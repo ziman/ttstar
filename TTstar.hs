@@ -25,7 +25,7 @@ data Alt r
 data DefType r = Ctor | Fun (TT' r) deriving (Eq, Ord, Show)
 data Def r = Def r Name (TT' r) (DefType r) deriving (Eq, Ord, Show)
 
-newtype Program r = Prog [Def r] deriving (Eq, Ord, Show)
+newtype Program r = Prog [Def r]
 
 type TT = TT' (Maybe Relevance)
 type TTstar = TT' Relevance
@@ -60,3 +60,16 @@ instance Functor Def where
 
 instance Functor Program where
     fmap f (Prog defs) = Prog (map (fmap f) defs)
+
+instance Show r => Show (Program r) where
+    show (Prog defs) = unlines $ map fmtDef defs
+      where
+        fmtDef (Def r n ty dt) = unlines
+            [ fmtR r ++ " " ++ n ++ " : " ++ show ty
+            , n ++ " = " ++ fmtDT dt
+            ]
+
+        fmtDT Ctor = "(constructor)"
+        fmtDT (Fun tm) = show tm
+
+        fmtR r = "[" ++ show r ++ "]"
