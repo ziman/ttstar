@@ -7,7 +7,7 @@ data Nat = Z | S Nat deriving (Eq, Ord, Show)
 type Name = String
 data Relevance = I | R deriving (Eq, Ord, Show)
 data Binder = Lam | Pi deriving (Eq, Ord, Show)
-data Constant = Int Int | TInt | TType deriving (Eq, Ord, Show)
+data Constant = Int Int | TInt | TType deriving (Eq, Ord)
 data Op = Plus deriving (Eq, Ord, Show)
 
 data TT' r
@@ -41,6 +41,11 @@ constType :: Constant -> TT' r
 constType (Int _) = C TInt
 constType  TInt   = C TType
 constType  TType  = C TType  -- woooo :)
+
+instance Show Constant where
+    show (Int i) = show i
+    show TInt = "Int"
+    show TType = "Type"
 
 instance Functor TT' where
     fmap _ (V n) = V n
