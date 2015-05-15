@@ -52,7 +52,6 @@ main = do
     putStrLn "### Metaified ###"
     let metaified = meta testProg
     print metaified
-    putStrLn ""
     putStrLn "### Constraints ###"
     let cs = either (error . show) id . check $ metaified
     mapM_ print $ S.toList cs
@@ -64,3 +63,6 @@ main = do
     putStrLn "### Annotated ###"
     let annotated = annotate uses $ metaified
     print $ annotated
+    putStrLn "### Pruned ###"
+    let pruned = prune annotated
+    print $ pruned

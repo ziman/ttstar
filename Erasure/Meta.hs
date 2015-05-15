@@ -13,6 +13,10 @@ instance Show Meta where
     show (MVar i) = "?" ++ show i
     show (Fixed r) = "!" ++ show r
 
+instance ShowR Meta where
+    showR x = "[" ++ show x ++ "]"
+    showX x = " -" ++ show x ++ "- "
+
 meta :: Program (Maybe Relevance) -> Program Meta
 meta prog = evalState (metaProg prog) 0
 

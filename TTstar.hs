@@ -41,12 +41,12 @@ constType  TInt   = C TType
 constType  TType  = C TType  -- woooo :)
 
 instance Functor TT' where
-    fmap f (V n) = V n
+    fmap _ (V n) = V n
     fmap f (Bind b r n ty tm) = Bind b (f r) n (fmap f ty) (fmap f tm)
     fmap f (App r fun arg) = App (f r) (fmap f fun) (fmap f arg)
-    fmap f (Prim op) = Prim op
+    fmap _ (Prim op) = Prim op
     fmap f (Case s alts) = Case (fmap f s) (map (fmap f) alts)
-    fmap f (C c) = C c
+    fmap _ (C c) = C c
 
 instance Functor Alt where
     fmap f (ConCase cn r ns tm) = ConCase cn (f r) ns (fmap f tm)
@@ -54,7 +54,7 @@ instance Functor Alt where
     fmap f (DefaultCase tm) = DefaultCase (fmap f tm)
 
 instance Functor DefType where
-    fmap f Ctor = Ctor
+    fmap _ Ctor = Ctor
     fmap f (Fun tm) = Fun (fmap f tm)
 
 instance Functor Def where
@@ -63,10 +63,19 @@ instance Functor Def where
 instance Functor Program where
     fmap f (Prog defs) = Prog (map (fmap f) defs)
 
-showR :: Show r => r -> String
-showR x = ":" ++ show x ++ ":"
+class Show r => ShowR r where
+    showR :: r -> String
+    showX :: r -> String
 
-instance Show r => Show (Program r) where
+instance ShowR Relevance where
+    showR x = ":" ++ show x ++ ":"
+    showX x = " -" ++ show x ++ "- "
+
+instance ShowR () where
+    showR _ = ":"
+    showX _ = " "
+
+instance ShowR r => Show (Program r) where
     show (Prog defs) = intercalate "\n" $ map fmtDef defs
       where
         fmtDef (Def r n ty dt) = intercalate "\n"
@@ -78,11 +87,11 @@ instance Show r => Show (Program r) where
         fmtDT Ctor = "(constructor)"
         fmtDT (Fun tm) = show tm
 
-instance Show r => Show (TT' r) where
+instance ShowR r => Show (TT' r) where
     show (V n) = n
     show (Bind Pi r n ty tm) = "(" ++ n ++ showR r ++ show ty ++ ") -> " ++ show tm
     show (Bind Lam r n ty tm) = "\\" ++ n ++ showR r ++ show ty ++ ". " ++ show tm
-    show (App r f x) = "(" ++ show f ++ " -" ++ show r ++ "- " ++ show x ++ ")"
+    show (App r f x) = "(" ++ show f ++ showX r ++ show x ++ ")"
     show (Prim op) = show op
     show (Case s alts) = "case " ++ show s ++ " of " ++ show alts
     show (C c) = show c
@@ -94,10 +103,10 @@ subst n tm t@(V n')
 subst n tm t@(Bind b r n' ty tm')
     | n' == n   = t
     | otherwise = Bind b r n' (subst n tm ty) (subst n tm tm')
-subst n tm t@(App r f x) = App r (subst n tm f) (subst n tm x)
-subst n tm t@(Prim op) = t
-subst n tm t@(Case s alts) = Case (subst n tm s) (map (substAlt n tm) alts)
-subst n tm t@(C c) = t
+subst n tm (App r f x) = App r (subst n tm f) (subst n tm x)
+subst _ _  t@(Prim _op) = t
+subst n tm (Case s alts) = Case (subst n tm s) (map (substAlt n tm) alts)
+subst _ _  t@(C _c) = t
 
 substAlt :: Name -> TT' r -> Alt r -> Alt r
 substAlt n tm (DefaultCase tm') = DefaultCase $ subst n tm tm'
