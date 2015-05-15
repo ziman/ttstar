@@ -61,24 +61,25 @@ instance Functor Def where
 instance Functor Program where
     fmap f (Prog defs) = Prog (map (fmap f) defs)
 
+showR :: Show r => r -> String
+showR x = ":" ++ show x ++ ":"
+
 instance Show r => Show (Program r) where
     show (Prog defs) = unlines $ map fmtDef defs
       where
         fmtDef (Def r n ty dt) = unlines
-            [ fmtR r ++ " " ++ n ++ " : " ++ show ty
+            [ n ++ showR r ++ show ty
             , n ++ " = " ++ fmtDT dt
             ]
 
         fmtDT Ctor = "(constructor)"
         fmtDT (Fun tm) = show tm
 
-        fmtR r = "[" ++ show r ++ "]"
-
 instance Show r => Show (TT' r) where
     show (V n) = n
-    show (Bind Pi r n ty tm) = "(" ++ show r ++ ". " ++ n ++ ":" ++ show ty ++ ") -> " ++ show tm
-    show (Bind Lam r n ty tm) = "\\" ++ show r ++ ". " ++ n ++ ":" ++ show ty ++ ". " ++ show tm
-    show (App r f x) = "(" ++ show r ++ ". "  ++ show f ++ " " ++ show x ++ ")"
+    show (Bind Pi r n ty tm) = "(" ++ n ++ showR r ++ show ty ++ ") -> " ++ show tm
+    show (Bind Lam r n ty tm) = "\\" ++ n ++ showR r ++ show ty ++ ". " ++ show tm
+    show (App r f x) = "(" ++ show r ++ " "   ++ show f ++ " " ++ show x ++ ")"
     show (Prim op) = show op
     show (Case s ty alts) = "case " ++ show s ++ " : " ++ show ty ++ " of " ++ show alts
     show (C c) = show c
