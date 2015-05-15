@@ -37,8 +37,8 @@ data TCError
 type TCState = Int
 type TC a = WriterT Constrs (ExceptT TCError (State TCState)) a
 
-cond :: Meta -> Constrs -> Constrs
-cond m = S.map mogrify
+cond :: Meta -> TC a -> TC a
+cond m = censor $ S.map mogrify
   where
     mogrify (us :<-: gs) = us :<-: S.insert m gs
 
@@ -146,7 +146,7 @@ checkTm ctx (Bind Lam r n ty tm) =
 
 checkTm ctx (App r f x) = do
     fTy <- checkTm ctx f
-    xTy <- checkTm ctx x
+    xTy <- cond r $ checkTm ctx x
     case fTy of
         Bind Pi r' n' ty' tm' -> do
             tell (r `eq` r')
