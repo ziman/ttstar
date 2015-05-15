@@ -168,6 +168,8 @@ checkTm ctx t@(Case s alts) = do
 
 checkTm _ctx (C c) = return $ constType c
 
+checkTm _ctx Erased = return $ Erased
+
 checkAlt :: Ctx -> Alt Meta -> TC TTmeta
 checkAlt ctx (DefaultCase tm) = checkTm ctx tm
 checkAlt ctx (ConstCase _c tm) = checkTm ctx tm

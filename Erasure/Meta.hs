@@ -41,6 +41,7 @@ metaTm (App r f x) = App <$> freshM r <*> metaTm f <*> metaTm x
 metaTm (Case s alts) = Case <$> metaTm s <*> mapM metaAlt alts
 metaTm (Prim op) = return $ Prim op
 metaTm (C c) = return $ C c
+metaTm Erased = return Erased
 
 metaAlt :: Alt (Maybe Relevance) -> MetaM (Alt Meta)
 metaAlt (DefaultCase tm) = DefaultCase <$> metaTm tm

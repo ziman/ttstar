@@ -17,6 +17,7 @@ data TT' r
     | Prim Op
     | Case (TT' r) [Alt r]  -- scrutinee, scrutinee type, alts
     | C Constant
+    | Erased
     deriving (Eq, Ord)
 
 data Alt r
@@ -48,6 +49,7 @@ instance Functor TT' where
     fmap _ (Prim op) = Prim op
     fmap f (Case s alts) = Case (fmap f s) (map (fmap f) alts)
     fmap _ (C c) = C c
+    fmap _ Erased = Erased
 
 instance Functor Alt where
     fmap f (ConCase cn r ns tm) = ConCase cn (f r) ns (fmap f tm)
@@ -86,6 +88,7 @@ instance ShowR (Maybe Relevance) where
 instance ShowR r => Show (Program r) where
     show (Prog defs) = intercalate "\n" $ map fmtDef defs
       where
+        fmtDef (Def _r n Erased dt) = n ++ " = " ++ fmtDT dt ++ "\n"
         fmtDef (Def r n ty dt) = intercalate "\n"
             [ n ++ " " ++ showR r ++ " " ++ show ty
             , n ++ " = " ++ fmtDT dt
@@ -98,6 +101,7 @@ instance ShowR r => Show (Program r) where
 instance ShowR r => Show (TT' r) where
     show (V n) = n
     show (Bind Pi r n ty tm) = "(" ++ n ++ showR r ++ show ty ++ ") -> " ++ show tm
+    show (Bind Lam _r n Erased tm) = "\\" ++ n ++ ". " ++ show tm
     show (Bind Lam r n ty tm) = "\\" ++ n ++ showR r ++ show ty ++ ". " ++ show tm
     show (App r f x) = "(" ++ show' r f x ++ ")"
       where
@@ -106,6 +110,7 @@ instance ShowR r => Show (TT' r) where
     show (Prim op) = show op
     show (Case s alts) = "case " ++ show s ++ " of " ++ show alts
     show (C c) = show c
+    show Erased = "____"
 
 subst :: Name -> TT' r -> TT' r -> TT' r
 subst n tm t@(V n')
@@ -118,6 +123,7 @@ subst n tm (App r f x) = App r (subst n tm f) (subst n tm x)
 subst _ _  t@(Prim _op) = t
 subst n tm (Case s alts) = Case (subst n tm s) (map (substAlt n tm) alts)
 subst _ _  t@(C _c) = t
+subst _ _  t@Erased = t
 
 substAlt :: Name -> TT' r -> Alt r -> Alt r
 substAlt n tm (DefaultCase tm') = DefaultCase $ subst n tm tm'
