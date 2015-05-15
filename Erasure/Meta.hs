@@ -5,9 +5,13 @@ import TTstar
 import Control.Applicative
 import Control.Monad.Trans.State.Strict
 
-data Meta = MVar Int | Fixed Relevance deriving (Eq, Ord, Show)
+data Meta = MVar Int | Fixed Relevance deriving (Eq, Ord)
 type TTmeta = TT' Meta
 type MetaM = State Int
+
+instance Show Meta where
+    show (MVar i) = "?" ++ show i
+    show (Fixed r) = "!" ++ show r
 
 meta :: Program (Maybe Relevance) -> Program Meta
 meta prog = evalState (metaProg prog) 0

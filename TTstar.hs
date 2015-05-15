@@ -14,7 +14,7 @@ data TT' r
     | Prim Op
     | Case (TT' r) (TT' r) [Alt r]  -- scrutinee, scrutinee type, alts
     | C Constant
-    deriving (Eq, Ord, Show)
+    deriving (Eq, Ord)
 
 data Alt r
     = ConCase Name r [Name] (TT' r)  -- relevance of tag + relevance of args
@@ -73,3 +73,12 @@ instance Show r => Show (Program r) where
         fmtDT (Fun tm) = show tm
 
         fmtR r = "[" ++ show r ++ "]"
+
+instance Show r => Show (TT' r) where
+    show (V n) = n
+    show (Bind Pi r n ty tm) = "(" ++ show r ++ ". " ++ n ++ ":" ++ show ty ++ ") -> " ++ show tm
+    show (Bind Lam r n ty tm) = "\\" ++ show r ++ ". " ++ n ++ ":" ++ show ty ++ ". " ++ show tm
+    show (App r f x) = "(" ++ show r ++ ". "  ++ show f ++ " " ++ show x ++ ")"
+    show (Prim op) = show op
+    show (Case s ty alts) = "case " ++ show s ++ " : " ++ show ty ++ " of " ++ show alts
+    show (C c) = show c

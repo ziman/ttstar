@@ -40,16 +40,20 @@ testProg = Prog
 
 main :: IO ()
 main = do
-    putStrLn "-- Constraints --"
-    let cs = fromRight . check $ meta testProg
+    putStrLn "### Metaified ###"
+    let metaified = meta testProg
+    print metaified
+    putStrLn ""
+    putStrLn "### Constraints ###"
+    let cs = fromRight . check $ metaified
     mapM_ print $ S.toList cs
     putStrLn ""
-    putStrLn "-- Solution --"
+    putStrLn "### Solution ###"
     let uses = solve cs
     print $ S.toList uses
     putStrLn ""
-    putStrLn "-- Annotated --"
-    let annotated = annotate uses $ meta testProg
+    putStrLn "### Annotated ###"
+    let annotated = annotate uses $ metaified
     print $ annotated
   where
     fromRight (Right x) = x
