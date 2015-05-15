@@ -47,3 +47,6 @@ metaAlt :: Alt (Maybe Relevance) -> MetaM (Alt Meta)
 metaAlt (DefaultCase tm) = DefaultCase <$> metaTm tm
 metaAlt (ConCase cn tr ns tm) = ConCase cn <$> freshM tr <*> pure ns <*> metaTm tm
 metaAlt (ConstCase c tm) = ConstCase c <$> metaTm tm
+
+-- Polymorphism
+-- differently-typed case alts

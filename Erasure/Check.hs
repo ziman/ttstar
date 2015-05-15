@@ -158,25 +158,22 @@ checkTm ctx (App r f x) = do
 checkTm _ctx (Prim op) = return $ primType Fixed op
 
 checkTm ctx t@(Case s alts) = do
-    _sTy <- checkTm ctx s  -- we ignore scrutinee type, there's no relevance info in it
-    altsTy <- mapM (checkAlt ctx) alts
-    case altsTy of
-        [] -> tcfail $ EmptyCaseTree t
-        aty:atys -> do
-            mapM_ (conv aty) atys
-            return aty
+    _sTy <- checkTm ctx s  -- we ignore scrutinee type
+    alts' <- mapM (checkAlt ctx) alts
+    return $ Case s alts'
 
 checkTm _ctx (C c) = return $ constType c
 
 checkTm _ctx Erased = return $ Erased
 
-checkAlt :: Ctx -> Alt Meta -> TC TTmeta
-checkAlt ctx (DefaultCase tm) = checkTm ctx tm
-checkAlt ctx (ConstCase _c tm) = checkTm ctx tm
-checkAlt ctx (ConCase cn _r ns tm) = do
-    (_cr, cty) <- lookupName ctx cn
+checkAlt :: Ctx -> Alt Meta -> TC (Alt Meta)
+checkAlt ctx (DefaultCase tm) = DefaultCase <$> checkTm ctx tm
+checkAlt ctx (ConstCase c tm) = ConstCase c <$> checkTm ctx tm
+checkAlt ctx (ConCase cn r ns tm) = do
+    (cr, cty) <- lookupName ctx cn
+    tell (cr `eq` r)
     ctx' <- augCtx ctx ns cty
-    checkTm ctx' tm
+    ConCase cn r ns <$> checkTm ctx' tm
   where
     augCtx :: Ctx -> [Name] -> TTmeta -> TC Ctx
     augCtx ctx [] _ty = return ctx
