@@ -5,7 +5,7 @@ import Erasure
 
 infixr 3 ~>
 (~>) :: TT -> TT -> TT
-(~>) = Bind Pi Nothing ""
+(~>) = Bind Pi Nothing "_"
 
 infixr 3 .->
 (.->) :: String -> TT -> TT
@@ -33,7 +33,7 @@ testProg =
     , Fun
       { dName = "f"
       , dType = intFun ~> C TInt ~> intFun ~> C TInt ~> C TInt
-      , dBody = "g" .-> "x" .-> "h" .-> "y" .-> Prim Plus [V "g" ! V "x", V "h" ! V "y"]
+      , dBody = "g" .-> "x" .-> "h" .-> "y" .-> Prim Plus ! (V "g" ! V "x") ! (V "h" ! V "y")
       }
     , Fun
       { dName = "main"
