@@ -33,7 +33,8 @@ testProg = Prog
     , Def Nothing "f" (intFun ~> C TInt ~> intFun ~> C TInt ~> C TInt)
         $ Fun ("g" .-> "z" .-> "h" .-> "w" .-> Prim Plus ! (V "g" ! V "z") ! (V "h" ! V "w"))
     , Def (Just R) "main" (C TInt)
-        $ Fun (V "f" ! V "id" ! C (Int 3) ! V "const_42" ! C (Int 7))
+    --    $ Fun (V "f" ! V "id" ! C (Int 3) ! V "const_42" ! C (Int 7))
+        $ Fun (V "id" ! C (Int 42))
     ]
   where
     intFun = C TInt ~> C TInt
@@ -45,7 +46,7 @@ main = do
     print metaified
     putStrLn ""
     putStrLn "### Constraints ###"
-    let cs = fromRight . check $ metaified
+    let cs = either (error . show) id . check $ metaified
     mapM_ print $ S.toList cs
     putStrLn ""
     putStrLn "### Solution ###"
