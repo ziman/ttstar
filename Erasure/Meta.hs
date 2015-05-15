@@ -34,7 +34,7 @@ metaTm :: TT -> MetaM TTmeta
 metaTm (V n) = return $ V n
 metaTm (Bind bnd r n ty tm) = Bind bnd <$> freshM r <*> pure n <*> metaTm ty <*> metaTm tm
 metaTm (App r f x) = App <$> freshM r <*> metaTm f <*> metaTm x
-metaTm (Case s sty alts) = Case <$> metaTm s <*> metaTm sty <*> mapM metaAlt alts
+metaTm (Case s alts) = Case <$> metaTm s <*> mapM metaAlt alts
 metaTm (Prim op) = return $ Prim op
 metaTm (C c) = return $ C c
 

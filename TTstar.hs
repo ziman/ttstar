@@ -14,7 +14,7 @@ data TT' r
     | Bind Binder r Name (TT' r) (TT' r)
     | App r (TT' r) (TT' r)
     | Prim Op
-    | Case (TT' r) (TT' r) [Alt r]  -- scrutinee, scrutinee type, alts
+    | Case (TT' r) [Alt r]  -- scrutinee, scrutinee type, alts
     | C Constant
     deriving (Eq, Ord)
 
@@ -45,7 +45,7 @@ instance Functor TT' where
     fmap f (Bind b r n ty tm) = Bind b (f r) n (fmap f ty) (fmap f tm)
     fmap f (App r fun arg) = App (f r) (fmap f fun) (fmap f arg)
     fmap f (Prim op) = Prim op
-    fmap f (Case s sty alts) = Case (fmap f s) (fmap f sty) (map (fmap f) alts)
+    fmap f (Case s alts) = Case (fmap f s) (map (fmap f) alts)
     fmap f (C c) = C c
 
 instance Functor Alt where
@@ -83,7 +83,7 @@ instance Show r => Show (TT' r) where
     show (Bind Lam r n ty tm) = "\\" ++ n ++ showR r ++ show ty ++ ". " ++ show tm
     show (App r f x) = "(" ++ show r ++ " "   ++ show f ++ " " ++ show x ++ ")"
     show (Prim op) = show op
-    show (Case s ty alts) = "case " ++ show s ++ " : " ++ show ty ++ " of " ++ show alts
+    show (Case s alts) = "case " ++ show s ++ " of " ++ show alts
     show (C c) = show c
 
 subst :: Name -> TT' r -> TT' r -> TT' r
@@ -95,7 +95,7 @@ subst n tm t@(Bind b r n' ty tm')
     | otherwise = Bind b r n' (subst n tm ty) (subst n tm tm')
 subst n tm t@(App r f x) = App r (subst n tm f) (subst n tm x)
 subst n tm t@(Prim op) = t
-subst n tm t@(Case s sty alts) = Case (subst n tm s) (subst n tm sty) (map (substAlt n tm) alts)
+subst n tm t@(Case s alts) = Case (subst n tm s) (map (substAlt n tm) alts)
 subst n tm t@(C c) = t
 
 substAlt :: Name -> TT' r -> Alt r -> Alt r

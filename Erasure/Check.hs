@@ -68,12 +68,11 @@ conv (Prim op) (Prim op') = do
     require (op == op') $ Mismatch (show op) (show op')
     return S.empty
 
-conv (Case s sty alts) (Case s' sty' alts') = do
+conv (Case s alts) (Case s' alts') = do
     xs <- conv s s'
-    ys <- conv sty sty'
     require (length alts == length alts') $ Mismatch (show alts) (show alts')
-    zs <- S.unions <$> zipWithM convAlt alts alts'
-    return $ S.unions [xs, ys, zs]
+    ys <- S.unions <$> zipWithM convAlt alts alts'
+    return $ S.union xs ys
 
 conv (C c) (C c') = do
     require (c == c') $ Mismatch (show c) (show c')
@@ -124,8 +123,15 @@ checkProgram (Prog defs) = S.unions <$> mapM (checkDef globals) defs
 
 checkDef :: Ctx -> Def Meta -> TC Constrs
 checkDef ctx (Def r n ty Ctor) = return S.empty
-checkDef ctx (Def r n ty (Fun tm)) = cond r <$> checkTerm ctx ty tm
+checkDef ctx (Def r n ty (Fun tm)) = do
+    (ty', xs) <- checkTm ctx tm
+    ys <- conv ty ty'
+    return $ S.union xs ys
 
+checkTm :: Ctx -> TTmeta -> TC (TTmeta, Constrs)
+checkTm ctx tm = undefined
+
+{-
 checkTerm :: Ctx -> TTmeta -> TTmeta -> TC Constrs
 checkTerm ctx ty (V n) = do
     (r, ty') <- lookupName ctx n
@@ -174,4 +180,4 @@ augCtx :: Ctx -> [Name] -> TTmeta -> TC (Ctx, TTmeta)
 augCtx ctx [] ty = return (ctx, ty)
 augCtx ctx (n : ns) (Bind Pi r n' ty tm) = augCtx (add r n ty ctx) ns tm
 augCtx ctx (n : ns) ty = throwE $ BadCtorReturn ty
-
+-}
