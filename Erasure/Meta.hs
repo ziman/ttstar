@@ -14,7 +14,7 @@ instance Show Meta where
     show (Fixed r) = "!" ++ show r
 
 instance ShowR Meta where
-    showR x = "[" ++ show x ++ "]"
+    showR x = ":" ++ show x ++ ":"
     showX x = " -" ++ show x ++ "- "
 
 meta :: Program (Maybe Relevance) -> Program Meta
