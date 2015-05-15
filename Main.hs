@@ -20,34 +20,28 @@ infixl 4 !
 testTerm :: TT
 testTerm = "x" .-> V "x"
 
-testProg :: Program TT
+testProg :: Program (Maybe Relevance)
 testProg =
-    [ Fun
-      { dName = "const_42"
-      , dType = intFun
-      , dBody = "x" .-> C (Int 42)
-      }
-    , Fun
-      { dName = "id"
-      , dType = intFun
-      , dBody = "y" .-> V "y"
-      }
-    , Fun
-      { dName = "f"
-      , dType = intFun ~> C TInt ~> intFun ~> C TInt ~> C TInt
-      , dBody = "g" .-> "z" .-> "h" .-> "w" .-> Prim Plus ! (V "g" ! V "z") ! (V "h" ! V "w")
-      }
-    , Fun
-      { dName = "main"
-      , dType = C TInt
-      , dBody = V "f" ! V "id" ! C (Int 3) ! V "const_42" ! C (Int 7)
-      }
+    [ Def Nothing "const_42" intFun
+        $ Fun ("x" .-> C (Int 42))
+    , Def Nothing "id" intFun
+        $ Fun ("y" .-> V "y")
+    , Def Nothing "f" (intFun ~> C TInt ~> intFun ~> C TInt ~> C TInt)
+        $ Fun ("g" .-> "z" .-> "h" .-> "w" .-> Prim Plus ! (V "g" ! V "z") ! (V "h" ! V "w"))
+    , Def (Just R) "main" (C TInt)
+        $ Fun (V "f" ! V "id" ! C (Int 3) ! V "const_42" ! C (Int 7))
     ]
   where
     intFun = C TInt ~> C TInt
 
 main :: IO ()
 main = do
-    mapM_ print . S.toList . fromRight . check $ meta testProg
+    putStrLn "-- Constraints --"
+    let cs = fromRight . check $ meta testProg
+    mapM_ print $ S.toList cs
+    putStrLn ""
+    putStrLn "-- Solution --"
+    let uses = solve cs
+    print $ S.toList uses
   where
     fromRight (Right x) = x

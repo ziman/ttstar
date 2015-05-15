@@ -10,6 +10,7 @@ import Control.Monad.Trans.Except
 
 import qualified Data.Map as M
 import qualified Data.Set as S
+import qualified Data.IntSet as IS
 
 import Debug.Trace
 
@@ -19,14 +20,18 @@ data Meta = MVar Int | Fixed Relevance deriving (Eq, Ord, Show)
 type TTmeta = TT' Meta
 type MetaM = State Int
 
-meta :: Program TT -> Program TTmeta
+meta :: Program (Maybe Relevance) -> Program Meta
 meta prog = evalState (metaProg prog) 0
 
-metaProg :: Program TT -> MetaM (Program TTmeta)
+metaProg :: Program (Maybe Relevance) -> MetaM (Program Meta)
 metaProg = mapM metaDef
 
-metaDef :: Def TT -> MetaM (Def TTmeta)
-metaDef (Fun n ty tm) = Fun n <$> metaTm ty <*> metaTm tm
+metaDef :: Def (Maybe Relevance) -> MetaM (Def Meta)
+metaDef (Def r n ty dt) = Def <$> freshM r <*> pure n <*> metaTm ty <*> metaDefType dt
+
+metaDefType :: DefType (Maybe Relevance) -> MetaM (DefType Meta)
+metaDefType  Ctor    = return $ Ctor
+metaDefType (Fun tm) = Fun <$> metaTm tm
 
 freshM :: Maybe Relevance -> State Int Meta
 freshM Nothing  = modify (+1) >> MVar <$> get
@@ -90,18 +95,18 @@ lookupName ctx n
     | Just x <- M.lookup n ctx = return x
     | otherwise = throwE $ UnknownName n
 
-check :: Program TTmeta -> Either TCError Constrs
+check :: Program Meta -> Either TCError Constrs
 check prog = evalState (runExceptT $ checkProgram prog) 0
 
-checkProgram :: Program TTmeta -> TC Constrs
+checkProgram :: Program Meta -> TC Constrs
 checkProgram prog = S.unions <$> mapM (checkDef globals) prog
   where
     globals :: Ctx
-    globals = M.fromList [(dName d, (Fixed R, dType d)) | d <- prog]
+    globals = M.fromList [(n, (r, ty)) | Def r n ty dt <- prog]
 
-checkDef :: Ctx -> Def TTmeta -> TC Constrs
-checkDef ctx (Con cn ty)    = return S.empty
-checkDef ctx (Fun fn ty tm) = checkTerm ctx ty tm
+checkDef :: Ctx -> Def Meta -> TC Constrs
+checkDef ctx (Def r n ty Ctor) = return S.empty
+checkDef ctx (Def r n ty (Fun tm)) = cond r <$> checkTerm ctx ty tm
 
 checkTerm :: Ctx -> TTmeta -> TTmeta -> TC Constrs
 checkTerm ctx ty (V n) = do
@@ -151,3 +156,18 @@ augCtx :: Ctx -> [Name] -> TTmeta -> TC (Ctx, TTmeta)
 augCtx ctx [] ty = return (ctx, ty)
 augCtx ctx (n : ns) (Bind Pi r n' ty tm) = augCtx (add r n ty ctx) ns tm
 augCtx ctx (n : ns) ty = throwE $ BadCtorReturn ty
+
+type CMap = M.Map Guards Uses
+
+solve :: Constrs -> Uses
+solve cs = step (S.singleton $ Fixed R) cmap
+  where
+    cmap = M.unionsWith S.union [M.singleton gs us | (us :<-: gs) <- S.toList cs]
+
+step :: Uses -> CMap -> Uses
+step ans cmap
+    | S.null new = ans
+    | otherwise = step (S.union ans new) prunedCmap
+  where
+    prunedCmap = M.mapKeysWith S.union (S.\\ ans) . M.map (S.\\ ans) $ cmap
+    new = M.findWithDefault S.empty S.empty prunedCmap

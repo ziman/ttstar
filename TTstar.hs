@@ -22,19 +22,10 @@ data Alt r
     | DefaultCase (TT' r)
     deriving (Eq, Ord, Show)
 
-data Def tm
-    = Fun
-        { dName :: Name
-        , dType :: tm
-        , dBody :: tm
-        }
-    | Con
-        { dName :: Name
-        , dType :: tm
-        }
-  deriving (Eq, Ord, Show)
+data DefType r = Ctor | Fun (TT' r) deriving (Eq, Ord, Show)
+data Def r = Def r Name (TT' r) (DefType r)
 
-type Program tm = [Def tm]
+type Program r = [Def r]
 
 type TT = TT' (Maybe Relevance)
 type TTstar = TT' Relevance
