@@ -72,6 +72,7 @@ instance Show r => Show (Program r) where
         fmtDef (Def r n ty dt) = intercalate "\n"
             [ n ++ showR r ++ show ty
             , n ++ " = " ++ fmtDT dt
+            , ""
             ]
 
         fmtDT Ctor = "(constructor)"
