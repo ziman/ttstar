@@ -3,6 +3,8 @@ module Main where
 import TTstar
 import Erasure
 
+import qualified Data.Set as S
+
 infixr 3 ~>
 (~>) :: TT -> TT -> TT
 (~>) = Bind Pi Nothing "_"
@@ -28,12 +30,12 @@ testProg =
     , Fun
       { dName = "id"
       , dType = intFun
-      , dBody = "x" .-> V "x"
+      , dBody = "y" .-> V "y"
       }
     , Fun
       { dName = "f"
       , dType = intFun ~> C TInt ~> intFun ~> C TInt ~> C TInt
-      , dBody = "g" .-> "x" .-> "h" .-> "y" .-> Prim Plus ! (V "g" ! V "x") ! (V "h" ! V "y")
+      , dBody = "g" .-> "z" .-> "h" .-> "w" .-> Prim Plus ! (V "g" ! V "z") ! (V "h" ! V "w")
       }
     , Fun
       { dName = "main"
@@ -46,4 +48,6 @@ testProg =
 
 main :: IO ()
 main = do
-    print $ testProg
+    mapM_ print . S.toList . fromRight . check $ meta testProg
+  where
+    fromRight (Right x) = x

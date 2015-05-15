@@ -11,6 +11,8 @@ import Control.Monad.Trans.Except
 import qualified Data.Map as M
 import qualified Data.Set as S
 
+import Debug.Trace
+
 import TTstar
 
 data Meta = MVar Int | Fixed Relevance deriving (Eq, Ord, Show)
@@ -111,7 +113,7 @@ checkTerm ctx (C TType) (Bind Pi r n ty tm)
 
 checkTerm ctx (Bind Pi r n ty tm) (Bind Lam r' n' ty' tm') = do
     xs <- conv ty ty'
-    ys <- checkTerm (add r' n ty ctx) tm tm'
+    ys <- checkTerm (add r' n' ty ctx) tm tm'
     return $ S.unions [[r] <~ [r'], xs, ys]
 
 checkTerm ctx ty (App r f x) = do
