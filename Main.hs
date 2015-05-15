@@ -26,12 +26,14 @@ testTerm = "x" .-> V "x"
 
 testProg :: Program (Maybe Relevance)
 testProg = Prog
-    [ Def Nothing "const_42" intFun
-        $ Fun ("x" .-> C (Int 42))
-    , Def Nothing "id" intFun
+    [ Def Nothing "id" intFun
         $ Fun ("y" .-> V "y")
+    {-
+    , Def Nothing "const_42" intFun
+        $ Fun ("x" .-> C (Int 42))
     , Def Nothing "f" (intFun ~> C TInt ~> intFun ~> C TInt ~> C TInt)
         $ Fun ("g" .-> "z" .-> "h" .-> "w" .-> Prim Plus ! (V "g" ! V "z") ! (V "h" ! V "w"))
+    -}
     , Def (Just R) "main" (C TInt)
     --    $ Fun (V "f" ! V "id" ! C (Int 3) ! V "const_42" ! C (Int 7))
         $ Fun (V "id" ! C (Int 42))
