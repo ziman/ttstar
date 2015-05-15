@@ -13,9 +13,12 @@ import qualified Data.Set as S
 
 type Guards = S.Set Meta
 type Uses = S.Set Meta
-data Constr = Uses :<-: Guards deriving (Eq, Ord, Show)
+data Constr = Uses :<-: Guards deriving (Eq, Ord)
 type Constrs = S.Set Constr
 type Ctx = M.Map Name (Meta, TTmeta)
+
+instance Show Constr where
+    show (us :<-: gs) = show (S.toList us) ++ " <- " ++ show (S.toList gs)
 
 data TCError
     = CantConvert TTmeta TTmeta

@@ -1,5 +1,7 @@
 module TTstar where
 
+import Data.List
+
 data Nat = Z | S Nat deriving (Eq, Ord, Show)
 type Name = String
 data Relevance = I | R deriving (Eq, Ord, Show)
@@ -65,9 +67,9 @@ showR :: Show r => r -> String
 showR x = ":" ++ show x ++ ":"
 
 instance Show r => Show (Program r) where
-    show (Prog defs) = unlines $ map fmtDef defs
+    show (Prog defs) = intercalate "\n" $ map fmtDef defs
       where
-        fmtDef (Def r n ty dt) = unlines
+        fmtDef (Def r n ty dt) = intercalate "\n"
             [ n ++ showR r ++ show ty
             , n ++ " = " ++ fmtDT dt
             ]
