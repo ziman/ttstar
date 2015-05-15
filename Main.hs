@@ -1,7 +1,6 @@
 module Main where
 
 import TTstar
-import Erasure
 import Erasure.Meta
 import Erasure.Check
 import Erasure.Solve
@@ -65,5 +64,3 @@ main = do
     putStrLn "### Annotated ###"
     let annotated = annotate uses $ metaified
     print $ annotated
-  where
-    fromRight (Right x) = x

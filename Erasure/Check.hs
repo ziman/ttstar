@@ -24,6 +24,7 @@ instance Show Constr where
 
 data TCError
     = CantConvert TTmeta TTmeta
+    | CantConvertAlt (Alt Meta) (Alt Meta)
     | Mismatch String String
     | UnknownName Name
     | WrongType TTmeta TTmeta  -- term, type
@@ -42,7 +43,7 @@ cond m = S.map mogrify
     mogrify (us :<-: gs) = us :<-: S.insert m gs
 
 require :: Bool -> TCError -> TC ()
-require True  e = return ()
+require True  _ = return ()
 require False e = tcfail e
 
 eq :: Meta -> Meta -> Constrs
@@ -51,6 +52,7 @@ eq r r' = S.unions [[r] <~ [r'], [r'] <~ [r]]
 rename :: [Name] -> [Name] -> TTmeta -> TTmeta
 rename [] [] tm = tm
 rename (n : ns) (n' : ns') tm = rename ns ns' $ subst n (V n') tm
+rename _ _ _ = error "rename: incoherent args"
 
 conv :: TTmeta -> TTmeta -> TC ()
 conv (V n) (V n') =
@@ -90,6 +92,7 @@ convAlt (ConCase cn r ns tm) (ConCase cn' r' ns' tm') = do
     require (length ns == length ns') $ Mismatch (show ns) (show ns')
     conv tm $ rename ns' ns tm'
     tell (r `eq` r')
+convAlt x y = tcfail $ CantConvertAlt x y
 
 add :: Meta -> Name -> TTmeta -> Ctx -> Ctx
 add r n ty = M.insert n (r, ty)
@@ -122,11 +125,11 @@ checkProgram :: Program Meta -> TC ()
 checkProgram (Prog defs) = mapM_ (checkDef globals) defs
   where
     globals :: Ctx
-    globals = M.fromList [(n, (r, ty)) | Def r n ty dt <- defs]
+    globals = M.fromList [(n, (r, ty)) | Def r n ty _ <- defs]
 
 checkDef :: Ctx -> Def Meta -> TC ()
-checkDef ctx (Def r n ty Ctor) = return ()
-checkDef ctx (Def r n ty (Fun tm)) = conv ty =<< checkTm ctx tm
+checkDef _ctx (Def _r _n _ty Ctor) = return ()
+checkDef ctx (Def _r _n ty (Fun tm)) = conv ty =<< checkTm ctx tm
 
 checkTm :: Ctx -> TTmeta -> TC TTmeta
 checkTm ctx (V n) = do
@@ -147,32 +150,33 @@ checkTm ctx (App r f x) = do
     case fTy of
         Bind Pi r' n' ty' tm' -> do
             tell (r `eq` r')
+            conv ty' xTy
             return $ subst n' x tm'
 
         _ -> tcfail $ NonFunction f fTy
 
-checkTm ctx (Prim op) = return $ primType Fixed op
+checkTm _ctx (Prim op) = return $ primType Fixed op
 
 checkTm ctx t@(Case s alts) = do
-    sTy <- checkTm ctx s
-    altsTy <- mapM (checkAlt ctx) alts  -- we ignore scrutinee type, it's been checked anyway
+    _sTy <- checkTm ctx s  -- we ignore scrutinee type, there's no relevance info in it
+    altsTy <- mapM (checkAlt ctx) alts
     case altsTy of
         [] -> tcfail $ EmptyCaseTree t
         aty:atys -> do
             mapM_ (conv aty) atys
             return aty
 
-checkTm ctx (C c) = return $ constType c
+checkTm _ctx (C c) = return $ constType c
 
 checkAlt :: Ctx -> Alt Meta -> TC TTmeta
 checkAlt ctx (DefaultCase tm) = checkTm ctx tm
-checkAlt ctx (ConstCase c tm) = checkTm ctx tm
-checkAlt ctx (ConCase cn r ns tm) = do
-    (cr, cty) <- lookupName ctx cn
+checkAlt ctx (ConstCase _c tm) = checkTm ctx tm
+checkAlt ctx (ConCase cn _r ns tm) = do
+    (_cr, cty) <- lookupName ctx cn
     ctx' <- augCtx ctx ns cty
     checkTm ctx' tm
   where
     augCtx :: Ctx -> [Name] -> TTmeta -> TC Ctx
-    augCtx ctx [] ty = return ctx
-    augCtx ctx (n : ns) (Bind Pi r n' ty tm) = augCtx (add r n ty ctx) ns tm
-    augCtx ctx (n : ns) tm = tcfail $ BadCtorType tm
+    augCtx ctx [] _ty = return ctx
+    augCtx ctx (n : ns) (Bind Pi r _n' ty tm) = augCtx (add r n ty ctx) ns tm
+    augCtx _ctx (_ : _ ) tm = tcfail $ BadCtorType tm
