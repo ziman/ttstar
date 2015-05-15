@@ -70,7 +70,7 @@ instance Show r => Show (Program r) where
     show (Prog defs) = intercalate "\n" $ map fmtDef defs
       where
         fmtDef (Def r n ty dt) = intercalate "\n"
-            [ n ++ showR r ++ show ty
+            [ n ++ " " ++ showR r ++ " " ++ show ty
             , n ++ " = " ++ fmtDT dt
             , ""
             ]
