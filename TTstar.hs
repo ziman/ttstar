@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances #-}
 module TTstar where
 
 import Data.List
@@ -75,6 +76,13 @@ instance ShowR () where
     showR _ = ":"
     showX _ = " "
 
+instance ShowR (Maybe Relevance) where
+    showR Nothing = ":"
+    showR (Just r) = showR r
+
+    showX Nothing = " "
+    showX (Just r) = showX r
+
 instance ShowR r => Show (Program r) where
     show (Prog defs) = intercalate "\n" $ map fmtDef defs
       where
@@ -91,7 +99,10 @@ instance ShowR r => Show (TT' r) where
     show (V n) = n
     show (Bind Pi r n ty tm) = "(" ++ n ++ showR r ++ show ty ++ ") -> " ++ show tm
     show (Bind Lam r n ty tm) = "\\" ++ n ++ showR r ++ show ty ++ ". " ++ show tm
-    show (App r f x) = "(" ++ show f ++ showX r ++ show x ++ ")"
+    show (App r f x) = "(" ++ show' r f x ++ ")"
+      where
+        show' r (App r' f' x') x = show' r' f' x' ++ showX r ++ show x
+        show' r f x = show f ++ showX r ++ show x
     show (Prim op) = show op
     show (Case s alts) = "case " ++ show s ++ " of " ++ show alts
     show (C c) = show c

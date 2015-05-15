@@ -49,20 +49,22 @@ testProg = Prog
 
 main :: IO ()
 main = do
-    putStrLn "### Metaified ###"
+    putStrLn "### Original program ###\n"
+    print testProg
+    putStrLn "### Metaified ###\n"
     let metaified = meta testProg
     print metaified
-    putStrLn "### Constraints ###"
+    putStrLn "### Constraints ###\n"
     let cs = either (error . show) id . check $ metaified
     mapM_ print $ S.toList cs
     putStrLn ""
-    putStrLn "### Solution ###"
+    putStrLn "### Solution ###\n"
     let uses = solve cs
     print $ S.toList uses
     putStrLn ""
-    putStrLn "### Annotated ###"
+    putStrLn "### Annotated ###\n"
     let annotated = annotate uses $ metaified
     print $ annotated
-    putStrLn "### Pruned ###"
+    putStrLn "### Pruned ###\n"
     let pruned = prune annotated
     print $ pruned
