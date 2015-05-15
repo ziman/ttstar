@@ -12,7 +12,7 @@ data TT' r
     | Bind Binder r Name (TT' r) (TT' r)
     | App r (TT' r) (TT' r)
     | Prim Op
-    | Case (TT' r) (TT' r) [Alt r]
+    | Case (TT' r) (TT' r) [Alt r]  -- scrutinee, scrutinee type, alts
     | C Constant
     deriving (Eq, Ord, Show)
 
@@ -23,9 +23,9 @@ data Alt r
     deriving (Eq, Ord, Show)
 
 data DefType r = Ctor | Fun (TT' r) deriving (Eq, Ord, Show)
-data Def r = Def r Name (TT' r) (DefType r)
+data Def r = Def r Name (TT' r) (DefType r) deriving (Eq, Ord, Show)
 
-type Program r = [Def r]
+newtype Program r = Prog [Def r] deriving (Eq, Ord, Show)
 
 type TT = TT' (Maybe Relevance)
 type TTstar = TT' Relevance
@@ -37,3 +37,26 @@ constType :: Constant -> TT' r
 constType (Int _) = C TInt
 constType  TInt   = C TType
 constType  TType  = C TType  -- woooo :)
+
+instance Functor TT' where
+    fmap f (V n) = V n
+    fmap f (Bind b r n ty tm) = Bind b (f r) n (fmap f ty) (fmap f tm)
+    fmap f (App r fun arg) = App (f r) (fmap f fun) (fmap f arg)
+    fmap f (Prim op) = Prim op
+    fmap f (Case s sty alts) = Case (fmap f s) (fmap f sty) (map (fmap f) alts)
+    fmap f (C c) = C c
+
+instance Functor Alt where
+    fmap f (ConCase cn r ns tm) = ConCase cn (f r) ns (fmap f tm)
+    fmap f (ConstCase c tm) = ConstCase c (fmap f tm)
+    fmap f (DefaultCase tm) = DefaultCase (fmap f tm)
+
+instance Functor DefType where
+    fmap f Ctor = Ctor
+    fmap f (Fun tm) = Fun (fmap f tm)
+
+instance Functor Def where
+    fmap f (Def r n ty dt) = Def (f r) n (fmap f ty) (fmap f dt)
+
+instance Functor Program where
+    fmap f (Prog defs) = Prog (map (fmap f) defs)

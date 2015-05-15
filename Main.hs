@@ -5,6 +5,7 @@ import Erasure
 import Erasure.Meta
 import Erasure.Check
 import Erasure.Solve
+import Erasure.Prune
 
 import qualified Data.Set as S
 
@@ -24,7 +25,7 @@ testTerm :: TT
 testTerm = "x" .-> V "x"
 
 testProg :: Program (Maybe Relevance)
-testProg =
+testProg = Prog
     [ Def Nothing "const_42" intFun
         $ Fun ("x" .-> C (Int 42))
     , Def Nothing "id" intFun
@@ -46,5 +47,9 @@ main = do
     putStrLn "-- Solution --"
     let uses = solve cs
     print $ S.toList uses
+    putStrLn ""
+    putStrLn "-- Annotated --"
+    let annotated = annotate uses $ meta testProg
+    print $ annotated
   where
     fromRight (Right x) = x

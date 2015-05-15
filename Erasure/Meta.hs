@@ -13,7 +13,7 @@ meta :: Program (Maybe Relevance) -> Program Meta
 meta prog = evalState (metaProg prog) 0
 
 metaProg :: Program (Maybe Relevance) -> MetaM (Program Meta)
-metaProg = mapM metaDef
+metaProg (Prog defs) = Prog <$> mapM metaDef defs
 
 metaDef :: Def (Maybe Relevance) -> MetaM (Def Meta)
 metaDef (Def r n ty dt) = Def <$> freshM r <*> pure n <*> metaTm ty <*> metaDefType dt

@@ -60,10 +60,10 @@ check :: Program Meta -> Either TCError Constrs
 check prog = evalState (runExceptT $ checkProgram prog) 0
 
 checkProgram :: Program Meta -> TC Constrs
-checkProgram prog = S.unions <$> mapM (checkDef globals) prog
+checkProgram (Prog defs) = S.unions <$> mapM (checkDef globals) defs
   where
     globals :: Ctx
-    globals = M.fromList [(n, (r, ty)) | Def r n ty dt <- prog]
+    globals = M.fromList [(n, (r, ty)) | Def r n ty dt <- defs]
 
 checkDef :: Ctx -> Def Meta -> TC Constrs
 checkDef ctx (Def r n ty Ctor) = return S.empty
