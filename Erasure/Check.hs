@@ -7,9 +7,10 @@ import Erasure.Meta
 import Control.Monad
 import Control.Applicative
 import Control.Monad.Trans
-import Control.Monad.Trans.State.Strict
+import Control.Monad.Trans.State
 import Control.Monad.Trans.Except
 import Control.Monad.Trans.Writer
+import Control.Monad.Trans.Reader
 
 import qualified Data.Map as M
 import qualified Data.Set as S
@@ -35,13 +36,19 @@ data TCError
     | Other String
     deriving (Eq, Ord, Show)
 
+data TCFailure = TCFailure TCError [String] deriving (Show)
+
 type TCState = Int
-type TC a = WriterT Constrs (ExceptT TCError (State TCState)) a
+type TCCtx = [String]
+type TC a = ReaderT TCCtx (WriterT Constrs (ExceptT TCFailure (State TCState))) a
 
 cond :: Meta -> TC a -> TC a
-cond m = censor $ S.map mogrify
+cond m = mapReaderT $ censor (S.map mogrify)
   where
     mogrify (us :<-: gs) = us :<-: S.insert m gs
+
+bt :: Show a => a -> TC b -> TC b
+bt dbg = withReaderT (show dbg :)
 
 require :: Bool -> TCError -> TC ()
 require True  _ = return ()
@@ -63,12 +70,12 @@ conv (Bind b r n ty tm) (Bind b' r' n' ty' tm') = do
     require (b == b') $ Mismatch (show b) (show b')
     conv ty $ rename [n'] [n] ty'
     conv tm $ rename [n'] [n] tm'
-    tell (r `eq` r')
+    emit (r `eq` r')
 
 conv (App r f x) (App r' f' x') = do
     conv f f'
     conv x x'
-    tell (r `eq` r')
+    emit (r `eq` r')
 
 conv (Prim op) (Prim op') =
     require (op == op') $ Mismatch (show op) (show op')
@@ -96,7 +103,7 @@ convAlt (ConCase cn r ns tm) (ConCase cn' r' ns' tm') = do
     require (cn == cn') $ Mismatch cn cn'
     require (length ns == length ns') $ Mismatch (show ns) (show ns')
     conv tm $ rename ns' ns tm'
-    tell (r `eq` r')
+    emit (r `eq` r')
 convAlt x y = tcfail $ CantConvertAlt x y
 
 uniformCase :: TTmeta -> [Alt Meta] -> TC ()
@@ -118,21 +125,26 @@ steps :: [TC Constrs] -> TC Constrs
 steps = fmap S.unions . sequence
 
 freshN :: TC Name
-freshN = lift . lift $ do
+freshN = lift . lift . lift $ do
     i <- get
     put $ i+1
     return $ "_" ++ show i
 
 tcfail :: TCError -> TC a
-tcfail = lift . throwE
+tcfail e = do
+    bt <- ask
+    lift . lift . throwE $ TCFailure e bt
+
+emit :: Constrs -> TC ()
+emit = lift . tell
 
 lookupName :: Ctx -> Name -> TC (Meta, TTmeta, Maybe TTmeta)
 lookupName ctx n
     | Just x <- M.lookup n ctx = return x
     | otherwise = tcfail $ UnknownName n
 
-check :: Program Meta -> Either TCError Constrs
-check prog = evalState (runExceptT . execWriterT $ checkProgram prog) 0
+check :: Program Meta -> Either TCFailure Constrs
+check prog = evalState (runExceptT . execWriterT $ runReaderT (checkProgram prog) []) 0
 
 checkProgram :: Program Meta -> TC ()
 checkProgram (Prog defs) = mapM_ (checkDef globals) defs
@@ -150,7 +162,7 @@ checkDef ctx (Def _r _n ty (Fun tm)) = conv ty =<< checkTm ctx tm
 checkTm :: Ctx -> TTmeta -> TC TTmeta
 checkTm ctx (V n) = do
     (r, ty, _def) <- lookupName ctx n
-    tell ([r] <~ [Fixed R])
+    emit ([r] <~ [Fixed R])
     return ty
 
 checkTm ctx (Bind Pi r n ty tm) = do
@@ -165,7 +177,7 @@ checkTm ctx (App r f x) = do
     xTy <- cond r $ checkTm ctx x
     case fTy of
         Bind Pi r' n' ty' tm' -> do
-            tell (r `eq` r')
+            emit (r `eq` r')
             conv ty' xTy
             return . reduce ctx $ subst n' x tm'
 
@@ -187,7 +199,7 @@ checkAlt ctx (DefaultCase tm) = DefaultCase <$> checkTm ctx tm
 checkAlt ctx (ConstCase c tm) = ConstCase c <$> checkTm ctx tm
 checkAlt ctx (ConCase cn r ns tm) = do
     (cr, cty, _def) <- lookupName ctx cn
-    tell (cr `eq` r)
+    emit (cr `eq` r)
     ctx' <- augCtx ctx ns cty
     ConCase cn r ns <$> checkTm ctx' tm
   where
