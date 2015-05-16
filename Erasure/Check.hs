@@ -81,6 +81,10 @@ conv (Case s alts) (Case s' alts') = do
 conv (C c) (C c') =
     require (c == c') $ Mismatch (show c) (show c')
 
+-- last-resort: uniform-case check
+conv x@(Case _ _) y = conv y x
+conv x (Case s alts) = uniformCase x alts
+
 conv tm tm' = tcfail $ CantConvert tm tm'
 
 convAlt :: Alt Meta -> Alt Meta -> TC ()
@@ -94,6 +98,14 @@ convAlt (ConCase cn r ns tm) (ConCase cn' r' ns' tm') = do
     conv tm $ rename ns' ns tm'
     tell (r `eq` r')
 convAlt x y = tcfail $ CantConvertAlt x y
+
+uniformCase :: TTmeta -> [Alt Meta] -> TC ()
+uniformCase  _ []     = return ()
+uniformCase  x (a:as) = conv x (getTm a) >> uniformCase x as
+  where
+    getTm (DefaultCase tm) = tm
+    getTm (ConstCase _c tm) = tm
+    getTm (ConCase _cn _r _ns tm) = tm
 
 add :: Meta -> Name -> TTmeta -> Ctx -> Ctx
 add r n ty = M.insert n (r, ty, Nothing)
