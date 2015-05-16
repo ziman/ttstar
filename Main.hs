@@ -40,6 +40,12 @@ import qualified Data.Set as S
 --  -> these are (of course) computed in isolation
 -- so it's questionable whether we should call it whole-program analysis
 -- (the information is usable on its own)
+--
+-- ***
+--
+-- A meta on a Pi is the upper bound of all Lambdas typed by that Pi.
+-- We could add another meta to every Pi, which is the lower bound of all Lams typed by it.
+-- Then we could tell whether *all* lambdas are relevant or whether some are irrelevant.
 
 main :: IO ()
 main = do
