@@ -21,9 +21,9 @@ span cls body = "<span class=\"" ++ cls ++ "\">" ++ body ++ "</span>"
 rel :: Uses -> Meta -> String
 rel uses (Fixed R) = span "rel rel-R" " :<sub>R</sub> "
 rel uses (Fixed I) = span "rel rel-I" " :<sub>I</sub> "
-rel uses (MVar i) = span ("rel mvar mvar-" ++ show i ++ " " ++ cls) (" :<sub>" ++ show i ++ "</sub> ")
+rel uses (MVar i j) = span ("rel mvar mvar-" ++ show (i,j) ++ " " ++ cls) (" :<sub>" ++ show i ++ "</sub> ")
   where
-    cls | MVar i `S.member` uses = "rel-R"
+    cls | MVar i j `S.member` uses = "rel-R"
         | otherwise = "rel-I"
 
 link :: String -> String -> String
@@ -40,7 +40,7 @@ nrty uses n r ty = wrap (name n ++ rel uses r ++ term uses ty ++ "\n")
   where
     wrap
         | Fixed _ <- r = span ("nrty " ++ cls)
-        | MVar  i <- r = span ("nrty nrty-" ++ show i ++ " " ++ cls)
+        | MVar i j <- r = span ("nrty nrty-" ++ show (i,j) ++ " " ++ cls)
 
     cls | r `S.member` uses = "nrty-R"
         | otherwise = "nrty-I"
@@ -60,7 +60,7 @@ term uses Erased = span "erased" "____"
 app :: Meta -> String
 app (Fixed R) = span "ap ap-R" "R"
 app (Fixed I) = span "ap ap-I" "I"
-app (MVar i) = span ("ap mvar mvar-" ++ show i) (show i)
+app (MVar i j) = span ("ap mvar mvar-" ++ show (i,j)) (show (i,j))
 
 htmlDef :: Uses -> Def Meta -> String
 htmlDef uses (Def r n ty Axiom) = div "def axiom" $ div "type" (nrty uses n r ty)
@@ -85,13 +85,13 @@ htmlMetas ms = op "{" ++ intercalate (op ", ") (map htmlMeta ms) ++ op "}"
 htmlMeta :: Meta -> String
 htmlMeta (Fixed R) = span "meta-R" "R"
 htmlMeta (Fixed I) = span "meta-I" "I"
-htmlMeta (MVar i) = span ("meta mvar mvar-" ++ show i) (show i)
+htmlMeta (MVar i j) = span ("meta mvar mvar-" ++ show (i,j)) (show (i,j))
 
 jsConstr :: Constr -> String
 jsConstr (us :<-: gs) = show [map num $ S.toList us, map num $ S.toList gs] ++ ",\n"
   where
-    num (Fixed _) = 0
-    num (MVar i) = i
+    num (Fixed _) = (0,0)
+    num (MVar i j) = (i,j)
 
 genHtml :: String -> Program Meta -> Constrs -> Uses -> IO ()
 genHtml fname prog cs uses = do

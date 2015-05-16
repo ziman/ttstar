@@ -118,11 +118,8 @@ us <~ gs = S.singleton (S.fromList us :<-: S.fromList gs)
 steps :: [TC Constrs] -> TC Constrs
 steps = fmap S.unions . sequence
 
-freshN :: TC Name
-freshN = lift . lift . lift $ do
-    i <- get
-    put $ i+1
-    return $ "_" ++ show i
+fresh :: TC Int
+fresh = lift . lift . lift $ modify (+1) *> get
 
 tcfail :: TCError -> TC a
 tcfail e = do

@@ -5,12 +5,13 @@ import TT
 import Control.Applicative
 import Control.Monad.Trans.State.Strict
 
-data Meta = MVar Int | Fixed Relevance deriving (Eq, Ord)
+data Meta = MVar Int Int | Fixed Relevance deriving (Eq, Ord)
 type TTmeta = TT Meta
 type MetaM = State Int
 
 instance Show Meta where
-    show (MVar i) = "?" ++ show i
+    show (MVar i 0) = "?" ++ show i
+    show (MVar i j) = "?" ++ show i ++ "/" ++ show j
     show (Fixed r) = "!" ++ show r
 
 instance ShowR Meta where
@@ -31,7 +32,7 @@ metaDefType  Axiom   = return $ Axiom
 metaDefType (Fun tm) = Fun <$> metaTm tm
 
 freshM :: Maybe Relevance -> State Int Meta
-freshM Nothing  = modify (+1) >> MVar <$> get
+freshM Nothing  = modify (+1) >> MVar <$> get <*> pure 0
 freshM (Just r) = return $ Fixed r
 
 metaTm :: TT MRel -> MetaM TTmeta
