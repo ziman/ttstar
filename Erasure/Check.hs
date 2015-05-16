@@ -1,6 +1,7 @@
 module Erasure.Check where
 
 import TTstar
+import Reduce
 import Erasure.Meta
 
 import Control.Monad
@@ -13,11 +14,11 @@ import Control.Monad.Trans.Writer
 import qualified Data.Map as M
 import qualified Data.Set as S
 
+type Ctx = Ctx' Meta
 type Guards = S.Set Meta
 type Uses = S.Set Meta
 data Constr = Uses :<-: Guards deriving (Eq, Ord)
 type Constrs = S.Set Constr
-type Ctx = M.Map Name (Meta, TTmeta)
 
 instance Show Constr where
     show (us :<-: gs) = show (S.toList us) ++ " <- " ++ show (S.toList gs)
@@ -95,7 +96,7 @@ convAlt (ConCase cn r ns tm) (ConCase cn' r' ns' tm') = do
 convAlt x y = tcfail $ CantConvertAlt x y
 
 add :: Meta -> Name -> TTmeta -> Ctx -> Ctx
-add r n ty = M.insert n (r, ty)
+add r n ty = M.insert n (r, ty, Nothing)
 
 infix 3 <~
 (<~) :: [Meta] -> [Meta] -> Constrs
@@ -113,7 +114,7 @@ freshN = lift . lift $ do
 tcfail :: TCError -> TC a
 tcfail = lift . throwE
 
-lookupName :: Ctx -> Name -> TC (Meta, TTmeta)
+lookupName :: Ctx -> Name -> TC (Meta, TTmeta, Maybe TTmeta)
 lookupName ctx n
     | Just x <- M.lookup n ctx = return x
     | otherwise = tcfail $ UnknownName n
@@ -125,7 +126,10 @@ checkProgram :: Program Meta -> TC ()
 checkProgram (Prog defs) = mapM_ (checkDef globals) defs
   where
     globals :: Ctx
-    globals = M.fromList [(n, (r, ty)) | Def r n ty _ <- defs]
+    globals = M.fromList $ map mkCtx defs
+    
+    mkCtx (Def r n ty Ctor) = (n, (r, ty, Nothing))
+    mkCtx (Def r n ty (Fun tm)) = (n, (r, ty, Just tm))
 
 checkDef :: Ctx -> Def Meta -> TC ()
 checkDef _ctx (Def _r _n _ty Ctor) = return ()
@@ -133,7 +137,7 @@ checkDef ctx (Def _r _n ty (Fun tm)) = conv ty =<< checkTm ctx tm
 
 checkTm :: Ctx -> TTmeta -> TC TTmeta
 checkTm ctx (V n) = do
-    (r, ty) <- lookupName ctx n
+    (r, ty, _def) <- lookupName ctx n
     tell ([r] <~ [Fixed R])
     return ty
 
@@ -151,7 +155,7 @@ checkTm ctx (App r f x) = do
         Bind Pi r' n' ty' tm' -> do
             tell (r `eq` r')
             conv ty' xTy
-            return $ subst n' x tm'
+            return . reduce ctx $ subst n' x tm'
 
         _ -> tcfail $ NonFunction f fTy
 
@@ -170,7 +174,7 @@ checkAlt :: Ctx -> Alt Meta -> TC (Alt Meta)
 checkAlt ctx (DefaultCase tm) = DefaultCase <$> checkTm ctx tm
 checkAlt ctx (ConstCase c tm) = ConstCase c <$> checkTm ctx tm
 checkAlt ctx (ConCase cn r ns tm) = do
-    (cr, cty) <- lookupName ctx cn
+    (cr, cty, _def) <- lookupName ctx cn
     tell (cr `eq` r)
     ctx' <- augCtx ctx ns cty
     ConCase cn r ns <$> checkTm ctx' tm
