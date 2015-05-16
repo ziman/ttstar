@@ -33,6 +33,18 @@ testTerm = ("x", int) .-> V "x"
 typ :: TT
 typ = C TType
 
+-- for every function f
+--   for every argument i
+--     if (Exists j. USED_f_i_j)
+--       we can't erase the argument completely
+--       but we can replace it with NULL whenever USED_f_i_j is False
+--     otherwise
+--       we can erase f_i completely
+--
+-- constraints are part of type signature
+--
+-- we copy a fresh set of constraints whenever the function is applied
+
 testProg :: Program (Maybe Relevance)
 testProg = Prog
     [ Def Nothing "Bool" typ Ctor
@@ -75,8 +87,10 @@ testProg = Prog
                             ])
                     , ConCase "Nothing" Nothing [] int
                     ]))
+    , Def Nothing "apply" (("f", int ~~> int) --> int ~~> int)
+        $ Fun (("f", int ~~> int) .-> ("x", int) .-> V "f" ! V "x")
     , Def (Just R) "main" int
-        $ Fun (V "depF" ! (V "Just" ! V "False"))  -- very dependent
+--        $ Fun (V "depF" ! (V "Just" ! V "False"))  -- very dependent
 --        $ Fun (V "f" ! V "id" ! C (Int 3) ! V "const_42" ! C (Int 7))  -- higher-order erasure
     ]
   where
