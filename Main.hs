@@ -65,6 +65,7 @@ testProg = Prog
                   ("w", int) .->
                     Prim Plus ! (V "g" ! V "z") ! (V "h" ! V "w")
           )
+    {-
     , Def Nothing "boolTy" (V "Bool" ~~> typ)
         $ Fun (("x", V "Bool") .->
                 (Case (V "x")
@@ -87,9 +88,11 @@ testProg = Prog
                             ])
                     , ConCase "Nothing" Nothing [] int
                     ]))
+    -}
     , Def Nothing "apply" (("f", int ~~> int) --> int ~~> int)
         $ Fun (("f", int ~~> int) .-> ("x", int) .-> V "f" ! V "x")
     , Def (Just R) "main" int
+        $ Fun (Prim Plus ! (V "apply" ! V "id" ! C (Int 3)) ! (V "apply" ! V "const_42" ! C (Int 7)))
 --        $ Fun (V "depF" ! (V "Just" ! V "False"))  -- very dependent
 --        $ Fun (V "f" ! V "id" ! C (Int 3) ! V "const_42" ! C (Int 7))  -- higher-order erasure
     ]
