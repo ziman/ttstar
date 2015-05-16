@@ -40,7 +40,7 @@ data TCFailure = TCFailure TCError [String]
 
 instance Show TCFailure where
     show (TCFailure e []) = show e
-    show (TCFailure e tb) = unlines (show e : tb)
+    show (TCFailure e tb) = unlines (show e : "Traceback:" : zipWith (\i n -> show i ++ ". " ++ n) [1..] (reverse tb))
 
 type TCState = Int
 type TCCtx = [String]
@@ -67,34 +67,34 @@ rename (n : ns) (n' : ns') tm = rename ns ns' $ subst n (V n') tm
 rename _ _ _ = error "rename: incoherent args"
 
 conv :: TTmeta -> TTmeta -> TC ()
-conv (V n) (V n') = bt ("VAR", n, n') $ do
+conv (V n) (V n') = bt ("C-VAR", n, n') $ do
     require (n == n') $ Mismatch n n'
 
-conv p@(Bind b r n ty tm) q@(Bind b' r' n' ty' tm') = bt ("BIND", p, q) $ do
+conv p@(Bind b r n ty tm) q@(Bind b' r' n' ty' tm') = bt ("C-BIND", p, q) $ do
     require (b == b') $ Mismatch (show b) (show b')
     conv ty $ rename [n'] [n] ty'
     conv tm $ rename [n'] [n] tm'
     emit (r `eq` r')
 
-conv p@(App r f x) q@(App r' f' x') = bt ("APP", p, q) $ do
+conv p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do
     conv f f'
     conv x x'
     emit (r `eq` r')
 
-conv p@(Prim op) q@(Prim op') = bt ("PRIM", p, q) $ do
+conv p@(Prim op) q@(Prim op') = bt ("C-PRIM", p, q) $ do
     require (op == op') $ Mismatch (show op) (show op')
 
-conv p@(Case s alts) q@(Case s' alts') = bt ("CASE", p, q) $ do
+conv p@(Case s alts) q@(Case s' alts') = bt ("C-CASE", p, q) $ do
     conv s s'
     require (length alts == length alts') $ Mismatch (show alts) (show alts')
     zipWithM_ convAlt alts alts'
 
-conv (C c) (C c') = bt ("CONST", c, c') $ do
+conv (C c) (C c') = bt ("C-CONST", c, c') $ do
     require (c == c') $ Mismatch (show c) (show c')
 
 -- last-resort: uniform-case check
 conv x@(Case _ _) y = conv y x
-conv x (Case s alts) = bt ("UNIFORM-CASE", x, alts) $ uniformCase x alts
+conv x (Case s alts) = bt ("C-UNIFORM-CASE", x, alts) $ uniformCase x alts
 
 conv tm tm' = tcfail $ CantConvert tm tm'
 
@@ -164,19 +164,19 @@ checkDef _ctx (Def _r _n _ty Ctor) = return ()
 checkDef ctx (Def _r _n ty (Fun tm)) = conv ty =<< checkTm ctx tm
 
 checkTm :: Ctx -> TTmeta -> TC TTmeta
-checkTm ctx (V n) = do
+checkTm ctx t@(V n) = bt ("VAR", t) $ do
     (r, ty, _def) <- lookupName ctx n
     emit ([r] <~ [Fixed R])
     return ty
 
-checkTm ctx (Bind Pi r n ty tm) = do
+checkTm ctx t@(Bind Pi r n ty tm) = bt ("PI", t) $ do
     conv (C TType) =<< checkTm (add r n ty ctx) tm
     return $ C TType
 
-checkTm ctx (Bind Lam r n ty tm) =
+checkTm ctx t@(Bind Lam r n ty tm) = bt ("LAM", t) $
     Bind Pi r n ty <$> checkTm (add r n ty ctx) tm
 
-checkTm ctx (App r f x) = do
+checkTm ctx t@(App r f x) = bt ("APP", t) $ do
     fTy <- checkTm ctx f
     xTy <- cond r $ checkTm ctx x
     case fTy of
@@ -189,7 +189,7 @@ checkTm ctx (App r f x) = do
 
 checkTm _ctx (Prim op) = return $ primType Fixed op
 
-checkTm ctx t@(Case s alts) = do
+checkTm ctx t@(Case s alts) = bt ("CASE", t) $ do
     _sTy <- checkTm ctx s  -- we ignore scrutinee type
     alts' <- mapM (checkAlt ctx) alts
     return $ Case s alts'
