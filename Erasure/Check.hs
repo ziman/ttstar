@@ -151,7 +151,7 @@ checkProgram (Prog defs) = mapM_ (checkDef globals) defs
 
 checkDef :: MCtx -> Def Meta -> TC ()
 checkDef _ctx (Def _r _n _ty Axiom) = return ()
-checkDef ctx (Def _r _n ty (Fun tm)) = conv ty =<< checkTm ctx tm
+checkDef ctx (Def _r n ty (Fun tm)) = bt ("FUNDECL", n) (conv ty =<< checkTm ctx tm)
 
 checkTm :: MCtx -> TTmeta -> TC TTmeta
 checkTm ctx t@(V n) = bt ("VAR", t) $ do

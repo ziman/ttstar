@@ -11,33 +11,33 @@ postulate Nothing : (a : *) -> *.
 
 postulate Nat : *.
 postulate Z : Nat.
-postulate S : Nat -> Nat.
+postulate S : (n :R: Nat) -> Nat.
 
 -- no case-expressions supported yet
-postulate Plus : Nat -> Nat -> Nat.
+postulate Plus : (x :R: Nat) -> (y :R: Nat) -> Nat.
 
 id : Nat -> Nat
     = \y : Nat. y.
 
-const_42 : Nat
-    = \_ : Nat. 42.
+const_3 : Nat -> Nat
+    = \_ : Nat. 3.
 
 two : Nat
     = S (S Z).
 
-f : (Nat -> Nat) -> Nat -> (Nat -> Nat) -> Nat
+f : (Nat -> Nat) -> Nat -> (Nat -> Nat) -> Nat -> Nat
     = \g : Nat -> Nat. \z : Nat. \h : Nat -> Nat. \w : Nat.
         Plus (g z) (h w).
 
-apply : (Nat -> Nat) -> Nat
+apply : (Nat -> Nat) -> Nat -> Nat
     = \f : Nat -> Nat. \x : Nat.
         f x.
 
 test_1 : Nat
-    = Plus (apply id 3) (apply const_42 two).
+    = Plus (apply id 2) (apply const_3 two).
 
 test_2 : Nat
-    = f id 3 const_42 7.
+    = f id 2 const_3 1.
 
 main :R: Nat
     = Plus test_1 test_2.
