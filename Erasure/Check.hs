@@ -36,7 +36,11 @@ data TCError
     | Other String
     deriving (Eq, Ord, Show)
 
-data TCFailure = TCFailure TCError [String] deriving (Show)
+data TCFailure = TCFailure TCError [String]
+
+instance Show TCFailure where
+    show (TCFailure e []) = show e
+    show (TCFailure e tb) = unlines (show e : tb)
 
 type TCState = Int
 type TCCtx = [String]
@@ -63,34 +67,34 @@ rename (n : ns) (n' : ns') tm = rename ns ns' $ subst n (V n') tm
 rename _ _ _ = error "rename: incoherent args"
 
 conv :: TTmeta -> TTmeta -> TC ()
-conv (V n) (V n') =
+conv (V n) (V n') = bt ("VAR", n, n') $ do
     require (n == n') $ Mismatch n n'
 
-conv (Bind b r n ty tm) (Bind b' r' n' ty' tm') = do
+conv p@(Bind b r n ty tm) q@(Bind b' r' n' ty' tm') = bt ("BIND", p, q) $ do
     require (b == b') $ Mismatch (show b) (show b')
     conv ty $ rename [n'] [n] ty'
     conv tm $ rename [n'] [n] tm'
     emit (r `eq` r')
 
-conv (App r f x) (App r' f' x') = do
+conv p@(App r f x) q@(App r' f' x') = bt ("APP", p, q) $ do
     conv f f'
     conv x x'
     emit (r `eq` r')
 
-conv (Prim op) (Prim op') =
+conv p@(Prim op) q@(Prim op') = bt ("PRIM", p, q) $ do
     require (op == op') $ Mismatch (show op) (show op')
 
-conv (Case s alts) (Case s' alts') = do
+conv p@(Case s alts) q@(Case s' alts') = bt ("CASE", p, q) $ do
     conv s s'
     require (length alts == length alts') $ Mismatch (show alts) (show alts')
     zipWithM_ convAlt alts alts'
 
-conv (C c) (C c') =
+conv (C c) (C c') = bt ("CONST", c, c') $ do
     require (c == c') $ Mismatch (show c) (show c')
 
 -- last-resort: uniform-case check
 conv x@(Case _ _) y = conv y x
-conv x (Case s alts) = uniformCase x alts
+conv x (Case s alts) = bt ("UNIFORM-CASE", x, alts) $ uniformCase x alts
 
 conv tm tm' = tcfail $ CantConvert tm tm'
 
