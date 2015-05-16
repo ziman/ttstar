@@ -81,16 +81,10 @@ conv p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do
     conv x x'
     emit (r `eq` r')
 
-conv p@(Prim op) q@(Prim op') = bt ("C-PRIM", p, q) $ do
-    require (op == op') $ Mismatch (show op) (show op')
-
 conv p@(Case s alts) q@(Case s' alts') = bt ("C-CASE", p, q) $ do
     conv s s'
     require (length alts == length alts') $ Mismatch (show alts) (show alts')
     zipWithM_ convAlt alts alts'
-
-conv (C c) (C c') = bt ("C-CONST", c, c') $ do
-    require (c == c') $ Mismatch (show c) (show c')
 
 -- last-resort: uniform-case check
 conv x@(Case _ _) y = conv y x
@@ -100,9 +94,6 @@ conv tm tm' = tcfail $ CantConvert tm tm'
 
 convAlt :: Alt Meta -> Alt Meta -> TC ()
 convAlt (DefaultCase tm) (DefaultCase tm') = conv tm tm'
-convAlt (ConstCase c tm) (ConstCase c' tm') = do
-    require (c == c') $ Mismatch (show c) (show c')
-    conv tm tm'
 convAlt (ConCase cn r ns tm) (ConCase cn' r' ns' tm') = do
     require (cn == cn') $ Mismatch cn cn'
     require (length ns == length ns') $ Mismatch (show ns) (show ns')
@@ -115,7 +106,6 @@ uniformCase  _ []     = return ()
 uniformCase  x (a:as) = conv x (getTm a) >> uniformCase x as
   where
     getTm (DefaultCase tm) = tm
-    getTm (ConstCase _c tm) = tm
     getTm (ConCase _cn _r _ns tm) = tm
 
 add :: Meta -> Name -> TTmeta -> Ctx -> Ctx
@@ -156,11 +146,11 @@ checkProgram (Prog defs) = mapM_ (checkDef globals) defs
     globals :: Ctx
     globals = M.fromList $ map mkCtx defs
     
-    mkCtx (Def r n ty Ctor) = (n, (r, ty, Nothing))
+    mkCtx (Def r n ty Axiom) = (n, (r, ty, Nothing))
     mkCtx (Def r n ty (Fun tm)) = (n, (r, ty, Just tm))
 
 checkDef :: Ctx -> Def Meta -> TC ()
-checkDef _ctx (Def _r _n _ty Ctor) = return ()
+checkDef _ctx (Def _r _n _ty Axiom) = return ()
 checkDef ctx (Def _r _n ty (Fun tm)) = conv ty =<< checkTm ctx tm
 
 checkTm :: Ctx -> TTmeta -> TC TTmeta
@@ -170,8 +160,8 @@ checkTm ctx t@(V n) = bt ("VAR", t) $ do
     return ty
 
 checkTm ctx t@(Bind Pi r n ty tm) = bt ("PI", t) $ do
-    conv (C TType) =<< checkTm (add r n ty ctx) tm
-    return $ C TType
+    conv Type =<< checkTm (add r n ty ctx) tm
+    return $ Type
 
 checkTm ctx t@(Bind Lam r n ty tm) = bt ("LAM", t) $
     Bind Pi r n ty <$> checkTm (add r n ty ctx) tm
@@ -187,20 +177,16 @@ checkTm ctx t@(App r f x) = bt ("APP", t) $ do
 
         _ -> tcfail $ NonFunction f fTy
 
-checkTm _ctx (Prim op) = return $ primType Fixed op
-
 checkTm ctx t@(Case s alts) = bt ("CASE", t) $ do
     _sTy <- checkTm ctx s  -- we ignore scrutinee type
     alts' <- mapM (checkAlt ctx) alts
     return $ Case s alts'
 
-checkTm _ctx (C c) = return $ constType c
-
 checkTm _ctx Erased = return $ Erased
+checkTm _ctx Type   = return $ Type  -- type-in-type
 
 checkAlt :: Ctx -> Alt Meta -> TC (Alt Meta)
 checkAlt ctx (DefaultCase tm) = DefaultCase <$> checkTm ctx tm
-checkAlt ctx (ConstCase c tm) = ConstCase c <$> checkTm ctx tm
 checkAlt ctx (ConCase cn r ns tm) = bt ("CONCASE", cn, ns) $ do
     tcfail $ Other "this can't work without proper unification implementation"
     (cr, cty, _def) <- lookupName ctx cn

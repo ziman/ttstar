@@ -23,16 +23,12 @@ reduce ctx (App r f x)
   where
     redF = reduce ctx f
 
-reduce ctx t@(Prim op) = t
-
 reduce ctx (Case s alts) = redCase ctx (reduce ctx s) alts
-
-reduce ctx t@(C c)     = t
-reduce ctx t@Erased    = t
+reduce ctx t@Erased = t
+reduce ctx t@Type   = t
 
 redCase :: ShowR r => Ctx' r -> TT' r -> [Alt r] -> TT' r
 redCase ctx _ (DefaultCase tm : _) = reduce ctx tm
-redCase ctx (C c) (ConstCase c' tm : as) | c == c' = reduce ctx tm
 redCase ctx s (ConCase cn _r ns tm : as)
     | (V cn', args) <- unApply s
     , length args == length ns
@@ -58,14 +54,12 @@ subst n tm t@(Bind b r n' ty tm')
     | n' == n   = t
     | otherwise = Bind b r n' (subst n tm ty) (subst n tm tm')
 subst n tm (App r f x) = App r (subst n tm f) (subst n tm x)
-subst _ _  t@(Prim _op) = t
 subst n tm (Case s alts) = Case (subst n tm s) (map (substAlt n tm) alts)
-subst _ _  t@(C _c) = t
 subst _ _  t@Erased = t
+subst _ _  t@Type   = t
 
 substAlt :: Name -> TT' r -> Alt r -> Alt r
 substAlt n tm (DefaultCase tm') = DefaultCase $ subst n tm tm'
-substAlt n tm (ConstCase c tm') = ConstCase c $ subst n tm tm'
 substAlt n tm t@(ConCase cn r ns tm')
     | n `elem` ns = t
     | otherwise   = ConCase cn r ns $ subst n tm tm'

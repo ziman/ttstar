@@ -3,66 +3,47 @@ module TTstar where
 
 import Data.List
 
-data Nat = Z | S Nat deriving (Eq, Ord, Show)
 type Name = String
 data Relevance = I | R deriving (Eq, Ord, Show)
 data Binder = Lam | Pi deriving (Eq, Ord, Show)
-data Constant = Int Int | TInt | TType deriving (Eq, Ord)
-data Op = Plus deriving (Eq, Ord, Show)
 
 data TT' r
     = V Name
     | Bind Binder r Name (TT' r) (TT' r)
     | App r (TT' r) (TT' r)
-    | Prim Op
     | Case (TT' r) [Alt r]  -- scrutinee, scrutinee type, alts
-    | C Constant
+    | Type
     | Erased
     deriving (Eq, Ord)
 
 data Alt r
     = ConCase Name r [Name] (TT' r)  -- relevance of tag + relevance of args
-    | ConstCase Constant (TT' r)
     | DefaultCase (TT' r)
     deriving (Eq, Ord, Show)
 
-data DefType r = Ctor | Fun (TT' r) deriving (Eq, Ord, Show)
+data DefType r = Axiom | Fun (TT' r) deriving (Eq, Ord, Show)
 data Def r = Def r Name (TT' r) (DefType r) deriving (Eq, Ord, Show)
 
 newtype Program r = Prog [Def r]
 
 type TT = TT' (Maybe Relevance)
 type TTstar = TT' Relevance
-
-primType :: (Relevance -> r) -> Op -> TT' r
-primType f Plus = Bind Pi (f R) "x" (C TInt) (Bind Pi (f R) "y" (C TInt) (C TInt))
-
-constType :: Constant -> TT' r
-constType (Int _) = C TInt
-constType  TInt   = C TType
-constType  TType  = C TType  -- woooo :)
-
-instance Show Constant where
-    show (Int i) = show i
-    show TInt = "Int"
-    show TType = "Type"
+type MRel = Maybe Relevance
 
 instance Functor TT' where
     fmap _ (V n) = V n
     fmap f (Bind b r n ty tm) = Bind b (f r) n (fmap f ty) (fmap f tm)
     fmap f (App r fun arg) = App (f r) (fmap f fun) (fmap f arg)
-    fmap _ (Prim op) = Prim op
     fmap f (Case s alts) = Case (fmap f s) (map (fmap f) alts)
-    fmap _ (C c) = C c
     fmap _ Erased = Erased
+    fmap _ Type = Type
 
 instance Functor Alt where
     fmap f (ConCase cn r ns tm) = ConCase cn (f r) ns (fmap f tm)
-    fmap f (ConstCase c tm) = ConstCase c (fmap f tm)
     fmap f (DefaultCase tm) = DefaultCase (fmap f tm)
 
 instance Functor DefType where
-    fmap _ Ctor = Ctor
+    fmap _  Axiom = Axiom
     fmap f (Fun tm) = Fun (fmap f tm)
 
 instance Functor Def where
@@ -100,7 +81,7 @@ instance ShowR r => Show (Program r) where
             , ""
             ]
 
-        fmtDT Ctor = "(constructor)"
+        fmtDT Axiom = "(axiom)"
         fmtDT (Fun tm) = show tm
 
 instance ShowR r => Show (TT' r) where
@@ -112,7 +93,6 @@ instance ShowR r => Show (TT' r) where
       where
         show' r (App r' f' x') x = show' r' f' x' ++ showX r ++ show x
         show' r f x = show f ++ showX r ++ show x
-    show (Prim op) = show op
     show (Case s alts) = "case " ++ show s ++ " of " ++ show alts
-    show (C c) = show c
     show Erased = "____"
+    show Type = "*"

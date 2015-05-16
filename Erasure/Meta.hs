@@ -27,7 +27,7 @@ metaDef :: Def (Maybe Relevance) -> MetaM (Def Meta)
 metaDef (Def r n ty dt) = Def <$> freshM r <*> pure n <*> metaTm ty <*> metaDefType dt
 
 metaDefType :: DefType (Maybe Relevance) -> MetaM (DefType Meta)
-metaDefType  Ctor    = return $ Ctor
+metaDefType  Axiom   = return $ Axiom
 metaDefType (Fun tm) = Fun <$> metaTm tm
 
 freshM :: Maybe Relevance -> State Int Meta
@@ -39,14 +39,12 @@ metaTm (V n) = return $ V n
 metaTm (Bind bnd r n ty tm) = Bind bnd <$> freshM r <*> pure n <*> metaTm ty <*> metaTm tm
 metaTm (App r f x) = App <$> freshM r <*> metaTm f <*> metaTm x
 metaTm (Case s alts) = Case <$> metaTm s <*> mapM metaAlt alts
-metaTm (Prim op) = return $ Prim op
-metaTm (C c) = return $ C c
 metaTm Erased = return Erased
+metaTm Type = return Type
 
 metaAlt :: Alt (Maybe Relevance) -> MetaM (Alt Meta)
 metaAlt (DefaultCase tm) = DefaultCase <$> metaTm tm
 metaAlt (ConCase cn tr ns tm) = ConCase cn <$> freshM tr <*> pure ns <*> metaTm tm
-metaAlt (ConstCase c tm) = ConstCase c <$> metaTm tm
 
 -- Polymorphism
 -- differently-typed case alts

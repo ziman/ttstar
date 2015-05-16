@@ -21,7 +21,7 @@ pruneDef (Def I _n _ty _dt) = []
 pruneDef (Def R n _ty dt) = [Def () n Erased (pruneDefType dt)]
 
 pruneDefType :: DefType Relevance -> DefType ()
-pruneDefType Ctor = Ctor
+pruneDefType  Axiom = Axiom
 pruneDefType (Fun tm) = Fun $ pruneTm tm
 
 pruneTm :: TT' Relevance -> TT' ()
@@ -30,12 +30,10 @@ pruneTm (Bind _bnd I _n _ty tm) = pruneTm tm
 pruneTm (Bind bnd R n _ty tm) = Bind bnd () n Erased (pruneTm tm)
 pruneTm (App I f _x) = pruneTm f
 pruneTm (App R f x) = App () (pruneTm f) (pruneTm x)
-pruneTm (Prim op) = Prim op
 pruneTm (Case s alts) = Case (pruneTm s) (map pruneAlt alts)
-pruneTm (C c) = C c
 pruneTm Erased = Erased
+pruneTm Type = Type
 
 pruneAlt :: Alt Relevance -> Alt ()
 pruneAlt (DefaultCase tm) = DefaultCase $ pruneTm tm
-pruneAlt (ConstCase c tm) = ConstCase c $ pruneTm tm
 pruneAlt (ConCase cn _r ns tm) = ConCase cn () ns $ pruneTm tm  -- TODO

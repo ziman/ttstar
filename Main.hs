@@ -1,37 +1,16 @@
 module Main where
 
 import TTstar
+import Parser
 import Erasure.Meta
 import Erasure.Check
 import Erasure.Solve
 import Erasure.Prune
 
+import Control.Applicative
+import Text.Parsec
+import System.Environment
 import qualified Data.Set as S
-
-infixr 3 ~~>
-(~~>) :: TT -> TT -> TT
-(~~>) = Bind Pi Nothing "_"
-
-infixr 3 -->
-(-->) :: (Name, TT) -> TT -> TT
-(n, ty) --> tm = Bind Pi Nothing n ty tm
-
-infixr 3 .->
-(.->) :: (String, TT) -> TT -> TT
-(n, ty) .-> tm = Bind Lam Nothing n ty tm
-
-infixl 4 !
-(!) :: TT -> TT -> TT
-(!) = App Nothing
-
-int :: TT
-int = C TInt
-
-testTerm :: TT
-testTerm = ("x", int) .-> V "x"
-
-typ :: TT
-typ = C TType
 
 -- for every function f
 --   for every argument i
@@ -50,6 +29,7 @@ typ = C TType
 --   -> rules out erasure-polymorphic recursion (that's fair because the annotations are completely inferred)
 --   -> maybe we could give the user a chance to explicitly annotate polymorphic recursion and then just check it
 
+{-
 testProg :: Program (Maybe Relevance)
 testProg = Prog
     [ Def Nothing "Bool" typ Ctor
@@ -103,25 +83,31 @@ testProg = Prog
     ]
   where
     intFun = int ~~> int
+-}
 
 main :: IO ()
 main = do
-    putStrLn "### Original program ###\n"
-    print testProg
-    putStrLn "### Metaified ###\n"
-    let metaified = meta testProg
-    print metaified
-    putStrLn "### Constraints ###\n"
-    let cs = either (error . show) id . check $ metaified
-    mapM_ print $ S.toList cs
-    putStrLn ""
-    putStrLn "### Solution ###\n"
-    let uses = solve cs
-    print $ S.toList uses
-    putStrLn ""
-    putStrLn "### Annotated ###\n"
-    let annotated = annotate uses $ metaified
-    print $ annotated
-    putStrLn "### Pruned ###\n"
-    let pruned = prune annotated
-    print $ pruned
+    [fname] <- getArgs
+    code <- readFile fname
+    case parse (sp *> parseProg <* eof) fname code of
+        Left e -> print e
+        Right prog -> do
+            putStrLn "### Original program ###\n"
+            print prog
+            putStrLn "### Metaified ###\n"
+            let metaified = meta prog
+            print metaified
+            putStrLn "### Constraints ###\n"
+            let cs = either (error . show) id . check $ metaified
+            mapM_ print $ S.toList cs
+            putStrLn ""
+            putStrLn "### Solution ###\n"
+            let uses = solve cs
+            print $ S.toList uses
+            putStrLn ""
+            putStrLn "### Annotated ###\n"
+            let annotated = annotate uses $ metaified
+            print $ annotated
+            putStrLn "### Pruned ###\n"
+            let pruned = prune annotated
+            print $ pruned
