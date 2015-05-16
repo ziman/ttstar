@@ -44,8 +44,9 @@ typ = C TType
 -- constraints are part of type signature
 --
 -- we copy a fresh set of constraints whenever the function is applied
+--  unless it's recursive
 --
--- how do we deal with self-referential functions? (probably don't copy the constrain set)
+-- how do we deal with self-referential functions? (probably don't copy the constraint set)
 --   -> rules out erasure-polymorphic recursion (that's fair because the annotations are completely inferred)
 --   -> maybe we could give the user a chance to explicitly annotate polymorphic recursion and then just check it
 
