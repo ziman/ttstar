@@ -47,6 +47,10 @@ import qualified Data.Set as S
 -- We could add another meta to every Pi, which is the lower bound of all Lams typed by it.
 -- Then we could tell whether *all* lambdas are relevant or whether some are irrelevant.
 --
+-- => therefore we can annotate every binder with the supremum and infimum of their variables
+--    and erase accordingly
+-- => lambdas imply pis (one pi might type multiple lambdas (case branches) but not vice versa)
+--
 -- Flow of relevance:
 --  - variables always start as relevant at the tail of the term
 --  - under an application, their relevance is and-ed with relevance of the lambda
