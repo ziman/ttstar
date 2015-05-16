@@ -1,0 +1,18 @@
+-- an example file
+-- vim: ft=agda
+
+postulate T : *.
+postulate A : T.
+postulate B : T.
+
+postulate Op : (x :R: T) -> (y :R: T) -> T.
+
+id      : T -> T = \t:T. t.
+const_A : T -> T = \t:T. A.
+
+f : (T -> T) -> T -> (T -> T) -> T -> T
+    = \g : T -> T. \z : T. \h : T -> T. \w : T.
+        Op (g z) (h w).
+
+main :R: T
+    = f id B const_A B.

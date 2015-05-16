@@ -36,6 +36,8 @@ main = do
     case parse (sp *> parseProg <* eof) fname code of
         Left e -> print e
         Right prog -> do
+            putStrLn "-- vim: ft=agda"
+            putStrLn ""
             putStrLn "### Original program ###\n"
             print prog
             putStrLn "### Metaified ###\n"
