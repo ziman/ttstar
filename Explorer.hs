@@ -73,11 +73,11 @@ htmlDef uses (Def r n ty (Fun tm)) =
   )
 
 htmlConstr :: (Int, Constr) -> String
-htmlConstr (i, us :<-: gs) = span ("constr constr-" ++ show i) (
+htmlConstr (i, us :<-: gs) = div ("constr constr-" ++ show i) (
     span "uses" (htmlMetas $ S.toList us)
     ++ op " &#8592; "
     ++ span "guards" (htmlMetas $ S.toList gs)
-  ) ++ ", "
+  )
 
 htmlMetas :: [Meta] -> String
 htmlMetas ms = op "{" ++ intercalate (op ", ") (map htmlMeta ms) ++ op "}"
@@ -96,13 +96,14 @@ jsConstr (us :<-: gs) = show [map num $ S.toList us, map num $ S.toList gs] ++ "
 genHtml :: String -> Program Meta -> Constrs -> Uses -> IO ()
 genHtml fname prog cs uses = do
     hdr <- readFile "html/header.html"
-    ftr <- readFile "html/footer.html"
-    writeFile fname (hdr ++ body ++ ftr)
+    writeFile fname (hdr ++ body)
   where
     body = unlines
-        [ htmlProg uses prog
-        , concatMap htmlConstr (zip [0..] $ S.toList cs)
+        [ "<h2>Metaified program</h2>"
+        , htmlProg uses prog
+        , "<h2>Constraints</h2>"
+        , div "constraints" $ concatMap htmlConstr (zip [0..] $ S.toList cs)
         , "<script>var constrs=["
         , concatMap jsConstr (S.toList cs)
-        , "[]];</script>"
+        , "[]];</script></body></html>"
         ]

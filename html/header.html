@@ -56,6 +56,14 @@ a:hover {
     background-color: red;
 }
 
+.shown {
+    display: block !important;
+}
+
+.constr {
+    display: none;
+}
+
 </style>
 
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
@@ -63,6 +71,7 @@ a:hover {
 
 function cleanup() {
     $('.marked').removeClass('marked');
+    $('.shown').removeClass('shown');
 }
 
 function init() {
@@ -72,7 +81,7 @@ function init() {
         elm.hover(function() {
             for (var i = 0; i < constrs.length; ++i) {
                 if ($.inArray(mvar, constrs[i][0]) != -1) {
-                    $('.constr-' + i).addClass('marked');
+                    $('.constr-' + i).addClass('shown');
                     var gs = constrs[i][1];
                     for (var j = 0; j < gs.length; ++j) {
                         $('.def .mvar-' + gs[j]).addClass('marked');
