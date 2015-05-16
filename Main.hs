@@ -46,6 +46,11 @@ import qualified Data.Set as S
 -- A meta on a Pi is the upper bound of all Lambdas typed by that Pi.
 -- We could add another meta to every Pi, which is the lower bound of all Lams typed by it.
 -- Then we could tell whether *all* lambdas are relevant or whether some are irrelevant.
+--
+-- Flow of relevance:
+--  - variables always start as relevant at the tail of the term
+--  - under an application, their relevance is and-ed with relevance of the lambda
+--  - finally, they die in their binder
 
 main :: IO ()
 main = do
