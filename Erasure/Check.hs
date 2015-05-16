@@ -201,11 +201,12 @@ checkTm _ctx Erased = return $ Erased
 checkAlt :: Ctx -> Alt Meta -> TC (Alt Meta)
 checkAlt ctx (DefaultCase tm) = DefaultCase <$> checkTm ctx tm
 checkAlt ctx (ConstCase c tm) = ConstCase c <$> checkTm ctx tm
-checkAlt ctx (ConCase cn r ns tm) = do
+checkAlt ctx (ConCase cn r ns tm) = bt ("CONCASE", cn, ns) $ do
+    tcfail $ Other "this can't work without proper unification implementation"
     (cr, cty, _def) <- lookupName ctx cn
     emit (cr `eq` r)
     ctx' <- augCtx ctx ns cty
-    ConCase cn r ns <$> checkTm ctx' tm
+    bt ("SUBCHECK", ns, cty) ( ConCase cn r ns <$> checkTm ctx' tm )
   where
     augCtx :: Ctx -> [Name] -> TTmeta -> TC Ctx
     augCtx ctx [] _ty = return ctx
