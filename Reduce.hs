@@ -1,6 +1,6 @@
 module Reduce where
 
-import TTstar
+import TT
 import qualified Data.Map as M
 
 type Ctx r = M.Map Name (r, TT r, Maybe (TT r))

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Erasure explorer</title>
+</head>
+
+<style>
+
+body {
+    font-family: sans-serif;
+}
+
+.rel {
+    color: #480;
+}
+
+.op {
+    color: #800;
+}
+
+.def {
+    margin-bottom: 10px;
+}
+
+.lambda > .head {
+    margin-right: 10px;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    background-color: yellow;
+}
+
+.nrty-I {
+    background-color: #f0f0f0;
+}
+
+.nrty-R {
+}
+
+.paren {
+    color: #aaa;
+}
+
+</style>
+
+<script>
+</script>
+
+<body>
+<div class="def axiom">
+<div class="type">
+<span class="nrty nrty-1 nrty-I"><span class="name name-T">T</span><a class="rel mvar-1 rel-I" href="#"> :<sub>1</sub> </a><span class="star">*</span>
+</span>
+</div>
+
+</div>
+<div class="def axiom">
+<div class="type">
+<span class="nrty nrty-2 nrty-R"><span class="name name-A">A</span><a class="rel mvar-2 rel-R" href="#"> :<sub>2</sub> </a><span class="var"><span class="name name-T">T</span></span>
+</span>
+</div>
+
+</div>
+<div class="def axiom">
+<div class="type">
+<span class="nrty nrty-3 nrty-R"><span class="name name-B">B</span><a class="rel mvar-3 rel-R" href="#"> :<sub>3</sub> </a><span class="var"><span class="name name-T">T</span></span>
+</span>
+</div>
+
+</div>
+<div class="def axiom">
+<div class="type">
+<span class="nrty nrty-4 nrty-R"><span class="name name-Op">Op</span><a class="rel mvar-4 rel-R" href="#"> :<sub>4</sub> </a><span class="pi"><span class="paren">(</span><span class="nrty nrty-R"><span class="name name-x">x</span><span class="rel rel-R"> :<sub>R</sub> </span><span class="var"><span class="name name-T">T</span></span>
+</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-R"><span class="name name-y">y</span><span class="rel rel-R"> :<sub>R</sub> </span><span class="var"><span class="name name-T">T</span></span>
+</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="var"><span class="name name-T">T</span></span></span></span>
+</span>
+</div>
+
+</div>
+<div class="def function">
+<div class="type">
+<span class="nrty nrty-5 nrty-R"><span class="name name-id">id</span><a class="rel mvar-5 rel-R" href="#"> :<sub>5</sub> </a><span class="pi"><span class="paren">(</span><span class="nrty nrty-6 nrty-R"><span class="name name-_">_</span><a class="rel mvar-6 rel-R" href="#"> :<sub>6</sub> </a><span class="var"><span class="name name-T">T</span></span>
+</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="var"><span class="name name-T">T</span></span></span>
+</span>
+</div>
+<div class="definition">
+<span class="name name-id">id</span><span class="op"> = </span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="nrty nrty-7 nrty-R"><span class="name name-t">t</span><a class="rel mvar-7 rel-R" href="#"> :<sub>7</sub> </a><span class="var"><span class="name name-T">T</span></span>
+</span><span class="op">.</span></span><span class="var"><span class="name name-t">t</span></span></span>
+</div>
+
+</div>
+<div class="def function">
+<div class="type">
+<span class="nrty nrty-8 nrty-R"><span class="name name-const_A">const_A</span><a class="rel mvar-8 rel-R" href="#"> :<sub>8</sub> </a><span class="pi"><span class="paren">(</span><span class="nrty nrty-9 nrty-I"><span class="name name-_">_</span><a class="rel mvar-9 rel-I" href="#"> :<sub>9</sub> </a><span class="var"><span class="name name-T">T</span></span>
+</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="var"><span class="name name-T">T</span></span></span>
+</span>
+</div>
+<div class="definition">
+<span class="name name-const_A">const_A</span><span class="op"> = </span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="nrty nrty-10 nrty-I"><span class="name name-t">t</span><a class="rel mvar-10 rel-I" href="#"> :<sub>10</sub> </a><span class="var"><span class="name name-T">T</span></span>
+</span><span class="op">.</span></span><span class="var"><span class="name name-A">A</span></span></span>
+</div>
+
+</div>
+<div class="def function">
+<div class="type">
+<span class="nrty nrty-11 nrty-R"><span class="name name-f">f</span><a class="rel mvar-11 rel-R" href="#"> :<sub>11</sub> </a><span class="pi"><span class="paren">(</span><span class="nrty nrty-12 nrty-R"><span class="name name-g">g</span><a class="rel mvar-12 rel-R" href="#"> :<sub>12</sub> </a><span class="pi"><span class="paren">(</span><span class="nrty nrty-13 nrty-R"><span class="name name-_">_</span><a class="rel mvar-13 rel-R" href="#"> :<sub>13</sub> </a><span class="var"><span class="name name-T">T</span></span>
+</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="var"><span class="name name-T">T</span></span></span>
+</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-14 nrty-R"><span class="name name-z">z</span><a class="rel mvar-14 rel-R" href="#"> :<sub>14</sub> </a><span class="var"><span class="name name-T">T</span></span>
+</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-15 nrty-R"><span class="name name-h">h</span><a class="rel mvar-15 rel-R" href="#"> :<sub>15</sub> </a><span class="pi"><span class="paren">(</span><span class="nrty nrty-16 nrty-I"><span class="name name-_">_</span><a class="rel mvar-16 rel-I" href="#"> :<sub>16</sub> </a><span class="var"><span class="name name-T">T</span></span>
+</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="var"><span class="name name-T">T</span></span></span>
+</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-17 nrty-I"><span class="name name-w">w</span><a class="rel mvar-17 rel-I" href="#"> :<sub>17</sub> </a><span class="var"><span class="name name-T">T</span></span>
+</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="var"><span class="name name-T">T</span></span></span></span></span></span>
+</span>
+</div>
+<div class="definition">
+<span class="name name-f">f</span><span class="op"> = </span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="nrty nrty-18 nrty-R"><span class="name name-g">g</span><a class="rel mvar-18 rel-R" href="#"> :<sub>18</sub> </a><span class="pi"><span class="paren">(</span><span class="nrty nrty-19 nrty-R"><span class="name name-_">_</span><a class="rel mvar-19 rel-R" href="#"> :<sub>19</sub> </a><span class="var"><span class="name name-T">T</span></span>
+</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="var"><span class="name name-T">T</span></span></span>
+</span><span class="op">.</span></span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="nrty nrty-20 nrty-R"><span class="name name-z">z</span><a class="rel mvar-20 rel-R" href="#"> :<sub>20</sub> </a><span class="var"><span class="name name-T">T</span></span>
+</span><span class="op">.</span></span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="nrty nrty-21 nrty-R"><span class="name name-h">h</span><a class="rel mvar-21 rel-R" href="#"> :<sub>21</sub> </a><span class="pi"><span class="paren">(</span><span class="nrty nrty-22 nrty-I"><span class="name name-_">_</span><a class="rel mvar-22 rel-I" href="#"> :<sub>22</sub> </a><span class="var"><span class="name name-T">T</span></span>
+</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="var"><span class="name name-T">T</span></span></span>
+</span><span class="op">.</span></span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="nrty nrty-23 nrty-I"><span class="name name-w">w</span><a class="rel mvar-23 rel-I" href="#"> :<sub>23</sub> </a><span class="var"><span class="name name-T">T</span></span>
+</span><span class="op">.</span></span><span class="app"><span class="paren">(</span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-Op">Op</span></span> <span class="app"><span class="paren">(</span><span class="var"><span class="name name-g">g</span></span> <span class="var"><span class="name name-z">z</span></span><span class="paren">)</span></span><span class="paren">)</span></span> <span class="app"><span class="paren">(</span><span class="var"><span class="name name-h">h</span></span> <span class="var"><span class="name name-w">w</span></span><span class="paren">)</span></span><span class="paren">)</span></span></span></span></span></span>
+</div>
+
+</div>
+<div class="def function">
+<div class="type">
+<span class="nrty nrty-R"><span class="name name-main">main</span><span class="rel rel-R"> :<sub>R</sub> </span><span class="var"><span class="name name-T">T</span></span>
+</span>
+</div>
+<div class="definition">
+<span class="name name-main">main</span><span class="op"> = </span><span class="app"><span class="paren">(</span><span class="app"><span class="paren">(</span><span class="app"><span class="paren">(</span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-f">f</span></span> <span class="var"><span class="name name-id">id</span></span><span class="paren">)</span></span> <span class="var"><span class="name name-B">B</span></span><span class="paren">)</span></span> <span class="var"><span class="name name-const_A">const_A</span></span><span class="paren">)</span></span> <span class="var"><span class="name name-B">B</span></span><span class="paren">)</span></span>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,6 +1,6 @@
 module Erasure.Solve where
 
-import TTstar
+import TT
 import Erasure.Meta
 import Erasure.Check
 

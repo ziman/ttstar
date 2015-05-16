@@ -1,7 +1,9 @@
 module Main where
 
-import TTstar
+import TT
 import Parser
+import Explorer
+
 import Erasure.Meta
 import Erasure.Check
 import Erasure.Solve
@@ -28,6 +30,8 @@ import qualified Data.Set as S
 -- how do we deal with self-referential functions? (probably don't copy the constraint set)
 --   -> rules out erasure-polymorphic recursion (that's fair because the annotations are completely inferred)
 --   -> maybe we could give the user a chance to explicitly annotate polymorphic recursion and then just check it
+--
+-- interactive constraint explorer
 
 main :: IO ()
 main = do
@@ -38,7 +42,7 @@ main = do
         Right prog -> do
             putStrLn "-- vim: ft=agda"
             putStrLn ""
-            putStrLn "### Original program ###\n"
+            putStrLn "### Desugared ###\n"
             print prog
             putStrLn "### Metaified ###\n"
             let metaified = meta prog
@@ -50,6 +54,7 @@ main = do
             putStrLn "### Solution ###\n"
             let uses = solve cs
             print $ S.toList uses
+            genHtml (fname ++ ".html") metaified cs uses
             putStrLn ""
             putStrLn "### Annotated ###\n"
             let annotated = annotate uses $ metaified

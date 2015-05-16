@@ -1,6 +1,6 @@
 module Parser where
 
-import TTstar
+import TT
 
 import Data.Char
 

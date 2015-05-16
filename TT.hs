@@ -1,5 +1,5 @@
 {-# LANGUAGE FlexibleInstances #-}
-module TTstar where
+module TT where
 
 import Data.List
 

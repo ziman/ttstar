@@ -1,6 +1,6 @@
 module Erasure.Meta where
 
-import TTstar
+import TT
 
 import Control.Applicative
 import Control.Monad.Trans.State.Strict
