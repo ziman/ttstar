@@ -1,4 +1,3 @@
--- an example file
 -- vim: ft=agda
 
 postulate Bool : *.
@@ -16,22 +15,18 @@ postulate S : (n :R: Nat) -> Nat.
 -- no case-expressions supported yet
 postulate Plus : (x :R: Nat) -> (y :R: Nat) -> Nat.
 
-id : Nat -> Nat
-    = \y : Nat. y.
+id : Nat -> Nat = \y : Nat. y.
 
-const_3 : Nat -> Nat
-    = \_ : Nat. 3.
+const_3 : Nat -> Nat = \_ : Nat. 3.
 
-two : Nat
-    = S (S Z).
+two : Nat = S (S Z).
 
-f : (Nat -> Nat) -> Nat -> (Nat -> Nat) -> Nat -> Nat
-    = \g : Nat -> Nat. \z : Nat. \h : Nat -> Nat. \w : Nat.
-        Plus (g z) (h w).
+f (g : Nat -> Nat) (z : Nat) (h : Nat -> Nat) (w : Nat) : Nat
+    = Plus (g z) (h w).
 
-apply : (Nat -> Nat) -> Nat -> Nat
-    = \f : Nat -> Nat. \x : Nat.
-        f x.
+-- mixed-style definition: ML + lambda
+apply (f : Nat -> Nat) : Nat -> Nat
+    = \x : Nat. f x.
 
 test_1 : Nat
     = Plus (apply id 2) (apply const_3 two).

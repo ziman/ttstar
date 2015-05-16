@@ -103,16 +103,30 @@ postulate = do
     kwd "."
     return $ Def r n ty Axiom
 
+mldef :: Parser (Def MRel)
+mldef = do
+    n <- name
+    args <- many $ parens typing
+    r <- rcolon
+    retTy <- expr
+    kwd "="
+    tm <- expr
+    kwd "."
+    return $ Def r n (chain Pi args retTy) (Fun $ chain Lam args tm)
+  where
+    chain bnd [] tm = tm
+    chain bnd ((n, r, ty) : args) tm = Bind bnd r n ty $ chain bnd args tm
+    
 fundef :: Parser (Def MRel)
 fundef = do
-    (n, r, ty) <- typing
+    (n, r, ty) <- try typing
     kwd "="
     tm <- expr
     kwd "."
     return $ Def r n ty (Fun tm)
 
 parseDef :: Parser (Def MRel)
-parseDef = postulate <|> fundef
+parseDef = postulate <|> fundef <|> mldef
 
 parseProg :: Parser (Program MRel)
 parseProg = Prog <$> many parseDef

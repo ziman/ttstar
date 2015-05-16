@@ -1,18 +1,22 @@
--- an example file
 -- vim: ft=agda
 
+-- declare a data type
 postulate T : *.
 postulate A : T.
 postulate B : T.
 
+-- some binary operation on the data type
+-- NB. we need to postulate (ir-)relevance, too.
 postulate Op : (x :R: T) -> (y :R: T) -> T.
 
+-- we can use lambdas to define functions
 id      : T -> T = \t:T. t.
 const_A : T -> T = \t:T. A.
 
-f : (T -> T) -> T -> (T -> T) -> T -> T
-    = \g : T -> T. \z : T. \h : T -> T. \w : T.
-        Op (g z) (h w).
+-- but there are also ML-style definitions, for convenience
+f (g : T -> T) (z : T) (h : T -> T) (w : T) : T
+    = Op (g z) (h w).
 
+-- main, manually marked as relevant
 main :R: T
     = f id B const_A B.
