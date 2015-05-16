@@ -7,30 +7,28 @@ type Name = String
 data Relevance = I | R deriving (Eq, Ord, Show)
 data Binder = Lam | Pi deriving (Eq, Ord, Show)
 
-data TT' r
+data TT r
     = V Name
-    | Bind Binder r Name (TT' r) (TT' r)
-    | App r (TT' r) (TT' r)
-    | Case (TT' r) [Alt r]  -- scrutinee, scrutinee type, alts
+    | Bind Binder r Name (TT r) (TT r)
+    | App r (TT r) (TT r)
+    | Case (TT r) [Alt r]  -- scrutinee, scrutinee type, alts
     | Type
     | Erased
     deriving (Eq, Ord)
 
 data Alt r
-    = ConCase Name r [Name] (TT' r)  -- relevance of tag + relevance of args
-    | DefaultCase (TT' r)
+    = ConCase Name r [Name] (TT r)  -- relevance of tag + relevance of args
+    | DefaultCase (TT r)
     deriving (Eq, Ord, Show)
 
-data DefType r = Axiom | Fun (TT' r) deriving (Eq, Ord, Show)
-data Def r = Def r Name (TT' r) (DefType r) deriving (Eq, Ord, Show)
+data DefType r = Axiom | Fun (TT r) deriving (Eq, Ord, Show)
+data Def r = Def r Name (TT r) (DefType r) deriving (Eq, Ord, Show)
 
 newtype Program r = Prog [Def r]
 
-type TT = TT' (Maybe Relevance)
-type TTstar = TT' Relevance
 type MRel = Maybe Relevance
 
-instance Functor TT' where
+instance Functor TT where
     fmap _ (V n) = V n
     fmap f (Bind b r n ty tm) = Bind b (f r) n (fmap f ty) (fmap f tm)
     fmap f (App r fun arg) = App (f r) (fmap f fun) (fmap f arg)
@@ -84,7 +82,7 @@ instance ShowR r => Show (Program r) where
         fmtDT Axiom = "(axiom)"
         fmtDT (Fun tm) = show tm
 
-instance ShowR r => Show (TT' r) where
+instance ShowR r => Show (TT r) where
     show (V n) = n
     show (Bind Pi r n ty tm) = "(" ++ n ++ showR r ++ show ty ++ ") -> " ++ show tm
     show (Bind Lam _r n Erased tm) = "\\" ++ n ++ ". " ++ show tm

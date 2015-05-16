@@ -6,7 +6,7 @@ import Control.Applicative
 import Control.Monad.Trans.State.Strict
 
 data Meta = MVar Int | Fixed Relevance deriving (Eq, Ord)
-type TTmeta = TT' Meta
+type TTmeta = TT Meta
 type MetaM = State Int
 
 instance Show Meta where
@@ -34,7 +34,7 @@ freshM :: Maybe Relevance -> State Int Meta
 freshM Nothing  = modify (+1) >> MVar <$> get
 freshM (Just r) = return $ Fixed r
 
-metaTm :: TT -> MetaM TTmeta
+metaTm :: TT MRel -> MetaM TTmeta
 metaTm (V n) = return $ V n
 metaTm (Bind bnd r n ty tm) = Bind bnd <$> freshM r <*> pure n <*> metaTm ty <*> metaTm tm
 metaTm (App r f x) = App <$> freshM r <*> metaTm f <*> metaTm x

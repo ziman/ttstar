@@ -24,7 +24,7 @@ pruneDefType :: DefType Relevance -> DefType ()
 pruneDefType  Axiom = Axiom
 pruneDefType (Fun tm) = Fun $ pruneTm tm
 
-pruneTm :: TT' Relevance -> TT' ()
+pruneTm :: TT Relevance -> TT ()
 pruneTm (V n) = V n
 pruneTm (Bind _bnd I _n _ty tm) = pruneTm tm
 pruneTm (Bind bnd R n _ty tm) = Bind bnd () n Erased (pruneTm tm)

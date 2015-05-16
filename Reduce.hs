@@ -3,9 +3,9 @@ module Reduce where
 import TTstar
 import qualified Data.Map as M
 
-type Ctx' r = M.Map Name (r, TT' r, Maybe (TT' r))
+type Ctx r = M.Map Name (r, TT r, Maybe (TT r))
 
-reduce :: ShowR r => Ctx' r -> TT' r -> TT' r
+reduce :: ShowR r => Ctx r -> TT r -> TT r
 reduce ctx t@(V n)
     | Just (r, ty, mtm) <- M.lookup n ctx
     = case mtm of
@@ -27,7 +27,7 @@ reduce ctx (Case s alts) = redCase ctx (reduce ctx s) alts
 reduce ctx t@Erased = t
 reduce ctx t@Type   = t
 
-redCase :: ShowR r => Ctx' r -> TT' r -> [Alt r] -> TT' r
+redCase :: ShowR r => Ctx r -> TT r -> [Alt r] -> TT r
 redCase ctx _ (DefaultCase tm : _) = reduce ctx tm
 redCase ctx s (ConCase cn _r ns tm : as)
     | (V cn', args) <- unApply s
@@ -40,13 +40,13 @@ redCase ctx s (ConCase cn _r ns tm : as)
 redCase ctx s (_ : as) = redCase ctx s as
 redCase ctx s [] = error $ "uncovered case: " ++ show s
 
-unApply :: TT' r -> (TT' r, [TT' r])
+unApply :: TT r -> (TT r, [TT r])
 unApply tm = ua tm []
   where
     ua (App _ f x) args = ua f (x : args)
     ua tm args = (tm, args)
 
-subst :: Name -> TT' r -> TT' r -> TT' r
+subst :: Name -> TT r -> TT r -> TT r
 subst n tm t@(V n')
     | n' == n   = tm
     | otherwise = t
@@ -58,7 +58,7 @@ subst n tm (Case s alts) = Case (subst n tm s) (map (substAlt n tm) alts)
 subst _ _  t@Erased = t
 subst _ _  t@Type   = t
 
-substAlt :: Name -> TT' r -> Alt r -> Alt r
+substAlt :: Name -> TT r -> Alt r -> Alt r
 substAlt n tm (DefaultCase tm') = DefaultCase $ subst n tm tm'
 substAlt n tm t@(ConCase cn r ns tm')
     | n `elem` ns = t

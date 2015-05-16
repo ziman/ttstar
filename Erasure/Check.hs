@@ -15,7 +15,6 @@ import Control.Monad.Trans.Reader
 import qualified Data.Map as M
 import qualified Data.Set as S
 
-type Ctx = Ctx' Meta
 type Guards = S.Set Meta
 type Uses = S.Set Meta
 data Constr = Uses :<-: Guards deriving (Eq, Ord)
@@ -43,8 +42,9 @@ instance Show TCFailure where
     show (TCFailure e tb) = unlines (show e : "Traceback:" : zipWith (\i n -> show i ++ ". " ++ n) [1..] (reverse tb))
 
 type TCState = Int
-type TCCtx = [String]
-type TC a = ReaderT TCCtx (WriterT Constrs (ExceptT TCFailure (State TCState))) a
+type TCTraceback = [String]
+type TC a = ReaderT TCTraceback (WriterT Constrs (ExceptT TCFailure (State TCState))) a
+type MCtx = Ctx Meta
 
 cond :: Meta -> TC a -> TC a
 cond m = mapReaderT $ censor (S.map mogrify)
@@ -108,7 +108,7 @@ uniformCase  x (a:as) = conv x (getTm a) >> uniformCase x as
     getTm (DefaultCase tm) = tm
     getTm (ConCase _cn _r _ns tm) = tm
 
-add :: Meta -> Name -> TTmeta -> Ctx -> Ctx
+add :: Meta -> Name -> TTmeta -> MCtx -> MCtx
 add r n ty = M.insert n (r, ty, Nothing)
 
 infix 3 <~
@@ -132,7 +132,7 @@ tcfail e = do
 emit :: Constrs -> TC ()
 emit = lift . tell
 
-lookupName :: Ctx -> Name -> TC (Meta, TTmeta, Maybe TTmeta)
+lookupName :: MCtx -> Name -> TC (Meta, TTmeta, Maybe TTmeta)
 lookupName ctx n
     | Just x <- M.lookup n ctx = return x
     | otherwise = tcfail $ UnknownName n
@@ -143,17 +143,17 @@ check prog = evalState (runExceptT . execWriterT $ runReaderT (checkProgram prog
 checkProgram :: Program Meta -> TC ()
 checkProgram (Prog defs) = mapM_ (checkDef globals) defs
   where
-    globals :: Ctx
+    globals :: MCtx
     globals = M.fromList $ map mkCtx defs
     
     mkCtx (Def r n ty Axiom) = (n, (r, ty, Nothing))
     mkCtx (Def r n ty (Fun tm)) = (n, (r, ty, Just tm))
 
-checkDef :: Ctx -> Def Meta -> TC ()
+checkDef :: MCtx -> Def Meta -> TC ()
 checkDef _ctx (Def _r _n _ty Axiom) = return ()
 checkDef ctx (Def _r _n ty (Fun tm)) = conv ty =<< checkTm ctx tm
 
-checkTm :: Ctx -> TTmeta -> TC TTmeta
+checkTm :: MCtx -> TTmeta -> TC TTmeta
 checkTm ctx t@(V n) = bt ("VAR", t) $ do
     (r, ty, _def) <- lookupName ctx n
     emit ([r] <~ [Fixed R])
@@ -185,7 +185,7 @@ checkTm ctx t@(Case s alts) = bt ("CASE", t) $ do
 checkTm _ctx Erased = return $ Erased
 checkTm _ctx Type   = return $ Type  -- type-in-type
 
-checkAlt :: Ctx -> Alt Meta -> TC (Alt Meta)
+checkAlt :: MCtx -> Alt Meta -> TC (Alt Meta)
 checkAlt ctx (DefaultCase tm) = DefaultCase <$> checkTm ctx tm
 checkAlt ctx (ConCase cn r ns tm) = bt ("CONCASE", cn, ns) $ do
     tcfail $ Other "this can't work without proper unification implementation"
@@ -194,7 +194,7 @@ checkAlt ctx (ConCase cn r ns tm) = bt ("CONCASE", cn, ns) $ do
     ctx' <- augCtx ctx ns cty
     bt ("SUBCHECK", ns, cty) ( ConCase cn r ns <$> checkTm ctx' tm )
   where
-    augCtx :: Ctx -> [Name] -> TTmeta -> TC Ctx
+    augCtx :: MCtx -> [Name] -> TTmeta -> TC MCtx
     augCtx ctx [] _ty = return ctx
     augCtx ctx (n : ns) (Bind Pi r _n' ty tm) = augCtx (add r n ty ctx) ns tm
     augCtx _ctx (_ : _ ) tm = tcfail $ BadCtorType tm
