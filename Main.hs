@@ -32,6 +32,14 @@ import qualified Data.Set as S
 --   -> maybe we could give the user a chance to explicitly annotate polymorphic recursion and then just check it
 --
 -- interactive constraint explorer
+--
+-- ***
+--
+-- this is too whole-program (because constructor usage can only be determined by whole-program analysis)
+-- however, every function has 1. type, 2. erasure constraints
+--  -> these are (of course) computed in isolation
+-- so it's questionable whether we should call it whole-program analysis
+-- (the information is usable on its own)
 
 main :: IO ()
 main = do
