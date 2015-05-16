@@ -5,6 +5,7 @@ import TT
 import Erasure.Meta
 import Erasure.Check
 
+import Data.List (intercalate)
 import Prelude hiding (div, span)
 import qualified Data.Set as S
 
@@ -20,7 +21,7 @@ span cls body = "<span class=\"" ++ cls ++ "\">" ++ body ++ "</span>"
 rel :: Uses -> Meta -> String
 rel uses (Fixed R) = span "rel rel-R" " :<sub>R</sub> "
 rel uses (Fixed I) = span "rel rel-I" " :<sub>I</sub> "
-rel uses (MVar i) = link ("rel mvar-" ++ show i ++ " " ++ cls) (" :<sub>" ++ show i ++ "</sub> ")
+rel uses (MVar i) = span ("rel mvar mvar-" ++ show i ++ " " ++ cls) (" :<sub>" ++ show i ++ "</sub> ")
   where
     cls | MVar i `S.member` uses = "rel-R"
         | otherwise = "rel-I"
@@ -51,10 +52,15 @@ term :: Uses -> TT Meta -> String
 term uses (V n) = span "var" $ name n
 term uses (Bind Pi r n ty tm) = span "pi" $ parens (nrty uses n r ty) ++ op " &#8594; " ++ term uses tm
 term uses (Bind Lam r n ty tm) = span "lambda" $ span "head" (op "&lambda; " ++ nrty uses n r ty ++ op ".") ++ term uses tm
-term uses (App r f x) = span "app" . parens $ term uses f ++ " " ++ term uses x
+term uses (App r f x) = span "app" . parens $ term uses f ++ app r ++ term uses x
 term uses (Case s alts) = error "not implemented"
 term uses Type = span "star" "*"
 term uses Erased = span "erased" "____"
+
+app :: Meta -> String
+app (Fixed R) = span "ap ap-R" "R"
+app (Fixed I) = span "ap ap-I" "I"
+app (MVar i) = span ("ap mvar mvar-" ++ show i) (show i)
 
 htmlDef :: Uses -> Def Meta -> String
 htmlDef uses (Def r n ty Axiom) = div "def axiom" $ div "type" (nrty uses n r ty)
@@ -66,10 +72,37 @@ htmlDef uses (Def r n ty (Fun tm)) =
     )
   )
 
+htmlConstr :: (Int, Constr) -> String
+htmlConstr (i, us :<-: gs) = span ("constr constr-" ++ show i) (
+    span "uses" (htmlMetas $ S.toList us)
+    ++ op " &#8592; "
+    ++ span "guards" (htmlMetas $ S.toList gs)
+  ) ++ ", "
+
+htmlMetas :: [Meta] -> String
+htmlMetas ms = op "{" ++ intercalate (op ", ") (map htmlMeta ms) ++ op "}"
+
+htmlMeta :: Meta -> String
+htmlMeta (Fixed R) = span "meta-R" "R"
+htmlMeta (Fixed I) = span "meta-I" "I"
+htmlMeta (MVar i) = span ("meta mvar mvar-" ++ show i) (show i)
+
+jsConstr :: Constr -> String
+jsConstr (us :<-: gs) = show [map num $ S.toList us, map num $ S.toList gs] ++ ",\n"
+  where
+    num (Fixed _) = 0
+    num (MVar i) = i
+
 genHtml :: String -> Program Meta -> Constrs -> Uses -> IO ()
 genHtml fname prog cs uses = do
     hdr <- readFile "html/header.html"
     ftr <- readFile "html/footer.html"
     writeFile fname (hdr ++ body ++ ftr)
   where
-    body = htmlProg uses prog
+    body = unlines
+        [ htmlProg uses prog
+        , concatMap htmlConstr (zip [0..] $ S.toList cs)
+        , "<script>var constrs=["
+        , concatMap jsConstr (S.toList cs)
+        , "[]];</script>"
+        ]

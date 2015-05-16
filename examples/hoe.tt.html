@@ -35,6 +35,11 @@ a:hover {
     background-color: yellow;
 }
 
+.ap {
+    color: #ccc;
+    font-size: 0.75em;
+}
+
 .nrty-I {
     background-color: #f0f0f0;
 }
@@ -46,36 +51,66 @@ a:hover {
     color: #aaa;
 }
 
+.marked {
+    color: yellow;
+    background-color: red;
+}
+
 </style>
 
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script>
+
+function cleanup() {
+    $('.marked').removeClass('marked');
+}
+
+function init() {
+    $('.mvar').each(function() {
+        var elm = $(this);
+        var mvar = parseInt(elm.attr('class').match(/mvar-(\d+)/)[1]);
+        elm.hover(function() {
+            for (var i = 0; i < constrs.length; ++i) {
+                if ($.inArray(mvar, constrs[i][0]) != -1) {
+                    $('.constr-' + i).addClass('marked');
+                    var gs = constrs[i][1];
+                    for (var j = 0; j < gs.length; ++j) {
+                        $('.def .mvar-' + gs[j]).addClass('marked');
+                    }
+                }
+            }
+        }, cleanup);
+    });
+}
+
+$(init);
 </script>
 
 <body>
 <div class="def axiom">
 <div class="type">
-<span class="nrty nrty-1 nrty-I"><span class="name name-T">T</span><a class="rel mvar-1 rel-I" href="#"> :<sub>1</sub> </a><span class="star">*</span>
+<span class="nrty nrty-1 nrty-I"><span class="name name-T">T</span><span class="rel mvar mvar-1 rel-I"> :<sub>1</sub> </span><span class="star">*</span>
 </span>
 </div>
 
 </div>
 <div class="def axiom">
 <div class="type">
-<span class="nrty nrty-2 nrty-R"><span class="name name-A">A</span><a class="rel mvar-2 rel-R" href="#"> :<sub>2</sub> </a><span class="var"><span class="name name-T">T</span></span>
+<span class="nrty nrty-2 nrty-R"><span class="name name-A">A</span><span class="rel mvar mvar-2 rel-R"> :<sub>2</sub> </span><span class="var"><span class="name name-T">T</span></span>
 </span>
 </div>
 
 </div>
 <div class="def axiom">
 <div class="type">
-<span class="nrty nrty-3 nrty-R"><span class="name name-B">B</span><a class="rel mvar-3 rel-R" href="#"> :<sub>3</sub> </a><span class="var"><span class="name name-T">T</span></span>
+<span class="nrty nrty-3 nrty-R"><span class="name name-B">B</span><span class="rel mvar mvar-3 rel-R"> :<sub>3</sub> </span><span class="var"><span class="name name-T">T</span></span>
 </span>
 </div>
 
 </div>
 <div class="def axiom">
 <div class="type">
-<span class="nrty nrty-4 nrty-R"><span class="name name-Op">Op</span><a class="rel mvar-4 rel-R" href="#"> :<sub>4</sub> </a><span class="pi"><span class="paren">(</span><span class="nrty nrty-R"><span class="name name-x">x</span><span class="rel rel-R"> :<sub>R</sub> </span><span class="var"><span class="name name-T">T</span></span>
+<span class="nrty nrty-4 nrty-R"><span class="name name-Op">Op</span><span class="rel mvar mvar-4 rel-R"> :<sub>4</sub> </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-R"><span class="name name-x">x</span><span class="rel rel-R"> :<sub>R</sub> </span><span class="var"><span class="name name-T">T</span></span>
 </span><span class="paren">)</span><span class="op"> &#8594; </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-R"><span class="name name-y">y</span><span class="rel rel-R"> :<sub>R</sub> </span><span class="var"><span class="name name-T">T</span></span>
 </span><span class="paren">)</span><span class="op"> &#8594; </span><span class="var"><span class="name name-T">T</span></span></span></span>
 </span>
@@ -84,47 +119,47 @@ a:hover {
 </div>
 <div class="def function">
 <div class="type">
-<span class="nrty nrty-5 nrty-R"><span class="name name-id">id</span><a class="rel mvar-5 rel-R" href="#"> :<sub>5</sub> </a><span class="pi"><span class="paren">(</span><span class="nrty nrty-6 nrty-R"><span class="name name-_">_</span><a class="rel mvar-6 rel-R" href="#"> :<sub>6</sub> </a><span class="var"><span class="name name-T">T</span></span>
+<span class="nrty nrty-5 nrty-R"><span class="name name-id">id</span><span class="rel mvar mvar-5 rel-R"> :<sub>5</sub> </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-6 nrty-R"><span class="name name-_">_</span><span class="rel mvar mvar-6 rel-R"> :<sub>6</sub> </span><span class="var"><span class="name name-T">T</span></span>
 </span><span class="paren">)</span><span class="op"> &#8594; </span><span class="var"><span class="name name-T">T</span></span></span>
 </span>
 </div>
 <div class="definition">
-<span class="name name-id">id</span><span class="op"> = </span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="nrty nrty-7 nrty-R"><span class="name name-t">t</span><a class="rel mvar-7 rel-R" href="#"> :<sub>7</sub> </a><span class="var"><span class="name name-T">T</span></span>
+<span class="name name-id">id</span><span class="op"> = </span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="nrty nrty-7 nrty-R"><span class="name name-t">t</span><span class="rel mvar mvar-7 rel-R"> :<sub>7</sub> </span><span class="var"><span class="name name-T">T</span></span>
 </span><span class="op">.</span></span><span class="var"><span class="name name-t">t</span></span></span>
 </div>
 
 </div>
 <div class="def function">
 <div class="type">
-<span class="nrty nrty-8 nrty-R"><span class="name name-const_A">const_A</span><a class="rel mvar-8 rel-R" href="#"> :<sub>8</sub> </a><span class="pi"><span class="paren">(</span><span class="nrty nrty-9 nrty-I"><span class="name name-_">_</span><a class="rel mvar-9 rel-I" href="#"> :<sub>9</sub> </a><span class="var"><span class="name name-T">T</span></span>
+<span class="nrty nrty-8 nrty-R"><span class="name name-const_A">const_A</span><span class="rel mvar mvar-8 rel-R"> :<sub>8</sub> </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-9 nrty-I"><span class="name name-_">_</span><span class="rel mvar mvar-9 rel-I"> :<sub>9</sub> </span><span class="var"><span class="name name-T">T</span></span>
 </span><span class="paren">)</span><span class="op"> &#8594; </span><span class="var"><span class="name name-T">T</span></span></span>
 </span>
 </div>
 <div class="definition">
-<span class="name name-const_A">const_A</span><span class="op"> = </span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="nrty nrty-10 nrty-I"><span class="name name-t">t</span><a class="rel mvar-10 rel-I" href="#"> :<sub>10</sub> </a><span class="var"><span class="name name-T">T</span></span>
+<span class="name name-const_A">const_A</span><span class="op"> = </span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="nrty nrty-10 nrty-I"><span class="name name-t">t</span><span class="rel mvar mvar-10 rel-I"> :<sub>10</sub> </span><span class="var"><span class="name name-T">T</span></span>
 </span><span class="op">.</span></span><span class="var"><span class="name name-A">A</span></span></span>
 </div>
 
 </div>
 <div class="def function">
 <div class="type">
-<span class="nrty nrty-11 nrty-R"><span class="name name-f">f</span><a class="rel mvar-11 rel-R" href="#"> :<sub>11</sub> </a><span class="pi"><span class="paren">(</span><span class="nrty nrty-12 nrty-R"><span class="name name-g">g</span><a class="rel mvar-12 rel-R" href="#"> :<sub>12</sub> </a><span class="pi"><span class="paren">(</span><span class="nrty nrty-13 nrty-R"><span class="name name-_">_</span><a class="rel mvar-13 rel-R" href="#"> :<sub>13</sub> </a><span class="var"><span class="name name-T">T</span></span>
+<span class="nrty nrty-11 nrty-R"><span class="name name-f">f</span><span class="rel mvar mvar-11 rel-R"> :<sub>11</sub> </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-12 nrty-R"><span class="name name-g">g</span><span class="rel mvar mvar-12 rel-R"> :<sub>12</sub> </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-13 nrty-R"><span class="name name-_">_</span><span class="rel mvar mvar-13 rel-R"> :<sub>13</sub> </span><span class="var"><span class="name name-T">T</span></span>
 </span><span class="paren">)</span><span class="op"> &#8594; </span><span class="var"><span class="name name-T">T</span></span></span>
-</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-14 nrty-R"><span class="name name-z">z</span><a class="rel mvar-14 rel-R" href="#"> :<sub>14</sub> </a><span class="var"><span class="name name-T">T</span></span>
-</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-15 nrty-R"><span class="name name-h">h</span><a class="rel mvar-15 rel-R" href="#"> :<sub>15</sub> </a><span class="pi"><span class="paren">(</span><span class="nrty nrty-16 nrty-I"><span class="name name-_">_</span><a class="rel mvar-16 rel-I" href="#"> :<sub>16</sub> </a><span class="var"><span class="name name-T">T</span></span>
+</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-14 nrty-R"><span class="name name-z">z</span><span class="rel mvar mvar-14 rel-R"> :<sub>14</sub> </span><span class="var"><span class="name name-T">T</span></span>
+</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-15 nrty-R"><span class="name name-h">h</span><span class="rel mvar mvar-15 rel-R"> :<sub>15</sub> </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-16 nrty-I"><span class="name name-_">_</span><span class="rel mvar mvar-16 rel-I"> :<sub>16</sub> </span><span class="var"><span class="name name-T">T</span></span>
 </span><span class="paren">)</span><span class="op"> &#8594; </span><span class="var"><span class="name name-T">T</span></span></span>
-</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-17 nrty-I"><span class="name name-w">w</span><a class="rel mvar-17 rel-I" href="#"> :<sub>17</sub> </a><span class="var"><span class="name name-T">T</span></span>
+</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-17 nrty-I"><span class="name name-w">w</span><span class="rel mvar mvar-17 rel-I"> :<sub>17</sub> </span><span class="var"><span class="name name-T">T</span></span>
 </span><span class="paren">)</span><span class="op"> &#8594; </span><span class="var"><span class="name name-T">T</span></span></span></span></span></span>
 </span>
 </div>
 <div class="definition">
-<span class="name name-f">f</span><span class="op"> = </span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="nrty nrty-18 nrty-R"><span class="name name-g">g</span><a class="rel mvar-18 rel-R" href="#"> :<sub>18</sub> </a><span class="pi"><span class="paren">(</span><span class="nrty nrty-19 nrty-R"><span class="name name-_">_</span><a class="rel mvar-19 rel-R" href="#"> :<sub>19</sub> </a><span class="var"><span class="name name-T">T</span></span>
+<span class="name name-f">f</span><span class="op"> = </span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="nrty nrty-18 nrty-R"><span class="name name-g">g</span><span class="rel mvar mvar-18 rel-R"> :<sub>18</sub> </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-19 nrty-R"><span class="name name-_">_</span><span class="rel mvar mvar-19 rel-R"> :<sub>19</sub> </span><span class="var"><span class="name name-T">T</span></span>
 </span><span class="paren">)</span><span class="op"> &#8594; </span><span class="var"><span class="name name-T">T</span></span></span>
-</span><span class="op">.</span></span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="nrty nrty-20 nrty-R"><span class="name name-z">z</span><a class="rel mvar-20 rel-R" href="#"> :<sub>20</sub> </a><span class="var"><span class="name name-T">T</span></span>
-</span><span class="op">.</span></span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="nrty nrty-21 nrty-R"><span class="name name-h">h</span><a class="rel mvar-21 rel-R" href="#"> :<sub>21</sub> </a><span class="pi"><span class="paren">(</span><span class="nrty nrty-22 nrty-I"><span class="name name-_">_</span><a class="rel mvar-22 rel-I" href="#"> :<sub>22</sub> </a><span class="var"><span class="name name-T">T</span></span>
+</span><span class="op">.</span></span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="nrty nrty-20 nrty-R"><span class="name name-z">z</span><span class="rel mvar mvar-20 rel-R"> :<sub>20</sub> </span><span class="var"><span class="name name-T">T</span></span>
+</span><span class="op">.</span></span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="nrty nrty-21 nrty-R"><span class="name name-h">h</span><span class="rel mvar mvar-21 rel-R"> :<sub>21</sub> </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-22 nrty-I"><span class="name name-_">_</span><span class="rel mvar mvar-22 rel-I"> :<sub>22</sub> </span><span class="var"><span class="name name-T">T</span></span>
 </span><span class="paren">)</span><span class="op"> &#8594; </span><span class="var"><span class="name name-T">T</span></span></span>
-</span><span class="op">.</span></span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="nrty nrty-23 nrty-I"><span class="name name-w">w</span><a class="rel mvar-23 rel-I" href="#"> :<sub>23</sub> </a><span class="var"><span class="name name-T">T</span></span>
-</span><span class="op">.</span></span><span class="app"><span class="paren">(</span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-Op">Op</span></span> <span class="app"><span class="paren">(</span><span class="var"><span class="name name-g">g</span></span> <span class="var"><span class="name name-z">z</span></span><span class="paren">)</span></span><span class="paren">)</span></span> <span class="app"><span class="paren">(</span><span class="var"><span class="name name-h">h</span></span> <span class="var"><span class="name name-w">w</span></span><span class="paren">)</span></span><span class="paren">)</span></span></span></span></span></span>
+</span><span class="op">.</span></span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="nrty nrty-23 nrty-I"><span class="name name-w">w</span><span class="rel mvar mvar-23 rel-I"> :<sub>23</sub> </span><span class="var"><span class="name name-T">T</span></span>
+</span><span class="op">.</span></span><span class="app"><span class="paren">(</span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-Op">Op</span></span><span class="ap mvar mvar-25">25</span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-g">g</span></span><span class="ap mvar mvar-26">26</span><span class="var"><span class="name name-z">z</span></span><span class="paren">)</span></span><span class="paren">)</span></span><span class="ap mvar mvar-24">24</span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-h">h</span></span><span class="ap mvar mvar-27">27</span><span class="var"><span class="name name-w">w</span></span><span class="paren">)</span></span><span class="paren">)</span></span></span></span></span></span>
 </div>
 
 </div>
@@ -134,9 +169,62 @@ a:hover {
 </span>
 </div>
 <div class="definition">
-<span class="name name-main">main</span><span class="op"> = </span><span class="app"><span class="paren">(</span><span class="app"><span class="paren">(</span><span class="app"><span class="paren">(</span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-f">f</span></span> <span class="var"><span class="name name-id">id</span></span><span class="paren">)</span></span> <span class="var"><span class="name name-B">B</span></span><span class="paren">)</span></span> <span class="var"><span class="name name-const_A">const_A</span></span><span class="paren">)</span></span> <span class="var"><span class="name name-B">B</span></span><span class="paren">)</span></span>
+<span class="name name-main">main</span><span class="op"> = </span><span class="app"><span class="paren">(</span><span class="app"><span class="paren">(</span><span class="app"><span class="paren">(</span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-f">f</span></span><span class="ap mvar mvar-31">31</span><span class="var"><span class="name name-id">id</span></span><span class="paren">)</span></span><span class="ap mvar mvar-30">30</span><span class="var"><span class="name name-B">B</span></span><span class="paren">)</span></span><span class="ap mvar mvar-29">29</span><span class="var"><span class="name name-const_A">const_A</span></span><span class="paren">)</span></span><span class="ap mvar mvar-28">28</span><span class="var"><span class="name name-B">B</span></span><span class="paren">)</span></span>
 </div>
 
 </div>
+
+<span class="constr constr-0"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-2">2</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta-R">R</span><span class="op">}</span></span></span>, <span class="constr constr-1"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-3">3</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-28">28</span><span class="op">, </span><span class="meta-R">R</span><span class="op">}</span></span></span>, <span class="constr constr-2"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-3">3</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-30">30</span><span class="op">, </span><span class="meta-R">R</span><span class="op">}</span></span></span>, <span class="constr constr-3"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-4">4</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta-R">R</span><span class="op">}</span></span></span>, <span class="constr constr-4"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-5">5</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-31">31</span><span class="op">, </span><span class="meta-R">R</span><span class="op">}</span></span></span>, <span class="constr constr-5"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-6">6</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-7">7</span><span class="op">}</span></span></span>, <span class="constr constr-6"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-6">6</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-13">13</span><span class="op">}</span></span></span>, <span class="constr constr-7"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-7">7</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-6">6</span><span class="op">}</span></span></span>, <span class="constr constr-8"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-7">7</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta-R">R</span><span class="op">}</span></span></span>, <span class="constr constr-9"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-8">8</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-29">29</span><span class="op">, </span><span class="meta-R">R</span><span class="op">}</span></span></span>, <span class="constr constr-10"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-9">9</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-10">10</span><span class="op">}</span></span></span>, <span class="constr constr-11"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-9">9</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-16">16</span><span class="op">}</span></span></span>, <span class="constr constr-12"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-10">10</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-9">9</span><span class="op">}</span></span></span>, <span class="constr constr-13"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-11">11</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta-R">R</span><span class="op">}</span></span></span>, <span class="constr constr-14"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-12">12</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-18">18</span><span class="op">}</span></span></span>, <span class="constr constr-15"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-12">12</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-31">31</span><span class="op">}</span></span></span>, <span class="constr constr-16"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-13">13</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-6">6</span><span class="op">}</span></span></span>, <span class="constr constr-17"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-13">13</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-19">19</span><span class="op">}</span></span></span>, <span class="constr constr-18"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-14">14</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-20">20</span><span class="op">}</span></span></span>, <span class="constr constr-19"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-14">14</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-30">30</span><span class="op">}</span></span></span>, <span class="constr constr-20"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-15">15</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-21">21</span><span class="op">}</span></span></span>, <span class="constr constr-21"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-15">15</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-29">29</span><span class="op">}</span></span></span>, <span class="constr constr-22"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-16">16</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-9">9</span><span class="op">}</span></span></span>, <span class="constr constr-23"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-16">16</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-22">22</span><span class="op">}</span></span></span>, <span class="constr constr-24"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-17">17</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-23">23</span><span class="op">}</span></span></span>, <span class="constr constr-25"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-17">17</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-28">28</span><span class="op">}</span></span></span>, <span class="constr constr-26"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-18">18</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-12">12</span><span class="op">}</span></span></span>, <span class="constr constr-27"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-18">18</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-25">25</span><span class="op">, </span><span class="meta-R">R</span><span class="op">}</span></span></span>, <span class="constr constr-28"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-19">19</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-13">13</span><span class="op">}</span></span></span>, <span class="constr constr-29"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-19">19</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-25">25</span><span class="op">, </span><span class="meta mvar mvar-26">26</span><span class="op">}</span></span></span>, <span class="constr constr-30"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-20">20</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-14">14</span><span class="op">}</span></span></span>, <span class="constr constr-31"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-20">20</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-25">25</span><span class="op">, </span><span class="meta mvar mvar-26">26</span><span class="op">, </span><span class="meta-R">R</span><span class="op">}</span></span></span>, <span class="constr constr-32"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-21">21</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-15">15</span><span class="op">}</span></span></span>, <span class="constr constr-33"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-21">21</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-24">24</span><span class="op">, </span><span class="meta-R">R</span><span class="op">}</span></span></span>, <span class="constr constr-34"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-22">22</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-16">16</span><span class="op">}</span></span></span>, <span class="constr constr-35"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-22">22</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-24">24</span><span class="op">, </span><span class="meta mvar mvar-27">27</span><span class="op">}</span></span></span>, <span class="constr constr-36"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-23">23</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-17">17</span><span class="op">}</span></span></span>, <span class="constr constr-37"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-23">23</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-24">24</span><span class="op">, </span><span class="meta mvar mvar-27">27</span><span class="op">, </span><span class="meta-R">R</span><span class="op">}</span></span></span>, <span class="constr constr-38"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-24">24</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta-R">R</span><span class="op">}</span></span></span>, <span class="constr constr-39"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-25">25</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta-R">R</span><span class="op">}</span></span></span>, <span class="constr constr-40"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-26">26</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-19">19</span><span class="op">, </span><span class="meta mvar mvar-25">25</span><span class="op">}</span></span></span>, <span class="constr constr-41"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-27">27</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-22">22</span><span class="op">, </span><span class="meta mvar mvar-24">24</span><span class="op">}</span></span></span>, <span class="constr constr-42"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-28">28</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-17">17</span><span class="op">}</span></span></span>, <span class="constr constr-43"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-29">29</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-15">15</span><span class="op">}</span></span></span>, <span class="constr constr-44"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-30">30</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-14">14</span><span class="op">}</span></span></span>, <span class="constr constr-45"><span class="uses"><span class="op">{</span><span class="meta mvar mvar-31">31</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-12">12</span><span class="op">}</span></span></span>, <span class="constr constr-46"><span class="uses"><span class="op">{</span><span class="meta-R">R</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-24">24</span><span class="op">}</span></span></span>, <span class="constr constr-47"><span class="uses"><span class="op">{</span><span class="meta-R">R</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta mvar mvar-25">25</span><span class="op">}</span></span></span>, 
+<script>var constrs=[
+[[2],[0]],
+[[3],[28,0]],
+[[3],[30,0]],
+[[4],[0]],
+[[5],[31,0]],
+[[6],[7]],
+[[6],[13]],
+[[7],[6]],
+[[7],[0]],
+[[8],[29,0]],
+[[9],[10]],
+[[9],[16]],
+[[10],[9]],
+[[11],[0]],
+[[12],[18]],
+[[12],[31]],
+[[13],[6]],
+[[13],[19]],
+[[14],[20]],
+[[14],[30]],
+[[15],[21]],
+[[15],[29]],
+[[16],[9]],
+[[16],[22]],
+[[17],[23]],
+[[17],[28]],
+[[18],[12]],
+[[18],[25,0]],
+[[19],[13]],
+[[19],[25,26]],
+[[20],[14]],
+[[20],[25,26,0]],
+[[21],[15]],
+[[21],[24,0]],
+[[22],[16]],
+[[22],[24,27]],
+[[23],[17]],
+[[23],[24,27,0]],
+[[24],[0]],
+[[25],[0]],
+[[26],[19,25]],
+[[27],[22,24]],
+[[28],[17]],
+[[29],[15]],
+[[30],[14]],
+[[31],[12]],
+[[0],[24]],
+[[0],[25]],
+
+[]];</script>
 </body>
 </html>

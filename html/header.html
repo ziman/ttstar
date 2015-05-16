@@ -35,6 +35,11 @@ a:hover {
     background-color: yellow;
 }
 
+.ap {
+    color: #ccc;
+    font-size: 0.75em;
+}
+
 .nrty-I {
     background-color: #f0f0f0;
 }
@@ -46,9 +51,39 @@ a:hover {
     color: #aaa;
 }
 
+.marked {
+    color: yellow;
+    background-color: red;
+}
+
 </style>
 
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script>
+
+function cleanup() {
+    $('.marked').removeClass('marked');
+}
+
+function init() {
+    $('.mvar').each(function() {
+        var elm = $(this);
+        var mvar = parseInt(elm.attr('class').match(/mvar-(\d+)/)[1]);
+        elm.hover(function() {
+            for (var i = 0; i < constrs.length; ++i) {
+                if ($.inArray(mvar, constrs[i][0]) != -1) {
+                    $('.constr-' + i).addClass('marked');
+                    var gs = constrs[i][1];
+                    for (var j = 0; j < gs.length; ++j) {
+                        $('.def .mvar-' + gs[j]).addClass('marked');
+                    }
+                }
+            }
+        }, cleanup);
+    });
+}
+
+$(init);
 </script>
 
 <body>
