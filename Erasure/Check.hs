@@ -46,6 +46,13 @@ type TCTraceback = [String]
 type TC a = ReaderT TCTraceback (WriterT Constrs (ExceptT TCFailure (State TCState))) a
 type MCtx = Ctx Meta
 
+-- gather all metas occurring in the type of the thing
+-- start search from there
+-- immutable metas (?)
+freshen :: TC TTmeta -> TC TTmeta
+freshen tc = do
+    ty <- mapReaderT $ censor (
+
 cond :: Meta -> TC a -> TC a
 cond m = mapReaderT $ censor (S.map mogrify)
   where
@@ -118,8 +125,8 @@ us <~ gs = S.singleton (S.fromList us :<-: S.fromList gs)
 steps :: [TC Constrs] -> TC Constrs
 steps = fmap S.unions . sequence
 
-fresh :: TC Int
-fresh = lift . lift . lift $ modify (+1) *> get
+freshInt :: TC Int
+freshInt = lift . lift . lift $ modify (+1) *> get
 
 tcfail :: TCError -> TC a
 tcfail e = do
@@ -164,7 +171,7 @@ checkTm ctx t@(Bind Lam r n ty tm) = bt ("LAM", t) $
     Bind Pi r n ty <$> checkTm (add r n ty ctx) tm
 
 checkTm ctx t@(App r f x) = bt ("APP", t) $ do
-    fTy <- checkTm ctx f
+    fTy <- freshen $ checkTm ctx f
     xTy <- cond r $ checkTm ctx x
     case fTy of
         Bind Pi r' n' ty' tm' -> do
