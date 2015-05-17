@@ -55,6 +55,8 @@ import qualified Data.Set as S
 --  - variables always start as relevant at the tail of the term
 --  - under an application, their relevance is and-ed with relevance of the lambda
 --  - finally, they die in their binder
+--
+-- We probably should perform the duplication in (checkTerm $ V n) -- because only variables can be duplicated.
 
 main :: IO ()
 main = do
