@@ -48,8 +48,11 @@ instance PrettyR r => Pretty (TT r) where
         show' r (App r' f' x') x = show' r' f' x' <> prettyApp r <> showd x
         show' r f x = showd f <> prettyApp r <> showd x
     pretty (Case s alts) =
-        text "case" <+> pretty s <+> text "of"
-        $$ indent (vcat $ map pretty alts)
+        blankLine
+        $$ indent (
+            text "case" <+> pretty s <+> text "of"
+            $$ indent (vcat $ map pretty alts)
+        )
     pretty Erased = text "____"
     pretty Type = text "*"
 
