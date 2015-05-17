@@ -1,0 +1,29 @@
+-- vim: ft=agda
+
+postulate Void : *.
+
+postulate Maybe : * -> *.
+postulate Just : (a : *) -> (x : a) -> Maybe a.
+postulate Nothing : (a : *) -> Maybe a.
+
+postulate Bool : *.
+postulate True : Bool.
+postulate False : Bool.
+
+not (x : Bool) : Bool
+    = case x of
+        True  -> False,
+        False -> True.
+
+retTy (x : Maybe Bool) : *
+    = case x of
+        Just t  -> Bool,
+        Nothing -> Void.
+
+f (x : Maybe Bool) : retTy x
+    = case x of
+        Just t  -> t,
+        Nothing -> Bool.
+
+main :R: Bool
+    = f (Just False).

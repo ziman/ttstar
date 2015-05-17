@@ -5,7 +5,7 @@ import qualified Data.Map as M
 
 type Ctx r = M.Map Name (r, TT r, Maybe (TT r))
 
-reduce :: ShowR r => Ctx r -> TT r -> TT r
+reduce :: Show r => Ctx r -> TT r -> TT r
 reduce ctx t@(V n)
     | Just (r, ty, mtm) <- M.lookup n ctx
     = case mtm of
@@ -27,7 +27,7 @@ reduce ctx (Case s alts) = redCase ctx (reduce ctx s) alts
 reduce ctx t@Erased = t
 reduce ctx t@Type   = t
 
-redCase :: ShowR r => Ctx r -> TT r -> [Alt r] -> TT r
+redCase :: Show r => Ctx r -> TT r -> [Alt r] -> TT r
 redCase ctx _ (DefaultCase tm : _) = reduce ctx tm
 redCase ctx s (ConCase cn _r ns tm : as)
     | (V cn', args) <- unApply s

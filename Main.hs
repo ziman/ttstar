@@ -4,6 +4,8 @@ import TT
 import Parser
 import Explorer
 
+import Util.PrettyPrint
+
 import Erasure.Meta
 import Erasure.Check
 import Erasure.Solve
@@ -68,10 +70,10 @@ main = do
             putStrLn "-- vim: ft=agda"
             putStrLn ""
             putStrLn "### Desugared ###\n"
-            print prog
+            printP prog
             putStrLn "### Metaified ###\n"
             let metaified = meta prog
-            print metaified
+            printP metaified
             putStrLn "### Constraints ###\n"
             let cs = either (error . show) id . check $ metaified
             mapM_ print $ S.toList cs
@@ -83,7 +85,7 @@ main = do
             putStrLn ""
             putStrLn "### Annotated ###\n"
             let annotated = annotate uses $ metaified
-            print $ annotated
+            printP $ annotated
             putStrLn "### Pruned ###\n"
             let pruned = prune annotated
-            print $ pruned
+            printP $ pruned

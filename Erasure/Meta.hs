@@ -1,6 +1,8 @@
 module Erasure.Meta where
 
 import TT
+import Pretty
+import Util.PrettyPrint
 
 import Control.Applicative
 import Control.Monad.Trans.State.Strict
@@ -14,9 +16,9 @@ instance Show Meta where
     show (MVar i j) = "?" ++ show i ++ "/" ++ show j
     show (Fixed r) = "!" ++ show r
 
-instance ShowR Meta where
-    showR x = ":" ++ show x ++ ":"
-    showX x = " -" ++ show x ++ "- "
+instance PrettyR Meta where
+    prettyCol x = colon <> showd x <> colon
+    prettyApp x = text "-" <> showd x <> text "-"
 
 meta :: Program (Maybe Relevance) -> Program Meta
 meta prog = evalState (metaProg prog) 0

@@ -46,12 +46,8 @@ type TCTraceback = [String]
 type TC a = ReaderT TCTraceback (WriterT Constrs (ExceptT TCFailure (State TCState))) a
 type MCtx = Ctx Meta
 
--- gather all metas occurring in the type of the thing
--- start search from there
--- immutable metas (?)
 freshen :: TC TTmeta -> TC TTmeta
-freshen tc = do
-    ty <- mapReaderT $ censor (
+freshen tc = tc
 
 cond :: Meta -> TC a -> TC a
 cond m = mapReaderT $ censor (S.map mogrify)
@@ -161,6 +157,7 @@ checkTm :: MCtx -> TTmeta -> TC TTmeta
 checkTm ctx t@(V n) = bt ("VAR", t) $ do
     (r, ty, _def) <- lookupName ctx n
     emit ([r] <~ [Fixed R])
+    -- TODO: freshen
     return ty
 
 checkTm ctx t@(Bind Pi r n ty tm) = bt ("PI", t) $ do
@@ -171,7 +168,7 @@ checkTm ctx t@(Bind Lam r n ty tm) = bt ("LAM", t) $
     Bind Pi r n ty <$> checkTm (add r n ty ctx) tm
 
 checkTm ctx t@(App r f x) = bt ("APP", t) $ do
-    fTy <- freshen $ checkTm ctx f
+    fTy <- checkTm ctx f
     xTy <- cond r $ checkTm ctx x
     case fTy of
         Bind Pi r' n' ty' tm' -> do

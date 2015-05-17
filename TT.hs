@@ -1,4 +1,3 @@
-{-# LANGUAGE FlexibleInstances #-}
 module TT where
 
 import Data.List
@@ -14,7 +13,7 @@ data TT r
     | Case (TT r) [Alt r]  -- scrutinee, scrutinee type, alts
     | Type
     | Erased
-    deriving (Eq, Ord)
+    deriving (Eq, Ord, Show)
 
 data Alt r
     = ConCase Name r [Name] (TT r)  -- relevance of tag + relevance of args
@@ -24,7 +23,7 @@ data Alt r
 data DefType r = Axiom | Fun (TT r) deriving (Eq, Ord, Show)
 data Def r = Def r Name (TT r) (DefType r) deriving (Eq, Ord, Show)
 
-newtype Program r = Prog [Def r]
+newtype Program r = Prog [Def r] deriving (Eq, Ord, Show)
 
 type MRel = Maybe Relevance
 
@@ -49,48 +48,3 @@ instance Functor Def where
 
 instance Functor Program where
     fmap f (Prog defs) = Prog (map (fmap f) defs)
-
-class Show r => ShowR r where
-    showR :: r -> String
-    showX :: r -> String
-
-instance ShowR Relevance where
-    showR x = ":" ++ show x ++ ":"
-    showX x = " -" ++ show x ++ "- "
-
-instance ShowR () where
-    showR _ = ":"
-    showX _ = " "
-
-instance ShowR (Maybe Relevance) where
-    showR Nothing = ":"
-    showR (Just r) = showR r
-
-    showX Nothing = " "
-    showX (Just r) = showX r
-
-instance ShowR r => Show (Program r) where
-    show (Prog defs) = intercalate "\n" $ map fmtDef defs
-      where
-        fmtDef (Def _r n Erased dt) = n ++ " = " ++ fmtDT dt ++ "\n"
-        fmtDef (Def r n ty dt) = intercalate "\n"
-            [ n ++ " " ++ showR r ++ " " ++ show ty
-            , n ++ " = " ++ fmtDT dt
-            , ""
-            ]
-
-        fmtDT Axiom = "(axiom)"
-        fmtDT (Fun tm) = show tm
-
-instance ShowR r => Show (TT r) where
-    show (V n) = n
-    show (Bind Pi r n ty tm) = "(" ++ n ++ showR r ++ show ty ++ ") -> " ++ show tm
-    show (Bind Lam _r n Erased tm) = "\\" ++ n ++ ". " ++ show tm
-    show (Bind Lam r n ty tm) = "\\" ++ n ++ showR r ++ show ty ++ ". " ++ show tm
-    show (App r f x) = "(" ++ show' r f x ++ ")"
-      where
-        show' r (App r' f' x') x = show' r' f' x' ++ showX r ++ show x
-        show' r f x = show f ++ showX r ++ show x
-    show (Case s alts) = "case " ++ show s ++ " of " ++ show alts
-    show Erased = "____"
-    show Type = "*"
