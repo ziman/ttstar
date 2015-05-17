@@ -22,6 +22,8 @@ module Util.PrettyPrint
     )
     where
 
+import Data.List
+
 class Pretty a where
     pretty :: a -> Doc
 
@@ -29,7 +31,7 @@ class Pretty a where
     prettyShow = render "--" . pretty
 
 printP :: Pretty a => a -> IO ()
-printP = putStr . prettyShow
+printP = putStrLn . prettyShow
 
 type Line = (String, String)  -- text, comment
 newtype Doc = Doc [Line]
@@ -108,7 +110,7 @@ braces :: Doc -> Doc
 braces d = lbrace <> d <> rbrace
 
 render :: String -> Doc -> String
-render cmtStr (Doc xs) = unlines $ map (renderLine cmtStr) xs
+render cmtStr (Doc xs) = intercalate "\n" $ map (renderLine cmtStr) xs
 
 renderLine :: String -> (String, String) -> String
 renderLine cmtStr ("", "") = ""

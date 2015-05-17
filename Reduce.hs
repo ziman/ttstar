@@ -1,21 +1,23 @@
 module Reduce where
 
 import TT
+import Pretty
 import qualified Data.Map as M
 
 type Ctx r = M.Map Name (r, TT r, Maybe (TT r))
 
-reduce :: Show r => Ctx r -> TT r -> TT r
+reduce :: PrettyR r => Ctx r -> TT r -> TT r
 reduce ctx t@(V n)
     | Just (r, ty, mtm) <- M.lookup n ctx
     = case mtm of
         Nothing -> t
         Just tm -> reduce ctx tm
 
-    | otherwise = error $ "unknown variable " ++ show n
+    | otherwise = t  -- unknown variable
 
 reduce ctx (Bind b r n ty tm) = Bind b r n (reduce ctx ty) (reduce ctx tm)
 reduce ctx (App r f x)
+
     | Bind Lam r' n' ty' tm' <- redF
     = reduce ctx $ subst n' x tm'
 
@@ -23,13 +25,13 @@ reduce ctx (App r f x)
   where
     redF = reduce ctx f
 
-reduce ctx (Case s alts) = redCase ctx (reduce ctx s) alts
+reduce ctx t@(Case s alts) = redCase ctx t (reduce ctx s) alts
 reduce ctx t@Erased = t
 reduce ctx t@Type   = t
 
-redCase :: Show r => Ctx r -> TT r -> [Alt r] -> TT r
-redCase ctx _ (DefaultCase tm : _) = reduce ctx tm
-redCase ctx s (ConCase cn _r ns tm : as)
+redCase :: PrettyR r => Ctx r -> TT r -> TT r -> [Alt r] -> TT r
+redCase ctx t _ (DefaultCase tm : _) = reduce ctx tm
+redCase ctx t s (ConCase cn _r ns tm : as)
     | (V cn', args) <- unApply s
     , length args == length ns
     = reduce ctx $ subst' (zip ns args) tm
@@ -37,8 +39,8 @@ redCase ctx s (ConCase cn _r ns tm : as)
     subst' ((n,x):xs) tm = subst' xs $ subst n x tm
     subst' [] tm = tm
 
-redCase ctx s (_ : as) = redCase ctx s as
-redCase ctx s [] = error $ "uncovered case: " ++ show s
+redCase ctx t s (_ : as) = redCase ctx t s as
+redCase ctx t s [] = t
 
 unApply :: TT r -> (TT r, [TT r])
 unApply tm = ua tm []

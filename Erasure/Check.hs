@@ -93,6 +93,9 @@ conv p@(Case s alts) q@(Case s' alts') = bt ("C-CASE", p, q) $ do
 conv x@(Case _ _) y = conv y x
 conv x (Case s alts) = bt ("C-UNIFORM-CASE", x, alts) $ uniformCase x alts
 
+conv Type Type = return ()
+conv Erased Erased = return ()
+
 conv tm tm' = tcfail $ CantConvert tm tm'
 
 convAlt :: Alt Meta -> Alt Meta -> TC ()
@@ -151,7 +154,10 @@ checkProgram (Prog defs) = mapM_ (checkDef globals) defs
 
 checkDef :: MCtx -> Def Meta -> TC ()
 checkDef _ctx (Def _r _n _ty Axiom) = return ()
-checkDef ctx (Def _r n ty (Fun tm)) = bt ("FUNDECL", n) (conv ty =<< checkTm ctx tm)
+checkDef ctx (Def _r n ty (Fun tm)) = bt ("FUNDECL", n) $ do
+    tmTy <- checkTm ctx (reduce ctx tm)
+    bt ("RET-TY", reduce ctx ty, reduce ctx tmTy) $ conv (reduce ctx ty) (reduce ctx tmTy)
+    -- todo: convert pattern to application before matching
 
 checkTm :: MCtx -> TTmeta -> TC TTmeta
 checkTm ctx t@(V n) = bt ("VAR", t) $ do
@@ -168,8 +174,8 @@ checkTm ctx t@(Bind Lam r n ty tm) = bt ("LAM", t) $
     Bind Pi r n ty <$> checkTm (add r n ty ctx) tm
 
 checkTm ctx t@(App r f x) = bt ("APP", t) $ do
-    fTy <- checkTm ctx f
-    xTy <- cond r $ checkTm ctx x
+    fTy <- bt ("APP-F", f) $ checkTm ctx f
+    xTy <- bt ("APP-X", x) $ cond r $ checkTm ctx x
     case fTy of
         Bind Pi r' n' ty' tm' -> do
             emit (r `eq` r')
@@ -189,7 +195,6 @@ checkTm _ctx Type   = return $ Type  -- type-in-type
 checkAlt :: MCtx -> Alt Meta -> TC (Alt Meta)
 checkAlt ctx (DefaultCase tm) = DefaultCase <$> checkTm ctx tm
 checkAlt ctx (ConCase cn r ns tm) = bt ("CONCASE", cn, ns) $ do
-    tcfail $ Other "this can't work without proper unification implementation"
     (cr, cty, _def) <- lookupName ctx cn
     emit (cr `eq` r)
     ctx' <- augCtx ctx ns cty

@@ -18,7 +18,7 @@ instance Show Meta where
 
 instance PrettyR Meta where
     prettyCol x = colon <> showd x <> colon
-    prettyApp x = text "-" <> showd x <> text "-"
+    prettyApp x = text " -" <> showd x <> text "- "
 
 meta :: Program (Maybe Relevance) -> Program Meta
 meta prog = evalState (metaProg prog) 0

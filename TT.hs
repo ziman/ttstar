@@ -13,17 +13,17 @@ data TT r
     | Case (TT r) [Alt r]  -- scrutinee, scrutinee type, alts
     | Type
     | Erased
-    deriving (Eq, Ord, Show)
+    deriving (Eq, Ord)
 
 data Alt r
     = ConCase Name r [Name] (TT r)  -- relevance of tag + relevance of args
     | DefaultCase (TT r)
-    deriving (Eq, Ord, Show)
+    deriving (Eq, Ord)
 
-data DefType r = Axiom | Fun (TT r) deriving (Eq, Ord, Show)
-data Def r = Def r Name (TT r) (DefType r) deriving (Eq, Ord, Show)
+data DefType r = Axiom | Fun (TT r) deriving (Eq, Ord)
+data Def r = Def r Name (TT r) (DefType r) deriving (Eq, Ord)
 
-newtype Program r = Prog [Def r] deriving (Eq, Ord, Show)
+newtype Program r = Prog [Def r] deriving (Eq, Ord)
 
 type MRel = Maybe Relevance
 

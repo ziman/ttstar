@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FlexibleInstances, StandaloneDeriving #-}
 module Pretty (PrettyR(..)) where
 
 import TT
@@ -10,7 +10,7 @@ class Show r => PrettyR r where
 
 instance PrettyR Relevance where
     prettyCol x = colon <> showd x <> colon
-    prettyApp x = text "-" <> showd x <> text "-"
+    prettyApp x = text " -" <> showd x <> text "- "
 
 instance PrettyR () where
     prettyCol _ = colon
@@ -45,8 +45,8 @@ instance PrettyR r => Pretty (TT r) where
     pretty (Bind Lam r n ty tm) = lam <> pretty (n, r, ty) <> dot <+> pretty tm
     pretty (App r f x) = parens $ show' r f x
       where
-        show' r (App r' f' x') x = show' r' f' x' <> prettyApp r <> showd x
-        show' r f x = showd f <> prettyApp r <> showd x
+        show' r (App r' f' x') x = show' r' f' x' <> prettyApp r <> pretty x
+        show' r f x = pretty f <> prettyApp r <> pretty x
     pretty (Case s alts) =
         blankLine
         $$ indent (
@@ -59,6 +59,13 @@ instance PrettyR r => Pretty (TT r) where
 instance PrettyR r => Pretty (Alt r) where
     pretty (DefaultCase tm) = text "_" <+> arrow <+> pretty tm
     pretty (ConCase cn r ns tm) = text cn <+> hsep (map text ns) <+> arrow <+> pretty tm
+
+instance PrettyR r => Show (TT r) where
+    show = prettyShow
+
+deriving instance PrettyR r => Show (Alt r)
+deriving instance PrettyR r => Show (Def r)
+deriving instance PrettyR r => Show (DefType r)
 
 lam = text "\\"
 indent = nest 2
