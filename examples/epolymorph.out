@@ -11,13 +11,13 @@ True = (axiom)
 False : Bool
 False = (axiom)
 
-Maybe : (_:*) -> *
+Maybe : (_ : *) -> *
 Maybe = (axiom)
 
-Just : (a:*) -> (_:a) -> *
+Just : (a : *) -> (_ : a) -> *
 Just = (axiom)
 
-Nothing : (a:*) -> *
+Nothing : (a : *) -> *
 Nothing = (axiom)
 
 Nat : *
@@ -26,26 +26,26 @@ Nat = (axiom)
 Z : Nat
 Z = (axiom)
 
-S : (n:R:Nat) -> Nat
+S : (n  -R-  Nat) -> Nat
 S = (axiom)
 
-Plus : (x:R:Nat) -> (y:R:Nat) -> Nat
+Plus : (x  -R-  Nat) -> (y  -R-  Nat) -> Nat
 Plus = (axiom)
 
-id : (_:Nat) -> Nat
-id = \y:Nat. y
+id : (_ : Nat) -> Nat
+id = \y : Nat. y
 
-const_3 : (_:Nat) -> Nat
-const_3 = \_:Nat. (S (S (S Z)))
+const_3 : (_ : Nat) -> Nat
+const_3 = \_ : Nat. (S (S (S Z)))
 
 two : Nat
 two = (S (S Z))
 
-f : (g:(_:Nat) -> Nat) -> (z:Nat) -> (h:(_:Nat) -> Nat) -> (w:Nat) -> Nat
-f = \g:(_:Nat) -> Nat. \z:Nat. \h:(_:Nat) -> Nat. \w:Nat. (Plus (g z) (h w))
+f : (g : (_ : Nat) -> Nat) -> (z : Nat) -> (h : (_ : Nat) -> Nat) -> (w : Nat) -> Nat
+f = \g : (_ : Nat) -> Nat. \z : Nat. \h : (_ : Nat) -> Nat. \w : Nat. (Plus (g z) (h w))
 
-apply : (f:(_:Nat) -> Nat) -> (_:Nat) -> Nat
-apply = \f:(_:Nat) -> Nat. \x:Nat. (f x)
+apply : (f : (_ : Nat) -> Nat) -> (_ : Nat) -> Nat
+apply = \f : (_ : Nat) -> Nat. \x : Nat. (f x)
 
 test_1 : Nat
 test_1 = (Plus (apply id (S (S Z))) (apply const_3 two))
@@ -53,7 +53,7 @@ test_1 = (Plus (apply id (S (S Z))) (apply const_3 two))
 test_2 : Nat
 test_2 = (f id (S (S Z)) const_3 (S Z))
 
-main :R: Nat
+main  -R-  Nat
 main = (Plus test_1 test_2)
 
 ### Metaified ###
@@ -67,13 +67,13 @@ True = (axiom)
 False :?3: Bool
 False = (axiom)
 
-Maybe :?4: (_:?5:*) -> *
+Maybe :?4: (_ :?5: *) -> *
 Maybe = (axiom)
 
-Just :?6: (a:?7:*) -> (_:?8:a) -> *
+Just :?6: (a :?7: *) -> (_ :?8: a) -> *
 Just = (axiom)
 
-Nothing :?9: (a:?10:*) -> *
+Nothing :?9: (a :?10: *) -> *
 Nothing = (axiom)
 
 Nat :?11: *
@@ -82,26 +82,26 @@ Nat = (axiom)
 Z :?12: Nat
 Z = (axiom)
 
-S :?13: (n:!R:Nat) -> Nat
+S :?13: (n :!R: Nat) -> Nat
 S = (axiom)
 
-Plus :?14: (x:!R:Nat) -> (y:!R:Nat) -> Nat
+Plus :?14: (x :!R: Nat) -> (y :!R: Nat) -> Nat
 Plus = (axiom)
 
-id :?15: (_:?16:Nat) -> Nat
-id = \y:?17:Nat. y
+id :?15: (_ :?16: Nat) -> Nat
+id = \y :?17: Nat. y
 
-const_3 :?18: (_:?19:Nat) -> Nat
-const_3 = \_:?20:Nat. (S -?21- (S -?22- (S -?23- Z)))
+const_3 :?18: (_ :?19: Nat) -> Nat
+const_3 = \_ :?20: Nat. (S -?21- (S -?22- (S -?23- Z)))
 
 two :?24: Nat
 two = (S -?25- (S -?26- Z))
 
-f :?27: (g:?28:(_:?29:Nat) -> Nat) -> (z:?30:Nat) -> (h:?31:(_:?32:Nat) -> Nat) -> (w:?33:Nat) -> Nat
-f = \g:?34:(_:?35:Nat) -> Nat. \z:?36:Nat. \h:?37:(_:?38:Nat) -> Nat. \w:?39:Nat. (Plus -?41- (g -?42- z) -?40- (h -?43- w))
+f :?27: (g :?28: (_ :?29: Nat) -> Nat) -> (z :?30: Nat) -> (h :?31: (_ :?32: Nat) -> Nat) -> (w :?33: Nat) -> Nat
+f = \g :?34: (_ :?35: Nat) -> Nat. \z :?36: Nat. \h :?37: (_ :?38: Nat) -> Nat. \w :?39: Nat. (Plus -?41- (g -?42- z) -?40- (h -?43- w))
 
-apply :?44: (f:?45:(_:?46:Nat) -> Nat) -> (_:?47:Nat) -> Nat
-apply = \f:?48:(_:?49:Nat) -> Nat. \x:?50:Nat. (f -?51- x)
+apply :?44: (f :?45: (_ :?46: Nat) -> Nat) -> (_ :?47: Nat) -> Nat
+apply = \f :?48: (_ :?49: Nat) -> Nat. \x :?50: Nat. (f -?51- x)
 
 test_1 :?52: Nat
 test_1 = (Plus -?54- (apply -?56- id -?55- (S -?57- (S -?58- Z))) -?53- (apply -?60- const_3 -?59- two))
@@ -246,13 +246,13 @@ True = (axiom)
 False :I: Bool
 False = (axiom)
 
-Maybe :I: (_:I:*) -> *
+Maybe :I: (_ :I: *) -> *
 Maybe = (axiom)
 
-Just :I: (a:I:*) -> (_:I:a) -> *
+Just :I: (a :I: *) -> (_ :I: a) -> *
 Just = (axiom)
 
-Nothing :I: (a:I:*) -> *
+Nothing :I: (a :I: *) -> *
 Nothing = (axiom)
 
 Nat :I: *
@@ -261,26 +261,26 @@ Nat = (axiom)
 Z :R: Nat
 Z = (axiom)
 
-S :R: (n:R:Nat) -> Nat
+S :R: (n :R: Nat) -> Nat
 S = (axiom)
 
-Plus :R: (x:R:Nat) -> (y:R:Nat) -> Nat
+Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
 Plus = (axiom)
 
-id :R: (_:R:Nat) -> Nat
-id = \y:R:Nat. y
+id :R: (_ :R: Nat) -> Nat
+id = \y :R: Nat. y
 
-const_3 :R: (_:R:Nat) -> Nat
-const_3 = \_:R:Nat. (S -R- (S -R- (S -R- Z)))
+const_3 :R: (_ :R: Nat) -> Nat
+const_3 = \_ :R: Nat. (S -R- (S -R- (S -R- Z)))
 
 two :R: Nat
 two = (S -R- (S -R- Z))
 
-f :R: (g:R:(_:R:Nat) -> Nat) -> (z:R:Nat) -> (h:R:(_:R:Nat) -> Nat) -> (w:R:Nat) -> Nat
-f = \g:R:(_:R:Nat) -> Nat. \z:R:Nat. \h:R:(_:R:Nat) -> Nat. \w:R:Nat. (Plus -R- (g -R- z) -R- (h -R- w))
+f :R: (g :R: (_ :R: Nat) -> Nat) -> (z :R: Nat) -> (h :R: (_ :R: Nat) -> Nat) -> (w :R: Nat) -> Nat
+f = \g :R: (_ :R: Nat) -> Nat. \z :R: Nat. \h :R: (_ :R: Nat) -> Nat. \w :R: Nat. (Plus -R- (g -R- z) -R- (h -R- w))
 
-apply :R: (f:R:(_:R:Nat) -> Nat) -> (_:R:Nat) -> Nat
-apply = \f:R:(_:R:Nat) -> Nat. \x:R:Nat. (f -R- x)
+apply :R: (f :R: (_ :R: Nat) -> Nat) -> (_ :R: Nat) -> Nat
+apply = \f :R: (_ :R: Nat) -> Nat. \x :R: Nat. (f -R- x)
 
 test_1 :R: Nat
 test_1 = (Plus -R- (apply -R- id -R- (S -R- (S -R- Z))) -R- (apply -R- const_3 -R- two))

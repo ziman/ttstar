@@ -86,11 +86,11 @@ htmlDef uses (Def r n ty (Fun tm)) =
   )
 
 htmlConstr :: (Int, Constr) -> String
-htmlConstr (i, us :<-: gs) = div ("constr constr-" ++ show i) (
+htmlConstr (i, us :<-: gs) = span ("constr constr-" ++ show i) (
     span "uses" (htmlMetas $ S.toList us)
     ++ op " &#8592; "
     ++ span "guards" (htmlMetas $ S.toList gs)
-  )
+  ) ++ ", "
 
 htmlMetas :: [Meta] -> String
 htmlMetas ms = op "{" ++ intercalate (op ", ") (map htmlMeta ms) ++ op "}"

@@ -1,6 +1,6 @@
 -- vim: ft=agda
 
-### Original program ###
+### Desugared ###
 
 T : *
 T = (axiom)
@@ -11,19 +11,19 @@ A = (axiom)
 B : T
 B = (axiom)
 
-Op : (x:R:T) -> (y:R:T) -> T
+Op : (x  -R-  T) -> (y  -R-  T) -> T
 Op = (axiom)
 
-id : (_:T) -> T
-id = \t:T. t
+id : (_ : T) -> T
+id = \t : T. t
 
-const_A : (_:T) -> T
-const_A = \t:T. A
+const_A : (_ : T) -> T
+const_A = \_ : T. A
 
-f : (_:(_:T) -> T) -> (_:T) -> (_:(_:T) -> T) -> (_:T) -> T
-f = \g:(_:T) -> T. \z:T. \h:(_:T) -> T. \w:T. (Op (g z) (h w))
+f : (g : (_ : T) -> T) -> (z : T) -> (h : (_ : T) -> T) -> (w : T) -> T
+f = \g : (_ : T) -> T. \z : T. \h : (_ : T) -> T. \w : T. (Op (g z) (h w))
 
-main :R: T
+main  -R-  T
 main = (f id B const_A B)
 
 ### Metaified ###
@@ -37,17 +37,17 @@ A = (axiom)
 B :?3: T
 B = (axiom)
 
-Op :?4: (x:!R:T) -> (y:!R:T) -> T
+Op :?4: (x :!R: T) -> (y :!R: T) -> T
 Op = (axiom)
 
-id :?5: (_:?6:T) -> T
-id = \t:?7:T. t
+id :?5: (_ :?6: T) -> T
+id = \t :?7: T. t
 
-const_A :?8: (_:?9:T) -> T
-const_A = \t:?10:T. A
+const_A :?8: (_ :?9: T) -> T
+const_A = \_ :?10: T. A
 
-f :?11: (_:?12:(_:?13:T) -> T) -> (_:?14:T) -> (_:?15:(_:?16:T) -> T) -> (_:?17:T) -> T
-f = \g:?18:(_:?19:T) -> T. \z:?20:T. \h:?21:(_:?22:T) -> T. \w:?23:T. (Op -?25- (g -?26- z) -?24- (h -?27- w))
+f :?11: (g :?12: (_ :?13: T) -> T) -> (z :?14: T) -> (h :?15: (_ :?16: T) -> T) -> (w :?17: T) -> T
+f = \g :?18: (_ :?19: T) -> T. \z :?20: T. \h :?21: (_ :?22: T) -> T. \w :?23: T. (Op -?25- (g -?26- z) -?24- (h -?27- w))
 
 main :!R: T
 main = (f -?31- id -?30- B -?29- const_A -?28- B)
@@ -118,17 +118,17 @@ A = (axiom)
 B :R: T
 B = (axiom)
 
-Op :R: (x:R:T) -> (y:R:T) -> T
+Op :R: (x :R: T) -> (y :R: T) -> T
 Op = (axiom)
 
-id :R: (_:R:T) -> T
-id = \t:R:T. t
+id :R: (_ :R: T) -> T
+id = \t :R: T. t
 
-const_A :R: (_:I:T) -> T
-const_A = \t:I:T. A
+const_A :R: (_ :I: T) -> T
+const_A = \_ :I: T. A
 
-f :R: (_:R:(_:R:T) -> T) -> (_:R:T) -> (_:R:(_:I:T) -> T) -> (_:I:T) -> T
-f = \g:R:(_:R:T) -> T. \z:R:T. \h:R:(_:I:T) -> T. \w:I:T. (Op -R- (g -R- z) -R- (h -I- w))
+f :R: (g :R: (_ :R: T) -> T) -> (z :R: T) -> (h :R: (_ :I: T) -> T) -> (w :I: T) -> T
+f = \g :R: (_ :R: T) -> T. \z :R: T. \h :R: (_ :I: T) -> T. \w :I: T. (Op -R- (g -R- z) -R- (h -I- w))
 
 main :R: T
 main = (f -R- id -R- B -R- const_A -I- B)
