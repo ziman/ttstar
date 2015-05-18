@@ -5,14 +5,13 @@
 Besides what the original paper had, we have:
 * higher-order erasure
 * changing arities of functions
-* [in progress] erasure polymorphism
 * data constructor support
+
+### TODO
+* erasure polymorphism
 
 ### Secondary features
 * erasure explorer
 * including very dependent functions
 * erasure of whole functions (dead function removal)
-
-### TODO
-* finish polymorphism
 * recursion
