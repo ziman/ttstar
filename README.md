@@ -11,7 +11,7 @@ Besides what the original paper had, we have:
 ### Secondary features
 * erasure explorer
 * including very dependent functions
-* erasure *of* whole functions (dead function removal)
+* erasure of whole functions (dead function removal)
 
 ### TODO
 * finish polymorphism
