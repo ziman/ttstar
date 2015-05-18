@@ -32,6 +32,7 @@ data TCError
     | BadCtorType TTmeta
     | NonFunction TTmeta TTmeta  -- term, type
     | EmptyCaseTree TTmeta
+    | CantMatch [Name] TTmeta TTmeta
     | Other String
     deriving (Eq, Ord, Show)
 
@@ -43,8 +44,7 @@ instance Show TCFailure where
 
 type TCState = Int
 type TCTraceback = [String]
-type TC a = ReaderT TCTraceback (WriterT Constrs (ExceptT TCFailure (State TCState))) a
-type MCtx = Ctx Meta
+type TC a = ReaderT (TCTraceback, Ctx Meta) (WriterT Constrs (ExceptT TCFailure (State TCState))) a
 
 freshen :: TC TTmeta -> TC TTmeta
 freshen tc = tc
@@ -85,8 +85,9 @@ conv p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do
     emit (r `eq` r')
 
 conv p@(Case s alts) q@(Case s' alts') = bt ("C-CASE", p, q) $ do
-    conv s s'
     require (length alts == length alts') $ Mismatch (show alts) (show alts')
+    conv s s'
+    sty <- 
     zipWithM_ convAlt alts alts'
 
 -- last-resort: uniform-case check
@@ -106,6 +107,28 @@ convAlt (ConCase cn r ns tm) (ConCase cn' r' ns' tm') = do
     conv tm $ rename ns' ns tm'
     emit (r `eq` r')
 convAlt x y = tcfail $ CantConvertAlt x y
+
+getTerm :: TT Meta -> Alt Meta -> TC (TT Meta)
+getTerm sty (DefaultCase tm) = tm
+getTerm sty t@(ConCase cn r ns tm) = bt ("GET-TERM", t) $ do
+    (cr, cty, Nothing) <- lookupName cn
+    (argTys, retTy) <- unPi cty
+    (phi, chi) <- match (reverse ns) retTy sty
+    return $ phi tm
+
+-- left: pattern type, right: scrutinee type, output: (pat subst, decl subst)
+match :: [Name] -> TT Meta -> TT Meta -> TC (TT Meta -> TT Meta, TT Meta -> TT Meta)
+match [] (V n) (V n') | n == n' = return (id, id)
+match (n:ns) p@(App r f (V n')) q@(App r' f' x) = bt ("MATCH", reverse (n:ns), p, q) $ do
+    emit (r `eq` r')
+    (phi, chi) <- match ns f f'
+    let (ty_phi, ty_chi) = (phi x, chi x)
+    return $ (reduce . subst n ty_phi . phi, reduce . subst n' ty_chi . chi)
+match ns p q = tcfail $ CantMatch ns p q
+
+unPi :: TT Meta -> [(Name, Meta, TT Meta)] -> ([(Name, Meta, TT Meta)], TT Meta)
+unPi (Bind Pi r n ty tm) args = unPi tm ((n, r, ty) : args)
+unPi tm args = (args, tm)
 
 uniformCase :: TTmeta -> [Alt Meta] -> TC ()
 uniformCase  _ []     = return ()
