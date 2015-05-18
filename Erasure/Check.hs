@@ -201,7 +201,7 @@ checkProgram (Prog defs) =
 checkDef :: Def Meta -> TC ()
 checkDef (Def r n ty Axiom) = return ()
 checkDef (Def r n ty (Fun tm)) = bt ("FUNDECL", n) $ do
-    tmTy <- reduce' =<< checkTm =<< reduce' tm
+    tmTy <- reduce' =<< checkTm tm
     ty' <- reduce' ty
     bt ("RET-TY", ty', tmTy) $ conv ty' tmTy
 
