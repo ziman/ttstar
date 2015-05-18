@@ -6,6 +6,7 @@ import Erasure.Meta
 
 import Control.Monad
 import Control.Applicative
+import Control.Arrow
 import Control.Monad.Trans
 import Control.Monad.Trans.State
 import Control.Monad.Trans.Except
@@ -55,7 +56,7 @@ cond m = mapReaderT $ censor (S.map mogrify)
     mogrify (us :<-: gs) = us :<-: S.insert m gs
 
 bt :: Show a => a -> TC b -> TC b
-bt dbg = withReaderT (show dbg :)
+bt dbg = local . first $ (show dbg :)
 
 require :: Bool -> TCError -> TC ()
 require True  _ = return ()
@@ -87,7 +88,7 @@ conv p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do
 conv p@(Case s alts) q@(Case s' alts') = bt ("C-CASE", p, q) $ do
     require (length alts == length alts') $ Mismatch (show alts) (show alts')
     conv s s'
-    sty <- 
+    tcfail $ Other "TODO"
     zipWithM_ convAlt alts alts'
 
 -- last-resort: uniform-case check
@@ -109,21 +110,22 @@ convAlt (ConCase cn r ns tm) (ConCase cn' r' ns' tm') = do
 convAlt x y = tcfail $ CantConvertAlt x y
 
 getTerm :: TT Meta -> Alt Meta -> TC (TT Meta)
-getTerm sty (DefaultCase tm) = tm
+getTerm sty (DefaultCase tm) = return $ tm
 getTerm sty t@(ConCase cn r ns tm) = bt ("GET-TERM", t) $ do
     (cr, cty, Nothing) <- lookupName cn
-    (argTys, retTy) <- unPi cty
+    let (argTys, retTy) = unPi cty []
     (phi, chi) <- match (reverse ns) retTy sty
-    return $ phi tm
+    phi tm
 
 -- left: pattern type, right: scrutinee type, output: (pat subst, decl subst)
-match :: [Name] -> TT Meta -> TT Meta -> TC (TT Meta -> TT Meta, TT Meta -> TT Meta)
-match [] (V n) (V n') | n == n' = return (id, id)
+match :: [Name] -> TT Meta -> TT Meta -> TC (TT Meta -> TC (TT Meta), TT Meta -> TC (TT Meta))
+match [] (V n) (V n') | n == n' = return (return, return)
 match (n:ns) p@(App r f (V n')) q@(App r' f' x) = bt ("MATCH", reverse (n:ns), p, q) $ do
     emit (r `eq` r')
     (phi, chi) <- match ns f f'
-    let (ty_phi, ty_chi) = (phi x, chi x)
-    return $ (reduce . subst n ty_phi . phi, reduce . subst n' ty_chi . chi)
+    x_phi <- phi x
+    x_chi <- chi x
+    return $ (reduce' . subst n x_phi <=< phi, reduce' . subst n' x_chi <=< chi)
 match ns p q = tcfail $ CantMatch ns p q
 
 unPi :: TT Meta -> [(Name, Meta, TT Meta)] -> ([(Name, Meta, TT Meta)], TT Meta)
@@ -137,8 +139,8 @@ uniformCase  x (a:as) = conv x (getTm a) >> uniformCase x as
     getTm (DefaultCase tm) = tm
     getTm (ConCase _cn _r _ns tm) = tm
 
-add :: Meta -> Name -> TTmeta -> MCtx -> MCtx
-add r n ty = M.insert n (r, ty, Nothing)
+add :: Meta -> Name -> TTmeta -> TC a -> TC a
+add r n ty = local . second $ M.insert n (r, ty, Nothing)
 
 infix 3 <~
 (<~) :: [Meta] -> [Meta] -> Constrs
@@ -152,77 +154,92 @@ freshInt = lift . lift . lift $ modify (+1) *> get
 
 tcfail :: TCError -> TC a
 tcfail e = do
-    bt <- ask
-    lift . lift . throwE $ TCFailure e bt
+    (tb, ctx) <- ask
+    lift . lift . throwE $ TCFailure e tb
 
 emit :: Constrs -> TC ()
 emit = lift . tell
 
-lookupName :: MCtx -> Name -> TC (Meta, TTmeta, Maybe TTmeta)
-lookupName ctx n
-    | Just x <- M.lookup n ctx = return x
-    | otherwise = tcfail $ UnknownName n
+lookupName :: Name -> TC (Meta, TTmeta, Maybe TTmeta)
+lookupName n = do
+    (tb, ctx) <- ask
+    case M.lookup n ctx of
+        Just x -> return x
+        Nothing -> tcfail $ UnknownName n
 
 check :: Program Meta -> Either TCFailure Constrs
-check prog = evalState (runExceptT . execWriterT $ runReaderT (checkProgram prog) []) 0
+check prog = afterState
+  where
+    afterReader = runReaderT (checkProgram prog) ([], M.empty)
+    afterWriter = execWriterT afterReader
+    afterExcept = runExceptT  afterWriter
+    afterState  = evalState   afterExcept 0
+
+reduce' :: TT Meta -> TC (TT Meta)
+reduce' tm = do
+    (tb, ctx) <- ask
+    return $ reduce ctx tm
 
 checkProgram :: Program Meta -> TC ()
-checkProgram (Prog defs) = mapM_ (checkDef globals) defs
+checkProgram (Prog defs) =
+    local (const ([], globals))
+        $ mapM_ checkDef defs
   where
-    globals :: MCtx
+    globals :: Ctx Meta
     globals = M.fromList $ map mkCtx defs
     
     mkCtx (Def r n ty Axiom) = (n, (r, ty, Nothing))
     mkCtx (Def r n ty (Fun tm)) = (n, (r, ty, Just tm))
 
-checkDef :: MCtx -> Def Meta -> TC ()
-checkDef _ctx (Def _r _n _ty Axiom) = return ()
-checkDef ctx (Def _r n ty (Fun tm)) = bt ("FUNDECL", n) $ do
-    tmTy <- checkTm ctx (reduce ctx tm)
-    bt ("RET-TY", reduce ctx ty, reduce ctx tmTy) $ conv (reduce ctx ty) (reduce ctx tmTy)
+checkDef :: Def Meta -> TC ()
+checkDef (Def r n ty Axiom) = return ()
+checkDef (Def r n ty (Fun tm)) = bt ("FUNDECL", n) $ do
+    tmTy <- reduce' =<< checkTm =<< reduce' tm
+    ty' <- reduce' ty
+    bt ("RET-TY", ty', tmTy) $ conv ty' tmTy
 
-checkTm :: MCtx -> TTmeta -> TC TTmeta
-checkTm ctx t@(V n) = bt ("VAR", t) $ do
-    (r, ty, _def) <- lookupName ctx n
+checkTm :: TTmeta -> TC TTmeta
+checkTm t@(V n) = bt ("VAR", t) $ do
+    (r, ty, _def) <- lookupName n
     emit ([r] <~ [Fixed R])
     -- TODO: freshen
     return ty
 
-checkTm ctx t@(Bind Pi r n ty tm) = bt ("PI", t) $ do
-    conv Type =<< checkTm (add r n ty ctx) tm
+checkTm t@(Bind Pi r n ty tm) = bt ("PI", t) $ do
+    conv Type =<< add r n ty (checkTm tm)
     return $ Type
 
-checkTm ctx t@(Bind Lam r n ty tm) = bt ("LAM", t) $
-    Bind Pi r n ty <$> checkTm (add r n ty ctx) tm
+checkTm t@(Bind Lam r n ty tm) = bt ("LAM", t) $
+    Bind Pi r n ty <$> add r n ty (checkTm tm)
 
-checkTm ctx t@(App r f x) = bt ("APP", t) $ do
-    fTy <- bt ("APP-F", f) $ checkTm ctx f
-    xTy <- bt ("APP-X", x) $ cond r $ checkTm ctx x
+checkTm t@(App r f x) = bt ("APP", t) $ do
+    fTy <- bt ("APP-F", f) $ checkTm f
+    xTy <- bt ("APP-X", x) $ cond r $ checkTm x
     case fTy of
         Bind Pi r' n' ty' tm' -> do
             emit (r `eq` r')
             conv ty' xTy
-            return . reduce ctx $ subst n' x tm'
+            reduce' $ subst n' x tm'
 
         _ -> tcfail $ NonFunction f fTy
 
-checkTm ctx t@(Case s alts) = bt ("CASE", t) $ do
-    _sTy <- checkTm ctx s  -- we ignore scrutinee type
-    alts' <- mapM (checkAlt ctx) alts
+checkTm t@(Case s alts) = bt ("CASE", t) $ do
+    _sTy <- checkTm s  -- we ignore scrutinee type
+    alts' <- mapM checkAlt alts
     return $ Case s alts'
 
-checkTm _ctx Erased = return $ Erased
-checkTm _ctx Type   = return $ Type  -- type-in-type
+checkTm Erased = return $ Erased
+checkTm Type   = return $ Type  -- type-in-type
 
-checkAlt :: MCtx -> Alt Meta -> TC (Alt Meta)
-checkAlt ctx (DefaultCase tm) = DefaultCase <$> checkTm ctx tm
-checkAlt ctx (ConCase cn r ns tm) = bt ("CONCASE", cn, ns) $ do
-    (cr, cty, _def) <- lookupName ctx cn
+checkAlt :: Alt Meta -> TC (Alt Meta)
+checkAlt (DefaultCase tm) = DefaultCase <$> checkTm tm
+checkAlt (ConCase cn r ns tm) = bt ("CONCASE", cn, ns) $ do
+    (cr, cty, _def) <- lookupName cn
     emit (cr `eq` r)
-    ctx' <- augCtx ctx ns cty
-    bt ("SUBCHECK", ns, cty) ( ConCase cn r ns <$> checkTm ctx' tm )
+    tm' <- bt ("SUBCHECK", ns, cty) $ inAugCtx ns cty (checkTm tm)
+    return $ ConCase cn r ns tm'
   where
-    augCtx :: MCtx -> [Name] -> TTmeta -> TC MCtx
-    augCtx ctx [] _ty = return ctx
-    augCtx ctx (n : ns) (Bind Pi r _n' ty tm) = augCtx (add r n ty ctx) ns tm
-    augCtx _ctx (_ : _ ) tm = tcfail $ BadCtorType tm
+    inAugCtx :: [Name] -> TTmeta -> TC a -> TC a
+    inAugCtx []       ty x = x
+    inAugCtx (n : ns) (Bind Pi r _n' ty tm) x = add r n ty $ inAugCtx ns tm x
+    inAugCtx (_ : _ ) ty x = tcfail $ BadCtorType tm
