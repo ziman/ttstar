@@ -1,1 +1,24 @@
 -- vim: ft=agda
+
+postulate Bool : *.
+postulate True : Bool.
+postulate False : Bool.
+
+postulate Nat : *.
+postulate Z : Nat.
+postulate S : Nat -> Nat.
+
+postulate Vec : Nat -> * -> *.
+postulate VNil : (a : *) -> Vec Z a.
+postulate VCons : (a : *) -> (n : Nat) -> (x : a) -> (xs : Vec n a) -> Vec (S n) a
+
+vlen (a : *) (n : Nat) (xs : Vec n a) : Nat
+    = case (xs) of
+        VNil a -> Z,
+        VCons a n x xs -> S (vlen a n xs).
+
+testVec : Vec (S (S Z)) Bool
+    = VCons Bool (S Z) True (VCons Bool Z False (VNil Bool)).
+
+main :R: Nat
+    = vlen Bool (S (S Z)) testVec.
