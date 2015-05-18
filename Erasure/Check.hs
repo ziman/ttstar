@@ -13,6 +13,7 @@ import Control.Monad.Trans.Except
 import Control.Monad.Trans.Writer
 import Control.Monad.Trans.Reader
 
+import qualified Data.List as L
 import qualified Data.Map as M
 import qualified Data.Set as S
 
@@ -33,7 +34,7 @@ data TCError
     | BadCtorType TTmeta
     | NonFunction TTmeta TTmeta  -- term, type
     | EmptyCaseTree TTmeta
-    | CantMatch [Name] TTmeta TTmeta
+    | CantMatch TTmeta TTmeta
     | Other String
     deriving (Eq, Ord, Show)
 
@@ -76,9 +77,9 @@ conv (V n) (V n') = bt ("C-VAR", n, n') $ do
 
 conv p@(Bind b r n ty tm) q@(Bind b' r' n' ty' tm') = bt ("C-BIND", p, q) $ do
     require (b == b') $ Mismatch (show b) (show b')
-    conv ty $ rename [n'] [n] ty'
-    conv tm $ rename [n'] [n] tm'
     emit (r `eq` r')
+    conv ty (rename [n'] [n] ty')  -- check convertibility of the type
+    add r n ty' $ conv tm (rename [n'] [n] tm')  -- knowing the type, check the rest
 
 conv p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do
     conv f f'
@@ -88,8 +89,8 @@ conv p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do
 conv p@(Case s alts) q@(Case s' alts') = bt ("C-CASE", p, q) $ do
     require (length alts == length alts') $ Mismatch (show alts) (show alts')
     conv s s'
-    tcfail $ Other "TODO"
-    zipWithM_ convAlt alts alts'
+    sty <- checkTm s
+    zipWithM_ (convAlt sty) (L.sort alts) (L.sort alts')
 
 -- last-resort: uniform-case check
 conv x@(Case _ _) y = conv y x
@@ -100,33 +101,39 @@ conv Erased Erased = return ()
 
 conv tm tm' = tcfail $ CantConvert tm tm'
 
-convAlt :: Alt Meta -> Alt Meta -> TC ()
-convAlt (DefaultCase tm) (DefaultCase tm') = conv tm tm'
-convAlt (ConCase cn r ns tm) (ConCase cn' r' ns' tm') = do
+convAlt :: TT Meta -> Alt Meta -> Alt Meta -> TC ()
+convAlt sty (DefaultCase tm) (DefaultCase tm') = conv tm tm'
+convAlt sty p@(ConCase cn r ns tm) q@(ConCase cn' r' ns' tm') = bt ("CONV-ALT", p, q) $ do
     require (cn == cn') $ Mismatch cn cn'
     require (length ns == length ns') $ Mismatch (show ns) (show ns')
-    conv tm $ rename ns' ns tm'
     emit (r `eq` r')
-convAlt x y = tcfail $ CantConvertAlt x y
+    tmp <- getTerm sty p
+    tmq <- getTerm sty q
+    conv tmp tmq
+convAlt sty x y = tcfail $ CantConvertAlt x y
+
+substMap :: M.Map Name (TT Meta) -> TT Meta -> TT Meta
+substMap phi tm = foldr (uncurry subst) tm $ M.toList phi
 
 getTerm :: TT Meta -> Alt Meta -> TC (TT Meta)
 getTerm sty (DefaultCase tm) = return $ tm
 getTerm sty t@(ConCase cn r ns tm) = bt ("GET-TERM", t) $ do
     (cr, cty, Nothing) <- lookupName cn
     let (argTys, retTy) = unPi cty []
-    (phi, chi) <- match (reverse ns) retTy sty
-    phi tm
+    phi <- match retTy sty
+    return $ substMap phi tm
 
--- left: pattern type, right: scrutinee type, output: (pat subst, decl subst)
-match :: [Name] -> TT Meta -> TT Meta -> TC (TT Meta -> TC (TT Meta), TT Meta -> TC (TT Meta))
-match [] (V n) (V n') | n == n' = return (return, return)
-match (n:ns) p@(App r f (V n')) q@(App r' f' x) = bt ("MATCH", reverse (n:ns), p, q) $ do
+-- left: pattern type, right: scrutinee type
+match :: TT Meta -> TT Meta -> TC (M.Map Name (TT Meta))
+match (V n) (V n') | n == n' = return M.empty
+match (V n) t = M.singleton n <$> reduce' t
+match p@(App r f (V n)) q@(App r' f' x) = bt ("MATCH-APP", p, q) $ do
     emit (r `eq` r')
-    (phi, chi) <- match ns f f'
-    x_phi <- phi x
-    x_chi <- chi x
-    return $ (reduce' . subst n x_phi <=< phi, reduce' . subst n' x_chi <=< chi)
-match ns p q = tcfail $ CantMatch ns p q
+    phi <- match f f' -- match the inside first
+    x' <- reduce' $ substMap phi x
+    return $ M.insert n x' phi
+
+match p q = tcfail $ CantMatch p q
 
 unPi :: TT Meta -> [(Name, Meta, TT Meta)] -> ([(Name, Meta, TT Meta)], TT Meta)
 unPi (Bind Pi r n ty tm) args = unPi tm ((n, r, ty) : args)
