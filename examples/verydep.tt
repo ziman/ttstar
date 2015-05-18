@@ -10,11 +10,6 @@ postulate Bool : *.
 postulate True : Bool.
 postulate False : Bool.
 
-not (x : Bool) : Bool
-    = case (x) of
-        True  -> False,
-        False -> True.
-
 retTy (x : Maybe Bool) : *
     = case (x) of
         Just    (a : *) (t : a) -> Bool,
