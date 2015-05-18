@@ -1,0 +1,92 @@
+-- vim: ft=agda
+
+### Desugared ###
+
+Void : *
+Void = (axiom)
+
+Maybe : (_ : *) -> *
+Maybe = (axiom)
+
+Just : (a : *) -> (x : a) -> (Maybe a)
+Just = (axiom)
+
+Nothing : (a : *) -> (Maybe a)
+Nothing = (axiom)
+
+Bool : *
+Bool = (axiom)
+
+True : Bool
+True = (axiom)
+
+False : Bool
+False = (axiom)
+
+not : (x : Bool) -> Bool
+not = \x : Bool. 
+  case x of
+    True -> False
+    False -> True
+
+retTy : (x : (Maybe Bool)) -> *
+retTy = \x : (Maybe Bool). 
+  case x of
+    Just (a : *) (t : a) -> Bool
+    Nothing (a : *) -> *
+
+f : (x : (Maybe Bool)) -> (retTy x)
+f = \x : (Maybe Bool). 
+  case x of
+    Just (a : *) (b : a) -> b
+    Nothing (a : *) -> Bool
+
+main  -R-  Bool
+main = (f (Just Bool False))
+
+### Metaified ###
+
+Void :?1: *
+Void = (axiom)
+
+Maybe :?2: (_ :?3: *) -> *
+Maybe = (axiom)
+
+Just :?4: (a :?5: *) -> (x :?6: a) -> (Maybe -?7- a)
+Just = (axiom)
+
+Nothing :?8: (a :?9: *) -> (Maybe -?10- a)
+Nothing = (axiom)
+
+Bool :?11: *
+Bool = (axiom)
+
+True :?12: Bool
+True = (axiom)
+
+False :?13: Bool
+False = (axiom)
+
+not :?14: (x :?15: Bool) -> Bool
+not = \x :?16: Bool. 
+  case x of
+    True -> False
+    False -> True
+
+retTy :?19: (x :?20: (Maybe -?21- Bool)) -> *
+retTy = \x :?22: (Maybe -?23- Bool). 
+  case x of
+    Just (a :?25: *) (t :?26: a) -> Bool
+    Nothing (a :?28: *) -> *
+
+f :?29: (x :?30: (Maybe -?31- Bool)) -> (retTy -?32- x)
+f = \x :?33: (Maybe -?34- Bool). 
+  case x of
+    Just (a :?36: *) (b :?37: a) -> b
+    Nothing (a :?39: *) -> Bool
+
+main :!R: Bool
+main = (f -?40- (Just -?42- Bool -?41- False))
+
+### Constraints ###
+
