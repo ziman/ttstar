@@ -48,10 +48,3 @@ instance Functor Def where
 
 instance Functor Program where
     fmap f (Prog defs) = Prog (map (fmap f) defs)
-
--- split a Pat-packed pattern into 1. pattern vars, 2. RHS
-splitPat :: TT r -> ([(Name, r, TT r)], TT r)
-splitPat (Bind Pat r n ty tm) = ((n, r, ty) : args, rhs)
-  where
-    (args, rhs) = splitPat tm
-splitPat tm = ([], tm)

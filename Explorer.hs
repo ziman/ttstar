@@ -1,6 +1,7 @@
 module Explorer (genHtml) where
 
 import TT
+import Reduce
 
 import Erasure.Meta
 import Erasure.Check
@@ -75,7 +76,7 @@ alt uses (ConCase cn r tm) = unwords
     , term uses rhs
     ]
   where
-    (args, rhs) = splitPat tm
+    (args, rhs) = splitBinder Pat tm
 
 app :: Meta -> String
 app (Fixed R) = span "ap ap-R" "R"

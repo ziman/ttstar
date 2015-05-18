@@ -2,6 +2,7 @@
 module Pretty (PrettyR(..)) where
 
 import TT
+import Reduce
 import Util.PrettyPrint
 
 class Show r => PrettyR r where
@@ -60,9 +61,11 @@ instance PrettyR r => Pretty (TT r) where
 
 instance PrettyR r => Pretty (Alt r) where
     pretty (DefaultCase tm) = text "_" <+> arrow <+> pretty tm
-    pretty (ConCase cn r tm) = text cn <+> hsep (map (parens . pretty) args) <+> arrow <+> pretty rhs
+    pretty (ConCase cn r tm) = text cn <+> hsep (map prettyPat args) <+> arrow <+> pretty rhs
       where
-        (args, rhs) = splitPat tm
+        prettyPat (n, r, Erased) = text n
+        prettyPat (n, r, ty) = parens $ pretty (n, r, ty)
+        (args, rhs) = splitBinder Pat tm
 
 instance PrettyR r => Show (TT r) where
     show = prettyShow

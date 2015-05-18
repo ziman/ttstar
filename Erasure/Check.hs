@@ -106,8 +106,31 @@ convAlt sty (DefaultCase tm) (DefaultCase tm') = conv tm tm'
 convAlt sty p@(ConCase cn r tm) q@(ConCase cn' r' tm') = bt ("CONV-ALT", p, q) $ do
     require (cn == cn') $ Mismatch cn cn'
     emit (r `eq` r')
-    conv tm tm'
+    (cr, cty, Nothing) <- lookupName cn
+    let (ctyArgs, ctyRet) = splitBinder Pi cty
+    ctx <- match ctyRet sty
+    conv (substMatch ctx cty tm) (substMatch ctx cty tm')
 convAlt sty x y = tcfail $ CantConvertAlt x y
+
+-- ctx, ctor type, pat+rhs
+substMatch :: M.Map Name (TT Meta) -> TT Meta -> TT Meta -> TT Meta
+substMatch ctx (Bind Pi r n ty tm) (Bind Pat r' n' ty' tm')
+    | Just x <- M.lookup n ctx
+    = substMatch ctx (subst n x tm) (subst n' x tm')
+
+    | otherwise
+    = substMatch ctx tm tm'
+substMatch ctx ctyRet rhs = rhs
+
+-- pattern, term
+match :: TT Meta -> TT Meta -> TC (M.Map Name (TT Meta))
+match (V n) (V n') | n == n' = return $ M.empty
+match (V n) tm = return $ M.singleton n tm
+match (App r f x) (App r' f' x') = do
+    emit (r `eq` r')
+    xs <- match f f'
+    ys <- match x x'
+    return $ M.union xs ys
 
 unPi :: TT Meta -> [(Name, Meta, TT Meta)] -> ([(Name, Meta, TT Meta)], TT Meta)
 unPi (Bind Pi r n ty tm) args = unPi tm ((n, r, ty) : args)
@@ -115,7 +138,7 @@ unPi tm args = (args, tm)
 
 uniformCase :: TTmeta -> [Alt Meta] -> TC ()
 uniformCase  _ []     = return ()
-uniformCase  x (a:as) = conv x (snd . splitPat $ getTm a) >> uniformCase x as
+uniformCase  x (a:as) = conv x (snd . splitBinder Pat $ getTm a) >> uniformCase x as
   where
     getTm (DefaultCase tm) = tm
     getTm (ConCase _cn _r tm) = tm
@@ -223,7 +246,7 @@ checkAlt (ConCase cn r tm) = bt ("CONCASE", cn, tm) $ do
     emit (cr `eq` r)
     ConCase cn r <$> checkTm tm
   where
-    (args, rhs) = splitPat tm
+    (args, rhs) = splitBinder Pat tm
     matchArgs (Bind Pi r n ty tm) ((n', r', ty'):as) = do
         emit (r `eq` r')
         conv ty ty'
