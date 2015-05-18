@@ -48,14 +48,23 @@ nrty uses n r ty = wrap (name n ++ rel uses r ++ term uses ty ++ "\n")
 parens :: String -> String
 parens s = span "paren" "(" ++ s ++ span "paren" ")"
 
+ul :: String -> [String] -> String
+ul cls lis = "<ul class=\"" ++ cls ++ "\">" ++ unlines ["<li>" ++ s ++ "</li>" | s <- lis] ++ "</ul>"
+
 term :: Uses -> TT Meta -> String
 term uses (V n) = span "var" $ name n
 term uses (Bind Pi r n ty tm) = span "pi" $ parens (nrty uses n r ty) ++ op " &#8594; " ++ term uses tm
 term uses (Bind Lam r n ty tm) = span "lambda" $ span "head" (op "&lambda; " ++ nrty uses n r ty ++ op ".") ++ term uses tm
 term uses (App r f x) = span "app" . parens $ term uses f ++ app r ++ term uses x
-term uses (Case s alts) = error "not implemented"
 term uses Type = span "star" "*"
 term uses Erased = span "erased" "____"
+term uses (Case s alts) =
+  span "kwd" "case" ++ " " ++ term uses s ++ " " ++ span "kwd" "of"
+  ++ ul "case" (map (alt uses) alts)
+
+alt :: Uses -> Alt Meta -> String
+alt uses (DefaultCase tm) = "_ -> " ++ term uses tm
+alt uses (ConCase cn r ns tm) = unwords (cn:ns) ++ " -> " ++ term uses tm
 
 app :: Meta -> String
 app (Fixed R) = span "ap ap-R" "R"
