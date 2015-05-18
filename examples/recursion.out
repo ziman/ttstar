@@ -263,7 +263,7 @@ VCons = (axiom)
 vlen = \xs. 
   case xs of
     VNil -> Z
-    VCons (xs) -> (S (vlen xs))
+    VCons xs -> (S (vlen xs))
 
 testVec = (VCons (VCons VNil))
 
