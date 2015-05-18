@@ -24,3 +24,4 @@ Besides what the original paper had, we have:
     * implicit: constraints
     * partial explicit: only combinations of non-R-fixed args
 * `Bind Pat` is a better representation of `ConCase`
+* erasure at `TT`, `LExp` and `DExp` levels
