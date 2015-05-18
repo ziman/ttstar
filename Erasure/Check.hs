@@ -103,37 +103,12 @@ conv tm tm' = tcfail $ CantConvert tm tm'
 
 convAlt :: TT Meta -> Alt Meta -> Alt Meta -> TC ()
 convAlt sty (DefaultCase tm) (DefaultCase tm') = conv tm tm'
-convAlt sty p@(ConCase cn r ns tm) q@(ConCase cn' r' ns' tm') = bt ("CONV-ALT", p, q) $ do
+convAlt sty p@(ConCase cn r ar tm) q@(ConCase cn' r' ar' tm') = bt ("CONV-ALT", p, q) $ do
     require (cn == cn') $ Mismatch cn cn'
-    require (length ns == length ns') $ Mismatch (show ns) (show ns')
+    require (ar == ar') $ Mismatch ("arity " ++ show ar) ("arity " ++ show ar')
     emit (r `eq` r')
-    tmp <- getTerm sty p
-    tmq <- getTerm sty q
-    conv tmp tmq
+    conv tm tm'
 convAlt sty x y = tcfail $ CantConvertAlt x y
-
-substMap :: M.Map Name (TT Meta) -> TT Meta -> TT Meta
-substMap phi tm = foldr (uncurry subst) tm $ M.toList phi
-
-getTerm :: TT Meta -> Alt Meta -> TC (TT Meta)
-getTerm sty (DefaultCase tm) = return $ tm
-getTerm sty t@(ConCase cn r ns tm) = bt ("GET-TERM", t) $ do
-    (cr, cty, Nothing) <- lookupName cn
-    let (argTys, retTy) = unPi cty []
-    phi <- match retTy sty
-    return $ substMap phi tm
-
--- left: pattern type, right: scrutinee type
-match :: TT Meta -> TT Meta -> TC (M.Map Name (TT Meta))
-match (V n) (V n') | n == n' = return M.empty
-match (V n) t = M.singleton n <$> reduce' t
-match p@(App r f (V n)) q@(App r' f' x) = bt ("MATCH-APP", p, q) $ do
-    emit (r `eq` r')
-    phi <- match f f' -- match the inside first
-    x' <- reduce' $ substMap phi x
-    return $ M.insert n x' phi
-
-match p q = tcfail $ CantMatch p q
 
 unPi :: TT Meta -> [(Name, Meta, TT Meta)] -> ([(Name, Meta, TT Meta)], TT Meta)
 unPi (Bind Pi r n ty tm) args = unPi tm ((n, r, ty) : args)
@@ -240,13 +215,7 @@ checkTm Type   = return $ Type  -- type-in-type
 
 checkAlt :: Alt Meta -> TC (Alt Meta)
 checkAlt (DefaultCase tm) = DefaultCase <$> checkTm tm
-checkAlt (ConCase cn r ns tm) = bt ("CONCASE", cn, ns) $ do
+checkAlt (ConCase cn r arity tm) = bt ("CONCASE", cn, tm) $ do
     (cr, cty, _def) <- lookupName cn
     emit (cr `eq` r)
-    tm' <- bt ("SUBCHECK", ns, cty) $ inAugCtx ns cty (checkTm tm)
-    return $ ConCase cn r ns tm'
-  where
-    inAugCtx :: [Name] -> TTmeta -> TC a -> TC a
-    inAugCtx []       ty x = x
-    inAugCtx (n : ns) (Bind Pi r _n' ty tm) x = add r n ty $ inAugCtx ns tm x
-    inAugCtx (_ : _ ) ty x = tcfail $ BadCtorType tm
+    ConCase cn r arity <$> checkTm tm

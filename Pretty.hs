@@ -58,7 +58,9 @@ instance PrettyR r => Pretty (TT r) where
 
 instance PrettyR r => Pretty (Alt r) where
     pretty (DefaultCase tm) = text "_" <+> arrow <+> pretty tm
-    pretty (ConCase cn r ns tm) = text cn <+> hsep (map text ns) <+> arrow <+> pretty tm
+    pretty (ConCase cn r arity tm) = text cn <+> hsep (map pretty args) <+> arrow <+> pretty rhs
+      where
+        (args, rhs) = splitLam arity tm
 
 instance PrettyR r => Show (TT r) where
     show = prettyShow

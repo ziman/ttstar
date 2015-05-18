@@ -31,13 +31,15 @@ reduce ctx t@Type   = t
 
 redCase :: PrettyR r => Ctx r -> TT r -> TT r -> [Alt r] -> TT r
 redCase ctx t _ (DefaultCase tm : _) = reduce ctx tm
-redCase ctx t s (ConCase cn _r ns tm : as)
-    | (V cn', args) <- unApply s
-    , length args == length ns
-    = reduce ctx $ subst' (zip ns args) tm
+redCase ctx t s (ConCase cn r arity tm : as)
+    | (V scn, sargs) <- unApply s
+    , scn == cn               -- it's the same constructor
+    , length sargs == arity   -- got the right number of args
+    = reduce ctx $ replaceCore tm s
   where
-    subst' ((n,x):xs) tm = subst' xs $ subst n x tm
-    subst' [] tm = tm
+    replaceCore :: TT r -> TT r -> TT r
+    replaceCore newCore (App r f x) = App r (replaceCore newCore f) x
+    replaceCore newCore _ = newCore
 
 redCase ctx t s (_ : as) = redCase ctx t s as
 redCase ctx t s [] = t
@@ -62,6 +64,4 @@ subst _ _  t@Type   = t
 
 substAlt :: Name -> TT r -> Alt r -> Alt r
 substAlt n tm (DefaultCase tm') = DefaultCase $ subst n tm tm'
-substAlt n tm t@(ConCase cn r ns tm')
-    | n `elem` ns = t
-    | otherwise   = ConCase cn r ns $ subst n tm tm'
+substAlt n tm t@(ConCase cn r arity tm') = ConCase cn r arity $ subst n tm tm'
