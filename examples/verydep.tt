@@ -22,7 +22,7 @@ retTy (x : Maybe Bool) : *
 
 f (x : Maybe Bool) : retTy x
     = case (x) of
-        Just a t  -> t,
+        Just a b  -> b,
         Nothing a -> Bool.
 
 main :R: Bool
