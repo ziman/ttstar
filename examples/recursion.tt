@@ -6,11 +6,11 @@ postulate False : Bool.
 
 postulate Nat : *.
 postulate Z : Nat.
-postulate S : Nat -> Nat.
+postulate S : (n :R: Nat) -> Nat.
 
 postulate Vec : Nat -> * -> *.
 postulate VNil : (a : *) -> Vec Z a.
-postulate VCons : (a : *) -> (n : Nat) -> (x : a) -> (xs : Vec n a) -> Vec (S n) a
+postulate VCons : (a : *) -> (n : Nat) -> (x : a) -> (xs : Vec n a) -> Vec (S n) a.
 
 vlen (a : *) (n : Nat) (xs : Vec n a) : Nat
     = case (xs) of
