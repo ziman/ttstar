@@ -17,13 +17,13 @@ not (x : Bool) : Bool
 
 retTy (x : Maybe Bool) : *
     = case (x) of
-        Just Bool t  -> Bool,
-        Nothing Bool -> *.
+        Just a t  -> Bool,
+        Nothing a -> *.
 
 f (x : Maybe Bool) : retTy x
     = case (x) of
-        Just Bool t  -> t,
-        Nothing Bool -> Bool.
+        Just a t  -> t,
+        Nothing a -> Bool.
 
 main :R: Bool
     = f (Just Bool False).

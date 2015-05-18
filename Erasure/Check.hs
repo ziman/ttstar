@@ -157,7 +157,6 @@ checkDef _ctx (Def _r _n _ty Axiom) = return ()
 checkDef ctx (Def _r n ty (Fun tm)) = bt ("FUNDECL", n) $ do
     tmTy <- checkTm ctx (reduce ctx tm)
     bt ("RET-TY", reduce ctx ty, reduce ctx tmTy) $ conv (reduce ctx ty) (reduce ctx tmTy)
-    -- todo: convert pattern to application before matching
 
 checkTm :: MCtx -> TTmeta -> TC TTmeta
 checkTm ctx t@(V n) = bt ("VAR", t) $ do
