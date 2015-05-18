@@ -21,7 +21,7 @@ span cls body = "<span class=\"" ++ cls ++ "\">" ++ body ++ "</span>"
 rel :: Uses -> Meta -> String
 rel uses (Fixed R) = span "rel rel-R" " :<sub>R</sub> "
 rel uses (Fixed I) = span "rel rel-I" " :<sub>I</sub> "
-rel uses (MVar i j) = span ("rel mvar mvar-" ++ show (i,j) ++ " " ++ cls) (" :<sub>" ++ show i ++ "</sub> ")
+rel uses (MVar i j) = span ("rel mvar mvar-" ++ mv i j ++ " " ++ cls) (" :<sub>" ++ mv i j ++ "</sub> ")
   where
     cls | MVar i j `S.member` uses = "rel-R"
         | otherwise = "rel-I"
@@ -35,12 +35,16 @@ name n = span ("name name-" ++ n) n
 op :: String -> String
 op = span "op"
 
+mv :: Int -> Int -> String
+mv i 0 = show i
+mv i j = show i ++ "_" ++ show j
+
 nrty :: Uses -> Name -> Meta -> TT Meta -> String
 nrty uses n r ty = wrap (name n ++ rel uses r ++ term uses ty ++ "\n")
   where
     wrap
         | Fixed _ <- r = span ("nrty " ++ cls)
-        | MVar i j <- r = span ("nrty nrty-" ++ show (i,j) ++ " " ++ cls)
+        | MVar i j <- r = span ("nrty nrty-" ++ mv i j ++ " " ++ cls)
 
     cls | r `S.member` uses = "nrty-R"
         | otherwise = "nrty-I"
@@ -69,7 +73,7 @@ alt uses (ConCase cn r ns tm) = unwords (cn:ns) ++ " -> " ++ term uses tm
 app :: Meta -> String
 app (Fixed R) = span "ap ap-R" "R"
 app (Fixed I) = span "ap ap-I" "I"
-app (MVar i j) = span ("ap mvar mvar-" ++ show (i,j)) (show (i,j))
+app (MVar i j) = span ("ap mvar mvar-" ++ mv i j) (mv i j)
 
 htmlDef :: Uses -> Def Meta -> String
 htmlDef uses (Def r n ty Axiom) = div "def axiom" $ div "type" (nrty uses n r ty)
@@ -94,13 +98,13 @@ htmlMetas ms = op "{" ++ intercalate (op ", ") (map htmlMeta ms) ++ op "}"
 htmlMeta :: Meta -> String
 htmlMeta (Fixed R) = span "meta-R" "R"
 htmlMeta (Fixed I) = span "meta-I" "I"
-htmlMeta (MVar i j) = span ("meta mvar mvar-" ++ show (i,j)) (show (i,j))
+htmlMeta (MVar i j) = span ("meta mvar mvar-" ++ mv i j) (mv i j)
 
 jsConstr :: Constr -> String
 jsConstr (us :<-: gs) = show [map num $ S.toList us, map num $ S.toList gs] ++ ",\n"
   where
-    num (Fixed _) = (0,0)
-    num (MVar i j) = (i,j)
+    num (Fixed r) = show r
+    num (MVar i j) = mv i j
 
 genHtml :: String -> Program Meta -> Constrs -> Uses -> IO ()
 genHtml fname prog cs uses = do

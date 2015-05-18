@@ -57,11 +57,13 @@ a:hover {
 }
 
 .shown {
-    display: block !important;
+    /* display: block !important; */
+    color: red;
+    background: yellow;
 }
 
 .constr {
-    display: none;
+    /* display: none; */
 }
 
 </style>
@@ -77,7 +79,7 @@ function cleanup() {
 function init() {
     $('.mvar').each(function() {
         var elm = $(this);
-        var mvar = parseInt(elm.attr('class').match(/mvar-(\d+)/)[1]);
+        var mvar = elm.attr('class').match(/mvar-(\d+)/)[1];
         elm.hover(function() {
             for (var i = 0; i < constrs.length; ++i) {
                 if ($.inArray(mvar, constrs[i][0]) != -1) {
