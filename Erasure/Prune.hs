@@ -36,4 +36,4 @@ pruneTm Type = Type
 
 pruneAlt :: Alt Relevance -> Alt ()
 pruneAlt (DefaultCase tm) = DefaultCase $ pruneTm tm
-pruneAlt (ConCase cn _r ns tm) = ConCase cn () ns $ pruneTm tm  -- TODO
+pruneAlt (ConCase cn r tm) = ConCase cn () $ pruneTm tm  -- TODO

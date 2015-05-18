@@ -103,9 +103,8 @@ conv tm tm' = tcfail $ CantConvert tm tm'
 
 convAlt :: TT Meta -> Alt Meta -> Alt Meta -> TC ()
 convAlt sty (DefaultCase tm) (DefaultCase tm') = conv tm tm'
-convAlt sty p@(ConCase cn r ar tm) q@(ConCase cn' r' ar' tm') = bt ("CONV-ALT", p, q) $ do
+convAlt sty p@(ConCase cn r tm) q@(ConCase cn' r' tm') = bt ("CONV-ALT", p, q) $ do
     require (cn == cn') $ Mismatch cn cn'
-    require (ar == ar') $ Mismatch ("arity " ++ show ar) ("arity " ++ show ar')
     emit (r `eq` r')
     conv tm tm'
 convAlt sty x y = tcfail $ CantConvertAlt x y
@@ -116,10 +115,10 @@ unPi tm args = (args, tm)
 
 uniformCase :: TTmeta -> [Alt Meta] -> TC ()
 uniformCase  _ []     = return ()
-uniformCase  x (a:as) = conv x (getTm a) >> uniformCase x as
+uniformCase  x (a:as) = conv x (snd . splitPat $ getTm a) >> uniformCase x as
   where
     getTm (DefaultCase tm) = tm
-    getTm (ConCase _cn _r _ns tm) = tm
+    getTm (ConCase _cn _r tm) = tm
 
 add :: Meta -> Name -> TTmeta -> TC a -> TC a
 add r n ty = local . second $ M.insert n (r, ty, Nothing)
@@ -194,6 +193,9 @@ checkTm t@(Bind Pi r n ty tm) = bt ("PI", t) $ do
 checkTm t@(Bind Lam r n ty tm) = bt ("LAM", t) $
     Bind Pi r n ty <$> add r n ty (checkTm tm)
 
+checkTm t@(Bind Pat r n ty tm) = bt ("PAT", t) $
+    Bind Pat r n ty <$> add r n ty (checkTm tm)
+
 checkTm t@(App r f x) = bt ("APP", t) $ do
     fTy <- bt ("APP-F", f) $ checkTm f
     xTy <- bt ("APP-X", x) $ cond r $ checkTm x
@@ -215,7 +217,15 @@ checkTm Type   = return $ Type  -- type-in-type
 
 checkAlt :: Alt Meta -> TC (Alt Meta)
 checkAlt (DefaultCase tm) = DefaultCase <$> checkTm tm
-checkAlt (ConCase cn r arity tm) = bt ("CONCASE", cn, tm) $ do
+checkAlt (ConCase cn r tm) = bt ("CONCASE", cn, tm) $ do
     (cr, cty, _def) <- lookupName cn
+    matchArgs cty args
     emit (cr `eq` r)
-    ConCase cn r arity <$> checkTm tm
+    ConCase cn r <$> checkTm tm
+  where
+    (args, rhs) = splitPat tm
+    matchArgs (Bind Pi r n ty tm) ((n', r', ty'):as) = do
+        emit (r `eq` r')
+        conv ty ty'
+        matchArgs tm as
+    matchArgs _ _ = return ()

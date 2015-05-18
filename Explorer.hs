@@ -68,7 +68,14 @@ term uses (Case s alts) =
 
 alt :: Uses -> Alt Meta -> String
 alt uses (DefaultCase tm) = "_ -> " ++ term uses tm
-alt uses (ConCase cn r ns tm) = unwords (cn:ns) ++ app r ++ "-> " ++ term uses tm
+alt uses (ConCase cn r tm) = unwords
+    [ app r ++ cn
+    , unwords $ map (\(n,r,ty) -> parens $ nrty uses n r ty) args
+    , "->"
+    , term uses rhs
+    ]
+  where
+    (args, rhs) = splitPat tm
 
 app :: Meta -> String
 app (Fixed R) = span "ap ap-R" "R"

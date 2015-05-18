@@ -14,8 +14,10 @@ postulate VCons : (a : *) -> (n : Nat) -> (x : a) -> (xs : Vec n a) -> Vec (S n)
 
 vlen (a : *) (n : Nat) (xs : Vec n a) : Nat
     = case (xs) of
-        VNil a -> Z,
-        VCons a n x xs -> S (vlen a n xs).
+        VNil (a : *)
+            -> Z,
+        VCons (a : *) (n : Nat) (x : a) (xs : Vec n a)
+            -> S (vlen a n xs).
 
 testVec : Vec (S (S Z)) Bool
     = VCons Bool (S Z) True (VCons Bool Z False (VNil Bool)).

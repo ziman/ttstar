@@ -36,6 +36,7 @@ instance PrettyR r => Pretty (Program r) where
         fmtDT (Fun tm) = pretty tm
 
 instance PrettyR r => Pretty (Name, r, TT r) where
+    pretty (n, r, Erased) = text n
     pretty (n, r, ty) = text n <+> prettyCol r <+> pretty ty
 
 instance PrettyR r => Pretty (TT r) where
@@ -43,6 +44,7 @@ instance PrettyR r => Pretty (TT r) where
     pretty (Bind Pi r n ty tm) = parens (pretty (n, r, ty)) <+> arrow <+> pretty tm
     pretty (Bind Lam _r n Erased tm) = lam <> text n <> dot <+> pretty tm
     pretty (Bind Lam r n ty tm) = lam <> pretty (n, r, ty) <> dot <+> pretty tm
+    pretty (Bind Pat r n ty tm) = text "pat " <> pretty (n, r, ty) <> dot <+> pretty tm
     pretty (App r f x) = parens $ show' r f x
       where
         show' r (App r' f' x') x = show' r' f' x' <> prettyApp r <> pretty x
@@ -58,9 +60,9 @@ instance PrettyR r => Pretty (TT r) where
 
 instance PrettyR r => Pretty (Alt r) where
     pretty (DefaultCase tm) = text "_" <+> arrow <+> pretty tm
-    pretty (ConCase cn r arity tm) = text cn <+> hsep (map pretty args) <+> arrow <+> pretty rhs
+    pretty (ConCase cn r tm) = text cn <+> hsep (map (parens . pretty) args) <+> arrow <+> pretty rhs
       where
-        (args, rhs) = splitLam arity tm
+        (args, rhs) = splitPat tm
 
 instance PrettyR r => Show (TT r) where
     show = prettyShow

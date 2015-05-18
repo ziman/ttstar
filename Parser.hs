@@ -112,9 +112,13 @@ defaultCase = (<?> "default case") $ do
 conCase :: Parser (Alt MRel)
 conCase = (<?> "constr case") $ do
     cn <- name
-    ns <- many name
+    ns <- many $ parens typing
     kwd "->"
-    ConCase cn Nothing ns <$> expr
+    rhs <- expr
+    return $ ConCase cn Nothing (tack ns rhs)
+  where
+    tack [] tm = tm
+    tack ((n,r,ty) : ns) tm = Bind Pat r n ty $ tack ns tm
 
 typing :: Parser (Name, MRel, TT MRel)
 typing = (<?> "typing") $ do

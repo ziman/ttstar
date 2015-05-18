@@ -4,7 +4,7 @@ import Data.List
 
 type Name = String
 data Relevance = I | R deriving (Eq, Ord, Show)
-data Binder = Lam | Pi deriving (Eq, Ord, Show)
+data Binder = Lam | Pi | Pat deriving (Eq, Ord, Show)
 
 data TT r
     = V Name
@@ -16,7 +16,7 @@ data TT r
     deriving (Eq, Ord)
 
 data Alt r
-    = ConCase Name r Int (TT r)  -- cn, relevance, arity, lambda-bound RHS
+    = ConCase Name r (TT r)  -- cn, relevance, arity, lambda-bound RHS
     | DefaultCase (TT r)
     deriving (Eq, Ord)
 
@@ -36,7 +36,7 @@ instance Functor TT where
     fmap _ Type = Type
 
 instance Functor Alt where
-    fmap f (ConCase cn r arity tm) = ConCase cn (f r) arity (fmap f tm)
+    fmap f (ConCase cn r tm) = ConCase cn (f r) (fmap f tm)
     fmap f (DefaultCase tm) = DefaultCase (fmap f tm)
 
 instance Functor DefType where
@@ -49,10 +49,9 @@ instance Functor Def where
 instance Functor Program where
     fmap f (Prog defs) = Prog (map (fmap f) defs)
 
--- split a lambda-packed pattern into 1. pattern vars, 2. RHS
-splitLam :: Int -> TT r -> ([(Name, r, TT r)], TT r)
-splitLam 0 tm = ([], tm)
-splitLam k (Bind Lam r n ty tm) = ((n, r, ty) : args, rhs)
+-- split a Pat-packed pattern into 1. pattern vars, 2. RHS
+splitPat :: TT r -> ([(Name, r, TT r)], TT r)
+splitPat (Bind Pat r n ty tm) = ((n, r, ty) : args, rhs)
   where
-    (args, rhs) = splitLam (k-1) tm
-splitLam k tm = error "could not split pattern term"
+    (args, rhs) = splitPat tm
+splitPat tm = ([], tm)
