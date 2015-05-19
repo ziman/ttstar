@@ -22,10 +22,7 @@ span cls body = "<span class=\"" ++ cls ++ "\">" ++ body ++ "</span>"
 rel :: Uses -> Meta -> String
 rel uses (Fixed R) = span "rel rel-R" " :<sub>R</sub> "
 rel uses (Fixed I) = span "rel rel-I" " :<sub>I</sub> "
-rel uses (MVar i j) = span ("rel mvar mvar-" ++ mv i j ++ " " ++ cls) (" :<sub>" ++ mv i j ++ "</sub> ")
-  where
-    cls | MVar i j `S.member` uses = "rel-R"
-        | otherwise = "rel-I"
+rel uses (MVar i j) = span ("rel mvar-num-" ++ mv i j) (" :<sub>" ++ mv i j ++ "</sub> ")
 
 link :: String -> String -> String
 link cls body = "<a class=\"" ++ cls ++ "\" href=\"#\">" ++ body ++ "</a>"
@@ -41,7 +38,7 @@ mv i 0 = show i
 mv i j = show i ++ "_" ++ show j
 
 nrty :: Uses -> Name -> Meta -> TT Meta -> String
-nrty uses n r ty = wrap (name n ++ rel uses r ++ term uses ty ++ "\n")
+nrty uses n r ty = erasedSpan uses r (name n ++ rel uses r ++ term uses ty ++ "\n")
   where
     wrap
         | Fixed _ <- r = span ("nrty " ++ cls)
@@ -60,7 +57,7 @@ term :: Uses -> TT Meta -> String
 term uses (V n) = span "var" $ name n
 term uses (Bind Pi r n ty tm) = span "pi" $ parens (nrty uses n r ty) ++ op " &#8594; " ++ term uses tm
 term uses (Bind Lam r n ty tm) = span "lambda" $ span "head" (op "&lambda; " ++ nrty uses n r ty ++ op ".") ++ term uses tm
-term uses (App r f x) = span "app" . parens $ term uses f ++ app r ++ span (erasedCls uses r) (term uses x)
+term uses (App r f x) = span "app" . parens $ term uses f ++ app r ++ erasedSpan uses r (term uses x)
 term uses Type = span "star" "*"
 term uses Erased = span "erased" "____"
 term uses (Case s alts) =
@@ -81,12 +78,21 @@ alt uses (ConCase cn r tm) = unwords
 app :: Meta -> String
 app (Fixed R) = span "ap ap-R" "R"
 app (Fixed I) = span "ap ap-I" "I"
-app (MVar i j) = span ("ap mvar mvar-" ++ mv i j) (mv i j)
+app (MVar i j) = span ("ap mvar-num-" ++ mv i j) (mv i j)
+
+erasedSpan :: Uses -> Meta -> String -> String
+erasedSpan uses m = span $ erasedCls uses m
 
 erasedCls :: Uses -> Meta -> String
-erasedCls uses m
-    | m `S.member` uses = "not-erased"
-    | otherwise = "erased"
+erasedCls uses m = erasure ++ " " ++ mvar
+  where
+    erasure
+        | m `S.member` uses = "not-erased"
+        | otherwise = "erased"
+
+    mvar
+        | MVar i j <- m = "mvar mvar-" ++ mv i j
+        | otherwise = ""
 
 htmlDef :: Uses -> Def Meta -> String
 htmlDef uses (Def r n ty Axiom) = div "def axiom" $ div "type" (nrty uses n r ty)

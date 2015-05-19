@@ -40,11 +40,10 @@ a:hover {
     font-size: 0.75em;
 }
 
-.nrty-I {
-    background-color: #f0f0f0;
-}
-
-.nrty-R {
+.erased {
+    /* background-color: #e8e8e8; */
+    text-decoration: line-through;
+    -moz-text-decoration-color: red;
 }
 
 .paren {
@@ -52,8 +51,12 @@ a:hover {
 }
 
 .marked {
-    color: yellow;
-    background-color: red;
+    background: #e8e8e8;
+}
+
+.marked-num {
+    background: yellow;
+    color: red;
 }
 
 .shown {
@@ -66,6 +69,9 @@ a:hover {
     /* display: none; */
 }
 
+.app {
+}
+
 </style>
 
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
@@ -73,6 +79,7 @@ a:hover {
 
 function cleanup() {
     $('.marked').removeClass('marked');
+    $('.marked-num').removeClass('marked-num');
     $('.shown').removeClass('shown');
 }
 
@@ -87,6 +94,7 @@ function init() {
                     var gs = constrs[i][1];
                     for (var j = 0; j < gs.length; ++j) {
                         $('.def .mvar-' + gs[j]).addClass('marked');
+                        $('.def .mvar-num-' + gs[j]).addClass('marked-num');
                     }
                 }
             }
@@ -105,14 +113,14 @@ Erased things are <span class="nrty-I">grayed out</span>.</p>
 <h2>Metaified program</h2>
 <div class="def axiom">
 <div class="type">
-<span class="nrty nrty-1 nrty-I"><span class="name name-Void">Void</span><span class="rel mvar mvar-1 rel-I"> :<sub>1</sub> </span><span class="star">*</span>
+<span class="erased mvar mvar-1"><span class="name name-Void">Void</span><span class="rel mvar-num-1"> :<sub>1</sub> </span><span class="star">*</span>
 </span>
 </div>
 
 </div>
 <div class="def axiom">
 <div class="type">
-<span class="nrty nrty-2 nrty-I"><span class="name name-Maybe">Maybe</span><span class="rel mvar mvar-2 rel-I"> :<sub>2</sub> </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-3 nrty-I"><span class="name name-_">_</span><span class="rel mvar mvar-3 rel-I"> :<sub>3</sub> </span><span class="star">*</span>
+<span class="erased mvar mvar-2"><span class="name name-Maybe">Maybe</span><span class="rel mvar-num-2"> :<sub>2</sub> </span><span class="pi"><span class="paren">(</span><span class="erased mvar mvar-3"><span class="name name-_">_</span><span class="rel mvar-num-3"> :<sub>3</sub> </span><span class="star">*</span>
 </span><span class="paren">)</span><span class="op"> &#8594; </span><span class="star">*</span></span>
 </span>
 </div>
@@ -120,54 +128,54 @@ Erased things are <span class="nrty-I">grayed out</span>.</p>
 </div>
 <div class="def axiom">
 <div class="type">
-<span class="nrty nrty-4 nrty-R"><span class="name name-Just">Just</span><span class="rel mvar mvar-4 rel-R"> :<sub>4</sub> </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-5 nrty-I"><span class="name name-a">a</span><span class="rel mvar mvar-5 rel-I"> :<sub>5</sub> </span><span class="star">*</span>
-</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-6 nrty-R"><span class="name name-x">x</span><span class="rel mvar mvar-6 rel-R"> :<sub>6</sub> </span><span class="var"><span class="name name-a">a</span></span>
-</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-Maybe">Maybe</span></span><span class="ap mvar mvar-7">7</span><span class="var"><span class="name name-a">a</span></span><span class="paren">)</span></span></span></span>
+<span class="not-erased mvar mvar-4"><span class="name name-Just">Just</span><span class="rel mvar-num-4"> :<sub>4</sub> </span><span class="pi"><span class="paren">(</span><span class="erased mvar mvar-5"><span class="name name-a">a</span><span class="rel mvar-num-5"> :<sub>5</sub> </span><span class="star">*</span>
+</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="pi"><span class="paren">(</span><span class="not-erased mvar mvar-6"><span class="name name-x">x</span><span class="rel mvar-num-6"> :<sub>6</sub> </span><span class="var"><span class="name name-a">a</span></span>
+</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-Maybe">Maybe</span></span><span class="ap mvar-num-7">7</span><span class="erased mvar mvar-7"><span class="var"><span class="name name-a">a</span></span></span><span class="paren">)</span></span></span></span>
 </span>
 </div>
 
 </div>
 <div class="def axiom">
 <div class="type">
-<span class="nrty nrty-8 nrty-I"><span class="name name-Nothing">Nothing</span><span class="rel mvar mvar-8 rel-I"> :<sub>8</sub> </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-9 nrty-I"><span class="name name-a">a</span><span class="rel mvar mvar-9 rel-I"> :<sub>9</sub> </span><span class="star">*</span>
-</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-Maybe">Maybe</span></span><span class="ap mvar mvar-10">10</span><span class="var"><span class="name name-a">a</span></span><span class="paren">)</span></span></span>
+<span class="erased mvar mvar-8"><span class="name name-Nothing">Nothing</span><span class="rel mvar-num-8"> :<sub>8</sub> </span><span class="pi"><span class="paren">(</span><span class="erased mvar mvar-9"><span class="name name-a">a</span><span class="rel mvar-num-9"> :<sub>9</sub> </span><span class="star">*</span>
+</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-Maybe">Maybe</span></span><span class="ap mvar-num-10">10</span><span class="erased mvar mvar-10"><span class="var"><span class="name name-a">a</span></span></span><span class="paren">)</span></span></span>
 </span>
 </div>
 
 </div>
 <div class="def axiom">
 <div class="type">
-<span class="nrty nrty-11 nrty-R"><span class="name name-Bool">Bool</span><span class="rel mvar mvar-11 rel-R"> :<sub>11</sub> </span><span class="star">*</span>
+<span class="not-erased mvar mvar-11"><span class="name name-Bool">Bool</span><span class="rel mvar-num-11"> :<sub>11</sub> </span><span class="star">*</span>
 </span>
 </div>
 
 </div>
 <div class="def axiom">
 <div class="type">
-<span class="nrty nrty-12 nrty-I"><span class="name name-True">True</span><span class="rel mvar mvar-12 rel-I"> :<sub>12</sub> </span><span class="var"><span class="name name-Bool">Bool</span></span>
+<span class="erased mvar mvar-12"><span class="name name-True">True</span><span class="rel mvar-num-12"> :<sub>12</sub> </span><span class="var"><span class="name name-Bool">Bool</span></span>
 </span>
 </div>
 
 </div>
 <div class="def axiom">
 <div class="type">
-<span class="nrty nrty-13 nrty-R"><span class="name name-False">False</span><span class="rel mvar mvar-13 rel-R"> :<sub>13</sub> </span><span class="var"><span class="name name-Bool">Bool</span></span>
+<span class="not-erased mvar mvar-13"><span class="name name-False">False</span><span class="rel mvar-num-13"> :<sub>13</sub> </span><span class="var"><span class="name name-Bool">Bool</span></span>
 </span>
 </div>
 
 </div>
 <div class="def function">
 <div class="type">
-<span class="nrty nrty-14 nrty-I"><span class="name name-retTy">retTy</span><span class="rel mvar mvar-14 rel-I"> :<sub>14</sub> </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-15 nrty-R"><span class="name name-x">x</span><span class="rel mvar mvar-15 rel-R"> :<sub>15</sub> </span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-Maybe">Maybe</span></span><span class="ap mvar mvar-16">16</span><span class="var"><span class="name name-Bool">Bool</span></span><span class="paren">)</span></span>
+<span class="erased mvar mvar-14"><span class="name name-retTy">retTy</span><span class="rel mvar-num-14"> :<sub>14</sub> </span><span class="pi"><span class="paren">(</span><span class="not-erased mvar mvar-15"><span class="name name-x">x</span><span class="rel mvar-num-15"> :<sub>15</sub> </span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-Maybe">Maybe</span></span><span class="ap mvar-num-16">16</span><span class="erased mvar mvar-16"><span class="var"><span class="name name-Bool">Bool</span></span></span><span class="paren">)</span></span>
 </span><span class="paren">)</span><span class="op"> &#8594; </span><span class="star">*</span></span>
 </span>
 </div>
 <div class="definition">
-<span class="name name-retTy">retTy</span><span class="op"> = </span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="nrty nrty-17 nrty-R"><span class="name name-x">x</span><span class="rel mvar mvar-17 rel-R"> :<sub>17</sub> </span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-Maybe">Maybe</span></span><span class="ap mvar mvar-18">18</span><span class="var"><span class="name name-Bool">Bool</span></span><span class="paren">)</span></span>
-</span><span class="op">.</span></span><span class="kwd">case</span> <span class="var"><span class="name name-x">x</span></span> <span class="kwd">of</span><ul class="case"><li><span class="ap mvar mvar-19">19</span>Just <span class="paren">(</span><span class="nrty nrty-20 nrty-I"><span class="name name-a">a</span><span class="rel mvar mvar-20 rel-I"> :<sub>20</sub> </span><span class="star">*</span>
-</span><span class="paren">)</span> <span class="paren">(</span><span class="nrty nrty-21 nrty-R"><span class="name name-t">t</span><span class="rel mvar mvar-21 rel-R"> :<sub>21</sub> </span><span class="var"><span class="name name-a">a</span></span>
+<span class="name name-retTy">retTy</span><span class="op"> = </span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="not-erased mvar mvar-17"><span class="name name-x">x</span><span class="rel mvar-num-17"> :<sub>17</sub> </span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-Maybe">Maybe</span></span><span class="ap mvar-num-18">18</span><span class="erased mvar mvar-18"><span class="var"><span class="name name-Bool">Bool</span></span></span><span class="paren">)</span></span>
+</span><span class="op">.</span></span><span class="kwd">case</span> <span class="var"><span class="name name-x">x</span></span> <span class="kwd">of</span><ul class="case"><li><span class="ap mvar-num-19">19</span>Just <span class="paren">(</span><span class="erased mvar mvar-20"><span class="name name-a">a</span><span class="rel mvar-num-20"> :<sub>20</sub> </span><span class="star">*</span>
+</span><span class="paren">)</span> <span class="paren">(</span><span class="not-erased mvar mvar-21"><span class="name name-t">t</span><span class="rel mvar-num-21"> :<sub>21</sub> </span><span class="var"><span class="name name-a">a</span></span>
 </span><span class="paren">)</span> -> <span class="var"><span class="name name-Bool">Bool</span></span></li>
-<li><span class="ap mvar mvar-22">22</span>Nothing <span class="paren">(</span><span class="nrty nrty-23 nrty-I"><span class="name name-a">a</span><span class="rel mvar mvar-23 rel-I"> :<sub>23</sub> </span><span class="star">*</span>
+<li><span class="ap mvar-num-22">22</span>Nothing <span class="paren">(</span><span class="erased mvar mvar-23"><span class="name name-a">a</span><span class="rel mvar-num-23"> :<sub>23</sub> </span><span class="star">*</span>
 </span><span class="paren">)</span> -> <span class="star">*</span></li>
 </ul></span>
 </div>
@@ -175,16 +183,16 @@ Erased things are <span class="nrty-I">grayed out</span>.</p>
 </div>
 <div class="def function">
 <div class="type">
-<span class="nrty nrty-24 nrty-R"><span class="name name-f">f</span><span class="rel mvar mvar-24 rel-R"> :<sub>24</sub> </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-25 nrty-R"><span class="name name-x">x</span><span class="rel mvar mvar-25 rel-R"> :<sub>25</sub> </span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-Maybe">Maybe</span></span><span class="ap mvar mvar-26">26</span><span class="var"><span class="name name-Bool">Bool</span></span><span class="paren">)</span></span>
-</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-retTy">retTy</span></span><span class="ap mvar mvar-27">27</span><span class="var"><span class="name name-x">x</span></span><span class="paren">)</span></span></span>
+<span class="not-erased mvar mvar-24"><span class="name name-f">f</span><span class="rel mvar-num-24"> :<sub>24</sub> </span><span class="pi"><span class="paren">(</span><span class="not-erased mvar mvar-25"><span class="name name-x">x</span><span class="rel mvar-num-25"> :<sub>25</sub> </span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-Maybe">Maybe</span></span><span class="ap mvar-num-26">26</span><span class="erased mvar mvar-26"><span class="var"><span class="name name-Bool">Bool</span></span></span><span class="paren">)</span></span>
+</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-retTy">retTy</span></span><span class="ap mvar-num-27">27</span><span class="erased mvar mvar-27"><span class="var"><span class="name name-x">x</span></span></span><span class="paren">)</span></span></span>
 </span>
 </div>
 <div class="definition">
-<span class="name name-f">f</span><span class="op"> = </span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="nrty nrty-28 nrty-R"><span class="name name-x">x</span><span class="rel mvar mvar-28 rel-R"> :<sub>28</sub> </span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-Maybe">Maybe</span></span><span class="ap mvar mvar-29">29</span><span class="var"><span class="name name-Bool">Bool</span></span><span class="paren">)</span></span>
-</span><span class="op">.</span></span><span class="kwd">case</span> <span class="var"><span class="name name-x">x</span></span> <span class="kwd">of</span><ul class="case"><li><span class="ap mvar mvar-30">30</span>Just <span class="paren">(</span><span class="nrty nrty-31 nrty-I"><span class="name name-a">a</span><span class="rel mvar mvar-31 rel-I"> :<sub>31</sub> </span><span class="star">*</span>
-</span><span class="paren">)</span> <span class="paren">(</span><span class="nrty nrty-32 nrty-R"><span class="name name-b">b</span><span class="rel mvar mvar-32 rel-R"> :<sub>32</sub> </span><span class="var"><span class="name name-a">a</span></span>
+<span class="name name-f">f</span><span class="op"> = </span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="not-erased mvar mvar-28"><span class="name name-x">x</span><span class="rel mvar-num-28"> :<sub>28</sub> </span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-Maybe">Maybe</span></span><span class="ap mvar-num-29">29</span><span class="erased mvar mvar-29"><span class="var"><span class="name name-Bool">Bool</span></span></span><span class="paren">)</span></span>
+</span><span class="op">.</span></span><span class="kwd">case</span> <span class="var"><span class="name name-x">x</span></span> <span class="kwd">of</span><ul class="case"><li><span class="ap mvar-num-30">30</span>Just <span class="paren">(</span><span class="erased mvar mvar-31"><span class="name name-a">a</span><span class="rel mvar-num-31"> :<sub>31</sub> </span><span class="star">*</span>
+</span><span class="paren">)</span> <span class="paren">(</span><span class="not-erased mvar mvar-32"><span class="name name-b">b</span><span class="rel mvar-num-32"> :<sub>32</sub> </span><span class="var"><span class="name name-a">a</span></span>
 </span><span class="paren">)</span> -> <span class="var"><span class="name name-b">b</span></span></li>
-<li><span class="ap mvar mvar-33">33</span>Nothing <span class="paren">(</span><span class="nrty nrty-34 nrty-I"><span class="name name-a">a</span><span class="rel mvar mvar-34 rel-I"> :<sub>34</sub> </span><span class="star">*</span>
+<li><span class="ap mvar-num-33">33</span>Nothing <span class="paren">(</span><span class="erased mvar mvar-34"><span class="name name-a">a</span><span class="rel mvar-num-34"> :<sub>34</sub> </span><span class="star">*</span>
 </span><span class="paren">)</span> -> <span class="var"><span class="name name-Bool">Bool</span></span></li>
 </ul></span>
 </div>
@@ -192,11 +200,11 @@ Erased things are <span class="nrty-I">grayed out</span>.</p>
 </div>
 <div class="def function">
 <div class="type">
-<span class="nrty nrty-R"><span class="name name-main">main</span><span class="rel rel-R"> :<sub>R</sub> </span><span class="var"><span class="name name-Bool">Bool</span></span>
+<span class="not-erased "><span class="name name-main">main</span><span class="rel rel-R"> :<sub>R</sub> </span><span class="var"><span class="name name-Bool">Bool</span></span>
 </span>
 </div>
 <div class="definition">
-<span class="name name-main">main</span><span class="op"> = </span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-f">f</span></span><span class="ap mvar mvar-35">35</span><span class="app"><span class="paren">(</span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-Just">Just</span></span><span class="ap mvar mvar-37">37</span><span class="var"><span class="name name-Bool">Bool</span></span><span class="paren">)</span></span><span class="ap mvar mvar-36">36</span><span class="var"><span class="name name-False">False</span></span><span class="paren">)</span></span><span class="paren">)</span></span>
+<span class="name name-main">main</span><span class="op"> = </span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-f">f</span></span><span class="ap mvar-num-35">35</span><span class="not-erased mvar mvar-35"><span class="app"><span class="paren">(</span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-Just">Just</span></span><span class="ap mvar-num-37">37</span><span class="erased mvar mvar-37"><span class="var"><span class="name name-Bool">Bool</span></span></span><span class="paren">)</span></span><span class="ap mvar-num-36">36</span><span class="not-erased mvar mvar-36"><span class="var"><span class="name name-False">False</span></span></span><span class="paren">)</span></span></span><span class="paren">)</span></span>
 </div>
 
 </div>

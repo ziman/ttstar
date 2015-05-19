@@ -40,11 +40,10 @@ a:hover {
     font-size: 0.75em;
 }
 
-.nrty-I {
-    background-color: #f0f0f0;
-}
-
-.nrty-R {
+.erased {
+    /* background-color: #e8e8e8; */
+    text-decoration: line-through;
+    -moz-text-decoration-color: red;
 }
 
 .paren {
@@ -52,8 +51,12 @@ a:hover {
 }
 
 .marked {
-    color: yellow;
-    background-color: red;
+    background: #e8e8e8;
+}
+
+.marked-num {
+    background: yellow;
+    color: red;
 }
 
 .shown {
@@ -66,6 +69,9 @@ a:hover {
     /* display: none; */
 }
 
+.app {
+}
+
 </style>
 
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
@@ -73,6 +79,7 @@ a:hover {
 
 function cleanup() {
     $('.marked').removeClass('marked');
+    $('.marked-num').removeClass('marked-num');
     $('.shown').removeClass('shown');
 }
 
@@ -87,6 +94,7 @@ function init() {
                     var gs = constrs[i][1];
                     for (var j = 0; j < gs.length; ++j) {
                         $('.def .mvar-' + gs[j]).addClass('marked');
+                        $('.def .mvar-num-' + gs[j]).addClass('marked-num');
                     }
                 }
             }
@@ -105,29 +113,29 @@ Erased things are <span class="nrty-I">grayed out</span>.</p>
 <h2>Metaified program</h2>
 <div class="def axiom">
 <div class="type">
-<span class="nrty nrty-1 nrty-I"><span class="name name-T">T</span><span class="rel mvar mvar-1 rel-I"> :<sub>1</sub> </span><span class="star">*</span>
+<span class="erased mvar mvar-1"><span class="name name-T">T</span><span class="rel mvar-num-1"> :<sub>1</sub> </span><span class="star">*</span>
 </span>
 </div>
 
 </div>
 <div class="def axiom">
 <div class="type">
-<span class="nrty nrty-2 nrty-R"><span class="name name-A">A</span><span class="rel mvar mvar-2 rel-R"> :<sub>2</sub> </span><span class="var"><span class="name name-T">T</span></span>
+<span class="not-erased mvar mvar-2"><span class="name name-A">A</span><span class="rel mvar-num-2"> :<sub>2</sub> </span><span class="var"><span class="name name-T">T</span></span>
 </span>
 </div>
 
 </div>
 <div class="def axiom">
 <div class="type">
-<span class="nrty nrty-3 nrty-R"><span class="name name-B">B</span><span class="rel mvar mvar-3 rel-R"> :<sub>3</sub> </span><span class="var"><span class="name name-T">T</span></span>
+<span class="not-erased mvar mvar-3"><span class="name name-B">B</span><span class="rel mvar-num-3"> :<sub>3</sub> </span><span class="var"><span class="name name-T">T</span></span>
 </span>
 </div>
 
 </div>
 <div class="def axiom">
 <div class="type">
-<span class="nrty nrty-4 nrty-R"><span class="name name-Op">Op</span><span class="rel mvar mvar-4 rel-R"> :<sub>4</sub> </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-R"><span class="name name-x">x</span><span class="rel rel-R"> :<sub>R</sub> </span><span class="var"><span class="name name-T">T</span></span>
-</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-R"><span class="name name-y">y</span><span class="rel rel-R"> :<sub>R</sub> </span><span class="var"><span class="name name-T">T</span></span>
+<span class="not-erased mvar mvar-4"><span class="name name-Op">Op</span><span class="rel mvar-num-4"> :<sub>4</sub> </span><span class="pi"><span class="paren">(</span><span class="not-erased "><span class="name name-x">x</span><span class="rel rel-R"> :<sub>R</sub> </span><span class="var"><span class="name name-T">T</span></span>
+</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="pi"><span class="paren">(</span><span class="not-erased "><span class="name name-y">y</span><span class="rel rel-R"> :<sub>R</sub> </span><span class="var"><span class="name name-T">T</span></span>
 </span><span class="paren">)</span><span class="op"> &#8594; </span><span class="var"><span class="name name-T">T</span></span></span></span>
 </span>
 </div>
@@ -135,57 +143,57 @@ Erased things are <span class="nrty-I">grayed out</span>.</p>
 </div>
 <div class="def function">
 <div class="type">
-<span class="nrty nrty-5 nrty-R"><span class="name name-id">id</span><span class="rel mvar mvar-5 rel-R"> :<sub>5</sub> </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-6 nrty-R"><span class="name name-_">_</span><span class="rel mvar mvar-6 rel-R"> :<sub>6</sub> </span><span class="var"><span class="name name-T">T</span></span>
+<span class="not-erased mvar mvar-5"><span class="name name-id">id</span><span class="rel mvar-num-5"> :<sub>5</sub> </span><span class="pi"><span class="paren">(</span><span class="not-erased mvar mvar-6"><span class="name name-_">_</span><span class="rel mvar-num-6"> :<sub>6</sub> </span><span class="var"><span class="name name-T">T</span></span>
 </span><span class="paren">)</span><span class="op"> &#8594; </span><span class="var"><span class="name name-T">T</span></span></span>
 </span>
 </div>
 <div class="definition">
-<span class="name name-id">id</span><span class="op"> = </span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="nrty nrty-7 nrty-R"><span class="name name-t">t</span><span class="rel mvar mvar-7 rel-R"> :<sub>7</sub> </span><span class="var"><span class="name name-T">T</span></span>
+<span class="name name-id">id</span><span class="op"> = </span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="not-erased mvar mvar-7"><span class="name name-t">t</span><span class="rel mvar-num-7"> :<sub>7</sub> </span><span class="var"><span class="name name-T">T</span></span>
 </span><span class="op">.</span></span><span class="var"><span class="name name-t">t</span></span></span>
 </div>
 
 </div>
 <div class="def function">
 <div class="type">
-<span class="nrty nrty-8 nrty-R"><span class="name name-const_A">const_A</span><span class="rel mvar mvar-8 rel-R"> :<sub>8</sub> </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-9 nrty-I"><span class="name name-_">_</span><span class="rel mvar mvar-9 rel-I"> :<sub>9</sub> </span><span class="var"><span class="name name-T">T</span></span>
+<span class="not-erased mvar mvar-8"><span class="name name-const_A">const_A</span><span class="rel mvar-num-8"> :<sub>8</sub> </span><span class="pi"><span class="paren">(</span><span class="erased mvar mvar-9"><span class="name name-_">_</span><span class="rel mvar-num-9"> :<sub>9</sub> </span><span class="var"><span class="name name-T">T</span></span>
 </span><span class="paren">)</span><span class="op"> &#8594; </span><span class="var"><span class="name name-T">T</span></span></span>
 </span>
 </div>
 <div class="definition">
-<span class="name name-const_A">const_A</span><span class="op"> = </span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="nrty nrty-10 nrty-I"><span class="name name-_">_</span><span class="rel mvar mvar-10 rel-I"> :<sub>10</sub> </span><span class="var"><span class="name name-T">T</span></span>
+<span class="name name-const_A">const_A</span><span class="op"> = </span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="erased mvar mvar-10"><span class="name name-_">_</span><span class="rel mvar-num-10"> :<sub>10</sub> </span><span class="var"><span class="name name-T">T</span></span>
 </span><span class="op">.</span></span><span class="var"><span class="name name-A">A</span></span></span>
 </div>
 
 </div>
 <div class="def function">
 <div class="type">
-<span class="nrty nrty-11 nrty-R"><span class="name name-f">f</span><span class="rel mvar mvar-11 rel-R"> :<sub>11</sub> </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-12 nrty-R"><span class="name name-g">g</span><span class="rel mvar mvar-12 rel-R"> :<sub>12</sub> </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-13 nrty-R"><span class="name name-_">_</span><span class="rel mvar mvar-13 rel-R"> :<sub>13</sub> </span><span class="var"><span class="name name-T">T</span></span>
+<span class="not-erased mvar mvar-11"><span class="name name-f">f</span><span class="rel mvar-num-11"> :<sub>11</sub> </span><span class="pi"><span class="paren">(</span><span class="not-erased mvar mvar-12"><span class="name name-g">g</span><span class="rel mvar-num-12"> :<sub>12</sub> </span><span class="pi"><span class="paren">(</span><span class="not-erased mvar mvar-13"><span class="name name-_">_</span><span class="rel mvar-num-13"> :<sub>13</sub> </span><span class="var"><span class="name name-T">T</span></span>
 </span><span class="paren">)</span><span class="op"> &#8594; </span><span class="var"><span class="name name-T">T</span></span></span>
-</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-14 nrty-R"><span class="name name-z">z</span><span class="rel mvar mvar-14 rel-R"> :<sub>14</sub> </span><span class="var"><span class="name name-T">T</span></span>
-</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-15 nrty-R"><span class="name name-h">h</span><span class="rel mvar mvar-15 rel-R"> :<sub>15</sub> </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-16 nrty-I"><span class="name name-_">_</span><span class="rel mvar mvar-16 rel-I"> :<sub>16</sub> </span><span class="var"><span class="name name-T">T</span></span>
+</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="pi"><span class="paren">(</span><span class="not-erased mvar mvar-14"><span class="name name-z">z</span><span class="rel mvar-num-14"> :<sub>14</sub> </span><span class="var"><span class="name name-T">T</span></span>
+</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="pi"><span class="paren">(</span><span class="not-erased mvar mvar-15"><span class="name name-h">h</span><span class="rel mvar-num-15"> :<sub>15</sub> </span><span class="pi"><span class="paren">(</span><span class="erased mvar mvar-16"><span class="name name-_">_</span><span class="rel mvar-num-16"> :<sub>16</sub> </span><span class="var"><span class="name name-T">T</span></span>
 </span><span class="paren">)</span><span class="op"> &#8594; </span><span class="var"><span class="name name-T">T</span></span></span>
-</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-17 nrty-I"><span class="name name-w">w</span><span class="rel mvar mvar-17 rel-I"> :<sub>17</sub> </span><span class="var"><span class="name name-T">T</span></span>
+</span><span class="paren">)</span><span class="op"> &#8594; </span><span class="pi"><span class="paren">(</span><span class="erased mvar mvar-17"><span class="name name-w">w</span><span class="rel mvar-num-17"> :<sub>17</sub> </span><span class="var"><span class="name name-T">T</span></span>
 </span><span class="paren">)</span><span class="op"> &#8594; </span><span class="var"><span class="name name-T">T</span></span></span></span></span></span>
 </span>
 </div>
 <div class="definition">
-<span class="name name-f">f</span><span class="op"> = </span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="nrty nrty-18 nrty-R"><span class="name name-g">g</span><span class="rel mvar mvar-18 rel-R"> :<sub>18</sub> </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-19 nrty-R"><span class="name name-_">_</span><span class="rel mvar mvar-19 rel-R"> :<sub>19</sub> </span><span class="var"><span class="name name-T">T</span></span>
+<span class="name name-f">f</span><span class="op"> = </span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="not-erased mvar mvar-18"><span class="name name-g">g</span><span class="rel mvar-num-18"> :<sub>18</sub> </span><span class="pi"><span class="paren">(</span><span class="not-erased mvar mvar-19"><span class="name name-_">_</span><span class="rel mvar-num-19"> :<sub>19</sub> </span><span class="var"><span class="name name-T">T</span></span>
 </span><span class="paren">)</span><span class="op"> &#8594; </span><span class="var"><span class="name name-T">T</span></span></span>
-</span><span class="op">.</span></span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="nrty nrty-20 nrty-R"><span class="name name-z">z</span><span class="rel mvar mvar-20 rel-R"> :<sub>20</sub> </span><span class="var"><span class="name name-T">T</span></span>
-</span><span class="op">.</span></span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="nrty nrty-21 nrty-R"><span class="name name-h">h</span><span class="rel mvar mvar-21 rel-R"> :<sub>21</sub> </span><span class="pi"><span class="paren">(</span><span class="nrty nrty-22 nrty-I"><span class="name name-_">_</span><span class="rel mvar mvar-22 rel-I"> :<sub>22</sub> </span><span class="var"><span class="name name-T">T</span></span>
+</span><span class="op">.</span></span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="not-erased mvar mvar-20"><span class="name name-z">z</span><span class="rel mvar-num-20"> :<sub>20</sub> </span><span class="var"><span class="name name-T">T</span></span>
+</span><span class="op">.</span></span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="not-erased mvar mvar-21"><span class="name name-h">h</span><span class="rel mvar-num-21"> :<sub>21</sub> </span><span class="pi"><span class="paren">(</span><span class="erased mvar mvar-22"><span class="name name-_">_</span><span class="rel mvar-num-22"> :<sub>22</sub> </span><span class="var"><span class="name name-T">T</span></span>
 </span><span class="paren">)</span><span class="op"> &#8594; </span><span class="var"><span class="name name-T">T</span></span></span>
-</span><span class="op">.</span></span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="nrty nrty-23 nrty-I"><span class="name name-w">w</span><span class="rel mvar mvar-23 rel-I"> :<sub>23</sub> </span><span class="var"><span class="name name-T">T</span></span>
-</span><span class="op">.</span></span><span class="app"><span class="paren">(</span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-Op">Op</span></span><span class="ap mvar mvar-25">25</span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-g">g</span></span><span class="ap mvar mvar-26">26</span><span class="var"><span class="name name-z">z</span></span><span class="paren">)</span></span><span class="paren">)</span></span><span class="ap mvar mvar-24">24</span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-h">h</span></span><span class="ap mvar mvar-27">27</span><span class="var"><span class="name name-w">w</span></span><span class="paren">)</span></span><span class="paren">)</span></span></span></span></span></span>
+</span><span class="op">.</span></span><span class="lambda"><span class="head"><span class="op">&lambda; </span><span class="erased mvar mvar-23"><span class="name name-w">w</span><span class="rel mvar-num-23"> :<sub>23</sub> </span><span class="var"><span class="name name-T">T</span></span>
+</span><span class="op">.</span></span><span class="app"><span class="paren">(</span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-Op">Op</span></span><span class="ap mvar-num-25">25</span><span class="not-erased mvar mvar-25"><span class="app"><span class="paren">(</span><span class="var"><span class="name name-g">g</span></span><span class="ap mvar-num-26">26</span><span class="not-erased mvar mvar-26"><span class="var"><span class="name name-z">z</span></span></span><span class="paren">)</span></span></span><span class="paren">)</span></span><span class="ap mvar-num-24">24</span><span class="not-erased mvar mvar-24"><span class="app"><span class="paren">(</span><span class="var"><span class="name name-h">h</span></span><span class="ap mvar-num-27">27</span><span class="erased mvar mvar-27"><span class="var"><span class="name name-w">w</span></span></span><span class="paren">)</span></span></span><span class="paren">)</span></span></span></span></span></span>
 </div>
 
 </div>
 <div class="def function">
 <div class="type">
-<span class="nrty nrty-R"><span class="name name-main">main</span><span class="rel rel-R"> :<sub>R</sub> </span><span class="var"><span class="name name-T">T</span></span>
+<span class="not-erased "><span class="name name-main">main</span><span class="rel rel-R"> :<sub>R</sub> </span><span class="var"><span class="name name-T">T</span></span>
 </span>
 </div>
 <div class="definition">
-<span class="name name-main">main</span><span class="op"> = </span><span class="app"><span class="paren">(</span><span class="app"><span class="paren">(</span><span class="app"><span class="paren">(</span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-f">f</span></span><span class="ap mvar mvar-31">31</span><span class="var"><span class="name name-id">id</span></span><span class="paren">)</span></span><span class="ap mvar mvar-30">30</span><span class="var"><span class="name name-B">B</span></span><span class="paren">)</span></span><span class="ap mvar mvar-29">29</span><span class="var"><span class="name name-const_A">const_A</span></span><span class="paren">)</span></span><span class="ap mvar mvar-28">28</span><span class="var"><span class="name name-B">B</span></span><span class="paren">)</span></span>
+<span class="name name-main">main</span><span class="op"> = </span><span class="app"><span class="paren">(</span><span class="app"><span class="paren">(</span><span class="app"><span class="paren">(</span><span class="app"><span class="paren">(</span><span class="var"><span class="name name-f">f</span></span><span class="ap mvar-num-31">31</span><span class="not-erased mvar mvar-31"><span class="var"><span class="name name-id">id</span></span></span><span class="paren">)</span></span><span class="ap mvar-num-30">30</span><span class="not-erased mvar mvar-30"><span class="var"><span class="name name-B">B</span></span></span><span class="paren">)</span></span><span class="ap mvar-num-29">29</span><span class="not-erased mvar mvar-29"><span class="var"><span class="name name-const_A">const_A</span></span></span><span class="paren">)</span></span><span class="ap mvar-num-28">28</span><span class="erased mvar mvar-28"><span class="var"><span class="name name-B">B</span></span></span><span class="paren">)</span></span>
 </div>
 
 </div>
