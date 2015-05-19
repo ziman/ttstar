@@ -48,7 +48,7 @@ nrty uses n r ty = wrap (name n ++ rel uses r ++ term uses ty ++ "\n")
         | MVar i j <- r = span ("nrty nrty-" ++ mv i j ++ " " ++ cls)
 
     cls | r `S.member` uses = "nrty-R"
-        | otherwise = "nrty-I"
+        | otherwise = "nrty-I erased"
 
 parens :: String -> String
 parens s = span "paren" "(" ++ s ++ span "paren" ")"
@@ -60,7 +60,7 @@ term :: Uses -> TT Meta -> String
 term uses (V n) = span "var" $ name n
 term uses (Bind Pi r n ty tm) = span "pi" $ parens (nrty uses n r ty) ++ op " &#8594; " ++ term uses tm
 term uses (Bind Lam r n ty tm) = span "lambda" $ span "head" (op "&lambda; " ++ nrty uses n r ty ++ op ".") ++ term uses tm
-term uses (App r f x) = span "app" . parens $ term uses f ++ app r ++ term uses x
+term uses (App r f x) = span "app" . parens $ term uses f ++ app r ++ span (erasedCls uses r) (term uses x)
 term uses Type = span "star" "*"
 term uses Erased = span "erased" "____"
 term uses (Case s alts) =
@@ -82,6 +82,11 @@ app :: Meta -> String
 app (Fixed R) = span "ap ap-R" "R"
 app (Fixed I) = span "ap ap-I" "I"
 app (MVar i j) = span ("ap mvar mvar-" ++ mv i j) (mv i j)
+
+erasedCls :: Uses -> Meta -> String
+erasedCls uses m
+    | m `S.member` uses = "not-erased"
+    | otherwise = "erased"
 
 htmlDef :: Uses -> Def Meta -> String
 htmlDef uses (Def r n ty Axiom) = div "def axiom" $ div "type" (nrty uses n r ty)
