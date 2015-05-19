@@ -59,6 +59,13 @@ import qualified Data.Set as S
 --  - finally, they die in their binder
 --
 -- We probably should perform the duplication in (checkTerm $ V n) -- because only variables can be duplicated.
+--
+-- ***
+--
+-- ifl : python backend
+-- pldi : erasure
+-- meetings every other tuesday afternoon starting with 19.5.2015
+
 
 main :: IO ()
 main = do
