@@ -32,5 +32,7 @@ Besides what the original paper had, we have:
     * find things that must be `R`
     * find fixed things
     * from the things that don't have to be `R`, keep the dep graph (this will be small)
+    * there are also "inner" variables that relate the fun body to other functions -- nonreducible at this point (?)
+        * or shall we run the solver after every definition?
 * copy them for every `V n` reference
 * use upper+lower bounds to guide erasure
