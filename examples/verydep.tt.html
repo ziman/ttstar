@@ -78,6 +78,7 @@ a:hover {
 <script>
 
 function cleanup() {
+    console.log('cleanup');
     $('.marked').removeClass('marked');
     $('.marked-num').removeClass('marked-num');
     $('.shown').removeClass('shown');
@@ -87,7 +88,9 @@ function init() {
     $('.mvar').each(function() {
         var elm = $(this);
         var mvar = elm.attr('class').match(/mvar-(\d+)/)[1];
-        elm.hover(function() {
+        elm.mouseover(function(event) {
+            console.log('over ' + mvar);
+            cleanup();
             for (var i = 0; i < constrs.length; ++i) {
                 if ($.inArray(mvar, constrs[i][0]) != -1) {
                     $('.constr-' + i).addClass('shown');
@@ -98,7 +101,9 @@ function init() {
                     }
                 }
             }
-        }, cleanup);
+            event.stopPropagation();
+            return false;
+        });
     });
 }
 
