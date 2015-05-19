@@ -34,5 +34,10 @@ Besides what the original paper had, we have:
     * from the things that don't have to be `R`, keep the dep graph (this will be small)
     * there are also "inner" variables that relate the fun body to other functions -- nonreducible at this point (?)
         * or shall we run the solver after every definition?
+        * yes, we will; that will replace most mvars with `R`, leaving just the meat
+        * after every definition: reduce constraint set
+            * for current definition
+            * globally (because current definition may force some simplification in the global constraint set)
+        * then duplication won't hurt much
 * copy them for every `V n` reference
 * use upper+lower bounds to guide erasure
