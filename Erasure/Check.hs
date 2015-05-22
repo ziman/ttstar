@@ -113,11 +113,13 @@ lookup n = do
 runTC :: Ctx Meta Constrs -> TC a -> Either TCFailure a
 runTC ctx tc = evalState (runExceptT $ runReaderT tc ([], ctx)) 0
 
-check :: Program Meta -> Either TCFailure Constrs
+check :: Program Meta -> Either TCFailure (Ctx Meta Constrs, Constrs)
 check (Prog defs) = runTC M.empty $ checkDefs M.empty defs
 
-checkDefs :: Constrs -> [Def Meta] -> TC Constrs
-checkDefs cs [] = return cs
+checkDefs :: Constrs -> [Def Meta] -> TC (Ctx Meta Constrs, Constrs)
+checkDefs cs [] = do
+    ctx <- getCtx
+    return (ctx, cs)
 checkDefs cs (d:ds) = do
     (n, r, ty, mtm, dcs) <- checkDef d
     with' n r ty mtm dcs

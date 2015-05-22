@@ -82,9 +82,12 @@ main = do
             putStrLn "### Metaified ###\n"
             let metaified = meta prog
             printP metaified
+            putStrLn "### Inferred definitions ###\n"
+            let (ctx, cs) = either (error . show) id . check $ metaified
+            mapM_ (putStrLn . fmtCtx) $ M.toList ctx
+            putStrLn ""
             putStrLn "### Constraints ###\n"
-            let cs = either (error . show) id . check $ metaified
-            mapM_ (\(gs,cs) -> putStrLn $ show (S.toList cs) ++ " <- " ++ show (S.toList gs)) $ M.toList cs
+            mapM_ (putStrLn . fmtCtr) $ M.toList cs
             putStrLn ""
             putStrLn "### Solution ###\n"
             let uses = solve cs
@@ -97,3 +100,8 @@ main = do
             putStrLn "### Pruned ###\n"
             let pruned = prune annotated
             printP $ pruned
+  where
+    fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
+    fmtCtx (n, (r, ty, body, cs)) = n ++ " : " ++ prettyShow ty
+        ++ unlines (map (("  " ++) . fmtCtr) $ M.toList cs)
+
