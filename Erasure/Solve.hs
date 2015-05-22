@@ -11,22 +11,30 @@ type Guards = S.Set Meta
 type Uses = S.Set Meta
 type Constrs = M.Map Guards Uses
 
-solve :: Constrs -> Uses
-solve = fst . forwardChain
-
+-- reduce the constraint set, keeping the empty-guard constraint
 reduce :: Constrs -> Constrs
-reduce = snd . forwardChain
-
-forwardChain :: Constrs -> (Uses, Constrs)
-forwardChain = step $ S.singleton (Fixed R)
-
-step :: Uses -> Constrs -> (Uses, Constrs)
-step ans cs
-    | S.null new = (ans, prunedCs)
-    | otherwise = step ans' prunedCs
+reduce = step $ S.singleton (Fixed R)
   where
-    prunedCs_ans = M.mapKeysWith S.union (S.\\ ans) . M.map (S.\\ ans) $ cs
-    new = M.findWithDefault S.empty S.empty prunedCs_ans
-    ans' = S.union ans new
-    prunedCs = M.filterWithKey flt prunedCs_ans
-    flt gs us = not (S.null gs) && not (S.null us)
+    step :: Uses -> Constrs -> Constrs
+    step ans cs
+        | S.null new = prunedCs
+        | otherwise = step (S.union ans new) prunedCs
+      where
+        prunedCs_ans = M.mapKeysWith S.union (S.\\ ans) . M.map (S.\\ ans) $ cs
+        new = M.findWithDefault S.empty S.empty prunedCs_ans S.\\ ans
+        ans' = S.union ans new
+        prunedCs = M.filterWithKey flt prunedCs_ans
+        flt gs us = not (S.null us)
+
+solve :: Constrs -> Uses
+solve = step $ S.singleton (Fixed R)
+  where
+    step :: Uses -> Constrs -> Uses
+    step ans cs
+        | S.null new = ans
+        | otherwise = step (S.union ans new) prunedCs
+      where
+        prunedCs_ans = M.mapKeysWith S.union (S.\\ ans) . M.map (S.\\ ans) $ cs
+        new = M.findWithDefault S.empty S.empty prunedCs_ans
+        prunedCs = M.filterWithKey flt prunedCs_ans
+        flt gs us = not (S.null gs) && not (S.null us)
