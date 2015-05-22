@@ -6,6 +6,8 @@ import Erasure.Meta
 import qualified Erasure.Solve as Solve
 import Erasure.Solve hiding (reduce)
 
+import Prelude hiding (lookup)
+
 import Control.Monad
 import Control.Applicative
 import Control.Arrow
@@ -77,8 +79,14 @@ unions = M.unionsWith S.union
 noConstrs :: Constrs
 noConstrs = M.empty
 
-knowing :: Name -> Meta -> Type -> Maybe Term -> Constrs -> TC a -> TC a
-knowing n r ty mtm cs = local $ \(tb, ctx) -> (tb, M.insert n (r, ty, mtm, cs) ctx)
+cond :: Meta -> Constrs -> Constrs
+cond r = M.mapKeysWith S.union $ S.insert r
+
+with' :: Name -> Meta -> Type -> Maybe Term -> Constrs -> TC a -> TC a
+with' n r ty mtm cs = local $ \(tb, ctx) -> (tb, M.insert n (r, ty, mtm, cs) ctx)
+
+with :: Name -> Meta -> Type -> TC a -> TC a
+with n r ty = with' n r ty Nothing noConstrs
 
 bt :: Show a => a -> TC b -> TC b
 bt dbg = local . first $ (show dbg :)
@@ -87,6 +95,13 @@ tcfail :: TCError -> TC a
 tcfail e = do
     (tb, ctx) <- ask
     lift . throwE $ TCFailure e tb
+
+lookup :: Name -> TC (Meta, Type, Maybe Term, Constrs)
+lookup n = do
+    (tb, ctx) <- ask
+    case M.lookup n ctx of
+        Just x  -> return x
+        Nothing -> tcfail $ UnknownName n
 
 runTC :: Ctx Meta Constrs -> TC a -> Either TCFailure a
 runTC ctx tc = evalState (runExceptT $ runReaderT tc ([], ctx)) 0
@@ -98,21 +113,77 @@ checkDefs :: Constrs -> [Def Meta] -> TC Constrs
 checkDefs cs [] = return cs
 checkDefs cs (d:ds) = do
     (n, r, ty, mtm, dcs) <- checkDef d
-    knowing n r ty mtm dcs
+    with' n r ty mtm dcs
         $ checkDefs (dcs `union` cs) ds
 
 checkDef :: Def Meta -> TC (Name, Meta, Type, Maybe Term, Constrs)
 checkDef (Def n r ty Axiom) = return (n, r, ty, Nothing, noConstrs)
 checkDef (Def n r ty (Fun tm)) = bt ("DEF", n) $ do
     (tmr, tmty, tmcs) <- checkTm tm
-    let cs = tmcs /\ r --> tmr
+    tycs <- conv ty tmty
+    let cs = tycs /\ tmcs /\ r --> tmr
     return (n, r, ty, Just tm, cs)
 
 checkTm :: Term -> TC (Meta, Type, Constrs)
-checkTm tm = tcfail $ NotImplemented "checkTm"
 
+checkTm t@(V n) = bt ("VAR", n) $ do
+    (r, ty, mtm, cs) <- lookup n
+    return (r, ty, cs)
+
+checkTm t@(Bind Lam n r ty tm) = bt ("LAM", t) $ do
+    (tmr, tmty, tmcs) <- with n r ty $ checkTm tm
+    return (tmr, Bind Pi n r ty tmty, tmcs)
+
+checkTm t@(Bind Pi n r ty tm) = bt ("PI", t) $ do
+    (tmr, tmty, tmcs) <- with n r ty $ checkTm tm
+    return (tmr, Type, tmcs)
+
+checkTm t@(Bind Pat n r ty tm) = bt ("PAT", t) $ do
+    (tmr, tmty, tmcs) <- with n r ty $ checkTm tm
+    return (tmr, Bind Pat n r ty tmty, tmcs)
+
+checkTm t@(App r f x) = bt ("APP", t) $ do
+    (fr, fty, fcs) <- checkTm f
+    (xr, xty, xcs) <- checkTm x
+    case fty of
+        Bind Pi n' r' ty' retTy -> do
+            tycs <- conv xty ty'
+            let cs = tycs /\ fcs /\ cond r xcs /\ r --> r'
+            return (fr, subst n' x retTy, cs)
+
+        _ -> do
+            tcfail $ NonFunction f fty
+
+checkTm t@(Case s alts) = bt ("CASE", t) $ do
+    (sr, sty, scs) <- checkTm s
+    alts' <- mapM checkAlt alts
+    let cs = scs /\ unions [cs /\ sr --> r | (r, ty, cs) <- alts']
+    let ty = Case s [ty | (r, ty, cs) <- alts']
+    return (sr, ty, cs)
+
+checkTm Erased = return (Fixed I, Erased, noConstrs)
+checkTm Type   = return (Fixed I, Type,   noConstrs)
+
+checkAlt :: Alt Meta -> TC (Meta, Alt Meta, Constrs)
+checkAlt (DefaultCase tm) = do
+    (tmr, tmty, tmcs) <- checkTm tm
+    return (tmr, DefaultCase tmty, tmcs)
+
+checkAlt (ConCase cn r tm) = do
+    (cr, cty, Nothing, ccs) <- lookup cn
+    (tmr, tmty, tmcs) <- checkTm tm
+    argcs <- matchArgs cty args
+    return (tmr, ConCase cn r tmty, tmcs /\ argcs)
+  where
+    (args, rhs) = splitBinder Pat tm
+    matchArgs (Bind Pi n r ty tm) ((n', r', ty') : as) = do
+        xs <- conv ty ty'
+        ys <- matchArgs tm as
+        return $ xs /\ ys /\ r' --> r
+
+-- left: from context (from outside), right: from expression (from inside)
 conv :: Type -> Type -> TC Constrs
-conv p q = tcfail $ NotImplemented "conv"
+conv p q = tcfail $ CantConvert p q
 
 {-
 freshen :: TC TTmeta -> TC TTmeta
