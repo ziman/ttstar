@@ -1,7 +1,7 @@
 module Erasure.Check (check) where
 
 import TT
-import Reduce
+import Whnf
 import Erasure.Meta
 import qualified Erasure.Solve as Solve
 import Erasure.Solve hiding (reduce)

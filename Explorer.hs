@@ -1,7 +1,6 @@
 module Explorer (genHtml) where
 
 import TT
-import Reduce
 
 import Erasure.Meta
 import Erasure.Check

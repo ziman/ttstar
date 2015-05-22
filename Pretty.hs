@@ -2,7 +2,6 @@
 module Pretty (PrettyR(..)) where
 
 import TT
-import Reduce
 import Util.PrettyPrint
 
 class Show r => PrettyR r where

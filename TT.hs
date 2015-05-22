@@ -1,6 +1,7 @@
 module TT where
 
 import Data.List
+import qualified Data.Map as M
 
 type Name = String
 data Relevance = I | R deriving (Eq, Ord, Show)
@@ -22,6 +23,7 @@ data Alt r
 
 data DefType r = Axiom | Fun (TT r) deriving (Eq, Ord)
 data Def r = Def Name r (TT r) (DefType r) deriving (Eq, Ord)
+type Ctx r cs = M.Map Name (r, TT r, Maybe (TT r), cs)
 
 newtype Program r = Prog [Def r] deriving (Eq, Ord)
 
@@ -48,3 +50,38 @@ instance Functor Def where
 
 instance Functor Program where
     fmap f (Prog defs) = Prog (map (fmap f) defs)
+
+unApply :: TT r -> (TT r, [TT r])
+unApply tm = ua tm []
+  where
+    ua (App _ f x) args = ua f (x : args)
+    ua tm args = (tm, args)
+
+subst :: Name -> TT r -> TT r -> TT r
+subst n tm t@(V n')
+    | n' == n   = tm
+    | otherwise = t
+subst n tm t@(Bind b n' r ty tm')
+    | n' == n   = t
+    | otherwise = Bind b n' r (subst n tm ty) (subst n tm tm')
+subst n tm (App r f x) = App r (subst n tm f) (subst n tm x)
+subst n tm (Case s alts) = Case (subst n tm s) (map (substAlt n tm) alts)
+subst _ _  t@Erased = t
+subst _ _  t@Type   = t
+
+substAlt :: Name -> TT r -> Alt r -> Alt r
+substAlt n tm (DefaultCase tm') = DefaultCase $ subst n tm tm'
+substAlt n tm t@(ConCase cn r tm') = ConCase cn r $ subst n tm tm'
+
+-- split a Pat-packed pattern into 1. pattern vars, 2. RHS
+splitBinder :: Binder -> TT r -> ([(Name, r, TT r)], TT r)
+splitBinder bnd (Bind b n r ty tm)
+    | b == bnd
+    = ((n, r, ty) : args, rhs)
+  where
+    (args, rhs) = splitBinder bnd tm
+splitBinder bnd tm = ([], tm)
+
+fromPat :: Binder -> TT r -> TT r
+fromPat b (Bind Pat n r ty tm) = Bind b n r ty $ fromPat b tm
+fromPat b tm = tm
