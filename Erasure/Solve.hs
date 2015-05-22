@@ -12,10 +12,13 @@ type Uses = S.Set Meta
 type Constrs = M.Map Guards Uses
 
 solve :: Constrs -> Uses
-solve = fst . reduce
+solve = fst . forwardChain
 
-reduce :: Constrs -> (Uses, Constrs)
-reduce = step $ S.singleton (Fixed R)
+reduce :: Constrs -> Constrs
+reduce = snd . forwardChain
+
+forwardChain :: Constrs -> (Uses, Constrs)
+forwardChain = step $ S.singleton (Fixed R)
 
 step :: Uses -> Constrs -> (Uses, Constrs)
 step ans cs

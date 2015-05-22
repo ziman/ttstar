@@ -3,8 +3,7 @@ module Erasure.Check (check) where
 import TT
 import Whnf
 import Erasure.Meta
-import qualified Erasure.Solve as Solve
-import Erasure.Solve hiding (reduce)
+import Erasure.Solve
 
 import Prelude hiding (lookup)
 
@@ -122,8 +121,9 @@ checkDefs cs [] = do
     return (ctx, cs)
 checkDefs cs (d:ds) = do
     (n, r, ty, mtm, dcs) <- checkDef d
-    with' n r ty mtm dcs
-        $ checkDefs (dcs `union` cs) ds
+    let dcs' = reduce dcs
+    with' n r ty mtm dcs'
+        $ checkDefs (dcs' `union` cs) ds
 
 checkDef :: Def Meta -> TC (Name, Meta, Type, Maybe Term, Constrs)
 checkDef (Def n r ty Axiom) = return (n, r, ty, Nothing, noConstrs)
