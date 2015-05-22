@@ -7,31 +7,26 @@ import Control.Arrow (second)
 import qualified Data.Map as M
 import qualified Data.Set as S
 
+import Debug.Trace
+
 type Guards = S.Set Meta
 type Uses = S.Set Meta
 type Constrs = M.Map Guards Uses
 
 -- reduce the constraint set, keeping the empty-guard constraint
 reduce :: Constrs -> Constrs
-reduce = step $ S.singleton (Fixed R)
+reduce cs
+    | S.null (S.delete (Fixed R) us) = residue
+    | otherwise = M.insert S.empty us residue
   where
-    step :: Uses -> Constrs -> Constrs
-    step ans cs
-        | S.null new = prunedCs
-        | otherwise = step (S.union ans new) prunedCs
-      where
-        prunedCs_ans = M.mapKeysWith S.union (S.\\ ans) . M.map (S.\\ ans) $ cs
-        new = M.findWithDefault S.empty S.empty prunedCs_ans S.\\ ans
-        ans' = S.union ans new
-        prunedCs = M.filterWithKey flt prunedCs_ans
-        flt gs us = not (S.null us)
+    (us, residue) = solve cs
 
-solve :: Constrs -> Uses
+solve :: Constrs -> (Uses, Constrs)
 solve = step $ S.singleton (Fixed R)
   where
-    step :: Uses -> Constrs -> Uses
+    step :: Uses -> Constrs -> (Uses, Constrs)
     step ans cs
-        | S.null new = ans
+        | S.null new = (ans, prunedCs)
         | otherwise = step (S.union ans new) prunedCs
       where
         prunedCs_ans = M.mapKeysWith S.union (S.\\ ans) . M.map (S.\\ ans) $ cs

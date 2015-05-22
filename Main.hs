@@ -90,7 +90,7 @@ main = do
             mapM_ (putStrLn . fmtCtr) $ M.toList cs
             putStrLn ""
             putStrLn "### Solution ###\n"
-            let uses = solve cs
+            let (uses, residue) = solve cs
             print $ S.toList uses
             genHtml (fname ++ ".html") metaified cs uses
             putStrLn ""

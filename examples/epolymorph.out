@@ -172,6 +172,7 @@ id :?15: (_ :?16: Nat) -> Nat
   [?17] -> [?16]
 
 main :!R: Nat
+  [] -> [?14,!R]
   [?15,?54,?56,?70] -> [?17]
   [?15,?65,?69] -> [?17]
   [?16,?54,?56,?70] -> [?17]
@@ -297,6 +298,7 @@ two :?24: Nat
 
 ### Constraints ###
 
+[] -> [?14,!R]
 [?15] -> [?17]
 [?15,?54,?56] -> [?17]
 [?15,?54,?56,?70] -> [?17]
@@ -427,7 +429,7 @@ two :?24: Nat
 
 ### Solution ###
 
-[!R]
+[?14,!R]
 
 ### Annotated ###
 
@@ -458,7 +460,7 @@ Z = (axiom)
 S :I: (n :R: Nat) -> Nat
 S = (axiom)
 
-Plus :I: (x :R: Nat) -> (y :R: Nat) -> Nat
+Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
 Plus = (axiom)
 
 id :I: (_ :I: Nat) -> Nat
@@ -486,6 +488,8 @@ main :R: Nat
 main = (Plus -I- test_1 -I- test_2)
 
 ### Pruned ###
+
+Plus = (axiom)
 
 main = Plus
 
