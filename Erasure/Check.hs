@@ -53,12 +53,26 @@ type Sig = (Meta, Type, Constrs)  -- relevance, type, constraints
 type Term = TT Meta
 type Type = TT Meta
 
-infix 3 ~>
-(~>) :: [Meta] -> [Meta] -> Constrs
-gs ~> us = M.singleton (S.fromList gs) (S.fromList us)
+infixl 2 /\
+(/\) :: Constrs -> Constrs -> Constrs
+(/\) = union
+
+infix 3 -->
+(-->) :: Meta -> Meta -> Constrs
+g --> u = M.singleton (S.singleton g) (S.singleton u)
+
+infix 3 <-->
+(<-->) :: Meta -> Meta -> Constrs
+p <--> q = p --> q /\ q --> p
+
+eq :: Meta -> Meta -> Constrs
+eq p q = p <--> q
 
 union :: Constrs -> Constrs -> Constrs
 union = M.unionWith S.union
+
+unions :: [Constrs] -> Constrs
+unions = M.unionsWith S.union
 
 noConstrs :: Constrs
 noConstrs = M.empty
@@ -89,8 +103,16 @@ checkDefs cs (d:ds) = do
 
 checkDef :: Def Meta -> TC (Name, Meta, Type, Maybe Term, Constrs)
 checkDef (Def n r ty Axiom) = return (n, r, ty, Nothing, noConstrs)
-checkDef (Def n r ty (Fun tm)) = do
-    tcfail $ NotImplemented "foo"
+checkDef (Def n r ty (Fun tm)) = bt ("DEF", n) $ do
+    (tmr, tmty, tmcs) <- checkTm tm
+    let cs = tmcs /\ r --> tmr
+    return (n, r, ty, Just tm, cs)
+
+checkTm :: Term -> TC (Meta, Type, Constrs)
+checkTm tm = tcfail $ NotImplemented "checkTm"
+
+conv :: Type -> Type -> TC Constrs
+conv p q = tcfail $ NotImplemented "conv"
 
 {-
 freshen :: TC TTmeta -> TC TTmeta
