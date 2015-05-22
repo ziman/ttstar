@@ -14,10 +14,10 @@ reduce ctx t@(V n)
 
     | otherwise = t  -- unknown variable
 
-reduce ctx (Bind b r n ty tm) = Bind b r n (reduce ctx ty) (reduce ctx tm)
+reduce ctx (Bind b n r ty tm) = Bind b n r (reduce ctx ty) (reduce ctx tm)
 reduce ctx (App r f x)
 
-    | Bind Lam r' n' ty' tm' <- redF
+    | Bind Lam n' r' ty' tm' <- redF
     = reduce ctx $ subst n' x tm'
 
     | otherwise = App r redF (reduce ctx x)
@@ -52,9 +52,9 @@ subst :: Name -> TT r -> TT r -> TT r
 subst n tm t@(V n')
     | n' == n   = tm
     | otherwise = t
-subst n tm t@(Bind b r n' ty tm')
+subst n tm t@(Bind b n' r ty tm')
     | n' == n   = t
-    | otherwise = Bind b r n' (subst n tm ty) (subst n tm tm')
+    | otherwise = Bind b n' r (subst n tm ty) (subst n tm tm')
 subst n tm (App r f x) = App r (subst n tm f) (subst n tm x)
 subst n tm (Case s alts) = Case (subst n tm s) (map (substAlt n tm) alts)
 subst _ _  t@Erased = t
@@ -66,7 +66,7 @@ substAlt n tm t@(ConCase cn r tm') = ConCase cn r $ subst n tm tm'
 
 -- split a Pat-packed pattern into 1. pattern vars, 2. RHS
 splitBinder :: Binder -> TT r -> ([(Name, r, TT r)], TT r)
-splitBinder bnd (Bind b r n ty tm)
+splitBinder bnd (Bind b n r ty tm)
     | b == bnd
     = ((n, r, ty) : args, rhs)
   where
@@ -74,5 +74,5 @@ splitBinder bnd (Bind b r n ty tm)
 splitBinder bnd tm = ([], tm)
 
 fromPat :: Binder -> TT r -> TT r
-fromPat b (Bind Pat r n ty tm) = Bind b r n ty $ fromPat b tm
+fromPat b (Bind Pat n r ty tm) = Bind b n r ty $ fromPat b tm
 fromPat b tm = tm

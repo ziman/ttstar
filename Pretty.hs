@@ -27,8 +27,8 @@ instance PrettyR (Maybe Relevance) where
 instance PrettyR r => Pretty (Program r) where
     pretty (Prog defs) = vcat $ map fmtDef defs
       where
-        fmtDef (Def _r n Erased dt) = text n <+> equals <+> fmtDT dt $$ blankLine
-        fmtDef (Def r n ty dt) =
+        fmtDef (Def n r Erased dt) = text n <+> equals <+> fmtDT dt $$ blankLine
+        fmtDef (Def n r ty dt) =
             pretty (n, r, ty)
             $$ text n <+> equals <+> fmtDT dt
             $$ blankLine
@@ -42,10 +42,10 @@ instance PrettyR r => Pretty (Name, r, TT r) where
 
 instance PrettyR r => Pretty (TT r) where
     pretty (V n) = text n
-    pretty (Bind Pi r n ty tm) = parens (pretty (n, r, ty)) <+> arrow <+> pretty tm
-    pretty (Bind Lam _r n Erased tm) = lam <> text n <> dot <+> pretty tm
-    pretty (Bind Lam r n ty tm) = lam <> pretty (n, r, ty) <> dot <+> pretty tm
-    pretty (Bind Pat r n ty tm) = text "pat " <> pretty (n, r, ty) <> dot <+> pretty tm
+    pretty (Bind Pi n r ty tm) = parens (pretty (n, r, ty)) <+> arrow <+> pretty tm
+    pretty (Bind Lam n r Erased tm) = lam <> text n <> dot <+> pretty tm
+    pretty (Bind Lam n r ty tm) = lam <> pretty (n, r, ty) <> dot <+> pretty tm
+    pretty (Bind Pat n r ty tm) = text "pat " <> pretty (n, r, ty) <> dot <+> pretty tm
     pretty (App r (V "S") x) = int $ 1 + count x
       where
         count (V "Z") = 0

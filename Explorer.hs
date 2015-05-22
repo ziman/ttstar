@@ -57,8 +57,8 @@ ul cls lis = "<ul class=\"" ++ cls ++ "\">" ++ unlines ["<li>" ++ s ++ "</li>" |
 
 term :: Uses -> TT Meta -> String
 term uses (V n) = span "var" $ name n
-term uses (Bind Pi r n ty tm) = span "pi" $ parens (nrty uses n r ty) ++ op " &#8594; " ++ term uses tm
-term uses (Bind Lam r n ty tm) = span "lambda" $ span "head" (op "&lambda; " ++ nrty uses n r ty ++ op ".") ++ term uses tm
+term uses (Bind Pi n r ty tm) = span "pi" $ parens (nrty uses n r ty) ++ op " &#8594; " ++ term uses tm
+term uses (Bind Lam n r ty tm) = span "lambda" $ span "head" (op "&lambda; " ++ nrty uses n r ty ++ op ".") ++ term uses tm
 term uses (App r f x) = span "app" . parens $ term uses f ++ app r ++ erasedSpan uses r (term uses x)
 term uses Type = span "star" "*"
 term uses Erased = span "erased" "____"
@@ -97,8 +97,8 @@ erasedCls uses m = erasure ++ " " ++ mvar
         | otherwise = ""
 
 htmlDef :: Uses -> Def Meta -> String
-htmlDef uses (Def r n ty Axiom) = div "def axiom" $ div "type" (nrty uses n r ty)
-htmlDef uses (Def r n ty (Fun tm)) =
+htmlDef uses (Def n r ty Axiom) = div "def axiom" $ div "type" (nrty uses n r ty)
+htmlDef uses (Def n r ty (Fun tm)) =
   div "def function" (
     div "type" (nrty uses n r ty)
     ++ div "definition" (

@@ -27,7 +27,7 @@ metaProg :: Program (Maybe Relevance) -> MetaM (Program Meta)
 metaProg (Prog defs) = Prog <$> mapM metaDef defs
 
 metaDef :: Def (Maybe Relevance) -> MetaM (Def Meta)
-metaDef (Def r n ty dt) = Def <$> freshM r <*> pure n <*> metaTm ty <*> metaDefType dt
+metaDef (Def n r ty dt) = Def <$> pure n <*> freshM r <*> metaTm ty <*> metaDefType dt
 
 metaDefType :: DefType (Maybe Relevance) -> MetaM (DefType Meta)
 metaDefType  Axiom   = return $ Axiom
@@ -39,7 +39,7 @@ freshM (Just r) = return $ Fixed r
 
 metaTm :: TT MRel -> MetaM TTmeta
 metaTm (V n) = return $ V n
-metaTm (Bind bnd r n ty tm) = Bind bnd <$> freshM r <*> pure n <*> metaTm ty <*> metaTm tm
+metaTm (Bind bnd n r ty tm) = Bind bnd <$> pure n <*> freshM r <*> metaTm ty <*> metaTm tm
 metaTm (App r f x) = App <$> freshM r <*> metaTm f <*> metaTm x
 metaTm (Case s alts) = Case <$> metaTm s <*> mapM metaAlt alts
 metaTm Erased = return Erased

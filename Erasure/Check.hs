@@ -30,6 +30,7 @@ data TCError
     | EmptyCaseTree TTmeta
     | CantMatch TTmeta TTmeta
     | InconsistentErasure Name
+    | NotImplemented String
     | Other String
     deriving (Eq, Ord, Show)
 
@@ -59,6 +60,20 @@ gs ~> us = M.singleton (S.fromList gs) (S.fromList us)
 union :: Constrs -> Constrs -> Constrs
 union = M.unionWith S.union
 
+noConstrs :: Constrs
+noConstrs = M.empty
+
+knowing :: Name -> Meta -> Type -> Maybe Term -> Constrs -> TC a -> TC a
+knowing n r ty mtm cs = local $ \(tb, ctx) -> (tb, M.insert n (r, ty, mtm, cs) ctx)
+
+bt :: Show a => a -> TC b -> TC b
+bt dbg = local . first $ (show dbg :)
+
+tcfail :: TCError -> TC a
+tcfail e = do
+    (tb, ctx) <- ask
+    lift . throwE $ TCFailure e tb
+
 runTC :: Ctx Meta Constrs -> TC a -> Either TCFailure a
 runTC ctx tc = evalState (runExceptT $ runReaderT tc ([], ctx)) 0
 
@@ -67,6 +82,15 @@ check (Prog defs) = runTC M.empty $ checkDefs M.empty defs
 
 checkDefs :: Constrs -> [Def Meta] -> TC Constrs
 checkDefs cs [] = return cs
+checkDefs cs (d:ds) = do
+    (n, r, ty, mtm, dcs) <- checkDef d
+    knowing n r ty mtm dcs
+        $ checkDefs (dcs `union` cs) ds
+
+checkDef :: Def Meta -> TC (Name, Meta, Type, Maybe Term, Constrs)
+checkDef (Def n r ty Axiom) = return (n, r, ty, Nothing, noConstrs)
+checkDef (Def n r ty (Fun tm)) = do
+    tcfail $ NotImplemented "foo"
 
 {-
 freshen :: TC TTmeta -> TC TTmeta
