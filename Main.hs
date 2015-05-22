@@ -102,6 +102,6 @@ main = do
             printP $ pruned
   where
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
-    fmtCtx (n, (r, ty, body, cs)) = n ++ " : " ++ prettyShow ty
+    fmtCtx (n, (r, ty, body, cs)) = prettyShow (n, r, ty) ++ "\n"
         ++ unlines (map (("  " ++) . fmtCtr) $ M.toList cs)
 

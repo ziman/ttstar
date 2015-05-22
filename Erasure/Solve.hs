@@ -22,8 +22,11 @@ forwardChain = step $ S.singleton (Fixed R)
 
 step :: Uses -> Constrs -> (Uses, Constrs)
 step ans cs
-    | S.null new = (ans, cs)
-    | otherwise = step (S.union ans new) prunedCs
+    | S.null new = (ans, prunedCs)
+    | otherwise = step ans' prunedCs
   where
-    prunedCs = M.mapKeysWith S.union (S.\\ ans) . M.map (S.\\ ans) $ cs
-    new = M.findWithDefault S.empty S.empty prunedCs
+    prunedCs_ans = M.mapKeysWith S.union (S.\\ ans) . M.map (S.\\ ans) $ cs
+    new = M.findWithDefault S.empty S.empty prunedCs_ans
+    ans' = S.union ans new
+    prunedCs = M.filterWithKey flt prunedCs_ans
+    flt gs us = not (S.null gs) && not (S.null us)
