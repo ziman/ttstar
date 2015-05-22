@@ -47,6 +47,7 @@ instance Show TCFailure where
 type TCState = Int
 type TCTraceback = [String]
 type TC a = ReaderT (TCTraceback, Ctx Meta) (WriterT Constrs (ExceptT TCFailure (State TCState))) a
+type HalfTC a = ExceptT TCFailure (State TCState) a
 
 freshen :: TC TTmeta -> TC TTmeta
 freshen tc = tc
@@ -171,23 +172,22 @@ lookupName n = do
         Just x -> return x
         Nothing -> tcfail $ UnknownName n
 
+halfRunTC :: Ctx Meta -> TC a -> HalfTC (a, Constrs)
+halfRunTC ctx tc = runWriterT $ runReaderT tc ([], ctx)
+
+runHalfTC :: TCState -> HalfTC a -> Either TCFailure a
+runHalfTC st htc = evalState (runExceptT htc) st
+
 check :: Program Meta -> Either TCFailure Constrs
-check prog = afterState
-  where
-    afterReader = runReaderT (checkProgram prog) ([], M.empty)
-    afterWriter = execWriterT afterReader
-    afterExcept = runExceptT  afterWriter
-    afterState  = evalState   afterExcept 0
+check prog = runHalfTC 0 $ checkProgram prog
 
 reduce' :: TT Meta -> TC (TT Meta)
 reduce' tm = do
     (tb, ctx) <- ask
     return $ reduce ctx tm
 
-checkProgram :: Program Meta -> TC ()
-checkProgram (Prog defs) =
-    local (const ([], globals))
-        $ mapM_ checkDef defs
+checkProgram :: Program Meta -> HalfTC Constrs
+checkProgram (Prog defs) = snd <$> halfRunTC globals (mapM_ checkDef defs)
   where
     globals :: Ctx Meta
     globals = M.fromList $ map mkCtx defs
