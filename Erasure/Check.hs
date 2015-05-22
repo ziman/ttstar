@@ -96,6 +96,13 @@ tcfail e = do
     (tb, ctx) <- ask
     lift . throwE $ TCFailure e tb
 
+getCtx :: TC (Ctx Meta Constrs)
+getCtx = snd <$> ask
+
+require :: Bool -> TCError -> TC ()
+require True  e = return ()
+require False e = tcfail e
+
 lookup :: Name -> TC (Meta, Type, Maybe Term, Constrs)
 lookup n = do
     (tb, ctx) <- ask
@@ -183,7 +190,75 @@ checkAlt (ConCase cn r tm) = do
 
 -- left: from context (from outside), right: from expression (from inside)
 conv :: Type -> Type -> TC Constrs
-conv p q = tcfail $ CantConvert p q
+conv p q = do
+    ctx <- getCtx
+    conv' (whnf ctx p) (whnf ctx q)
+
+-- note that this function gets arguments in WHNF
+conv' :: Type -> Type -> TC Constrs
+
+-- whnf is variable (something irreducible, constructor or axiom)
+conv' (V n) (V n') = bt ("C-VAR", n, n') $ do
+    require (n == n') $ Mismatch n n'
+    return noConstrs
+
+conv' p@(Bind b n r ty tm) q@(Bind b' n' r' ty' tm') = bt ("C-BIND", p, q) $ do
+    require (b == b') $ Mismatch (show b) (show b')
+    xs <- conv ty (rename [n'] [n] ty')
+    ys <- with n r ty $ conv tm (rename [n'] [n] tm')
+    return $ xs /\ ys /\ r <--> r'
+
+-- whnf is application (application of something irreducible)
+conv' p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do
+    xs <- conv f f'
+    ys <- conv x x'
+    return $ xs /\ ys /\ r <--> r'
+
+conv' p@(Case s alts) q@(Case s' alts') = bt ("C-CASE", p, q) $ do
+    require (length alts == length alts') $ Mismatch (show alts) (show alts')
+    xs <- conv s s'
+    (sr, sty, scs) <- checkTm s
+    acs <- unions <$> zipWithM (convAlt sr sty) (L.sort alts) (L.sort alts')
+    return $ xs /\ scs /\ acs
+
+conv' Type   Type   = return noConstrs
+conv' Erased Erased = return noConstrs
+
+conv' p q = tcfail $ CantConvert p q
+
+convAlt :: Meta -> Type -> Alt Meta -> Alt Meta -> TC Constrs
+convAlt sr sty (DefaultCase tm) (DefaultCase tm') = bt ("CA-DEF", tm, tm') $ conv tm tm'
+convAlt sr sty p@(ConCase cn r tm) q@(ConCase cn' r' tm') = bt ("CA-CON", p, q) $ do
+    require (cn == cn') $ Mismatch cn cn'
+    (cr, cty, Nothing, _empty) <- lookup cn
+    let (ctyArgs, ctyRet) = splitBinder Pi cty
+    (xs, ctx) <- match ctyRet sty
+    ys <- conv (substMatch ctx cty tm) (substMatch ctx cty tm')
+    return $ xs /\ ys /\ r <--> r'
+    
+-- pattern, term
+match :: TT Meta -> TT Meta -> TC (Constrs, M.Map Name Term)
+match (V n) (V n') | n == n' = return (noConstrs, M.empty)
+match (V n) tm = return (noConstrs, M.singleton n tm)
+match (App r f x) (App r' f' x') = do
+    (xs, xmap) <- match f f'
+    (ys, ymap) <- match x x'
+    return (xs /\ ys /\ r <--> r', M.union xmap ymap)
+
+-- ctx, ctor type, pat+rhs
+substMatch :: M.Map Name Term -> Term -> Term -> Term
+substMatch ctx (Bind Pi n r ty tm) (Bind Pat n' r' ty' tm')
+    | Just x <- M.lookup n ctx
+    = substMatch ctx (subst n x tm) (subst n' x tm')
+
+    | otherwise
+    = substMatch ctx tm tm'
+substMatch ctx ctyRet rhs = rhs
+
+rename :: [Name] -> [Name] -> TTmeta -> TTmeta
+rename [] [] tm = tm
+rename (n : ns) (n' : ns') tm = rename ns ns' $ subst n (V n') tm
+rename _ _ _ = error "rename: incoherent args"
 
 {-
 freshen :: TC TTmeta -> TC TTmeta
@@ -203,11 +278,6 @@ require False e = tcfail e
 
 eq :: Meta -> Meta -> Constrs
 eq r r' = S.unions [[r] <~ [r'], [r'] <~ [r]]
-
-rename :: [Name] -> [Name] -> TTmeta -> TTmeta
-rename [] [] tm = tm
-rename (n : ns) (n' : ns') tm = rename ns ns' $ subst n (V n') tm
-rename _ _ _ = error "rename: incoherent args"
 
 conv :: TTmeta -> TTmeta -> TC ()
 conv (V n) (V n') = bt ("C-VAR", n, n') $ do

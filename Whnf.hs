@@ -26,8 +26,8 @@ whnf ctx t@Erased = t
 whnf ctx t@Type   = t
 
 redCase :: Ctx r cs -> TT r -> TT r -> [Alt r] -> TT r
-redCase ctx t _ (DefaultCase tm : _) = whnf ctx tm
-redCase ctx t s (ConCase cn r tm : as)
+redCase ctx fallback _ (DefaultCase tm : _) = whnf ctx tm
+redCase ctx fallback s (ConCase cn r tm : as)
     | (V scn, sargs) <- unApply s
     , scn == cn  -- it's the same constructor
     = whnf ctx $ replaceCore (fromPat Lam tm) s
@@ -36,5 +36,5 @@ redCase ctx t s (ConCase cn r tm : as)
     replaceCore newCore (App r f x) = App r (replaceCore newCore f) x
     replaceCore newCore _ = newCore
 
-redCase ctx t s (_ : as) = redCase ctx t s as
-redCase ctx t s [] = t
+redCase ctx fallback s (_ : as) = redCase ctx fallback s as
+redCase ctx fallback s [] = fallback
