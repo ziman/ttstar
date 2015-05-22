@@ -175,6 +175,9 @@ lookupName n = do
 halfRunTC :: Ctx Meta -> TC a -> HalfTC (a, Constrs)
 halfRunTC ctx tc = runWriterT $ runReaderT tc ([], ctx)
 
+halfExecTC :: Ctx Meta -> TC a -> HalfTC Constrs
+halfExecTC ctx tc = execWriterT $ runReaderT tc ([], ctx)
+
 runHalfTC :: TCState -> HalfTC a -> Either TCFailure a
 runHalfTC st htc = evalState (runExceptT htc) st
 
@@ -187,7 +190,7 @@ reduce' tm = do
     return $ reduce ctx tm
 
 checkProgram :: Program Meta -> HalfTC Constrs
-checkProgram (Prog defs) = snd <$> halfRunTC globals (mapM_ checkDef defs)
+checkProgram (Prog defs) = halfExecTC globals $ mapM_ checkDef defs
   where
     globals :: Ctx Meta
     globals = M.fromList $ map mkCtx defs
