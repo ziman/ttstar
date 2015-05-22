@@ -197,11 +197,11 @@ checkProgram (Prog defs) = halfExecTC globals $ mapM_ checkDef defs
 checkDefs :: Ctx Meta -> Constrs -> [Def Meta] -> HalfTC Constrs
 checkDefs ctx cs [] = return cs
 checkDefs ctx cs (d:ds) = do
-    (ctx', dcs) <- halfRunTC ctx $ checkDef d
+    (dctx, dcs) <- halfRunTC ctx $ checkDef d
     let (uses, rdcs) = Solve.reduce dcs
     if Fixed I `S.member` uses
         then throwE $ TCFailure (InconsistentErasure $ defName d) []
-        else checkDefs (M.union ctx' ctx) (S.union cs rdcs) ds
+        else checkDefs (M.union dctx ctx) (S.union rdcs cs) ds
   where
     defName (Def r n ty _) = n
 
