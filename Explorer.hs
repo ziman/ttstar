@@ -105,10 +105,10 @@ htmlDef uses (Def n r ty (Fun tm)) =
     )
   )
 
-htmlConstr :: (Int, (Guards, Uses)) -> String
-htmlConstr (i, (gs, us)) = span ("constr constr-" ++ show i) (
+htmlConstr :: (Int, (Uses, Guards)) -> String
+htmlConstr (i, (us, gs)) = span ("constr constr-" ++ show i) (
     span "uses" (htmlMetas $ S.toList us)
-    ++ op " &#8592; "
+    ++ op " &#8594; "
     ++ span "guards" (htmlMetas $ S.toList gs)
   ) ++ ", "
 
@@ -120,8 +120,8 @@ htmlMeta (Fixed R) = span "meta-R" "R"
 htmlMeta (Fixed I) = span "meta-I" "I"
 htmlMeta (MVar i j) = span ("meta mvar mvar-" ++ mv i j) (mv i j)
 
-jsConstr :: (Guards, Uses) -> String
-jsConstr (gs, us) = show [map num $ S.toList us, map num $ S.toList gs] ++ ",\n"
+jsConstr :: (Uses, Guards) -> String
+jsConstr (us, gs) = show [map num $ S.toList us, map num $ S.toList gs] ++ ",\n"
   where
     num (Fixed r) = show r
     num (MVar i j) = mv i j
