@@ -10,6 +10,7 @@ import Erasure.Solve
 import Data.List (intercalate)
 import Prelude hiding (div, span)
 import qualified Data.Set as S
+import qualified Data.Map as M
 
 htmlProg :: Uses -> Program Meta -> String
 htmlProg uses (Prog defs) = concatMap (htmlDef uses) defs
@@ -105,8 +106,8 @@ htmlDef uses (Def r n ty (Fun tm)) =
     )
   )
 
-htmlConstr :: (Int, Constr) -> String
-htmlConstr (i, us :<-: gs) = span ("constr constr-" ++ show i) (
+htmlConstr :: (Int, (Guards, Uses)) -> String
+htmlConstr (i, (gs, us)) = span ("constr constr-" ++ show i) (
     span "uses" (htmlMetas $ S.toList us)
     ++ op " &#8592; "
     ++ span "guards" (htmlMetas $ S.toList gs)
@@ -120,8 +121,8 @@ htmlMeta (Fixed R) = span "meta-R" "R"
 htmlMeta (Fixed I) = span "meta-I" "I"
 htmlMeta (MVar i j) = span ("meta mvar mvar-" ++ mv i j) (mv i j)
 
-jsConstr :: Constr -> String
-jsConstr (us :<-: gs) = show [map num $ S.toList us, map num $ S.toList gs] ++ ",\n"
+jsConstr :: (Guards, Uses) -> String
+jsConstr (gs, us) = show [map num $ S.toList us, map num $ S.toList gs] ++ ",\n"
   where
     num (Fixed r) = show r
     num (MVar i j) = mv i j
@@ -135,8 +136,8 @@ genHtml fname prog cs uses = do
         [ "<h2>Metaified program</h2>"
         , htmlProg uses prog
         , "<h2>Constraints</h2>"
-        , div "constraints" $ concatMap htmlConstr (zip [0..] $ S.toList cs)
+        , div "constraints" $ concatMap htmlConstr (zip [0..] $ M.toList cs)
         , "<script>var constrs=["
-        , concatMap jsConstr (S.toList cs)
+        , concatMap jsConstr (M.toList cs)
         , "[]];</script></body></html>"
         ]

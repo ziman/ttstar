@@ -1,4 +1,4 @@
-module Erasure.Check where
+module Erasure.Check (check) where
 
 import TT
 import Reduce
@@ -37,14 +37,38 @@ data TCFailure = TCFailure TCError [String]
 
 instance Show TCFailure where
     show (TCFailure e []) = show e
-    show (TCFailure e tb) = unlines (show e : "Traceback:" : zipWith (\i n -> show i ++ ". " ++ n) [1..] (reverse tb))
+    show (TCFailure e tb) = unlines $
+        show e : "Traceback:"
+            : zipWith
+                (\i n -> show i ++ ". " ++ n)
+                [1..]
+                (reverse tb)
 
 type TCState = Int
 type TCTraceback = [String]
-type TC a = ReaderT (TCTraceback, Ctx Meta) (WriterT Constrs (ExceptT TCFailure (State TCState))) a
-type HalfTC a = ExceptT TCFailure (State TCState) a
-type Nrty r = (Name, r, TT r)  -- name, relevance, type
+type TC a = ReaderT (TCTraceback, Ctx Meta Constrs) (ExceptT TCFailure (State TCState)) a
+type Sig = (Meta, Type, Constrs)  -- relevance, type, constraints
 
+type Term = TT Meta
+type Type = TT Meta
+
+infix 3 ~>
+(~>) :: [Meta] -> [Meta] -> Constrs
+gs ~> us = M.singleton (S.fromList gs) (S.fromList us)
+
+union :: Constrs -> Constrs -> Constrs
+union = M.unionWith S.union
+
+runTC :: Ctx Meta Constrs -> TC a -> Either TCFailure a
+runTC ctx tc = evalState (runExceptT $ runReaderT tc ([], ctx)) 0
+
+check :: Program Meta -> Either TCFailure Constrs
+check (Prog defs) = runTC M.empty $ checkDefs M.empty defs
+
+checkDefs :: Constrs -> [Def Meta] -> TC Constrs
+checkDefs cs [] = return cs
+
+{-
 freshen :: TC TTmeta -> TC TTmeta
 freshen tc = tc
 
@@ -168,10 +192,10 @@ lookupName n = do
         Just x -> return x
         Nothing -> tcfail $ UnknownName n
 
-halfRunTC :: Ctx Meta -> TC a -> HalfTC (a, Constrs)
+halfRunTC :: TCCtx -> TC a -> HalfTC (a, Constrs)
 halfRunTC ctx tc = runWriterT $ runReaderT tc ([], ctx)
 
-halfExecTC :: Ctx Meta -> TC a -> HalfTC Constrs
+halfExecTC :: TCCtx -> TC a -> HalfTC Constrs
 halfExecTC ctx tc = execWriterT $ runReaderT tc ([], ctx)
 
 runHalfTC :: TCState -> HalfTC a -> Either TCFailure a
@@ -186,15 +210,9 @@ reduce' tm = do
     return $ reduce ctx tm
 
 checkProgram :: Program Meta -> HalfTC Constrs
-checkProgram (Prog defs) = halfExecTC globals $ mapM_ checkDef defs
-  where
-    globals :: Ctx Meta
-    globals = M.fromList $ map mkCtx defs
-    
-    mkCtx (Def r n ty Axiom) = (n, (r, ty, Nothing))
-    mkCtx (Def r n ty (Fun tm)) = (n, (r, ty, Just tm))
+checkProgram (Prog defs) = halfExecTC M.empty $ mapM_ checkDef defs
 
-checkDefs :: Ctx Meta -> Constrs -> [Def Meta] -> HalfTC Constrs
+checkDefs :: TCCtx -> Constrs -> [Def Meta] -> HalfTC Constrs
 checkDefs ctx cs [] = return cs
 checkDefs ctx cs (d:ds) = do
     (dctx, dcs) <- halfRunTC ctx $ checkDef d
@@ -205,7 +223,7 @@ checkDefs ctx cs (d:ds) = do
   where
     defName (Def r n ty _) = n
 
-checkDef :: Def Meta -> TC (Ctx Meta)
+checkDef :: Def Meta -> TC TCCtx
 checkDef (Def r n ty Axiom) = return $ M.singleton n (r, ty, Nothing)
 checkDef (Def r n ty (Fun tm)) = bt ("FUNDECL", n) $ do
     tmTy <- reduce' =<< checkTm tm
@@ -263,3 +281,4 @@ checkAlt (ConCase cn r tm) = bt ("CONCASE", cn, tm) $ do
         conv ty ty'
         matchArgs tm as
     matchArgs _ _ = return ()
+-}

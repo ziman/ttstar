@@ -15,6 +15,7 @@ import Control.Applicative
 import Text.Parsec
 import System.Environment
 import qualified Data.Set as S
+import qualified Data.Map as M
 
 -- for every function f
 --   for every argument i
@@ -83,7 +84,7 @@ main = do
             printP metaified
             putStrLn "### Constraints ###\n"
             let cs = either (error . show) id . check $ metaified
-            mapM_ print $ S.toList cs
+            mapM_ (\(gs,cs) -> putStrLn $ show (S.toList cs) ++ " <- " ++ show (S.toList gs)) $ M.toList cs
             putStrLn ""
             putStrLn "### Solution ###\n"
             let uses = solve cs

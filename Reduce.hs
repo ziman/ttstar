@@ -3,11 +3,11 @@ module Reduce where
 import TT
 import qualified Data.Map as M
 
-type Ctx r = M.Map Name (r, TT r, Maybe (TT r))
+type Ctx r cs = M.Map Name (r, TT r, Maybe (TT r), cs)
 
-reduce :: Ctx r -> TT r -> TT r
+reduce :: Ctx r cs -> TT r -> TT r
 reduce ctx t@(V n)
-    | Just (r, ty, mtm) <- M.lookup n ctx
+    | Just (r, ty, mtm, cs) <- M.lookup n ctx
     = case mtm of
         Nothing -> t
         Just tm -> reduce ctx tm
@@ -28,7 +28,7 @@ reduce ctx t@(Case s alts) = redCase ctx t (reduce ctx s) alts
 reduce ctx t@Erased = t
 reduce ctx t@Type   = t
 
-redCase :: Ctx r -> TT r -> TT r -> [Alt r] -> TT r
+redCase :: Ctx r cs -> TT r -> TT r -> [Alt r] -> TT r
 redCase ctx t _ (DefaultCase tm : _) = reduce ctx tm
 redCase ctx t s (ConCase cn r tm : as)
     | (V scn, sargs) <- unApply s
