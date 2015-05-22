@@ -5,6 +5,7 @@ import Reduce
 
 import Erasure.Meta
 import Erasure.Check
+import Erasure.Solve
 
 import Data.List (intercalate)
 import Prelude hiding (div, span)

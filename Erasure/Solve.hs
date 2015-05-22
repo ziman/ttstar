@@ -2,11 +2,18 @@ module Erasure.Solve where
 
 import TT
 import Erasure.Meta
-import Erasure.Check
 
 import Control.Arrow (second)
 import qualified Data.Map as M
 import qualified Data.Set as S
+
+type Guards = S.Set Meta
+type Uses = S.Set Meta
+data Constr = Uses :<-: Guards deriving (Eq, Ord)
+type Constrs = S.Set Constr
+
+instance Show Constr where
+    show (us :<-: gs) = show (S.toList us) ++ " <- " ++ show (S.toList gs)
 
 type CMap = M.Map Guards Uses
 

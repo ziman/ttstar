@@ -3,6 +3,7 @@ module Erasure.Prune where
 import TT
 import Erasure.Meta
 import Erasure.Check
+import Erasure.Solve
 
 import qualified Data.Set as S
 

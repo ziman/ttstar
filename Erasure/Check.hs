@@ -3,6 +3,8 @@ module Erasure.Check where
 import TT
 import Reduce
 import Erasure.Meta
+import qualified Erasure.Solve as Solve
+import Erasure.Solve hiding (reduce)
 
 import Control.Monad
 import Control.Applicative
@@ -17,14 +19,6 @@ import qualified Data.List as L
 import qualified Data.Map as M
 import qualified Data.Set as S
 
-type Guards = S.Set Meta
-type Uses = S.Set Meta
-data Constr = Uses :<-: Guards deriving (Eq, Ord)
-type Constrs = S.Set Constr
-
-instance Show Constr where
-    show (us :<-: gs) = show (S.toList us) ++ " <- " ++ show (S.toList gs)
-
 data TCError
     = CantConvert TTmeta TTmeta
     | CantConvertAlt (Alt Meta) (Alt Meta)
@@ -35,6 +29,7 @@ data TCError
     | NonFunction TTmeta TTmeta  -- term, type
     | EmptyCaseTree TTmeta
     | CantMatch TTmeta TTmeta
+    | InconsistentErasure Name
     | Other String
     deriving (Eq, Ord, Show)
 
@@ -48,6 +43,7 @@ type TCState = Int
 type TCTraceback = [String]
 type TC a = ReaderT (TCTraceback, Ctx Meta) (WriterT Constrs (ExceptT TCFailure (State TCState))) a
 type HalfTC a = ExceptT TCFailure (State TCState) a
+type Nrty r = (Name, r, TT r)  -- name, relevance, type
 
 freshen :: TC TTmeta -> TC TTmeta
 freshen tc = tc
@@ -198,12 +194,24 @@ checkProgram (Prog defs) = halfExecTC globals $ mapM_ checkDef defs
     mkCtx (Def r n ty Axiom) = (n, (r, ty, Nothing))
     mkCtx (Def r n ty (Fun tm)) = (n, (r, ty, Just tm))
 
-checkDef :: Def Meta -> TC ()
-checkDef (Def r n ty Axiom) = return ()
+checkDefs :: Ctx Meta -> Constrs -> [Def Meta] -> HalfTC Constrs
+checkDefs ctx cs [] = return cs
+checkDefs ctx cs (d:ds) = do
+    (ctx', dcs) <- halfRunTC ctx $ checkDef d
+    let (uses, rdcs) = Solve.reduce dcs
+    if Fixed I `S.member` uses
+        then throwE $ TCFailure (InconsistentErasure $ defName d) []
+        else checkDefs (M.union ctx' ctx) (S.union cs rdcs) ds
+  where
+    defName (Def r n ty _) = n
+
+checkDef :: Def Meta -> TC (Ctx Meta)
+checkDef (Def r n ty Axiom) = return $ M.singleton n (r, ty, Nothing)
 checkDef (Def r n ty (Fun tm)) = bt ("FUNDECL", n) $ do
     tmTy <- reduce' =<< checkTm tm
     ty' <- reduce' ty
     bt ("RET-TY", ty', tmTy) $ conv ty' tmTy
+    return $ M.singleton n (r, ty, Just tm)
 
 checkTm :: TTmeta -> TC TTmeta
 checkTm t@(V n) = bt ("VAR", t) $ do
