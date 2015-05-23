@@ -151,13 +151,13 @@ checkTm t@(Bind Pat n r ty tm) = bt ("PAT", t) $ do
     (tmr, tmty, tmcs) <- with n r ty $ checkTm tm
     return (tmr, Bind Pat n r ty tmty, tmcs)
 
-checkTm t@(App r f x) = bt ("APP", t) $ do
+checkTm t@(App app_r f x) = bt ("APP", t) $ do
     (fr, fty, fcs) <- checkTm f
     (xr, xty, xcs) <- checkTm x
     case fty of
-        Bind Pi n' r' ty' retTy -> do
+        Bind Pi n' pi_r ty' retTy -> do
             tycs <- conv xty ty'
-            let cs = tycs /\ fcs /\ cond r xcs /\ r' --> r /\ r' --> xr
+            let cs = tycs /\ fcs /\ cond pi_r xcs /\ pi_r --> app_r /\ pi_r --> xr
             return (fr, subst n' x retTy, cs)
 
         _ -> do
