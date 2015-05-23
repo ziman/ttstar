@@ -174,21 +174,22 @@ checkTm Erased = return (Fixed I, Erased, noConstrs)
 checkTm Type   = return (Fixed I, Type,   noConstrs)
 
 checkAlt :: Alt Meta -> TC (Meta, Alt Meta, Constrs)
-checkAlt (DefaultCase tm) = do
+checkAlt (DefaultCase tm) = bt ("ALT-DEF", tm) $ do
     (tmr, tmty, tmcs) <- checkTm tm
     return (tmr, DefaultCase tmty, tmcs)
 
-checkAlt (ConCase cn r tm) = do
+checkAlt (ConCase cn r tm) = bt ("ALT-CON", cn, tm) $ do
     (cr, cty, Nothing, ccs) <- lookup cn
     (tmr, tmty, tmcs) <- checkTm tm
     argcs <- matchArgs cty args
     return (tmr, ConCase cn r tmty, tmcs /\ argcs)
   where
     (args, rhs) = splitBinder Pat tm
-    matchArgs (Bind Pi n r ty tm) ((n', r', ty') : as) = do
+    matchArgs p@(Bind Pi n r ty tm) q@((n', r', ty') : as) = bt ("MATCH-ARGS", p, q) $ do
         xs <- conv ty ty'
         ys <- matchArgs tm as
         return $ xs /\ ys /\ r' --> r
+    matchArgs p q = return noConstrs
 
 -- left: from context (from outside), right: from expression (from inside)
 conv :: Type -> Type -> TC Constrs
@@ -223,6 +224,10 @@ conv' p@(Case s alts) q@(Case s' alts') = bt ("C-CASE", p, q) $ do
     acs <- unions <$> zipWithM (convAlt sr sty) (L.sort alts) (L.sort alts')
     return $ xs /\ scs /\ acs
 
+-- last resort: uniform-case test
+conv' p@(Case _ _) q = conv' q p  -- won't loop because q /= Case
+conv' p q@(Case s alts) = bt ("UNIF-CASE", p, q) $ uniformCase p alts
+
 conv' Type   Type   = return noConstrs
 conv' Erased Erased = return noConstrs
 
@@ -237,6 +242,12 @@ convAlt sr sty p@(ConCase cn r tm) q@(ConCase cn' r' tm') = bt ("CA-CON", p, q) 
     (xs, ctx) <- match ctyRet sty
     ys <- conv (substMatch ctx cty tm) (substMatch ctx cty tm')
     return $ xs /\ ys /\ r <--> r'
+
+uniformCase :: Term -> [Alt Meta] -> TC Constrs
+uniformCase target alts = unions <$> mapM (simpleAlt target) alts
+  where
+    simpleAlt target (DefaultCase tm) = conv target tm
+    simpleAlt target (ConCase cn r tm) = conv target $ snd (splitBinder Pat tm)
     
 -- pattern, term
 match :: TT Meta -> TT Meta -> TC (Constrs, M.Map Name Term)
