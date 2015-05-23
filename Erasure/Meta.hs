@@ -20,8 +20,8 @@ instance PrettyR Meta where
     prettyCol x = colon <> showd x <> colon
     prettyApp x = text " -" <> showd x <> text "- "
 
-meta :: Program (Maybe Relevance) -> Program Meta
-meta prog = evalState (metaProg prog) 0
+meta :: Program (Maybe Relevance) -> (Program Meta, Int)
+meta prog = runState (metaProg prog) 0
 
 metaProg :: Program (Maybe Relevance) -> MetaM (Program Meta)
 metaProg (Prog defs) = Prog <$> mapM metaDef defs
