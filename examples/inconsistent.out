@@ -1,0 +1,35 @@
+-- vim: ft=agda
+
+### Desugared ###
+
+main  -R-  (x  -I-  *) -> *
+main = \x  -I-  *. *
+
+### Metaified ###
+
+main :!R: (x :!I: *) -> *
+main = \x :!I: *. *
+
+### Inferred definitions ###
+
+main :!R: (x :!I: *) -> *
+  [!I] -> [!I]
+
+
+### Constraints ###
+
+[!I] -> [!I]
+
+### Solution ###
+
+[!R]
+
+### Annotated ###
+
+main :R: (x :I: *) -> *
+main = \x :I: *. *
+
+### Pruned ###
+
+main = *
+

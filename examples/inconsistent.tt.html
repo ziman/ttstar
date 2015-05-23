@@ -90,9 +90,9 @@ function init() {
         elm.mouseover(function(event) {
             cleanup();
             for (var i = 0; i < constrs.length; ++i) {
-                if ($.inArray(mvar, constrs[i][0]) != -1) {
+                if ($.inArray(mvar, constrs[i][1]) != -1) {
                     $('.constr-' + i).addClass('shown');
-                    var gs = constrs[i][1];
+                    var gs = constrs[i][0];
                     for (var j = 0; j < gs.length; ++j) {
                         $('.def .mvar-' + gs[j]).addClass('marked');
                         $('.def .mvar-num-' + gs[j]).addClass('marked-num');
@@ -129,7 +129,7 @@ Erased things are <span class="nrty-I">grayed out</span>.</p>
 
 <h2>Constraints</h2>
 <div class="constraints">
-<span class="constr constr-0"><span class="uses"><span class="op">{</span><span class="meta-I">I</span><span class="op">}</span></span><span class="op"> &#8592; </span><span class="guards"><span class="op">{</span><span class="meta-I">I</span><span class="op">}</span></span></span>, 
+<span class="constr constr-0"><span class="uses"><span class="op">{</span><span class="meta-I">I</span><span class="op">}</span></span><span class="op"> &#8594; </span><span class="guards"><span class="op">{</span><span class="meta-I">I</span><span class="op">}</span></span></span>, 
 </div>
 
 <script>var constrs=[
