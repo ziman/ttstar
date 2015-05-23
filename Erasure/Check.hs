@@ -131,68 +131,68 @@ checkDefs cs (d:ds) = do
 checkDef :: Def Meta -> TC (Name, Meta, Type, Maybe Term, Constrs)
 checkDef (Def n r ty Axiom) = return (n, r, ty, Nothing, noConstrs)
 checkDef (Def n r ty (Fun tm)) = bt ("DEF", n) $ do
-    (tmr, tmty, tmcs) <- checkTm tm
+    (tmty, tmcs) <- checkTm tm
     tycs <- conv ty tmty
-    let cs = tycs /\ tmcs /\ r --> tmr
-    return (n, r, ty, Just tm, cs)
+    let cs = tycs /\ tmcs
+    return (n, r, ty, Just tm, cs)  -- cond r cs?
 
-checkTm :: Term -> TC (Meta, Type, Constrs)
+checkTm :: Term -> TC (Type, Constrs)
 
 checkTm t@(V n) = bt ("VAR", n) $ do
     (r, ty, mtm, cs) <- lookup n
     tag <- freshTag
-    return (r, tagTm tag ty, tagConstrs tag cs)
+    return (tagTm tag ty, tagConstrs tag cs /\ Fixed R --> r)
 
 checkTm t@(Bind Lam n r ty tm) = bt ("LAM", t) $ do
-    (tmr, tmty, tmcs) <- with n r ty $ checkTm tm
-    return (tmr, Bind Pi n r ty tmty, tmcs)
+    (tmty, tmcs) <- with n r ty $ checkTm tm
+    return (Bind Pi n r ty tmty, tmcs)
 
 checkTm t@(Bind Pi n r ty tm) = bt ("PI", t) $ do
-    (tmr, tmty, tmcs) <- with n r ty $ checkTm tm
-    return (tmr, Type, tmcs)
+    (tmty, tmcs) <- with n r ty $ checkTm tm
+    return (Type, tmcs)
 
 checkTm t@(Bind Pat n r ty tm) = bt ("PAT", t) $ do
-    (tmr, tmty, tmcs) <- with n r ty $ checkTm tm
-    return (tmr, Bind Pat n r ty tmty, tmcs)
+    (tmty, tmcs) <- with n r ty $ checkTm tm
+    return (Bind Pat n r ty tmty, tmcs)
 
 checkTm t@(App app_r f x) = bt ("APP", t) $ do
-    (fr, fty, fcs) <- checkTm f
-    (xr, xty, xcs) <- checkTm x
+    (fty, fcs) <- checkTm f
+    (xty, xcs) <- checkTm x
     case fty of
         Bind Pi n' pi_r ty' retTy -> do
             tycs <- conv xty ty'
-            let cs = tycs /\ fcs /\ cond pi_r xcs /\ pi_r --> app_r /\ app_r --> xr
-            return (fr, subst n' x retTy, cs)
+            let cs = tycs /\ fcs /\ cond pi_r xcs /\ pi_r --> app_r
+            return (subst n' x retTy, cs)
 
         _ -> do
             tcfail $ NonFunction f fty
 
 checkTm t@(Case s alts) = bt ("CASE", t) $ do
-    (sr, sty, scs) <- checkTm s
+    (sty, scs) <- checkTm s
     alts' <- mapM checkAlt alts
-    let cs = scs /\ unions [cs /\ sr --> r | (r, ty, cs) <- alts']
-    let ty = Case s [ty | (r, ty, cs) <- alts']
-    return (sr, ty, cs)
+    let cs = scs /\ unions [cs | (alt, cs) <- alts']
+    let ty = Case s [alt | (alt, cs) <- alts']
+    return (ty, cs)
 
-checkTm Erased = return (Fixed I, Erased, noConstrs)
-checkTm Type   = return (Fixed I, Type,   noConstrs)
+checkTm Erased = return (Erased, noConstrs)
+checkTm Type   = return (Type,   noConstrs)
 
-checkAlt :: Alt Meta -> TC (Meta, Alt Meta, Constrs)
+checkAlt :: Alt Meta -> TC (Alt Meta, Constrs)
 checkAlt (DefaultCase tm) = bt ("ALT-DEF", tm) $ do
-    (tmr, tmty, tmcs) <- checkTm tm
-    return (tmr, DefaultCase tmty, tmcs)
+    (tmty, tmcs) <- checkTm tm
+    return (DefaultCase tmty, tmcs)
 
 checkAlt (ConCase cn r tm) = bt ("ALT-CON", cn, tm) $ do
     (cr, cty, Nothing, ccs) <- lookup cn
-    (tmr, tmty, tmcs) <- checkTm tm
+    (tmty, tmcs) <- checkTm tm
     argcs <- matchArgs cty args
-    return (tmr, ConCase cn r tmty, tmcs /\ argcs)
+    return (ConCase cn r tmty, tmcs /\ argcs)
   where
     (args, rhs) = splitBinder Pat tm
     matchArgs p@(Bind Pi n r ty tm) q@((n', r', ty') : as) = bt ("MATCH-ARGS", p, q) $ do
         xs <- conv ty ty'
         ys <- matchArgs tm as
-        return $ xs /\ ys /\ r' --> r
+        return $ xs /\ ys /\ r' --> r  -- ?direction?
     matchArgs p q = return noConstrs
 
 tagMeta :: Int -> Meta -> Meta
@@ -238,8 +238,8 @@ conv' p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do
 conv' p@(Case s alts) q@(Case s' alts') = bt ("C-CASE", p, q) $ do
     require (length alts == length alts') $ Mismatch (show alts) (show alts')
     xs <- conv s s'
-    (sr, sty, scs) <- checkTm s
-    acs <- unions <$> zipWithM (convAlt sr sty) (L.sort alts) (L.sort alts')
+    (sty, scs) <- checkTm s
+    acs <- unions <$> zipWithM (convAlt sty) (L.sort alts) (L.sort alts')
     return $ xs /\ scs /\ acs
 
 -- last resort: uniform-case test
@@ -251,9 +251,9 @@ conv' Erased Erased = return noConstrs
 
 conv' p q = tcfail $ CantConvert p q
 
-convAlt :: Meta -> Type -> Alt Meta -> Alt Meta -> TC Constrs
-convAlt sr sty (DefaultCase tm) (DefaultCase tm') = bt ("CA-DEF", tm, tm') $ conv tm tm'
-convAlt sr sty p@(ConCase cn r tm) q@(ConCase cn' r' tm') = bt ("CA-CON", p, q) $ do
+convAlt :: Type -> Alt Meta -> Alt Meta -> TC Constrs
+convAlt sty (DefaultCase tm) (DefaultCase tm') = bt ("CA-DEF", tm, tm') $ conv tm tm'
+convAlt sty p@(ConCase cn r tm) q@(ConCase cn' r' tm') = bt ("CA-CON", p, q) $ do
     require (cn == cn') $ Mismatch cn cn'
     (cr, cty, Nothing, _empty) <- lookup cn
     let (ctyArgs, ctyRet) = splitBinder Pi cty
