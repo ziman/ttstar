@@ -7,6 +7,7 @@ import Erasure.Solve
 
 import Prelude hiding (lookup)
 
+import Data.Foldable
 import Control.Monad
 import Control.Applicative
 import Control.Arrow
@@ -19,6 +20,8 @@ import Control.Monad.Trans.Reader
 import qualified Data.List as L
 import qualified Data.Map as M
 import qualified Data.Set as S
+
+import Debug.Trace
 
 data TCError
     = CantConvert TTmeta TTmeta
@@ -141,7 +144,8 @@ checkTm :: Term -> TC (Type, Constrs)
 checkTm t@(V n) = bt ("VAR", n) $ do
     (r, ty, mtm, cs) <- lookup n
     tag <- freshTag
-    return (tagTm tag ty, tagConstrs tag cs /\ Fixed R --> r)
+    let (ty', cs') = freshen tag (ty, cs)
+    return (ty', cs' /\ Fixed R --> r)
 
 checkTm t@(Bind Lam n r ty tm) = bt ("LAM", t) $ do
     (tmty, tmcs) <- with n r ty $ checkTm tm
@@ -155,13 +159,13 @@ checkTm t@(Bind Pat n r ty tm) = bt ("PAT", t) $ do
     (tmty, tmcs) <- with n r ty $ checkTm tm
     return (Bind Pat n r ty tmty, tmcs)
 
-checkTm t@(App app_r f x) = bt ("APP", t) $ do
+checkTm t@(App app_pi_r app_r f x) = bt ("APP", t) $ do
     (fty, fcs) <- checkTm f
     (xty, xcs) <- checkTm x
     case fty of
         Bind Pi n' pi_r ty' retTy -> do
             tycs <- conv xty ty'
-            let cs = tycs /\ fcs /\ cond pi_r xcs /\ pi_r --> app_r
+            let cs = tycs /\ fcs /\ cond pi_r xcs /\ pi_r --> app_r /\ base pi_r --> app_pi_r
             return (subst n' x retTy, cs)
 
         _ -> do
@@ -195,19 +199,24 @@ checkAlt (ConCase cn r tm) = bt ("ALT-CON", cn, tm) $ do
         return $ xs /\ ys /\ r' --> r  -- ?direction?
     matchArgs p q = return noConstrs
 
+base :: Meta -> Meta
+base (MVar i _) = MVar i 0
+base m = m
+
 tagMeta :: Int -> Meta -> Meta
 tagMeta tag (MVar i j)
     | tag <= j = error "tagMeta: tag not fresh"
     | otherwise = MVar i tag
 tagMeta tag m = m
 
-tagTm :: Int -> Term -> Term
-tagTm tag = fmap $ tagMeta tag
-
-tagConstrs :: Int -> Constrs -> Constrs
-tagConstrs tag = M.mapKeysWith S.union tagSet . M.map tagSet
+freshen :: Int -> (Type, Constrs) -> (Type, Constrs)
+freshen tag (ty, cs) = (ty', cs' /\ backArrows)
   where
+    ty' = fmap (tagMeta tag) ty
+    cs' = M.mapKeysWith S.union tagSet . M.map tagSet $ cs
     tagSet = S.map $ tagMeta tag
+    newMetas = fold $ fmap S.singleton ty'
+    backArrows = unions [MVar i j --> MVar i 0 | MVar i j <- S.toList newMetas]
 
 -- left: from context (from outside), right: from expression (from inside)
 conv :: Type -> Type -> TC Constrs
@@ -230,10 +239,10 @@ conv' p@(Bind b n r ty tm) q@(Bind b' n' r' ty' tm') = bt ("C-BIND", p, q) $ do
     return $ xs /\ ys /\ r <--> r'
 
 -- whnf is application (application of something irreducible)
-conv' p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do
+conv' p@(App pi_r r f x) q@(App pi_r' r' f' x') = bt ("C-APP", p, q) $ do
     xs <- conv f f'
     ys <- conv x x'
-    return $ xs /\ ys /\ r <--> r'
+    return $ xs /\ ys /\ r <--> r' /\ pi_r <--> pi_r'
 
 conv' p@(Case s alts) q@(Case s' alts') = bt ("C-CASE", p, q) $ do
     require (length alts == length alts') $ Mismatch (show alts) (show alts')
@@ -271,10 +280,10 @@ uniformCase target alts = unions <$> mapM (simpleAlt target) alts
 match :: TT Meta -> TT Meta -> TC (Constrs, M.Map Name Term)
 match (V n) (V n') | n == n' = return (noConstrs, M.empty)
 match (V n) tm = return (noConstrs, M.singleton n tm)
-match (App r f x) (App r' f' x') = do
+match (App pi_r r f x) (App pi_r' r' f' x') = do
     (xs, xmap) <- match f f'
     (ys, ymap) <- match x x'
-    return (xs /\ ys /\ r <--> r', M.union xmap ymap)
+    return (xs /\ ys /\ r <--> r' /\ pi_r <--> pi_r', M.union xmap ymap)
 
 -- ctx, ctor type, pat+rhs
 substMatch :: M.Map Name Term -> Term -> Term -> Term

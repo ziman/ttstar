@@ -66,6 +66,12 @@ import qualified Data.Map as M
 -- ifl : python backend
 -- pldi : erasure
 -- meetings every other tuesday afternoon starting with 19.5.2015
+--
+-- ***
+--
+-- general rule:
+-- we always assume we're in a completely relevant environment
+-- the environment will insert conditions using "cond" if that's not the case but we mustn't care about this
 
 
 main :: IO ()

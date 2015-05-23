@@ -45,13 +45,13 @@ instance PrettyR r => Pretty (TT r) where
     pretty (Bind Lam n r Erased tm) = lam <> text n <> dot <+> pretty tm
     pretty (Bind Lam n r ty tm) = lam <> pretty (n, r, ty) <> dot <+> pretty tm
     pretty (Bind Pat n r ty tm) = text "pat " <> pretty (n, r, ty) <> dot <+> pretty tm
-    pretty (App r (V "S") x) = int $ 1 + count x
+    pretty (App pi_r r (V "S") x) = int $ 1 + count x
       where
         count (V "Z") = 0
-        count (App r (V "S") x) = 1 + count x
-    pretty (App r f x) = parens $ show' r f x
+        count (App pi_r r (V "S") x) = 1 + count x
+    pretty (App pi_r r f x) = parens $ show' r f x
       where
-        show' r (App r' f' x') x = show' r' f' x' <> prettyApp r <> pretty x
+        show' r (App pi_r' r' f' x') x = show' r' f' x' <> prettyApp r <> pretty x
         show' r f x = pretty f <> prettyApp r <> pretty x
     pretty (Case s alts) =
         blankLine

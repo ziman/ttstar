@@ -1,6 +1,8 @@
 module TT where
 
 import Data.List
+import Data.Foldable
+import Data.Monoid
 import qualified Data.Map as M
 
 type Name = String
@@ -10,7 +12,7 @@ data Binder = Lam | Pi | Pat deriving (Eq, Ord, Show)
 data TT r
     = V Name
     | Bind Binder Name r (TT r) (TT r)
-    | App r (TT r) (TT r)
+    | App r r (TT r) (TT r)
     | Case (TT r) [Alt r]  -- scrutinee, scrutinee type, alts
     | Type
     | Erased
@@ -32,7 +34,7 @@ type MRel = Maybe Relevance
 instance Functor TT where
     fmap _ (V n) = V n
     fmap f (Bind b n r ty tm) = Bind b n (f r) (fmap f ty) (fmap f tm)
-    fmap f (App r fun arg) = App (f r) (fmap f fun) (fmap f arg)
+    fmap f (App pi_r r fun arg) = App (f pi_r) (f r) (fmap f fun) (fmap f arg)
     fmap f (Case s alts) = Case (fmap f s) (map (fmap f) alts)
     fmap _ Erased = Erased
     fmap _ Type = Type
@@ -51,10 +53,22 @@ instance Functor Def where
 instance Functor Program where
     fmap f (Prog defs) = Prog (map (fmap f) defs)
 
+instance Foldable TT where
+    fold (V n) = mempty
+    fold (Bind b n r ty tm) = r `mappend` fold ty `mappend` fold tm
+    fold (App pi_r r f x) = pi_r `mappend` r `mappend` fold f `mappend` fold x
+    fold (Case s alts) = fold s `mappend` mconcat (map fold alts)
+    fold Erased = mempty
+    fold Type = mempty
+
+instance Foldable Alt where
+    fold (ConCase cn r tm) = r `mappend` fold tm
+    fold (DefaultCase tm) = fold tm
+
 unApply :: TT r -> (TT r, [TT r])
 unApply tm = ua tm []
   where
-    ua (App _ f x) args = ua f (x : args)
+    ua (App _ _ f x) args = ua f (x : args)
     ua tm args = (tm, args)
 
 subst :: Name -> TT r -> TT r -> TT r
@@ -64,7 +78,7 @@ subst n tm t@(V n')
 subst n tm t@(Bind b n' r ty tm')
     | n' == n   = t
     | otherwise = Bind b n' r (subst n tm ty) (subst n tm tm')
-subst n tm (App r f x) = App r (subst n tm f) (subst n tm x)
+subst n tm (App pi_r r f x) = App pi_r r (subst n tm f) (subst n tm x)
 subst n tm (Case s alts) = Case (subst n tm s) (map (substAlt n tm) alts)
 subst _ _  t@Erased = t
 subst _ _  t@Type   = t
