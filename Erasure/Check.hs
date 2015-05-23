@@ -157,7 +157,7 @@ checkTm t@(App r f x) = bt ("APP", t) $ do
     case fty of
         Bind Pi n' r' ty' retTy -> do
             tycs <- conv xty ty'
-            let cs = tycs /\ fcs /\ cond r xcs /\ r --> r'
+            let cs = tycs /\ fcs /\ cond r xcs /\ r' --> r
             return (fr, subst n' x retTy, cs)
 
         _ -> do
