@@ -109,14 +109,14 @@ lookup n = do
         Just x  -> return x
         Nothing -> tcfail $ UnknownName n
 
-freshen :: (Type, Constrs) -> TC (Type, Constrs)
-freshen = undefined
+freshTag :: TC Int
+freshTag = lift $ lift (modify (+1) >> get)
 
-runTC :: Int -> Ctx Meta Constrs -> TC a -> Either TCFailure a
-runTC maxMvarNo ctx tc = evalState (runExceptT $ runReaderT tc ([], ctx)) maxMvarNo
+runTC :: Ctx Meta Constrs -> TC a -> Either TCFailure a
+runTC ctx tc = evalState (runExceptT $ runReaderT tc ([], ctx)) 0
 
-check :: Int -> Program Meta -> Either TCFailure (Ctx Meta Constrs, Constrs)
-check maxMvarNo (Prog defs) = runTC maxMvarNo M.empty $ checkDefs M.empty defs
+check :: Program Meta -> Either TCFailure (Ctx Meta Constrs, Constrs)
+check (Prog defs) = runTC M.empty $ checkDefs M.empty defs
 
 checkDefs :: Constrs -> [Def Meta] -> TC (Ctx Meta Constrs, Constrs)
 checkDefs cs [] = do
@@ -140,8 +140,8 @@ checkTm :: Term -> TC (Meta, Type, Constrs)
 
 checkTm t@(V n) = bt ("VAR", n) $ do
     (r, ty, mtm, cs) <- lookup n
-    (ty', cs') <- freshen (ty, cs)  -- for erasure polymorphism
-    return (r, ty', cs')
+    tag <- freshTag
+    return (r, tagTm tag ty, tagConstrs tag cs)
 
 checkTm t@(Bind Lam n r ty tm) = bt ("LAM", t) $ do
     (tmr, tmty, tmcs) <- with n r ty $ checkTm tm
@@ -161,7 +161,7 @@ checkTm t@(App app_r f x) = bt ("APP", t) $ do
     case fty of
         Bind Pi n' pi_r ty' retTy -> do
             tycs <- conv xty ty'
-            let cs = tycs /\ fcs /\ cond pi_r xcs /\ pi_r --> app_r /\ pi_r --> xr
+            let cs = tycs /\ fcs /\ cond pi_r xcs /\ pi_r --> app_r /\ app_r --> xr
             return (fr, subst n' x retTy, cs)
 
         _ -> do
@@ -194,6 +194,20 @@ checkAlt (ConCase cn r tm) = bt ("ALT-CON", cn, tm) $ do
         ys <- matchArgs tm as
         return $ xs /\ ys /\ r' --> r
     matchArgs p q = return noConstrs
+
+tagMeta :: Int -> Meta -> Meta
+tagMeta tag (MVar i j)
+    | tag <= j = error "tagMeta: tag not fresh"
+    | otherwise = MVar i tag
+tagMeta tag m = m
+
+tagTm :: Int -> Term -> Term
+tagTm tag = fmap $ tagMeta tag
+
+tagConstrs :: Int -> Constrs -> Constrs
+tagConstrs tag = M.mapKeysWith S.union tagSet . M.map tagSet
+  where
+    tagSet = S.map $ tagMeta tag
 
 -- left: from context (from outside), right: from expression (from inside)
 conv :: Type -> Type -> TC Constrs

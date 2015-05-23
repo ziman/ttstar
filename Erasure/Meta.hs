@@ -13,15 +13,15 @@ type MetaM = State Int
 
 instance Show Meta where
     show (MVar i 0) = "?" ++ show i
-    show (MVar i j) = "?" ++ show i ++ "/" ++ show j
+    show (MVar i j) = "?" ++ show i ++ "_" ++ show j
     show (Fixed r) = "!" ++ show r
 
 instance PrettyR Meta where
     prettyCol x = colon <> showd x <> colon
     prettyApp x = text " -" <> showd x <> text "- "
 
-meta :: Program (Maybe Relevance) -> (Program Meta, Int)
-meta prog = runState (metaProg prog) 0
+meta :: Program (Maybe Relevance) -> Program Meta
+meta prog = evalState (metaProg prog) 0
 
 metaProg :: Program (Maybe Relevance) -> MetaM (Program Meta)
 metaProg (Prog defs) = Prog <$> mapM metaDef defs
@@ -48,6 +48,3 @@ metaTm Type = return Type
 metaAlt :: Alt (Maybe Relevance) -> MetaM (Alt Meta)
 metaAlt (DefaultCase tm) = DefaultCase <$> metaTm tm
 metaAlt (ConCase cn r tm) = ConCase cn <$> freshM r <*> metaTm tm
-
--- Polymorphism
--- differently-typed case alts

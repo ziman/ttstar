@@ -80,10 +80,10 @@ main = do
             putStrLn "### Desugared ###\n"
             printP prog
             putStrLn "### Metaified ###\n"
-            let (metaified, maxMvarNo) = meta prog
+            let metaified = meta prog
             printP metaified
             putStrLn "### Inferred definitions ###\n"
-            let (ctx, cs) = either (error . show) id . check maxMvarNo $ metaified
+            let (ctx, cs) = either (error . show) id . check $ metaified
             mapM_ (putStrLn . fmtCtx) $ M.toList ctx
             putStrLn ""
             putStrLn "### Constraints ###\n"
