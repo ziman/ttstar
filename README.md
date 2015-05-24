@@ -11,6 +11,7 @@ Besides what the original paper had, we have:
 
 ### TODO
 * good error reporting
+* first-order evars for unlimited-rank polymorphism
 
 ### Secondary features
 * erasure explorer
