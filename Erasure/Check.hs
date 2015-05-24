@@ -64,7 +64,11 @@ infixl 2 /\
 
 infix 3 -->
 (-->) :: Meta -> Meta -> Constrs
-g --> u = M.singleton (S.singleton g) (S.singleton u)
+g --> u = g ~~> (u, R)
+
+infix 3 ~~>
+(~~>) :: Meta -> (Meta, Relevance) -> Constrs
+g ~~> (u, r) = M.singleton (S.singleton g) (M.singleton u r)
 
 infix 3 <-->
 (<-->) :: Meta -> Meta -> Constrs
@@ -74,16 +78,16 @@ eq :: Meta -> Meta -> Constrs
 eq p q = p <--> q
 
 union :: Constrs -> Constrs -> Constrs
-union = M.unionWith S.union
+union = M.unionWith unionU
 
 unions :: [Constrs] -> Constrs
-unions = M.unionsWith S.union
+unions = M.unionsWith unionU
 
 noConstrs :: Constrs
 noConstrs = M.empty
 
 cond :: Meta -> Constrs -> Constrs
-cond r = M.mapKeysWith S.union $ S.insert r
+cond r = M.mapKeysWith unionU $ S.insert r
 
 with :: Def Meta Constrs -> TC a -> TC a
 with d@(Def n r ty mtm mcs) = local $ \(tb, ctx) -> (tb, M.insert n d ctx)
@@ -144,7 +148,7 @@ checkTm t@(V n) = bt ("VAR", n) $ do
     case mcs of
         Nothing -> return (ty, Fixed R --> r)
         Just cs -> do
-            tag <- ("FRESH", n, cs) `traceShow` freshTag
+            tag <- freshTag
             let (ty', cs') = freshen tag (ty, cs)
             return (ty', cs' /\ Fixed R --> r)
 
@@ -210,10 +214,11 @@ freshen :: Int -> (Type, Constrs) -> (Type, Constrs)
 freshen tag (ty, cs) = (ty', cs' /\ backArrows)
   where
     ty' = fmap (tagMeta tag) ty
-    cs' = M.mapKeysWith S.union tagSet . M.map tagSet $ cs
-    tagSet = S.map $ tagMeta tag
-    newMetas = fold $ fmap S.singleton ty'
-    backArrows = unions [MVar i j --> MVar i 0 | MVar i j <- S.toList newMetas]
+    cs' = M.mapKeysWith unionU tagGuards . M.map tagUses $ cs
+    tagGuards = S.map $ tagMeta tag
+    tagUses = M.mapKeysWith lub $ tagMeta tag
+    oldTyMetas = fold $ fmap S.singleton ty
+    backArrows = unions [tagMeta tag m --> m /\ m ~~> (tagMeta tag m, N) | m <- S.toList oldTyMetas]
 
 -- left: from context (from outside), right: from expression (from inside)
 conv :: Type -> Type -> TC Constrs

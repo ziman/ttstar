@@ -97,7 +97,7 @@ main = do
             putStrLn ""
             putStrLn "### Solution ###\n"
             let (uses, residue) = solve cs
-            print $ S.toList uses
+            print $ M.toList uses
             genHtml (fname ++ ".html") metaified cs uses
             putStrLn ""
             putStrLn "### Annotated ###\n"
@@ -107,7 +107,10 @@ main = do
             let pruned = prune annotated
             printP $ pruned
   where
-    fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
+    fmtCtr :: (Guards, Uses) -> String
+    fmtCtr (gs,us) = show (S.toList gs) ++ " -> " ++ show (M.toList us)
+
+    fmtCtx :: (Name, Def Meta Constrs) -> String
     fmtCtx (n, (Def _n r ty mtm Nothing)) = prettyShow (n, r, ty)
     fmtCtx (n, (Def _n r ty mtm (Just cs))) = prettyShow (n, r, ty) ++ "\n"
         ++ unlines (map (("  " ++) . fmtCtr) $ M.toList cs)

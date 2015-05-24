@@ -13,6 +13,9 @@ type Guards = S.Set Meta
 type Uses = M.Map Meta Relevance
 type Constrs = M.Map Guards Uses
 
+unionU :: Uses -> Uses -> Uses
+unionU = M.unionWith lub
+
 -- reduce the constraint set, keeping the empty-guard constraint
 reduce :: Constrs -> Constrs
 reduce cs
@@ -22,7 +25,7 @@ reduce cs
     (us, residue) = solve cs
 
 solve :: Constrs -> (Uses, Constrs)
-solve = step $ S.singleton (M.Map (Fixed R) R)
+solve = step $ M.singleton (Fixed R) R
   where
     step :: Uses -> Constrs -> (Uses, Constrs)
     step ans cs
@@ -30,13 +33,11 @@ solve = step $ S.singleton (M.Map (Fixed R) R)
         | otherwise = step (ans `unionU` new) prunedCs
       where
         -- first, prune all guards by all metas mentioned in `ans`
-        prunedCs_ans = M.mapKeysWith unionU (S.\\ M.keySet ans) $ cs
+        prunedCs_ans = M.mapKeysWith unionU (S.\\ M.keysSet ans) $ cs
 
         -- then find out what's immediately deducible
         new = M.findWithDefault M.empty S.empty prunedCs_ans
 
         -- prune trivial implications
         prunedCs = M.filterWithKey flt prunedCs_ans
-        flt gs us = not (S.null gs) && not (S.null us)
-
-        unionU = M.unionWith lub
+        flt gs us = not (S.null gs) && not (M.null us)

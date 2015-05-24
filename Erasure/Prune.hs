@@ -10,6 +10,7 @@ import Erasure.Solve
 import Util.PrettyPrint
 
 import Control.Applicative
+import qualified Data.Map as M
 import qualified Data.Set as S
 
 annotate :: Uses -> Program Meta cs -> Program Relevance Void
@@ -18,9 +19,7 @@ annotate uses (Prog defs) = Prog $ map (annDef uses) defs
 annDef :: Uses -> Def Meta cs -> Def Relevance Void
 annDef uses (Def n r ty mtm mcs) = Def n (rel r) (rel <$> ty) (fmap rel <$> mtm) Nothing
   where
-    rel m
-        | m `S.member` uses = R
-        | otherwise         = E
+    rel m = M.findWithDefault E m uses
 
 prune :: Program Relevance Void -> Program () Void
 prune (Prog defs) = Prog $ concatMap pruneDef defs

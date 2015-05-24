@@ -45,8 +45,11 @@ nrty uses n r ty = erasedSpan uses r (name n ++ rel uses r ++ term uses ty ++ "\
         | Fixed _ <- r = span ("nrty " ++ cls)
         | MVar i j <- r = span ("nrty nrty-" ++ mv i j ++ " " ++ cls)
 
-    cls | r `S.member` uses = "nrty-R"
-        | otherwise = "nrty-E erased"
+    cls = case M.lookup r uses of
+        Just R -> "nrty-R"
+        Just N -> "nrty-N"
+        Just E -> "nrty-E"
+        Nothing -> "nrty-E"
 
 parens :: String -> String
 parens s = span "paren" "(" ++ s ++ span "paren" ")"
@@ -88,7 +91,7 @@ erasedCls :: Uses -> Meta -> String
 erasedCls uses m = erasure ++ " " ++ mvar
   where
     erasure
-        | m `S.member` uses = "not-erased"
+        | m `M.member` uses = "not-erased"
         | otherwise = "erased"
 
     mvar
@@ -105,11 +108,11 @@ htmlDef uses (Def n r ty (Just tm) mcs) =
     )
   )
 
-htmlConstr :: (Int, (Uses, Guards)) -> String
-htmlConstr (i, (us, gs)) = span ("constr constr-" ++ show i) (
-    span "uses" (htmlMetas $ S.toList us)
+htmlConstr :: (Int, (Guards, Uses)) -> String
+htmlConstr (i, (gs, us)) = span ("constr constr-" ++ show i) (
+    span "guards" (htmlMetas $ S.toList gs)
     ++ op " &#8594; "
-    ++ span "guards" (htmlMetas $ S.toList gs)
+    ++ span "uses" (htmlMetas $ S.toList $ M.keysSet us)
   ) ++ ", "
 
 htmlMetas :: [Meta] -> String
@@ -120,8 +123,8 @@ htmlMeta (Fixed R) = span "meta-R" "R"
 htmlMeta (Fixed E) = span "meta-E" "E"
 htmlMeta (MVar i j) = span ("meta mvar mvar-" ++ mv i j) (mv i j)
 
-jsConstr :: (Uses, Guards) -> String
-jsConstr (us, gs) = show [map num $ S.toList us, map num $ S.toList gs] ++ ",\n"
+jsConstr :: (Guards, Uses) -> String
+jsConstr (gs, us) = show [map num $ S.toList $ M.keysSet us, map num $ S.toList gs] ++ ",\n"
   where
     num (Fixed r) = show r
     num (MVar i j) = mv i j
