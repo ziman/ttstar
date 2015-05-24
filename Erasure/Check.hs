@@ -84,11 +84,8 @@ noConstrs = M.empty
 cond :: Meta -> Constrs -> Constrs
 cond r = M.mapKeysWith S.union $ S.insert r
 
-with' :: Name -> Meta -> Type -> Maybe Term -> Constrs -> TC a -> TC a
-with' n r ty mtm cs = local $ \(tb, ctx) -> (tb, M.insert n (r, ty, mtm, cs) ctx)
-
-with :: Name -> Meta -> Type -> TC a -> TC a
-with n r ty = with' n r ty Nothing noConstrs
+with :: Name -> Meta -> Type -> Maybe Term -> Constrs -> TC a -> TC a
+with n r ty mtm cs = local $ \(tb, ctx) -> (tb, M.insert n (r, ty, mtm, cs) ctx)
 
 bt :: Show a => a -> TC b -> TC b
 bt dbg = local . first $ (show dbg :)
@@ -128,7 +125,7 @@ checkDefs cs [] = do
 checkDefs cs (d:ds) = do
     (n, r, ty, mtm, dcs) <- checkDef d
     let dcs' = reduce dcs
-    with' n r ty mtm dcs'
+    with n r ty mtm dcs'
         $ checkDefs (dcs' `union` cs) ds
 
 checkDef :: Def Meta -> TC (Name, Meta, Type, Maybe Term, Constrs)
@@ -143,20 +140,26 @@ checkTm :: Term -> TC (Type, Constrs)
 
 checkTm t@(V n) = bt ("VAR", n) $ do
     (r, ty, mtm, cs) <- lookup n
-    tag <- freshTag
+    tag <- ("FRESH", n, cs) `traceShow` freshTag
     let (ty', cs') = freshen tag (ty, cs)
     return (ty', cs' /\ Fixed R --> r)
 
 checkTm t@(Bind Lam n r ty tm) = bt ("LAM", t) $ do
-    (tmty, tmcs) <- with n r ty $ checkTm tm
+    (tyty, tycs) <- checkTm ty
+    -- we omit "conv tyty Type"
+    (tmty, tmcs) <- with n r ty Nothing tycs $ checkTm tm
     return (Bind Pi n r ty tmty, tmcs)
 
 checkTm t@(Bind Pi n r ty tm) = bt ("PI", t) $ do
-    (tmty, tmcs) <- with n r ty $ checkTm tm
+    (tyty, tycs) <- checkTm ty
+    -- we omit "conv tyty Type"
+    (tmty, tmcs) <- with n r ty Nothing tycs $ checkTm tm
     return (Type, tmcs)
 
 checkTm t@(Bind Pat n r ty tm) = bt ("PAT", t) $ do
-    (tmty, tmcs) <- with n r ty $ checkTm tm
+    (tyty, tycs) <- checkTm ty
+    -- we omit "conv tyty Type"
+    (tmty, tmcs) <- with n r ty Nothing tycs $ checkTm tm
     return (Bind Pat n r ty tmty, tmcs)
 
 checkTm t@(App app_pi_r app_r f x) = bt ("APP", t) $ do
@@ -234,8 +237,10 @@ conv' (V n) (V n') = bt ("C-VAR", n, n') $ do
 
 conv' p@(Bind b n r ty tm) q@(Bind b' n' r' ty' tm') = bt ("C-BIND", p, q) $ do
     require (b == b') $ Mismatch (show b) (show b')
+    (tyty, tycs) <- checkTm ty
+    -- we omit "conv tyty Type"
     xs <- conv ty (rename [n'] [n] ty')
-    ys <- with n r ty $ conv tm (rename [n'] [n] tm')
+    ys <- with n r ty Nothing tycs $ conv tm (rename [n'] [n] tm')
     return $ xs /\ ys /\ r <--> r'
 
 -- whnf is application (application of something irreducible)
