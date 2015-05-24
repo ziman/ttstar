@@ -24,10 +24,11 @@ instance PrettyR (Maybe Relevance) where
     prettyApp (Just r) = prettyApp r
 
 instance PrettyR r => Pretty (Program r cs) where
-    pretty (Prog defs) = vcat $ map (($$ blankLine) . fmtDef) defs
+    pretty (Prog defs) = vcat $ map fmtDef defs
       where
-        fmtDef (Def n r Erased mtm cs) = fmtMT n mtm
-        fmtDef (Def n r ty mtm cs) = pretty (n, r, ty) $$ fmtMT n mtm
+        fmtDef (Def n r Erased Nothing cs) = empty
+        fmtDef (Def n r Erased mtm cs) = fmtMT n mtm $$ blankLine
+        fmtDef (Def n r ty mtm cs) = pretty (n, r, ty) $$ fmtMT n mtm $$ blankLine
 
         fmtMT n Nothing   = empty
         fmtMT n (Just tm) = text n <+> equals <+> pretty tm
@@ -42,10 +43,11 @@ instance PrettyR r => Pretty (TT r) where
     pretty (Bind Lam n r Erased tm) = lam <> text n <> dot <+> pretty tm
     pretty (Bind Lam n r ty tm) = lam <> pretty (n, r, ty) <> dot <+> pretty tm
     pretty (Bind Pat n r ty tm) = text "pat " <> pretty (n, r, ty) <> dot <+> pretty tm
-    pretty (App pi_r r (V "S") x) = int $ 1 + count x
+    pretty (App pi_r r (V "S") x) | Just i <- fromNat x = int $ 1+i
       where
-        count (V "Z") = 0
-        count (App pi_r r (V "S") x) = 1 + count x
+        fromNat (V "Z") = Just 0
+        fromNat (App pi_r r (V "S") x) = (1 +) `fmap` fromNat x
+        fromNat _ = Nothing
     pretty (App pi_r r f x) = parens $ show' r f x
       where
         show' r (App pi_r' r' f' x') x = show' r' f' x' <> prettyApp r <> pretty x

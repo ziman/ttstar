@@ -6,9 +6,10 @@ Besides what the original paper had, we have:
 * higher-order erasure
 * changing arities of functions
 * data constructor support
+* erasure polymorphism for let-bound names
+    * but not for lambda-bound names
 
 ### TODO
-* erasure polymorphism
 * good error reporting
 
 ### Secondary features

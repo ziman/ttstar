@@ -2,3 +2,67 @@
 
 ### Desugared ###
 
+Bool : *
+
+True : Bool
+
+False : Bool
+
+Nat : *
+
+Z : Nat
+
+S : (n  -R-  Nat) -> Nat
+
+Vec : (_ : Nat) -> (_ : *) -> *
+
+VNil : (a : *) -> (Vec Z a)
+
+VCons : (a : *) -> (n : Nat) -> (x : a) -> (xs : (Vec n a)) -> (Vec (S n) a)
+
+vlen : (a : *) -> (n : Nat) -> (xs : (Vec n a)) -> Nat
+vlen = \a : *. \n : Nat. \xs : (Vec n a). 
+  case xs of
+    VNil (a : *) -> Z
+    VCons (a : *) (n : Nat) (x : a) (xs : (Vec n a)) -> (S (vlen a n xs))
+
+testVec : (Vec 2 Bool)
+testVec = (VCons Bool 1 True (VCons Bool Z False (VNil Bool)))
+
+main  -R-  Nat
+main = (vlen Bool 2 testVec)
+
+### Metaified ###
+
+Bool :?1: *
+
+True :?2: Bool
+
+False :?3: Bool
+
+Nat :?4: *
+
+Z :?5: Nat
+
+S :?6: (n :!R: Nat) -> Nat
+
+Vec :?7: (_ :?8: Nat) -> (_ :?9: *) -> *
+
+VNil :?10: (a :?11: *) -> (Vec -?15- Z -?13- a)
+
+VCons :?16: (a :?17: *) -> (n :?18: Nat) -> (x :?19: a) -> (xs :?20: (Vec -?24- n -?22- a)) -> (Vec -?28- (S -?30- n) -?26- a)
+
+vlen :?31: (a :?32: *) -> (n :?33: Nat) -> (xs :?34: (Vec -?38- n -?36- a)) -> Nat
+vlen = \a :?39: *. \n :?40: Nat. \xs :?41: (Vec -?45- n -?43- a). 
+  case xs of
+    VNil (a :?46: *) -> Z
+    VCons (a :?47: *) (n :?48: Nat) (x :?49: a) (xs :?50: (Vec -?54- n -?52- a)) -> (S -?56- (vlen -?62- a -?60- n -?58- xs))
+
+testVec :?63: (Vec -?67- 2 -?65- Bool)
+testVec = (VCons -?79- Bool -?77- 1 -?75- True -?73- (VCons -?89- Bool -?87- Z -?85- False -?83- (VNil -?91- Bool)))
+
+main :!R: Nat
+main = (vlen -?97- Bool -?95- 2 -?93- testVec)
+
+### Inferred definitions ###
+
