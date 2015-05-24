@@ -10,26 +10,33 @@ import qualified Data.Set as S
 import Debug.Trace
 
 type Guards = S.Set Meta
-type Uses = S.Set Meta
+type Uses = M.Map Meta Relevance
 type Constrs = M.Map Guards Uses
 
 -- reduce the constraint set, keeping the empty-guard constraint
 reduce :: Constrs -> Constrs
 reduce cs
-    | S.null (S.delete (Fixed R) us) = residue
+    | M.null (M.delete (Fixed R) us) = residue
     | otherwise = M.insert S.empty us residue
   where
     (us, residue) = solve cs
 
 solve :: Constrs -> (Uses, Constrs)
-solve = step $ S.singleton (Fixed R)
+solve = step $ S.singleton (M.Map (Fixed R) R)
   where
     step :: Uses -> Constrs -> (Uses, Constrs)
     step ans cs
-        | S.null new = (ans, prunedCs)
-        | otherwise = step (S.union ans new) prunedCs
+        | M.null new = (ans, prunedCs)
+        | otherwise = step (ans `unionU` new) prunedCs
       where
-        prunedCs_ans = M.mapKeysWith S.union (S.\\ ans) . M.map (S.\\ ans) $ cs
-        new = M.findWithDefault S.empty S.empty prunedCs_ans
+        -- first, prune all guards by all metas mentioned in `ans`
+        prunedCs_ans = M.mapKeysWith unionU (S.\\ M.keySet ans) $ cs
+
+        -- then find out what's immediately deducible
+        new = M.findWithDefault M.empty S.empty prunedCs_ans
+
+        -- prune trivial implications
         prunedCs = M.filterWithKey flt prunedCs_ans
         flt gs us = not (S.null gs) && not (S.null us)
+
+        unionU = M.unionWith lub
