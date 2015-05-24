@@ -57,6 +57,10 @@ type Sig = (Meta, Type, Constrs)  -- relevance, type, constraints
 type Term = TT Meta
 type Type = TT Meta
 
+check :: Program Meta -> Either TCFailure (Ctx Meta Constrs, Constrs)
+check prog = undefined
+
+{-
 infixl 2 /\
 (/\) :: Constrs -> Constrs -> Constrs
 (/\) = union
@@ -304,3 +308,4 @@ rename :: [Name] -> [Name] -> TTmeta -> TTmeta
 rename [] [] tm = tm
 rename (n : ns) (n' : ns') tm = rename ns ns' $ subst n (V n') tm
 rename _ _ _ = error "rename: incoherent args"
+-}

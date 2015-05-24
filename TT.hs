@@ -4,15 +4,33 @@ import Data.List
 import Data.Foldable
 import Data.Monoid
 import qualified Data.Map as M
+import qualified Data.Set as S
 
 type Name = String
-data Relevance = I | R deriving (Eq, Ord, Show)
+
+data Relevance =
+      R  -- relevant: normal unerased argument
+    | N  -- null: to be replaced with a placeholder
+    | E  -- erased: completely removed
+    deriving (Eq, Ord, Show)
+
 data Binder = Lam | Pi | Pat deriving (Eq, Ord, Show)
+data MetaQ = E
+
+newtype Evar = EV Int  deriving (Eq, Ord)
+instance Show Evar where
+    show (EV i) = "e" ++ show i
+
+type Guards = S.Set Evar
+type Uses = S.Set (Evar, Relevance)
+type Constrs = M.Map Guards Uses
+data EAnn = Fixed Relevance | EV Name
 
 data TT r
     = V Name
-    | Bind Binder Name r (TT r) (TT r)
-    | App r r (TT r) (TT r)
+    | Evar Name Constrs (TT r)  -- meta quantifier
+    | Bind Binder Name r (TT r) (TT r)  -- binder, name, evar, type, term
+    | App r (TT r) (TT r)  -- name = evar
     | Case (TT r) [Alt r]  -- scrutinee, scrutinee type, alts
     | Type
     | Erased
