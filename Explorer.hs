@@ -121,6 +121,7 @@ htmlMetas ms = op "{" ++ intercalate (op ", ") (map htmlMeta ms) ++ op "}"
 htmlMeta :: Meta -> String
 htmlMeta (Fixed R) = span "meta-R" "R"
 htmlMeta (Fixed E) = span "meta-E" "E"
+htmlMeta (Fixed N) = span "meta-N" "N"
 htmlMeta (MVar i j) = span ("meta mvar mvar-" ++ mv i j) (mv i j)
 
 jsConstr :: (Guards, Uses) -> String

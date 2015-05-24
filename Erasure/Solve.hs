@@ -11,6 +11,7 @@ import Debug.Trace
 
 type Guards = S.Set Meta
 type Uses = M.Map Meta Relevance
+type Metas = S.Set Meta
 type Constrs = M.Map Guards Uses
 
 unionU :: Uses -> Uses -> Uses
@@ -25,19 +26,31 @@ reduce cs
     (us, residue) = solve cs
 
 solve :: Constrs -> (Uses, Constrs)
-solve = step $ M.singleton (Fixed R) R
+solve = step (S.singleton $ Fixed N) (S.singleton $ Fixed R)
   where
-    step :: Uses -> Constrs -> (Uses, Constrs)
-    step ans cs
-        | M.null new = (ans, prunedCs)
-        | otherwise = step (ans `unionU` new) prunedCs
-      where
-        -- first, prune all guards by all metas mentioned in `ans`
-        prunedCs_ans = M.mapKeysWith unionU (S.\\ M.keysSet ans) $ cs
+    step :: Metas -> Metas -> Constrs -> (Uses, Constrs)
+    step ns rs cs
+        | M.null newR && M.null newN
+        = (M.fromList $ [(m,N)|m<-S.toList ns] ++ [(m,R)|m<-S.toList rs], prunedCs)
 
-        -- then find out what's immediately deducible
-        new = M.findWithDefault M.empty S.empty prunedCs_ans
+        | otherwise = step (S.union ns newNM) (S.union rs newRM) prunedCs
+      where
+        -- first, prune all guards by all metas known to be R
+        prunedCs_R = M.mapKeysWith unionU (S.\\ rs) $ cs
+
+        -- then find out what's immediately deducible as R
+        newR = M.findWithDefault M.empty S.empty prunedCs_R
+
+        -- then, prune the rest by all metas known to be N
+        prunedCs_N = M.mapKeysWith unionU (S.\\ ns) $ prunedCs_R
+
+        -- find out what's deducible as N
+        newN = M.findWithDefault M.empty S.empty prunedCs_N
+
+        -- construct the resulting R- and N-sets
+        newRM = S.fromList [m | (m,R) <- M.toList newR]
+        newNM = S.fromList $ [m | (m,N) <- M.toList newR] ++ [m | (m,_) <- M.toList newN]
 
         -- prune trivial implications
-        prunedCs = M.filterWithKey flt prunedCs_ans
+        prunedCs = M.filterWithKey flt prunedCs_N
         flt gs us = not (S.null gs) && not (M.null us)

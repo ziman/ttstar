@@ -5,15 +5,13 @@ import Data.Foldable
 import Data.Monoid
 import qualified Data.Map as M
 
--- TODO:
--- DefType += Local
--- Uses += Map Evar Relevance
 -- TODO: single-dimensional MVar
 type Name = String
 data Relevance
     = E  -- erased: completely removed
     | N  -- null: replaced by NULL
     | R  -- relevant: untouched
+    -- TODO: I
     deriving (Eq, Ord, Show)
 data Binder = Lam | Pi | Pat deriving (Eq, Ord, Show)
 
