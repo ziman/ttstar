@@ -100,12 +100,15 @@ main = do
             print $ S.toList uses
             genHtml (fname ++ ".html") metaified cs uses
             putStrLn ""
-            putStrLn "### Annotated ###\n"
-            let annotated = annotate uses $ metaified
-            printP $ annotated
-            putStrLn "### Pruned ###\n"
-            let pruned = prune annotated
-            printP $ pruned
+            case Fixed E `S.member` uses of
+                True -> putStrLn "!! inconsistent annotation"
+                False -> do
+                    putStrLn "### Annotated ###\n"
+                    let annotated = annotate uses $ metaified
+                    printP $ annotated
+                    putStrLn "### Pruned ###\n"
+                    let pruned = prune annotated
+                    printP $ pruned
   where
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
     fmtCtx (n, (Def _n r ty mtm Nothing)) = prettyShow (n, r, ty)

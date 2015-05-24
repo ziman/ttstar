@@ -204,19 +204,19 @@ two :?27: Nat
 
 ### Annotated ###
 
-Bool :I: *
+Bool :E: *
 
-True :I: Bool
+True :E: Bool
 
-False :I: Bool
+False :E: Bool
 
-Maybe :I: (_ :I: *) -> *
+Maybe :E: (_ :E: *) -> *
 
-Just :I: (a :I: *) -> (_ :I: a) -> *
+Just :E: (a :E: *) -> (_ :E: a) -> *
 
-Nothing :I: (a :I: *) -> *
+Nothing :E: (a :E: *) -> *
 
-Nat :I: *
+Nat :E: *
 
 Z :R: Nat
 
@@ -227,23 +227,23 @@ Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
 id :R: (_ :R: Nat) -> Nat
 id = \y :R: Nat. y
 
-const_3 :R: (_ :I: Nat) -> Nat
-const_3 = \_ :I: Nat. 3
+const_3 :R: (_ :E: Nat) -> Nat
+const_3 = \_ :E: Nat. 3
 
-two :I: Nat
+two :E: Nat
 two = 2
 
-f :R: (g :R: (_ :R: Nat) -> Nat) -> (z :R: Nat) -> (h :R: (_ :I: Nat) -> Nat) -> (w :I: Nat) -> Nat
-f = \g :R: (_ :R: Nat) -> Nat. \z :R: Nat. \h :R: (_ :I: Nat) -> Nat. \w :I: Nat. (Plus -R- (g -R- z) -R- (h -I- w))
+f :R: (g :R: (_ :R: Nat) -> Nat) -> (z :R: Nat) -> (h :R: (_ :E: Nat) -> Nat) -> (w :E: Nat) -> Nat
+f = \g :R: (_ :R: Nat) -> Nat. \z :R: Nat. \h :R: (_ :E: Nat) -> Nat. \w :E: Nat. (Plus -R- (g -R- z) -R- (h -E- w))
 
 apply :R: (f :R: (_ :R: Nat) -> Nat) -> (_ :R: Nat) -> Nat
 apply = \f :R: (_ :R: Nat) -> Nat. \x :R: Nat. (f -R- x)
 
 test_1 :R: Nat
-test_1 = (Plus -R- (apply -R- id -R- 2) -R- (apply -R- const_3 -I- two))
+test_1 = (Plus -R- (apply -R- id -R- 2) -R- (apply -R- const_3 -E- two))
 
 test_2 :R: Nat
-test_2 = (f -R- id -R- 2 -R- const_3 -I- 1)
+test_2 = (f -R- id -R- 2 -R- const_3 -E- 1)
 
 main :R: Nat
 main = (Plus -R- test_1 -R- test_2)

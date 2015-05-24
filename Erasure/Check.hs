@@ -124,10 +124,12 @@ checkDefs cs [] = do
     ctx <- getCtx
     return (ctx, cs)
 checkDefs cs (d:ds) = do
-    Def n r ty mtm dcs <- checkDef d
+    Def n r ty mtm dcs <- with (bare d) $ checkDef d
     let dcs' = reduce <$> dcs
     with (Def n r ty mtm dcs')
         $ checkDefs (fromMaybe noConstrs dcs' `union` cs) ds
+  where
+    bare (Def n r ty mtm Nothing) = Def n r ty mtm Nothing
 
 checkDef :: Def Meta Void -> TC (Def Meta Constrs)
 checkDef (Def n r ty Nothing Nothing) = return $ Def n r ty Nothing Nothing
@@ -144,7 +146,7 @@ checkTm t@(V n) = bt ("VAR", n) $ do
     case mcs of
         Nothing -> return (ty, Fixed R --> r)
         Just cs -> do
-            tag <- ("FRESH", n, cs) `traceShow` freshTag
+            tag <- freshTag
             let (ty', cs') = freshen tag (ty, cs)
             return (ty', cs' /\ Fixed R --> r)
 

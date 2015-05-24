@@ -106,7 +106,7 @@ main :!R: T
 
 ### Annotated ###
 
-T :I: *
+T :E: *
 
 A :R: T
 
@@ -117,14 +117,14 @@ Op :R: (x :R: T) -> (y :R: T) -> T
 id :R: (_ :R: T) -> T
 id = \t :R: T. t
 
-const_A :R: (_ :I: T) -> T
-const_A = \_ :I: T. A
+const_A :R: (_ :E: T) -> T
+const_A = \_ :E: T. A
 
-f :R: (g :R: (_ :R: T) -> T) -> (z :R: T) -> (h :R: (_ :I: T) -> T) -> (w :I: T) -> T
-f = \g :R: (_ :R: T) -> T. \z :R: T. \h :R: (_ :I: T) -> T. \w :I: T. (Op -R- (g -R- z) -R- (h -I- w))
+f :R: (g :R: (_ :R: T) -> T) -> (z :R: T) -> (h :R: (_ :E: T) -> T) -> (w :E: T) -> T
+f = \g :R: (_ :R: T) -> T. \z :R: T. \h :R: (_ :E: T) -> T. \w :E: T. (Op -R- (g -R- z) -R- (h -E- w))
 
 main :R: T
-main = (f -R- id -R- B -R- const_A -I- B)
+main = (f -R- id -R- B -R- const_A -E- B)
 
 ### Pruned ###
 

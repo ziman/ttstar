@@ -9,7 +9,7 @@ import qualified Data.Map as M
 -- DefType += Local
 -- Uses += Map Evar Relevance
 type Name = String
-data Relevance = E | N | R deriving (Eq, Ord, Show)  -- TODO: I
+data Relevance = E | R deriving (Eq, Ord, Show)  -- TODO: I
 data Binder = Lam | Pi | Pat deriving (Eq, Ord, Show)
 
 lub :: Relevance -> Relevance -> Relevance
