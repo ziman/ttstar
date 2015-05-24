@@ -64,11 +64,11 @@ infixl 2 /\
 
 infix 3 -->
 (-->) :: Meta -> Meta -> Constrs
-g --> u = g ~~> (u, R)
+g --> u = M.singleton (S.singleton g) (S.empty, S.singleton u)
 
 infix 3 ~~>
-(~~>) :: Meta -> (Meta, Relevance) -> Constrs
-g ~~> (u, r) = M.singleton (S.singleton g) (M.singleton u r)
+(~~>) :: Meta -> Meta -> Constrs
+g ~~> u = M.singleton (S.singleton g) (S.singleton u, S.empty)
 
 infix 3 <-->
 (<-->) :: Meta -> Meta -> Constrs
@@ -216,11 +216,11 @@ freshen :: Int -> (Type, Constrs) -> (Type, Constrs)
 freshen tag (ty, cs) = (ty', cs' /\ backArrows)
   where
     ty' = fmap (tagMeta tag) ty
-    cs' = M.mapKeysWith unionU tagGuards . M.map tagUses $ cs
-    tagGuards = S.map $ tagMeta tag
-    tagUses = M.mapKeysWith lub $ tagMeta tag
+    cs' = M.mapKeysWith unionU tagSet . M.map tagUses $ cs
+    tagSet = S.map $ tagMeta tag
+    tagUses (ns, rs) = (tagSet ns, tagSet rs)
     oldTyMetas = fold $ fmap S.singleton ty
-    backArrows = unions [tagMeta tag m --> m /\ m ~~> (tagMeta tag m, N) | m <- S.toList oldTyMetas]
+    backArrows = unions [tagMeta tag m --> m /\ m ~~> tagMeta tag m | m <- S.toList oldTyMetas]
 
 -- left: from context (from outside), right: from expression (from inside)
 conv :: Type -> Type -> TC Constrs

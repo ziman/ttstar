@@ -2,7 +2,6 @@ module Main where
 
 import TT
 import Parser
-import Explorer
 
 import Util.PrettyPrint
 
@@ -96,9 +95,11 @@ main = do
             mapM_ (putStrLn . fmtCtr) $ M.toList cs
             putStrLn ""
             putStrLn "### Solution ###\n"
-            let (uses, residue) = solve cs
-            print $ M.toList uses
-            genHtml (fname ++ ".html") metaified cs uses
+            let (uses@(uses_N, uses_R), residue) = solve cs
+            putStrLn $ "N = " ++ show (S.toList uses_N)
+            putStrLn ""
+            putStrLn $ "R = " ++ show (S.toList uses_R)
+            -- genHtml (fname ++ ".html") metaified cs uses
             putStrLn ""
             putStrLn "### Annotated ###\n"
             let annotated = annotate uses $ metaified
@@ -108,7 +109,7 @@ main = do
             printP $ pruned
   where
     fmtCtr :: (Guards, Uses) -> String
-    fmtCtr (gs,us) = show (S.toList gs) ++ " -> " ++ show (M.toList us)
+    fmtCtr (gs,(ns,rs)) = show (S.toList gs) ++ " -> " ++ show (S.toList rs) ++ "+" ++ show (S.toList ns)
 
     fmtCtx :: (Name, Def Meta Constrs) -> String
     fmtCtx (n, (Def _n r ty mtm Nothing)) = prettyShow (n, r, ty)

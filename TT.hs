@@ -15,9 +15,6 @@ data Relevance
     deriving (Eq, Ord, Show)
 data Binder = Lam | Pi | Pat deriving (Eq, Ord, Show)
 
-lub :: Relevance -> Relevance -> Relevance
-lub = max
-
 data TT r
     = V Name
     | Bind Binder Name r (TT r) (TT r)

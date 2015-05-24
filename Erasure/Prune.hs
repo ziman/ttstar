@@ -17,9 +17,12 @@ annotate :: Uses -> Program Meta cs -> Program Relevance Void
 annotate uses (Prog defs) = Prog $ map (annDef uses) defs
 
 annDef :: Uses -> Def Meta cs -> Def Relevance Void
-annDef uses (Def n r ty mtm mcs) = Def n (rel r) (rel <$> ty) (fmap rel <$> mtm) Nothing
+annDef (ns, rs) (Def n r ty mtm mcs) = Def n (rel r) (rel <$> ty) (fmap rel <$> mtm) Nothing
   where
-    rel m = M.findWithDefault E m uses
+    rel m
+        | m `S.member` rs = R
+        | m `S.member` ns = N
+        | otherwise = E
 
 prune :: Program Relevance Void -> Program () Void
 prune (Prog defs) = Prog $ concatMap pruneDef defs
