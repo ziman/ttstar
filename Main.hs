@@ -101,12 +101,15 @@ main = do
             putStrLn $ "R = " ++ show (S.toList uses_R)
             -- genHtml (fname ++ ".html") metaified cs uses
             putStrLn ""
-            putStrLn "### Annotated ###\n"
-            let annotated = annotate uses $ metaified
-            printP $ annotated
-            putStrLn "### Pruned ###\n"
-            let pruned = prune annotated
-            printP $ pruned
+            case Fixed E `S.member` uses_R of
+                True -> putStrLn "!! inconsistent annotation"
+                False -> do
+                    putStrLn "### Annotated ###\n"
+                    let annotated = annotate uses $ metaified
+                    printP $ annotated
+                    putStrLn "### Pruned ###\n"
+                    let pruned = prune annotated
+                    printP $ pruned
   where
     fmtCtr :: (Guards, Uses) -> String
     fmtCtr (gs,(ns,rs)) = show (S.toList gs) ++ " -> " ++ show (S.toList rs) ++ "+" ++ show (S.toList ns)

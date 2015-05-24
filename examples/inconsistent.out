@@ -13,23 +13,17 @@ main = \x :!E: *. x
 ### Inferred definitions ###
 
 main :!R: (x :!E: *) -> *
-  [] -> [(!E,R),(!N,N),(!R,R)]
+  [] -> [!E,!R]+[]
 
 
 ### Constraints ###
 
-[] -> [(!E,R),(!N,N),(!R,R)]
+[] -> [!E,!R]+[]
 
 ### Solution ###
 
-[(!E,R),(!N,N),(!R,R)]
+N = []
 
-### Annotated ###
+R = [!E,!R]
 
-main :R: (x :R: *) -> *
-main = \x :R: *. x
-
-### Pruned ###
-
-main = \x. x
-
+!! inconsistent annotation
