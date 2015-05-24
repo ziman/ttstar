@@ -13,16 +13,16 @@ main = \x :?2: *. x
 ### Inferred definitions ###
 
 main :!R: (x :?1: *) -> *
-  [] -> [?1,?2,!R]
+  [] -> [(?1,R),(?2,R),(!N,N),(!R,R)]
 
 
 ### Constraints ###
 
-[] -> [?1,?2,!R]
+[] -> [(?1,R),(?2,R),(!N,N),(!R,R)]
 
 ### Solution ###
 
-[?1,?2,!R]
+[(?1,R),(?2,R),(!N,N),(!R,R)]
 
 ### Annotated ###
 

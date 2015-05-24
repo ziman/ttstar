@@ -48,21 +48,21 @@ S :?6: (n :!R: Nat) -> Nat
 
 Vec :?7: (_ :?8: Nat) -> (_ :?9: *) -> *
 
-VNil :?10: (a :?11: *) -> (Vec -?15- Z -?13- a)
+VNil :?10: (a :?11: *) -> (Vec -?13- Z -?12- a)
 
-VCons :?16: (a :?17: *) -> (n :?18: Nat) -> (x :?19: a) -> (xs :?20: (Vec -?24- n -?22- a)) -> (Vec -?28- (S -?30- n) -?26- a)
+VCons :?14: (a :?15: *) -> (n :?16: Nat) -> (x :?17: a) -> (xs :?18: (Vec -?20- n -?19- a)) -> (Vec -?22- (S -?23- n) -?21- a)
 
-vlen :?31: (a :?32: *) -> (n :?33: Nat) -> (xs :?34: (Vec -?38- n -?36- a)) -> Nat
-vlen = \a :?39: *. \n :?40: Nat. \xs :?41: (Vec -?45- n -?43- a). 
+vlen :?24: (a :?25: *) -> (n :?26: Nat) -> (xs :?27: (Vec -?29- n -?28- a)) -> Nat
+vlen = \a :?30: *. \n :?31: Nat. \xs :?32: (Vec -?34- n -?33- a). 
   case xs of
-    VNil (a :?46: *) -> Z
-    VCons (a :?47: *) (n :?48: Nat) (x :?49: a) (xs :?50: (Vec -?54- n -?52- a)) -> (S -?56- (vlen -?62- a -?60- n -?58- xs))
+    VNil (a :?35: *) -> Z
+    VCons (a :?36: *) (n :?37: Nat) (x :?38: a) (xs :?39: (Vec -?41- n -?40- a)) -> (S -?42- (vlen -?45- a -?44- n -?43- xs))
 
-testVec :?63: (Vec -?67- 2 -?65- Bool)
-testVec = (VCons -?79- Bool -?77- 1 -?75- True -?73- (VCons -?89- Bool -?87- Z -?85- False -?83- (VNil -?91- Bool)))
+testVec :?46: (Vec -?48- 2 -?47- Bool)
+testVec = (VCons -?54- Bool -?53- 1 -?52- True -?51- (VCons -?59- Bool -?58- Z -?57- False -?56- (VNil -?60- Bool)))
 
 main :!R: Nat
-main = (vlen -?97- Bool -?95- 2 -?93- testVec)
+main = (vlen -?63- Bool -?62- 2 -?61- testVec)
 
 ### Inferred definitions ###
 

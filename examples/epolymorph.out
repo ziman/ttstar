@@ -244,8 +244,6 @@ id = \y. y
 
 const_3 = \_. 3
 
-two = ____
-
 f = \g. \z. \h. \w. (Plus (g z) (h ____))
 
 apply = \f. \x. (f x)

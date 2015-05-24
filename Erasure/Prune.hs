@@ -26,7 +26,7 @@ prune (Prog defs) = Prog $ concatMap pruneDef defs
 
 pruneDef :: Def Relevance Void -> [Def () Void]
 pruneDef (Def n E ty dt mcs) = []
-pruneDef (Def n N ty dt mcs) = [Def n () Erased (const Erased <$> dt) Nothing]
+pruneDef (Def n N ty dt mcs) = []  -- all usages replaced by NULL
 pruneDef (Def n R ty dt mcs) = [Def n () Erased (pruneTm <$> dt) Nothing]
 
 pruneTm :: TT Relevance -> TT ()
