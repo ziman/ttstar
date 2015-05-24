@@ -128,10 +128,12 @@ checkDefs cs [] = do
     ctx <- getCtx
     return (ctx, cs)
 checkDefs cs (d:ds) = do
-    Def n r ty mtm dcs <- checkDef d
+    Def n r ty mtm dcs <- with (prelim d) $ checkDef d  -- with itself for recursion
     let dcs' = reduce <$> dcs
     with (Def n r ty mtm dcs')
         $ checkDefs (fromMaybe noConstrs dcs' `union` cs) ds
+  where
+    prelim (Def n r ty mtm Nothing) = Def n r ty mtm Nothing
 
 checkDef :: Def Meta Void -> TC (Def Meta Constrs)
 checkDef (Def n r ty Nothing Nothing) = return $ Def n r ty Nothing Nothing
