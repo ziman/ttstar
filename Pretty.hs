@@ -43,14 +43,14 @@ instance PrettyR r => Pretty (TT r) where
     pretty (Bind Lam n r Erased tm) = lam <> text n <> dot <+> pretty tm
     pretty (Bind Lam n r ty tm) = lam <> pretty (n, r, ty) <> dot <+> pretty tm
     pretty (Bind Pat n r ty tm) = text "pat " <> pretty (n, r, ty) <> dot <+> pretty tm
-    pretty (App pi_r r (V "S") x) | Just i <- fromNat x = int $ 1+i
+    pretty (App r (V "S") x) | Just i <- fromNat x = int $ 1+i
       where
         fromNat (V "Z") = Just 0
-        fromNat (App pi_r r (V "S") x) = (1 +) `fmap` fromNat x
+        fromNat (App r (V "S") x) = (1 +) `fmap` fromNat x
         fromNat _ = Nothing
-    pretty (App pi_r r f x) = parens $ show' r f x
+    pretty (App r f x) = parens $ show' r f x
       where
-        show' r (App pi_r' r' f' x') x = show' r' f' x' <> prettyApp r <> pretty x
+        show' r (App r' f' x') x = show' r' f' x' <> prettyApp r <> pretty x
         show' r f x = pretty f <> prettyApp r <> pretty x
     pretty (Case s alts) =
         blankLine

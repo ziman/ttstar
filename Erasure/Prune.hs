@@ -27,16 +27,17 @@ prune (Prog defs) = Prog $ concatMap pruneDef defs
 
 pruneDef :: Def Relevance Void -> [Def () Void]
 pruneDef (Def n E ty dt mcs) = []
+pruneDef (Def n N ty dt mcs) = [Def n () Erased (const Erased <$> dt) Nothing]
 pruneDef (Def n R ty dt mcs) = [Def n () Erased (pruneTm <$> dt) Nothing]
 
 pruneTm :: TT Relevance -> TT ()
 pruneTm (V n) = V n
 pruneTm (Bind bnd n E ty tm) = pruneTm tm
+pruneTm (Bind bnd n N ty tm) = Bind bnd n () Erased (pruneTm tm)
 pruneTm (Bind bnd n R ty tm) = Bind bnd n () Erased (pruneTm tm)
-pruneTm (App E E f x) = pruneTm f
-pruneTm (App R R f x) = App () () (pruneTm f) (pruneTm x)
-pruneTm (App R E f x) = App () () (pruneTm f) Erased
-pruneTm (App E R f x) = error "relevant application of irrelevant pi"  -- should never happen
+pruneTm (App E f x) = pruneTm f
+pruneTm (App N f x) = App () (pruneTm f) Erased
+pruneTm (App R f x) = App () (pruneTm f) (pruneTm x)
 pruneTm (Case s alts) = Case (pruneTm s) (map pruneAlt alts)
 pruneTm Erased = Erased
 pruneTm Type = Type

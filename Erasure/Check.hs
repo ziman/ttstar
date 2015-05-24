@@ -160,13 +160,13 @@ checkTm t@(Bind Pat n r ty tm) = bt ("PAT", t) $ do
     (tmty, tmcs) <- with (Def n r ty Nothing Nothing) $ checkTm tm
     return (Bind Pat n r ty tmty, tmcs)
 
-checkTm t@(App app_pi_r app_r f x) = bt ("APP", t) $ do
+checkTm t@(App app_r f x) = bt ("APP", t) $ do
     (fty, fcs) <- checkTm f
     (xty, xcs) <- checkTm x
     case fty of
         Bind Pi n' pi_r ty' retTy -> do
             tycs <- conv xty ty'
-            let cs = tycs /\ fcs /\ cond pi_r xcs /\ pi_r --> app_r /\ base pi_r --> app_pi_r
+            let cs = tycs /\ fcs /\ cond pi_r xcs /\ pi_r --> app_r
             return (subst n' x retTy, cs)
 
         _ -> do
@@ -199,10 +199,6 @@ checkAlt (ConCase cn tm) = bt ("ALT-CON", cn, tm) $ do
         ys <- matchArgs tm as
         return $ xs /\ ys /\ r' --> r  -- ?direction?
     matchArgs p q = return noConstrs
-
-base :: Meta -> Meta
-base (MVar i _) = MVar i 0
-base m = m
 
 tagMeta :: Int -> Meta -> Meta
 tagMeta tag (MVar i j)
@@ -240,10 +236,10 @@ conv' p@(Bind b n r ty tm) q@(Bind b' n' r' ty' tm') = bt ("C-BIND", p, q) $ do
     return $ xs /\ ys /\ r <--> r'
 
 -- whnf is application (application of something irreducible)
-conv' p@(App pi_r r f x) q@(App pi_r' r' f' x') = bt ("C-APP", p, q) $ do
+conv' p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do
     xs <- conv f f'
     ys <- conv x x'
-    return $ xs /\ ys /\ r <--> r' /\ pi_r <--> pi_r'
+    return $ xs /\ ys /\ r <--> r'
 
 conv' p@(Case s alts) q@(Case s' alts') = bt ("C-CASE", p, q) $ do
     require (length alts == length alts') $ Mismatch (show alts) (show alts')
@@ -281,10 +277,10 @@ uniformCase target alts = unions <$> mapM (simpleAlt target) alts
 match :: TT Meta -> TT Meta -> TC (Constrs, M.Map Name Term)
 match (V n) (V n') | n == n' = return (noConstrs, M.empty)
 match (V n) tm = return (noConstrs, M.singleton n tm)
-match (App pi_r r f x) (App pi_r' r' f' x') = do
+match (App r f x) (App r' f' x') = do
     (xs, xmap) <- match f f'
     (ys, ymap) <- match x x'
-    return (xs /\ ys /\ r <--> r' /\ pi_r <--> pi_r', M.union xmap ymap)
+    return (xs /\ ys /\ r <--> r', M.union xmap ymap)
 
 -- ctx, ctor type, pat+rhs
 substMatch :: M.Map Name Term -> Term -> Term -> Term

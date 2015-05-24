@@ -8,8 +8,13 @@ import qualified Data.Map as M
 -- TODO:
 -- DefType += Local
 -- Uses += Map Evar Relevance
+-- TODO: single-dimensional MVar
 type Name = String
-data Relevance = E | N | R deriving (Eq, Ord, Show)  -- TODO: I
+data Relevance
+    = E  -- erased: completely removed
+    | N  -- null: replaced by NULL
+    | R  -- relevant: untouched
+    deriving (Eq, Ord, Show)
 data Binder = Lam | Pi | Pat deriving (Eq, Ord, Show)
 
 lub :: Relevance -> Relevance -> Relevance
@@ -18,7 +23,7 @@ lub = max
 data TT r
     = V Name
     | Bind Binder Name r (TT r) (TT r)
-    | App r r (TT r) (TT r)
+    | App r (TT r) (TT r)
     | Case (TT r) [Alt r]  -- scrutinee, scrutinee type, alts
     | Type
     | Erased
@@ -40,7 +45,7 @@ newtype Void = Void Void deriving (Eq, Ord, Show)
 instance Functor TT where
     fmap _ (V n) = V n
     fmap f (Bind b n r ty tm) = Bind b n (f r) (fmap f ty) (fmap f tm)
-    fmap f (App pi_r r fun arg) = App (f pi_r) (f r) (fmap f fun) (fmap f arg)
+    fmap f (App r fun arg) = App (f r) (fmap f fun) (fmap f arg)
     fmap f (Case s alts) = Case (fmap f s) (map (fmap f) alts)
     fmap _ Erased = Erased
     fmap _ Type = Type
@@ -52,7 +57,7 @@ instance Functor Alt where
 instance Foldable TT where
     fold (V n) = mempty
     fold (Bind b n r ty tm) = r `mappend` fold ty `mappend` fold tm
-    fold (App pi_r r f x) = pi_r `mappend` r `mappend` fold f `mappend` fold x
+    fold (App r f x) = r `mappend` fold f `mappend` fold x
     fold (Case s alts) = fold s `mappend` mconcat (map fold alts)
     fold Erased = mempty
     fold Type = mempty
@@ -64,7 +69,7 @@ instance Foldable Alt where
 unApply :: TT r -> (TT r, [TT r])
 unApply tm = ua tm []
   where
-    ua (App _ _ f x) args = ua f (x : args)
+    ua (App r f x) args = ua f (x : args)
     ua tm args = (tm, args)
 
 subst :: Name -> TT r -> TT r -> TT r
@@ -74,7 +79,7 @@ subst n tm t@(V n')
 subst n tm t@(Bind b n' r ty tm')
     | n' == n   = t
     | otherwise = Bind b n' r (subst n tm ty) (subst n tm tm')
-subst n tm (App pi_r r f x) = App pi_r r (subst n tm f) (subst n tm x)
+subst n tm (App r f x) = App r (subst n tm f) (subst n tm x)
 subst n tm (Case s alts) = Case (subst n tm s) (map (substAlt n tm) alts)
 subst _ _  t@Erased = t
 subst _ _  t@Type   = t

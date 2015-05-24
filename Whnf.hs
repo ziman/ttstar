@@ -13,7 +13,7 @@ whnf ctx t@(V n)
     | otherwise = t  -- unknown variable
 
 whnf ctx t@(Bind b n r ty tm) = t
-whnf ctx t@(App pi_r r f x)
+whnf ctx t@(App r f x)
     | Bind Lam n' r' ty' tm' <- redF
     = whnf ctx $ subst n' x tm'
 
@@ -33,7 +33,7 @@ redCase ctx fallback s (ConCase cn tm : as)
     = whnf ctx $ replaceCore (fromPat Lam tm) s
   where
     replaceCore :: TT r -> TT r -> TT r
-    replaceCore newCore (App pi_r r f x) = App pi_r r (replaceCore newCore f) x
+    replaceCore newCore (App r f x) = App r (replaceCore newCore f) x
     replaceCore newCore _ = newCore
 
 redCase ctx fallback s (_ : as) = redCase ctx fallback s as

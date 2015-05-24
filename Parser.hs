@@ -51,7 +51,7 @@ natural = mkNat . read <$> (many1 (satisfy isDigit) <* sp) <?> "number"
   where
     mkNat :: Int -> TT MRel
     mkNat 0 = V "Z"
-    mkNat k = App Nothing Nothing (V "S") (mkNat (k-1))
+    mkNat k = App Nothing (V "S") (mkNat (k-1))
 
 atomic :: Parser (TT MRel)
 atomic = parens expr
@@ -88,7 +88,7 @@ app :: Parser (TT MRel)
 app = mkApp <$> atomic <*> many atomic <?> "application"
   where
     mkApp f [] = f
-    mkApp f (x : xs) = mkApp (App Nothing Nothing f x) xs
+    mkApp f (x : xs) = mkApp (App Nothing f x) xs
 
 expr :: Parser (TT MRel)
 expr = case_ <|> bind <|> app <?> "expression"  -- app includes nullary-applied atoms
