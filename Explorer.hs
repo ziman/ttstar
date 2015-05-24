@@ -22,7 +22,7 @@ span cls body = "<span class=\"" ++ cls ++ "\">" ++ body ++ "</span>"
 
 rel :: Uses -> Meta -> String
 rel uses (Fixed R) = span "rel rel-R" " :<sub>R</sub> "
-rel uses (Fixed I) = span "rel rel-I" " :<sub>I</sub> "
+rel uses (Fixed E) = span "rel rel-E" " :<sub>E</sub> "
 rel uses (MVar i j) = span ("rel mvar-num-" ++ mv i j) (" :<sub>" ++ mv i j ++ "</sub> ")
 
 link :: String -> String -> String
@@ -46,7 +46,7 @@ nrty uses n r ty = erasedSpan uses r (name n ++ rel uses r ++ term uses ty ++ "\
         | MVar i j <- r = span ("nrty nrty-" ++ mv i j ++ " " ++ cls)
 
     cls | r `S.member` uses = "nrty-R"
-        | otherwise = "nrty-I erased"
+        | otherwise = "nrty-E erased"
 
 parens :: String -> String
 parens s = span "paren" "(" ++ s ++ span "paren" ")"
@@ -78,7 +78,7 @@ alt uses (ConCase cn tm) = unwords
 
 app :: Meta -> String
 app (Fixed R) = span "ap ap-R" "R"
-app (Fixed I) = span "ap ap-I" "I"
+app (Fixed E) = span "ap ap-E" "E"
 app (MVar i j) = span ("ap mvar-num-" ++ mv i j) (mv i j)
 
 erasedSpan :: Uses -> Meta -> String -> String
@@ -117,7 +117,7 @@ htmlMetas ms = op "{" ++ intercalate (op ", ") (map htmlMeta ms) ++ op "}"
 
 htmlMeta :: Meta -> String
 htmlMeta (Fixed R) = span "meta-R" "R"
-htmlMeta (Fixed I) = span "meta-I" "I"
+htmlMeta (Fixed E) = span "meta-E" "E"
 htmlMeta (MVar i j) = span ("meta mvar mvar-" ++ mv i j) (mv i j)
 
 jsConstr :: (Uses, Guards) -> String

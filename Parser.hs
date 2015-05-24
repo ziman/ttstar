@@ -36,7 +36,7 @@ name = (<?> "name") $ do
 rcolon :: Parser MRel
 rcolon =
         (kwd ":R:" *> pure (Just R))
-    <|> (kwd ":I:" *> pure (Just I))
+    <|> (kwd ":E:" *> pure (Just E))
     <|> (kwd  ":"  *> pure (Nothing))
     <?> "colon"
 

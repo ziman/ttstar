@@ -7,11 +7,13 @@ import qualified Data.Map as M
 
 -- TODO:
 -- DefType += Local
--- Relevance += ENRI + lub
 -- Uses += Map Evar Relevance
 type Name = String
-data Relevance = I | R deriving (Eq, Ord, Show)
+data Relevance = E | N | R deriving (Eq, Ord, Show)  -- TODO: I
 data Binder = Lam | Pi | Pat deriving (Eq, Ord, Show)
+
+lub :: Relevance -> Relevance -> Relevance
+lub = max
 
 data TT r
     = V Name
