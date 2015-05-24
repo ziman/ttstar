@@ -23,17 +23,14 @@ instance PrettyR (Maybe Relevance) where
     prettyApp Nothing = text " "
     prettyApp (Just r) = prettyApp r
 
-instance PrettyR r => Pretty (Program r) where
-    pretty (Prog defs) = vcat $ map fmtDef defs
+instance PrettyR r => Pretty (Program r cs) where
+    pretty (Prog defs) = vcat $ map (($$ blankLine) . fmtDef) defs
       where
-        fmtDef (Def n r Erased dt) = text n <+> equals <+> fmtDT dt $$ blankLine
-        fmtDef (Def n r ty dt) =
-            pretty (n, r, ty)
-            $$ text n <+> equals <+> fmtDT dt
-            $$ blankLine
+        fmtDef (Def n r Erased mtm cs) = fmtMT n mtm
+        fmtDef (Def n r ty mtm cs) = pretty (n, r, ty) $$ fmtMT n mtm
 
-        fmtDT Axiom = text "(axiom)"
-        fmtDT (Fun tm) = pretty tm
+        fmtMT n Nothing   = empty
+        fmtMT n (Just tm) = text n <+> equals <+> pretty tm
 
 instance PrettyR r => Pretty (Name, r, TT r) where
     pretty (n, r, Erased) = text n
@@ -64,7 +61,7 @@ instance PrettyR r => Pretty (TT r) where
 
 instance PrettyR r => Pretty (Alt r) where
     pretty (DefaultCase tm) = text "_" <+> arrow <+> pretty tm
-    pretty (ConCase cn r tm) = text cn <+> hsep (map prettyPat args) <+> arrow <+> pretty rhs
+    pretty (ConCase cn tm) = text cn <+> hsep (map prettyPat args) <+> arrow <+> pretty rhs
       where
         prettyPat (n, r, Erased) = text n
         prettyPat (n, r, ty) = parens $ pretty (n, r, ty)
@@ -74,8 +71,7 @@ instance PrettyR r => Show (TT r) where
     show = prettyShow
 
 deriving instance PrettyR r => Show (Alt r)
-deriving instance PrettyR r => Show (Def r)
-deriving instance PrettyR r => Show (DefType r)
+deriving instance (Show cs, PrettyR r) => Show (Def r cs)
 
 lam = text "\\"
 indent = nest 2

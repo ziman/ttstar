@@ -11,7 +11,7 @@ import Prelude hiding (div, span)
 import qualified Data.Set as S
 import qualified Data.Map as M
 
-htmlProg :: Uses -> Program Meta -> String
+htmlProg :: Uses -> Program Meta cs -> String
 htmlProg uses (Prog defs) = concatMap (htmlDef uses) defs
 
 div :: String -> String -> String
@@ -67,8 +67,8 @@ term uses (Case s alts) =
 
 alt :: Uses -> Alt Meta -> String
 alt uses (DefaultCase tm) = "_ -> " ++ term uses tm
-alt uses (ConCase cn r tm) = unwords
-    [ app r ++ cn
+alt uses (ConCase cn tm) = unwords
+    [ cn
     , unwords $ map (\(n,r,ty) -> parens $ nrty uses n r ty) args
     , "->"
     , term uses rhs
@@ -95,9 +95,9 @@ erasedCls uses m = erasure ++ " " ++ mvar
         | MVar i j <- m = "mvar mvar-" ++ mv i j
         | otherwise = ""
 
-htmlDef :: Uses -> Def Meta -> String
-htmlDef uses (Def n r ty Axiom) = div "def axiom" $ div "type" (nrty uses n r ty)
-htmlDef uses (Def n r ty (Fun tm)) =
+htmlDef :: Uses -> Def Meta cs -> String
+htmlDef uses (Def n r ty Nothing mcs) = div "def axiom" $ div "type" (nrty uses n r ty)
+htmlDef uses (Def n r ty (Just tm) mcs) =
   div "def function" (
     div "type" (nrty uses n r ty)
     ++ div "definition" (
@@ -126,7 +126,7 @@ jsConstr (us, gs) = show [map num $ S.toList us, map num $ S.toList gs] ++ ",\n"
     num (Fixed r) = show r
     num (MVar i j) = mv i j
 
-genHtml :: String -> Program Meta -> Constrs -> Uses -> IO ()
+genHtml :: String -> Program Meta cs -> Constrs -> Uses -> IO ()
 genHtml fname prog cs uses = do
     hdr <- readFile "html/header.html"
     writeFile fname (hdr ++ body)

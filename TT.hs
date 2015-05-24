@@ -5,6 +5,10 @@ import Data.Foldable
 import Data.Monoid
 import qualified Data.Map as M
 
+-- TODO:
+-- DefType += Local
+-- Relevance += ENRI + lub
+-- Uses += Map Evar Relevance
 type Name = String
 data Relevance = I | R deriving (Eq, Ord, Show)
 data Binder = Lam | Pi | Pat deriving (Eq, Ord, Show)
@@ -17,19 +21,19 @@ data TT r
     | Type
     | Erased
     deriving (Eq, Ord)
+    -- TODO: let-bindings, basically identical to Def
 
 data Alt r
-    = ConCase Name r (TT r)  -- cn, relevance, arity, lambda-bound RHS
+    = ConCase Name (TT r)  -- cn, relevance, arity, lambda-bound RHS
     | DefaultCase (TT r)
     deriving (Eq, Ord)
 
-data DefType r = Axiom | Fun (TT r) deriving (Eq, Ord)
-data Def r = Def Name r (TT r) (DefType r) deriving (Eq, Ord)
-type Ctx r cs = M.Map Name (r, TT r, Maybe (TT r), cs)
+data Def r cs = Def Name r (TT r) (Maybe (TT r)) (Maybe cs) deriving (Eq, Ord)
+type Ctx r cs = M.Map Name (Def r cs)
 
-newtype Program r = Prog [Def r] deriving (Eq, Ord)
+newtype Program r cs = Prog [Def r cs] deriving (Eq, Ord)
 
-type MRel = Maybe Relevance
+newtype Void = Void Void deriving (Eq, Ord, Show)
 
 instance Functor TT where
     fmap _ (V n) = V n
@@ -40,18 +44,8 @@ instance Functor TT where
     fmap _ Type = Type
 
 instance Functor Alt where
-    fmap f (ConCase cn r tm) = ConCase cn (f r) (fmap f tm)
-    fmap f (DefaultCase tm) = DefaultCase (fmap f tm)
-
-instance Functor DefType where
-    fmap _  Axiom = Axiom
-    fmap f (Fun tm) = Fun (fmap f tm)
-
-instance Functor Def where
-    fmap f (Def n r ty dt) = Def n (f r) (fmap f ty) (fmap f dt)
-
-instance Functor Program where
-    fmap f (Prog defs) = Prog (map (fmap f) defs)
+    fmap f (ConCase cn tm) = ConCase cn $ fmap f tm
+    fmap f (DefaultCase tm) = DefaultCase $ fmap f tm
 
 instance Foldable TT where
     fold (V n) = mempty
@@ -62,7 +56,7 @@ instance Foldable TT where
     fold Type = mempty
 
 instance Foldable Alt where
-    fold (ConCase cn r tm) = r `mappend` fold tm
+    fold (ConCase cn tm)  = fold tm
     fold (DefaultCase tm) = fold tm
 
 unApply :: TT r -> (TT r, [TT r])
@@ -85,7 +79,7 @@ subst _ _  t@Type   = t
 
 substAlt :: Name -> TT r -> Alt r -> Alt r
 substAlt n tm (DefaultCase tm') = DefaultCase $ subst n tm tm'
-substAlt n tm t@(ConCase cn r tm') = ConCase cn r $ subst n tm tm'
+substAlt n tm t@(ConCase cn tm') = ConCase cn $ subst n tm tm'
 
 -- split a Pat-packed pattern into 1. pattern vars, 2. RHS
 splitBinder :: Binder -> TT r -> ([(Name, r, TT r)], TT r)

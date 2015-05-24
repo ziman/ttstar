@@ -78,7 +78,7 @@ main :: IO ()
 main = do
     [fname] <- getArgs
     code <- readFile fname
-    case parse (sp *> parseProg <* eof) fname code of
+    case parse ttProgram fname code of
         Left e -> print e
         Right prog -> do
             putStrLn "-- vim: ft=agda"
@@ -108,6 +108,7 @@ main = do
             printP $ pruned
   where
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
-    fmtCtx (n, (r, ty, body, cs)) = prettyShow (n, r, ty) ++ "\n"
+    fmtCtx (n, (Def _n r ty mtm Nothing)) = prettyShow (n, r, ty)
+    fmtCtx (n, (Def _n r ty mtm (Just cs))) = prettyShow (n, r, ty) ++ "\n"
         ++ unlines (map (("  " ++) . fmtCtr) $ M.toList cs)
 

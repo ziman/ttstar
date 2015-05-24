@@ -9,25 +9,25 @@ import Erasure.Solve
 
 import Util.PrettyPrint
 
+import Control.Applicative
 import qualified Data.Set as S
 
-annotate :: Uses -> Program Meta -> Program Relevance
-annotate uses = fmap rel
+annotate :: Uses -> Program Meta cs -> Program Relevance Void
+annotate uses (Prog defs) = Prog $ map (annDef uses) defs
+
+annDef :: Uses -> Def Meta cs -> Def Relevance Void
+annDef uses (Def n r ty mtm mcs) = Def n (rel r) (rel <$> ty) (fmap rel <$> mtm) Nothing
   where
     rel m
         | m `S.member` uses = R
         | otherwise         = I
 
-prune :: Program Relevance -> Program ()
+prune :: Program Relevance Void -> Program () Void
 prune (Prog defs) = Prog $ concatMap pruneDef defs
 
-pruneDef :: Def Relevance -> [Def ()]
-pruneDef (Def n I ty dt) = []
-pruneDef (Def n R ty dt) = [Def n () Erased (pruneDefType dt)]
-
-pruneDefType :: DefType Relevance -> DefType ()
-pruneDefType  Axiom = Axiom
-pruneDefType (Fun tm) = Fun $ pruneTm tm
+pruneDef :: Def Relevance Void -> [Def () Void]
+pruneDef (Def n I ty dt mcs) = []
+pruneDef (Def n R ty dt mcs) = [Def n () Erased (pruneTm <$> dt) Nothing]
 
 pruneTm :: TT Relevance -> TT ()
 pruneTm (V n) = V n
@@ -43,4 +43,4 @@ pruneTm Type = Type
 
 pruneAlt :: Alt Relevance -> Alt ()
 pruneAlt (DefaultCase tm) = DefaultCase $ pruneTm tm
-pruneAlt (ConCase cn r tm) = ConCase cn () $ pruneTm tm
+pruneAlt (ConCase cn tm) = ConCase cn $ pruneTm tm

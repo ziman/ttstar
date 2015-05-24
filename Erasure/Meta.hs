@@ -20,24 +20,24 @@ instance PrettyR Meta where
     prettyCol x = colon <> showd x <> colon
     prettyApp x = text " -" <> showd x <> text "- "
 
-meta :: Program (Maybe Relevance) -> Program Meta
+meta :: Program (Maybe Relevance) Void -> Program Meta Void
 meta prog = evalState (metaProg prog) 0
 
-metaProg :: Program (Maybe Relevance) -> MetaM (Program Meta)
+metaProg :: Program (Maybe Relevance) Void -> MetaM (Program Meta Void)
 metaProg (Prog defs) = Prog <$> mapM metaDef defs
 
-metaDef :: Def (Maybe Relevance) -> MetaM (Def Meta)
-metaDef (Def n r ty dt) = Def <$> pure n <*> freshM r <*> metaTm ty <*> metaDefType dt
+metaDef :: Def (Maybe Relevance) Void -> MetaM (Def Meta Void)
+metaDef (Def n r ty mtm cs) = Def <$> pure n <*> freshM r <*> metaTm ty <*> metaBody mtm <*> pure cs
 
-metaDefType :: DefType (Maybe Relevance) -> MetaM (DefType Meta)
-metaDefType  Axiom   = return $ Axiom
-metaDefType (Fun tm) = Fun <$> metaTm tm
+metaBody :: Maybe (TT (Maybe Relevance)) -> MetaM (Maybe (TT Meta))
+metaBody  Nothing  = return $ Nothing
+metaBody (Just tm) = Just <$> metaTm tm
 
 freshM :: Maybe Relevance -> State Int Meta
 freshM Nothing  = modify (+1) >> MVar <$> get <*> pure 0
 freshM (Just r) = return $ Fixed r
 
-metaTm :: TT MRel -> MetaM TTmeta
+metaTm :: TT (Maybe Relevance) -> MetaM TTmeta
 metaTm (V n) = return $ V n
 metaTm (Bind bnd n r ty tm) = Bind bnd <$> pure n <*> freshM r <*> metaTm ty <*> metaTm tm
 metaTm (App pi_r r f x) = App <$> freshM pi_r <*> freshM r <*> metaTm f <*> metaTm x
@@ -47,4 +47,4 @@ metaTm Type = return Type
 
 metaAlt :: Alt (Maybe Relevance) -> MetaM (Alt Meta)
 metaAlt (DefaultCase tm) = DefaultCase <$> metaTm tm
-metaAlt (ConCase cn r tm) = ConCase cn <$> freshM r <*> metaTm tm
+metaAlt (ConCase cn tm) = ConCase cn <$> metaTm tm

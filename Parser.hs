@@ -1,4 +1,4 @@
-module Parser where
+module Parser (ttProgram) where
 
 import TT
 
@@ -10,6 +10,7 @@ import Control.Monad
 import Text.Parsec
 
 type Parser = Parsec String ()
+type MRel = Maybe Relevance
 
 lineComment :: Parser ()
 lineComment = kwd "--" *> many (satisfy (/= '\n')) *> return () <?> "line comment"
@@ -115,7 +116,7 @@ conCase = (<?> "constr case") $ do
     ns <- many $ parens typing
     kwd "->"
     rhs <- expr
-    return $ ConCase cn Nothing (tack ns rhs)
+    return $ ConCase cn (tack ns rhs)
   where
     tack [] tm = tm
     tack ((n,r,ty) : ns) tm = Bind Pat n r ty $ tack ns tm
@@ -127,14 +128,14 @@ typing = (<?> "typing") $ do
     ty <- expr
     return (n, r, ty)
 
-postulate :: Parser (Def MRel)
+postulate :: Parser (Def MRel Void)
 postulate = (<?> "postulate") $ do
     kwd "postulate"
     (n, r, ty) <- typing
     kwd "."
-    return $ Def n r ty Axiom
+    return $ Def n r ty Nothing Nothing
 
-mldef :: Parser (Def MRel)
+mldef :: Parser (Def MRel Void)
 mldef = (<?> "ml-style definition") $ do
     n <- name
     args <- many $ parens typing
@@ -143,21 +144,24 @@ mldef = (<?> "ml-style definition") $ do
     kwd "="
     tm <- expr
     kwd "."
-    return $ Def n r (chain Pi args retTy) (Fun $ chain Lam args tm)
+    return $ Def n r (chain Pi args retTy) (Just $ chain Lam args tm) Nothing
   where
     chain bnd [] tm = tm
     chain bnd ((n, r, ty) : args) tm = Bind bnd n r ty $ chain bnd args tm
     
-fundef :: Parser (Def MRel)
+fundef :: Parser (Def MRel Void)
 fundef = (<?> "function definition") $ do
     (n, r, ty) <- try typing
     kwd "="
     tm <- expr
     kwd "."
-    return $ Def n r ty (Fun tm)
+    return $ Def n r ty (Just tm) Nothing
 
-parseDef :: Parser (Def MRel)
+parseDef :: Parser (Def MRel Void)
 parseDef = postulate <|> fundef <|> mldef <?> "definition"
 
-parseProg :: Parser (Program MRel)
+parseProg :: Parser (Program MRel Void)
 parseProg = Prog <$> many parseDef <?> "program"
+
+ttProgram :: Parser (Program MRel Void)
+ttProgram = sp *> parseProg <* eof

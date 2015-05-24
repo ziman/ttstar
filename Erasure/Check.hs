@@ -7,6 +7,7 @@ import Erasure.Solve
 
 import Prelude hiding (lookup)
 
+import Data.Maybe
 import Data.Foldable
 import Control.Monad
 import Control.Applicative
@@ -84,8 +85,8 @@ noConstrs = M.empty
 cond :: Meta -> Constrs -> Constrs
 cond r = M.mapKeysWith S.union $ S.insert r
 
-with :: Name -> Meta -> Type -> Maybe Term -> Constrs -> TC a -> TC a
-with n r ty mtm cs = local $ \(tb, ctx) -> (tb, M.insert n (r, ty, mtm, cs) ctx)
+with :: Def Meta Constrs -> TC a -> TC a
+with d@(Def n r ty mtm mcs) = local $ \(tb, ctx) -> (tb, M.insert n d ctx)
 
 bt :: Show a => a -> TC b -> TC b
 bt dbg = local . first $ (show dbg :)
@@ -102,7 +103,7 @@ require :: Bool -> TCError -> TC ()
 require True  e = return ()
 require False e = tcfail e
 
-lookup :: Name -> TC (Meta, Type, Maybe Term, Constrs)
+lookup :: Name -> TC (Def Meta Constrs)
 lookup n = do
     (tb, ctx) <- ask
     case M.lookup n ctx of
@@ -115,51 +116,48 @@ freshTag = lift $ lift (modify (+1) >> get)
 runTC :: Ctx Meta Constrs -> TC a -> Either TCFailure a
 runTC ctx tc = evalState (runExceptT $ runReaderT tc ([], ctx)) 0
 
-check :: Program Meta -> Either TCFailure (Ctx Meta Constrs, Constrs)
+check :: Program Meta Void -> Either TCFailure (Ctx Meta Constrs, Constrs)
 check (Prog defs) = runTC M.empty $ checkDefs M.empty defs
 
-checkDefs :: Constrs -> [Def Meta] -> TC (Ctx Meta Constrs, Constrs)
+checkDefs :: Constrs -> [Def Meta Void] -> TC (Ctx Meta Constrs, Constrs)
 checkDefs cs [] = do
     ctx <- getCtx
     return (ctx, cs)
 checkDefs cs (d:ds) = do
-    (n, r, ty, mtm, dcs) <- checkDef d
-    let dcs' = reduce dcs
-    with n r ty mtm dcs'
-        $ checkDefs (dcs' `union` cs) ds
+    Def n r ty mtm dcs <- checkDef d
+    let dcs' = reduce <$> dcs
+    with (Def n r ty mtm dcs')
+        $ checkDefs (fromMaybe noConstrs dcs' `union` cs) ds
 
-checkDef :: Def Meta -> TC (Name, Meta, Type, Maybe Term, Constrs)
-checkDef (Def n r ty Axiom) = return (n, r, ty, Nothing, noConstrs)
-checkDef (Def n r ty (Fun tm)) = bt ("DEF", n) $ do
+checkDef :: Def Meta Void -> TC (Def Meta Constrs)
+checkDef (Def n r ty Nothing Nothing) = return $ Def n r ty Nothing Nothing
+checkDef (Def n r ty (Just tm) Nothing) = bt ("DEF", n) $ do
     (tmty, tmcs) <- checkTm tm
     tycs <- conv ty tmty
     let cs = tycs /\ tmcs
-    return (n, r, ty, Just tm, cs)  -- cond r cs?
+    return $ Def n r ty (Just tm) (Just cs)
 
 checkTm :: Term -> TC (Type, Constrs)
 
 checkTm t@(V n) = bt ("VAR", n) $ do
-    (r, ty, mtm, cs) <- lookup n
-    tag <- ("FRESH", n, cs) `traceShow` freshTag
-    let (ty', cs') = freshen tag (ty, cs)
-    return (ty', cs' /\ Fixed R --> r)
+    Def _n r ty mtm mcs <- lookup n
+    case mcs of
+        Nothing -> return (ty, Fixed R --> r)
+        Just cs -> do
+            tag <- ("FRESH", n, cs) `traceShow` freshTag
+            let (ty', cs') = freshen tag (ty, cs)
+            return (ty', cs' /\ Fixed R --> r)
 
 checkTm t@(Bind Lam n r ty tm) = bt ("LAM", t) $ do
-    (tyty, tycs) <- checkTm ty
-    -- we omit "conv tyty Type"
-    (tmty, tmcs) <- with n r ty Nothing tycs $ checkTm tm
+    (tmty, tmcs) <- with (Def n r ty Nothing Nothing) $ checkTm tm
     return (Bind Pi n r ty tmty, tmcs)
 
 checkTm t@(Bind Pi n r ty tm) = bt ("PI", t) $ do
-    (tyty, tycs) <- checkTm ty
-    -- we omit "conv tyty Type"
-    (tmty, tmcs) <- with n r ty Nothing tycs $ checkTm tm
+    (tmty, tmcs) <- with (Def n r ty Nothing Nothing) $ checkTm tm
     return (Type, tmcs)
 
 checkTm t@(Bind Pat n r ty tm) = bt ("PAT", t) $ do
-    (tyty, tycs) <- checkTm ty
-    -- we omit "conv tyty Type"
-    (tmty, tmcs) <- with n r ty Nothing tycs $ checkTm tm
+    (tmty, tmcs) <- with (Def n r ty Nothing Nothing) $ checkTm tm
     return (Bind Pat n r ty tmty, tmcs)
 
 checkTm t@(App app_pi_r app_r f x) = bt ("APP", t) $ do
@@ -189,11 +187,11 @@ checkAlt (DefaultCase tm) = bt ("ALT-DEF", tm) $ do
     (tmty, tmcs) <- checkTm tm
     return (DefaultCase tmty, tmcs)
 
-checkAlt (ConCase cn r tm) = bt ("ALT-CON", cn, tm) $ do
-    (cr, cty, Nothing, ccs) <- lookup cn
+checkAlt (ConCase cn tm) = bt ("ALT-CON", cn, tm) $ do
+    Def _cn cr cty Nothing Nothing <- lookup cn
     (tmty, tmcs) <- checkTm tm
     argcs <- matchArgs cty args
-    return (ConCase cn r tmty, tmcs /\ argcs)
+    return (ConCase cn tmty, tmcs /\ argcs)
   where
     (args, rhs) = splitBinder Pat tm
     matchArgs p@(Bind Pi n r ty tm) q@((n', r', ty') : as) = bt ("MATCH-ARGS", p, q) $ do
@@ -237,10 +235,8 @@ conv' (V n) (V n') = bt ("C-VAR", n, n') $ do
 
 conv' p@(Bind b n r ty tm) q@(Bind b' n' r' ty' tm') = bt ("C-BIND", p, q) $ do
     require (b == b') $ Mismatch (show b) (show b')
-    (tyty, tycs) <- checkTm ty
-    -- we omit "conv tyty Type"
     xs <- conv ty (rename [n'] [n] ty')
-    ys <- with n r ty Nothing tycs $ conv tm (rename [n'] [n] tm')
+    ys <- with (Def n r ty Nothing Nothing) $ conv tm (rename [n'] [n] tm')
     return $ xs /\ ys /\ r <--> r'
 
 -- whnf is application (application of something irreducible)
@@ -267,19 +263,19 @@ conv' p q = tcfail $ CantConvert p q
 
 convAlt :: Type -> Alt Meta -> Alt Meta -> TC Constrs
 convAlt sty (DefaultCase tm) (DefaultCase tm') = bt ("CA-DEF", tm, tm') $ conv tm tm'
-convAlt sty p@(ConCase cn r tm) q@(ConCase cn' r' tm') = bt ("CA-CON", p, q) $ do
+convAlt sty p@(ConCase cn tm) q@(ConCase cn' tm') = bt ("CA-CON", p, q) $ do
     require (cn == cn') $ Mismatch cn cn'
-    (cr, cty, Nothing, _empty) <- lookup cn
+    Def _cn cr cty Nothing Nothing <- lookup cn
     let (ctyArgs, ctyRet) = splitBinder Pi cty
     (xs, ctx) <- match ctyRet sty
     ys <- conv (substMatch ctx cty tm) (substMatch ctx cty tm')
-    return $ xs /\ ys /\ r <--> r'
+    return $ xs /\ ys
 
 uniformCase :: Term -> [Alt Meta] -> TC Constrs
 uniformCase target alts = unions <$> mapM (simpleAlt target) alts
   where
     simpleAlt target (DefaultCase tm) = conv target tm
-    simpleAlt target (ConCase cn r tm) = conv target $ snd (splitBinder Pat tm)
+    simpleAlt target (ConCase cn tm) = conv target $ snd (splitBinder Pat tm)
     
 -- pattern, term
 match :: TT Meta -> TT Meta -> TC (Constrs, M.Map Name Term)

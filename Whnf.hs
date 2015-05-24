@@ -5,7 +5,7 @@ import qualified Data.Map as M
 
 whnf :: Ctx r cs -> TT r -> TT r
 whnf ctx t@(V n)
-    | Just (r, ty, mtm, cs) <- M.lookup n ctx
+    | Just (Def _n r ty mtm cs) <- M.lookup n ctx
     = case mtm of
         Nothing -> t
         Just tm -> whnf ctx tm
@@ -27,7 +27,7 @@ whnf ctx t@Type   = t
 
 redCase :: Ctx r cs -> TT r -> TT r -> [Alt r] -> TT r
 redCase ctx fallback _ (DefaultCase tm : _) = whnf ctx tm
-redCase ctx fallback s (ConCase cn r tm : as)
+redCase ctx fallback s (ConCase cn tm : as)
     | (V scn, sargs) <- unApply s
     , scn == cn  -- it's the same constructor
     = whnf ctx $ replaceCore (fromPat Lam tm) s
