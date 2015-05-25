@@ -6,6 +6,7 @@ import Erasure.Meta
 import Erasure.Check
 import Erasure.Solve
 
+import Data.Maybe (fromMaybe)
 import Data.List (intercalate)
 import Prelude hiding (div, span)
 import qualified Data.Set as S
@@ -58,6 +59,8 @@ term :: Uses -> TT Meta -> String
 term uses (V n) = span "var" $ name n
 term uses (Bind Pi n r ty tm) = span "pi" $ parens (nrty uses n r ty) ++ op " &#8594; " ++ term uses tm
 term uses (Bind Lam n r ty tm) = span "lambda" $ span "head" (op "&lambda; " ++ nrty uses n r ty ++ op ".") ++ term uses tm
+term uses (Let (Def n r ty mtm Nothing) tm) =
+    span "let" $ nrty uses n r ty ++ " = " ++ term uses (fromMaybe Erased mtm) ++ " in " ++ term uses tm
 term uses (App pi_r r f x) = span "app" . parens $ term uses f ++ app r ++ erasedSpan uses r (term uses x)
 term uses Type = span "star" "*"
 term uses Erased = span "erased" "____"

@@ -52,6 +52,11 @@ instance PrettyR r => Pretty (TT r) where
       where
         show' r (App pi_r' r' f' x') x = show' r' f' x' <> prettyApp r <> pretty x
         show' r f x = pretty f <> prettyApp r <> pretty x
+    pretty (Let d@(Def n r ty mtm Nothing) tm) =
+        blankLine
+        $$ indent (text "let" <+> pretty d
+            $$ text "in" <+> pretty tm
+        )
     pretty (Case s alts) =
         blankLine
         $$ indent (
@@ -68,6 +73,12 @@ instance PrettyR r => Pretty (Alt r) where
         prettyPat (n, r, Erased) = text n
         prettyPat (n, r, ty) = parens $ pretty (n, r, ty)
         (args, rhs) = splitBinder Pat tm
+
+instance PrettyR r => Pretty (Def r Void) where
+    pretty (Def n r ty Nothing Nothing) = text "postulate" <+> pretty (n, r, ty)
+    pretty (Def n r ty (Just tm) Nothing) =
+        pretty (n, r, ty)
+        $$ indent (equals <+> pretty tm)
 
 instance PrettyR r => Show (TT r) where
     show = prettyShow

@@ -3,6 +3,7 @@ module TT where
 import Data.List
 import Data.Foldable
 import Data.Monoid
+import Data.Maybe
 import qualified Data.Map as M
 
 -- TODO:
@@ -24,11 +25,11 @@ data TT r
     = V Name
     | Bind Binder Name r (TT r) (TT r)
     | App r r (TT r) (TT r)
+    | Let (Def r Void) (TT r)
     | Case (TT r) [Alt r]  -- scrutinee, scrutinee type, alts
     | Type
     | Erased
     deriving (Eq, Ord)
-    -- TODO: let-bindings, basically identical to Def
 
 data Alt r
     = ConCase Name (TT r)  -- cn, relevance, arity, lambda-bound RHS
@@ -46,6 +47,7 @@ instance Functor TT where
     fmap _ (V n) = V n
     fmap f (Bind b n r ty tm) = Bind b n (f r) (fmap f ty) (fmap f tm)
     fmap f (App pi_r r fun arg) = App (f pi_r) (f r) (fmap f fun) (fmap f arg)
+    fmap f (Let (Def n r ty mtm Nothing) tm) = Let (Def n (f r) (fmap f ty) (fmap f `fmap` mtm) Nothing) (fmap f tm)
     fmap f (Case s alts) = Case (fmap f s) (map (fmap f) alts)
     fmap _ Erased = Erased
     fmap _ Type = Type
@@ -58,6 +60,7 @@ instance Foldable TT where
     fold (V n) = mempty
     fold (Bind b n r ty tm) = r `mappend` fold ty `mappend` fold tm
     fold (App pi_r r f x) = pi_r `mappend` r `mappend` fold f `mappend` fold x
+    fold (Let (Def n r ty mtm Nothing) tm) = r `mappend` fold ty `mappend` fold (fromMaybe Erased mtm) `mappend` fold tm
     fold (Case s alts) = fold s `mappend` mconcat (map fold alts)
     fold Erased = mempty
     fold Type = mempty
@@ -80,6 +83,9 @@ subst n tm t@(Bind b n' r ty tm')
     | n' == n   = t
     | otherwise = Bind b n' r (subst n tm ty) (subst n tm tm')
 subst n tm (App pi_r r f x) = App pi_r r (subst n tm f) (subst n tm x)
+subst n tm t@(Let (Def n' r ty mtm Nothing) tm')
+    | n' == n = t
+    | otherwise = Let (Def n' r (subst n tm ty) (subst n tm `fmap` mtm) Nothing) (subst n tm tm')
 subst n tm (Case s alts) = Case (subst n tm s) (map (substAlt n tm) alts)
 subst _ _  t@Erased = t
 subst _ _  t@Type   = t

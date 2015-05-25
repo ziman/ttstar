@@ -90,8 +90,16 @@ app = mkApp <$> atomic <*> many atomic <?> "application"
     mkApp f [] = f
     mkApp f (x : xs) = mkApp (App Nothing Nothing f x) xs
 
+let_ :: Parser (TT MRel)
+let_ = do
+    kwd "let"
+    d <- parseDef
+    kwd "in"
+    tm <- expr
+    return $ Let d tm
+
 expr :: Parser (TT MRel)
-expr = case_ <|> bind <|> app <?> "expression"  -- app includes nullary-applied atoms
+expr = let_ <|> case_ <|> bind <|> app <?> "expression"  -- app includes nullary-applied atoms
 
 case_ :: Parser (TT MRel)
 case_ = (<?> "case") $ do

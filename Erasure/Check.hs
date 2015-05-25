@@ -174,6 +174,19 @@ checkTm t@(App app_pi_r app_r f x) = bt ("APP", t) $ do
         _ -> do
             tcfail $ NonFunction f fty
 
+checkTm t@(Let (Def n r ty mtm Nothing) tm) = bt ("LET", t) $ do
+    letcs <- case mtm of
+        Just t -> do
+            (valty, valcs) <- checkTm (fromMaybe Erased mtm)
+            tycs <- conv ty valty
+            return $ Just (valcs /\ tycs)
+        Nothing -> return Nothing
+
+    (tmty, tmcs) <-
+        with (Def n r ty mtm letcs)
+            $ checkTm tm
+    return (tmty, tmcs /\ fromMaybe noConstrs letcs)
+
 checkTm t@(Case s alts) = bt ("CASE", t) $ do
     (sty, scs) <- checkTm s
     alts' <- mapM checkAlt alts
@@ -246,6 +259,20 @@ conv' p@(App pi_r r f x) q@(App pi_r' r' f' x') = bt ("C-APP", p, q) $ do
     xs <- conv f f'
     ys <- conv x x'
     return $ xs /\ ys /\ r <--> r' /\ pi_r <--> pi_r'
+
+conv' p@(Let (Def n r ty mtm Nothing) tm) q@(Let (Def n' r' ty' mtm' Nothing) tm') = bt ("C-LET", p, q) $ do
+    (val, val') <- case (mtm, mtm') of
+        (Just t, Just t') -> return (t, t')
+        (Nothing, Nothing) -> return (Erased, Erased)
+        _ -> tcfail $ Mismatch (show mtm) (show mtm')
+
+    xs <- conv ty (rename [n'] [n] ty')
+    (valty, valcs) <- checkTm val
+    tycs <- conv ty valty
+    vcs <- conv val val'
+    let letcs = valcs /\ tycs
+    ys <- with (Def n r ty mtm (Just letcs)) $ conv tm (rename [n'] [n] tm')
+    return $ letcs /\ ys /\ vcs /\ r <--> r'
 
 conv' p@(Case s alts) q@(Case s' alts') = bt ("C-CASE", p, q) $ do
     require (length alts == length alts') $ Mismatch (show alts) (show alts')
