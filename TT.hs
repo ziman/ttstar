@@ -8,6 +8,11 @@ import qualified Data.Map as M
 -- TODO:
 -- DefType += Local
 -- Uses += Map Evar Relevance
+--
+-- new implication format:
+-- p=A --> q=B
+-- type Guards = S.Set (MVar, Relevance)
+-- type Uses = S.Set (MVar, Relevance)
 type Name = String
 data Relevance = E | R deriving (Eq, Ord, Show)  -- TODO: I
 data Binder = Lam | Pi | Pat deriving (Eq, Ord, Show)
