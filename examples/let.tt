@@ -1,0 +1,19 @@
+-- vim: ft=agda
+
+postulate Nat : *.
+postulate Z : Nat.
+postulate S : (n :R: Nat) -> Nat.
+
+-- no case-expressions supported yet
+postulate Plus : (x :R: Nat) -> (y :R: Nat) -> Nat.
+
+id : Nat -> Nat = \y : Nat. y.
+const_3 : Nat -> Nat = \_ : Nat. 3.
+two : Nat = S (S Z).
+
+main :R: Nat
+    = let apply (f : Nat -> Nat) : Nat -> Nat
+          = \x : Nat. f x.
+      in 
+        let unused : Nat = 3.
+        in Plus (apply id 2) (apply const_3 two).
