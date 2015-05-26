@@ -2,7 +2,7 @@
 
 postulate Nat : *.
 postulate Z : Nat.
-postulate S : (n :R: Nat) -> Nat.
+postulate S : (n : Nat) -> Nat.
 
 plus (x : Nat) (y : Nat) : Nat
     = case (x) of
