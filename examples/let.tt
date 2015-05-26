@@ -8,12 +8,10 @@ postulate S : (n :R: Nat) -> Nat.
 postulate Plus : (x :R: Nat) -> (y :R: Nat) -> Nat.
 
 id : Nat -> Nat = \y : Nat. y.
-const_3 : Nat -> Nat = \_ : Nat. 3.
-two : Nat = S (S Z).
+const (x : Nat) : Nat -> Nat = \_ : Nat. x.
 
 main :R: Nat
-    = let apply (f : Nat -> Nat) : Nat -> Nat
-          = \x : Nat. f x.
-      in 
-        let unused : Nat = 3.
-        in Plus (apply id 2) (apply const_3 two).
+    = let apply (f : Nat -> Nat) (x : Nat) : Nat = f x.
+   in let postulate Q : Nat.
+   in let three : Nat = 3.
+   in Plus (apply id 2) (apply (const Q) three).
