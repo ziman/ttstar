@@ -6,7 +6,7 @@ Nat : *
 
 Z : Nat
 
-S : (n : Nat) -> Nat
+S : (_ : Nat) -> Nat
 
 plus : (x : Nat) -> (y : Nat) -> Nat
 plus = \x : Nat. \y : Nat. 
@@ -37,7 +37,7 @@ Nat :?1: *
 
 Z :?2: Nat
 
-S :?3: (n :?4: Nat) -> Nat
+S :?3: (_ :?4: Nat) -> Nat
 
 plus :?5: (x :?6: Nat) -> (y :?7: Nat) -> Nat
 plus = \x :?8: Nat. \y :?9: Nat. 
@@ -65,7 +65,7 @@ main =
 ### Inferred definitions ###
 
 Nat :?1: *
-S :?3: (n :?4: Nat) -> Nat
+S :?3: (_ :?4: Nat) -> Nat
 Z :?2: Nat
 const :?18: (x :?19: Nat) -> (_ :?20: Nat) -> Nat
   [] -> [?19,?21,!R]
@@ -114,7 +114,7 @@ Nat :E: *
 
 Z :R: Nat
 
-S :R: (n :R: Nat) -> Nat
+S :R: (_ :R: Nat) -> Nat
 
 plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
 plus = \x :R: Nat. \y :R: Nat. 
