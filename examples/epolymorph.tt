@@ -12,7 +12,6 @@ postulate Nat : *.
 postulate Z : Nat.
 postulate S : (n :R: Nat) -> Nat.
 
--- no case-expressions supported yet
 postulate Plus : (x :R: Nat) -> (y :R: Nat) -> Nat.
 
 id : Nat -> Nat = \y : Nat. y.
@@ -24,7 +23,6 @@ two : Nat = S (S Z).
 f (g : Nat -> Nat) (z : Nat) (h : Nat -> Nat) (w : Nat) : Nat
     = Plus (g z) (h w).
 
--- mixed-style definition: ML + lambda
 apply (f : Nat -> Nat) : Nat -> Nat
     = \x : Nat. f x.
 

@@ -4,8 +4,10 @@ postulate Nat : *.
 postulate Z : Nat.
 postulate S : (n :R: Nat) -> Nat.
 
--- no case-expressions supported yet
-postulate Plus : (x :R: Nat) -> (y :R: Nat) -> Nat.
+plus (x : Nat) (y : Nat) : Nat
+    = case (x) of
+        Z -> y,
+        S (xx : Nat) -> plus xx y.
 
 id : Nat -> Nat = \y : Nat. y.
 const (x : Nat) : Nat -> Nat = \_ : Nat. x.
@@ -14,4 +16,4 @@ main :R: Nat
     = let apply (f : Nat -> Nat) (x : Nat) : Nat = f x.
    in let postulate Q : Nat.
    in let three : Nat = 3.
-   in Plus (apply id 2) (apply (const Q) three).
+   in plus (apply id 2) (apply (const Q) three).
