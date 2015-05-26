@@ -2,8 +2,7 @@
 
 ### Features
 
-Besides what the original paper had, we have the following
-([P] = improvement over previous paper, [M] = improvement over Mishra-Linger):
+Besides what the original paper had, we have:
 * [P] higher-order erasure
 * [P] changing arities of functions
 * [M] data constructor support
@@ -11,6 +10,8 @@ Besides what the original paper had, we have the following
 * [MP] erasure polymorphism for let-bound names
     * but not for lambda-bound names (would require extension of the type system)
     * probably equivalent to Hindley-Milner-style polymorphism
+
+[P] = improvement over previous paper, [M] = improvement over Mishra-Linger
 
 
 ### TODO
