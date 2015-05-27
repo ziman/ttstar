@@ -33,7 +33,7 @@ main = \x :R: *. x
 
 main = \x. x
 
-### Reductions ###
+### Normal forms ###
 
 unerased:
   \x : *. x

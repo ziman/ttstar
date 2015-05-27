@@ -193,7 +193,7 @@ f = \x.
 
 main = (f (Just False))
 
-### Reductions ###
+### Normal forms ###
 
 unerased:
   False

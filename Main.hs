@@ -118,7 +118,7 @@ main = do
                     let pruned = prune annotated
                     printP $ pruned
 
-                    putStrLn "### Reductions ###\n"
+                    putStrLn "### Normal forms ###\n"
                     putStrLn "unerased:"
                     putStrLn $ "  " ++ show (eval NF prog)
                     putStrLn "erased:"

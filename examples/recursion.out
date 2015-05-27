@@ -382,7 +382,7 @@ testVec = (VCons (VCons VNil))
 
 main = (vlen testVec)
 
-### Reductions ###
+### Normal forms ###
 
 unerased:
   2

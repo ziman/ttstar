@@ -153,7 +153,7 @@ main =
     let postulate Q
     in (plus (apply id 2) (apply (const Q) ____))
 
-### Reductions ###
+### Normal forms ###
 
 unerased:
   (S (S Q))
