@@ -136,3 +136,9 @@ f = \g. \z. \h. (Op (g z) h)
 
 main = (f id B const_A)
 
+### Reductions ###
+
+unerased:
+  (Op B A)
+erased:
+  (Op B A)

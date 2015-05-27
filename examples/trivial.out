@@ -33,3 +33,9 @@ main = \x :R: *. x
 
 main = \x. x
 
+### Reductions ###
+
+unerased:
+  \x : *. x
+erased:
+  \x. x

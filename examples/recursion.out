@@ -382,3 +382,9 @@ testVec = (VCons (VCons VNil))
 
 main = (vlen testVec)
 
+### Reductions ###
+
+unerased:
+  2
+erased:
+  2

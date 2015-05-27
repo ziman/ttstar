@@ -155,34 +155,34 @@ retTy :?16: (x :?17: (Maybe -?19- Bool)) -> *
 
 ### Annotated ###
 
-Void :I: *
+Void :E: *
 
-Maybe :I: (_ :I: *) -> *
+Maybe :E: (_ :E: *) -> *
 
-Just :R: (a :I: *) -> (x :R: a) -> (Maybe -I- a)
+Just :R: (a :E: *) -> (x :R: a) -> (Maybe -E- a)
 
-Nothing :I: (a :I: *) -> (Maybe -I- a)
+Nothing :E: (a :E: *) -> (Maybe -E- a)
 
 Bool :R: *
 
-True :I: Bool
+True :E: Bool
 
 False :R: Bool
 
-retTy :I: (x :R: (Maybe -I- Bool)) -> *
-retTy = \x :R: (Maybe -I- Bool). 
+retTy :E: (x :R: (Maybe -E- Bool)) -> *
+retTy = \x :R: (Maybe -E- Bool). 
   case x of
-    Just (a :I: *) (t :I: a) -> Bool
-    Nothing (a :I: *) -> *
+    Just (a :E: *) (t :E: a) -> Bool
+    Nothing (a :E: *) -> *
 
-f :R: (x :R: (Maybe -I- Bool)) -> (retTy -I- x)
-f = \x :R: (Maybe -I- Bool). 
+f :R: (x :R: (Maybe -E- Bool)) -> (retTy -E- x)
+f = \x :R: (Maybe -E- Bool). 
   case x of
-    Just (a :I: *) (b :R: a) -> b
-    Nothing (a :I: *) -> Bool
+    Just (a :E: *) (b :R: a) -> b
+    Nothing (a :E: *) -> Bool
 
 main :R: Bool
-main = (f -R- (Just -I- Bool -R- False))
+main = (f -R- (Just -E- Bool -R- False))
 
 ### Pruned ###
 
@@ -193,3 +193,9 @@ f = \x.
 
 main = (f (Just False))
 
+### Reductions ###
+
+unerased:
+  False
+erased:
+  False
