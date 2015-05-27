@@ -3,6 +3,8 @@ module Main where
 import TT
 import Parser
 import Explorer
+import Whnf
+import Run
 
 import Util.PrettyPrint
 
@@ -85,30 +87,42 @@ main = do
             putStrLn ""
             putStrLn "### Desugared ###\n"
             printP prog
+
             putStrLn "### Metaified ###\n"
             let metaified = meta prog
             printP metaified
+
             putStrLn "### Inferred definitions ###\n"
             let (ctx, cs) = either (error . show) id . check $ metaified
             mapM_ (putStrLn . fmtCtx) $ M.toList ctx
             putStrLn ""
+
             putStrLn "### Constraints ###\n"
             mapM_ (putStrLn . fmtCtr) $ M.toList cs
             putStrLn ""
+
             putStrLn "### Solution ###\n"
             let (uses, residue) = solve cs
             print $ S.toList uses
             genHtml (fname ++ ".html") metaified cs uses
             putStrLn ""
+
             case Fixed E `S.member` uses of
                 True -> putStrLn "!! inconsistent annotation"
                 False -> do
                     putStrLn "### Annotated ###\n"
                     let annotated = annotate uses $ metaified
                     printP $ annotated
+
                     putStrLn "### Pruned ###\n"
                     let pruned = prune annotated
                     printP $ pruned
+
+                    putStrLn "### Reductions ###\n"
+                    putStrLn "unerased:"
+                    putStrLn $ "  " ++ show (eval NF prog)
+                    putStrLn "erased:"
+                    putStrLn $ "  " ++ show (eval NF pruned)
   where
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
     fmtCtx (n, (Def _n r ty mtm Nothing)) = prettyShow (n, r, ty)
