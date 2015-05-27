@@ -1,4 +1,4 @@
-module Run (eval) where
+module Eval (eval) where
 
 import TT
 import Whnf

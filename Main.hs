@@ -4,7 +4,7 @@ import TT
 import Parser
 import Explorer
 import Whnf
-import Run
+import Eval
 
 import Util.PrettyPrint
 
