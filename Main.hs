@@ -74,6 +74,28 @@ import qualified Data.Map as M
 -- general rule:
 -- we always assume we're in a completely relevant environment
 -- the environment will insert conditions using "cond" if that's not the case but we mustn't care about this
+--
+--  ***
+--
+--  Relevance levels
+--
+--    E < N < R   |   < I ?
+--
+--  Constraints:
+--
+--    (r, E) --> (r, R)
+--
+--  Solver:
+--
+--    1. keep a map of assignments (r --> E)
+--    2. initialise the map so that every `r` maps to `E` at first
+--    3. go round'n'round the constraints and update the mapping
+--
+--  Tradeoff:
+--
+--    Smarter constraints:
+--      -> more complicated solver
+--      -> fewer constraints
 
 
 main :: IO ()
