@@ -47,15 +47,15 @@ instance PrettyR r => Pretty (TT r) where
     pretty (Bind Lam n r Erased rr tm) = lam <> text n <> dot <+> pretty tm
     pretty (Bind Lam n r ty rr tm) = lam <> pretty (n, r, rr, ty) <> dot <+> pretty tm
     pretty (Bind Pat n r ty rr tm) = text "pat " <> pretty (n, r, ty) <> dot <+> pretty tm
-    pretty (App pi_r r (V "S") x) | Just i <- fromNat x = int $ 1+i
+    pretty (App pi_rr r (V "S") x) | Just i <- fromNat x = int $ 1+i
       where
         fromNat (V "Z") = Just 0
-        fromNat (App pi_r r (V "S") x) = (1 +) `fmap` fromNat x
+        fromNat (App pi_rr r (V "S") x) = (1 +) `fmap` fromNat x
         fromNat _ = Nothing
-    pretty (App pi_r r f x) = parens $ show' r f x
+    pretty (App pi_rr r f x) = parens $ show' pi_rr r f x
       where
-        show' r (App pi_r' r' f' x') x = show' r' f' x' <> prettyApp r <> pretty x
-        show' r f x = pretty f <> prettyApp r <> pretty x
+        show' pi_rr r (App pi_rr' r' f' x') x = show' pi_rr' r' f' x' <> prettyApp pi_rr <> prettyApp r <> pretty x
+        show' pi_rr r f x = pretty f <> prettyApp pi_rr <> prettyApp r <> pretty x
     pretty (Let d@(Def n r ty mtm Nothing) tm) =
         blankLine
         $$ indent (text "let" <+> pretty d

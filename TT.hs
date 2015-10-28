@@ -47,7 +47,7 @@ newtype Void = Void Void deriving (Eq, Ord, Show)
 instance Functor TT where
     fmap _ (V n) = V n
     fmap f (Bind b n r ty rr tm) = Bind b n (f r) (fmap f ty) (f rr) (fmap f tm)
-    fmap f (App pi_r r fun arg) = App (f pi_r) (f r) (fmap f fun) (fmap f arg)
+    fmap f (App pi_rr r fun arg) = App (f pi_rr) (f r) (fmap f fun) (fmap f arg)
     fmap f (Let (Def n r ty mtm Nothing) tm) = Let (Def n (f r) (fmap f ty) (fmap f `fmap` mtm) Nothing) (fmap f tm)
     fmap f (Case s alts) = Case (fmap f s) (map (fmap f) alts)
     fmap _ Erased = Erased
@@ -60,7 +60,7 @@ instance Functor Alt where
 instance Foldable TT where
     fold (V n) = mempty
     fold (Bind b n r ty rr tm) = r `mappend` fold ty `mappend` r `mappend` fold tm
-    fold (App pi_r r f x) = pi_r `mappend` r `mappend` fold f `mappend` fold x
+    fold (App pi_rr r f x) = pi_rr `mappend` r `mappend` fold f `mappend` fold x
     fold (Let (Def n r ty mtm Nothing) tm) = r `mappend` fold ty `mappend` fold (fromMaybe Erased mtm) `mappend` fold tm
     fold (Case s alts) = fold s `mappend` mconcat (map fold alts)
     fold Erased = mempty
@@ -87,7 +87,7 @@ subst n tm t@(V n')
 subst n tm t@(Bind b n' r ty rr tm')
     | n' == n   = t
     | otherwise = Bind b n' r (subst n tm ty) rr (subst n tm tm')
-subst n tm (App pi_r r f x) = App pi_r r (subst n tm f) (subst n tm x)
+subst n tm (App pi_rr r f x) = App pi_rr r (subst n tm f) (subst n tm x)
 subst n tm t@(Let (Def n' r ty mtm Nothing) tm')
     | n' == n = t
     | otherwise = Let (Def n' r (subst n tm ty) (subst n tm `fmap` mtm) Nothing) (subst n tm tm')

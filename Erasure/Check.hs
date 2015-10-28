@@ -162,7 +162,7 @@ checkTm t@(Bind Pat n r ty rr tm) = bt ("PAT", t) $ do
     (tmty, tmcs) <- with (Def n r ty Nothing Nothing) $ checkTm tm
     return (Bind Pat n r ty rr tmty, tmcs)
 
-checkTm t@(App app_pi_r app_r f x) = bt ("APP", t) $ do
+checkTm t@(App app_pi_rr app_r f x) = bt ("APP", t) $ do
     (fty, fcs) <- checkTm f
     (xty, xcs) <- checkTm x
     case fty of
@@ -174,7 +174,7 @@ checkTm t@(App app_pi_r app_r f x) = bt ("APP", t) $ do
                     /\ cond pi_r xcs
                     /\ pi_r --> app_r
                     /\ app_r --> pi_rr
-                    /\ base pi_r --> app_pi_r
+                    /\ base pi_rr --> app_pi_rr
             return (subst n' x retTy, cs)
 
         _ -> do
@@ -261,10 +261,10 @@ conv' p@(Bind b n r ty rr tm) q@(Bind b' n' r' ty' rr' tm') = bt ("C-BIND", p, q
     return $ xs /\ ys /\ r <--> r' /\ rr <--> rr'
 
 -- whnf is application (application of something irreducible)
-conv' p@(App pi_r r f x) q@(App pi_r' r' f' x') = bt ("C-APP", p, q) $ do
+conv' p@(App pi_rr r f x) q@(App pi_rr' r' f' x') = bt ("C-APP", p, q) $ do
     xs <- conv f f'
     ys <- conv x x'
-    return $ xs /\ ys /\ r <--> r' /\ pi_r <--> pi_r'
+    return $ xs /\ ys /\ r <--> r' /\ pi_rr <--> pi_rr'
 
 conv' p@(Let (Def n r ty mtm Nothing) tm) q@(Let (Def n' r' ty' mtm' Nothing) tm') = bt ("C-LET", p, q) $ do
     (val, val') <- case (mtm, mtm') of
@@ -316,10 +316,10 @@ uniformCase target alts = unions <$> mapM (simpleAlt target) alts
 match :: TT Meta -> TT Meta -> TC (Constrs, M.Map Name Term)
 match (V n) (V n') | n == n' = return (noConstrs, M.empty)
 match (V n) tm = return (noConstrs, M.singleton n tm)
-match (App pi_r r f x) (App pi_r' r' f' x') = do
+match (App pi_rr r f x) (App pi_rr' r' f' x') = do
     (xs, xmap) <- match f f'
     (ys, ymap) <- match x x'
-    return (xs /\ ys /\ r <--> r' /\ pi_r <--> pi_r', M.union xmap ymap)
+    return (xs /\ ys /\ r <--> r' /\ pi_rr <--> pi_rr', M.union xmap ymap)
 
 -- ctx, ctor type, pat+rhs
 substMatch :: M.Map Name Term -> Term -> Term -> Term

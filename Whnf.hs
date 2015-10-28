@@ -25,7 +25,7 @@ red  NF  ctx t@(Bind b n r ty rr tm) = Bind b n r (red NF ctx ty) rr (red NF ctx
   where
     ctx' = M.insert n (Def n r ty Nothing Nothing) ctx
 
-red WHNF ctx t@(App pi_r r f x)
+red WHNF ctx t@(App pi_rr r f x)
     | Bind Lam n' r' ty' rr' tm' <- redF
     = red WHNF ctx $ subst n' x tm'
 
@@ -33,11 +33,11 @@ red WHNF ctx t@(App pi_r r f x)
   where
     redF = red WHNF ctx f
 
-red NF ctx t@(App pi_r r f x)
+red NF ctx t@(App pi_rr r f x)
     | Bind Lam n' r' ty' rr' tm' <- redF
     = red NF ctx $ subst n' redX tm'
 
-    | otherwise = App pi_r r redF redX  -- not a redex
+    | otherwise = App pi_rr r redF redX  -- not a redex
   where
     redF = red NF ctx f
     redX = red NF ctx x
@@ -57,7 +57,7 @@ redCase form ctx fallback s (ConCase cn tm : as)
     = red form ctx $ replaceCore (fromPat Lam tm) s
   where
     replaceCore :: TT r -> TT r -> TT r
-    replaceCore newCore (App pi_r r f x) = App pi_r r (replaceCore newCore f) x
+    replaceCore newCore (App pi_rr r f x) = App pi_rr r (replaceCore newCore f) x
     replaceCore newCore _ = newCore
 
 redCase form ctx fallback s (_ : as) = redCase form ctx fallback s as

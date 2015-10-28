@@ -6,9 +6,9 @@ Void : *
 
 Maybe : (_ :: *) -> *
 
-Just : (a :: *) -> (x :: a) -> (Maybe a)
+Just : (a :: *) -> (x :: a) -> (Maybe  a)
 
-Nothing : (a :: *) -> (Maybe a)
+Nothing : (a :: *) -> (Maybe  a)
 
 Bool : *
 
@@ -16,20 +16,20 @@ True : Bool
 
 False : Bool
 
-retTy : (x :: (Maybe Bool)) -> *
-retTy = \x :: (Maybe Bool). 
+retTy : (x :: (Maybe  Bool)) -> *
+retTy = \x :: (Maybe  Bool). 
   case x of
     Just (a : *) (t : a) -> Bool
     Nothing (a : *) -> *
 
-f : (x :: (Maybe Bool)) -> (retTy x)
-f = \x :: (Maybe Bool). 
+f : (x :: (Maybe  Bool)) -> (retTy  x)
+f = \x :: (Maybe  Bool). 
   case x of
     Just (a : *) (b : a) -> b
     Nothing (a : *) -> Bool
 
 main  -R-  Bool
-main = (f (Just Bool False))
+main = (f  (Just  Bool  False))
 
 ### Metaified ###
 
@@ -37,9 +37,9 @@ Void :?1: *
 
 Maybe :?2: (_ :?3::?4: *) -> *
 
-Just :?5: (a :?6::?7: *) -> (x :?8::?9: a) -> (Maybe -?11- a)
+Just :?5: (a :?6::?7: *) -> (x :?8::?9: a) -> (Maybe -?10-  -?11- a)
 
-Nothing :?12: (a :?13::?14: *) -> (Maybe -?16- a)
+Nothing :?12: (a :?13::?14: *) -> (Maybe -?15-  -?16- a)
 
 Bool :?17: *
 
@@ -47,31 +47,31 @@ True :?18: Bool
 
 False :?19: Bool
 
-retTy :?20: (x :?21::?24: (Maybe -?23- Bool)) -> *
-retTy = \x :?25::?28: (Maybe -?27- Bool). 
+retTy :?20: (x :?21::?24: (Maybe -?22-  -?23- Bool)) -> *
+retTy = \x :?25::?28: (Maybe -?26-  -?27- Bool). 
   case x of
     Just (a :?29: *) (t :?31: a) -> Bool
     Nothing (a :?33: *) -> *
 
-f :?35: (x :?36::?39: (Maybe -?38- Bool)) -> (retTy -?41- x)
-f = \x :?42::?45: (Maybe -?44- Bool). 
+f :?35: (x :?36::?39: (Maybe -?37-  -?38- Bool)) -> (retTy -?40-  -?41- x)
+f = \x :?42::?45: (Maybe -?43-  -?44- Bool). 
   case x of
     Just (a :?46: *) (b :?48: a) -> b
     Nothing (a :?50: *) -> Bool
 
 main :!R: Bool
-main = (f -?53- (Just -?57- Bool -?55- False))
+main = (f -?52-  -?53- (Just -?56-  -?57- Bool -?54-  -?55- False))
 
 ### Inferred definitions ###
 
 Bool :?17: *
 False :?19: Bool
-Just :?5: (a :?6::?7: *) -> (x :?8::?9: a) -> (Maybe -?11- a)
+Just :?5: (a :?6::?7: *) -> (x :?8::?9: a) -> (Maybe -?10-  -?11- a)
 Maybe :?2: (_ :?3::?4: *) -> *
-Nothing :?12: (a :?13::?14: *) -> (Maybe -?16- a)
+Nothing :?12: (a :?13::?14: *) -> (Maybe -?15-  -?16- a)
 True :?18: Bool
 Void :?1: *
-f :?35: (x :?36::?39: (Maybe -?38- Bool)) -> (retTy -?41- x)
+f :?35: (x :?36::?39: (Maybe -?37-  -?38- Bool)) -> (retTy -?40-  -?41- x)
   [] -> [?8,?17,?36,?42,?48,!R]
   [?10] -> [?37]
   [?11] -> [?38]
@@ -87,9 +87,11 @@ f :?35: (x :?36::?39: (Maybe -?38- Bool)) -> (retTy -?41- x)
   [?50] -> [?13]
 
 main :!R: Bool
-  [] -> [?5,?8_1,?17_1,?35,?36,?36_1,?39_1,?42_1,?45_1,?48_1,?52,?53,!R]
-  [?6] -> [?17,?56,?57]
-  [?8] -> [?19,?54,?55]
+  [] -> [?5,?8_1,?17_1,?35,?36,?36_1,?39_1,?42_1,?45_1,?48_1,?53,!R]
+  [?6] -> [?17,?57]
+  [?7] -> [?56]
+  [?8] -> [?19,?55]
+  [?9] -> [?54]
   [?10] -> [?37_1]
   [?10_1] -> [?37_1]
   [?11] -> [?38_1]
@@ -98,6 +100,7 @@ main :!R: Bool
   [?16_1] -> [?38_1]
   [?37_1] -> [?10,?10_1,?15_1,?37,?43_1]
   [?38_1] -> [?11,?11_1,?16_1,?38,?44_1]
+  [?39] -> [?52]
   [?40_1] -> [?40]
   [?41_1] -> [?41]
   [?43_1] -> [?37_1]
@@ -107,7 +110,7 @@ main :!R: Bool
   [?55] -> [?9]
   [?57] -> [?7]
 
-retTy :?20: (x :?21::?24: (Maybe -?23- Bool)) -> *
+retTy :?20: (x :?21::?24: (Maybe -?22-  -?23- Bool)) -> *
   [] -> [?17,?21,?25,!R]
   [?22] -> [?26]
   [?23] -> [?27]
@@ -122,9 +125,11 @@ retTy :?20: (x :?21::?24: (Maybe -?23- Bool)) -> *
 
 ### Constraints ###
 
-[] -> [?5,?8,?8_1,?17,?17_1,?21,?25,?35,?36,?36_1,?39_1,?42,?42_1,?45_1,?48,?48_1,?52,?53,!R]
-[?6] -> [?17,?56,?57]
-[?8] -> [?19,?54,?55]
+[] -> [?5,?8,?8_1,?17,?17_1,?21,?25,?35,?36,?36_1,?39_1,?42,?42_1,?45_1,?48,?48_1,?53,!R]
+[?6] -> [?17,?57]
+[?7] -> [?56]
+[?8] -> [?19,?55]
+[?9] -> [?54]
 [?10] -> [?37,?37_1]
 [?10_1] -> [?37_1]
 [?11] -> [?38,?38_1]
@@ -146,7 +151,7 @@ retTy :?20: (x :?21::?24: (Maybe -?23- Bool)) -> *
 [?37_1] -> [?10,?10_1,?15_1,?37,?43_1]
 [?38] -> [?11,?16,?44]
 [?38_1] -> [?11,?11_1,?16_1,?38,?44_1]
-[?39] -> [?45]
+[?39] -> [?45,?52]
 [?40_1] -> [?40]
 [?41_1] -> [?41]
 [?43] -> [?37]
@@ -163,7 +168,7 @@ retTy :?20: (x :?21::?24: (Maybe -?23- Bool)) -> *
 
 ### Solution ###
 
-[?5,?8,?8_1,?9,?17,?17_1,?19,?21,?25,?35,?36,?36_1,?39_1,?42,?42_1,?45_1,?48,?48_1,?52,?53,?54,?55,!R]
+[?5,?8,?8_1,?9,?17,?17_1,?19,?21,?25,?35,?36,?36_1,?39_1,?42,?42_1,?45_1,?48,?48_1,?53,?54,?55,!R]
 
 ### Annotated ###
 
@@ -171,9 +176,9 @@ Void :E: *
 
 Maybe :E: (_ :E::E: *) -> *
 
-Just :R: (a :E::E: *) -> (x :R::R: a) -> (Maybe -E- a)
+Just :R: (a :E::E: *) -> (x :R::R: a) -> (Maybe -E-  -E- a)
 
-Nothing :E: (a :E::E: *) -> (Maybe -E- a)
+Nothing :E: (a :E::E: *) -> (Maybe -E-  -E- a)
 
 Bool :R: *
 
@@ -181,20 +186,20 @@ True :E: Bool
 
 False :R: Bool
 
-retTy :E: (x :R::E: (Maybe -E- Bool)) -> *
-retTy = \x :R::E: (Maybe -E- Bool). 
+retTy :E: (x :R::E: (Maybe -E-  -E- Bool)) -> *
+retTy = \x :R::E: (Maybe -E-  -E- Bool). 
   case x of
     Just (a :E: *) (t :E: a) -> Bool
     Nothing (a :E: *) -> *
 
-f :R: (x :R::E: (Maybe -E- Bool)) -> (retTy -E- x)
-f = \x :R::E: (Maybe -E- Bool). 
+f :R: (x :R::E: (Maybe -E-  -E- Bool)) -> (retTy -E-  -E- x)
+f = \x :R::E: (Maybe -E-  -E- Bool). 
   case x of
     Just (a :E: *) (b :R: a) -> b
     Nothing (a :E: *) -> Bool
 
 main :R: Bool
-main = (f -R- (Just -E- Bool -R- False))
+main = (f -E-  -R- (Just -E-  -E- Bool -R-  -R- False))
 
 ### Pruned ###
 
@@ -203,11 +208,14 @@ f = \x.
     Just b -> b
     Nothing -> Bool
 
-main = (f (Just False))
+main = (f  ____)
 
 ### Normal forms ###
 
 unerased:
   False
 erased:
-  False
+  
+  case ____ of
+    Just b -> b
+    Nothing -> Bool
