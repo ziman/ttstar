@@ -65,9 +65,13 @@ instance Foldable TT where
     fold Erased = mempty
     fold Type = mempty
 
+    foldMap f = fold . fmap f
+
 instance Foldable Alt where
     fold (ConCase cn tm)  = fold tm
     fold (DefaultCase tm) = fold tm
+
+    foldMap f = fold . fmap f
 
 unApply :: TT r -> (TT r, [TT r])
 unApply tm = ua tm []
