@@ -2,32 +2,36 @@
 
 ### Desugared ###
 
-main  -R-  (x : *) -> *
-main = \x : *. x
+main  -R-  (x :: *) -> *
+main = \x :: *. x
 
 ### Metaified ###
 
-main :!R: (x :?1: *) -> *
-main = \x :?2: *. x
+main :!R: (x :?1::?2: *) -> *
+main = \x :?3::?4: *. x
 
 ### Inferred definitions ###
 
-main :!R: (x :?1: *) -> *
-  [] -> [?1,?2,!R]
+main :!R: (x :?1::?2: *) -> *
+  [] -> [?1,?3,!R]
+  [?2] -> [?4]
+  [?4] -> [?2]
 
 
 ### Constraints ###
 
-[] -> [?1,?2,!R]
+[] -> [?1,?3,!R]
+[?2] -> [?4]
+[?4] -> [?2]
 
 ### Solution ###
 
-[?1,?2,!R]
+[?1,?3,!R]
 
 ### Annotated ###
 
-main :R: (x :R: *) -> *
-main = \x :R: *. x
+main :R: (x :R::E: *) -> *
+main = \x :R::E: *. x
 
 ### Pruned ###
 
@@ -36,6 +40,6 @@ main = \x. x
 ### Normal forms ###
 
 unerased:
-  \x : *. x
+  \x :: *. x
 erased:
   \x. x

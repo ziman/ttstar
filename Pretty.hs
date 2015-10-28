@@ -37,12 +37,16 @@ instance PrettyR r => Pretty (Name, r, TT r) where
     pretty (n, r, Erased) = text n
     pretty (n, r, ty) = text n <+> prettyCol r <+> pretty ty
 
+instance PrettyR r => Pretty (Name, r, r, TT r) where
+    pretty (n, r, rr, Erased) = text n
+    pretty (n, r, rr, ty) = text n <+> prettyCol r <> prettyCol rr <+> pretty ty
+
 instance PrettyR r => Pretty (TT r) where
     pretty (V n) = text n
-    pretty (Bind Pi n r ty tm) = parens (pretty (n, r, ty)) <+> arrow <+> pretty tm
-    pretty (Bind Lam n r Erased tm) = lam <> text n <> dot <+> pretty tm
-    pretty (Bind Lam n r ty tm) = lam <> pretty (n, r, ty) <> dot <+> pretty tm
-    pretty (Bind Pat n r ty tm) = text "pat " <> pretty (n, r, ty) <> dot <+> pretty tm
+    pretty (Bind Pi n r ty rr tm) = parens (pretty (n, r, rr, ty)) <+> arrow <+> pretty tm
+    pretty (Bind Lam n r Erased rr tm) = lam <> text n <> dot <+> pretty tm
+    pretty (Bind Lam n r ty rr tm) = lam <> pretty (n, r, rr, ty) <> dot <+> pretty tm
+    pretty (Bind Pat n r ty rr tm) = text "pat " <> pretty (n, r, ty) <> dot <+> pretty tm
     pretty (App pi_r r (V "S") x) | Just i <- fromNat x = int $ 1+i
       where
         fromNat (V "Z") = Just 0

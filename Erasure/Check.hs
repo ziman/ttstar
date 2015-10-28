@@ -150,25 +150,31 @@ checkTm t@(V n) = bt ("VAR", n) $ do
             let (ty', cs') = freshen tag (ty, cs)
             return (ty', cs' /\ Fixed R --> r)
 
-checkTm t@(Bind Lam n r ty tm) = bt ("LAM", t) $ do
+checkTm t@(Bind Lam n r ty rr tm) = bt ("LAM", t) $ do
     (tmty, tmcs) <- with (Def n r ty Nothing Nothing) $ checkTm tm
-    return (Bind Pi n r ty tmty, tmcs)
+    return (Bind Pi n r ty rr tmty, tmcs)
 
-checkTm t@(Bind Pi n r ty tm) = bt ("PI", t) $ do
+checkTm t@(Bind Pi n r ty rr tm) = bt ("PI", t) $ do
     (tmty, tmcs) <- with (Def n r ty Nothing Nothing) $ checkTm tm
     return (Type, tmcs)
 
-checkTm t@(Bind Pat n r ty tm) = bt ("PAT", t) $ do
+checkTm t@(Bind Pat n r ty rr tm) = bt ("PAT", t) $ do
     (tmty, tmcs) <- with (Def n r ty Nothing Nothing) $ checkTm tm
-    return (Bind Pat n r ty tmty, tmcs)
+    return (Bind Pat n r ty rr tmty, tmcs)
 
 checkTm t@(App app_pi_r app_r f x) = bt ("APP", t) $ do
     (fty, fcs) <- checkTm f
     (xty, xcs) <- checkTm x
     case fty of
-        Bind Pi n' pi_r ty' retTy -> do
+        Bind Pi n' pi_r ty' pi_rr retTy -> do
             tycs <- conv xty ty'
-            let cs = tycs /\ fcs /\ cond pi_r xcs /\ pi_r --> app_r /\ base pi_r --> app_pi_r
+            let cs =
+                    tycs
+                    /\ fcs
+                    /\ cond pi_r xcs
+                    /\ pi_r --> app_r
+                    /\ app_r --> pi_rr
+                    /\ base pi_r --> app_pi_r
             return (subst n' x retTy, cs)
 
         _ -> do
@@ -209,7 +215,7 @@ checkAlt (ConCase cn tm) = bt ("ALT-CON", cn, tm) $ do
     return (ConCase cn tmty, tmcs /\ argcs)
   where
     (args, rhs) = splitBinder Pat tm
-    matchArgs p@(Bind Pi n r ty tm) q@((n', r', ty') : as) = bt ("MATCH-ARGS", p, q) $ do
+    matchArgs p@(Bind Pi n r ty rr tm) q@((n', r', ty') : as) = bt ("MATCH-ARGS", p, q) $ do
         xs <- conv ty ty'
         ys <- matchArgs tm as
         return $ xs /\ ys /\ r' --> r  -- ?direction?
@@ -248,11 +254,11 @@ conv' (V n) (V n') = bt ("C-VAR", n, n') $ do
     require (n == n') $ Mismatch n n'
     return noConstrs
 
-conv' p@(Bind b n r ty tm) q@(Bind b' n' r' ty' tm') = bt ("C-BIND", p, q) $ do
+conv' p@(Bind b n r ty rr tm) q@(Bind b' n' r' ty' rr' tm') = bt ("C-BIND", p, q) $ do
     require (b == b') $ Mismatch (show b) (show b')
     xs <- conv ty (rename [n'] [n] ty')
     ys <- with (Def n r ty Nothing Nothing) $ conv tm (rename [n'] [n] tm')
-    return $ xs /\ ys /\ r <--> r'
+    return $ xs /\ ys /\ r <--> r' /\ rr <--> rr'
 
 -- whnf is application (application of something irreducible)
 conv' p@(App pi_r r f x) q@(App pi_r' r' f' x') = bt ("C-APP", p, q) $ do
@@ -317,7 +323,7 @@ match (App pi_r r f x) (App pi_r' r' f' x') = do
 
 -- ctx, ctor type, pat+rhs
 substMatch :: M.Map Name Term -> Term -> Term -> Term
-substMatch ctx (Bind Pi n r ty tm) (Bind Pat n' r' ty' tm')
+substMatch ctx (Bind Pi n r ty rr tm) (Bind Pat n' r' ty' rr' tm')
     | Just x <- M.lookup n ctx
     = substMatch ctx (subst n x tm) (subst n' x tm')
 

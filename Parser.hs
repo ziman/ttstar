@@ -63,20 +63,20 @@ atomic = parens expr
 arrow :: Parser (TT MRel)
 arrow = (<?> "arrow type") $ do
     ty <- try (atomic <* kwd "->")
-    Bind Pi "_" Nothing ty <$> expr
+    Bind Pi "_" Nothing ty Nothing <$> expr
 
 lambda :: Parser (TT MRel)
 lambda = (<?> "lambda") $ do
     kwd "\\"
     (n, r, ty) <- typing
     kwd "."
-    Bind Lam n r ty <$> expr
+    Bind Lam n r ty Nothing <$> expr
 
 bpi :: Parser (TT MRel)
 bpi = (<?> "pi") $ do
     (n, r, ty) <- parens typing
     kwd "->"
-    Bind Pi n r ty <$> expr  
+    Bind Pi n r ty Nothing <$> expr  
 
 bind :: Parser (TT MRel)
 bind = arrow
@@ -127,7 +127,7 @@ conCase = (<?> "constr case") $ do
     return $ ConCase cn (tack ns rhs)
   where
     tack [] tm = tm
-    tack ((n,r,ty) : ns) tm = Bind Pat n r ty $ tack ns tm
+    tack ((n,r,ty) : ns) tm = Bind Pat n r ty Nothing $ tack ns tm
 
 typing :: Parser (Name, MRel, TT MRel)
 typing = (<?> "typing") $ do
@@ -155,7 +155,7 @@ mldef = (<?> "ml-style definition") $ do
     return $ Def n r (chain Pi args retTy) (Just $ chain Lam args tm) Nothing
   where
     chain bnd [] tm = tm
-    chain bnd ((n, r, ty) : args) tm = Bind bnd n r ty $ chain bnd args tm
+    chain bnd ((n, r, ty) : args) tm = Bind bnd n r ty Nothing $ chain bnd args tm
     
 fundef :: Parser (Def MRel Void)
 fundef = (<?> "function definition") $ do

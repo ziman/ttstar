@@ -20,13 +20,13 @@ red form ctx t@(V n)
 
     | otherwise = t  -- unknown variable
 
-red WHNF ctx t@(Bind b n r ty tm) = t
-red  NF  ctx t@(Bind b n r ty tm) = Bind b n r (red NF ctx ty) (red NF ctx' tm)
+red WHNF ctx t@(Bind b n r ty rr tm) = t
+red  NF  ctx t@(Bind b n r ty rr tm) = Bind b n r (red NF ctx ty) rr (red NF ctx' tm)
   where
     ctx' = M.insert n (Def n r ty Nothing Nothing) ctx
 
 red WHNF ctx t@(App pi_r r f x)
-    | Bind Lam n' r' ty' tm' <- redF
+    | Bind Lam n' r' ty' rr' tm' <- redF
     = red WHNF ctx $ subst n' x tm'
 
     | otherwise = t  -- not a redex
@@ -34,7 +34,7 @@ red WHNF ctx t@(App pi_r r f x)
     redF = red WHNF ctx f
 
 red NF ctx t@(App pi_r r f x)
-    | Bind Lam n' r' ty' tm' <- redF
+    | Bind Lam n' r' ty' rr' tm' <- redF
     = red NF ctx $ subst n' redX tm'
 
     | otherwise = App pi_r r redF redX  -- not a redex

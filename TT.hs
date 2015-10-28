@@ -23,7 +23,8 @@ lub = max
 
 data TT r
     = V Name
-    | Bind Binder Name r (TT r) (TT r)
+    | Bind Binder Name r (TT r) r (TT r)
+        -- ^ binder, nrty, reverse dep, body
     | App r r (TT r) (TT r)
     | Let (Def r Void) (TT r)
     | Case (TT r) [Alt r]  -- scrutinee, scrutinee type, alts
@@ -45,7 +46,7 @@ newtype Void = Void Void deriving (Eq, Ord, Show)
 
 instance Functor TT where
     fmap _ (V n) = V n
-    fmap f (Bind b n r ty tm) = Bind b n (f r) (fmap f ty) (fmap f tm)
+    fmap f (Bind b n r ty rr tm) = Bind b n (f r) (fmap f ty) (f rr) (fmap f tm)
     fmap f (App pi_r r fun arg) = App (f pi_r) (f r) (fmap f fun) (fmap f arg)
     fmap f (Let (Def n r ty mtm Nothing) tm) = Let (Def n (f r) (fmap f ty) (fmap f `fmap` mtm) Nothing) (fmap f tm)
     fmap f (Case s alts) = Case (fmap f s) (map (fmap f) alts)
@@ -58,16 +59,20 @@ instance Functor Alt where
 
 instance Foldable TT where
     fold (V n) = mempty
-    fold (Bind b n r ty tm) = r `mappend` fold ty `mappend` fold tm
+    fold (Bind b n r ty rr tm) = r `mappend` fold ty `mappend` r `mappend` fold tm
     fold (App pi_r r f x) = pi_r `mappend` r `mappend` fold f `mappend` fold x
     fold (Let (Def n r ty mtm Nothing) tm) = r `mappend` fold ty `mappend` fold (fromMaybe Erased mtm) `mappend` fold tm
     fold (Case s alts) = fold s `mappend` mconcat (map fold alts)
     fold Erased = mempty
     fold Type = mempty
 
+    foldMap f = fold . fmap f
+
 instance Foldable Alt where
     fold (ConCase cn tm)  = fold tm
     fold (DefaultCase tm) = fold tm
+
+    foldMap f = fold . fmap f
 
 unApply :: TT r -> (TT r, [TT r])
 unApply tm = ua tm []
@@ -79,9 +84,9 @@ subst :: Name -> TT r -> TT r -> TT r
 subst n tm t@(V n')
     | n' == n   = tm
     | otherwise = t
-subst n tm t@(Bind b n' r ty tm')
+subst n tm t@(Bind b n' r ty rr tm')
     | n' == n   = t
-    | otherwise = Bind b n' r (subst n tm ty) (subst n tm tm')
+    | otherwise = Bind b n' r (subst n tm ty) rr (subst n tm tm')
 subst n tm (App pi_r r f x) = App pi_r r (subst n tm f) (subst n tm x)
 subst n tm t@(Let (Def n' r ty mtm Nothing) tm')
     | n' == n = t
@@ -96,7 +101,7 @@ substAlt n tm t@(ConCase cn tm') = ConCase cn $ subst n tm tm'
 
 -- split a Pat-packed pattern into 1. pattern vars, 2. RHS
 splitBinder :: Binder -> TT r -> ([(Name, r, TT r)], TT r)
-splitBinder bnd (Bind b n r ty tm)
+splitBinder bnd (Bind b n r ty rr tm)
     | b == bnd
     = ((n, r, ty) : args, rhs)
   where
@@ -104,5 +109,5 @@ splitBinder bnd (Bind b n r ty tm)
 splitBinder bnd tm = ([], tm)
 
 fromPat :: Binder -> TT r -> TT r
-fromPat b (Bind Pat n r ty tm) = Bind b n r ty $ fromPat b tm
+fromPat b (Bind Pat n r ty rr tm) = Bind b n r ty rr $ fromPat b tm
 fromPat b tm = tm
