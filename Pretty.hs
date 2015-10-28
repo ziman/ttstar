@@ -39,7 +39,7 @@ instance PrettyR r => Pretty (Name, r, TT r) where
 
 instance PrettyR r => Pretty (Name, r, r, TT r) where
     pretty (n, r, rr, Erased) = text n
-    pretty (n, r, rr, ty) = text n <+> prettyCol r <> prettyCol rr <+> pretty ty
+    pretty (n, r, rr, ty) = text n <+> prettyCol rr <> prettyCol r <+> pretty ty
 
 instance PrettyR r => Pretty (TT r) where
     pretty (V n) = text n

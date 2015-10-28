@@ -172,8 +172,8 @@ checkTm t@(App app_pi_rr app_r f x) = bt ("APP", t) $ do
                     tycs
                     /\ fcs
                     /\ cond pi_r xcs
-                    /\ pi_r --> app_r
-                    /\ app_r --> pi_rr
+                    /\ pi_r <--> app_r
+                    /\ app_r --> base pi_rr
                     /\ base pi_rr --> app_pi_rr
             return (subst n' x retTy, cs)
 
@@ -232,13 +232,18 @@ tagMeta tag (MVar i j)
 tagMeta tag m = m
 
 freshen :: Int -> (Type, Constrs) -> (Type, Constrs)
-freshen tag (ty, cs) = (ty', cs' /\ backArrows)
+freshen tag (ty, cs) = (ty', cs' /\ bindFresh ty ty')
   where
     ty' = fmap (tagMeta tag) ty
     cs' = M.mapKeysWith S.union tagSet . M.map tagSet $ cs
     tagSet = S.map $ tagMeta tag
     newMetas = fold $ fmap S.singleton ty'
-    backArrows = unions [MVar i j --> MVar i 0 | MVar i j <- S.toList newMetas]
+
+bindFresh :: Type -> Type -> Constrs
+bindFresh (Bind Pi n r ty rr tm) (Bind Pi n' r' ty' rr' tm')  -- original, copy
+    = bindFresh ty ty' /\ bindFresh tm tm' /\ r' --> rr
+    -- regardless of variance, usage in new type implies reverse usage in the old type
+bindFresh _ _ = M.empty
 
 -- left: from context (from outside), right: from expression (from inside)
 conv :: Type -> Type -> TC Constrs
