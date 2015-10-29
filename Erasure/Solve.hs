@@ -10,7 +10,8 @@ import qualified Data.Set as S
 import Debug.Trace
 
 type Guards = S.Set Meta
-type Uses = S.Set Meta
+type MetaSet = S.Set Meta
+type Uses = M.Map Meta Relevance
 type Constrs = M.Map Guards Uses
 
 -- reduce the constraint set, keeping the empty-guard constraint
@@ -21,11 +22,11 @@ reduce cs
   where
     (us, residue) = solve cs
 
-solve :: Constrs -> (Uses, Constrs)
-solve = step $ S.singleton (Fixed R)
+solve :: Constrs -> (MetaSet, MetaSet, Constrs)
+solve cs = step (S.singleton $ Fixed P) (S.singleton $ Fixed K) cs
   where
-    step :: Uses -> Constrs -> (Uses, Constrs)
-    step ans cs
+    step :: MetaSet -> MetaSet -> Constrs -> (MetaSet, MetaSet, Constrs)
+    step ps ks cs
         | S.null new = (ans, prunedCs)
         | otherwise = step (S.union ans new) prunedCs
       where

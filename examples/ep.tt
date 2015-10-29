@@ -1,0 +1,22 @@
+-- vim: ft=agda
+
+postulate T : *.
+postulate A : T.
+postulate B : T.
+postulate Op : (x :K: T) -> (y :K: T) -> T.
+
+id : T -> T = \y : T. y.
+
+constA : T -> T = \_ : T. A.
+
+apply (f : T -> T) : T -> T
+    = \x : T. f x.
+
+test1 : T
+    = apply id B.
+
+test2 : T
+    = apply constA B.
+
+main :K: T
+    = Op test1 test2.

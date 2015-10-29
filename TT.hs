@@ -15,7 +15,10 @@ import qualified Data.Map as M
 -- type Guards = S.Set (MVar, Relevance)
 -- type Uses = S.Set (MVar, Relevance)
 type Name = String
-data Relevance = E | R deriving (Eq, Ord, Show)  -- TODO: I
+
+-- Erase, Polymorphic, Keep
+data Relevance = E | P | K deriving (Eq, Ord, Show)
+
 data Binder = Lam | Pi | Pat deriving (Eq, Ord, Show)
 
 lub :: Relevance -> Relevance -> Relevance
