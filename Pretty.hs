@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleInstances, StandaloneDeriving #-}
+{-# LANGUAGE FlexibleContexts, FlexibleInstances, StandaloneDeriving #-}
 module Pretty (PrettyR(..)) where
 
 import TT

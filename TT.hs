@@ -2,7 +2,7 @@ module TT where
 
 import Data.List
 import Data.Foldable
-import Data.Monoid
+import Data.Monoid hiding (Alt)
 import Data.Maybe
 import qualified Data.Map as M
 
