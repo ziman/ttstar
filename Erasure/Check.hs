@@ -173,8 +173,7 @@ checkTm t@(App app_pi_rr app_r f x) = bt ("APP", t) $ do
                     /\ fcs
                     /\ cond pi_r xcs
                     /\ pi_r <--> app_r
-                    /\ app_r --> base pi_rr
-                    /\ base pi_rr --> app_pi_rr
+                    /\ base pi_rr <--> app_pi_rr
             return (subst n' x retTy, cs)
 
         _ -> do
