@@ -1,0 +1,34 @@
+-- vim: ft=agda
+
+### Desugared ###
+
+Bool : *
+
+### Metaified ###
+
+Bool :?1: *
+
+### Inferred definitions ###
+
+Bool :?1: *
+
+### Constraints ###
+
+
+### Solution ###
+
+[!R]
+
+### Annotated ###
+
+Bool :E: *
+
+### Pruned ###
+
+
+### Normal forms ###
+
+unerased:
+  main
+erased:
+  main

@@ -240,7 +240,7 @@ freshen tag (ty, cs) = (ty', cs' /\ bindFresh ty ty')
 
 bindFresh :: Type -> Type -> Constrs
 bindFresh (Bind Pi n r ty rr tm) (Bind Pi n' r' ty' rr' tm')  -- original, copy
-    = bindFresh ty ty' /\ bindFresh tm tm' /\ r' --> rr
+    = bindFresh ty ty' /\ bindFresh tm tm' /\ r' --> rr /\ rr' --> rr
     -- regardless of variance, usage in new type implies reverse usage in the old type
 bindFresh _ _ = M.empty
 

@@ -74,9 +74,12 @@ lambda = (<?> "lambda") $ do
 
 bpi :: Parser (TT MRel)
 bpi = (<?> "pi") $ do
-    (n, r, ty) <- parens typing
+    (n, rr, r, ty) <- parens piTyping
     kwd "->"
-    Bind Pi n r ty Nothing <$> expr  
+    Bind Pi n r ty rr <$> expr  
+  where
+    piTyping = try rtyping <|> (enrich <$> typing)
+    enrich (n, r, ty) = (n, Nothing, r, ty)
 
 bind :: Parser (TT MRel)
 bind = arrow
@@ -135,6 +138,14 @@ typing = (<?> "typing") $ do
     r <- rcolon
     ty <- expr
     return (n, r, ty)
+
+rtyping :: Parser (Name, MRel, MRel, TT MRel)
+rtyping = (<?> "rtyping") $ do
+    n <- name
+    rr <- rcolon
+    r <- rcolon
+    ty <- expr
+    return (n, rr, r, ty)
 
 postulate :: Parser (Def MRel Void)
 postulate = (<?> "postulate") $ do
