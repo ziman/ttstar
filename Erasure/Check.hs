@@ -143,37 +143,41 @@ checkTm :: Term -> TC (Type, Constrs)
 
 checkTm t@(V n) = bt ("VAR", n) $ do
     Def _n r ty mtm mcs <- lookup n
-    case mcs of
-        Nothing -> return (ty, Fixed R --> r)
-        Just cs -> do
+    case (mtm, mcs) of
+        -- mtm == Just tm  --> it's a definition
+        -- mcs == Just cs  --> there are some constraints
+        -- we can treat it polymorphically
+        (Just tm, Just cs) -> do
             tag <- freshTag
             let (ty', cs') = freshen tag (ty, cs)
             return (ty', cs' /\ Fixed R --> r)
 
-checkTm t@(Bind Lam n r ty rr tm) = bt ("LAM", t) $ do
-    (tmty, tmcs) <- with (Def n r ty Nothing Nothing) $ checkTm tm
-    return (Bind Pi n r ty rr tmty, tmcs)
+        -- don't erasure-polymorph-instantiate
+        _ -> return (ty, Fixed R --> r)
 
-checkTm t@(Bind Pi n r ty rr tm) = bt ("PI", t) $ do
+checkTm t@(Bind Lam n r ty tm) = bt ("LAM", t) $ do
+    (tmty, tmcs) <- with (Def n r ty Nothing Nothing) $ checkTm tm
+    return (Bind Pi n r ty tmty, tmcs)
+
+checkTm t@(Bind Pi n r ty tm) = bt ("PI", t) $ do
     (tmty, tmcs) <- with (Def n r ty Nothing Nothing) $ checkTm tm
     return (Type, tmcs)
 
-checkTm t@(Bind Pat n r ty rr tm) = bt ("PAT", t) $ do
+checkTm t@(Bind Pat n r ty tm) = bt ("PAT", t) $ do
     (tmty, tmcs) <- with (Def n r ty Nothing Nothing) $ checkTm tm
-    return (Bind Pat n r ty rr tmty, tmcs)
+    return (Bind Pat n r ty tmty, tmcs)
 
-checkTm t@(App app_pi_rr app_r f x) = bt ("APP", t) $ do
+checkTm t@(App app_r f x) = bt ("APP", t) $ do
     (fty, fcs) <- checkTm f
     (xty, xcs) <- checkTm x
     case fty of
-        Bind Pi n' pi_r ty' pi_rr retTy -> do
+        Bind Pi n' pi_r ty' retTy -> do
             tycs <- conv xty ty'
             let cs =
                     tycs
                     /\ fcs
                     /\ cond pi_r xcs
                     /\ pi_r <--> app_r
-                    /\ base pi_rr <--> app_pi_rr
             return (subst n' x retTy, cs)
 
         _ -> do
@@ -214,7 +218,7 @@ checkAlt (ConCase cn tm) = bt ("ALT-CON", cn, tm) $ do
     return (ConCase cn tmty, tmcs /\ argcs)
   where
     (args, rhs) = splitBinder Pat tm
-    matchArgs p@(Bind Pi n r ty rr tm) q@((n', r', ty') : as) = bt ("MATCH-ARGS", p, q) $ do
+    matchArgs p@(Bind Pi n r ty tm) q@((n', r', ty') : as) = bt ("MATCH-ARGS", p, q) $ do
         xs <- conv ty ty'
         ys <- matchArgs tm as
         return $ xs /\ ys /\ r' --> r  -- ?direction?
@@ -231,18 +235,12 @@ tagMeta tag (MVar i j)
 tagMeta tag m = m
 
 freshen :: Int -> (Type, Constrs) -> (Type, Constrs)
-freshen tag (ty, cs) = (ty', cs' /\ bindFresh ty ty')
+freshen tag (ty, cs) = (ty', cs')
   where
     ty' = fmap (tagMeta tag) ty
     cs' = M.mapKeysWith S.union tagSet . M.map tagSet $ cs
     tagSet = S.map $ tagMeta tag
     newMetas = fold $ fmap S.singleton ty'
-
-bindFresh :: Type -> Type -> Constrs
-bindFresh (Bind Pi n r ty rr tm) (Bind Pi n' r' ty' rr' tm')  -- original, copy
-    = bindFresh ty ty' /\ bindFresh tm tm' /\ r' --> rr /\ rr' --> rr
-    -- regardless of variance, usage in new type implies reverse usage in the old type
-bindFresh _ _ = M.empty
 
 -- left: from context (from outside), right: from expression (from inside)
 conv :: Type -> Type -> TC Constrs
@@ -258,17 +256,17 @@ conv' (V n) (V n') = bt ("C-VAR", n, n') $ do
     require (n == n') $ Mismatch n n'
     return noConstrs
 
-conv' p@(Bind b n r ty rr tm) q@(Bind b' n' r' ty' rr' tm') = bt ("C-BIND", p, q) $ do
+conv' p@(Bind b n r ty tm) q@(Bind b' n' r' ty' tm') = bt ("C-BIND", p, q) $ do
     require (b == b') $ Mismatch (show b) (show b')
     xs <- conv ty (rename [n'] [n] ty')
     ys <- with (Def n r ty Nothing Nothing) $ conv tm (rename [n'] [n] tm')
-    return $ xs /\ ys /\ r <--> r' /\ rr <--> rr'
+    return $ xs /\ ys /\ r <--> r'
 
 -- whnf is application (application of something irreducible)
-conv' p@(App pi_rr r f x) q@(App pi_rr' r' f' x') = bt ("C-APP", p, q) $ do
+conv' p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do
     xs <- conv f f'
     ys <- conv x x'
-    return $ xs /\ ys /\ r <--> r' /\ pi_rr <--> pi_rr'
+    return $ xs /\ ys /\ r <--> r'
 
 conv' p@(Let (Def n r ty mtm Nothing) tm) q@(Let (Def n' r' ty' mtm' Nothing) tm') = bt ("C-LET", p, q) $ do
     (val, val') <- case (mtm, mtm') of
@@ -320,14 +318,14 @@ uniformCase target alts = unions <$> mapM (simpleAlt target) alts
 match :: TT Meta -> TT Meta -> TC (Constrs, M.Map Name Term)
 match (V n) (V n') | n == n' = return (noConstrs, M.empty)
 match (V n) tm = return (noConstrs, M.singleton n tm)
-match (App pi_rr r f x) (App pi_rr' r' f' x') = do
+match (App r f x) (App r' f' x') = do
     (xs, xmap) <- match f f'
     (ys, ymap) <- match x x'
-    return (xs /\ ys /\ r <--> r' /\ pi_rr <--> pi_rr', M.union xmap ymap)
+    return (xs /\ ys /\ r <--> r', M.union xmap ymap)
 
 -- ctx, ctor type, pat+rhs
 substMatch :: M.Map Name Term -> Term -> Term -> Term
-substMatch ctx (Bind Pi n r ty rr tm) (Bind Pat n' r' ty' rr' tm')
+substMatch ctx (Bind Pi n r ty tm) (Bind Pat n' r' ty' tm')
     | Just x <- M.lookup n ctx
     = substMatch ctx (subst n x tm) (subst n' x tm')
 

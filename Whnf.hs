@@ -20,24 +20,24 @@ red form ctx t@(V n)
 
     | otherwise = t  -- unknown variable
 
-red WHNF ctx t@(Bind b n r ty rr tm) = t
-red  NF  ctx t@(Bind b n r ty rr tm) = Bind b n r (red NF ctx ty) rr (red NF ctx' tm)
+red WHNF ctx t@(Bind b n r ty tm) = t
+red  NF  ctx t@(Bind b n r ty tm) = Bind b n r (red NF ctx ty) (red NF ctx' tm)
   where
     ctx' = M.insert n (Def n r ty Nothing Nothing) ctx
 
-red WHNF ctx t@(App pi_rr r f x)
-    | Bind Lam n' r' ty' rr' tm' <- redF
+red WHNF ctx t@(App r f x)
+    | Bind Lam n' r' ty' tm' <- redF
     = red WHNF ctx $ subst n' x tm'
 
     | otherwise = t  -- not a redex
   where
     redF = red WHNF ctx f
 
-red NF ctx t@(App pi_rr r f x)
-    | Bind Lam n' r' ty' rr' tm' <- redF
+red NF ctx t@(App r f x)
+    | Bind Lam n' r' ty' tm' <- redF
     = red NF ctx $ subst n' redX tm'
 
-    | otherwise = App pi_rr r redF redX  -- not a redex
+    | otherwise = App r redF redX  -- not a redex
   where
     redF = red NF ctx f
     redX = red NF ctx x
@@ -57,7 +57,7 @@ redCase form ctx fallback s (ConCase cn tm : as)
     = red form ctx $ replaceCore (fromPat Lam tm) s
   where
     replaceCore :: TT r -> TT r -> TT r
-    replaceCore newCore (App pi_rr r f x) = App pi_rr r (replaceCore newCore f) x
+    replaceCore newCore (App r f x) = App r (replaceCore newCore f) x
     replaceCore newCore _ = newCore
 
 redCase form ctx fallback s (_ : as) = redCase form ctx fallback s as

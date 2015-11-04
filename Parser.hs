@@ -51,7 +51,7 @@ natural = mkNat . read <$> (many1 (satisfy isDigit) <* sp) <?> "number"
   where
     mkNat :: Int -> TT MRel
     mkNat 0 = V "Z"
-    mkNat k = App Nothing Nothing (V "S") (mkNat (k-1))
+    mkNat k = App Nothing (V "S") (mkNat (k-1))
 
 atomic :: Parser (TT MRel)
 atomic = parens expr
@@ -63,23 +63,20 @@ atomic = parens expr
 arrow :: Parser (TT MRel)
 arrow = (<?> "arrow type") $ do
     ty <- try (atomic <* kwd "->")
-    Bind Pi "_" Nothing ty Nothing <$> expr
+    Bind Pi "_" Nothing ty <$> expr
 
 lambda :: Parser (TT MRel)
 lambda = (<?> "lambda") $ do
     kwd "\\"
     (n, r, ty) <- typing
     kwd "."
-    Bind Lam n r ty Nothing <$> expr
+    Bind Lam n r ty <$> expr
 
 bpi :: Parser (TT MRel)
 bpi = (<?> "pi") $ do
-    (n, rr, r, ty) <- parens piTyping
+    (n, r, ty) <- parens typing
     kwd "->"
-    Bind Pi n r ty rr <$> expr  
-  where
-    piTyping = try rtyping <|> (enrich <$> typing)
-    enrich (n, r, ty) = (n, Nothing, r, ty)
+    Bind Pi n r ty <$> expr  
 
 bind :: Parser (TT MRel)
 bind = arrow
@@ -91,7 +88,7 @@ app :: Parser (TT MRel)
 app = mkApp <$> atomic <*> many atomic <?> "application"
   where
     mkApp f [] = f
-    mkApp f (x : xs) = mkApp (App Nothing Nothing f x) xs
+    mkApp f (x : xs) = mkApp (App Nothing f x) xs
 
 let_ :: Parser (TT MRel)
 let_ = do
@@ -130,7 +127,7 @@ conCase = (<?> "constr case") $ do
     return $ ConCase cn (tack ns rhs)
   where
     tack [] tm = tm
-    tack ((n,r,ty) : ns) tm = Bind Pat n r ty Nothing $ tack ns tm
+    tack ((n,r,ty) : ns) tm = Bind Pat n r ty $ tack ns tm
 
 typing :: Parser (Name, MRel, TT MRel)
 typing = (<?> "typing") $ do
@@ -138,14 +135,6 @@ typing = (<?> "typing") $ do
     r <- rcolon
     ty <- expr
     return (n, r, ty)
-
-rtyping :: Parser (Name, MRel, MRel, TT MRel)
-rtyping = (<?> "rtyping") $ do
-    n <- name
-    rr <- rcolon
-    r <- rcolon
-    ty <- expr
-    return (n, rr, r, ty)
 
 postulate :: Parser (Def MRel Void)
 postulate = (<?> "postulate") $ do
@@ -166,7 +155,7 @@ mldef = (<?> "ml-style definition") $ do
     return $ Def n r (chain Pi args retTy) (Just $ chain Lam args tm) Nothing
   where
     chain bnd [] tm = tm
-    chain bnd ((n, r, ty) : args) tm = Bind bnd n r ty Nothing $ chain bnd args tm
+    chain bnd ((n, r, ty) : args) tm = Bind bnd n r ty $ chain bnd args tm
     
 fundef :: Parser (Def MRel Void)
 fundef = (<?> "function definition") $ do

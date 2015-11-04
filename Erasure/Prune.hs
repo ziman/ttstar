@@ -31,13 +31,10 @@ pruneDef (Def n R ty dt mcs) = [Def n () Erased (pruneTm <$> dt) Nothing]
 
 pruneTm :: TT Relevance -> TT ()
 pruneTm (V n) = V n
-pruneTm (Bind bnd n E ty E tm) = pruneTm tm  -- never used
-pruneTm (Bind bnd n E ty R tm) = Bind bnd n () Erased () (pruneTm tm)  -- used somewhere polymorphically
-pruneTm (Bind bnd n R ty _ tm) = Bind bnd n () Erased () (pruneTm tm)
-pruneTm (App E E f x) = pruneTm f
-pruneTm (App E R f x) = App () () (pruneTm f) (pruneTm x)  -- happens with postulates
-pruneTm (App R E f x) = App () () (pruneTm f) Erased
-pruneTm (App R R f x) = App () () (pruneTm f) (pruneTm x)
+pruneTm (Bind bnd n E ty tm) = pruneTm tm
+pruneTm (Bind bnd n R ty tm) = Bind bnd n () Erased (pruneTm tm)
+pruneTm (App E f x) = pruneTm f
+pruneTm (App R f x) = App () (pruneTm f) (pruneTm x)
 pruneTm (Let (Def n E ty mtm Nothing) tm) = pruneTm tm
 pruneTm (Let (Def n R ty mtm Nothing) tm) = Let (Def n () Erased (pruneTm <$> mtm) Nothing) (pruneTm tm)
 pruneTm (Case s alts) = Case (pruneTm s) (map pruneAlt alts)
