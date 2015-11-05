@@ -139,6 +139,8 @@ checkDef (Def n r ty (Just tm) Nothing) = bt ("DEF", n) $ do
     let cs = tycs /\ tmcs
     return $ Def n r ty (Just tm) (Just cs)
 
+matchEVars :: Type -> Type -> 
+
 checkTm :: Term -> TC (Type, Constrs)
 
 checkTm t@(V n) = bt ("VAR", n) $ do
@@ -148,8 +150,10 @@ checkTm t@(V n) = bt ("VAR", n) $ do
         -- mcs == Just cs  --> there are some constraints
         -- we can treat it polymorphically
         (Just tm, Just cs) -> do
+            -- todo: Add (Instantiate tag n) to TT
             tag <- freshTag
             let (ty', cs') = freshen tag (ty, cs)
+            addMorph n $ matchEVars ty ty'
             return (ty', cs' /\ Fixed R --> r)
 
         -- don't erasure-polymorph-instantiate
@@ -186,13 +190,13 @@ checkTm t@(App app_r f x) = bt ("APP", t) $ do
 checkTm t@(Let (Def n r ty mtm Nothing) tm) = bt ("LET", t) $ do
     letcs <- case mtm of
         Just t -> do
-            (valty, valcs) <- checkTm (fromMaybe Erased mtm)
+            (valty, valcs) <- checkTm $ fromMaybe Erased mtm
             tycs <- conv ty valty
             return $ Just (valcs /\ tycs)
         Nothing -> return Nothing
 
     (tmty, tmcs) <-
-        with (Def n r ty mtm letcs)
+        with (Def n r ty mtm Nothing) -- letcs)  -- let's make let-bindings erasure-monomorphic
             $ checkTm tm
     return (tmty, tmcs /\ fromMaybe noConstrs letcs)
 
