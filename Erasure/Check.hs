@@ -183,7 +183,7 @@ checkTm t@(Let (Def n r ty mtm Nothing) tm) = bt ("LET", t) $ do
         Nothing -> return Nothing
 
     (tmty, tmcs) <-
-        with (Def n r ty mtm Nothing) -- letcs)  -- let's make let-bindings erasure-monomorphic
+        with (Def n r ty mtm letcs)
             $ checkTm tm
     return (tmty, tmcs /\ fromMaybe noConstrs letcs)
 

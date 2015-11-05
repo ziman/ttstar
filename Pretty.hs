@@ -39,6 +39,7 @@ instance PrettyR r => Pretty (Name, r, TT r) where
 
 instance PrettyR r => Pretty (TT r) where
     pretty (V n) = text n
+    pretty (I n i) = text n <> text "_" <> int i
     pretty (Bind Pi n r ty tm) = parens (pretty (n, r, ty)) <+> arrow <+> pretty tm
     pretty (Bind Lam n r Erased tm) = lam <> text n <> dot <+> pretty tm
     pretty (Bind Lam n r ty tm) = lam <> pretty (n, r, ty) <> dot <+> pretty tm

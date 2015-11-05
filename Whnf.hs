@@ -20,6 +20,14 @@ red form ctx t@(V n)
 
     | otherwise = t  -- unknown variable
 
+red form ctx t@(I n i)
+    | Just (Def _n r ty mtm cs) <- M.lookup n ctx
+    = case mtm of
+        Nothing -> t
+        Just tm -> red form ctx tm
+
+    | otherwise = t  -- unknown variable
+
 red WHNF ctx t@(Bind b n r ty tm) = t
 red  NF  ctx t@(Bind b n r ty tm) = Bind b n r (red NF ctx ty) (red NF ctx' tm)
   where

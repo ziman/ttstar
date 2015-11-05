@@ -39,6 +39,7 @@ freshM (Just r) = return $ Fixed r
 
 metaTm :: TT (Maybe Relevance) -> MetaM TTmeta
 metaTm (V n) = return $ V n
+metaTm (I n i) = return $ I n i
 metaTm (Bind bnd n r ty tm) = Bind bnd <$> pure n <*> freshM r <*> metaTm ty <*> metaTm tm
 metaTm (App r f x) = App <$> freshM r <*> metaTm f <*> metaTm x
 metaTm (Let d tm) = Let <$> metaDef d <*> metaTm tm

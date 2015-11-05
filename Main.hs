@@ -13,6 +13,7 @@ import Erasure.Meta
 import Erasure.Check
 import Erasure.Solve
 import Erasure.Prune
+import Erasure.InstGlob
 
 import Control.Applicative
 import Text.Parsec
@@ -111,8 +112,12 @@ main = do
             putStrLn "### Desugared ###\n"
             printP prog
 
+            putStrLn "### Instantiated ###\n"
+            let instantiated = instantiateGlobals prog
+            printP instantiated
+
             putStrLn "### Metaified ###\n"
-            let metaified = meta prog
+            let metaified = meta instantiated
             printP metaified
 
             putStrLn "### Inferred definitions ###\n"
