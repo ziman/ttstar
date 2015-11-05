@@ -23,7 +23,7 @@ lub = max
 
 data TT r
     = V Name
---    | Morph Name (TT r)
+    | I Name Int  -- instance of a global definition
     | Bind Binder Name r (TT r) (TT r)
         -- ^ binder, nrty, reverse dep, body
     | App r (TT r) (TT r)
@@ -47,6 +47,7 @@ newtype Void = Void Void deriving (Eq, Ord, Show)
 
 instance Functor TT where
     fmap _ (V n) = V n
+    fmap _ (I n i) = I n i
     fmap f (Bind b n r ty tm) = Bind b n (f r) (fmap f ty) (fmap f tm)
     fmap f (App r fun arg) = App (f r) (fmap f fun) (fmap f arg)
     fmap f (Let (Def n r ty mtm Nothing) tm) = Let (Def n (f r) (fmap f ty) (fmap f `fmap` mtm) Nothing) (fmap f tm)
@@ -60,6 +61,7 @@ instance Functor Alt where
 
 instance Foldable TT where
     fold (V n) = mempty
+    fold (I n i) = mempty
     fold (Bind b n r ty tm) = r `mappend` fold ty `mappend` r `mappend` fold tm
     fold (App r f x) = r `mappend` fold f `mappend` fold x
     fold (Let (Def n r ty mtm Nothing) tm) = r `mappend` fold ty `mappend` fold (fromMaybe Erased mtm) `mappend` fold tm
@@ -85,6 +87,7 @@ subst :: Name -> TT r -> TT r -> TT r
 subst n tm t@(V n')
     | n' == n   = tm
     | otherwise = t
+subst n tm t@(I n' i') = t  -- substitution does not affect global refs
 subst n tm t@(Bind b n' r ty tm')
     | n' == n   = t
     | otherwise = Bind b n' r (subst n tm ty) (subst n tm tm')

@@ -50,9 +50,8 @@ instance Show TCFailure where
                 [1..]
                 (reverse tb)
 
-type TCState = Int
 type TCTraceback = [String]
-type TC a = ReaderT (TCTraceback, Ctx Meta Constrs) (ExceptT TCFailure (State TCState)) a
+type TC a = ReaderT (TCTraceback, Ctx Meta Constrs) (Except TCFailure) a
 type Sig = (Meta, Type, Constrs)  -- relevance, type, constraints
 
 type Term = TT Meta
@@ -110,11 +109,8 @@ lookup n = do
         Just x  -> return x
         Nothing -> tcfail $ UnknownName n
 
-freshTag :: TC Int
-freshTag = lift $ lift (modify (+1) >> get)
-
 runTC :: Ctx Meta Constrs -> TC a -> Either TCFailure a
-runTC ctx tc = evalState (runExceptT $ runReaderT tc ([], ctx)) 0
+runTC ctx tc = runExcept $ runReaderT tc ([], ctx)
 
 check :: Program Meta Void -> Either TCFailure (Ctx Meta Constrs, Constrs)
 check (Prog defs) = runTC M.empty $ checkDefs M.empty defs
@@ -139,25 +135,16 @@ checkDef (Def n r ty (Just tm) Nothing) = bt ("DEF", n) $ do
     let cs = tycs /\ tmcs
     return $ Def n r ty (Just tm) (Just cs)
 
-matchEVars :: Type -> Type -> 
-
 checkTm :: Term -> TC (Type, Constrs)
 
 checkTm t@(V n) = bt ("VAR", n) $ do
     Def _n r ty mtm mcs <- lookup n
-    case (mtm, mcs) of
-        -- mtm == Just tm  --> it's a definition
-        -- mcs == Just cs  --> there are some constraints
-        -- we can treat it polymorphically
-        (Just tm, Just cs) -> do
-            -- todo: Add (Instantiate tag n) to TT
-            tag <- freshTag
-            let (ty', cs') = freshen tag (ty, cs)
-            addMorph n $ matchEVars ty ty'
-            return (ty', cs' /\ Fixed R --> r)
+    return (ty, Fixed R --> r)
 
-        -- don't erasure-polymorph-instantiate
-        _ -> return (ty, Fixed R --> r)
+checkTm t@(I n i) = bt ("INST", n, i) $ do
+    Def _n r ty mtm mcs <- lookup n
+    let (ty', cs') = instantiate i (ty, fromMaybe noConstrs mcs)
+    return (ty', cs' /\ Fixed R --> r)
 
 checkTm t@(Bind Lam n r ty tm) = bt ("LAM", t) $ do
     (tmty, tmcs) <- with (Def n r ty Nothing Nothing) $ checkTm tm
@@ -238,8 +225,8 @@ tagMeta tag (MVar i j)
     | otherwise = MVar i tag
 tagMeta tag m = m
 
-freshen :: Int -> (Type, Constrs) -> (Type, Constrs)
-freshen tag (ty, cs) = (ty', cs')
+instantiate :: Int -> (Type, Constrs) -> (Type, Constrs)
+instantiate tag (ty, cs) = (ty', cs')
   where
     ty' = fmap (tagMeta tag) ty
     cs' = M.mapKeysWith S.union tagSet . M.map tagSet $ cs
