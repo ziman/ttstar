@@ -51,7 +51,8 @@ instance Show TCFailure where
                 (reverse tb)
 
 type TCTraceback = [String]
-type TC a = ReaderT (TCTraceback, Ctx Meta Constrs) (Except TCFailure) a
+type TCState = Int
+type TC a = ReaderT (TCTraceback, Ctx Meta Constrs) (ExceptT TCFailure (State TCState)) a
 type Sig = (Meta, Type, Constrs)  -- relevance, type, constraints
 
 type Term = TT Meta
@@ -109,8 +110,11 @@ lookup n = do
         Just x  -> return x
         Nothing -> tcfail $ UnknownName n
 
-runTC :: Ctx Meta Constrs -> TC a -> Either TCFailure a
-runTC ctx tc = runExcept $ runReaderT tc ([], ctx)
+freshTag :: TC Int
+freshTag = lift $ lift (modify (+1) >> get)
+
+runTC :: Int -> Ctx Meta Constrs -> TC a -> Either TCFailure a
+runTC firstTag ctx tc = evalState (runExceptT $ runReaderT tc ([], ctx)) firstTag
 
 check :: Program Meta Void -> Either TCFailure (Ctx Meta Constrs, Constrs)
 check (Prog defs) = runTC M.empty $ checkDefs M.empty defs
@@ -141,10 +145,11 @@ checkTm t@(V n) = bt ("VAR", n) $ do
     Def _n r ty mtm mcs <- lookup n
     return (ty, Fixed R --> r)
 
-checkTm t@(I n i) = bt ("INST", n, i) $ do
-    Def _n r ty mtm mcs <- lookup n
-    let (ty', cs') = instantiate i (ty, fromMaybe noConstrs mcs)
-    return (ty', cs' /\ Fixed R --> r)
+checkTm t@(I n ty) = bt ("INST", n, ty) $ do
+    Def _n r nty mtm mcs <- lookup n
+    let (ty', cs') = instantiate i (nty, fromMaybe noConstrs mcs)
+    convCs <- conv ty' ty
+    return (ty', cs' /\ convCs /\ Fixed R --> r)
 
 checkTm t@(Bind Lam n r ty tm) = bt ("LAM", t) $ do
     (tmty, tmcs) <- with (Def n r ty Nothing Nothing) $ checkTm tm
