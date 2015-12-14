@@ -35,6 +35,7 @@ pruneDef (Def n R ty dt mcs) = [Def n () Erased (pruneTm <$> dt) Nothing]
 
 pruneTm :: TT Relevance -> TT ()
 pruneTm (V n) = V n
+pruneTm (I n ty) = V n  -- TODO: replace with the correct reference here!
 pruneTm (Bind bnd n E ty tm) = pruneTm tm
 pruneTm (Bind bnd n R ty tm) = Bind bnd n () Erased (pruneTm tm)
 pruneTm (App E f x) = pruneTm f

@@ -13,10 +13,10 @@ apply (f : T -> T) : T -> T
     = \x : T. f x.
 
 test1 : T
-    = apply id B.
+    = [apply : (T -> T) -> T -> T] id B.
 
 test2 : T
-    = apply constA B.
+    = [apply : (T -> T) -> T -> T] constA B.
 
 main :R: T
     = Op test1 test2.

@@ -53,6 +53,7 @@ ul cls lis = "<ul class=\"" ++ cls ++ "\">" ++ unlines ["<li>" ++ s ++ "</li>" |
 
 term :: Uses -> TT Meta -> String
 term uses (V n) = span "var" $ name n
+term uses (I n ty) = span "var instance" $ name n ++ " : " ++ term uses ty
 term uses (Bind Pi n r ty tm) = span "pi" $ parens (nrty uses n r ty) ++ op " &#8594; " ++ term uses tm
 term uses (Bind Lam n r ty tm) = span "lambda" $ span "head" (op "&lambda; " ++ nrty uses n r ty ++ op ".") ++ term uses tm
 term uses (Let (Def n r ty mtm Nothing) tm) =

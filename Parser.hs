@@ -55,6 +55,7 @@ natural = mkNat . read <$> (many1 (satisfy isDigit) <* sp) <?> "number"
 
 atomic :: Parser (TT MRel)
 atomic = parens expr
+    <|> inst
     <|> var
     <|> (kwd "*" *> pure Type)
     <|> natural
@@ -98,8 +99,22 @@ let_ = do
     tm <- expr
     return $ Let d tm
 
+inst :: Parser (TT MRel)
+inst = do
+    kwd "["
+    n <- name
+    kwd ":"
+    ty <- expr
+    kwd "]"
+    return $ I n ty
+
 expr :: Parser (TT MRel)
-expr = let_ <|> case_ <|> bind <|> app <?> "expression"  -- app includes nullary-applied atoms
+expr =
+        let_
+    <|> case_
+    <|> bind
+    <|> app
+    <?> "expression"  -- app includes nullary-applied atoms
 
 case_ :: Parser (TT MRel)
 case_ = (<?> "case") $ do
