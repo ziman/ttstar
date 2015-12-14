@@ -1,3 +1,5 @@
+{-# LANGUAGE ViewPatterns #-}
+
 module Erasure.Check (check) where
 
 import TT
@@ -155,9 +157,7 @@ checkTm t@(V n) = bt ("VAR", n) $ do
     return (ty, Fixed R --> r)
 
 checkTm t@(I n ty) = bt ("INST", n, ty) $ do
-    Def _n r nty mtm mcs <- lookup n
-    i <- freshTag
-    let (ty', cs') = undefined -- instantiate i (nty, fromMaybe noConstrs mcs)
+    Def _n r ty' _mtm (fromMaybe noConstrs -> cs') <- instantiate =<< lookup n
     convCs <- conv ty' ty
     return (ty', cs' /\ convCs /\ Fixed R --> r)
 
@@ -229,6 +229,9 @@ checkAlt (ConCase cn tm) = bt ("ALT-CON", cn, tm) $ do
         ys <- matchArgs tm as
         return $ xs /\ ys /\ r' --> r  -- ?direction?
     matchArgs p q = return noConstrs
+
+instantiate :: Def Meta Constrs' -> TC (Def Meta Constrs')
+instantiate = return
 
 {-
 instantiate :: Int -> (Type, Constrs) -> (Type, Constrs)
