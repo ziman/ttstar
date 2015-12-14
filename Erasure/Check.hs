@@ -116,11 +116,17 @@ lookup n = do
 freshTag :: TC Int
 freshTag = lift $ lift (modify (+1) >> get)
 
-runTC :: Ctx Meta Constrs' -> TC a -> Either TCFailure a
-runTC ctx tc = evalState (runExceptT $ runReaderT tc ([], ctx)) 0
+runTC :: Int -> Ctx Meta Constrs' -> TC a -> Either TCFailure a
+runTC maxTag ctx tc = evalState (runExceptT $ runReaderT tc ([], ctx)) maxTag
 
 check :: Program Meta VoidConstrs -> Either TCFailure (Ctx Meta Constrs', Constrs)
-check (Prog defs) = runTC M.empty $ checkDefs (CS M.empty) defs
+check prog@(Prog defs) = runTC maxTag M.empty $ checkDefs (CS M.empty) defs
+  where
+    getTag (MVar i) = i
+    getTag _        = 0  -- whatever, we're looking for maximum
+
+    allTags = prog ^.. progRelevance . to getTag
+    maxTag = L.maximum allTags
 
 checkDefs :: Constrs -> [Def Meta VoidConstrs] -> TC (Ctx Meta Constrs', Constrs)
 checkDefs cs [] = do
@@ -151,7 +157,7 @@ checkTm t@(V n) = bt ("VAR", n) $ do
 checkTm t@(I n ty) = bt ("INST", n, ty) $ do
     Def _n r nty mtm mcs <- lookup n
     i <- freshTag
-    let (ty', cs') = instantiate i (nty, fromMaybe noConstrs mcs)
+    let (ty', cs') = undefined -- instantiate i (nty, fromMaybe noConstrs mcs)
     convCs <- conv ty' ty
     return (ty', cs' /\ convCs /\ Fixed R --> r)
 
@@ -224,16 +230,7 @@ checkAlt (ConCase cn tm) = bt ("ALT-CON", cn, tm) $ do
         return $ xs /\ ys /\ r' --> r  -- ?direction?
     matchArgs p q = return noConstrs
 
-base :: Meta -> Meta
-base (MVar i _) = MVar i 0
-base m = m
-
-tagMeta :: Int -> Meta -> Meta
-tagMeta tag (MVar i j)
-    | tag <= j = error "tagMeta: tag not fresh"
-    | otherwise = MVar i tag
-tagMeta tag m = m
-
+{-
 instantiate :: Int -> (Type, Constrs) -> (Type, Constrs)
 instantiate tag (ty, CS cs) = (ty', CS cs')
   where
@@ -241,6 +238,7 @@ instantiate tag (ty, CS cs) = (ty', CS cs')
     cs' = M.mapKeysWith S.union tagSet . M.map tagSet $ cs
     tagSet = S.map $ tagMeta tag
     newMetas = views ttRelevance S.singleton ty
+-}
 
 -- left: from context (from outside), right: from expression (from inside)
 conv :: Type -> Type -> TC Constrs

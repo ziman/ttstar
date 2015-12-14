@@ -24,7 +24,7 @@ span cls body = "<span class=\"" ++ cls ++ "\">" ++ body ++ "</span>"
 rel :: Uses -> Meta -> String
 rel uses (Fixed R) = span "rel rel-R" " :<sub>R</sub> "
 rel uses (Fixed E) = span "rel rel-E" " :<sub>E</sub> "
-rel uses (MVar i j) = span ("rel mvar-num-" ++ mv i j) (" :<sub>" ++ mv i j ++ "</sub> ")
+rel uses (MVar i) = span ("rel mvar-num-" ++ show i) (" :<sub>" ++ show i ++ "</sub> ")
 
 link :: String -> String -> String
 link cls body = "<a class=\"" ++ cls ++ "\" href=\"#\">" ++ body ++ "</a>"
@@ -35,16 +35,12 @@ name n = span ("name name-" ++ n) n
 op :: String -> String
 op = span "op"
 
-mv :: Int -> Int -> String
-mv i 0 = show i
-mv i j = show i ++ "_" ++ show j
-
 nrty :: Uses -> Name -> Meta -> TT Meta -> String
 nrty uses n r ty = erasedSpan uses r (name n ++ rel uses r ++ term uses ty ++ "\n")
   where
     wrap
         | Fixed _ <- r = span ("nrty " ++ cls)
-        | MVar i j <- r = span ("nrty nrty-" ++ mv i j ++ " " ++ cls)
+        | MVar i <- r = span ("nrty nrty-" ++ show i ++ " " ++ cls)
 
     cls | r `S.member` uses = "nrty-R"
         | otherwise = "nrty-E erased"
@@ -82,7 +78,7 @@ alt uses (ConCase cn tm) = unwords
 app :: Meta -> String
 app (Fixed R) = span "ap ap-R" "R"
 app (Fixed E) = span "ap ap-E" "E"
-app (MVar i j) = span ("ap mvar-num-" ++ mv i j) (mv i j)
+app (MVar i) = span ("ap mvar-num-" ++ show i) (show i)
 
 erasedSpan :: Uses -> Meta -> String -> String
 erasedSpan uses m = span $ erasedCls uses m
@@ -95,7 +91,7 @@ erasedCls uses m = erasure ++ " " ++ mvar
         | otherwise = "erased"
 
     mvar
-        | MVar i j <- m = "mvar mvar-" ++ mv i j
+        | MVar i <- m = "mvar mvar-" ++ show i
         | otherwise = ""
 
 htmlDef :: Uses -> Def Meta cs -> String
@@ -121,13 +117,13 @@ htmlMetas ms = op "{" ++ intercalate (op ", ") (map htmlMeta ms) ++ op "}"
 htmlMeta :: Meta -> String
 htmlMeta (Fixed R) = span "meta-R" "R"
 htmlMeta (Fixed E) = span "meta-E" "E"
-htmlMeta (MVar i j) = span ("meta mvar mvar-" ++ mv i j) (mv i j)
+htmlMeta (MVar i) = span ("meta mvar mvar-" ++ show i) (show i)
 
 jsConstr :: (Uses, Guards) -> String
 jsConstr (us, gs) = show [map num $ S.toList us, map num $ S.toList gs] ++ ",\n"
   where
     num (Fixed r) = show r
-    num (MVar i j) = mv i j
+    num (MVar i) = show i
 
 genHtml :: String -> Program Meta cs -> Constrs -> Uses -> IO ()
 genHtml fname prog (CS cs) uses = do
