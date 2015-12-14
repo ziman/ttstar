@@ -1,28 +1,20 @@
+{-# LANGUAGE FlexibleInstances #-}
 module TT where
 
 import Control.Applicative
-
-import Data.List
-import Data.Foldable
-import Data.Traversable
-import Data.Monoid hiding (Alt)
-import Data.Maybe
 import qualified Data.Map as M
 
--- TODO:
--- DefType += Local
--- Uses += Map Evar Relevance
---
--- new implication format:
--- p=A --> q=B
--- type Guards = S.Set (MVar, Relevance)
--- type Uses = S.Set (MVar, Relevance)
 type Name = String
-data Relevance = E | R deriving (Eq, Ord, Show)  -- TODO: I
+data Relevance = E | R deriving (Eq, Ord, Show)
 data Binder = Lam | Pi | Pat deriving (Eq, Ord, Show)
 
-lub :: Relevance -> Relevance -> Relevance
-lub = max
+newtype Void = Void Void deriving (Eq, Ord, Show)
+instance Eq (Const Void r) where
+    x == y = error "void elimination"
+instance Ord (Const Void r) where
+    compare x y = error "void elimination"
+
+type VoidConstrs = Const Void
 
 data TT r
     = V Name
@@ -30,7 +22,7 @@ data TT r
     | Bind Binder Name r (TT r) (TT r)
         -- ^ binder, nrty, reverse dep, body
     | App r (TT r) (TT r)
-    | Let (Def r Void) (TT r)
+    | Let (Def r VoidConstrs) (TT r)
     | Case (TT r) [Alt r]  -- scrutinee, scrutinee type, alts
     | Type
     | Erased
@@ -41,61 +33,10 @@ data Alt r
     | DefaultCase (TT r)
     deriving (Eq, Ord)
 
-data Def r cs = Def Name r (TT r) (Maybe (TT r)) (Maybe cs) deriving (Eq, Ord)
+data Def r cs = Def Name r (TT r) (Maybe (TT r)) (Maybe (cs r)) deriving (Eq, Ord)
 type Ctx r cs = M.Map Name (Def r cs)
 
 newtype Program r cs = Prog [Def r cs] deriving (Eq, Ord)
-
-newtype Void = Void Void deriving (Eq, Ord, Show)
-
-instance Functor TT where
-    fmap _ (V n) = V n
-    fmap f (I n ty) = I n (fmap f ty)
-    fmap f (Bind b n r ty tm) = Bind b n (f r) (fmap f ty) (fmap f tm)
-    fmap f (App r fun arg) = App (f r) (fmap f fun) (fmap f arg)
-    fmap f (Let (Def n r ty mtm Nothing) tm) = Let (Def n (f r) (fmap f ty) (fmap f `fmap` mtm) Nothing) (fmap f tm)
-    fmap f (Case s alts) = Case (fmap f s) (map (fmap f) alts)
-    fmap _ Erased = Erased
-    fmap _ Type = Type
-
-instance Functor Alt where
-    fmap f (ConCase cn tm) = ConCase cn $ fmap f tm
-    fmap f (DefaultCase tm) = DefaultCase $ fmap f tm
-
-instance Foldable TT where
-    fold (V n) = mempty
-    fold (I n ty) = fold ty
-    fold (Bind b n r ty tm) = r `mappend` fold ty `mappend` r `mappend` fold tm
-    fold (App r f x) = r `mappend` fold f `mappend` fold x
-    fold (Let (Def n r ty mtm Nothing) tm) = r `mappend` fold ty `mappend` fold (fromMaybe Erased mtm) `mappend` fold tm
-    fold (Case s alts) = fold s `mappend` mconcat (map fold alts)
-    fold Erased = mempty
-    fold Type = mempty
-
-    foldMap f = fold . fmap f
-
-instance Foldable Alt where
-    fold (ConCase cn tm)  = fold tm
-    fold (DefaultCase tm) = fold tm
-
-    foldMap f = fold . fmap f
-
-instance Traversable TT where
-    sequenceA (V n) = pure $ V n
-    sequenceA (I n ty) = I n <$> sequenceA ty
-    sequenceA (Bind b n r ty tm) = Bind b n <$> r <*> sequenceA ty <*> sequenceA tm
-    sequenceA (App r f x) = App <$> r <*> sequenceA f <*> sequenceA x
-    sequenceA (Let (Def n r ty mtm Nothing) tm)
-        = tpl <$> r <*> sequenceA ty <*> sequenceA (sequenceA <$> mtm) <*> sequenceA tm
-      where
-        tpl r' ty' mtm' tm' = Let (Def n r' ty' mtm' Nothing) tm'
-    sequenceA (Case s alts) = Case <$> sequenceA s <*> sequenceA (sequenceA <$> alts)
-    sequenceA Erased = pure Erased
-    sequenceA Type = pure Type
-
-instance Traversable Alt where
-    sequenceA (ConCase cn tm) = ConCase cn <$> sequenceA tm
-    sequenceA (DefaultCase tm) = DefaultCase <$> sequenceA tm
 
 unApply :: TT r -> (TT r, [TT r])
 unApply tm = ua tm []

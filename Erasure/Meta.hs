@@ -20,14 +20,14 @@ instance PrettyR Meta where
     prettyCol x = colon <> showd x <> colon
     prettyApp x = text " -" <> showd x <> text "- "
 
-meta :: Program (Maybe Relevance) Void -> Program Meta Void
+meta :: Program (Maybe Relevance) VoidConstrs -> Program Meta VoidConstrs
 meta prog = evalState (metaProg prog) 0
 
-metaProg :: Program (Maybe Relevance) Void -> MetaM (Program Meta Void)
+metaProg :: Program (Maybe Relevance) VoidConstrs -> MetaM (Program Meta VoidConstrs)
 metaProg (Prog defs) = Prog <$> mapM metaDef defs
 
-metaDef :: Def (Maybe Relevance) Void -> MetaM (Def Meta Void)
-metaDef (Def n r ty mtm cs) = Def <$> pure n <*> freshM r <*> metaTm ty <*> metaBody mtm <*> pure cs
+metaDef :: Def (Maybe Relevance) VoidConstrs -> MetaM (Def Meta VoidConstrs)
+metaDef (Def n r ty mtm Nothing) = Def <$> pure n <*> freshM r <*> metaTm ty <*> metaBody mtm <*> pure Nothing
 
 metaBody :: Maybe (TT (Maybe Relevance)) -> MetaM (Maybe (TT Meta))
 metaBody  Nothing  = return $ Nothing

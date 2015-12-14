@@ -52,7 +52,7 @@ instance Show TCFailure where
 
 type TCTraceback = [String]
 type TCState = Int
-type TC a = ReaderT (TCTraceback, Ctx Meta Constrs) (ExceptT TCFailure (State TCState)) a
+type TC a = ReaderT (TCTraceback, Ctx Meta Constrs') (ExceptT TCFailure (State TCState)) a
 type Sig = (Meta, Type, Constrs)  -- relevance, type, constraints
 
 type Term = TT Meta
@@ -64,7 +64,7 @@ infixl 2 /\
 
 infix 3 -->
 (-->) :: Meta -> Meta -> Constrs
-g --> u = M.singleton (S.singleton g) (S.singleton u)
+g --> u = CS $ M.singleton (S.singleton g) (S.singleton u)
 
 infix 3 <-->
 (<-->) :: Meta -> Meta -> Constrs
@@ -74,18 +74,18 @@ eq :: Meta -> Meta -> Constrs
 eq p q = p <--> q
 
 union :: Constrs -> Constrs -> Constrs
-union = M.unionWith S.union
+union (CS x) (CS y) = CS $ M.unionWith S.union x y
 
 unions :: [Constrs] -> Constrs
-unions = M.unionsWith S.union
+unions = CS . M.unionsWith S.union . map runCS
 
 noConstrs :: Constrs
-noConstrs = M.empty
+noConstrs = CS M.empty
 
 cond :: Meta -> Constrs -> Constrs
-cond r = M.mapKeysWith S.union $ S.insert r
+cond r = CS . M.mapKeysWith S.union (S.insert r) . runCS
 
-with :: Def Meta Constrs -> TC a -> TC a
+with :: Def Meta Constrs' -> TC a -> TC a
 with d@(Def n r ty mtm mcs) = local $ \(tb, ctx) -> (tb, M.insert n d ctx)
 
 bt :: Show a => a -> TC b -> TC b
@@ -96,14 +96,14 @@ tcfail e = do
     (tb, ctx) <- ask
     lift . throwE $ TCFailure e tb
 
-getCtx :: TC (Ctx Meta Constrs)
+getCtx :: TC (Ctx Meta Constrs')
 getCtx = snd <$> ask
 
 require :: Bool -> TCError -> TC ()
 require True  e = return ()
 require False e = tcfail e
 
-lookup :: Name -> TC (Def Meta Constrs)
+lookup :: Name -> TC (Def Meta Constrs')
 lookup n = do
     (tb, ctx) <- ask
     case M.lookup n ctx of
@@ -113,13 +113,13 @@ lookup n = do
 freshTag :: TC Int
 freshTag = lift $ lift (modify (+1) >> get)
 
-runTC :: Int -> Ctx Meta Constrs -> TC a -> Either TCFailure a
-runTC firstTag ctx tc = evalState (runExceptT $ runReaderT tc ([], ctx)) firstTag
+runTC :: Ctx Meta Constrs' -> TC a -> Either TCFailure a
+runTC ctx tc = evalState (runExceptT $ runReaderT tc ([], ctx)) 0
 
-check :: Program Meta Void -> Either TCFailure (Ctx Meta Constrs, Constrs)
-check (Prog defs) = runTC M.empty $ checkDefs M.empty defs
+check :: Program Meta VoidConstrs -> Either TCFailure (Ctx Meta Constrs', Constrs)
+check (Prog defs) = runTC M.empty $ checkDefs (CS M.empty) defs
 
-checkDefs :: Constrs -> [Def Meta Void] -> TC (Ctx Meta Constrs, Constrs)
+checkDefs :: Constrs -> [Def Meta VoidConstrs] -> TC (Ctx Meta Constrs', Constrs)
 checkDefs cs [] = do
     ctx <- getCtx
     return (ctx, cs)
@@ -131,7 +131,7 @@ checkDefs cs (d:ds) = do
   where
     bare (Def n r ty mtm Nothing) = Def n r ty mtm Nothing
 
-checkDef :: Def Meta Void -> TC (Def Meta Constrs)
+checkDef :: Def Meta VoidConstrs -> TC (Def Meta Constrs')
 checkDef (Def n r ty Nothing Nothing) = return $ Def n r ty Nothing Nothing
 checkDef (Def n r ty (Just tm) Nothing) = bt ("DEF", n) $ do
     (tmty, tmcs) <- checkTm tm
@@ -147,6 +147,7 @@ checkTm t@(V n) = bt ("VAR", n) $ do
 
 checkTm t@(I n ty) = bt ("INST", n, ty) $ do
     Def _n r nty mtm mcs <- lookup n
+    i <- freshTag
     let (ty', cs') = instantiate i (nty, fromMaybe noConstrs mcs)
     convCs <- conv ty' ty
     return (ty', cs' /\ convCs /\ Fixed R --> r)
@@ -231,7 +232,7 @@ tagMeta tag (MVar i j)
 tagMeta tag m = m
 
 instantiate :: Int -> (Type, Constrs) -> (Type, Constrs)
-instantiate tag (ty, cs) = (ty', cs')
+instantiate tag (ty, CS cs) = (ty', CS cs')
   where
     ty' = fmap (tagMeta tag) ty
     cs' = M.mapKeysWith S.union tagSet . M.map tagSet $ cs

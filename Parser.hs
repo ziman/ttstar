@@ -136,14 +136,14 @@ typing = (<?> "typing") $ do
     ty <- expr
     return (n, r, ty)
 
-postulate :: Parser (Def MRel Void)
+postulate :: Parser (Def MRel VoidConstrs)
 postulate = (<?> "postulate") $ do
     kwd "postulate"
     (n, r, ty) <- typing
     kwd "."
     return $ Def n r ty Nothing Nothing
 
-mldef :: Parser (Def MRel Void)
+mldef :: Parser (Def MRel VoidConstrs)
 mldef = (<?> "ml-style definition") $ do
     n <- name
     args <- many $ parens typing
@@ -157,7 +157,7 @@ mldef = (<?> "ml-style definition") $ do
     chain bnd [] tm = tm
     chain bnd ((n, r, ty) : args) tm = Bind bnd n r ty $ chain bnd args tm
     
-fundef :: Parser (Def MRel Void)
+fundef :: Parser (Def MRel VoidConstrs)
 fundef = (<?> "function definition") $ do
     (n, r, ty) <- try typing
     kwd "="
@@ -165,11 +165,11 @@ fundef = (<?> "function definition") $ do
     kwd "."
     return $ Def n r ty (Just tm) Nothing
 
-parseDef :: Parser (Def MRel Void)
+parseDef :: Parser (Def MRel VoidConstrs)
 parseDef = postulate <|> fundef <|> mldef <?> "definition"
 
-parseProg :: Parser (Program MRel Void)
+parseProg :: Parser (Program MRel VoidConstrs)
 parseProg = Prog <$> many parseDef <?> "program"
 
-ttProgram :: Parser (Program MRel Void)
+ttProgram :: Parser (Program MRel VoidConstrs)
 ttProgram = sp *> parseProg <* eof

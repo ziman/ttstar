@@ -2,6 +2,7 @@
 module Main where
 
 import TT
+import TTLens
 import Parser
 import Explorer
 import Whnf

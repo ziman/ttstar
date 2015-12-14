@@ -75,7 +75,7 @@ instance PrettyR r => Pretty (Alt r) where
         prettyPat (n, r, ty) = parens $ pretty (n, r, ty)
         (args, rhs) = splitBinder Pat tm
 
-instance PrettyR r => Pretty (Def r Void) where
+instance PrettyR r => Pretty (Def r VoidConstrs) where
     pretty (Def n r ty Nothing Nothing) = text "postulate" <+> pretty (n, r, ty)
     pretty (Def n r ty (Just tm) Nothing) =
         pretty (n, r, ty)
@@ -85,7 +85,7 @@ instance PrettyR r => Show (TT r) where
     show = prettyShow
 
 deriving instance PrettyR r => Show (Alt r)
-deriving instance (Show cs, PrettyR r) => Show (Def r cs)
+deriving instance (Show (cs r), PrettyR r) => Show (Def r cs)
 
 lam = text "\\"
 indent = nest 2
