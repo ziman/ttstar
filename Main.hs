@@ -13,6 +13,8 @@ import Util.PrettyPrint
 import Erasure.Meta
 import Erasure.Check
 import Erasure.Solve
+import Erasure.Annotate
+import Erasure.Specialise
 import Erasure.Prune
 
 import Control.Applicative
@@ -138,8 +140,12 @@ main = do
                     let annotated = annotate uses $ metaified
                     printP $ annotated
 
+                    putStrLn "### Specialised ###\n"
+                    let specialised = specialise annotated
+                    printP $ specialised
+
                     putStrLn "### Pruned ###\n"
-                    let pruned = prune annotated
+                    let pruned = prune specialised
                     printP $ pruned
 
                     putStrLn "### Normal forms ###\n"

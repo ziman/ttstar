@@ -1,30 +1,7 @@
 module Erasure.Prune where
 
 import TT
-import TTLens
-import Pretty
-
-import Erasure.Meta
-import Erasure.Check
-import Erasure.Solve
-
-import Util.PrettyPrint
-
-import Lens.Family
 import Control.Applicative
-import qualified Data.Set as S
-
-annotate :: Uses -> Program Meta cs -> Program Relevance VoidConstrs
-annotate uses (Prog defs) = Prog $ map (annDef uses) defs
-
-annDef :: Uses -> Def Meta cs -> Def Relevance VoidConstrs
-annDef uses (Def n r ty mtm mcs)
-    = Def n (rel r) (annTm ty) (annTm <$> mtm) Nothing
-  where
-    annTm tm = tm & ttRelevance %~ rel
-    rel m
-        | m `S.member` uses = R
-        | otherwise         = E
 
 prune :: Program Relevance VoidConstrs -> Program () VoidConstrs
 prune (Prog defs) = Prog $ concatMap pruneDef defs
@@ -35,7 +12,7 @@ pruneDef (Def n R ty dt mcs) = [Def n () Erased (pruneTm <$> dt) Nothing]
 
 pruneTm :: TT Relevance -> TT ()
 pruneTm (V n) = V n
-pruneTm (I n ty) = V n  -- TODO: replace with the correct reference here!
+pruneTm (I n ty) = error "non-specialised instance found in pruneTm"
 pruneTm (Bind bnd n E ty tm) = pruneTm tm
 pruneTm (Bind bnd n R ty tm) = Bind bnd n () Erased (pruneTm tm)
 pruneTm (App E f x) = pruneTm f
