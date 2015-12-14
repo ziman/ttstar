@@ -35,8 +35,6 @@ defRelevance csRelevance f (Def n r ty mtm mcs)
         <*> ttRelevance f ty
         <*> traverse (ttRelevance f) mtm
         <*> traverse (csRelevance f) mcs
-  where
-    g = ttRelevance f
 
 altRelevance :: Traversal (Alt r) (Alt r') r r'
 altRelevance f (ConCase cn tm) = ConCase cn <$> ttRelevance f tm
