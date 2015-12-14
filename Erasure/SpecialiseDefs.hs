@@ -6,5 +6,7 @@ import Erasure.Meta
 import Erasure.Solve
 
 specialiseDefs :: Program Meta Constrs' -> Program Meta Constrs'
-specialiseDefs p = p
+specialiseDefs (Prog defs) = Prog (concatMap specDef defs)
 
+specDef :: Def Meta Constrs' -> [Def Meta Constrs']
+specDef d = [d]
