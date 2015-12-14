@@ -1,13 +1,22 @@
 {-# LANGUAGE Rank2Types #-}
-module TTLens where
+module TTLens
+    ( module Lens.Family2
+    , ttRelevance
+    , defRelevance
+    , altRelevance
+    , progRelevance
+    )
+    where
 
 import Data.Traversable
 import Control.Applicative
+
+import Lens.Family2
 import Lens.Family2.Unchecked
 
 import TT
 
-voidRelevance :: Traversal (VoidConstrs r) (VoidConstrs r') r r'
+voidRelevance :: Traversal (VoidConstrs r) (cs' r') r r'
 voidRelevance f _ = error "void elimination"
 
 ttRelevance :: Traversal (TT r) (TT r') r r'
@@ -27,7 +36,7 @@ ttRelevance f = g
         Erased -> pure Erased
         Type -> pure Type
 
-defRelevance :: Traversal (cs r) (cs r') r r' -> Traversal (Def r cs) (Def r' cs) r r'
+defRelevance :: Traversal (cs r) (cs' r') r r' -> Traversal (Def r cs) (Def r' cs') r r'
 defRelevance csRelevance f (Def n r ty mtm mcs)
     = Def n
         <$> f r
@@ -41,5 +50,5 @@ altRelevance :: Traversal (Alt r) (Alt r') r r'
 altRelevance f (ConCase cn tm) = ConCase cn <$> ttRelevance f tm
 altRelevance f (DefaultCase tm) = DefaultCase <$> ttRelevance f tm
 
-progRelevance :: Traversal (cs r) (cs r') r r' -> Traversal (Program r cs) (Program r' cs) r r'
+progRelevance :: Traversal (cs r) (cs' r') r r' -> Traversal (Program r cs) (Program r' cs') r r'
 progRelevance csRelevance f (Prog defs) = Prog <$> traverse (defRelevance csRelevance f) defs

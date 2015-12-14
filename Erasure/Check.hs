@@ -1,6 +1,7 @@
 module Erasure.Check (check) where
 
 import TT
+import TTLens
 import Whnf
 import Erasure.Meta
 import Erasure.Solve
@@ -234,10 +235,10 @@ tagMeta tag m = m
 instantiate :: Int -> (Type, Constrs) -> (Type, Constrs)
 instantiate tag (ty, CS cs) = (ty', CS cs')
   where
-    ty' = fmap (tagMeta tag) ty
+    ty' = ty & ttRelevance %~ tagMeta tag
     cs' = M.mapKeysWith S.union tagSet . M.map tagSet $ cs
     tagSet = S.map $ tagMeta tag
-    newMetas = fold $ fmap S.singleton ty'
+    newMetas = views ttRelevance S.singleton ty
 
 -- left: from context (from outside), right: from expression (from inside)
 conv :: Type -> Type -> TC Constrs

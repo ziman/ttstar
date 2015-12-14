@@ -14,7 +14,6 @@ import Erasure.Meta
 import Erasure.Check
 import Erasure.Solve
 import Erasure.Prune
-import Erasure.InstGlob
 
 import Control.Applicative
 import Text.Parsec
@@ -113,12 +112,8 @@ main = do
             putStrLn "### Desugared ###\n"
             printP prog
 
-            putStrLn "### Instantiated ###\n"
-            let instantiated = instantiateGlobals prog
-            printP instantiated
-
             putStrLn "### Metaified ###\n"
-            let metaified = meta instantiated
+            let metaified = meta prog
             printP metaified
 
             putStrLn "### Inferred definitions ###\n"
@@ -127,7 +122,7 @@ main = do
             putStrLn ""
 
             putStrLn "### Constraints ###\n"
-            mapM_ (putStrLn . fmtCtr) $ M.toList cs
+            mapM_ (putStrLn . fmtCtr) $ M.toList (runCS cs)
             putStrLn ""
 
             putStrLn "### Solution ###\n"
@@ -155,6 +150,6 @@ main = do
   where
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
     fmtCtx (n, (Def _n r ty mtm Nothing)) = prettyShow (n, r, ty)
-    fmtCtx (n, (Def _n r ty mtm (Just cs))) = prettyShow (n, r, ty) ++ "\n"
+    fmtCtx (n, (Def _n r ty mtm (Just (CS cs)))) = prettyShow (n, r, ty) ++ "\n"
         ++ unlines (map (("  " ++) . fmtCtr) $ M.toList cs)
 

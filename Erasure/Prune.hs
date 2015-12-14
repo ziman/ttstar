@@ -1,6 +1,7 @@
 module Erasure.Prune where
 
 import TT
+import TTLens
 import Pretty
 
 import Erasure.Meta
@@ -12,20 +13,22 @@ import Util.PrettyPrint
 import Control.Applicative
 import qualified Data.Set as S
 
-annotate :: Uses -> Program Meta cs -> Program Relevance Void
+annotate :: Uses -> Program Meta cs -> Program Relevance VoidConstrs
 annotate uses (Prog defs) = Prog $ map (annDef uses) defs
 
-annDef :: Uses -> Def Meta cs -> Def Relevance Void
-annDef uses (Def n r ty mtm mcs) = Def n (rel r) (rel <$> ty) (fmap rel <$> mtm) Nothing
+annDef :: Uses -> Def Meta cs -> Def Relevance VoidConstrs
+annDef uses (Def n r ty mtm mcs)
+    = Def n (rel r) (annTm ty) (annTm <$> mtm) Nothing
   where
+    annTm tm = tm & ttRelevance %~ rel
     rel m
         | m `S.member` uses = R
         | otherwise         = E
 
-prune :: Program Relevance Void -> Program () Void
+prune :: Program Relevance VoidConstrs -> Program () VoidConstrs
 prune (Prog defs) = Prog $ concatMap pruneDef defs
 
-pruneDef :: Def Relevance Void -> [Def () Void]
+pruneDef :: Def Relevance VoidConstrs -> [Def () VoidConstrs]
 pruneDef (Def n E ty dt mcs) = []
 pruneDef (Def n R ty dt mcs) = [Def n () Erased (pruneTm <$> dt) Nothing]
 

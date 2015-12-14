@@ -130,7 +130,7 @@ jsConstr (us, gs) = show [map num $ S.toList us, map num $ S.toList gs] ++ ",\n"
     num (MVar i j) = mv i j
 
 genHtml :: String -> Program Meta cs -> Constrs -> Uses -> IO ()
-genHtml fname prog cs uses = do
+genHtml fname prog (CS cs) uses = do
     hdr <- readFile "html/header.html"
     writeFile fname (hdr ++ body)
   where
