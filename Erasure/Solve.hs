@@ -3,7 +3,7 @@ module Erasure.Solve where
 import TT
 import Erasure.Meta
 
-import Data.Traversable (sequenceA)
+import Data.Traversable (traverse)
 import Control.Applicative
 import Control.Arrow (second)
 import qualified Data.Map as M
@@ -18,10 +18,10 @@ type Uses'    r = S.Set r
 newtype Constrs' r = CS { runCS :: M.Map (Guards' r) (Uses' r) }
 
 csRelevance :: (Ord r, Ord r') => Traversal (Constrs' r) (Constrs' r') r r'
-csRelevance f = fmap (CS . M.fromList) . sequenceA . fmap f' . M.toList . runCS
+csRelevance f = fmap (CS . M.fromList) . traverse f' . M.toList . runCS
   where
     f' (x, y) = (,) <$> f'' x <*> f'' y
-    f'' = fmap S.fromList . sequenceA . fmap f . S.toList
+    f'' = fmap S.fromList . traverse f . S.toList
 
 type Guards  = Guards'  Meta
 type Uses    = Uses'    Meta
