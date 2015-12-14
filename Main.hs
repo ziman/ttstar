@@ -141,7 +141,7 @@ main = do
                     printP $ annotated
 
                     putStrLn "### Specialised ###\n"
-                    let specialised = specialise annotated
+                    let specialised = specGlobRefs annotated
                     printP $ specialised
 
                     putStrLn "### Pruned ###\n"
