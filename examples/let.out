@@ -6,30 +6,30 @@ Nat : *
 
 Z : Nat
 
-S : (n : -R-  Nat) -> Nat
+S : (n  -R-  Nat) -> Nat
 
-plus : (x :: Nat) -> (y :: Nat) -> Nat
-plus = \x :: Nat. \y :: Nat. 
+plus : (x : Nat) -> (y : Nat) -> Nat
+plus = \x : Nat. \y : Nat. 
   case x of
     Z -> y
-    S (xx : Nat) -> (S  (plus  xx  y))
+    S (xx : Nat) -> (S (plus xx y))
 
-id : (_ :: Nat) -> Nat
-id = \y :: Nat. y
+id : (_ : Nat) -> Nat
+id = \y : Nat. y
 
-const : (x :: Nat) -> (_ :: Nat) -> Nat
-const = \x :: Nat. \_ :: Nat. x
+const : (x : Nat) -> (_ : Nat) -> Nat
+const = \x : Nat. \_ : Nat. x
 
 main  -R-  Nat
 main = 
-  let apply : (f :: (_ :: Nat) -> Nat) -> (x :: Nat) -> Nat
-    = \f :: (_ :: Nat) -> Nat. \x :: Nat. (f  x)
+  let apply : (f : (_ : Nat) -> Nat) -> (x : Nat) -> Nat
+    = \f : (_ : Nat) -> Nat. \x : Nat. (f x)
   in 
     let postulate Q : Nat
     in 
       let three : Nat
         = 3
-      in (plus  (apply  id  2)  (apply  (const  Q)  three))
+      in (plus (apply id 2) (apply (const Q) three))
 
 ### Metaified ###
 
@@ -37,47 +37,154 @@ Nat :?1: *
 
 Z :?2: Nat
 
-S :?3: (n :?4::!R: Nat) -> Nat
+S :?3: (n :!R: Nat) -> Nat
 
-plus :?5: (x :?7::?6: Nat) -> (y :?9::?8: Nat) -> Nat
-plus = \x :?11::?10: Nat. \y :?13::?12: Nat. 
+plus :?4: (x :?5: Nat) -> (y :?6: Nat) -> Nat
+plus = \x :?7: Nat. \y :?8: Nat. 
   case x of
     Z -> y
-    S (xx :?14: Nat) -> (S -?16-  -?17- (plus -?20-  -?21- xx -?18-  -?19- y))
+    S (xx :?9: Nat) -> (S -?10- (plus -?12- xx -?11- y))
 
-id :?22: (_ :?24::?23: Nat) -> Nat
-id = \y :?26::?25: Nat. y
+id :?13: (_ :?14: Nat) -> Nat
+id = \y :?15: Nat. y
 
-const :?27: (x :?29::?28: Nat) -> (_ :?31::?30: Nat) -> Nat
-const = \x :?33::?32: Nat. \_ :?35::?34: Nat. x
+const :?16: (x :?17: Nat) -> (_ :?18: Nat) -> Nat
+const = \x :?19: Nat. \_ :?20: Nat. x
 
 main :!R: Nat
 main = 
-  let apply :?36: (f :?40::?37: (_ :?39::?38: Nat) -> Nat) -> (x :?42::?41: Nat) -> Nat
-    = \f :?46::?43: (_ :?45::?44: Nat) -> Nat. \x :?48::?47: Nat. (f -?49-  -?50- x)
+  let apply :?21: (f :?22: (_ :?23: Nat) -> Nat) -> (x :?24: Nat) -> Nat
+    = \f :?25: (_ :?26: Nat) -> Nat. \x :?27: Nat. (f -?28- x)
   in 
-    let postulate Q :?51: Nat
+    let postulate Q :?29: Nat
     in 
-      let three :?52: Nat
+      let three :?30: Nat
         = 3
-      in (plus -?61-  -?62- (apply -?65-  -?66- id -?63-  -?64- 2) -?59-  -?60- (apply -?73-  -?74- (const -?75-  -?76- Q) -?71-  -?72- three))
+      in (plus -?35- (apply -?37- id -?36- 2) -?34- (apply -?41- (const -?42- Q) -?40- three))
 
 ### Inferred definitions ###
 
 Nat :?1: *
-S :?3: (n :?4::!R: Nat) -> Nat
+S :?3: (n :!R: Nat) -> Nat
 Z :?2: Nat
-const :?27: (x :?29::?28: Nat) -> (_ :?31::?30: Nat) -> Nat
-  [] -> [?28,?32,!R]
-  [?29] -> [?33]
-  [?30] -> [?34]
-  [?31] -> [?35]
-  [?33] -> [?29]
-  [?34] -> [?30]
-  [?35] -> [?31]
+const :?16: (x :?17: Nat) -> (_ :?18: Nat) -> Nat
+  [] -> [?17,?19,!R]
+  [?18] -> [?20]
+  [?20] -> [?18]
 
-id :?22: (_ :?24::?23: Nat) -> Nat
-  [] -> [?23,?25,!R]
-  [?24] -> [?26]
-  [?26] -> [?24]
+id :?13: (_ :?14: Nat) -> Nat
+  [] -> [?14,?15,!R]
 
+main :!R: Nat
+  [] -> [?2,?3,?4,?22,?25,?31,?32,?33,!R]
+  [?5] -> [?13,?21,?35,?37]
+  [?5,?14] -> [?23]
+  [?5,?23] -> [?14]
+  [?5,?24] -> [?36,?38,?39]
+  [?5,?36] -> [?24]
+  [?6] -> [?16,?21,?34,?41]
+  [?6,?17] -> [?29,?42]
+  [?6,?18] -> [?23]
+  [?6,?23] -> [?18]
+  [?6,?24] -> [?30,?40]
+  [?6,?40] -> [?24]
+  [?6,?42] -> [?17]
+  [?23] -> [?26]
+  [?24] -> [?27]
+  [?26] -> [?23,?27,?28]
+  [?27] -> [?24]
+  [?28] -> [?26]
+  [?34] -> [?6]
+  [?35] -> [?5]
+
+plus :?4: (x :?5: Nat) -> (y :?6: Nat) -> Nat
+  [] -> [?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,!R]
+
+
+### Constraints ###
+
+[] -> [?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?14,?15,?17,?19,?22,?25,?31,?32,?33,!R]
+[?5] -> [?13,?21,?35,?37]
+[?5,?14] -> [?23]
+[?5,?23] -> [?14]
+[?5,?24] -> [?36,?38,?39]
+[?5,?36] -> [?24]
+[?6] -> [?16,?21,?34,?41]
+[?6,?17] -> [?29,?42]
+[?6,?18] -> [?23]
+[?6,?23] -> [?18]
+[?6,?24] -> [?30,?40]
+[?6,?40] -> [?24]
+[?6,?42] -> [?17]
+[?18] -> [?20]
+[?20] -> [?18]
+[?23] -> [?26]
+[?24] -> [?27]
+[?26] -> [?23,?27,?28]
+[?27] -> [?24]
+[?28] -> [?26]
+[?34] -> [?6]
+[?35] -> [?5]
+
+### Solution ###
+
+[?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,?19,?20,?21,?22,?23,?24,?25,?26,?27,?28,?29,?30,?31,?32,?33,?34,?35,?36,?37,?38,?39,?40,?41,?42,!R]
+
+### Annotated ###
+
+Nat :E: *
+
+Z :R: Nat
+
+S :R: (n :R: Nat) -> Nat
+
+plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
+plus = \x :R: Nat. \y :R: Nat. 
+  case x of
+    Z -> y
+    S (xx :R: Nat) -> (S -R- (plus -R- xx -R- y))
+
+id :R: (_ :R: Nat) -> Nat
+id = \y :R: Nat. y
+
+const :R: (x :R: Nat) -> (_ :R: Nat) -> Nat
+const = \x :R: Nat. \_ :R: Nat. x
+
+main :R: Nat
+main = 
+  let apply :R: (f :R: (_ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat
+    = \f :R: (_ :R: Nat) -> Nat. \x :R: Nat. (f -R- x)
+  in 
+    let postulate Q :R: Nat
+    in 
+      let three :R: Nat
+        = 3
+      in (plus -R- (apply -R- id -R- 2) -R- (apply -R- (const -R- Q) -R- three))
+
+### Pruned ###
+
+plus = \x. \y. 
+  case x of
+    Z -> y
+    S xx -> (S (plus xx y))
+
+id = \y. y
+
+const = \x. \_. x
+
+main = 
+  let apply
+    = \f. \x. (f x)
+  in 
+    let postulate Q
+    in 
+      let three
+        = 3
+      in (plus (apply id 2) (apply (const Q) three))
+
+### Normal forms ###
+
+unerased:
+  (S (S Q))
+erased:
+  (S (S Q))

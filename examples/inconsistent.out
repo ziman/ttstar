@@ -2,27 +2,23 @@
 
 ### Desugared ###
 
-main  -R-  (x : -E-  *) -> *
-main = \x : -E-  *. x
+main  -R-  (x  -E-  *) -> *
+main = \x  -E-  *. x
 
 ### Metaified ###
 
-main :!R: (x :?1::!E: *) -> *
-main = \x :?2::!E: *. x
+main :!R: (x :!E: *) -> *
+main = \x :!E: *. x
 
 ### Inferred definitions ###
 
-main :!R: (x :?1::!E: *) -> *
+main :!R: (x :!E: *) -> *
   [] -> [!E,!R]
-  [?1] -> [?2]
-  [?2] -> [?1]
 
 
 ### Constraints ###
 
 [] -> [!E,!R]
-[?1] -> [?2]
-[?2] -> [?1]
 
 ### Solution ###
 

@@ -1,17 +1,9 @@
 {-# LANGUAGE Rank2Types #-}
-module TTLens
-    ( module Lens.Family2
-    , ttRelevance
-    , defRelevance
-    , altRelevance
-    , progRelevance
-    )
-    where
+module TTLens where
 
 import Data.Traversable
 import Control.Applicative
 
-import Lens.Family2
 import Lens.Family2.Unchecked
 
 import TT

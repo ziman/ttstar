@@ -10,6 +10,7 @@ import Erasure.Solve
 
 import Util.PrettyPrint
 
+import Lens.Family
 import Control.Applicative
 import qualified Data.Set as S
 

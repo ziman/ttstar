@@ -19,6 +19,8 @@ import Control.Monad.Trans.Except
 import Control.Monad.Trans.Writer
 import Control.Monad.Trans.Reader
 
+import Lens.Family
+
 import qualified Data.List as L
 import qualified Data.Map as M
 import qualified Data.Set as S
