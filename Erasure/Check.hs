@@ -1,4 +1,4 @@
-{-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE ViewPatterns, GeneralizedNewtypeDeriving #-}
 
 module Erasure.Check (check) where
 
@@ -26,6 +26,7 @@ import Lens.Family
 import qualified Data.List as L
 import qualified Data.Map as M
 import qualified Data.Set as S
+import qualified Data.IntMap as IM
 
 import Debug.Trace
 
@@ -230,18 +231,25 @@ checkAlt (ConCase cn tm) = bt ("ALT-CON", cn, tm) $ do
         return $ xs /\ ys /\ r' --> r  -- ?direction?
     matchArgs p q = return noConstrs
 
-instantiate :: Def Meta Constrs' -> TC (Def Meta Constrs')
-instantiate = return
+newtype TC' a = LiftTC' { runTC' :: TC a } deriving (Functor, Applicative, Monad)
+type ITC = StateT (IM.IntMap Int) TC'
 
-{-
-instantiate :: Int -> (Type, Constrs) -> (Type, Constrs)
-instantiate tag (ty, CS cs) = (ty', CS cs')
+freshen :: Meta -> ITC Meta
+freshen m@(Fixed r) = return m
+freshen (MVar i) = do
+    imap <- get
+    case IM.lookup i imap of
+        Just j ->
+            return $ MVar j
+        Nothing -> do
+            j <- lift . LiftTC' $ freshTag
+            modify $ IM.insert i j
+            return $ MVar j
+
+instantiate :: Def Meta Constrs' -> TC (Def Meta Constrs')
+instantiate def = runTC' $ evalStateT refresh IM.empty
   where
-    ty' = ty & ttRelevance %~ tagMeta tag
-    cs' = M.mapKeysWith S.union tagSet . M.map tagSet $ cs
-    tagSet = S.map $ tagMeta tag
-    newMetas = views ttRelevance S.singleton ty
--}
+    refresh = defRelevance' csRelevance freshen def
 
 -- left: from context (from outside), right: from expression (from inside)
 conv :: Type -> Type -> TC Constrs
