@@ -2,10 +2,12 @@ module Erasure.Annotate where
 
 import TT
 import TTLens
-import Lens.Family
-import qualified Data.Set as S
-
+import Erasure.Meta
 import Erasure.Solve
+
+import Lens.Family
+import Control.Applicative
+import qualified Data.Set as S
 
 annotate :: Uses -> Program Meta cs -> Program Relevance VoidConstrs
 annotate uses (Prog defs) = Prog $ map (annDef uses) defs
