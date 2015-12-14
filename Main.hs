@@ -13,8 +13,9 @@ import Util.PrettyPrint
 import Erasure.Meta
 import Erasure.Check
 import Erasure.Solve
+import Erasure.SpecialiseDefs
 import Erasure.Annotate
-import Erasure.Specialise
+import Erasure.SpecialiseRefs
 import Erasure.Prune
 
 import Control.Applicative
@@ -140,12 +141,12 @@ main = do
                     let annotated = annotate uses $ metaified
                     printP $ annotated
 
-                    putStrLn "### Specialised ###\n"
-                    let specialised = specGlobRefs annotated
-                    printP $ specialised
+                    putStrLn "### Specialised refs ###\n"
+                    let specialisedRefs = specialiseRefs annotated
+                    printP $ specialisedRefs
 
                     putStrLn "### Pruned ###\n"
-                    let pruned = prune specialised
+                    let pruned = prune specialisedRefs
                     printP $ pruned
 
                     putStrLn "### Normal forms ###\n"
