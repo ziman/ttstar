@@ -29,7 +29,7 @@ name = (<?> "name") $ do
     x <- satisfy $ idChar
     xs <- many $ satisfy (\x -> idChar x || isDigit x)
     sp
-    return (x : xs)
+    return $ UN (x : xs)
   where
     idChar x = isAlpha x || x `elem` "_"
 
@@ -50,8 +50,8 @@ natural :: Parser (TT MRel)
 natural = mkNat . read <$> (many1 (satisfy isDigit) <* sp) <?> "number"
   where
     mkNat :: Int -> TT MRel
-    mkNat 0 = V "Z"
-    mkNat k = App Nothing (V "S") (mkNat (k-1))
+    mkNat 0 = V $ UN "Z"
+    mkNat k = App Nothing (V $ UN "S") (mkNat (k-1))
 
 atomic :: Parser (TT MRel)
 atomic = parens expr
@@ -64,7 +64,7 @@ atomic = parens expr
 arrow :: Parser (TT MRel)
 arrow = (<?> "arrow type") $ do
     ty <- try (atomic <* kwd "->")
-    Bind Pi "_" Nothing ty <$> expr
+    Bind Pi (UN "_") Nothing ty <$> expr
 
 lambda :: Parser (TT MRel)
 lambda = (<?> "lambda") $ do

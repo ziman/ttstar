@@ -4,9 +4,13 @@ module TT where
 import Control.Applicative
 import qualified Data.Map as M
 
-type Name = String
+data Name = UN String | IN String [Relevance] deriving (Eq, Ord)
 data Relevance = E | R deriving (Eq, Ord, Show)
 data Binder = Lam | Pi | Pat deriving (Eq, Ord, Show)
+
+instance Show Name where
+    show (UN n) = n
+    show (IN n rs) = n ++ "_" ++ concatMap show rs
 
 newtype Void = Void Void deriving (Eq, Ord, Show)
 instance Eq (Const Void r) where

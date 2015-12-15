@@ -23,6 +23,9 @@ instance PrettyR (Maybe Relevance) where
     prettyApp Nothing = text " "
     prettyApp (Just r) = prettyApp r
 
+instance Pretty Name where
+    pretty = text . show
+
 instance PrettyR r => Pretty (Program r cs) where
     pretty (Prog defs) = vcat $ map fmtDef defs
       where
@@ -31,23 +34,23 @@ instance PrettyR r => Pretty (Program r cs) where
         fmtDef (Def n r ty mtm cs) = pretty (n, r, ty) $$ fmtMT n mtm $$ blankLine
 
         fmtMT n Nothing   = empty
-        fmtMT n (Just tm) = text n <+> equals <+> pretty tm
+        fmtMT n (Just tm) = pretty n <+> equals <+> pretty tm
 
 instance PrettyR r => Pretty (Name, r, TT r) where
-    pretty (n, r, Erased) = text n
-    pretty (n, r, ty) = text n <+> prettyCol r <+> pretty ty
+    pretty (n, r, Erased) = pretty n
+    pretty (n, r, ty) = pretty n <+> prettyCol r <+> pretty ty
 
 instance PrettyR r => Pretty (TT r) where
-    pretty (V n) = text n
-    pretty (I n ty) = parens (text n <+> colon <+> pretty ty)
+    pretty (V n) = pretty n
+    pretty (I n ty) = parens (pretty n <+> colon <+> pretty ty)
     pretty (Bind Pi n r ty tm) = parens (pretty (n, r, ty)) <+> arrow <+> pretty tm
-    pretty (Bind Lam n r Erased tm) = lam <> text n <> dot <+> pretty tm
+    pretty (Bind Lam n r Erased tm) = lam <> pretty n <> dot <+> pretty tm
     pretty (Bind Lam n r ty tm) = lam <> pretty (n, r, ty) <> dot <+> pretty tm
     pretty (Bind Pat n r ty tm) = text "pat " <> pretty (n, r, ty) <> dot <+> pretty tm
-    pretty (App r (V "S") x) | Just i <- fromNat x = int $ 1+i
+    pretty (App r (V (UN "S")) x) | Just i <- fromNat x = int $ 1+i
       where
-        fromNat (V "Z") = Just 0
-        fromNat (App r (V "S") x) = (1 +) `fmap` fromNat x
+        fromNat (V (UN "Z")) = Just 0
+        fromNat (App r (V (UN "S")) x) = (1 +) `fmap` fromNat x
         fromNat _ = Nothing
     pretty (App r f x) = parens $ show' r f x
       where
@@ -69,9 +72,9 @@ instance PrettyR r => Pretty (TT r) where
 
 instance PrettyR r => Pretty (Alt r) where
     pretty (DefaultCase tm) = text "_" <+> arrow <+> pretty tm
-    pretty (ConCase cn tm) = text cn <+> hsep (map prettyPat args) <+> arrow <+> pretty rhs
+    pretty (ConCase cn tm) = pretty cn <+> hsep (map prettyPat args) <+> arrow <+> pretty rhs
       where
-        prettyPat (n, r, Erased) = text n
+        prettyPat (n, r, Erased) = pretty n
         prettyPat (n, r, ty) = parens $ pretty (n, r, ty)
         (args, rhs) = splitBinder Pat tm
 

@@ -262,7 +262,7 @@ conv' :: Type -> Type -> TC Constrs
 
 -- whnf is variable (something irreducible, constructor or axiom)
 conv' (V n) (V n') = bt ("C-VAR", n, n') $ do
-    require (n == n') $ Mismatch n n'
+    require (n == n') $ Mismatch (show n) (show n')
     return noConstrs
 
 conv' p@(Bind b n r ty tm) q@(Bind b' n' r' ty' tm') = bt ("C-BIND", p, q) $ do
@@ -310,7 +310,7 @@ conv' p q = tcfail $ CantConvert p q
 convAlt :: Type -> Alt Meta -> Alt Meta -> TC Constrs
 convAlt sty (DefaultCase tm) (DefaultCase tm') = bt ("CA-DEF", tm, tm') $ conv tm tm'
 convAlt sty p@(ConCase cn tm) q@(ConCase cn' tm') = bt ("CA-CON", p, q) $ do
-    require (cn == cn') $ Mismatch cn cn'
+    require (cn == cn') $ Mismatch (show cn) (show cn')
     Def _cn cr cty Nothing Nothing <- lookup cn
     let (ctyArgs, ctyRet) = splitBinder Pi cty
     (xs, ctx) <- match ctyRet sty

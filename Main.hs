@@ -119,8 +119,12 @@ main = do
             let metaified = meta prog
             printP metaified
 
+            putStrLn "### Specialised defs ###\n"
+            let specialisedDefs = specialiseDefs metaified
+            printP specialisedDefs
+
             putStrLn "### Inferred definitions ###\n"
-            let (ctx, cs) = either (error . show) id . check $ metaified
+            let (ctx, cs) = either (error . show) id . check $ specialisedDefs
             mapM_ (putStrLn . fmtCtx) $ M.toList ctx
             putStrLn ""
 
@@ -134,26 +138,27 @@ main = do
             genHtml (fname ++ ".html") metaified cs uses
             putStrLn ""
 
-            case Fixed E `S.member` uses of
-                True -> putStrLn "!! inconsistent annotation"
-                False -> do
-                    putStrLn "### Annotated ###\n"
-                    let annotated = annotate uses $ metaified
-                    printP $ annotated
+            if Fixed E `S.member` uses
+               then error "!! inconsistent annotation"
+               else return ()
 
-                    putStrLn "### Specialised refs ###\n"
-                    let specialisedRefs = specialiseRefs annotated
-                    printP $ specialisedRefs
+            putStrLn "### Annotated ###\n"
+            let annotated = annotate uses $ metaified
+            printP $ annotated
 
-                    putStrLn "### Pruned ###\n"
-                    let pruned = prune specialisedRefs
-                    printP $ pruned
+            putStrLn "### Specialised refs ###\n"
+            let specialisedRefs = specialiseRefs annotated
+            printP $ specialisedRefs
 
-                    putStrLn "### Normal forms ###\n"
-                    putStrLn "unerased:"
-                    putStrLn $ "  " ++ show (eval NF prog)
-                    putStrLn "erased:"
-                    putStrLn $ "  " ++ show (eval NF pruned)
+            putStrLn "### Pruned ###\n"
+            let pruned = prune specialisedRefs
+            printP $ pruned
+
+            putStrLn "### Normal forms ###\n"
+            putStrLn "unerased:"
+            putStrLn $ "  " ++ show (eval NF prog)
+            putStrLn "erased:"
+            putStrLn $ "  " ++ show (eval NF pruned)
   where
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
     fmtCtx (n, (Def _n r ty mtm Nothing)) = prettyShow (n, r, ty)

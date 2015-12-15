@@ -7,10 +7,8 @@ import Erasure.Check (instantiate)
 import Erasure.Meta
 import Erasure.Solve
 
-specialiseDefs :: Program Meta Constrs' -> Program Meta Constrs'
+specialiseDefs :: Program Meta VoidConstrs -> Program Meta VoidConstrs
 specialiseDefs (Prog defs) = Prog (concatMap specDef defs)
 
-specDef :: Def Meta Constrs' -> [Def Meta Constrs']
-specDef d@(Def n r ty mtm Nothing) = [d]  -- no constraints available -> monomorphic
-specDef d@(Def n r ty Nothing mcs) = [d]  -- no body available -> monomorphic
-specDef d@(Def n r ty (Just tm) (Just cs)) = [d]
+specDef :: Def Meta VoidConstrs -> [Def Meta VoidConstrs]
+specDef d@(Def n r ty mtm Nothing) = [d]

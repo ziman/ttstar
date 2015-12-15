@@ -30,7 +30,7 @@ link :: String -> String -> String
 link cls body = "<a class=\"" ++ cls ++ "\" href=\"#\">" ++ body ++ "</a>"
 
 name :: Name -> String
-name n = span ("name name-" ++ n) n
+name n = span ("name name-" ++ show n) (show n)
 
 op :: String -> String
 op = span "op"
@@ -68,7 +68,7 @@ term uses (Case s alts) =
 alt :: Uses -> Alt Meta -> String
 alt uses (DefaultCase tm) = "_ -> " ++ term uses tm
 alt uses (ConCase cn tm) = unwords
-    [ cn
+    [ show cn
     , unwords $ map (\(n,r,ty) -> parens $ nrty uses n r ty) args
     , "->"
     , term uses rhs

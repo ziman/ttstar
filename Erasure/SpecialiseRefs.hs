@@ -36,7 +36,7 @@ specNAlt (ConCase n tm) = ConCase n $ specNTm tm
 specNAlt (DefaultCase tm) = DefaultCase $ specNTm tm
 
 specName :: Name -> TT Relevance -> Name
-specName n ty = specName' n (ty ^.. ttRelevance)
+specName (UN n) ty = IN n (ty ^.. ttRelevance)
 
 specName' :: Name -> ErPattern -> Name
-specName' n epat = n ++ "_" ++ concatMap show epat
+specName' (UN n) epat = IN n epat
