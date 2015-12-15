@@ -1,6 +1,6 @@
 {-# LANGUAGE ViewPatterns, GeneralizedNewtypeDeriving #-}
 
-module Erasure.Check (check) where
+module Erasure.Check (check, instantiate) where
 
 import TT
 import TTLens
@@ -158,7 +158,7 @@ checkTm t@(V n) = bt ("VAR", n) $ do
     return (ty, Fixed R --> r)
 
 checkTm t@(I n ty) = bt ("INST", n, ty) $ do
-    Def _n r ty' _mtm (fromMaybe noConstrs -> cs') <- instantiate =<< lookup n
+    Def _n r ty' _mtm (fromMaybe noConstrs -> cs') <- instantiate freshTag =<< lookup n
     convCs <- conv ty' ty
     return (ty', cs' /\ convCs /\ Fixed R --> r)
 
@@ -234,22 +234,22 @@ checkAlt (ConCase cn tm) = bt ("ALT-CON", cn, tm) $ do
 newtype TC' a = LiftTC' { runTC' :: TC a } deriving (Functor, Applicative, Monad)
 type ITC = StateT (IM.IntMap Int) TC'
 
-freshen :: Meta -> ITC Meta
-freshen m@(Fixed r) = return m
-freshen (MVar i) = do
+freshen :: Monad m => m Int -> Meta -> StateT (IM.IntMap Int) m Meta
+freshen freshTag m@(Fixed r) = return m
+freshen freshTag (MVar i) = do
     imap <- get
     case IM.lookup i imap of
         Just j ->
             return $ MVar j
         Nothing -> do
-            j <- lift . LiftTC' $ freshTag
+            j <- lift freshTag
             modify $ IM.insert i j
             return $ MVar j
 
-instantiate :: Def Meta Constrs' -> TC (Def Meta Constrs')
-instantiate def = runTC' $ evalStateT refresh IM.empty
+instantiate :: (Functor m, Monad m) => m Int -> Def Meta Constrs' -> m (Def Meta Constrs')
+instantiate freshTag def = evalStateT refresh IM.empty
   where
-    refresh = defRelevance' csRelevance freshen def
+    refresh = defRelevance' csRelevance (freshen freshTag) def
 
 -- left: from context (from outside), right: from expression (from inside)
 conv :: Type -> Type -> TC Constrs
