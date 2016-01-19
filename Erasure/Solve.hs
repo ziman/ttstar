@@ -9,7 +9,8 @@ import Control.Arrow (second)
 import qualified Data.Map as M
 import qualified Data.Set as S
 
-import Lens.Family2.Unchecked
+import TTLens
+import Lens.Family2
 
 import Debug.Trace
 

@@ -142,11 +142,11 @@ main = do
             printP $ annotated
 
             putStrLn "### Specialised ###\n"
-            let specialised = specialise annotated
+            let specialised = specialise metaified annotated
             printP $ specialised
 
             putStrLn "### Pruned ###\n"
-            let pruned = prune specialised
+            let pruned = prune annotated -- specialised
             printP $ pruned
 
             putStrLn "### Normal forms ###\n"
