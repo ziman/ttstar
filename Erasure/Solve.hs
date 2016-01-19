@@ -1,3 +1,4 @@
+{-# LANGUAGE TypeSynonymInstances, FlexibleInstances #-}
 module Erasure.Solve where
 
 import TT
@@ -18,11 +19,17 @@ type Guards'  r = S.Set r
 type Uses'    r = S.Set r
 newtype Constrs' r = CS { runCS :: M.Map (Guards' r) (Uses' r) }
 
-csRelevance :: (Ord r, Ord r') => Traversal (Constrs' r) (Constrs' r') r r'
-csRelevance f = fmap (CS . M.fromList) . traverse f' . M.toList . runCS
-  where
-    f' (x, y) = (,) <$> f'' x <*> f'' y
-    f'' = fmap S.fromList . traverse f . S.toList
+class CsRelevance cs where
+    csRelevance :: (Ord r, Ord r') => Traversal (cs r) (cs r') r r'
+
+instance CsRelevance Constrs' where
+    csRelevance f = fmap (CS . M.fromList) . traverse f' . M.toList . runCS
+      where
+        f' (x, y) = (,) <$> f'' x <*> f'' y
+        f'' = fmap S.fromList . traverse f . S.toList
+
+instance CsRelevance VoidConstrs where
+    csRelevance f = voidElim . getConst
 
 type Guards  = Guards'  Meta
 type Uses    = Uses'    Meta

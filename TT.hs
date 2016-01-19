@@ -15,6 +15,9 @@ instance Show Name where
 newtype Void = Void Void deriving (Eq, Ord, Show)
 type VoidConstrs = Const Void
 
+voidElim :: Void -> a
+voidElim (Void v) = voidElim v
+
 data TT r
     = V Name
     | I Name (TT r)  -- instance of a global definition with a specific type

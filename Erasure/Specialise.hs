@@ -4,10 +4,12 @@ import TT
 import TTLens
 
 import Erasure.Meta
+import Erasure.Check
 
 import Control.Arrow
 import Control.Applicative
 import Control.Monad.Trans.Writer
+import Control.Monad.Trans.State
 import Data.Traversable
 import qualified Data.Map as M
 import qualified Data.Set as S
@@ -17,28 +19,39 @@ import Lens.Family
 newtype Instances = Instances (M.Map Name (S.Set ErPattern))
 type ErPattern = [Relevance]
 type Spec = Writer Instances
+type Ext  = State Int
 
 instance Monoid Instances where
     mempty = Instances M.empty
     mappend (Instances p) (Instances q)
         = Instances $ M.unionWith S.union p q
 
+fresh :: Ext Int
+fresh = do
+    i <- get
+    put $ i+1
+    return i
+-- instantiate :: (Functor m, Monad m) => m Int -> Def Meta Constrs' -> m (Def Meta Constrs')
+
 extend ::
     Program Meta VoidConstrs
     -> Instances
     -> Program Meta VoidConstrs
     -> Program Meta VoidConstrs
-extend (Prog rawDefs) (Instances imap) (Prog defs)
-    = Prog $ concatMap expandDef defs
+extend (Prog rawDefs) (Instances imap) prog@(Prog defs)
+    = Prog $ evalState (concat <$> traverse expandDef defs) initialState
   where
+    initialState = 1 + maximum (0 : [i | MVar i <- prog ^.. progRelevance])
     rawDefMap = M.fromList [(n, d) | d@(Def n r ty _ _) <- rawDefs]
+
     extendDefs n
-      = [ let 
+      = traverse (instantiate fresh) [ let 
             Def _ r ty mtm Nothing = rawDefMap M.! n
             in Def (specName n ep) r ty mtm Nothing
         | ep <- S.toList $ M.findWithDefault S.empty n imap
         ]
-    expandDef d@(Def n r ty mtm Nothing) = d : extendDefs n
+
+    expandDef d@(Def n r ty mtm Nothing) = (d :) <$> extendDefs n
 
 remetaify :: Program Relevance VoidConstrs -> Program Meta VoidConstrs
 remetaify = progRelevance %~ Fixed

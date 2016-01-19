@@ -246,7 +246,7 @@ freshen freshTag (MVar i) = do
             modify $ IM.insert i j
             return $ MVar j
 
-instantiate :: (Functor m, Monad m) => m Int -> Def Meta Constrs' -> m (Def Meta Constrs')
+instantiate :: (Functor m, Monad m, CsRelevance cs) => m Int -> Def Meta cs -> m (Def Meta cs)
 instantiate freshTag def = evalStateT refresh IM.empty
   where
     refresh = defRelevance' csRelevance (freshen freshTag) def
