@@ -13,11 +13,6 @@ instance Show Name where
     show (IN n rs) = n ++ "_" ++ concatMap show rs
 
 newtype Void = Void Void deriving (Eq, Ord, Show)
-instance Eq (Const Void r) where
-    x == y = error "void elimination"
-instance Ord (Const Void r) where
-    compare x y = error "void elimination"
-
 type VoidConstrs = Const Void
 
 data TT r

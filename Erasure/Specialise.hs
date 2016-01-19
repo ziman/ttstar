@@ -1,4 +1,4 @@
-module Erasure.SpecialiseRefs (specialiseRefs) where
+module Erasure.Specialise (specialise) where
 
 import TT
 import TTLens
@@ -14,8 +14,8 @@ import Lens.Family
 
 type ErPattern = [Relevance]
 
-specialiseRefs :: Program Relevance VoidConstrs -> Program Relevance VoidConstrs
-specialiseRefs (Prog defs) = Prog $ map specNDef defs
+specialise :: Program Relevance VoidConstrs -> Program Relevance VoidConstrs
+specialise (Prog defs) = Prog $ map specNDef defs
 
 specNDef :: Def Relevance VoidConstrs -> Def Relevance VoidConstrs
 specNDef (Def n r ty mtm Nothing)

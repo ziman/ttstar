@@ -44,8 +44,8 @@ instance PrettyR r => Pretty (TT r) where
     pretty (V n) = pretty n
     pretty (I n ty) = parens (pretty n <+> colon <+> pretty ty)
     pretty (Bind Pi n r ty tm) = parens (pretty (n, r, ty)) <+> arrow <+> pretty tm
-    pretty (Bind Lam n r Erased tm) = lam <> pretty n <> dot <+> pretty tm
-    pretty (Bind Lam n r ty tm) = lam <> pretty (n, r, ty) <> dot <+> pretty tm
+    pretty (Bind Lam n r Erased tm) = parens (lam <> pretty n <> dot <+> pretty tm)
+    pretty (Bind Lam n r ty tm) = parens (lam <> pretty (n, r, ty) <> dot <+> pretty tm)
     pretty (Bind Pat n r ty tm) = text "pat " <> pretty (n, r, ty) <> dot <+> pretty tm
     pretty (App r (V (UN "S")) x) | Just i <- fromNat x = int $ 1+i
       where

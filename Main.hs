@@ -13,9 +13,8 @@ import Util.PrettyPrint
 import Erasure.Meta
 import Erasure.Check
 import Erasure.Solve
-import Erasure.SpecialiseDefs
 import Erasure.Annotate
-import Erasure.SpecialiseRefs
+import Erasure.Specialise
 import Erasure.Prune
 
 import Control.Applicative
@@ -119,12 +118,8 @@ main = do
             let metaified = meta prog
             printP metaified
 
-            putStrLn "### Specialised defs ###\n"
-            let specialisedDefs = specialiseDefs metaified
-            printP specialisedDefs
-
             putStrLn "### Inferred definitions ###\n"
-            let (ctx, cs) = either (error . show) id . check $ specialisedDefs
+            let (ctx, cs) = either (error . show) id . check $ metaified
             mapM_ (putStrLn . fmtCtx) $ M.toList ctx
             putStrLn ""
 
@@ -146,12 +141,12 @@ main = do
             let annotated = annotate uses $ metaified
             printP $ annotated
 
-            putStrLn "### Specialised refs ###\n"
-            let specialisedRefs = specialiseRefs annotated
-            printP $ specialisedRefs
+            putStrLn "### Specialised ###\n"
+            let specialised = specialise annotated
+            printP $ specialised
 
             putStrLn "### Pruned ###\n"
-            let pruned = prune specialisedRefs
+            let pruned = prune specialised
             printP $ pruned
 
             putStrLn "### Normal forms ###\n"
