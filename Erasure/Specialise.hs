@@ -5,6 +5,7 @@ import TTLens
 
 import Erasure.Meta
 import Erasure.Check
+import Erasure.Solve
 
 import Control.Arrow
 import Control.Applicative
@@ -13,6 +14,7 @@ import Control.Monad.Trans.State
 import Data.Traversable
 import qualified Data.Map as M
 import qualified Data.Set as S
+import qualified Data.IntMap as IM
 
 import Lens.Family
 
@@ -31,7 +33,16 @@ fresh = do
     i <- get
     put $ i+1
     return i
--- instantiate :: (Functor m, Monad m) => m Int -> Def Meta Constrs' -> m (Def Meta Constrs')
+
+bindMetas :: [Relevance] -> [Meta] -> IM.IntMap Meta
+bindMetas [] [] = IM.empty
+bindMetas (r : rs) (m : ms) = bind r m $ bindMetas rs ms
+  where
+    bind R (Fixed R) = id
+    bind E (Fixed E) = id
+    bind r (MVar  i) = IM.insert i (Fixed r)
+    bind r m = error $ "bindMetas.bind: inconsistency: " ++ show (r, m)
+bindMetas rs ms = error $ "bindMetas: length mismatch: " ++ show (rs, ms)
 
 extend ::
     Program Meta VoidConstrs
@@ -45,13 +56,14 @@ extend (Prog rawDefs) (Instances imap) prog@(Prog defs)
     rawDefMap = M.fromList [(n, d) | d@(Def n r ty _ _) <- rawDefs]
 
     extendDefs n
-      = traverse (instantiate fresh) [ let 
-            Def _ r ty mtm Nothing = rawDefMap M.! n
-            in Def (specName n ep) r ty mtm Nothing
-        | ep <- S.toList $ M.findWithDefault S.empty n imap
-        ]
+      = sequence
+          [ let Def _ r ty mtm Nothing = rawDefMap M.! n
+              in instantiate fresh (bindMetas ep (ty ^.. ttRelevance))
+                   $ Def (specName n ep) r ty mtm Nothing
+          | ep <- S.toList $ M.findWithDefault S.empty n imap
+          ]
 
-    expandDef d@(Def n r ty mtm Nothing) = (d :) <$> extendDefs n
+    expandDef (Def n r ty mtm Nothing) = (Def n r ty mtm Nothing :) <$> extendDefs n
 
 remetaify :: Program Relevance VoidConstrs -> Program Meta VoidConstrs
 remetaify = progRelevance %~ Fixed

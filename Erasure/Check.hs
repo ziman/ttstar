@@ -158,7 +158,7 @@ checkTm t@(V n) = bt ("VAR", n) $ do
     return (ty, Fixed R --> r)
 
 checkTm t@(I n ty) = bt ("INST", n, ty) $ do
-    Def _n r ty' _mtm (fromMaybe noConstrs -> cs') <- instantiate freshTag =<< lookup n
+    Def _n r ty' _mtm (fromMaybe noConstrs -> cs') <- instantiate freshTag IM.empty =<< lookup n
     convCs <- conv ty' ty
     return (ty', cs' /\ convCs /\ Fixed R --> r)
 
@@ -234,20 +234,20 @@ checkAlt (ConCase cn tm) = bt ("ALT-CON", cn, tm) $ do
 newtype TC' a = LiftTC' { runTC' :: TC a } deriving (Functor, Applicative, Monad)
 type ITC = StateT (IM.IntMap Int) TC'
 
-freshen :: Monad m => m Int -> Meta -> StateT (IM.IntMap Int) m Meta
+freshen :: Monad m => m Int -> Meta -> StateT (IM.IntMap Meta) m Meta
 freshen freshTag m@(Fixed r) = return m
 freshen freshTag (MVar i) = do
     imap <- get
     case IM.lookup i imap of
         Just j ->
-            return $ MVar j
+            return j
         Nothing -> do
-            j <- lift freshTag
+            j <- MVar <$> lift freshTag
             modify $ IM.insert i j
-            return $ MVar j
+            return j
 
-instantiate :: (Functor m, Monad m, CsRelevance cs) => m Int -> Def Meta cs -> m (Def Meta cs)
-instantiate freshTag def = evalStateT refresh IM.empty
+instantiate :: (Functor m, Monad m, CsRelevance cs) => m Int -> IM.IntMap Meta -> Def Meta cs -> m (Def Meta cs)
+instantiate freshTag metaMap def = evalStateT refresh metaMap
   where
     refresh = defRelevance' csRelevance (freshen freshTag) def
 
