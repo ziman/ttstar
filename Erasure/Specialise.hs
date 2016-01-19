@@ -14,25 +14,40 @@ import qualified Data.Set as S
 
 import Lens.Family
 
-newtype Instances = Instances { runInstances :: M.Map Name (S.Set [Relevance]) }
+newtype Instances = Instances (M.Map Name (S.Set ErPattern))
 type ErPattern = [Relevance]
 type Spec = Writer Instances
 
 instance Monoid Instances where
     mempty = Instances M.empty
-    mappend (Instances p) (Instances q) = Instances $ M.unionWith S.union p q
+    mappend (Instances p) (Instances q)
+        = Instances $ M.unionWith S.union p q
 
-thaw :: Program Relevance VoidConstrs -> Program Meta VoidConstrs
-thaw = progRelevance %~ Fixed
+extend ::
+    Program Meta VoidConstrs
+    -> Instances
+    -> Program Meta VoidConstrs
+    -> Program Meta VoidConstrs
+extend (Prog rawDefs) (Instances imap) (Prog defs)
+    = Prog $ concatMap expandDef defs
+  where
+    rawDefMap = M.fromList [(n, d) | d@(Def n r ty _ _) <- rawDefs]
+    extendDefs n
+      = [ let 
+            Def _ r ty mtm Nothing = rawDefMap M.! n
+            in Def (specName n ep) r ty mtm Nothing
+        | ep <- S.toList $ M.findWithDefault S.empty n imap
+        ]
+    expandDef d@(Def n r ty mtm Nothing) = d : extendDefs n
 
-spec :: Name -> [Relevance] -> Instances
-spec n = Instances . M.singleton n . S.singleton
+remetaify :: Program Relevance VoidConstrs -> Program Meta VoidConstrs
+remetaify = progRelevance %~ Fixed
 
 specialise ::
-    Program Meta VoidConstrs     -- raw, just metaified definitions (material to specialise)   
+    Program Meta VoidConstrs          -- raw, just metaified definitions (material to specialise)   
     -> Program Relevance VoidConstrs  -- program to extend
-    -> Program Meta VoidConstrs  -- extended program
-specialise raw prog = thaw prog'
+    -> Program Meta VoidConstrs       -- extended program
+specialise raw prog = extend raw insts $ remetaify prog'
   where
     (prog', insts) = runWriter $ specNProg prog
 
@@ -50,6 +65,9 @@ specNTm (I n@(UN ns) ty) = do
     let rs = ty ^.. ttRelevance
     tell $ spec n rs
     return $ V (IN ns rs)
+  where
+    spec :: Name -> [Relevance] -> Instances
+    spec n = Instances . M.singleton n . S.singleton
 
 specNTm (Bind b n r ty tm) = Bind b n r <$> specNTm ty <*> specNTm tm
 specNTm (App r f x) = App r <$> specNTm f <*> specNTm x
@@ -62,10 +80,5 @@ specNAlt :: Alt Relevance -> Spec (Alt Relevance)
 specNAlt (ConCase n tm) = ConCase n <$> specNTm tm
 specNAlt (DefaultCase tm) = DefaultCase <$> specNTm tm
 
-{-
-specName :: Name -> TT Relevance -> Name
-specName (UN n) ty = IN n (ty ^.. ttRelevance)
-
-specName' :: Name -> ErPattern -> Name
-specName' (UN n) epat = IN n epat
--}
+specName :: Name -> ErPattern -> Name
+specName (UN n) epat = IN n epat
