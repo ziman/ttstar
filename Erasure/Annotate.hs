@@ -17,6 +17,7 @@ annDef uses (Def n r ty mtm mcs)
     = Def n (rel r) (annTm ty) (annTm <$> mtm) Nothing
   where
     annTm tm = tm & ttRelevance %~ rel
+    rel (Fixed r) = r
     rel m
         | m `S.member` uses = R
         | otherwise         = E

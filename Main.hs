@@ -120,12 +120,12 @@ main = do
             let metaified = meta prog
             printP metaified
 
-            putStrLn "### Inferred definitions ###\n"
-            let (ctx, cs) = either (error . show) id . check $ metaified
-            mapM_ (putStrLn . fmtCtx) $ M.toList ctx
-            putStrLn ""
-
             let iterSpecialisation metaified = do
+                    putStrLn "### Inferred definitions ###\n"
+                    let (ctx, cs) = either (error . show) id . check $ metaified
+                    mapM_ (putStrLn . fmtCtx) $ M.toList ctx
+                    putStrLn ""
+
                     putStrLn "### Constraints ###\n"
                     mapM_ (putStrLn . fmtCtr) $ M.toList (runCS cs)
                     putStrLn ""
@@ -154,6 +154,7 @@ main = do
 
             putStrLn "### Final annotation ###\n"
             annotated <- iterSpecialisation metaified
+            -- let annotated = annotate S.empty specialised  -- no usage set needed, everything is Fixed
             printP $ annotated
 
             putStrLn "### Pruned ###\n"

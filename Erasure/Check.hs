@@ -160,7 +160,9 @@ checkTm t@(V n) = bt ("VAR", n) $ do
 checkTm t@(I n ty) = bt ("INST", n, ty) $ do
     Def _n r ty' _mtm (fromMaybe noConstrs -> cs') <- instantiate freshTag IM.empty =<< lookup n
     convCs <- conv ty' ty
-    return (ty', cs' /\ convCs /\ Fixed R --> r)
+    -- we do not include (Fixed R --> r) because it will be an instance
+    -- of this function that's runtime-relevant, not the function itself
+    return (ty', cs' /\ convCs)
 
 checkTm t@(Bind Lam n r ty tm) = bt ("LAM", t) $ do
     (tmty, tmcs) <- with (Def n r ty Nothing Nothing) $ checkTm tm
