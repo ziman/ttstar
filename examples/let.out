@@ -9,21 +9,21 @@ Z : Nat
 S : (n  -R-  Nat) -> Nat
 
 plus : (x : Nat) -> (y : Nat) -> Nat
-plus = \x : Nat. \y : Nat. 
+plus = (\x : Nat. (\y : Nat. 
   case x of
     Z -> y
-    S (xx : Nat) -> (S (plus xx y))
+    S (xx : Nat) -> (S (plus xx y))))
 
 id : (_ : Nat) -> Nat
-id = \y : Nat. y
+id = (\y : Nat. y)
 
 const : (x : Nat) -> (_ : Nat) -> Nat
-const = \x : Nat. \_ : Nat. x
+const = (\x : Nat. (\_ : Nat. x))
 
 main  -R-  Nat
 main = 
   let apply : (f : (_ : Nat) -> Nat) -> (x : Nat) -> Nat
-    = \f : (_ : Nat) -> Nat. \x : Nat. (f x)
+    = (\f : (_ : Nat) -> Nat. (\x : Nat. (f x)))
   in 
     let postulate Q : Nat
     in 
@@ -40,27 +40,29 @@ Z :?2: Nat
 S :?3: (n :!R: Nat) -> Nat
 
 plus :?4: (x :?5: Nat) -> (y :?6: Nat) -> Nat
-plus = \x :?7: Nat. \y :?8: Nat. 
+plus = (\x :?7: Nat. (\y :?8: Nat. 
   case x of
     Z -> y
-    S (xx :?9: Nat) -> (S -?10- (plus -?12- xx -?11- y))
+    S (xx :?9: Nat) -> (S -?10- (plus -?12- xx -?11- y))))
 
 id :?13: (_ :?14: Nat) -> Nat
-id = \y :?15: Nat. y
+id = (\y :?15: Nat. y)
 
 const :?16: (x :?17: Nat) -> (_ :?18: Nat) -> Nat
-const = \x :?19: Nat. \_ :?20: Nat. x
+const = (\x :?19: Nat. (\_ :?20: Nat. x))
 
 main :!R: Nat
 main = 
   let apply :?21: (f :?22: (_ :?23: Nat) -> Nat) -> (x :?24: Nat) -> Nat
-    = \f :?25: (_ :?26: Nat) -> Nat. \x :?27: Nat. (f -?28- x)
+    = (\f :?25: (_ :?26: Nat) -> Nat. (\x :?27: Nat. (f -?28- x)))
   in 
     let postulate Q :?29: Nat
     in 
       let three :?30: Nat
         = 3
       in (plus -?35- (apply -?37- id -?36- 2) -?34- (apply -?41- (const -?42- Q) -?40- three))
+
+### Final annotation ###
 
 ### Inferred definitions ###
 
@@ -139,21 +141,81 @@ Z :R: Nat
 S :R: (n :R: Nat) -> Nat
 
 plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
-plus = \x :R: Nat. \y :R: Nat. 
+plus = (\x :R: Nat. (\y :R: Nat. 
   case x of
     Z -> y
-    S (xx :R: Nat) -> (S -R- (plus -R- xx -R- y))
+    S (xx :R: Nat) -> (S -R- (plus -R- xx -R- y))))
 
 id :R: (_ :R: Nat) -> Nat
-id = \y :R: Nat. y
+id = (\y :R: Nat. y)
 
 const :R: (x :R: Nat) -> (_ :R: Nat) -> Nat
-const = \x :R: Nat. \_ :R: Nat. x
+const = (\x :R: Nat. (\_ :R: Nat. x))
 
 main :R: Nat
 main = 
   let apply :R: (f :R: (_ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat
-    = \f :R: (_ :R: Nat) -> Nat. \x :R: Nat. (f -R- x)
+    = (\f :R: (_ :R: Nat) -> Nat. (\x :R: Nat. (f -R- x)))
+  in 
+    let postulate Q :R: Nat
+    in 
+      let three :R: Nat
+        = 3
+      in (plus -R- (apply -R- id -R- 2) -R- (apply -R- (const -R- Q) -R- three))
+
+### Specialised ###
+
+Nat :!E: *
+
+Z :!R: Nat
+
+S :!R: (n :!R: Nat) -> Nat
+
+plus :!R: (x :!R: Nat) -> (y :!R: Nat) -> Nat
+plus = (\x :!R: Nat. (\y :!R: Nat. 
+  case x of
+    Z -> y
+    S (xx :!R: Nat) -> (S -!R- (plus -!R- xx -!R- y))))
+
+id :!R: (_ :!R: Nat) -> Nat
+id = (\y :!R: Nat. y)
+
+const :!R: (x :!R: Nat) -> (_ :!R: Nat) -> Nat
+const = (\x :!R: Nat. (\_ :!R: Nat. x))
+
+main :!R: Nat
+main = 
+  let apply :!R: (f :!R: (_ :!R: Nat) -> Nat) -> (x :!R: Nat) -> Nat
+    = (\f :!R: (_ :!R: Nat) -> Nat. (\x :!R: Nat. (f -!R- x)))
+  in 
+    let postulate Q :!R: Nat
+    in 
+      let three :!R: Nat
+        = 3
+      in (plus -!R- (apply -!R- id -!R- 2) -!R- (apply -!R- (const -!R- Q) -!R- three))
+
+Nat :E: *
+
+Z :R: Nat
+
+S :R: (n :R: Nat) -> Nat
+
+plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
+plus = (\x :R: Nat. (\y :R: Nat. 
+  case x of
+    Z -> y
+    S (xx :R: Nat) -> (S -R- (plus -R- xx -R- y))))
+
+id :R: (_ :R: Nat) -> Nat
+id = (\y :R: Nat. y)
+
+const :R: (x :R: Nat) -> (_ :R: Nat) -> Nat
+const = (\x :R: Nat. (\_ :R: Nat. x))
+
+main :R: Nat
+main = 
+  let apply :R: (f :R: (_ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat
+    = (\f :R: (_ :R: Nat) -> Nat. (\x :R: Nat. (f -R- x)))
   in 
     let postulate Q :R: Nat
     in 
@@ -163,18 +225,18 @@ main =
 
 ### Pruned ###
 
-plus = \x. \y. 
+plus = (\x. (\y. 
   case x of
     Z -> y
-    S xx -> (S (plus xx y))
+    S xx -> (S (plus xx y))))
 
-id = \y. y
+id = (\y. y)
 
-const = \x. \_. x
+const = (\x. (\_. x))
 
 main = 
   let apply
-    = \f. \x. (f x)
+    = (\f. (\x. (f x)))
   in 
     let postulate Q
     in 

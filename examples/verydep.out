@@ -17,16 +17,16 @@ True : Bool
 False : Bool
 
 retTy : (x : (Maybe Bool)) -> *
-retTy = \x : (Maybe Bool). 
+retTy = (\x : (Maybe Bool). 
   case x of
     Just (a : *) (t : a) -> Bool
-    Nothing (a : *) -> *
+    Nothing (a : *) -> *)
 
 f : (x : (Maybe Bool)) -> (retTy x)
-f = \x : (Maybe Bool). 
+f = (\x : (Maybe Bool). 
   case x of
     Just (a : *) (b : a) -> b
-    Nothing (a : *) -> Bool
+    Nothing (a : *) -> Bool)
 
 main  -R-  Bool
 main = (f (Just Bool False))
@@ -48,19 +48,21 @@ True :?12: Bool
 False :?13: Bool
 
 retTy :?14: (x :?15: (Maybe -?16- Bool)) -> *
-retTy = \x :?17: (Maybe -?18- Bool). 
+retTy = (\x :?17: (Maybe -?18- Bool). 
   case x of
     Just (a :?19: *) (t :?20: a) -> Bool
-    Nothing (a :?21: *) -> *
+    Nothing (a :?21: *) -> *)
 
 f :?22: (x :?23: (Maybe -?24- Bool)) -> (retTy -?25- x)
-f = \x :?26: (Maybe -?27- Bool). 
+f = (\x :?26: (Maybe -?27- Bool). 
   case x of
     Just (a :?28: *) (b :?29: a) -> b
-    Nothing (a :?30: *) -> Bool
+    Nothing (a :?30: *) -> Bool)
 
 main :!R: Bool
 main = (f -?31- (Just -?33- Bool -?32- False))
+
+### Final annotation ###
 
 ### Inferred definitions ###
 
@@ -142,26 +144,86 @@ True :E: Bool
 False :R: Bool
 
 retTy :E: (x :R: (Maybe -E- Bool)) -> *
-retTy = \x :R: (Maybe -E- Bool). 
+retTy = (\x :R: (Maybe -E- Bool). 
   case x of
     Just (a :E: *) (t :E: a) -> Bool
-    Nothing (a :E: *) -> *
+    Nothing (a :E: *) -> *)
 
 f :R: (x :R: (Maybe -E- Bool)) -> (retTy -E- x)
-f = \x :R: (Maybe -E- Bool). 
+f = (\x :R: (Maybe -E- Bool). 
   case x of
     Just (a :E: *) (b :R: a) -> b
-    Nothing (a :E: *) -> Bool
+    Nothing (a :E: *) -> Bool)
+
+main :R: Bool
+main = (f -R- (Just -E- Bool -R- False))
+
+### Specialised ###
+
+Void :!E: *
+
+Maybe :!E: (_ :!E: *) -> *
+
+Just :!R: (a :!E: *) -> (x :!R: a) -> (Maybe -!E- a)
+
+Nothing :!E: (a :!E: *) -> (Maybe -!E- a)
+
+Bool :!R: *
+
+True :!E: Bool
+
+False :!R: Bool
+
+retTy :!E: (x :!R: (Maybe -!E- Bool)) -> *
+retTy = (\x :!R: (Maybe -!E- Bool). 
+  case x of
+    Just (a :!E: *) (t :!E: a) -> Bool
+    Nothing (a :!E: *) -> *)
+
+f :!R: (x :!R: (Maybe -!E- Bool)) -> (retTy -!E- x)
+f = (\x :!R: (Maybe -!E- Bool). 
+  case x of
+    Just (a :!E: *) (b :!R: a) -> b
+    Nothing (a :!E: *) -> Bool)
+
+main :!R: Bool
+main = (f -!R- (Just -!E- Bool -!R- False))
+
+Void :E: *
+
+Maybe :E: (_ :E: *) -> *
+
+Just :R: (a :E: *) -> (x :R: a) -> (Maybe -E- a)
+
+Nothing :E: (a :E: *) -> (Maybe -E- a)
+
+Bool :R: *
+
+True :E: Bool
+
+False :R: Bool
+
+retTy :E: (x :R: (Maybe -E- Bool)) -> *
+retTy = (\x :R: (Maybe -E- Bool). 
+  case x of
+    Just (a :E: *) (t :E: a) -> Bool
+    Nothing (a :E: *) -> *)
+
+f :R: (x :R: (Maybe -E- Bool)) -> (retTy -E- x)
+f = (\x :R: (Maybe -E- Bool). 
+  case x of
+    Just (a :E: *) (b :R: a) -> b
+    Nothing (a :E: *) -> Bool)
 
 main :R: Bool
 main = (f -R- (Just -E- Bool -R- False))
 
 ### Pruned ###
 
-f = \x. 
+f = (\x. 
   case x of
     Just b -> b
-    Nothing -> Bool
+    Nothing -> Bool)
 
 main = (f (Just False))
 

@@ -21,10 +21,10 @@ VNil : (a : *) -> (Vec Z a)
 VCons : (a : *) -> (n : Nat) -> (x : a) -> (xs : (Vec n a)) -> (Vec (S n) a)
 
 vlen : (a : *) -> (n : Nat) -> (xs : (Vec n a)) -> Nat
-vlen = \a : *. \n : Nat. \xs : (Vec n a). 
+vlen = (\a : *. (\n : Nat. (\xs : (Vec n a). 
   case xs of
     VNil (a : *) -> Z
-    VCons (a : *) (n : Nat) (x : a) (xs : (Vec n a)) -> (S (vlen a n xs))
+    VCons (a : *) (n : Nat) (x : a) (xs : (Vec n a)) -> (S (vlen a n xs)))))
 
 testVec : (Vec 2 Bool)
 testVec = (VCons Bool 1 True (VCons Bool Z False (VNil Bool)))
@@ -53,16 +53,18 @@ VNil :?10: (a :?11: *) -> (Vec -?13- Z -?12- a)
 VCons :?14: (a :?15: *) -> (n :?16: Nat) -> (x :?17: a) -> (xs :?18: (Vec -?20- n -?19- a)) -> (Vec -?22- (S -?23- n) -?21- a)
 
 vlen :?24: (a :?25: *) -> (n :?26: Nat) -> (xs :?27: (Vec -?29- n -?28- a)) -> Nat
-vlen = \a :?30: *. \n :?31: Nat. \xs :?32: (Vec -?34- n -?33- a). 
+vlen = (\a :?30: *. (\n :?31: Nat. (\xs :?32: (Vec -?34- n -?33- a). 
   case xs of
     VNil (a :?35: *) -> Z
-    VCons (a :?36: *) (n :?37: Nat) (x :?38: a) (xs :?39: (Vec -?41- n -?40- a)) -> (S -?42- (vlen -?45- a -?44- n -?43- xs))
+    VCons (a :?36: *) (n :?37: Nat) (x :?38: a) (xs :?39: (Vec -?41- n -?40- a)) -> (S -?42- (vlen -?45- a -?44- n -?43- xs)))))
 
 testVec :?46: (Vec -?48- 2 -?47- Bool)
 testVec = (VCons -?54- Bool -?53- 1 -?52- True -?51- (VCons -?59- Bool -?58- Z -?57- False -?56- (VNil -?60- Bool)))
 
 main :!R: Nat
 main = (vlen -?63- Bool -?62- 2 -?61- testVec)
+
+### Final annotation ###
 
 ### Inferred definitions ###
 
@@ -230,10 +232,72 @@ VNil :R: (a :E: *) -> (Vec -E- Z -E- a)
 VCons :R: (a :E: *) -> (n :E: Nat) -> (x :E: a) -> (xs :R: (Vec -E- n -E- a)) -> (Vec -E- (S -E- n) -E- a)
 
 vlen :R: (a :E: *) -> (n :E: Nat) -> (xs :R: (Vec -E- n -E- a)) -> Nat
-vlen = \a :E: *. \n :E: Nat. \xs :R: (Vec -E- n -E- a). 
+vlen = (\a :E: *. (\n :E: Nat. (\xs :R: (Vec -E- n -E- a). 
   case xs of
     VNil (a :E: *) -> Z
-    VCons (a :E: *) (n :E: Nat) (x :E: a) (xs :R: (Vec -E- n -E- a)) -> (S -R- (vlen -E- a -E- n -R- xs))
+    VCons (a :E: *) (n :E: Nat) (x :E: a) (xs :R: (Vec -E- n -E- a)) -> (S -R- (vlen -E- a -E- n -R- xs)))))
+
+testVec :R: (Vec -E- 2 -E- Bool)
+testVec = (VCons -E- Bool -E- 1 -E- True -R- (VCons -E- Bool -E- Z -E- False -R- (VNil -E- Bool)))
+
+main :R: Nat
+main = (vlen -E- Bool -E- 2 -R- testVec)
+
+### Specialised ###
+
+Bool :!E: *
+
+True :!E: Bool
+
+False :!E: Bool
+
+Nat :!E: *
+
+Z :!R: Nat
+
+S :!R: (n :!R: Nat) -> Nat
+
+Vec :!E: (_ :!E: Nat) -> (_ :!E: *) -> *
+
+VNil :!R: (a :!E: *) -> (Vec -!E- Z -!E- a)
+
+VCons :!R: (a :!E: *) -> (n :!E: Nat) -> (x :!E: a) -> (xs :!R: (Vec -!E- n -!E- a)) -> (Vec -!E- (S -!E- n) -!E- a)
+
+vlen :!R: (a :!E: *) -> (n :!E: Nat) -> (xs :!R: (Vec -!E- n -!E- a)) -> Nat
+vlen = (\a :!E: *. (\n :!E: Nat. (\xs :!R: (Vec -!E- n -!E- a). 
+  case xs of
+    VNil (a :!E: *) -> Z
+    VCons (a :!E: *) (n :!E: Nat) (x :!E: a) (xs :!R: (Vec -!E- n -!E- a)) -> (S -!R- (vlen -!E- a -!E- n -!R- xs)))))
+
+testVec :!R: (Vec -!E- 2 -!E- Bool)
+testVec = (VCons -!E- Bool -!E- 1 -!E- True -!R- (VCons -!E- Bool -!E- Z -!E- False -!R- (VNil -!E- Bool)))
+
+main :!R: Nat
+main = (vlen -!E- Bool -!E- 2 -!R- testVec)
+
+Bool :E: *
+
+True :E: Bool
+
+False :E: Bool
+
+Nat :E: *
+
+Z :R: Nat
+
+S :R: (n :R: Nat) -> Nat
+
+Vec :E: (_ :E: Nat) -> (_ :E: *) -> *
+
+VNil :R: (a :E: *) -> (Vec -E- Z -E- a)
+
+VCons :R: (a :E: *) -> (n :E: Nat) -> (x :E: a) -> (xs :R: (Vec -E- n -E- a)) -> (Vec -E- (S -E- n) -E- a)
+
+vlen :R: (a :E: *) -> (n :E: Nat) -> (xs :R: (Vec -E- n -E- a)) -> Nat
+vlen = (\a :E: *. (\n :E: Nat. (\xs :R: (Vec -E- n -E- a). 
+  case xs of
+    VNil (a :E: *) -> Z
+    VCons (a :E: *) (n :E: Nat) (x :E: a) (xs :R: (Vec -E- n -E- a)) -> (S -R- (vlen -E- a -E- n -R- xs)))))
 
 testVec :R: (Vec -E- 2 -E- Bool)
 testVec = (VCons -E- Bool -E- 1 -E- True -R- (VCons -E- Bool -E- Z -E- False -R- (VNil -E- Bool)))
@@ -243,10 +307,10 @@ main = (vlen -E- Bool -E- 2 -R- testVec)
 
 ### Pruned ###
 
-vlen = \xs. 
+vlen = (\xs. 
   case xs of
     VNil -> Z
-    VCons xs -> (S (vlen xs))
+    VCons xs -> (S (vlen xs)))
 
 testVec = (VCons (VCons VNil))
 

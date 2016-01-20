@@ -8,6 +8,8 @@ Bool : *
 
 Bool :?1: *
 
+### Final annotation ###
+
 ### Inferred definitions ###
 
 Bool :?1: *
@@ -20,6 +22,12 @@ Bool :?1: *
 [!R]
 
 ### Annotated ###
+
+Bool :E: *
+
+### Specialised ###
+
+Bool :!E: *
 
 Bool :E: *
 
