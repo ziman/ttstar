@@ -1,6 +1,7 @@
 module Erasure.Prune where
 
 import TT
+import Pretty
 import Control.Applicative
 
 prune :: Program Relevance VoidConstrs -> Program () VoidConstrs
@@ -12,7 +13,7 @@ pruneDef (Def n R ty dt mcs) = [Def n () Erased (pruneTm <$> dt) Nothing]
 
 pruneTm :: TT Relevance -> TT ()
 pruneTm (V n) = V n
-pruneTm (I n ty) = error "non-specialised instance found in pruneTm"
+pruneTm (I n ty) = error $ "non-specialised instance found in pruneTm: " ++ show (n, ty)
 pruneTm (Bind bnd n E ty tm) = pruneTm tm
 pruneTm (Bind bnd n R ty tm) = Bind bnd n () Erased (pruneTm tm)
 pruneTm (App E f x) = pruneTm f

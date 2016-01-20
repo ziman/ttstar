@@ -38,7 +38,7 @@ data Alt r
 data Def r cs = Def Name r (TT r) (Maybe (TT r)) (Maybe (cs r)) deriving (Eq, Ord)
 type Ctx r cs = M.Map Name (Def r cs)
 
-newtype Program r cs = Prog [Def r cs] deriving (Eq, Ord)
+newtype Program r cs = Prog { getDefs :: [Def r cs] } deriving (Eq, Ord)
 
 unApply :: TT r -> (TT r, [TT r])
 unApply tm = ua tm []

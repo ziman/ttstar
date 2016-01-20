@@ -17,6 +17,8 @@ import Erasure.Annotate
 import Erasure.Specialise
 import Erasure.Prune
 
+import Lens.Family2
+
 import Control.Applicative
 import Text.Parsec
 import System.Environment
@@ -123,27 +125,36 @@ main = do
             mapM_ (putStrLn . fmtCtx) $ M.toList ctx
             putStrLn ""
 
-            putStrLn "### Constraints ###\n"
-            mapM_ (putStrLn . fmtCtr) $ M.toList (runCS cs)
-            putStrLn ""
+            let iterSpecialisation metaified = do
+                    putStrLn "### Constraints ###\n"
+                    mapM_ (putStrLn . fmtCtr) $ M.toList (runCS cs)
+                    putStrLn ""
 
-            putStrLn "### Solution ###\n"
-            let (uses, residue) = solve cs
-            print $ S.toList uses
-            genHtml (fname ++ ".html") metaified cs uses
-            putStrLn ""
+                    putStrLn "### Solution ###\n"
+                    let (uses, residue) = solve cs
+                    print $ S.toList uses
+                    genHtml (fname ++ ".html") metaified cs uses
+                    putStrLn ""
 
-            if Fixed E `S.member` uses
-               then error "!! inconsistent annotation"
-               else return ()
+                    if Fixed E `S.member` uses
+                    then error "!! inconsistent annotation"
+                    else return ()
 
-            putStrLn "### Annotated ###\n"
-            let annotated = annotate uses $ metaified
+                    putStrLn "### Annotated ###\n"
+                    let annotated = annotate uses $ metaified
+                    printP $ annotated
+
+                    putStrLn "### Specialised ###\n"
+                    let specialised = specialise metaified annotated
+                    printP $ specialised
+
+                    if ndefs specialised == ndefs annotated
+                        then return annotated  -- fixed point reached
+                        else iterSpecialisation specialised
+
+            putStrLn "### Final annotation ###\n"
+            annotated <- iterSpecialisation metaified
             printP $ annotated
-
-            putStrLn "### Specialised ###\n"
-            let specialised = specialise metaified annotated
-            printP $ specialised
 
             putStrLn "### Pruned ###\n"
             let pruned = prune annotated -- specialised
@@ -160,3 +171,4 @@ main = do
     fmtCtx (n, (Def _n r ty mtm (Just (CS cs)))) = prettyShow (n, r, ty) ++ "\n"
         ++ unlines (map (("  " ++) . fmtCtr) $ M.toList cs)
 
+    ndefs (Prog defs) = length defs
