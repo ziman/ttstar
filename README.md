@@ -7,9 +7,8 @@ Besides what the original paper had, we have:
 * [P] changing arities of functions
 * [M] data constructor support
     * because M-L avoids case-expressions
-* [MP] erasure polymorphism for let-bound names
-    * but not for lambda-bound names (would require extension of the type system)
-    * probably equivalent to Hindley-Milner-style polymorphism
+* [MP] erasure polymorphism for top-level-bound names
+    * but not for let- or lambda-bound names
 
 [P] = improvement over previous paper, [M] = improvement over Mishra-Linger
 
