@@ -10,8 +10,6 @@ main = (\x : *. x)
 main :!R: (x :?1: *) -> *
 main = (\x :?2: *. x)
 
-### Final annotation ###
-
 ### Inferred definitions ###
 
 main :!R: (x :?1: *) -> *
@@ -35,6 +33,8 @@ main = (\x :R: *. x)
 
 main :!R: (x :!R: *) -> *
 main = (\x :!R: *. x)
+
+### Final annotation ###
 
 main :R: (x :R: *) -> *
 main = (\x :R: *. x)

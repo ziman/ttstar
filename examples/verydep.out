@@ -62,8 +62,6 @@ f = (\x :?26: (Maybe -?27- Bool).
 main :!R: Bool
 main = (f -?31- (Just -?33- Bool -?32- False))
 
-### Final annotation ###
-
 ### Inferred definitions ###
 
 Bool :?11: *
@@ -188,6 +186,8 @@ f = (\x :!R: (Maybe -!E- Bool).
 
 main :!R: Bool
 main = (f -!R- (Just -!E- Bool -!R- False))
+
+### Final annotation ###
 
 Void :E: *
 

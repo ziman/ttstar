@@ -44,8 +44,6 @@ f = (\g :?18: (_ :?19: T) -> T. (\z :?20: T. (\h :?21: (_ :?22: T) -> T. (\w :?2
 main :!R: T
 main = (f -?31- id -?30- B -?29- const_A -?28- B)
 
-### Final annotation ###
-
 ### Inferred definitions ###
 
 A :?2: T
@@ -159,6 +157,8 @@ f = (\g :!R: (_ :!R: T) -> T. (\z :!R: T. (\h :!R: (_ :!E: T) -> T. (\w :!E: T. 
 
 main :!R: T
 main = (f -!R- id -!R- B -!R- const_A -!E- B)
+
+### Final annotation ###
 
 T :E: *
 

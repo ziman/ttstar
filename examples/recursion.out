@@ -64,8 +64,6 @@ testVec = (VCons -?54- Bool -?53- 1 -?52- True -?51- (VCons -?59- Bool -?58- Z -
 main :!R: Nat
 main = (vlen -?63- Bool -?62- 2 -?61- testVec)
 
-### Final annotation ###
-
 ### Inferred definitions ###
 
 Bool :?1: *
@@ -274,6 +272,8 @@ testVec = (VCons -!E- Bool -!E- 1 -!E- True -!R- (VCons -!E- Bool -!E- Z -!E- Fa
 
 main :!R: Nat
 main = (vlen -!E- Bool -!E- 2 -!R- testVec)
+
+### Final annotation ###
 
 Bool :E: *
 

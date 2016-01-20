@@ -92,8 +92,6 @@ test_2 = (f -?65- id -?64- 2 -?63- const_3 -?62- 1)
 main :!R: Nat
 main = (Plus -?70- test_1 -?69- test_2)
 
-### Final annotation ###
-
 ### Inferred definitions ###
 
 Bool :?1: *
@@ -297,6 +295,8 @@ test_2 = (f -!R- id -!R- 2 -!R- const_3 -!R- 1)
 
 main :!R: Nat
 main = (Plus -!R- test_1 -!R- test_2)
+
+### Final annotation ###
 
 Bool :E: *
 

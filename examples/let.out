@@ -62,8 +62,6 @@ main =
         = 3
       in (plus -?35- (apply -?37- id -?36- 2) -?34- (apply -?41- (const -?42- Q) -?40- three))
 
-### Final annotation ###
-
 ### Inferred definitions ###
 
 Nat :?1: *
@@ -193,6 +191,8 @@ main =
       let three :!R: Nat
         = 3
       in (plus -!R- (apply -!R- id -!R- 2) -!R- (apply -!R- (const -!R- Q) -!R- three))
+
+### Final annotation ###
 
 Nat :E: *
 

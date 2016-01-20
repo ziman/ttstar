@@ -56,8 +56,6 @@ test2 = ((apply : (_ :?28: (_ :?29: T) -> T) -> (_ :?30: T) -> T) -?27- constA -
 main :!R: T
 main = (Op -?32- test1 -?31- test2)
 
-### Final annotation ###
-
 ### Inferred definitions ###
 
 A :?2: T
@@ -315,6 +313,8 @@ test2 = (apply_REE -!R- constA -!E- B)
 
 main :!R: T
 main = (Op -!R- test1 -!R- test2)
+
+### Final annotation ###
 
 T :E: *
 

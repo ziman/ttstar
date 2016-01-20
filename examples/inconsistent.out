@@ -10,8 +10,6 @@ main = (\x  -E-  *. x)
 main :!R: (x :!E: *) -> *
 main = (\x :!E: *. x)
 
-### Final annotation ###
-
 ### Inferred definitions ###
 
 main :!R: (x :!E: *) -> *
