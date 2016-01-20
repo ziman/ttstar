@@ -152,8 +152,9 @@ main = do
                         then return annotated  -- fixed point reached
                         else iterSpecialisation specialised
 
-            putStrLn "### Final annotation ###\n"
             annotated <- iterSpecialisation metaified
+
+            putStrLn "### Final annotation ###\n"
             -- let annotated = annotate S.empty specialised  -- no usage set needed, everything is Fixed
             printP $ annotated
 
