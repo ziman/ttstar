@@ -61,12 +61,15 @@ instance PrettyR r => Pretty (TT r) where
         $$ indent (text "let" <+> pretty d
             $$ text "in" <+> pretty tm
         )
-    pretty (Case s alts) =
+    pretty (Case s ty alts) =
         blankLine
         $$ indent (
-            text "case" <+> pretty s <+> text "of"
+            text "case" <+> pretty s <+> caseTy ty <+> text "of"
             $$ indent (vcat $ map pretty alts)
         )
+      where
+        caseTy Nothing   = empty
+        caseTy (Just ty) = text "returns" <+> pretty ty
     pretty Erased = text "____"
     pretty Type = text "*"
 

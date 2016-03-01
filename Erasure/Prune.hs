@@ -20,7 +20,7 @@ pruneTm (App E f x) = pruneTm f
 pruneTm (App R f x) = App () (pruneTm f) (pruneTm x)
 pruneTm (Let (Def n E ty mtm Nothing) tm) = pruneTm tm
 pruneTm (Let (Def n R ty mtm Nothing) tm) = Let (Def n () Erased (pruneTm <$> mtm) Nothing) (pruneTm tm)
-pruneTm (Case s alts) = Case (pruneTm s) (map pruneAlt alts)
+pruneTm (Case s _ty alts) = Case (pruneTm s) Nothing (map pruneAlt alts)
 pruneTm Erased = Erased
 pruneTm Type = Type
 

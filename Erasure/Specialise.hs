@@ -97,7 +97,7 @@ specNTm (I n@(UN ns) ty) = do
 specNTm (Bind b n r ty tm) = Bind b n r <$> specNTm ty <*> specNTm tm
 specNTm (App r f x) = App r <$> specNTm f <*> specNTm x
 specNTm (Let def tm) = Let <$> specNDef def <*> specNTm tm
-specNTm (Case s alts) = Case <$> specNTm s <*> traverse specNAlt alts
+specNTm (Case s ty alts) = Case <$> specNTm s <*> traverse specNTm ty <*> traverse specNAlt alts
 specNTm  Type = pure Type
 specNTm  Erased = pure Erased
 

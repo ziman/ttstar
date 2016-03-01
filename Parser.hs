@@ -26,7 +26,7 @@ kwd s = (try (string s) >> sp) <?> s
 
 name :: Parser Name
 name = (<?> "name") $ do
-    x <- satisfy $ idChar
+    x <- satisfy idChar
     xs <- many $ satisfy (\x -> idChar x || isDigit x)
     sp
     return $ UN (x : xs)
@@ -77,7 +77,7 @@ bpi :: Parser (TT MRel)
 bpi = (<?> "pi") $ do
     (n, r, ty) <- parens typing
     kwd "->"
-    Bind Pi n r ty <$> expr  
+    Bind Pi n r ty <$> expr
 
 bind :: Parser (TT MRel)
 bind = arrow
@@ -86,10 +86,7 @@ bind = arrow
     <?> "binder"
 
 app :: Parser (TT MRel)
-app = mkApp <$> atomic <*> many atomic <?> "application"
-  where
-    mkApp f [] = f
-    mkApp f (x : xs) = mkApp (App Nothing f x) xs
+app = foldl (App Nothing) <$> atomic <*> many atomic <?> "application"
 
 let_ :: Parser (TT MRel)
 let_ = do
@@ -118,11 +115,12 @@ expr =
 
 case_ :: Parser (TT MRel)
 case_ = (<?> "case") $ do
-    kwd "case" 
+    kwd "case"
     s <- parens expr
+    r <- optionMaybe (kwd "returns" *> parens expr)
     kwd "of"
     alts <- alt `sepBy` kwd ","
-    return $ Case s alts
+    return $ Case s r alts
 
 alt :: Parser (Alt MRel)
 alt = defaultCase <|> conCase <?> "case alt"
@@ -171,7 +169,7 @@ mldef = (<?> "ml-style definition") $ do
   where
     chain bnd [] tm = tm
     chain bnd ((n, r, ty) : args) tm = Bind bnd n r ty $ chain bnd args tm
-    
+
 fundef :: Parser (Def MRel VoidConstrs)
 fundef = (<?> "function definition") $ do
     (n, r, ty) <- try typing

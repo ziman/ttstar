@@ -1,0 +1,18 @@
+-- vim: ft=agda
+
+postulate Bool : *.
+postulate T : Bool.
+postulate F : Bool.
+
+postulate Id : (a : *) -> (x : a) -> (y : a) -> *.
+postulate Refl : (a : *) -> (x : a) -> Id x x.
+
+not (x : Bool) : Bool
+    = case (x) of
+        T -> F,
+        F -> T.
+
+notnot (x : Bool) : Id x (not (not x))
+    = case (x) returns (Id x (not (not x))) of
+        T -> Refl Bool T,
+        F -> Refl Bool F.

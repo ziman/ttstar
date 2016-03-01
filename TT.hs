@@ -25,7 +25,7 @@ data TT r
         -- ^ binder, nrty, reverse dep, body
     | App r (TT r) (TT r)
     | Let (Def r VoidConstrs) (TT r)
-    | Case (TT r) [Alt r]  -- scrutinee, scrutinee type, alts
+    | Case (TT r) (Maybe (TT r)) [Alt r]  -- scrutinee, return type, alts
     | Type
     | Erased
     deriving (Eq, Ord)
@@ -58,7 +58,7 @@ subst n tm (App r f x) = App r (subst n tm f) (subst n tm x)
 subst n tm t@(Let (Def n' r ty mtm Nothing) tm')
     | n' == n = t
     | otherwise = Let (Def n' r (subst n tm ty) (subst n tm `fmap` mtm) Nothing) (subst n tm tm')
-subst n tm (Case s alts) = Case (subst n tm s) (map (substAlt n tm) alts)
+subst n tm (Case s ty alts) = Case (subst n tm s) (subst n tm <$> ty) (map (substAlt n tm) alts)
 subst _ _  t@Erased = t
 subst _ _  t@Type   = t
 

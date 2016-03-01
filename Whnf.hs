@@ -53,7 +53,7 @@ red NF ctx t@(App r f x)
 red form ctx t@(Let (Def n r ty mtm Nothing) tm)
     = red form (M.insert n (Def n r ty mtm Nothing) ctx) tm
 
-red form ctx t@(Case s alts) = redCase form ctx t (red form ctx s) alts
+red form ctx t@(Case s _ty alts) = redCase form ctx t (red form ctx s) alts
 red form ctx t@Erased = t
 red form ctx t@Type   = t
 

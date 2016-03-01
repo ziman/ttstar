@@ -23,8 +23,8 @@ ttRelevance f = g
             -> App <$> f r <*> g fun <*> g arg
         Let def tm
             -> Let <$> defRelevance f def <*> g tm
-        Case s alts
-            -> Case <$> g s <*> traverse (altRelevance f) alts
+        Case s ty alts
+            -> Case <$> g s <*> traverse (ttRelevance f) ty <*> traverse (altRelevance f) alts
         Erased -> pure Erased
         Type -> pure Type
 

@@ -205,12 +205,15 @@ checkTm t@(Let (Def n r ty mtm Nothing) tm) = bt ("LET", t) $ do
             $ checkTm tm
     return (tmty, tmcs /\ fromMaybe noConstrs letcs)
 
-checkTm t@(Case s alts) = bt ("CASE", t) $ do
+checkTm t@(Case s Nothing alts) = bt ("CASE-SIMPLE", t) $ do
     (sty, scs) <- checkTm s
     alts' <- mapM checkAlt alts
     let cs = scs /\ unions [cs | (alt, cs) <- alts']
-    let ty = Case s [alt | (alt, cs) <- alts']
+    let ty = Case s (Just Type) [alt | (alt, cs) <- alts']
     return (ty, cs)
+
+checkTm t@(Case s (Just ty) alts) = bt ("CASE-TYPED", t) $ do
+    tcfail $ NotImplemented (show t)
 
 checkTm Erased = return (Erased, noConstrs)
 checkTm Type   = return (Type,   noConstrs)
@@ -293,16 +296,19 @@ conv' p@(Let (Def n r ty mtm Nothing) tm) q@(Let (Def n' r' ty' mtm' Nothing) tm
     ys <- with (Def n r ty mtm (Just letcs)) $ conv tm (rename [n'] [n] tm')
     return $ letcs /\ ys /\ vcs /\ r <--> r'
 
-conv' p@(Case s alts) q@(Case s' alts') = bt ("C-CASE", p, q) $ do
+conv' p@(Case s ty alts) q@(Case s' ty' alts') = bt ("C-CASE", p, q) $ do
     require (length alts == length alts') $ Mismatch (show alts) (show alts')
+    ts <- case (ty, ty') of
+        (Just t, Just t') -> conv t t'
+        _ -> return noConstrs
     xs <- conv s s'
     (sty, scs) <- checkTm s
     acs <- unions <$> zipWithM (convAlt sty) (L.sort alts) (L.sort alts')
-    return $ xs /\ scs /\ acs
+    return $ ts /\ xs /\ scs /\ acs
 
 -- last resort: uniform-case test
-conv' p@(Case _ _) q = conv' q p  -- won't loop because q /= Case
-conv' p q@(Case s alts) = bt ("UNIF-CASE", p, q) $ uniformCase p alts
+conv' p@(Case _ _ _) q = conv' q p  -- won't loop because q /= Case
+conv' p q@(Case s ty alts) = bt ("UNIF-CASE", p, q) $ uniformCase p alts
 
 conv' Type   Type   = return noConstrs
 conv' Erased Erased = return noConstrs

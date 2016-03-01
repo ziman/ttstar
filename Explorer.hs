@@ -61,9 +61,12 @@ term uses (Let (Def n r ty mtm Nothing) tm) =
 term uses (App r f x) = span "app" . parens $ term uses f ++ app r ++ erasedSpan uses r (term uses x)
 term uses Type = span "star" "*"
 term uses Erased = span "erased" "____"
-term uses (Case s alts) =
-  span "kwd" "case" ++ " " ++ term uses s ++ " " ++ span "kwd" "of"
-  ++ ul "case" (map (alt uses) alts)
+term uses (Case s ty alts) =
+    span "kwd" "case" ++ " " ++ term uses s ++ " " ++ ret ty ++ span "kwd" "of"
+    ++ ul "case" (map (alt uses) alts)
+  where
+    ret Nothing = ""
+    ret (Just ty) = span "kwd" "returns" ++ term uses ty
 
 alt :: Uses -> Alt Meta -> String
 alt uses (DefaultCase tm) = "_ -> " ++ term uses tm

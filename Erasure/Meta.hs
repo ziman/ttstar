@@ -42,7 +42,7 @@ metaTm (I n ty) = I n <$> metaTm ty
 metaTm (Bind bnd n r ty tm) = Bind bnd <$> pure n <*> freshM r <*> metaTm ty <*> metaTm tm
 metaTm (App r f x) = App <$> freshM r <*> metaTm f <*> metaTm x
 metaTm (Let d tm) = Let <$> metaDef d <*> metaTm tm
-metaTm (Case s alts) = Case <$> metaTm s <*> mapM metaAlt alts
+metaTm (Case s ty alts) = Case <$> metaTm s <*> traverse metaTm ty <*> mapM metaAlt alts
 metaTm Erased = return Erased
 metaTm Type = return Type
 
