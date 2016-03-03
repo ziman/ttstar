@@ -1,0 +1,185 @@
+-- vim: ft=agda
+
+### Desugared ###
+
+Bool : *
+
+T : Bool
+
+F : Bool
+
+Id : (a : *) -> (x : a) -> (y : a) -> *
+
+Refl : (a : *) -> (x : a) -> (Id x x)
+
+not : (x : Bool) -> Bool
+not = (\x : Bool. 
+  case x of
+    T -> F
+    F -> T)
+
+notnot : (x : Bool) -> (Id x (not (not x)))
+notnot = (\x : Bool. 
+  case x returns (Id x (not (not x))) of
+    T -> (Refl Bool T)
+    F -> (Refl Bool F))
+
+### Metaified ###
+
+Bool :?1: *
+
+T :?2: Bool
+
+F :?3: Bool
+
+Id :?4: (a :?5: *) -> (x :?6: a) -> (y :?7: a) -> *
+
+Refl :?8: (a :?9: *) -> (x :?10: a) -> (Id -?12- x -?11- x)
+
+not :?13: (x :?14: Bool) -> Bool
+not = (\x :?15: Bool. 
+  case x of
+    T -> F
+    F -> T)
+
+notnot :?16: (x :?17: Bool) -> (Id -?19- x -?18- (not -?20- (not -?21- x)))
+notnot = (\x :?22: Bool. 
+  case x returns (Id -?24- x -?23- (not -?25- (not -?26- x))) of
+    T -> (Refl -?28- Bool -?27- T)
+    F -> (Refl -?30- Bool -?29- F))
+
+### Inferred definitions ###
+
+Bool :?1: *
+F :?3: Bool
+Id :?4: (a :?5: *) -> (x :?6: a) -> (y :?7: a) -> *
+Refl :?8: (a :?9: *) -> (x :?10: a) -> (Id -?12- x -?11- x)
+T :?2: Bool
+not :?13: (x :?14: Bool) -> Bool
+  [] -> [?2,?3,?14,?15,!R]
+
+notnot :?16: (x :?17: Bool) -> (Id -?19- x -?18- (not -?20- (not -?21- x)))
+  [] -> [?8,?13,?17,?22,!R]
+  [?9] -> [?1,?28,?30]
+  [?10] -> [?2,?3,?27,?29]
+  [?11] -> [?23]
+  [?12] -> [?24]
+  [?14] -> [?21]
+  [?18] -> [?23]
+  [?19] -> [?24]
+  [?21] -> [?14]
+  [?23] -> [?11,?18]
+  [?24] -> [?12,?19]
+  [?27] -> [?10]
+  [?28] -> [?9]
+  [?29] -> [?10]
+  [?30] -> [?9]
+
+
+### Constraints ###
+
+[] -> [?2,?3,?8,?13,?14,?15,?17,?22,!R]
+[?9] -> [?1,?28,?30]
+[?10] -> [?2,?3,?27,?29]
+[?11] -> [?23]
+[?12] -> [?24]
+[?14] -> [?21]
+[?18] -> [?23]
+[?19] -> [?24]
+[?21] -> [?14]
+[?23] -> [?11,?18]
+[?24] -> [?12,?19]
+[?27] -> [?10]
+[?28] -> [?9]
+[?29] -> [?10]
+[?30] -> [?9]
+
+### Solution ###
+
+[?2,?3,?8,?13,?14,?15,?17,?21,?22,!R]
+
+### Annotated ###
+
+Bool :E: *
+
+T :R: Bool
+
+F :R: Bool
+
+Id :E: (a :E: *) -> (x :E: a) -> (y :E: a) -> *
+
+Refl :R: (a :E: *) -> (x :E: a) -> (Id -E- x -E- x)
+
+not :R: (x :R: Bool) -> Bool
+not = (\x :R: Bool. 
+  case x of
+    T -> F
+    F -> T)
+
+notnot :E: (x :R: Bool) -> (Id -E- x -E- (not -E- (not -R- x)))
+notnot = (\x :R: Bool. 
+  case x returns (Id -E- x -E- (not -E- (not -E- x))) of
+    T -> (Refl -E- Bool -E- T)
+    F -> (Refl -E- Bool -E- F))
+
+### Specialised ###
+
+Bool :!E: *
+
+T :!R: Bool
+
+F :!R: Bool
+
+Id :!E: (a :!E: *) -> (x :!E: a) -> (y :!E: a) -> *
+
+Refl :!R: (a :!E: *) -> (x :!E: a) -> (Id -!E- x -!E- x)
+
+not :!R: (x :!R: Bool) -> Bool
+not = (\x :!R: Bool. 
+  case x of
+    T -> F
+    F -> T)
+
+notnot :!E: (x :!R: Bool) -> (Id -!E- x -!E- (not -!E- (not -!R- x)))
+notnot = (\x :!R: Bool. 
+  case x returns (Id -!E- x -!E- (not -!E- (not -!E- x))) of
+    T -> (Refl -!E- Bool -!E- T)
+    F -> (Refl -!E- Bool -!E- F))
+
+### Final annotation ###
+
+Bool :E: *
+
+T :R: Bool
+
+F :R: Bool
+
+Id :E: (a :E: *) -> (x :E: a) -> (y :E: a) -> *
+
+Refl :R: (a :E: *) -> (x :E: a) -> (Id -E- x -E- x)
+
+not :R: (x :R: Bool) -> Bool
+not = (\x :R: Bool. 
+  case x of
+    T -> F
+    F -> T)
+
+notnot :E: (x :R: Bool) -> (Id -E- x -E- (not -E- (not -R- x)))
+notnot = (\x :R: Bool. 
+  case x returns (Id -E- x -E- (not -E- (not -E- x))) of
+    T -> (Refl -E- Bool -E- T)
+    F -> (Refl -E- Bool -E- F))
+
+### Pruned ###
+
+not = (\x. 
+  case x of
+    T -> F
+    F -> T)
+
+### Normal forms ###
+
+unerased:
+  main
+erased:
+  main
