@@ -205,18 +205,43 @@ checkTm t@(Let (Def n r ty mtm Nothing) tm) = bt ("LET", t) $ do
             $ checkTm tm
     return (tmty, tmcs /\ fromMaybe noConstrs letcs)
 
-checkTm t@(Case s Nothing alts) = bt ("CASE-SIMPLE", t) $ do
+checkTm t@(Case s cty alts) = bt ("CASE-SIMPLE", t) $ do
     (sty, scs) <- checkTm s
     alts' <- mapM checkAlt alts
-    let cs = scs /\ unions [cs | (alt, cs) <- alts']
-    let ty = Case s (Just Type) [alt | (alt, cs) <- alts']
-    return (ty, cs)
+    let cs = scs /\ unions [cs | (altTy, cs) <- alts']
+    (ty, tycs) <- case cty of
+        Nothing ->
+            return (
+                -- just synthesise the type from the branches
+                Case s (Just Type) [altTy | (altTy, cs) <- alts'],
 
-checkTm t@(Case s (Just ty) alts) = bt ("CASE-TYPED", t) $ do
-    tcfail $ NotImplemented (show t)
+                -- no extra constraints
+                noConstrs
+            )
+
+        Just ty -> do
+            -- check that each branch converts with the corresponding specialised type
+            css <- sequence [ convSpecAlt s ty altTy | (altTy, cs) <- alts']
+            return (ty, unions css)
+
+    return (ty, cs /\ tycs)
 
 checkTm Erased = return (Erased, noConstrs)
 checkTm Type   = return (Type,   noConstrs)
+
+convSpecAlt :: Term -> Type -> Alt Meta -> TC Constrs
+convSpecAlt s ty (DefaultCase altTy) = conv ty altTy
+convSpecAlt s ty (ConCase cn tm)
+    | (val, altTy) <- wrapPat (V cn) tm
+    = case s of
+        V n -> conv (subst n val ty) altTy
+        _   -> conv ty altTy
+
+-- Transform (C, pat x. pat y. M) --> (C x y, M)
+wrapPat :: Term -> Term -> (Term, Term)
+wrapPat tm (Bind Pat n r ty tm')
+    = wrapPat (App r tm (V n)) tm'
+wrapPat tm tm' = (tm, tm')
 
 checkAlt :: Alt Meta -> TC (Alt Meta, Constrs)
 checkAlt (DefaultCase tm) = bt ("ALT-DEF", tm) $ do
