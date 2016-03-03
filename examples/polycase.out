@@ -1,0 +1,106 @@
+-- vim: ft=agda
+
+### Desugared ###
+
+Mool : *
+
+Q : Mool
+
+W : Mool
+
+Bool : *
+
+T : Bool
+
+F : Bool
+
+Id : (a : *) -> (x : a) -> (y : a) -> *
+
+Refl : (a : *) -> (x : a) -> (Id x x)
+
+not : (x : Bool) -> Bool
+not = (\x : Bool. 
+  case x of
+    T -> F
+    F -> T)
+
+notnot : (x : Bool) -> (Id x (not (not x)))
+notnot = (\x : Bool. 
+  case x returns (Id x (not (not x))) of
+    T -> (Refl Bool T)
+    F -> (Refl Bool F))
+
+retTy : (x : Bool) -> *
+retTy = (\x : Bool. 
+  case x of
+    T -> Bool
+    F -> Mool)
+
+mot : (x : Mool) -> Mool
+mot = (\x : Mool. 
+  case x of
+    Q -> W
+    W -> Q)
+
+conv : (t : Bool) -> (x : (retTy t)) -> (retTy t)
+conv = (\t : Bool. (\x : (retTy t). 
+  case t returns (retTy t) of
+    T -> (not x)
+    F -> (mot x)))
+
+main  -R-  Mool
+main = (conv F Q)
+
+### Metaified ###
+
+Mool :?1: *
+
+Q :?2: Mool
+
+W :?3: Mool
+
+Bool :?4: *
+
+T :?5: Bool
+
+F :?6: Bool
+
+Id :?7: (a :?8: *) -> (x :?9: a) -> (y :?10: a) -> *
+
+Refl :?11: (a :?12: *) -> (x :?13: a) -> (Id -?15- x -?14- x)
+
+not :?16: (x :?17: Bool) -> Bool
+not = (\x :?18: Bool. 
+  case x of
+    T -> F
+    F -> T)
+
+notnot :?19: (x :?20: Bool) -> (Id -?22- x -?21- (not -?23- (not -?24- x)))
+notnot = (\x :?25: Bool. 
+  case x returns (Id -?27- x -?26- (not -?28- (not -?29- x))) of
+    T -> (Refl -?31- Bool -?30- T)
+    F -> (Refl -?33- Bool -?32- F))
+
+retTy :?34: (x :?35: Bool) -> *
+retTy = (\x :?36: Bool. 
+  case x of
+    T -> Bool
+    F -> Mool)
+
+mot :?37: (x :?38: Mool) -> Mool
+mot = (\x :?39: Mool. 
+  case x of
+    Q -> W
+    W -> Q)
+
+conv :?40: (t :?41: Bool) -> (x :?42: (retTy -?43- t)) -> (retTy -?44- t)
+conv = (\t :?45: Bool. (\x :?46: (retTy -?47- t). 
+  case t returns (retTy -?48- t) of
+    T -> (not -?49- x)
+    F -> (mot -?50- x)))
+
+main :!R: Mool
+main = (conv -?52- F -?51- Q)
+
+### Inferred definitions ###
+

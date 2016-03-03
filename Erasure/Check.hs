@@ -205,8 +205,9 @@ checkTm t@(Let (Def n r ty mtm Nothing) tm) = bt ("LET", t) $ do
             $ checkTm tm
     return (tmty, tmcs /\ fromMaybe noConstrs letcs)
 
-checkTm t@(Case s cty alts) = bt ("CASE-SIMPLE", t) $ do
+checkTm t@(Case s cty alts) = bt ("CASE", t) $ do
     (sty, scs) <- checkTm s
+    -- TODO: check that alt constructors come from the family given by `sty'
     alts' <- mapM checkAlt alts
     let cs = scs /\ unions [cs | (altTy, cs) <- alts']
     (ty, tycs) <- case cty of
@@ -230,10 +231,10 @@ checkTm Erased = return (Erased, noConstrs)
 checkTm Type   = return (Type,   noConstrs)
 
 convSpecAlt :: Term -> Type -> Alt Meta -> TC Constrs
-convSpecAlt s ty (DefaultCase altTy) = conv ty altTy
+convSpecAlt s ty (DefaultCase altTy) = bt ("CONV-SPEC-ALT-DEFAULT", ty, altTy) $ conv ty altTy
 convSpecAlt s ty (ConCase cn tm)
     | (val, altTy) <- wrapPat (V cn) tm
-    = case s of
+    = bt ("CONV-SPEC-ALT", ty, s, val, altTy) $ case s of
         V n -> conv (subst n val ty) altTy
         _   -> conv ty altTy
 
