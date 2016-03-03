@@ -24,6 +24,9 @@ notnot = (\x : Bool.
     T -> (Refl Bool T)
     F -> (Refl Bool F))
 
+main  -R-  (Id F (not (not F)))
+main = (notnot F)
+
 ### Metaified ###
 
 Bool :?1: *
@@ -48,6 +51,9 @@ notnot = (\x :?22: Bool.
     T -> (Refl -?28- Bool -?27- T)
     F -> (Refl -?30- Bool -?29- F))
 
+main :!R: (Id -?32- F -?31- (not -?33- (not -?34- F)))
+main = (notnot -?35- F)
+
 ### Inferred definitions ###
 
 Bool :?1: *
@@ -55,6 +61,15 @@ F :?3: Bool
 Id :?4: (a :?5: *) -> (x :?6: a) -> (y :?7: a) -> *
 Refl :?8: (a :?9: *) -> (x :?10: a) -> (Id -?12- x -?11- x)
 T :?2: Bool
+main :!R: (Id -?32- F -?31- (not -?33- (not -?34- F)))
+  [] -> [?16,!R]
+  [?17] -> [?3,?35]
+  [?18] -> [?31]
+  [?19] -> [?32]
+  [?31] -> [?18]
+  [?32] -> [?19]
+  [?35] -> [?17]
+
 not :?13: (x :?14: Bool) -> Bool
   [] -> [?2,?3,?14,?15,!R]
 
@@ -78,14 +93,15 @@ notnot :?16: (x :?17: Bool) -> (Id -?19- x -?18- (not -?20- (not -?21- x)))
 
 ### Constraints ###
 
-[] -> [?2,?3,?8,?13,?14,?15,?17,?22,!R]
+[] -> [?2,?3,?8,?13,?14,?15,?16,?17,?22,!R]
 [?9] -> [?1,?28,?30]
 [?10] -> [?2,?3,?27,?29]
 [?11] -> [?23]
 [?12] -> [?24]
 [?14] -> [?21]
-[?18] -> [?23]
-[?19] -> [?24]
+[?17] -> [?3,?35]
+[?18] -> [?23,?31]
+[?19] -> [?24,?32]
 [?21] -> [?14]
 [?23] -> [?11,?18]
 [?24] -> [?12,?19]
@@ -93,10 +109,13 @@ notnot :?16: (x :?17: Bool) -> (Id -?19- x -?18- (not -?20- (not -?21- x)))
 [?28] -> [?9]
 [?29] -> [?10]
 [?30] -> [?9]
+[?31] -> [?18]
+[?32] -> [?19]
+[?35] -> [?17]
 
 ### Solution ###
 
-[?2,?3,?8,?13,?14,?15,?17,?21,?22,!R]
+[?2,?3,?8,?13,?14,?15,?16,?17,?21,?22,?35,!R]
 
 ### Annotated ###
 
@@ -116,11 +135,14 @@ not = (\x :R: Bool.
     T -> F
     F -> T)
 
-notnot :E: (x :R: Bool) -> (Id -E- x -E- (not -E- (not -R- x)))
+notnot :R: (x :R: Bool) -> (Id -E- x -E- (not -E- (not -R- x)))
 notnot = (\x :R: Bool. 
   case x returns (Id -E- x -E- (not -E- (not -E- x))) of
     T -> (Refl -E- Bool -E- T)
     F -> (Refl -E- Bool -E- F))
+
+main :R: (Id -E- F -E- (not -E- (not -E- F)))
+main = (notnot -R- F)
 
 ### Specialised ###
 
@@ -140,11 +162,14 @@ not = (\x :!R: Bool.
     T -> F
     F -> T)
 
-notnot :!E: (x :!R: Bool) -> (Id -!E- x -!E- (not -!E- (not -!R- x)))
+notnot :!R: (x :!R: Bool) -> (Id -!E- x -!E- (not -!E- (not -!R- x)))
 notnot = (\x :!R: Bool. 
   case x returns (Id -!E- x -!E- (not -!E- (not -!E- x))) of
     T -> (Refl -!E- Bool -!E- T)
     F -> (Refl -!E- Bool -!E- F))
+
+main :!R: (Id -!E- F -!E- (not -!E- (not -!E- F)))
+main = (notnot -!R- F)
 
 ### Final annotation ###
 
@@ -164,11 +189,14 @@ not = (\x :R: Bool.
     T -> F
     F -> T)
 
-notnot :E: (x :R: Bool) -> (Id -E- x -E- (not -E- (not -R- x)))
+notnot :R: (x :R: Bool) -> (Id -E- x -E- (not -E- (not -R- x)))
 notnot = (\x :R: Bool. 
   case x returns (Id -E- x -E- (not -E- (not -E- x))) of
     T -> (Refl -E- Bool -E- T)
     F -> (Refl -E- Bool -E- F))
+
+main :R: (Id -E- F -E- (not -E- (not -E- F)))
+main = (notnot -R- F)
 
 ### Pruned ###
 
@@ -177,9 +205,16 @@ not = (\x.
     T -> F
     F -> T)
 
+notnot = (\x. 
+  case x of
+    T -> Refl
+    F -> Refl)
+
+main = (notnot F)
+
 ### Normal forms ###
 
 unerased:
-  main
+  (Refl Bool F)
 erased:
-  main
+  Refl

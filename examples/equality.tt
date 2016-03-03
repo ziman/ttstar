@@ -16,3 +16,5 @@ notnot (x : Bool) : Id x (not (not x))
     = case (x) returns (Id x (not (not x))) of
         T -> Refl Bool T,
         F -> Refl Bool F.
+
+main :R: Id F (not (not F)) = notnot F.
