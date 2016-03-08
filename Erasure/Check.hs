@@ -97,7 +97,7 @@ with d@(Def n r ty mtm mcs) = local $ \(tb, ctx) -> (tb, M.insert n d ctx)
 bt :: Show a => a -> TC b -> TC b
 bt dbg sub = do
     ctx <- getCtx
-    let btLine = "In context:\n" ++ showCtx ctx ++ "\n" ++ show dbg
+    let btLine = "In context:\n" ++ showCtx ctx ++ "\n" ++ show dbg ++ "\n"
     local (first (btLine:)) sub
 
 showCtx :: Ctx Meta Constrs' -> String
@@ -230,9 +230,8 @@ checkTm t@(Case s cty alts) = bt ("CASE", t) $ do
             return (caseTy, constrs)
 
         Just ty -> do
-            alts' <- mapM checkAlt alts
             -- check that each branch converts with the corresponding specialised type
-            css <- sequence [ convSpecAlt s ty altTy | (altTy, cs) <- alts']
+            css <- sequence [ checkSpecAlt s ty alt | alt <- alts]
             return (ty, unions css)
 
     return (cty, scs /\ ctycs)
@@ -240,13 +239,28 @@ checkTm t@(Case s cty alts) = bt ("CASE", t) $ do
 checkTm Erased = return (Erased, noConstrs)
 checkTm Type   = return (Type,   noConstrs)
 
-convSpecAlt :: Term -> Type -> Alt Meta -> TC Constrs
-convSpecAlt s ty (DefaultCase altTy) = bt ("CONV-SPEC-ALT-DEFAULT", ty, altTy) $ conv ty altTy
-convSpecAlt s ty (ConCase cn tm)
-    | (val, altTy) <- wrapPat (V cn) tm
-    = bt ("CONV-SPEC-ALT", ty, s, val, altTy) $ case s of
-        V n -> withEnvSubst n val $ conv (subst n val ty) altTy
-        _   -> conv ty altTy
+checkSpecAlt :: TT Meta -> Type -> Alt Meta -> TC Constrs
+checkSpecAlt s expectedTy alt@(DefaultCase _tm)
+    = bt ("CONV-SPEC-ALT-DEFAULT", s, expectedTy, alt) $ do
+        (DefaultCase altTy, cs) <- checkAlt alt
+        cs' <- conv expectedTy altTy
+        return $ cs /\ cs'
+
+checkSpecAlt (V n) expectedTy alt@(ConCase cn tm)
+    | (val, _) <- wrapPat (V cn) tm
+    = withEnvSubst n val $
+        bt ("CONV-SPEC-ALT-VAR", n, val, expectedTy, alt) $ do
+            (ConCase ccn ctm, cs) <- checkAlt $ substAlt n val alt
+            let (_, altTy) = wrapPat (V ccn) ctm
+            cs' <- conv (subst n val expectedTy) altTy
+            return $ cs /\ cs'
+
+checkSpecAlt s expectedTy alt@(ConCase cn tm)
+    = bt ("CONV-SPEC-ALT-TM", s, expectedTy, alt) $ do
+        (ConCase ccn ctm, cs) <- checkAlt alt
+        let (_, altTy) = wrapPat (V ccn) ctm
+        cs' <- conv expectedTy altTy
+        return $ cs /\ cs'
 
 -- Transform (C, pat x. pat y. M) --> (C x y, M)
 wrapPat :: Term -> Term -> (Term, Term)
