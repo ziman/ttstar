@@ -95,7 +95,16 @@ with :: Def Meta Constrs' -> TC a -> TC a
 with d@(Def n r ty mtm mcs) = local $ \(tb, ctx) -> (tb, M.insert n d ctx)
 
 bt :: Show a => a -> TC b -> TC b
-bt dbg = local . first $ (show dbg :)
+bt dbg sub = do
+    ctx <- getCtx
+    let btLine = "In context:\n" ++ showCtx ctx ++ "\n" ++ show dbg
+    local (first (btLine:)) sub
+
+showCtx :: Ctx Meta Constrs' -> String
+showCtx ctx = unlines
+    [ "  " ++ show n ++ " : " ++ show ty
+    | (n, Def _n _r ty _mtm _mcs) <- M.toList ctx
+    ]
 
 tcfail :: TCError -> TC a
 tcfail e = do
@@ -121,6 +130,9 @@ freshTag = lift $ lift (modify (+1) >> get)
 
 runTC :: Int -> Ctx Meta Constrs' -> TC a -> Either TCFailure a
 runTC maxTag ctx tc = evalState (runExceptT $ runReaderT tc ([], ctx)) maxTag
+
+withEnvSubst :: Name -> TT Meta -> TC a -> TC a
+withEnvSubst n tm = withReaderT . second $ substCtx n tm
 
 check :: Program Meta VoidConstrs -> Either TCFailure (Ctx Meta Constrs', Constrs)
 check prog@(Prog defs) = runTC maxTag M.empty $ checkDefs (CS M.empty) defs
@@ -206,26 +218,24 @@ checkTm t@(Let (Def n r ty mtm Nothing) tm) = bt ("LET", t) $ do
     return (tmty, tmcs /\ fromMaybe noConstrs letcs)
 
 checkTm t@(Case s cty alts) = bt ("CASE", t) $ do
-    (sty, scs) <- checkTm s
     -- TODO: check that alt constructors come from the family given by `sty'
-    alts' <- mapM checkAlt alts
-    let cs = scs /\ unions [cs | (altTy, cs) <- alts']
-    (ty, tycs) <- case cty of
-        Nothing ->
-            return (
-                -- just synthesise the type from the branches
-                Case s (Just Type) [altTy | (altTy, cs) <- alts'],
-
-                -- no extra constraints
-                noConstrs
-            )
+    -- to avoid (case (x : Bool) of Z -> ..., Refl -> ..., MkFoo -> ... .)
+    (sty, scs) <- checkTm s
+    (cty, ctycs) <- case cty of
+        Nothing -> do
+            alts' <- mapM checkAlt alts
+            -- just synthesise the type from the branches
+            let caseTy = Case s (Just Type) [altTy | (altTy, cs) <- alts']
+            let constrs = unions [cs | (altTy, cs) <- alts']
+            return (caseTy, constrs)
 
         Just ty -> do
+            alts' <- mapM checkAlt alts
             -- check that each branch converts with the corresponding specialised type
             css <- sequence [ convSpecAlt s ty altTy | (altTy, cs) <- alts']
             return (ty, unions css)
 
-    return (ty, cs /\ tycs)
+    return (cty, scs /\ ctycs)
 
 checkTm Erased = return (Erased, noConstrs)
 checkTm Type   = return (Type,   noConstrs)
@@ -235,7 +245,7 @@ convSpecAlt s ty (DefaultCase altTy) = bt ("CONV-SPEC-ALT-DEFAULT", ty, altTy) $
 convSpecAlt s ty (ConCase cn tm)
     | (val, altTy) <- wrapPat (V cn) tm
     = bt ("CONV-SPEC-ALT", ty, s, val, altTy) $ case s of
-        V n -> conv (subst n val ty) altTy
+        V n -> withEnvSubst n val $ conv (subst n val ty) altTy
         _   -> conv ty altTy
 
 -- Transform (C, pat x. pat y. M) --> (C x y, M)

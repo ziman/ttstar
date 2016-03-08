@@ -66,6 +66,13 @@ substAlt :: Name -> TT r -> Alt r -> Alt r
 substAlt n tm (DefaultCase tm') = DefaultCase $ subst n tm tm'
 substAlt n tm t@(ConCase cn tm') = ConCase cn $ subst n tm tm'
 
+substCtx :: Name -> TT r -> Ctx r cs -> Ctx r cs
+substCtx n tm = M.map $ substDef n tm
+
+substDef :: Name -> TT r -> Def r cs -> Def r cs
+-- XXX TODO HACK: what do we do with constraints here?
+substDef n tm (Def dn r ty mtm mcs) = Def dn r (subst n tm ty) (subst n tm <$> mtm) mcs
+
 -- split a Pat-packed pattern into 1. pattern vars, 2. RHS
 splitBinder :: Binder -> TT r -> ([(Name, r, TT r)], TT r)
 splitBinder bnd (Bind b n r ty tm)
