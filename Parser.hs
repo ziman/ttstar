@@ -75,7 +75,7 @@ lambda = (<?> "lambda") $ do
 
 bpi :: Parser (TT MRel)
 bpi = (<?> "pi") $ do
-    (n, r, ty) <- parens typing
+    (n, r, ty) <- try $ parens typing
     kwd "->"
     Bind Pi n r ty <$> expr
 
