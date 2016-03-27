@@ -104,3 +104,262 @@ main = (conv -?52- F -?51- Q)
 
 ### Inferred definitions ###
 
+Bool :?4: *
+F :?6: Bool
+Id :?7: (a :?8: *) -> (x :?9: a) -> (y :?10: a) -> *
+Mool :?1: *
+Q :?2: Mool
+Refl :?11: (a :?12: *) -> (x :?13: a) -> (Id -?15- x -?14- x)
+T :?5: Bool
+W :?3: Mool
+conv :?40: (t :?41: Bool) -> (x :?42: (retTy -?43- t)) -> (retTy -?44- t)
+  [] -> [?16,?37,?41,?45,!R]
+  [?17] -> [?46,?49]
+  [?38] -> [?46,?50]
+  [?42] -> [?46]
+  [?46] -> [?42]
+  [?49] -> [?17]
+  [?50] -> [?38]
+
+main :!R: Mool
+  [] -> [?40,!R]
+  [?41] -> [?6,?52]
+  [?42] -> [?2,?51]
+  [?51] -> [?42]
+  [?52] -> [?41]
+
+mot :?37: (x :?38: Mool) -> Mool
+  [] -> [?2,?3,?38,?39,!R]
+
+not :?16: (x :?17: Bool) -> Bool
+  [] -> [?5,?6,?17,?18,!R]
+
+notnot :?19: (x :?20: Bool) -> (Id -?22- x -?21- (not -?23- (not -?24- x)))
+  [] -> [?11,?16,?20,?25,!R]
+  [?12] -> [?4,?31,?33]
+  [?13] -> [?5,?6,?30,?32]
+  [?14] -> [?26]
+  [?15] -> [?27]
+  [?17] -> [?24]
+  [?21] -> [?26]
+  [?22] -> [?27]
+  [?24] -> [?17]
+  [?26] -> [?14,?21]
+  [?27] -> [?15,?22]
+  [?30] -> [?13]
+  [?31] -> [?12]
+  [?32] -> [?13]
+  [?33] -> [?12]
+
+retTy :?34: (x :?35: Bool) -> *
+  [] -> [?1,?4,?35,?36,!R]
+
+
+### Constraints ###
+
+[] -> [?1,?2,?3,?4,?5,?6,?11,?16,?17,?18,?20,?25,?35,?36,?37,?38,?39,?40,?41,?45,!R]
+[?12] -> [?4,?31,?33]
+[?13] -> [?5,?6,?30,?32]
+[?14] -> [?26]
+[?15] -> [?27]
+[?17] -> [?24,?46,?49]
+[?21] -> [?26]
+[?22] -> [?27]
+[?24] -> [?17]
+[?26] -> [?14,?21]
+[?27] -> [?15,?22]
+[?30] -> [?13]
+[?31] -> [?12]
+[?32] -> [?13]
+[?33] -> [?12]
+[?38] -> [?46,?50]
+[?41] -> [?6,?52]
+[?42] -> [?2,?46,?51]
+[?46] -> [?42]
+[?49] -> [?17]
+[?50] -> [?38]
+[?51] -> [?42]
+[?52] -> [?41]
+
+### Solution ###
+
+[?1,?2,?3,?4,?5,?6,?11,?16,?17,?18,?20,?24,?25,?35,?36,?37,?38,?39,?40,?41,?42,?45,?46,?49,?50,?51,?52,!R]
+
+### Annotated ###
+
+Mool :R: *
+
+Q :R: Mool
+
+W :R: Mool
+
+Bool :R: *
+
+T :R: Bool
+
+F :R: Bool
+
+Id :E: (a :E: *) -> (x :E: a) -> (y :E: a) -> *
+
+Refl :R: (a :E: *) -> (x :E: a) -> (Id -E- x -E- x)
+
+not :R: (x :R: Bool) -> Bool
+not = (\x :R: Bool. 
+  case x of
+    T -> F
+    F -> T)
+
+notnot :E: (x :R: Bool) -> (Id -E- x -E- (not -E- (not -R- x)))
+notnot = (\x :R: Bool. 
+  case x returns (Id -E- x -E- (not -E- (not -E- x))) of
+    T -> (Refl -E- Bool -E- T)
+    F -> (Refl -E- Bool -E- F))
+
+retTy :E: (x :R: Bool) -> *
+retTy = (\x :R: Bool. 
+  case x of
+    T -> Bool
+    F -> Mool)
+
+mot :R: (x :R: Mool) -> Mool
+mot = (\x :R: Mool. 
+  case x of
+    Q -> W
+    W -> Q)
+
+conv :R: (t :R: Bool) -> (x :R: (retTy -E- t)) -> (retTy -E- t)
+conv = (\t :R: Bool. (\x :R: (retTy -E- t). 
+  case t returns (retTy -E- t) of
+    T -> (not -R- x)
+    F -> (mot -R- x)))
+
+main :R: Mool
+main = (conv -R- F -R- Q)
+
+### Specialised ###
+
+Mool :!R: *
+
+Q :!R: Mool
+
+W :!R: Mool
+
+Bool :!R: *
+
+T :!R: Bool
+
+F :!R: Bool
+
+Id :!E: (a :!E: *) -> (x :!E: a) -> (y :!E: a) -> *
+
+Refl :!R: (a :!E: *) -> (x :!E: a) -> (Id -!E- x -!E- x)
+
+not :!R: (x :!R: Bool) -> Bool
+not = (\x :!R: Bool. 
+  case x of
+    T -> F
+    F -> T)
+
+notnot :!E: (x :!R: Bool) -> (Id -!E- x -!E- (not -!E- (not -!R- x)))
+notnot = (\x :!R: Bool. 
+  case x returns (Id -!E- x -!E- (not -!E- (not -!E- x))) of
+    T -> (Refl -!E- Bool -!E- T)
+    F -> (Refl -!E- Bool -!E- F))
+
+retTy :!E: (x :!R: Bool) -> *
+retTy = (\x :!R: Bool. 
+  case x of
+    T -> Bool
+    F -> Mool)
+
+mot :!R: (x :!R: Mool) -> Mool
+mot = (\x :!R: Mool. 
+  case x of
+    Q -> W
+    W -> Q)
+
+conv :!R: (t :!R: Bool) -> (x :!R: (retTy -!E- t)) -> (retTy -!E- t)
+conv = (\t :!R: Bool. (\x :!R: (retTy -!E- t). 
+  case t returns (retTy -!E- t) of
+    T -> (not -!R- x)
+    F -> (mot -!R- x)))
+
+main :!R: Mool
+main = (conv -!R- F -!R- Q)
+
+### Final annotation ###
+
+Mool :R: *
+
+Q :R: Mool
+
+W :R: Mool
+
+Bool :R: *
+
+T :R: Bool
+
+F :R: Bool
+
+Id :E: (a :E: *) -> (x :E: a) -> (y :E: a) -> *
+
+Refl :R: (a :E: *) -> (x :E: a) -> (Id -E- x -E- x)
+
+not :R: (x :R: Bool) -> Bool
+not = (\x :R: Bool. 
+  case x of
+    T -> F
+    F -> T)
+
+notnot :E: (x :R: Bool) -> (Id -E- x -E- (not -E- (not -R- x)))
+notnot = (\x :R: Bool. 
+  case x returns (Id -E- x -E- (not -E- (not -E- x))) of
+    T -> (Refl -E- Bool -E- T)
+    F -> (Refl -E- Bool -E- F))
+
+retTy :E: (x :R: Bool) -> *
+retTy = (\x :R: Bool. 
+  case x of
+    T -> Bool
+    F -> Mool)
+
+mot :R: (x :R: Mool) -> Mool
+mot = (\x :R: Mool. 
+  case x of
+    Q -> W
+    W -> Q)
+
+conv :R: (t :R: Bool) -> (x :R: (retTy -E- t)) -> (retTy -E- t)
+conv = (\t :R: Bool. (\x :R: (retTy -E- t). 
+  case t returns (retTy -E- t) of
+    T -> (not -R- x)
+    F -> (mot -R- x)))
+
+main :R: Mool
+main = (conv -R- F -R- Q)
+
+### Pruned ###
+
+not = (\x. 
+  case x of
+    T -> F
+    F -> T)
+
+mot = (\x. 
+  case x of
+    Q -> W
+    W -> Q)
+
+conv = (\t. (\x. 
+  case t of
+    T -> (not x)
+    F -> (mot x)))
+
+main = (conv F Q)
+
+### Normal forms ###
+
+unerased:
+  W
+erased:
+  W
