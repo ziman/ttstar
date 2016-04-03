@@ -221,7 +221,7 @@ checkTm t@(Case s cty alts) = bt ("CASE", t) $ do
     -- TODO: check that alt constructors come from the family given by `sty'
     -- to avoid (case (x : Bool) of Z -> ..., Refl -> ..., MkFoo -> ... .)
     (sty, scs) <- checkTm s
-    (cty, ctycs) <- case cty of
+    (cty', ctycs) <- case cty of
         Nothing -> do
             alts' <- mapM checkAlt alts
             -- just synthesise the type from the branches
@@ -234,7 +234,7 @@ checkTm t@(Case s cty alts) = bt ("CASE", t) $ do
             css <- sequence [ checkSpecAlt s ty alt | alt <- alts]
             return (ty, unions css)
 
-    return (cty, scs /\ ctycs)
+    return (cty', scs /\ ctycs)
 
 checkTm Erased = return (Erased, noConstrs)
 checkTm Type   = return (Type,   noConstrs)
@@ -246,21 +246,23 @@ checkSpecAlt s expectedTy alt@(DefaultCase _tm)
         cs' <- conv expectedTy altTy
         return $ cs /\ cs'
 
-checkSpecAlt (V n) expectedTy alt@(ConCase cn tm)
-    | (val, _) <- wrapPat (V cn) tm
-    = withEnvSubst n val $
-        bt ("CONV-SPEC-ALT-VAR", n, val, expectedTy, alt) $ do
-            (ConCase ccn ctm, cs) <- checkAlt $ substAlt n val alt
-            let (_, altTy) = wrapPat (V ccn) ctm
-            cs' <- conv (subst n val expectedTy) altTy
-            return $ cs /\ cs'
-
 checkSpecAlt s expectedTy alt@(ConCase cn tm)
-    = bt ("CONV-SPEC-ALT-TM", s, expectedTy, alt) $ do
+    | (val, _) <- wrapPat (V cn) tm
+    = bt ("CONV-SPEC-ALT-CON", s, val, expectedTy, alt) $ do
         (ConCase ccn ctm, cs) <- checkAlt alt
         let (_, altTy) = wrapPat (V ccn) ctm
         cs' <- conv expectedTy altTy
         return $ cs /\ cs'
+
+{-
+checkSpecAlt s expectedTy alt@(ConCase cn tm)
+ withEnvSubst n val $
+    = bt ("CONV-SPEC-ALT-TM", s, expectedTy, alt) $ do
+        (ConCase ccn ctm, cs) <- checkAlt $ substAlt n val alt
+        let (_, altTy) = wrapPat (V ccn) ctm
+        cs' <- conv (subst n val expectedTy) altTy
+        return $ cs /\ cs'
+-}
 
 -- Transform (C, pat x. pat y. M) --> (C x y, M)
 wrapPat :: Term -> Term -> (Term, Term)
