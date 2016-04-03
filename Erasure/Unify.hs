@@ -12,7 +12,8 @@ import qualified Data.Set as S
 import qualified Data.Map as M
 
 -- Stuck equations
-type Stuck r = S.Set (TT r, TT r)
+type Problem r = (TT r, TT r)
+type Stuck r = S.Set (Problem r)
 
 -- Solved substitution.
 type Subst r cs = [(Name, TT r)]
@@ -33,11 +34,14 @@ iterUnif substSoFar = do
 
 attack :: Ord r => Unify r (Subst r cs)
 attack = do
-    simples <- concatMap findSimple . S.toList <$> get
+    simples <- concat <$> (traverse findSimple . S.toList =<< get)
     -- nothing else beyond simples at the moment
     return simples
 
-findSimple :: (TT r, TT r) -> Subst r cs
-findSimple (V n, tm) = [(n, tm)]
-findSimple (tm, V n) = [(n, tm)]
-findSimple _ = []
+discard :: Ord r => Problem r -> Unify r ()
+discard p = put . S.delete p =<< get
+
+findSimple :: Ord r => (TT r, TT r) -> Unify r (Subst r cs)
+findSimple p@(V n, tm) = discard p *> pure [(n, tm)]
+findSimple p@(tm, V n) = discard p *> pure [(n, tm)]
+findSimple _ = return []
