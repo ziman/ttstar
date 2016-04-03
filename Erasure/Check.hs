@@ -135,10 +135,13 @@ runTC :: Int -> Ctx Meta Constrs' -> TC a -> Either TCFailure a
 runTC maxTag ctx tc = evalState (runExceptT $ runReaderT tc ([], ctx, S.empty)) maxTag
 
 unifying :: TT Meta -> TT Meta -> TC a -> TC a
-unifying l r = withReaderT $
-    \(tb, ctx, stuck) ->
-        let (ctx', stuck') = addUnif l r ctx stuck
-            in (tb, ctx', stuck')
+unifying l r = btEntry . envOp
+  where
+    btEntry = bt ("UNIFY", l, r)
+    envOp = withReaderT $
+        \(tb, ctx, stuck) ->
+            let (ctx', stuck') = addUnif l r ctx stuck
+                in (tb, ctx', stuck')
 
 addUnif :: TT Meta -> TT Meta -> Ctx Meta Constrs' -> Stuck Meta
     -> (Ctx Meta Constrs', Stuck Meta)  -- can this produce more constraints?
