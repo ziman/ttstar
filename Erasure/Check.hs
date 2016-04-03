@@ -264,11 +264,13 @@ checkSpecAlt s expectedTy alt@(DefaultCase _tm)
 
 checkSpecAlt s expectedTy alt@(ConCase cn tm)
     | (val, _) <- wrapPat (V cn) tm
-    = bt ("CONV-SPEC-ALT-CON", s, val, expectedTy, alt) $ do
-        (ConCase ccn ctm, cs) <- checkAlt alt
-        let (_, altTy) = wrapPat (V ccn) ctm
-        cs' <- conv expectedTy altTy
-        return $ cs /\ cs'
+    = bt ("CONV-SPEC-ALT-CON", s, val, expectedTy, alt) $
+        -- (valTy, valCs) <- checkTm val FIXME -- TODO how do we check alts at all?
+        unifying s val $ do
+            (ConCase ccn ctm, cs) <- checkAlt alt
+            let (_, altTy) = wrapPat (V ccn) ctm
+            cs' <- conv expectedTy altTy
+            return $ cs /\ cs'
 
 {-
 checkSpecAlt s expectedTy alt@(ConCase cn tm)
