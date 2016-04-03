@@ -7,6 +7,7 @@ import TTLens
 import Whnf
 import Erasure.Meta
 import Erasure.Solve
+import Erasure.Unify
 
 import Prelude hiding (lookup)
 
@@ -58,7 +59,7 @@ instance Show TCFailure where
 
 type TCTraceback = [String]
 type TCState = Int
-type TC a = ReaderT (TCTraceback, Ctx Meta Constrs') (ExceptT TCFailure (State TCState)) a
+type TC a = ReaderT (TCTraceback, Ctx Meta Constrs', Stuck Meta) (ExceptT TCFailure (State TCState)) a
 type Sig = (Meta, Type, Constrs)  -- relevance, type, constraints
 
 type Term = TT Meta
@@ -92,13 +93,13 @@ cond :: Meta -> Constrs -> Constrs
 cond r = CS . M.mapKeysWith S.union (S.insert r) . runCS
 
 with :: Def Meta Constrs' -> TC a -> TC a
-with d@(Def n r ty mtm mcs) = local $ \(tb, ctx) -> (tb, M.insert n d ctx)
+with d@(Def n r ty mtm mcs) = local $ \(tb, ctx, stuck) -> (tb, M.insert n d ctx, stuck)
 
 bt :: Show a => a -> TC b -> TC b
 bt dbg sub = do
     ctx <- getCtx
     let btLine = "In context:\n" ++ showCtx ctx ++ "\n" ++ show dbg ++ "\n"
-    local (first (btLine:)) sub
+    local (\(tb,ctx,stuck) -> (btLine:tb,ctx,stuck)) sub
 
 showCtx :: Ctx Meta Constrs' -> String
 showCtx ctx = unlines
@@ -108,11 +109,13 @@ showCtx ctx = unlines
 
 tcfail :: TCError -> TC a
 tcfail e = do
-    (tb, ctx) <- ask
+    (tb, ctx, stuck) <- ask
     lift . throwE $ TCFailure e tb
 
 getCtx :: TC (Ctx Meta Constrs')
-getCtx = snd <$> ask
+getCtx = do
+    (tb, ctx, stuck) <- ask
+    return ctx
 
 require :: Bool -> TCError -> TC ()
 require True  e = return ()
@@ -120,7 +123,7 @@ require False e = tcfail e
 
 lookup :: Name -> TC (Def Meta Constrs')
 lookup n = do
-    (tb, ctx) <- ask
+    ctx <- getCtx
     case M.lookup n ctx of
         Just x  -> return x
         Nothing -> tcfail $ UnknownName n
@@ -129,10 +132,20 @@ freshTag :: TC Int
 freshTag = lift $ lift (modify (+1) >> get)
 
 runTC :: Int -> Ctx Meta Constrs' -> TC a -> Either TCFailure a
-runTC maxTag ctx tc = evalState (runExceptT $ runReaderT tc ([], ctx)) maxTag
+runTC maxTag ctx tc = evalState (runExceptT $ runReaderT tc ([], ctx, S.empty)) maxTag
 
-withEnvSubst :: Name -> TT Meta -> TC a -> TC a
-withEnvSubst n tm = withReaderT . second $ substCtx n tm
+unifying :: TT Meta -> TT Meta -> TC a -> TC a
+unifying l r = withReaderT $
+    \(tb, ctx, stuck) ->
+        let (ctx', stuck') = addUnif l r ctx stuck
+            in (tb, ctx', stuck')
+
+addUnif :: TT Meta -> TT Meta -> Ctx Meta Constrs' -> Stuck Meta
+    -> (Ctx Meta Constrs', Stuck Meta)  -- can this produce more constraints?
+addUnif l r ctx stuck = (ctx', stuck')
+  where
+    (subst, stuck') = unify $ S.insert (l, r) stuck
+    ctx' = foldl (\c (n, tm) -> substCtx n tm c) ctx subst
 
 check :: Program Meta VoidConstrs -> Either TCFailure (Ctx Meta Constrs', Constrs)
 check prog@(Prog defs) = runTC maxTag M.empty $ checkDefs (CS M.empty) defs

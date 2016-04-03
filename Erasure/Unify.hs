@@ -6,13 +6,14 @@ module Erasure.Unify
 import TT
 import Erasure.Meta
 
+import qualified Data.Set as S
 import qualified Data.Map as M
 
 -- Stuck equations
-type Stuck r = [(TT r, TT r)]
+type Stuck r = S.Set (TT r, TT r)
 
 -- Solved substitution.
-type Subst = Ctx
+type Subst r cs = [(Name, TT r)]
 
-unify :: [(TT r, TT r)] -> (Subst r cs, Stuck r)
-unify eqs = (M.empty, eqs)
+unify :: Ord r => Stuck r -> (Subst r cs, Stuck r)
+unify eqs = ([], eqs)

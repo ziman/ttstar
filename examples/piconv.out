@@ -1,3 +1,3 @@
-"examples/piconv.tt" (line 7, column 15):
+"examples/piconv.tt" (line 7, column 14):
 unexpected ":"
-expecting whitespace or comment or expression
+expecting line comment, block comment, atomic expression or )
