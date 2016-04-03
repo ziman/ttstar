@@ -1,0 +1,26 @@
+-- vim: ft=agda
+
+### Desugared ###
+
+Id : (A : *) -> (_ : A) -> (_ : A) -> *
+
+Refl : (A : *) -> (x : A) -> (Id A x x)
+
+subst : (A : *) -> (P : (_ : A) -> *) -> (x : A) -> (y : A) -> (eq : (Id A x y)) -> (px : (P x)) -> (P y)
+subst = (\A : *. (\P : (_ : A) -> *. (\x : A. (\y : A. (\eq : (Id A x y). (\px : (P x). 
+  case eq of
+    Refl (a : *) (x : A) -> px))))))
+
+### Metaified ###
+
+Id :?1: (A :?2: *) -> (_ :?3: A) -> (_ :?4: A) -> *
+
+Refl :?5: (A :?6: *) -> (x :?7: A) -> (Id -?10- A -?9- x -?8- x)
+
+subst :?11: (A :?12: *) -> (P :?13: (_ :?14: A) -> *) -> (x :?15: A) -> (y :?16: A) -> (eq :?17: (Id -?20- A -?19- x -?18- y)) -> (px :?21: (P -?22- x)) -> (P -?23- y)
+subst = (\A :?24: *. (\P :?25: (_ :?26: A) -> *. (\x :?27: A. (\y :?28: A. (\eq :?29: (Id -?32- A -?31- x -?30- y). (\px :?33: (P -?34- x). 
+  case eq of
+    Refl (a :?35: *) (x :?36: A) -> px))))))
+
+### Inferred definitions ###
+

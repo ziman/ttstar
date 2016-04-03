@@ -1,0 +1,70 @@
+-- vim: ft=agda
+
+### Desugared ###
+
+N : *
+
+Z : N
+
+S : (_ : N) -> N
+
+Vec : (_ : N) -> (_ : *) -> *
+
+Nil : (a : *) -> (Vec Z a)
+
+Cons : (a : *) -> (n : N) -> (x : a) -> (xs : (Vec n a)) -> (Vec (S n) a)
+
+plus : (x : N) -> (y : N) -> N
+plus = (\x : N. (\y : N. 
+  case x of
+    Z -> y
+    S (z : N) -> (S (plus z y))))
+
+append : (a : *) -> (m : N) -> (n : N) -> (xs : (Vec m a)) -> (ys : (Vec n a)) -> (Vec (plus m n) a)
+append = (\a : *. (\m : N. (\n : N. (\xs : (Vec m a). (\ys : (Vec n a). 
+  case xs returns (Vec (plus m n) a) of
+    Nil (aa : *) -> 
+      case m returns (Vec (plus m n) a) of
+        Z -> ys
+    Cons (aa : *) (mm : N) (x : a) (zs : (Vec mm a)) -> 
+      case m returns (Vec (plus m n) a) of
+        S (mmm : N) -> (Cons aa mm x (append a mmm n zs ys)))))))
+
+main  -R-  (Vec Z N)
+main = (Nil N)
+
+### Metaified ###
+
+N :?1: *
+
+Z :?2: N
+
+S :?3: (_ :?4: N) -> N
+
+Vec :?5: (_ :?6: N) -> (_ :?7: *) -> *
+
+Nil :?8: (a :?9: *) -> (Vec -?11- Z -?10- a)
+
+Cons :?12: (a :?13: *) -> (n :?14: N) -> (x :?15: a) -> (xs :?16: (Vec -?18- n -?17- a)) -> (Vec -?20- (S -?21- n) -?19- a)
+
+plus :?22: (x :?23: N) -> (y :?24: N) -> N
+plus = (\x :?25: N. (\y :?26: N. 
+  case x of
+    Z -> y
+    S (z :?27: N) -> (S -?28- (plus -?30- z -?29- y))))
+
+append :?31: (a :?32: *) -> (m :?33: N) -> (n :?34: N) -> (xs :?35: (Vec -?37- m -?36- a)) -> (ys :?38: (Vec -?40- n -?39- a)) -> (Vec -?42- (plus -?44- m -?43- n) -?41- a)
+append = (\a :?45: *. (\m :?46: N. (\n :?47: N. (\xs :?48: (Vec -?50- m -?49- a). (\ys :?51: (Vec -?53- n -?52- a). 
+  case xs returns (Vec -?55- (plus -?57- m -?56- n) -?54- a) of
+    Nil (aa :?58: *) -> 
+      case m returns (Vec -?60- (plus -?62- m -?61- n) -?59- a) of
+        Z -> ys
+    Cons (aa :?63: *) (mm :?64: N) (x :?65: a) (zs :?66: (Vec -?68- mm -?67- a)) -> 
+      case m returns (Vec -?70- (plus -?72- m -?71- n) -?69- a) of
+        S (mmm :?73: N) -> (Cons -?77- aa -?76- mm -?75- x -?74- (append -?82- a -?81- mmm -?80- n -?79- zs -?78- ys)))))))
+
+main :!R: (Vec -?84- Z -?83- N)
+main = (Nil -?85- N)
+
+### Inferred definitions ###
+
