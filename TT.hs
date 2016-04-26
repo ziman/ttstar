@@ -6,7 +6,7 @@ import qualified Data.Map as M
 
 data Name = UN String | IN String [Relevance] deriving (Eq, Ord)
 data Relevance = E | R deriving (Eq, Ord, Show)
-data Binder = Lam | Pi | Pat deriving (Eq, Ord, Show)
+data Binder = Lam | Pi | Let deriving (Eq, Ord, Show)
 
 instance Show Name where
     show (UN n) = n
@@ -21,21 +21,15 @@ voidElim (Void v) = voidElim v
 data TT r
     = V Name
     | I Name (TT r)  -- instance of a global definition with a specific type
-    | Bind Binder Name r (TT r) (TT r)
-        -- ^ binder, nrty, reverse dep, body
+    | Bind Binder (Def r VoidConstrs) (TT r)
     | App r (TT r) (TT r)
-    | Let (Def r VoidConstrs) (TT r)
-    | Case (TT r) (Maybe (TT r)) [Alt r]  -- scrutinee, return type, alts
     | Type
     | Erased
+    | Forced (TT r)  -- forced pattern
     deriving (Eq, Ord)
 
-data Alt r
-    = ConCase Name (TT r)  -- cn, relevance, arity, lambda-bound RHS
-    | DefaultCase (TT r)
-    deriving (Eq, Ord)
-
-data Def r cs = Def Name r (TT r) (Maybe (TT r)) (Maybe (cs r)) deriving (Eq, Ord)
+data Clause r = Clause { pvars :: [Def r VoidConstrs], lhs :: TT r,  rhs :: TT r } deriving (Eq, Ord)
+data Def r cs = Def Name r (TT r) [Clause r] (Maybe (cs r)) deriving (Eq, Ord)
 type Ctx r cs = M.Map Name (Def r cs)
 
 newtype Program r cs = Prog { getDefs :: [Def r cs] } deriving (Eq, Ord)
@@ -51,37 +45,33 @@ subst n tm t@(V n')
     | n' == n   = tm
     | otherwise = t
 subst n tm t@(I n' ty) = I n' $ subst n tm ty
-subst n tm t@(Bind b n' r ty tm')
-    | n' == n   = t
-    | otherwise = Bind b n' r (subst n tm ty) (subst n tm tm')
+subst n tm (Bind b d@(Def n' r ty body Nothing) tm')
+    = Bind b
+        (substDef n tm d)
+        (if n == n'
+            then tm'
+            else subst n tm tm')
 subst n tm (App r f x) = App r (subst n tm f) (subst n tm x)
-subst n tm t@(Let (Def n' r ty mtm Nothing) tm')
-    | n' == n = t
-    | otherwise = Let (Def n' r (subst n tm ty) (subst n tm `fmap` mtm) Nothing) (subst n tm tm')
-subst n tm (Case s ty alts) = Case (subst n tm s) (subst n tm <$> ty) (map (substAlt n tm) alts)
+subst n tm (Forced t) = Forced (subst n tm t)
 subst _ _  t@Erased = t
 subst _ _  t@Type   = t
-
-substAlt :: Name -> TT r -> Alt r -> Alt r
-substAlt n tm (DefaultCase tm') = DefaultCase $ subst n tm tm'
-substAlt n tm t@(ConCase cn tm') = ConCase cn $ subst n tm tm'
 
 substCtx :: Name -> TT r -> Ctx r cs -> Ctx r cs
 substCtx n tm = M.map $ substDef n tm
 
 substDef :: Name -> TT r -> Def r cs -> Def r cs
 -- XXX TODO HACK: what do we do with constraints here?
-substDef n tm (Def dn r ty mtm mcs) = Def dn r (subst n tm ty) (subst n tm <$> mtm) mcs
+substDef n tm (Def dn r ty cls mcs) = Def dn r (subst n tm ty) (substClause n tm <$> cls) mcs
 
+substClause :: Name -> TT r -> Clause r -> Clause r
+substClause n tm (Clause pvs lhs rhs) = Clause (substDef n tm <$> pvs) (subst n tm lhs) (subst n tm rhs)
+
+{-
 -- split a Pat-packed pattern into 1. pattern vars, 2. RHS
-splitBinder :: Binder -> TT r -> ([(Name, r, TT r)], TT r)
-splitBinder bnd (Bind b n r ty tm)
-    | b == bnd
-    = ((n, r, ty) : args, rhs)
+splitBinder :: Binder -> TT r -> ([Def r], TT r)
+splitBinder bnd (Bind b d tm)
+    | b == bnd = (d : args, rhs)
   where
     (args, rhs) = splitBinder bnd tm
 splitBinder bnd tm = ([], tm)
-
-fromPat :: Binder -> TT r -> TT r
-fromPat b (Bind Pat n r ty tm) = Bind b n r ty $ fromPat b tm
-fromPat b tm = tm
+-}

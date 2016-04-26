@@ -17,31 +17,28 @@ ttRelevance f = g
     g tm = case tm of
         V n    -> pure $ V n
         I n ty -> I n <$> (g ty)
-        Bind b n r ty tm
-            -> Bind b n <$> f r <*> g ty <*> g tm
+        Bind b d tm
+            -> Bind b <$> defRelevance f d <*> g tm
         App r fun arg
             -> App <$> f r <*> g fun <*> g arg
-        Let def tm
-            -> Let <$> defRelevance f def <*> g tm
-        Case s ty alts
-            -> Case <$> g s <*> traverse (ttRelevance f) ty <*> traverse (altRelevance f) alts
+        Forced tm -> Forced <$> g tm
         Erased -> pure Erased
         Type -> pure Type
 
 defRelevance' :: Traversal (cs r) (cs' r') r r' -> Traversal (Def r cs) (Def r' cs') r r'
-defRelevance' csRelevance f (Def n r ty mtm mcs)
+defRelevance' csRelevance f (Def n r ty cls mcs)
     = Def n
         <$> f r
         <*> ttRelevance f ty
-        <*> traverse (ttRelevance f) mtm
+        <*> traverse (clauseRelevance f) cls
         <*> traverse (csRelevance f) mcs
+
+clauseRelevance :: Traversal (Clause r) (Clause r') r r'
+clauseRelevance f (Clause pvs lhs rhs)
+    = Clause <$> traverse (defRelevance f) pvs <*> ttRelevance f lhs <*> ttRelevance f rhs
 
 defRelevance :: Traversal (Def r VoidConstrs) (Def r' cs') r r'
 defRelevance = defRelevance' voidRelevance
-
-altRelevance :: Traversal (Alt r) (Alt r') r r'
-altRelevance f (ConCase cn tm) = ConCase cn <$> ttRelevance f tm
-altRelevance f (DefaultCase tm) = DefaultCase <$> ttRelevance f tm
 
 progRelevance' :: Traversal (cs r) (cs' r') r r' -> Traversal (Program r cs) (Program r' cs') r r'
 progRelevance' csRelevance f (Prog defs) = Prog <$> traverse (defRelevance' csRelevance f) defs

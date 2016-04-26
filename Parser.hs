@@ -55,7 +55,7 @@ natural = mkNat . read <$> (many1 (satisfy isDigit) <* sp) <?> "number"
 
 atomic :: Parser (TT MRel)
 atomic = parens expr
-    <|> inst
+    <|> instOrForced
     <|> var
     <|> (kwd "*" *> pure Type)
     <|> natural
@@ -64,122 +64,95 @@ atomic = parens expr
 arrow :: Parser (TT MRel)
 arrow = (<?> "arrow type") $ do
     ty <- try (atomic <* kwd "->")
-    Bind Pi (UN "_") Nothing ty <$> expr
+    Bind Pi (Def (UN "_") Nothing ty [] Nothing) <$> expr
 
 lambda :: Parser (TT MRel)
 lambda = (<?> "lambda") $ do
     kwd "\\"
-    (n, r, ty) <- typing
+    d <- typing
     kwd "."
-    Bind Lam n r ty <$> expr
+    Bind Lam d <$> expr
 
 bpi :: Parser (TT MRel)
 bpi = (<?> "pi") $ do
-    (n, r, ty) <- try $ parens typing
+    d <- try $ parens typing
     kwd "->"
-    Bind Pi n r ty <$> expr
+    Bind Pi d <$> expr
 
 bind :: Parser (TT MRel)
 bind = arrow
     <|> lambda
     <|> bpi
+    <|> let_
     <?> "binder"
 
 app :: Parser (TT MRel)
 app = foldl (App Nothing) <$> atomic <*> many atomic <?> "application"
 
 let_ :: Parser (TT MRel)
-let_ = do
+let_ = (<?> "let expression") $ do
     kwd "let"
     d <- parseDef
     kwd "in"
-    tm <- expr
-    return $ Let d tm
+    Bind Let d <$> expr
+
+instOrForced :: Parser (TT MRel)
+instOrForced = kwd "[" >> (try inst <|> forced)
 
 inst :: Parser (TT MRel)
-inst = do
-    kwd "["
+inst = (<?> "erasure instance") $ do
     n <- name
     kwd ":"
     ty <- expr
     kwd "]"
     return $ I n ty
 
+forced :: Parser (TT MRel)
+forced = (<?> "forced pattern") $ do
+    tm <- expr
+    kwd "]"
+    return $ Forced tm
+
 expr :: Parser (TT MRel)
-expr =
-        let_
-    <|> case_
-    <|> bind
+expr =  bind
     <|> app
     <?> "expression"  -- app includes nullary-applied atoms
 
-case_ :: Parser (TT MRel)
-case_ = (<?> "case") $ do
-    kwd "case"
-    s <- parens expr
-    r <- optionMaybe (kwd "returns" *> parens expr)
-    kwd "of"
-    alts <- alt `sepBy` kwd ","
-    return $ Case s r alts
-
-alt :: Parser (Alt MRel)
-alt = defaultCase <|> conCase <?> "case alt"
-
-defaultCase :: Parser (Alt MRel)
-defaultCase = (<?> "default case") $ do
-    kwd "_"
-    kwd "->"
-    DefaultCase <$> expr
-
-conCase :: Parser (Alt MRel)
-conCase = (<?> "constr case") $ do
-    cn <- name
-    ns <- many $ parens typing
-    kwd "->"
-    rhs <- expr
-    return $ ConCase cn (tack ns rhs)
-  where
-    tack [] tm = tm
-    tack ((n,r,ty) : ns) tm = Bind Pat n r ty $ tack ns tm
-
-typing :: Parser (Name, MRel, TT MRel)
-typing = (<?> "typing") $ do
+typing :: Parser (Def MRel VoidConstrs)
+typing = (<?> "name binding") $ do
     n <- name
     r <- rcolon
     ty <- expr
-    return (n, r, ty)
+    return $ Def n r ty [] Nothing
 
 postulate :: Parser (Def MRel VoidConstrs)
-postulate = (<?> "postulate") $ do
-    kwd "postulate"
-    (n, r, ty) <- typing
-    kwd "."
-    return $ Def n r ty Nothing Nothing
+postulate = kwd "postulate" *> typing <* kwd "." <?> "postulate"
 
-mldef :: Parser (Def MRel VoidConstrs)
-mldef = (<?> "ml-style definition") $ do
-    n <- name
-    args <- many $ parens typing
-    r <- rcolon
-    retTy <- expr
-    kwd "="
-    tm <- expr
+patvars :: Parser [Def MRel VoidConstrs]
+patvars = (<?> "pattern variables") $ do
+    kwd "pat"
+    pvs <- many (parens typing)
     kwd "."
-    return $ Def n r (chain Pi args retTy) (Just $ chain Lam args tm) Nothing
-  where
-    chain bnd [] tm = tm
-    chain bnd ((n, r, ty) : args) tm = Bind bnd n r ty $ chain bnd args tm
+    return pvs
+
+clause :: Parser (Clause MRel)
+clause = (<?> "clause") $ do
+    pvs <- patvars <|> return []
+    lhs <- expr
+    kwd "="
+    rhs <- expr
+    kwd "."
+    return $ Clause pvs lhs rhs
 
 fundef :: Parser (Def MRel VoidConstrs)
 fundef = (<?> "function definition") $ do
-    (n, r, ty) <- try typing
-    kwd "="
-    tm <- expr
+    Def n r ty [] Nothing <- try typing
     kwd "."
-    return $ Def n r ty (Just tm) Nothing
+    cls <- many clause
+    return $ Def n r ty cls Nothing
 
 parseDef :: Parser (Def MRel VoidConstrs)
-parseDef = postulate <|> fundef <|> mldef <?> "definition"
+parseDef = postulate <|> fundef <?> "definition"
 
 parseProg :: Parser (Program MRel VoidConstrs)
 parseProg = Prog <$> many parseDef <?> "program"

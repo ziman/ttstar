@@ -4,18 +4,23 @@ module Main where
 import TT
 import TTLens
 import Parser
+import Pretty
+{-
 import Explorer
 import Whnf
 import Eval
+-}
 
 import Util.PrettyPrint
 
+{-
 import Erasure.Meta
 import Erasure.Check
 import Erasure.Solve
 import Erasure.Annotate
 import Erasure.Specialise
 import Erasure.Prune
+-}
 
 import Lens.Family2
 
@@ -116,6 +121,7 @@ main = do
             putStrLn "### Desugared ###\n"
             printP prog
 
+{-
             putStrLn "### Metaified ###\n"
             let metaified = meta prog
             printP metaified
@@ -174,3 +180,4 @@ main = do
         ++ unlines (map (("  " ++) . fmtCtr) $ M.toList cs)
 
     ndefs (Prog defs) = length defs
+-}
