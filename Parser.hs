@@ -64,7 +64,7 @@ atomic = parens expr
 arrow :: Parser (TT MRel)
 arrow = (<?> "arrow type") $ do
     ty <- try (atomic <* kwd "->")
-    Bind Pi (Def (UN "_") Nothing ty [] Nothing) <$> expr
+    Bind Pi (Def (UN "_") Nothing ty Abstract Nothing) <$> expr
 
 lambda :: Parser (TT MRel)
 lambda = (<?> "lambda") $ do
@@ -123,7 +123,7 @@ typing = (<?> "name binding") $ do
     n <- name
     r <- rcolon
     ty <- expr
-    return $ Def n r ty [] Nothing
+    return $ Def n r ty Abstract Nothing
 
 postulate :: Parser (Def MRel VoidConstrs)
 postulate = kwd "postulate" *> typing <* kwd "." <?> "postulate"
@@ -146,10 +146,10 @@ clause = (<?> "clause") $ do
 
 fundef :: Parser (Def MRel VoidConstrs)
 fundef = (<?> "function definition") $ do
-    Def n r ty [] Nothing <- try typing
+    Def n r ty Abstract Nothing <- try typing
     kwd "."
     cls <- many clause
-    return $ Def n r ty cls Nothing
+    return $ Def n r ty (Clauses cls) Nothing
 
 parseDef :: Parser (Def MRel VoidConstrs)
 parseDef = postulate <|> fundef <?> "definition"

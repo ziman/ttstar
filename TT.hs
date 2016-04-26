@@ -29,7 +29,8 @@ data TT r
     deriving (Eq, Ord)
 
 data Clause r = Clause { pvars :: [Def r VoidConstrs], lhs :: TT r,  rhs :: TT r } deriving (Eq, Ord)
-data Def r cs = Def Name r (TT r) [Clause r] (Maybe (cs r)) deriving (Eq, Ord)
+data Body r = Abstract | Term (TT r) | Clauses [Clause r] deriving (Eq, Ord)
+data Def r cs = Def Name r (TT r) (Body r) (Maybe (cs r)) deriving (Eq, Ord)
 type Ctx r cs = M.Map Name (Def r cs)
 
 newtype Program r cs = Prog { getDefs :: [Def r cs] } deriving (Eq, Ord)
@@ -61,7 +62,12 @@ substCtx n tm = M.map $ substDef n tm
 
 substDef :: Name -> TT r -> Def r cs -> Def r cs
 -- XXX TODO HACK: what do we do with constraints here?
-substDef n tm (Def dn r ty cls mcs) = Def dn r (subst n tm ty) (substClause n tm <$> cls) mcs
+substDef n tm (Def dn r ty body mcs) = Def dn r (subst n tm ty) (substBody n tm body) mcs
+
+substBody :: Name -> TT r -> Body r -> Body r
+substBody n tm Abstract = Abstract
+substBody n tm (Term t) = Term $ subst n tm t
+substBody n tm (Clauses cls) = Clauses $ map (substClause n tm) cls
 
 substClause :: Name -> TT r -> Clause r -> Clause r
 substClause n tm (Clause pvs lhs rhs) = Clause (substDef n tm <$> pvs) (subst n tm lhs) (subst n tm rhs)

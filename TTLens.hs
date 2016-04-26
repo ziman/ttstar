@@ -26,12 +26,17 @@ ttRelevance f = g
         Type -> pure Type
 
 defRelevance' :: Traversal (cs r) (cs' r') r r' -> Traversal (Def r cs) (Def r' cs') r r'
-defRelevance' csRelevance f (Def n r ty cls mcs)
+defRelevance' csRelevance f (Def n r ty body mcs)
     = Def n
         <$> f r
         <*> ttRelevance f ty
-        <*> traverse (clauseRelevance f) cls
+        <*> bodyRelevance f body
         <*> traverse (csRelevance f) mcs
+
+bodyRelevance :: Traversal (Body r) (Body r') r r'
+bodyRelevance f Abstract = pure Abstract
+bodyRelevance f (Term tm) = Term <$> ttRelevance f tm
+bodyRelevance f (Clauses cls) = Clauses <$> traverse (clauseRelevance f) cls
 
 clauseRelevance :: Traversal (Clause r) (Clause r') r r'
 clauseRelevance f (Clause pvs lhs rhs)
