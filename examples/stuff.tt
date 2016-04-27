@@ -47,10 +47,17 @@ test_1 : Nat.
 test_2 : Nat.
   test_2 = f id 2 const_3 1.
 
+not : Bool -> Bool.
+  not True  = False,
+  not False = True.
+
+main :R: Bool.
+  main = not True.
+
+{-
 main :R: Nat.
   main = Plus test_1 test_2.
 
-{-
 postulate T : *.
 postulate A : T.
 postulate B : T.

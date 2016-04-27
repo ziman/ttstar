@@ -55,8 +55,8 @@ instance PrettyR r => Pretty (Def r cs) where
     pretty (Def n r ty    (Term   tm) Nothing) = pretty n <+> prettyCol r <+> pretty ty <+> text "=" <+> pretty tm
     pretty (Def n r ty    (Clauses cls) Nothing)
         = pretty (Def n r ty Abstract Nothing)
-            $$ vcat (map pretty cls)
-    pretty (Def n r ty     cls       (Just cs))
+            $$ indent (vcat $ map pretty cls)
+    pretty (Def n r ty cls (Just cs))
         = pretty (Def n r ty cls Nothing) <+> text "{- constraints apply -}"
 
 instance PrettyR r => Pretty (TT r) where
