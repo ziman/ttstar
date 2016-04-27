@@ -294,7 +294,8 @@ conv' p@(Let (Def n r ty mtm Nothing) tm) q@(Let (Def n' r' ty' mtm' Nothing) tm
     return $ letcs /\ ys /\ vcs /\ r <--> r'
 -}
 
-conv' (Forced l) (Forced r) = conv l r
+conv' (Forced l) r = conv l r
+conv' l (Forced r) = conv l r
 conv' Type   Type   = return noConstrs
 conv' Erased Erased = return noConstrs
 

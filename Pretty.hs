@@ -53,7 +53,9 @@ instance PrettyR r => Pretty (Def r cs) where
     pretty (Def n r Erased Abstract   Nothing) = pretty n
     pretty (Def n r ty     Abstract   Nothing) = pretty n <+> prettyCol r <+> pretty ty
     pretty (Def n r ty    (Term   tm) Nothing) = pretty n <+> prettyCol r <+> pretty ty <+> text "=" <+> pretty tm
-    pretty (Def n r ty    (Clauses _) Nothing) = error "can't inline-print a def with clauses for body"
+    pretty (Def n r ty    (Clauses cls) Nothing)
+        = pretty (Def n r ty Abstract Nothing)
+            $$ vcat (map pretty cls)
     pretty (Def n r ty     cls       (Just cs))
         = pretty (Def n r ty cls Nothing) <+> text "{- constraints apply -}"
 

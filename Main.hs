@@ -180,7 +180,8 @@ main = do
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
 
     fmtCtx (n, (Def _n r ty body Nothing))
-        = prettyShow (Def n r ty body Nothing)
+        = prettyShow (Def n r ty body Nothing) ++ "\n"
+
     fmtCtx (n, (Def _n r ty body (Just (CS cs))))
         = prettyShow (Def n r ty body Nothing) ++ "\n"
         ++ unlines (map (("  " ++) . fmtCtr) $ M.toList cs)
