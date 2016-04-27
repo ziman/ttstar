@@ -14,9 +14,9 @@ import Eval
 import Util.PrettyPrint
 
 import Erasure.Meta
-{-
 import Erasure.Check
 import Erasure.Solve
+{-
 import Erasure.Annotate
 import Erasure.Specialise
 import Erasure.Prune
@@ -126,8 +126,6 @@ main = do
             printP metaified
 
             let iterSpecialisation metaified = do
-                    return metaified
-{-
                     putStrLn "### Inferred definitions ###\n"
                     let (ctx, cs) = either (error . show) id . check $ metaified
                     mapM_ (putStrLn . fmtCtx) $ M.toList ctx
@@ -147,6 +145,8 @@ main = do
                     then error "!! inconsistent annotation"
                     else return ()
 
+                    return metaified
+{-
                     putStrLn "### Annotated ###\n"
                     let annotated = annotate uses $ metaified
                     printP $ annotated

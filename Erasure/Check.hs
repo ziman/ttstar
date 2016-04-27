@@ -7,7 +7,6 @@ import TTLens
 import Whnf
 import Erasure.Meta
 import Erasure.Solve
-import Erasure.Unify
 
 import Prelude hiding (lookup)
 
@@ -33,7 +32,6 @@ import Debug.Trace
 
 data TCError
     = CantConvert TTmeta TTmeta
-    | CantConvertAlt (Alt Meta) (Alt Meta)
     | Mismatch String String
     | UnknownName Name
     | WrongType TTmeta TTmeta  -- term, type
