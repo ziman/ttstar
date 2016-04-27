@@ -13,8 +13,8 @@ import Eval
 
 import Util.PrettyPrint
 
+--import Erasure.Meta
 {-
-import Erasure.Meta
 import Erasure.Check
 import Erasure.Solve
 import Erasure.Annotate
@@ -125,7 +125,9 @@ main = do
             putStrLn "### Metaified ###\n"
             let metaified = meta prog
             printP metaified
+            -}
 
+{-
             let iterSpecialisation metaified = do
                     putStrLn "### Inferred definitions ###\n"
                     let (ctx, cs) = either (error . show) id . check $ metaified
