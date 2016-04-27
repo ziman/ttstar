@@ -41,6 +41,9 @@ red form ctx t@(V n)
 
 red form ctx t@(I n i) = red form ctx (V n)
 
+red form ctx t@(Bind Let (Def n r ty body Nothing) tm)
+    = red form (M.insert n (Def n r ty body Nothing) ctx) tm
+
 red WHNF ctx t@(Bind b d tm) = t
 red  NF  ctx t@(Bind b d tm) = Bind b (redDef NF ctx d) (red NF ctx' tm)
   where
