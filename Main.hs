@@ -7,17 +7,17 @@ import Parser
 import Pretty
 {-
 import Explorer
+-}
 import Whnf
 import Eval
--}
 
 import Util.PrettyPrint
 
 import Erasure.Meta
 import Erasure.Check
 import Erasure.Solve
-{-
 import Erasure.Annotate
+{-
 import Erasure.Specialise
 import Erasure.Prune
 -}
@@ -145,12 +145,12 @@ main = do
                     then error "!! inconsistent annotation"
                     else return ()
 
-                    return metaified
-{-
                     putStrLn "### Annotated ###\n"
                     let annotated = annotate uses $ metaified
                     printP $ annotated
 
+                    return annotated
+{-
                     putStrLn "### Specialised ###\n"
                     let specialised = specialise metaified annotated
                     printP $ specialised

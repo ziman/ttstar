@@ -13,10 +13,12 @@ annotate :: Uses -> Program Meta cs -> Program Relevance VoidConstrs
 annotate uses (Prog defs) = Prog $ map (annDef uses) defs
 
 annDef :: Uses -> Def Meta cs -> Def Relevance VoidConstrs
-annDef uses (Def n r ty mtm mcs)
-    = Def n (rel r) (annTm ty) (annTm <$> mtm) Nothing
+annDef uses (Def n r ty body mcs)
+    = Def n (rel r)
+        (ty & ttRelevance %~ rel)
+        (body & bodyRelevance %~ rel)
+        Nothing
   where
-    annTm tm = tm & ttRelevance %~ rel
     rel (Fixed r) = r
     rel m
         | m `S.member` uses = R
