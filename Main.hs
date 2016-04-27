@@ -17,10 +17,8 @@ import Erasure.Meta
 import Erasure.Check
 import Erasure.Solve
 import Erasure.Annotate
-{-
 import Erasure.Specialise
 import Erasure.Prune
--}
 
 import Lens.Family2
 
@@ -149,8 +147,6 @@ main = do
                     let annotated = annotate uses $ metaified
                     printP $ annotated
 
-                    return annotated
-{-
                     putStrLn "### Specialised ###\n"
                     let specialised = specialise metaified annotated
                     printP $ specialised
@@ -159,13 +155,12 @@ main = do
                         then return annotated  -- fixed point reached
                         else iterSpecialisation specialised
 
--}
             annotated <- iterSpecialisation metaified
 
             putStrLn "### Final annotation ###\n"
             -- let annotated = annotate S.empty specialised  -- no usage set needed, everything is Fixed
             printP $ annotated
-{-
+
             putStrLn "### Pruned ###\n"
             let pruned = prune annotated -- specialised
             printP $ pruned
@@ -175,7 +170,6 @@ main = do
             putStrLn $ "  " ++ show (eval NF prog)
             putStrLn "erased:"
             putStrLn $ "  " ++ show (eval NF pruned)
--}
   where
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
 

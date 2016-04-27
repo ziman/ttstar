@@ -80,8 +80,17 @@ specNProg :: Program Relevance VoidConstrs -> Spec (Program Relevance VoidConstr
 specNProg (Prog defs) = Prog <$> traverse specNDef defs
 
 specNDef :: Def Relevance VoidConstrs -> Spec (Def Relevance VoidConstrs)
-specNDef (Def n r ty mtm Nothing)
-    = Def n r <$> specNTm ty <*> traverse specNTm mtm <*> pure Nothing
+specNDef (Def n r ty body Nothing)
+    = Def n r <$> specNTm ty <*> specNBody body <*> pure Nothing
+
+specNBody :: Body Relevance -> Spec (Body Relevance)
+specNBody Abstract = pure Abstract
+specNBody (Term tm) = Term <$> specNTm tm
+specNBody (Clauses cls) = Clauses <$> traverse specNClause cls
+
+specNClause :: Clause Relevance -> Spec (Clause Relevance)
+specNClause (Clause pvs lhs rhs)
+    = Clause <$> traverse specNDef pvs <*> specNTm lhs <*> specNTm rhs
 
 specNTm :: TT Relevance -> Spec (TT Relevance)
 specNTm (V n) = pure $ V n
@@ -94,16 +103,11 @@ specNTm (I n@(UN ns) ty) = do
     spec :: Name -> [Relevance] -> Instances
     spec n = Instances . M.singleton n . S.singleton
 
-specNTm (Bind b n r ty tm) = Bind b n r <$> specNTm ty <*> specNTm tm
+specNTm (Bind b d tm) = Bind b <$> specNDef d <*> specNTm tm
 specNTm (App r f x) = App r <$> specNTm f <*> specNTm x
-specNTm (Let def tm) = Let <$> specNDef def <*> specNTm tm
-specNTm (Case s ty alts) = Case <$> specNTm s <*> traverse specNTm ty <*> traverse specNAlt alts
+specNTm (Forced tm) = Forced <$> specNTm tm
 specNTm  Type = pure Type
 specNTm  Erased = pure Erased
-
-specNAlt :: Alt Relevance -> Spec (Alt Relevance)
-specNAlt (ConCase n tm) = ConCase n <$> specNTm tm
-specNAlt (DefaultCase tm) = DefaultCase <$> specNTm tm
 
 specName :: Name -> ErPattern -> Name
 specName (UN n) epat = IN n epat

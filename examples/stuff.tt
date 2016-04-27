@@ -49,3 +49,20 @@ test_2 : Nat.
 
 main :R: Nat.
   main = Plus test_1 test_2.
+
+{-
+postulate T : *.
+postulate A : T.
+postulate B : T.
+
+const_A : T -> T.
+pat (t : T).
+  const_A t = A.
+
+apply : (f : T -> T) -> T -> T.
+  pat (f : T -> T) (x : T).
+    apply f x = f x.
+
+main :R: T.
+main = apply const_A B.
+-}
