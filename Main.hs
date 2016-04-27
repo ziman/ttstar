@@ -125,8 +125,9 @@ main = do
             let metaified = meta prog
             printP metaified
 
-{-
             let iterSpecialisation metaified = do
+                    return metaified
+{-
                     putStrLn "### Inferred definitions ###\n"
                     let (ctx, cs) = either (error . show) id . check $ metaified
                     mapM_ (putStrLn . fmtCtx) $ M.toList ctx
@@ -158,12 +159,13 @@ main = do
                         then return annotated  -- fixed point reached
                         else iterSpecialisation specialised
 
+-}
             annotated <- iterSpecialisation metaified
 
             putStrLn "### Final annotation ###\n"
             -- let annotated = annotate S.empty specialised  -- no usage set needed, everything is Fixed
             printP $ annotated
-
+{-
             putStrLn "### Pruned ###\n"
             let pruned = prune annotated -- specialised
             printP $ pruned
