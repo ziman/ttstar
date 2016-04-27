@@ -125,7 +125,7 @@ main = do
             putStrLn "### Metaified ###\n"
             let metaified = meta prog
             printP metaified
-            -}
+-}
 
 {-
             let iterSpecialisation metaified = do
