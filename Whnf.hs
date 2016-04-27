@@ -45,6 +45,11 @@ red  NF  ctx t@(Bind b d tm) = Bind b (redDef NF ctx d) (red NF ctx' tm)
     Def n r ty body Nothing = d
     ctx' = M.insert n (Def n r ty body Nothing) ctx
 
+red form ctx t@(App r f x)
+    | (V fn, args) <- unApply t
+    , Def _ _ _ (Clauses cls) _ <- M.lookup fn ctx
+    = redClauses cls t (error $ "non-coverage for " ++ show fn)
+
 red WHNF ctx t@(App r f x)
     -- TODO: look up name in context, reduce clauses
     | Bind Lam (Def n' r' ty' Abstract Nothing) tm' <- redF
@@ -66,3 +71,9 @@ red NF ctx t@(App r f x)
 red form ctx (Forced tm) = Forced $ red form ctx tm
 red form ctx t@Erased = t
 red form ctx t@Type   = t
+
+redClauses :: [Clause r] -> TT r -> TT r -> TT r
+redClauses [] tm fail = fail
+redClauses (Clause pvs lhs rhs : cs) tm fail
+    | Right (ctx, rest) <- match lhs tm
+    = error "not implemented"

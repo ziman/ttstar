@@ -237,7 +237,13 @@ checkTm t@(Bind Let (Def n r ty body Nothing) tm) = bt ("LET", t) $ do
             $ checkTm tm
     return (tmty, tmcs /\ fromMaybe noConstrs letcs)
 
-checkTm (Forced tm) = checkTm tm
+-- forced patterns don't produce constraints (?)
+-- TODO: is that okay?
+-- probably yes, because relevance is also propagated via the type signature
+checkTm (Forced tm) = do
+    (ty, cs) <- checkTm tm
+    return (ty, noConstrs)
+
 checkTm Erased = return (Erased, noConstrs)
 checkTm Type   = return (Type,   noConstrs)
 
