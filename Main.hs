@@ -138,7 +138,7 @@ main = do
                     putStrLn "### Solution ###\n"
                     let (uses, residue) = solve cs
                     print $ S.toList uses
-                    genHtml (fname ++ ".html") metaified cs uses
+                    -- genHtml (fname ++ ".html") metaified cs uses
                     putStrLn ""
 
                     if Fixed E `S.member` uses
@@ -175,11 +175,14 @@ main = do
             putStrLn $ "  " ++ show (eval NF prog)
             putStrLn "erased:"
             putStrLn $ "  " ++ show (eval NF pruned)
+-}
   where
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
-    fmtCtx (n, (Def _n r ty mtm Nothing)) = prettyShow (n, r, ty)
-    fmtCtx (n, (Def _n r ty mtm (Just (CS cs)))) = prettyShow (n, r, ty) ++ "\n"
+
+    fmtCtx (n, (Def _n r ty body Nothing))
+        = prettyShow (Def n r ty body Nothing)
+    fmtCtx (n, (Def _n r ty body (Just (CS cs))))
+        = prettyShow (Def n r ty body Nothing) ++ "\n"
         ++ unlines (map (("  " ++) . fmtCtr) $ M.toList cs)
 
     ndefs (Prog defs) = length defs
--}

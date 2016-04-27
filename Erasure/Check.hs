@@ -97,7 +97,7 @@ bt :: Show a => a -> TC b -> TC b
 bt dbg sub = do
     ctx <- getCtx
     let btLine = "In context:\n" ++ showCtx ctx ++ "\n" ++ show dbg ++ "\n"
-    local (\(tb,ctx,stuck) -> (btLine:tb,ctx,stuck)) sub
+    local (\(tb,ctx) -> (btLine:tb,ctx)) sub
 
 showCtx :: Ctx Meta Constrs' -> String
 showCtx ctx = unlines
@@ -130,7 +130,7 @@ freshTag :: TC Int
 freshTag = lift $ lift (modify (+1) >> get)
 
 runTC :: Int -> Ctx Meta Constrs' -> TC a -> Either TCFailure a
-runTC maxTag ctx tc = evalState (runExceptT $ runReaderT tc ([], ctx, S.empty)) maxTag
+runTC maxTag ctx tc = evalState (runExceptT $ runReaderT tc ([], ctx)) maxTag
 
 check :: Program Meta VoidConstrs -> Either TCFailure (Ctx Meta Constrs', Constrs)
 check prog@(Prog defs) = runTC maxTag M.empty $ checkDefs (CS M.empty) defs
@@ -154,12 +154,15 @@ checkDefs cs (d:ds) = do
     bare (Def n r ty mtm Nothing) = Def n r ty mtm Nothing
 
 checkDef :: Def Meta VoidConstrs -> TC (Def Meta Constrs')
-checkDef (Def n r ty Nothing Nothing) = return $ Def n r ty Nothing Nothing
-checkDef (Def n r ty (Just tm) Nothing) = bt ("DEF", n) $ do
+checkDef (Def n r ty Abstract Nothing) = return $ Def n r ty Abstract Nothing
+checkDef (Def n r ty (Term tm) Nothing) = bt ("DEF-TERM", n) $ do
     (tmty, tmcs) <- checkTm tm
     tycs <- conv ty tmty
     let cs = tycs /\ tmcs
-    return $ Def n r ty (Just tm) (Just cs)
+    return $ Def n r ty (Term tm) (Just cs)
+
+checkDef (Def n r ty (Clauses cls) Nothing) = bt ("DEF-CLAUSES", n) $ do
+    tcfail $ NotImplemented "checking def-clauses"
 
 checkTm :: Term -> TC (Type, Constrs)
 
@@ -175,18 +178,18 @@ checkTm t@(I n ty) = bt ("INST", n, ty) $ do
     return (ty', cs' /\ convCs)
 
 checkTm t@(Bind Lam (Def n r ty Abstract Nothing) tm) = bt ("LAM", t) $ do
-    (tmty, tmcs) <- with (Def n r ty Nothing Nothing) $ checkTm tm
-    return (Bind Pi n r ty tmty, tmcs)
+    (tmty, tmcs) <- with (Def n r ty Abstract Nothing) $ checkTm tm
+    return (Bind Pi (Def n r ty Abstract Nothing) tmty, tmcs)
 
 checkTm t@(Bind Pi (Def n r ty Abstract Nothing) tm) = bt ("PI", t) $ do
-    (tmty, tmcs) <- with (Def n r ty Nothing Nothing) $ checkTm tm
+    (tmty, tmcs) <- with (Def n r ty Abstract Nothing) $ checkTm tm
     return (Type, tmcs)
 
 checkTm t@(App app_r f x) = bt ("APP", t) $ do
     (fty, fcs) <- checkTm f
     (xty, xcs) <- checkTm x
     case fty of
-        Bind Pi n' pi_r ty' retTy -> do
+        Bind Pi (Def n' pi_r ty' Abstract Nothing) retTy -> do
             tycs <- conv xty ty'
             let cs =
                     tycs
@@ -205,7 +208,7 @@ checkTm t@(Bind Let (Def n r ty body Nothing) tm) = bt ("LET", t) $ do
             tycs <- conv ty valty
             return $ Just (valcs /\ tycs)
         Abstract -> return Nothing
-        Clauses -> error "trying to check let-bound clauses"
+        Clauses cls -> error "trying to check let-bound clauses"
 
     (tmty, tmcs) <-
         with (Def n r ty body letcs)
@@ -250,11 +253,12 @@ conv' (V n) (V n') = bt ("C-VAR", n, n') $ do
     require (n == n') $ Mismatch (show n) (show n')
     return noConstrs
 
-conv' p@(Bind b n r ty tm) q@(Bind b' n' r' ty' tm') = bt ("C-BIND", p, q) $ do
-    require (b == b') $ Mismatch (show b) (show b')
-    xs <- conv ty (rename [n'] [n] ty')
-    ys <- with (Def n r ty Nothing Nothing) $ conv tm (rename [n'] [n] tm')
-    return $ xs /\ ys /\ r <--> r'
+conv' p@(Bind b (Def n r ty Abstract Nothing) tm) q@(Bind b' (Def n' r' ty' Abstract Nothing) tm')
+    = bt ("C-BIND", p, q) $ do
+        require (b == b') $ Mismatch (show b) (show b')
+        xs <- conv ty (rename [n'] [n] ty')
+        ys <- with (Def n r ty Abstract Nothing) $ conv tm (rename [n'] [n] tm')
+        return $ xs /\ ys /\ r <--> r'
 
 -- whnf is application (application of something irreducible)
 conv' p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do

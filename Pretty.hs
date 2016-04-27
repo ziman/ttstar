@@ -54,7 +54,8 @@ instance PrettyR r => Pretty (Def r cs) where
     pretty (Def n r ty     Abstract   Nothing) = pretty n <+> prettyCol r <+> pretty ty
     pretty (Def n r ty    (Term   tm) Nothing) = pretty n <+> prettyCol r <+> pretty ty <+> text "=" <+> pretty tm
     pretty (Def n r ty    (Clauses _) Nothing) = error "can't inline-print a def with clauses for body"
-    pretty (Def n r ty     cls cs)      = error "can't print a def with constraints"
+    pretty (Def n r ty     cls       (Just cs))
+        = pretty (Def n r ty cls Nothing) <+> text "{- constraints apply -}"
 
 instance PrettyR r => Pretty (TT r) where
     pretty (V n) = pretty n
