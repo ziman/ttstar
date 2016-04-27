@@ -64,7 +64,7 @@ instance PrettyR r => Pretty (TT r) where
     pretty (I n ty) = parens (pretty n <+> colon <+> pretty ty)
     pretty (Bind Pi d tm) = parens (pretty d) <+> arrow <+> pretty tm
     pretty (Bind Lam d tm) = parens (lam <> pretty d <> dot <+> pretty tm)
-    pretty (Bind Let d@(Def n r ty (Term _) Nothing) tm) =
+    pretty (Bind Let d tm) =
         blankLine
         $$ indent (text "let" <+> pretty d
             $$ text "in" <+> pretty tm

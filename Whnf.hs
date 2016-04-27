@@ -17,8 +17,15 @@ redDef form ctx (Def n r ty body cs) = Def n r (red form ctx ty) (redBody form c
 redBody :: Form -> Ctx r cs -> Body r -> Body r
 redBody form ctx Abstract = Abstract
 redBody form ctx (Term tm) = Term (red form ctx tm)
-redBody form ctx (Clauses cls) = error "trying to reduce clauses"
-    -- ^^ only let-bound terms should come into this function
+redBody form ctx (Clauses cls) = Clauses $ map (redClause form ctx) cls
+
+redClause :: Form -> Ctx r cs -> Clause r -> Clause r
+redClause WHNF ctx clause = clause
+redClause NF ctx (Clause pvs lhs rhs)
+    = Clause
+        (map (redDef NF ctx) pvs)
+        (red NF ctx lhs)
+        (red NF ctx rhs)
 
 red :: Form -> Ctx r cs -> TT r -> TT r
 red form ctx t@(V n)
