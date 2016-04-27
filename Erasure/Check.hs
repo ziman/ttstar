@@ -162,7 +162,19 @@ checkDef (Def n r ty (Term tm) Nothing) = bt ("DEF-TERM", n) $ do
     return $ Def n r ty (Term tm) (Just cs)
 
 checkDef (Def n r ty (Clauses cls) Nothing) = bt ("DEF-CLAUSES", n) $ do
-    tcfail $ NotImplemented "checking def-clauses"
+    cs <- unions <$> traverse (checkClause n r ty) cls
+    return $ Def n r ty (Clauses cls) (Just cs)
+
+checkClause :: Name -> Meta -> Type -> Clause Meta -> TC Constrs
+checkClause fn fr fty (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
+    (lty, lcs) <- withDefs pvs $ checkTm lhs
+    (rty, rcs) <- withDefs pvs $ checkTm rhs
+    ccs <- conv lty rty
+    return $ lcs /\ rcs /\ ccs
+
+withDefs :: [Def Meta cs] -> TC a -> TC a
+withDefs (Def n r ty Abstract Nothing : ds) = with (Def n r ty Abstract Nothing) . withDefs ds
+withDefs [] = id
 
 checkTm :: Term -> TC (Type, Constrs)
 
