@@ -87,6 +87,16 @@ unions = CS . M.unionsWith S.union . map runCS
 noConstrs :: Constrs
 noConstrs = CS M.empty
 
+-- newtype Constrs' r = CS { runCS :: M.Map (Guards' r) (Uses' r) }
+flipConstrs :: Constrs -> Constrs
+flipConstrs (CS cs)
+    = unions
+        [ p --> q
+        | (qs, ps) <- M.toList cs
+        , q <- S.toList qs
+        , p <- S.toList ps
+        ]
+
 cond :: Meta -> Constrs -> Constrs
 cond r = CS . M.mapKeysWith S.union (S.insert r) . runCS
 
@@ -170,7 +180,7 @@ checkClause fn fr fty (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
     (lty, lcs) <- withDefs pvs $ checkTm lhs
     (rty, rcs) <- withDefs pvs $ checkTm rhs
     ccs <- conv lty rty
-    return $ lcs /\ rcs /\ ccs
+    return $ flipConstrs lcs /\ rcs /\ ccs
 
 withDefs :: [Def Meta cs] -> TC a -> TC a
 withDefs (Def n r ty Abstract Nothing : ds) = with (Def n r ty Abstract Nothing) . withDefs ds
