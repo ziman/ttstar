@@ -1,6 +1,8 @@
 module Whnf (Form(..), red, whnf, nf) where
 
 import TT
+
+import Control.Monad
 import qualified Data.Map as M
 
 data Form = NF | WHNF
@@ -47,8 +49,8 @@ red  NF  ctx t@(Bind b d tm) = Bind b (redDef NF ctx d) (red NF ctx' tm)
 
 red form ctx t@(App r f x)
     | (V fn, args) <- unApply t
-    , Def _ _ _ (Clauses cls) _ <- M.lookup fn ctx
-    = redClauses cls t (error $ "non-coverage for " ++ show fn)
+    , Just (Def _ _ _ (Clauses cls) _) <- M.lookup fn ctx
+    = redClauses cls t
 
 red WHNF ctx t@(App r f x)
     -- TODO: look up name in context, reduce clauses
@@ -72,8 +74,67 @@ red form ctx (Forced tm) = Forced $ red form ctx tm
 red form ctx t@Erased = t
 red form ctx t@Type   = t
 
-redClauses :: [Clause r] -> TT r -> TT r -> TT r
-redClauses [] tm fail = fail
-redClauses (Clause pvs lhs rhs : cs) tm fail
-    | Right (ctx, rest) <- match lhs tm
-    = error "not implemented"
+appDepth :: TT r -> Int
+appDepth (App r f x) = 1 + appDepth f
+appDepth _ = 0
+
+unwrap :: Int -> TT r -> (TT r, [(r, TT r)])
+unwrap 0 tm = (tm, [])
+unwrap n (App r f x) = (tm, xs ++ [(r, x)])
+  where
+    (tm, xs) = unwrap (n-1) f
+unwrap n tm = error $ "can't unwrap"
+
+rewrap :: TT r -> [(r, TT r)] -> TT r
+rewrap f [] = f
+rewrap f ((r, x) : xs) = rewrap (App r f x) xs
+
+data Tri a = OK a | Nope | Unknown deriving (Eq, Ord, Show)
+
+instance Functor Tri where
+    fmap f (OK x)  = OK (f x)
+    fmap f Nope    = Nope
+    fmap f Unknown = Unknown
+
+instance Applicative Tri where
+    pure = OK
+    OK f <*> OK x = OK (f x)
+    Unknown <*> _ = Unknown
+    _ <*> Unknown = Unknown
+    Nope <*> _ = Nope
+    _ <*> Nope = Nope
+
+triJoin :: Tri (Tri a) -> Tri a
+triJoin Unknown = Unknown
+triJoin Nope    = Nope
+triJoin (OK x)  = x
+
+instance Monad Tri where
+    return = OK
+    x >>= f = triJoin $ fmap f x
+
+redClauses :: [Clause r] -> TT r -> TT r
+redClauses [] tm = tm
+redClauses (c : cs) tm
+    = case redClause' c tm of
+        OK tm'  -> tm'
+        Nope    -> redClauses cs tm
+        Unknown -> tm
+
+redClause' :: Clause r -> TT r -> Tri (TT r)
+redClause' (Clause pvs lhs rhs) tm
+    | tmDepth < patDepth = Unknown  -- undersaturated
+
+    | otherwise = do
+        ctx <- match [lhs] [tm']
+        return $ rewrap (substMany ctx rhs) extra
+  where
+    patDepth = appDepth lhs
+    tmDepth = appDepth tm
+    (tm', extra) = unwrap (tmDepth - patDepth) tm
+
+match :: [TT r] -> [TT r] -> Tri (Ctx r cs)
+match ls rs = M.unions <$> zipWithM matchTm ls rs
+
+matchTm :: TT r -> TT r -> Tri (Ctx r cs)
+matchTm _ _ = Unknown

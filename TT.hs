@@ -41,6 +41,9 @@ unApply tm = ua tm []
     ua (App _ f x) args = ua f (x : args)
     ua tm args = (tm, args)
 
+substMany :: Ctx r cs -> TT r -> TT r
+substMany ctx tm = foldl (\t (n, Def _ _ _ (Term tm) Nothing) -> subst n tm t) tm $ M.toList ctx
+
 subst :: Name -> TT r -> TT r -> TT r
 subst n tm t@(V n')
     | n' == n   = tm
