@@ -57,7 +57,7 @@ instance Show TCFailure where
 
 type TCTraceback = [String]
 type TCState = Int
-type TC a = ReaderT (TCTraceback, Ctx Meta Constrs', Stuck Meta) (ExceptT TCFailure (State TCState)) a
+type TC a = ReaderT (TCTraceback, Ctx Meta Constrs') (ExceptT TCFailure (State TCState)) a
 type Sig = (Meta, Type, Constrs)  -- relevance, type, constraints
 
 type Term = TT Meta
@@ -91,7 +91,7 @@ cond :: Meta -> Constrs -> Constrs
 cond r = CS . M.mapKeysWith S.union (S.insert r) . runCS
 
 with :: Def Meta Constrs' -> TC a -> TC a
-with d@(Def n r ty mtm mcs) = local $ \(tb, ctx, stuck) -> (tb, M.insert n d ctx, stuck)
+with d@(Def n r ty mtm mcs) = local $ \(tb, ctx) -> (tb, M.insert n d ctx)
 
 bt :: Show a => a -> TC b -> TC b
 bt dbg sub = do
@@ -107,12 +107,12 @@ showCtx ctx = unlines
 
 tcfail :: TCError -> TC a
 tcfail e = do
-    (tb, ctx, stuck) <- ask
+    (tb, ctx) <- ask
     lift . throwE $ TCFailure e tb
 
 getCtx :: TC (Ctx Meta Constrs')
 getCtx = do
-    (tb, ctx, stuck) <- ask
+    (tb, ctx) <- ask
     return ctx
 
 require :: Bool -> TCError -> TC ()
@@ -131,22 +131,6 @@ freshTag = lift $ lift (modify (+1) >> get)
 
 runTC :: Int -> Ctx Meta Constrs' -> TC a -> Either TCFailure a
 runTC maxTag ctx tc = evalState (runExceptT $ runReaderT tc ([], ctx, S.empty)) maxTag
-
-unifying :: TT Meta -> TT Meta -> TC a -> TC a
-unifying l r = btEntry . envOp
-  where
-    btEntry = bt ("UNIFY", l, r)
-    envOp = withReaderT $
-        \(tb, ctx, stuck) ->
-            let (ctx', stuck') = addUnif l r ctx stuck
-                in (tb, ctx', stuck')
-
-addUnif :: TT Meta -> TT Meta -> Ctx Meta Constrs' -> Stuck Meta
-    -> (Ctx Meta Constrs', Stuck Meta)  -- can this produce more constraints?
-addUnif l r ctx stuck = (ctx', stuck')
-  where
-    (subst, stuck') = unify $ S.insert (l, r) stuck
-    ctx' = foldl (\c (n, tm) -> substCtx n tm c) ctx subst
 
 check :: Program Meta VoidConstrs -> Either TCFailure (Ctx Meta Constrs', Constrs)
 check prog@(Prog defs) = runTC maxTag M.empty $ checkDefs (CS M.empty) defs
@@ -190,17 +174,13 @@ checkTm t@(I n ty) = bt ("INST", n, ty) $ do
     -- of this function that's runtime-relevant, not the function itself
     return (ty', cs' /\ convCs)
 
-checkTm t@(Bind Lam n r ty tm) = bt ("LAM", t) $ do
+checkTm t@(Bind Lam (Def n r ty Abstract Nothing) tm) = bt ("LAM", t) $ do
     (tmty, tmcs) <- with (Def n r ty Nothing Nothing) $ checkTm tm
     return (Bind Pi n r ty tmty, tmcs)
 
-checkTm t@(Bind Pi n r ty tm) = bt ("PI", t) $ do
+checkTm t@(Bind Pi (Def n r ty Abstract Nothing) tm) = bt ("PI", t) $ do
     (tmty, tmcs) <- with (Def n r ty Nothing Nothing) $ checkTm tm
     return (Type, tmcs)
-
-checkTm t@(Bind Pat n r ty tm) = bt ("PAT", t) $ do
-    (tmty, tmcs) <- with (Def n r ty Nothing Nothing) $ checkTm tm
-    return (Bind Pat n r ty tmty, tmcs)
 
 checkTm t@(App app_r f x) = bt ("APP", t) $ do
     (fty, fcs) <- checkTm f
@@ -218,91 +198,23 @@ checkTm t@(App app_r f x) = bt ("APP", t) $ do
         _ -> do
             tcfail $ NonFunction f fty
 
-checkTm t@(Let (Def n r ty mtm Nothing) tm) = bt ("LET", t) $ do
-    letcs <- case mtm of
-        Just t -> do
-            (valty, valcs) <- checkTm $ fromMaybe Erased mtm
+checkTm t@(Bind Let (Def n r ty body Nothing) tm) = bt ("LET", t) $ do
+    letcs <- case body of
+        Term t -> do
+            (valty, valcs) <- checkTm t
             tycs <- conv ty valty
             return $ Just (valcs /\ tycs)
-        Nothing -> return Nothing
+        Abstract -> return Nothing
+        Clauses -> error "trying to check let-bound clauses"
 
     (tmty, tmcs) <-
-        with (Def n r ty mtm letcs)
+        with (Def n r ty body letcs)
             $ checkTm tm
     return (tmty, tmcs /\ fromMaybe noConstrs letcs)
 
-checkTm t@(Case s cty alts) = bt ("CASE", t) $ do
-    -- TODO: check that alt constructors come from the family given by `sty'
-    -- to avoid (case (x : Bool) of Z -> ..., Refl -> ..., MkFoo -> ... .)
-    (sty, scs) <- checkTm s
-    (cty', ctycs) <- case cty of
-        Nothing -> do
-            alts' <- mapM checkAlt alts
-            -- just synthesise the type from the branches
-            let caseTy = Case s (Just Type) [altTy | (altTy, cs) <- alts']
-            let constrs = unions [cs | (altTy, cs) <- alts']
-            return (caseTy, constrs)
-
-        Just ty -> do
-            -- check that each branch converts with the corresponding specialised type
-            css <- sequence [ checkSpecAlt s ty alt | alt <- alts]
-            return (ty, unions css)
-
-    return (cty', scs /\ ctycs)
-
+checkTm (Forced tm) = checkTm tm
 checkTm Erased = return (Erased, noConstrs)
 checkTm Type   = return (Type,   noConstrs)
-
-checkSpecAlt :: TT Meta -> Type -> Alt Meta -> TC Constrs
-checkSpecAlt s expectedTy alt@(DefaultCase _tm)
-    = bt ("CONV-SPEC-ALT-DEFAULT", s, expectedTy, alt) $ do
-        (DefaultCase altTy, cs) <- checkAlt alt
-        cs' <- conv expectedTy altTy
-        return $ cs /\ cs'
-
-checkSpecAlt s expectedTy alt@(ConCase cn tm)
-    | (val, _) <- wrapPat (V cn) tm
-    = bt ("CONV-SPEC-ALT-CON", s, val, expectedTy, alt) $
-        -- (valTy, valCs) <- checkTm val FIXME -- TODO how do we check alts at all?
-        unifying s val $ do
-            (ConCase ccn ctm, cs) <- checkAlt alt
-            let (_, altTy) = wrapPat (V ccn) ctm
-            cs' <- conv expectedTy altTy
-            return $ cs /\ cs'
-
-{-
-checkSpecAlt s expectedTy alt@(ConCase cn tm)
- withEnvSubst n val $
-    = bt ("CONV-SPEC-ALT-TM", s, expectedTy, alt) $ do
-        (ConCase ccn ctm, cs) <- checkAlt $ substAlt n val alt
-        let (_, altTy) = wrapPat (V ccn) ctm
-        cs' <- conv (subst n val expectedTy) altTy
-        return $ cs /\ cs'
--}
-
--- Transform (C, pat x. pat y. M) --> (C x y, M)
-wrapPat :: Term -> Term -> (Term, Term)
-wrapPat tm (Bind Pat n r ty tm')
-    = wrapPat (App r tm (V n)) tm'
-wrapPat tm tm' = (tm, tm')
-
-checkAlt :: Alt Meta -> TC (Alt Meta, Constrs)
-checkAlt (DefaultCase tm) = bt ("ALT-DEF", tm) $ do
-    (tmty, tmcs) <- checkTm tm
-    return (DefaultCase tmty, tmcs)
-
-checkAlt (ConCase cn tm) = bt ("ALT-CON", cn, tm) $ do
-    Def _cn cr cty Nothing Nothing <- lookup cn
-    (tmty, tmcs) <- checkTm tm
-    argcs <- matchArgs cty args
-    return (ConCase cn tmty, tmcs /\ argcs)
-  where
-    (args, rhs) = splitBinder Pat tm
-    matchArgs p@(Bind Pi n r ty tm) q@((n', r', ty') : as) = bt ("MATCH-ARGS", p, q) $ do
-        xs <- conv ty ty'
-        ys <- matchArgs tm as
-        return $ xs /\ ys /\ r' --> r  -- ?direction?
-    matchArgs p q = return noConstrs
 
 newtype TC' a = LiftTC' { runTC' :: TC a } deriving (Functor, Applicative, Monad)
 type ITC = StateT (IM.IntMap Int) TC'
@@ -350,6 +262,7 @@ conv' p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do
     ys <- conv x x'
     return $ xs /\ ys /\ r <--> r'
 
+{-
 conv' p@(Let (Def n r ty mtm Nothing) tm) q@(Let (Def n' r' ty' mtm' Nothing) tm') = bt ("C-LET", p, q) $ do
     (val, val') <- case (mtm, mtm') of
         (Just t, Just t') -> return (t, t')
@@ -363,60 +276,13 @@ conv' p@(Let (Def n r ty mtm Nothing) tm) q@(Let (Def n' r' ty' mtm' Nothing) tm
     let letcs = valcs /\ tycs
     ys <- with (Def n r ty mtm (Just letcs)) $ conv tm (rename [n'] [n] tm')
     return $ letcs /\ ys /\ vcs /\ r <--> r'
+-}
 
-conv' p@(Case s ty alts) q@(Case s' ty' alts') = bt ("C-CASE", p, q) $ do
-    require (length alts == length alts') $ Mismatch (show alts) (show alts')
-    ts <- case (ty, ty') of
-        (Just t, Just t') -> conv t t'
-        _ -> return noConstrs
-    xs <- conv s s'
-    (sty, scs) <- checkTm s
-    acs <- unions <$> zipWithM (convAlt sty) (L.sort alts) (L.sort alts')
-    return $ ts /\ xs /\ scs /\ acs
-
--- last resort: uniform-case test
-conv' p@(Case _ _ _) q = conv' q p  -- won't loop because q /= Case
-conv' p q@(Case s ty alts) = bt ("UNIF-CASE", p, q) $ uniformCase p alts
-
+conv' (Forced l) (Forced r) = conv l r
 conv' Type   Type   = return noConstrs
 conv' Erased Erased = return noConstrs
 
 conv' p q = tcfail $ CantConvert p q
-
-convAlt :: Type -> Alt Meta -> Alt Meta -> TC Constrs
-convAlt sty (DefaultCase tm) (DefaultCase tm') = bt ("CA-DEF", tm, tm') $ conv tm tm'
-convAlt sty p@(ConCase cn tm) q@(ConCase cn' tm') = bt ("CA-CON", p, q) $ do
-    require (cn == cn') $ Mismatch (show cn) (show cn')
-    Def _cn cr cty Nothing Nothing <- lookup cn
-    let (ctyArgs, ctyRet) = splitBinder Pi cty
-    (xs, ctx) <- match ctyRet sty
-    ys <- conv (substMatch ctx cty tm) (substMatch ctx cty tm')
-    return $ xs /\ ys
-
-uniformCase :: Term -> [Alt Meta] -> TC Constrs
-uniformCase target alts = unions <$> mapM (simpleAlt target) alts
-  where
-    simpleAlt target (DefaultCase tm) = conv target tm
-    simpleAlt target (ConCase cn tm) = conv target $ snd (splitBinder Pat tm)
-    
--- pattern, term
-match :: TT Meta -> TT Meta -> TC (Constrs, M.Map Name Term)
-match (V n) (V n') | n == n' = return (noConstrs, M.empty)
-match (V n) tm = return (noConstrs, M.singleton n tm)
-match (App r f x) (App r' f' x') = do
-    (xs, xmap) <- match f f'
-    (ys, ymap) <- match x x'
-    return (xs /\ ys /\ r <--> r', M.union xmap ymap)
-
--- ctx, ctor type, pat+rhs
-substMatch :: M.Map Name Term -> Term -> Term -> Term
-substMatch ctx (Bind Pi n r ty tm) (Bind Pat n' r' ty' tm')
-    | Just x <- M.lookup n ctx
-    = substMatch ctx (subst n x tm) (subst n' x tm')
-
-    | otherwise
-    = substMatch ctx tm tm'
-substMatch ctx ctyRet rhs = rhs
 
 rename :: [Name] -> [Name] -> TTmeta -> TTmeta
 rename [] [] tm = tm
