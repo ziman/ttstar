@@ -27,9 +27,11 @@ instance Pretty Name where
     pretty = text . show
 
 instance PrettyR r => Pretty (Clause r) where
+    pretty (Clause [] lhs rhs) =
+        indent (pretty lhs <+> text " = " <+> pretty rhs)
     pretty (Clause pvs lhs rhs) =
         (text "pat" <+> hsep (map (parens . pretty) pvs) <> text ".")
-        $$ text "  " <> pretty lhs <+> text " = " <+> pretty rhs
+        $$ pretty (Clause [] lhs rhs)
 
 instance PrettyR r => Pretty (Body r) where
     pretty Abstract = empty
@@ -42,10 +44,10 @@ instance PrettyR r => Pretty (Program r cs) where
         fmtDef (Def n r ty Abstract cs)
             = text "postulate" <+> pretty (Def n r ty Abstract Nothing)
                 $$ blankLine
-        fmtDef (Def n r Erased body cs) = pretty body $$ blankLine
+        fmtDef (Def n r Erased body cs) = indent (pretty body) $$ blankLine
         fmtDef (Def n r ty body cs)
             = pretty (Def n r ty Abstract Nothing)
-                $$ pretty body $$ blankLine
+                $$ indent (pretty body) $$ blankLine
 
 instance PrettyR r => Pretty (Def r cs) where
     pretty (Def n r Erased Abstract   Nothing) = pretty n

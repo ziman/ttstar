@@ -92,9 +92,13 @@ app = foldl (App Nothing) <$> atomic <*> many atomic <?> "application"
 let_ :: Parser (TT MRel)
 let_ = (<?> "let expression") $ do
     kwd "let"
-    d <- parseDef
+    kwd "("
+    Def n r ty Abstract Nothing <- typing
+    kwd "="
+    body <- Term <$> expr
+    kwd ")"
     kwd "in"
-    Bind Let d <$> expr
+    Bind Let (Def n r ty body Nothing) <$> expr
 
 instOrForced :: Parser (TT MRel)
 instOrForced = kwd "[" >> (try inst <|> forced)
@@ -141,14 +145,14 @@ clause = (<?> "clause") $ do
     lhs <- expr
     kwd "="
     rhs <- expr
-    kwd "."
     return $ Clause pvs lhs rhs
 
 fundef :: Parser (Def MRel VoidConstrs)
 fundef = (<?> "function definition") $ do
-    Def n r ty Abstract Nothing <- try typing
+    Def n r ty Abstract Nothing <- typing
     kwd "."
-    cls <- many clause
+    cls <- clause `sepBy` kwd ","
+    kwd "."
     return $ Def n r ty (Clauses cls) Nothing
 
 parseDef :: Parser (Def MRel VoidConstrs)
