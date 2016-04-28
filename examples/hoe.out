@@ -233,6 +233,6 @@ postulate Op
 ### Normal forms ###
 
 unerased:
-  Op (id B) (const_A B)
+  Op B A
 erased:
-  Op (id B) A
+  Op B A

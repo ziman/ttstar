@@ -11,8 +11,8 @@ import Debug.Trace
 data Form = NF | WHNF deriving Show
 
 dbg :: Show a => a -> b -> b
-dbg = traceShow
--- dbg _ x = x
+--dbg = traceShow
+dbg _ x = x
 
 dbgS :: (Show a, Show b) => a -> b -> b
 dbgS x y = (x, y) `dbg` y
@@ -65,16 +65,18 @@ red  NF  ctx t@(Bind b d tm) = Bind b (redDef NF ctx d) (red NF ctx' tm)
     Def n r ty body Nothing = d
     ctx' = M.insert n (Def n r ty body Nothing) ctx
 
+-- pattern-matching definitions
 red form ctx t@(App r f x)
     | (V fn, args) <- unApply t
     , Just (Def _ _ _ (Clauses cls) _) <- M.lookup fn ctx
     = redClauses form ctx cls t
 
 red WHNF ctx t@(App r f x)
-    -- TODO: look up name in context, reduce clauses
+    -- lambdas
     | Bind Lam (Def n' r' ty' (Abstract Var) Nothing) tm' <- redF
     = red WHNF ctx $ subst n' x tm'
 
+    -- everything else
     | otherwise = t  -- not a redex
   where
     redF = red WHNF ctx f
@@ -147,12 +149,12 @@ redClause' form ctx (Clause pvs lhs rhs) tm
     | tmDepth < patDepth = Unknown  -- undersaturated
 
     | otherwise = do
-        patSubst <- ("PVS", pvs, lhs, rhs) `dbg` matchTm form patVars lhs tm'
-        let patValues = foldr (M.insert <$> defName <*> id) ctx patSubst
+        patSubst <- matchTm form patVars lhs tm'
+        let patValues = patSubst `M.union` ctx
         if M.keysSet patVars /= M.keysSet patValues
             then error "not all pattern vars bound in match"
             else return ()
-        return . red form patValues $ rewrap rhs extra
+        return . red form ctx $ rewrap (substMany patSubst rhs) extra
   where
     patDepth = appDepth lhs
     tmDepth = appDepth tm

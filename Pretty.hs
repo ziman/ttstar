@@ -92,7 +92,9 @@ instance PrettyR r => Pretty (TT r) where
 instance PrettyR r => Show (TT r) where
     show = prettyShow
 
-deriving instance (Show (cs r), PrettyR r) => Show (Def r cs)
+instance PrettyR r => Show (Def r cs) where
+    show = prettyShow
+
 deriving instance PrettyR r => Show (Clause r)
 deriving instance PrettyR r => Show (Body r)
 

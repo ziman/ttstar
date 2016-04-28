@@ -6,7 +6,7 @@ postulate S : N -> N.
 
 postulate Vec : N -> * -> *.
 postulate Nil : (a : *) -> Vec Z a.
-postulate Cons : (a : *) -> (n : N) -> (x : a) -> (xs : Vec n a) -> Vec (S n) a.
+postulate Cons : (a : *) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a.
 
 plus : N -> N -> N.
   pat (n : N).
@@ -20,5 +20,5 @@ append : (a : *) -> (m : N) -> (n : N) -> (xs : Vec m a) -> (ys : Vec n a) -> (V
   pat (a : *) (m : N) (n : N) (x : a) (xs : Vec m a) (ys : Vec n a).
     append a (S m) n (Cons a m x xs) ys = Cons a (plus m n) x (append a m n xs ys).
 
-main :R: Vec Z N
+main :R: Vec 1 N
     = append N 0 1 (Nil N) (Cons N Z 42 (Nil N)).
