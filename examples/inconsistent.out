@@ -3,24 +3,28 @@
 ### Desugared ###
 
 main  -R-  (x  -E-  *) -> *
-main = (\x  -E-  *. x)
+  pat (x : *).
+    main x  =  x
 
 ### Metaified ###
 
 main :!R: (x :!E: *) -> *
-main = (\x :!E: *. x)
+  pat (x :?1: *).
+    main -?2- x  =  x
 
 ### Inferred definitions ###
 
-main :!R: (x :!E: *) -> *
-  [] -> [!E,!R]
+main :!R: (x :!E: *) -> * 
+  pat (x :?1: *).
+    main -?2- x  =  x
+  [] -> [?1,?2,!E,!R]
 
 
 ### Constraints ###
 
-[] -> [!E,!R]
+[] -> [?1,?2,!E,!R]
 
 ### Solution ###
 
-[!E,!R]
+[?1,?2,!E,!R]
 

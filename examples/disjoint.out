@@ -2,15 +2,18 @@
 
 ### Desugared ###
 
-Bool : *
+main  -R-  *
+  = *
 
 ### Metaified ###
 
-Bool :?1: *
+main :!R: *
+  = *
 
 ### Inferred definitions ###
 
-Bool :?1: *
+main :!R: * = *
+
 
 ### Constraints ###
 
@@ -21,22 +24,26 @@ Bool :?1: *
 
 ### Annotated ###
 
-Bool :E: *
+main :R: *
+  = *
 
 ### Specialised ###
 
-Bool :!E: *
+main :!R: *
+  = *
 
 ### Final annotation ###
 
-Bool :E: *
+main :R: *
+  = *
 
 ### Pruned ###
 
+  = *
 
 ### Normal forms ###
 
 unerased:
-  main
+  *
 erased:
-  main
+  *

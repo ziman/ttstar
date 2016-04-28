@@ -40,9 +40,6 @@ redClause NF ctx (Clause pvs lhs rhs)
         (red NF ctx rhs)
 
 red :: IsRelevance r => Form -> Ctx r cs -> TT r -> TT r
-red form ctx t
-    | ("REDUCING", form, t, M.keys ctx) `dbg` False
-    = undefined
 
 red form ctx t@(V n)
     | Just (Def _n r ty body cs) <- M.lookup n ctx
@@ -52,6 +49,10 @@ red form ctx t@(V n)
         Clauses  cls -> redClauses form ctx cls t
 
     | otherwise = error $ "unknown variable: " ++ show n  -- unknown variable
+
+red form ctx t
+    | ("REDUCING", form, t, M.keys ctx) `dbg` False
+    = undefined
 
 red form ctx t@(I n i) = red form ctx (V n)
 
@@ -133,18 +134,20 @@ instance Monad Tri where
 redClauses :: IsRelevance r => Form -> Ctx r cs -> [Clause r] -> TT r -> TT r
 redClauses form ctx [] tm = tm
 redClauses form ctx (c : cs) tm
-    = let result = redClause' form ctx c tm
-        in case ("RED-CLAUSE", c, tm, result) `dbg` result of
-            Yep tm'  -> tm'
-            Nope    -> redClauses form ctx cs tm
-            Unknown -> tm
+    = case redClause' form ctx (freshen ctx c) tm of
+        Yep tm' -> tm'
+        Nope    -> redClauses form ctx cs tm
+        Unknown -> tm
 
 redClause' :: IsRelevance r => Form -> Ctx r cs -> Clause r -> TT r -> Tri (TT r)
+redClause' form ctx c tm
+    | ("RED-CLAUSE", M.keys ctx, c, tm) `dbg` False
+    = undefined
 redClause' form ctx (Clause pvs lhs rhs) tm
     | tmDepth < patDepth = Unknown  -- undersaturated
 
     | otherwise = do
-        patSubst <- match form patVars [lhs] [tm']
+        patSubst <- ("PVS", pvs, lhs, rhs) `dbg` matchTm form patVars lhs tm'
         let patValues = foldr (M.insert <$> defName <*> id) ctx patSubst
         if M.keysSet patVars /= M.keysSet patValues
             then error "not all pattern vars bound in match"
@@ -156,13 +159,13 @@ redClause' form ctx (Clause pvs lhs rhs) tm
     (tm', extra) = unwrap (tmDepth - patDepth) tm
     patVars = foldr (M.insert <$> defName <*> csDef) ctx pvs
 
-match :: IsRelevance r => Form -> Ctx r cs -> [TT r] -> [TT r] -> Tri (Ctx r cs)
-match form ctx ls rs
+matchTms :: IsRelevance r => Form -> Ctx r cs -> [TT r] -> [TT r] -> Tri (Ctx r cs)
+matchTms form ctx ls rs
     = M.unions <$> zipWithM (matchTm form ctx) ls rs
 
 matchTm :: IsRelevance r => Form -> Ctx r cs -> TT r -> TT r -> Tri (Ctx r cs)
 matchTm form ctx pat tm
-    | ("MATCH", pat, tm) `dbg` False
+    | ("MATCH-TM", pat, tm, M.keys ctx) `dbg` False
     = undefined
 
 -- patvars match anything
@@ -176,7 +179,7 @@ matchTm form ctx pattern@(App _ _ _) tm@(App _ _ _)
     , (V cn', args') <- unApply tm
     , cn == cn'  -- heads are the same
 --    , Just (Def _ _ _ (Abstract Postulate) Nothing) <- M.lookup cn ctx  -- is a ctor/postulate
-    = match form ctx (map (red form ctx) args) (map (red form ctx) args')
+    = matchTms form ctx (map (red form ctx) args) (map (red form ctx) args')
 
 -- forced patterns always match, not generating anything
 matchTm form ctx (Forced _) tm
@@ -195,9 +198,9 @@ freshen ctx (Clause (d:ds) rhs lhs)
     | n `M.member` ctx
     = let n' = getFreshName ctx n
         in Clause (d{ defName = n' } :ds') (rename n n' rhs') (rename n n' lhs')
-    | otherwise = c'
+    | otherwise = Clause (d:ds') rhs' lhs'
   where
     n = defName d
-    c'@(Clause ds' rhs' lhs') = freshen ctx $ Clause ds rhs lhs
+    Clause ds' rhs' lhs' = freshen ctx $ Clause ds rhs lhs
 
 -- TODO: remove `Forced` from matched contexts

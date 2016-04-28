@@ -3,16 +3,16 @@
 ### Desugared ###
 
 main  -R-  (x : *) -> *
-main = (\x : *. x)
+  = (\x : *. x)
 
 ### Metaified ###
 
 main :!R: (x :?1: *) -> *
-main = (\x :?2: *. x)
+  = (\x :?2: *. x)
 
 ### Inferred definitions ###
 
-main :!R: (x :?1: *) -> *
+main :!R: (x :?1: *) -> * = (\x :?2: *. x)
   [] -> [?1,?2,!R]
 
 
@@ -27,21 +27,21 @@ main :!R: (x :?1: *) -> *
 ### Annotated ###
 
 main :R: (x :R: *) -> *
-main = (\x :R: *. x)
+  = (\x :R: *. x)
 
 ### Specialised ###
 
 main :!R: (x :!R: *) -> *
-main = (\x :!R: *. x)
+  = (\x :!R: *. x)
 
 ### Final annotation ###
 
 main :R: (x :R: *) -> *
-main = (\x :R: *. x)
+  = (\x :R: *. x)
 
 ### Pruned ###
 
-main = (\x. x)
+  = (\x. x)
 
 ### Normal forms ###
 

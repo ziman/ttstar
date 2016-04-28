@@ -2,57 +2,209 @@
 
 ### Desugared ###
 
-Bool : *
+postulate Bool : *
 
-T : Bool
+postulate T : Bool
 
-F : Bool
+postulate F : Bool
 
-Id : (a : *) -> (x : a) -> (y : a) -> *
+postulate Id : (a : *) -> (x : a) -> (y : a) -> *
 
-Refl : (a : *) -> (x : a) -> (Id x x)
+postulate Refl : (a : *) -> (x : a) -> Id x x
 
-not : (x : Bool) -> Bool
-not = (\x : Bool. 
-  case x of
-    T -> F
-    F -> T)
+not : (_ : Bool) -> Bool
+  not T  =  F
+  not F  =  T
 
-notnot : (x : Bool) -> (Id x (not (not x)))
-notnot = (\x : Bool. 
-  case x returns (Id x (not (not x))) of
-    T -> (Refl Bool T)
-    F -> (Refl Bool F))
+notnot : (x : Bool) -> Id x (not (not x))
+  notnot T  =  Refl Bool T
+  notnot F  =  Refl Bool F
 
-main  -R-  (Id F (not (not F)))
-main = (notnot F)
+main  -R-  Id F (not (not F))
+  main  =  notnot F
 
 ### Metaified ###
 
-Bool :?1: *
+postulate Bool :?1: *
 
-T :?2: Bool
+postulate T :?2: Bool
+
+postulate F :?3: Bool
+
+postulate Id :?4: (a :?5: *) -> (x :?6: a) -> (y :?7: a) -> *
+
+postulate Refl :?8: (a :?9: *) -> (x :?10: a) -> Id -?12- x -?11- x
+
+not :?13: (_ :?14: Bool) -> Bool
+  not -?15- T  =  F
+  not -?16- F  =  T
+
+notnot :?17: (x :?18: Bool) -> Id -?20- x -?19- (not -?21- (not -?22- x))
+  notnot -?23- T  =  Refl -?25- Bool -?24- T
+  notnot -?26- F  =  Refl -?28- Bool -?27- F
+
+main :!R: Id -?30- F -?29- (not -?31- (not -?32- F))
+  main  =  notnot -?33- F
+
+### Inferred definitions ###
+
+Bool :?1: *
 
 F :?3: Bool
 
 Id :?4: (a :?5: *) -> (x :?6: a) -> (y :?7: a) -> *
 
-Refl :?8: (a :?9: *) -> (x :?10: a) -> (Id -?12- x -?11- x)
+Refl :?8: (a :?9: *) -> (x :?10: a) -> Id -?12- x -?11- x
 
-not :?13: (x :?14: Bool) -> Bool
-not = (\x :?15: Bool. 
-  case x of
-    T -> F
-    F -> T)
+T :?2: Bool
 
-notnot :?16: (x :?17: Bool) -> (Id -?19- x -?18- (not -?20- (not -?21- x)))
-notnot = (\x :?22: Bool. 
-  case x returns (Id -?24- x -?23- (not -?25- (not -?26- x))) of
-    T -> (Refl -?28- Bool -?27- T)
-    F -> (Refl -?30- Bool -?29- F))
+main :!R: Id -?30- F -?29- (not -?31- (not -?32- F)) 
+  main  =  notnot -?33- F
+  [] -> [?17,!R]
+  [?18] -> [?3,?33]
+  [?19] -> [?29]
+  [?20] -> [?30]
+  [?29] -> [?19]
+  [?30] -> [?20]
+  [?33] -> [?18]
 
-main :!R: (Id -?32- F -?31- (not -?33- (not -?34- F)))
-main = (notnot -?35- F)
+not :?13: (_ :?14: Bool) -> Bool 
+  not -?15- T  =  F
+  not -?16- F  =  T
+  [] -> [?2,?3,?14,?15,?16,!R]
 
-### Inferred definitions ###
+notnot :?17: (x :?18: Bool) -> Id -?20- x -?19- (not -?21- (not -?22- x)) 
+  notnot -?23- T  =  Refl -?25- Bool -?24- T
+  notnot -?26- F  =  Refl -?28- Bool -?27- F
+  [] -> [?8,!R]
+  [?2] -> [?18]
+  [?3] -> [?18]
+  [?9] -> [?1,?25,?28]
+  [?10] -> [?2,?3,?24,?27]
+  [?11] -> [?19]
+  [?12] -> [?20]
+  [?18] -> [?23,?26]
+  [?19] -> [?11]
+  [?20] -> [?12]
+  [?23] -> [?18]
+  [?24] -> [?10]
+  [?25] -> [?9]
+  [?26] -> [?18]
+  [?27] -> [?10]
+  [?28] -> [?9]
 
+
+### Constraints ###
+
+[] -> [?2,?3,?8,?14,?15,?16,?17,!R]
+[?2] -> [?18]
+[?3] -> [?18]
+[?9] -> [?1,?25,?28]
+[?10] -> [?2,?3,?24,?27]
+[?11] -> [?19]
+[?12] -> [?20]
+[?18] -> [?3,?23,?26,?33]
+[?19] -> [?11,?29]
+[?20] -> [?12,?30]
+[?23] -> [?18]
+[?24] -> [?10]
+[?25] -> [?9]
+[?26] -> [?18]
+[?27] -> [?10]
+[?28] -> [?9]
+[?29] -> [?19]
+[?30] -> [?20]
+[?33] -> [?18]
+
+### Solution ###
+
+[?2,?3,?8,?14,?15,?16,?17,?18,?23,?26,?33,!R]
+
+### Annotated ###
+
+postulate Bool :E: *
+
+postulate T :R: Bool
+
+postulate F :R: Bool
+
+postulate Id :E: (a :E: *) -> (x :E: a) -> (y :E: a) -> *
+
+postulate Refl :R: (a :E: *) -> (x :E: a) -> Id -E- x -E- x
+
+not :E: (_ :R: Bool) -> Bool
+  not -R- T  =  F
+  not -R- F  =  T
+
+notnot :R: (x :R: Bool) -> Id -E- x -E- (not -E- (not -E- x))
+  notnot -R- T  =  Refl -E- Bool -E- T
+  notnot -R- F  =  Refl -E- Bool -E- F
+
+main :R: Id -E- F -E- (not -E- (not -E- F))
+  main  =  notnot -R- F
+
+### Specialised ###
+
+postulate Bool :!E: *
+
+postulate T :!R: Bool
+
+postulate F :!R: Bool
+
+postulate Id :!E: (a :!E: *) -> (x :!E: a) -> (y :!E: a) -> *
+
+postulate Refl :!R: (a :!E: *) -> (x :!E: a) -> Id -!E- x -!E- x
+
+not :!E: (_ :!R: Bool) -> Bool
+  not -!R- T  =  F
+  not -!R- F  =  T
+
+notnot :!R: (x :!R: Bool) -> Id -!E- x -!E- (not -!E- (not -!E- x))
+  notnot -!R- T  =  Refl -!E- Bool -!E- T
+  notnot -!R- F  =  Refl -!E- Bool -!E- F
+
+main :!R: Id -!E- F -!E- (not -!E- (not -!E- F))
+  main  =  notnot -!R- F
+
+### Final annotation ###
+
+postulate Bool :E: *
+
+postulate T :R: Bool
+
+postulate F :R: Bool
+
+postulate Id :E: (a :E: *) -> (x :E: a) -> (y :E: a) -> *
+
+postulate Refl :R: (a :E: *) -> (x :E: a) -> Id -E- x -E- x
+
+not :E: (_ :R: Bool) -> Bool
+  not -R- T  =  F
+  not -R- F  =  T
+
+notnot :R: (x :R: Bool) -> Id -E- x -E- (not -E- (not -E- x))
+  notnot -R- T  =  Refl -E- Bool -E- T
+  notnot -R- F  =  Refl -E- Bool -E- F
+
+main :R: Id -E- F -E- (not -E- (not -E- F))
+  main  =  notnot -R- F
+
+### Pruned ###
+
+postulate T
+
+postulate F
+
+postulate Refl
+
+  notnot T  =  Refl
+  notnot F  =  Refl
+
+  main  =  notnot F
+
+### Normal forms ###
+
+unerased:
+  Refl Bool F
+erased:
+  Refl

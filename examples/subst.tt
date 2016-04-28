@@ -3,8 +3,8 @@
 postulate Id : (A : *) -> A -> A -> *.
 postulate Refl : (A : *) -> (x : A) -> Id A x x.
 
-subst : (A : *) -> (P : A -> *) -> (x : A) -> (y : A) -> (eq : Id A x y) -> (px : P x) -> P y.
+subst : (A : *) -> (P : A -> *) -> (x : A) -> (y : A) -> (eq : Id A x y) -> (px : P x) -> A {- P y -}.
   pat (A : *) (P : A -> *) (x : A) (px : P x).
-    subst A P x [x] (Refl A [x]) px = px.
+    subst A P x [x] (Refl A [x]) px = x {- px -}.
 
 main :R: * = *.

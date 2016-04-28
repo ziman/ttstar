@@ -1,0 +1,3 @@
+"examples/stuff.tt" (line 27, column 20):
+unexpected "("
+expecting line comment, block comment or definition
