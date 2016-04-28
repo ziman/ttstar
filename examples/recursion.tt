@@ -1,4 +1,4 @@
--- vim: ft=agda
+-- vim: ft=idris
 
 postulate Bool : *.
 postulate True : Bool.
@@ -12,12 +12,11 @@ postulate Vec : Nat -> * -> *.
 postulate VNil : (a : *) -> Vec Z a.
 postulate VCons : (a : *) -> (n : Nat) -> (x : a) -> (xs : Vec n a) -> Vec (S n) a.
 
-vlen (a : *) (n : Nat) (xs : Vec n a) : Nat
-    = case (xs) of
-        VNil (a : *)
-            -> Z,
-        VCons (a : *) (n : Nat) (x : a) (xs : Vec n a)
-            -> S (vlen a n xs).
+vlen : (a : *) -> (n : Nat) -> (Vec n a) -> Nat.
+  pat (a : *).
+    vlen a Z (VNil a) = Z,
+  pat (a : *) (n : Nat) (x : a) (xs : Vec n a).
+    vlen a (S n) (VCons a n x xs) = S (vlen a n xs).
 
 testVec : Vec (S (S Z)) Bool
     = VCons Bool (S Z) True (VCons Bool Z False (VNil Bool)).
