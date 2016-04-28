@@ -1,4 +1,4 @@
--- vim: ft=agda
+-- vim: ft=idris
 
 postulate Bool : *.
 postulate T : Bool.
@@ -7,14 +7,15 @@ postulate F : Bool.
 postulate Id : (a : *) -> (x : a) -> (y : a) -> *.
 postulate Refl : (a : *) -> (x : a) -> Id x x.
 
-not (x : Bool) : Bool
-    = case (x) of
-        T -> F,
-        F -> T.
+not : Bool -> Bool.
+  pat (x : Bool).
+    not T = F,
+    not F = T.
 
-notnot (x : Bool) : Id x (not (not x))
-    = case (x) returns (Id x (not (not x))) of
-        T -> Refl Bool T,
-        F -> Refl Bool F.
+notnot : (x : Bool) -> Id x (not (not x)).
+  pat (x : Bool).
+    notnot T = Refl Bool T,
+    notnot F = Refl Bool F.
 
-main :R: Id F (not (not F)) = notnot F.
+main :R: Id F (not (not F)).
+  main = notnot F.
