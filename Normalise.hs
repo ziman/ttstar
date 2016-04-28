@@ -103,16 +103,16 @@ rewrap :: TT r -> [(r, TT r)] -> TT r
 rewrap f [] = f
 rewrap f ((r, x) : xs) = rewrap (App r f x) xs
 
-data Tri a = OK a | Nope | Unknown deriving (Eq, Ord, Show)
+data Tri a = Yep a | Nope | Unknown deriving (Eq, Ord, Show)
 
 instance Functor Tri where
-    fmap f (OK x)  = OK (f x)
+    fmap f (Yep x) = Yep (f x)
     fmap f Nope    = Nope
     fmap f Unknown = Unknown
 
 instance Applicative Tri where
-    pure = OK
-    OK f <*> OK x = OK (f x)
+    pure = Yep
+    Yep f <*> Yep x = Yep (f x)
     Unknown <*> _ = Unknown
     _ <*> Unknown = Unknown
     Nope <*> _ = Nope
@@ -121,19 +121,20 @@ instance Applicative Tri where
 triJoin :: Tri (Tri a) -> Tri a
 triJoin Unknown = Unknown
 triJoin Nope    = Nope
-triJoin (OK x)  = x
+triJoin (Yep x)  = x
 
 instance Monad Tri where
-    return = OK
+    return = Yep
     x >>= f = triJoin $ fmap f x
 
 redClauses :: IsRelevance r => Form -> Ctx r cs -> [Clause r] -> TT r -> TT r
 redClauses form ctx [] tm = tm
 redClauses form ctx (c : cs) tm
-    = case redClause' form ctx c tm of
-        OK tm'  -> tm'
-        Nope    -> redClauses form ctx cs tm
-        Unknown -> tm
+    = let result = redClause' form ctx c tm
+        in case ("RED-CLAUSE", c, tm, result) `dbg` result of
+            Yep tm'  -> tm'
+            Nope    -> redClauses form ctx cs tm
+            Unknown -> tm
 
 redClause' :: IsRelevance r => Form -> Ctx r cs -> Clause r -> TT r -> Tri (TT r)
 redClause' form ctx (Clause pvs lhs rhs) tm
@@ -152,27 +153,30 @@ match :: IsRelevance r => Form -> Ctx r cs -> [TT r] -> [TT r] -> Tri (Ctx r cs)
 match form ctx ls rs = M.unions <$> zipWithM (matchTm form ctx) ls rs
 
 matchTm :: IsRelevance r => Form -> Ctx r cs -> TT r -> TT r -> Tri (Ctx r cs)
+matchTm form ctx pat tm
+    | ("MATCH", pat, tm) `dbg` False
+    = undefined
 
 -- patvars match anything
 matchTm form ctx (V n) tm
-    | Just d@(Def _ _ _ (Abstract Var) Nothing) <- M.lookup n ctx
-    = OK $ M.singleton n d
+    | Just d@(Def n r ty (Abstract Var) Nothing) <- M.lookup n ctx
+    = Yep $ M.singleton n (Def n r ty (Term tm) Nothing)
 
 -- data constructors match
 matchTm form ctx pattern@(App _ _ _) tm@(App _ _ _)
     | (V cn , args ) <- unApply pattern
     , (V cn', args') <- unApply tm
     , cn == cn'  -- heads are the same
-    , Just (Def _ _ _ (Abstract Postulate) Nothing) <- M.lookup cn ctx  -- is a ctor/postulate
+--    , Just (Def _ _ _ (Abstract Postulate) Nothing) <- M.lookup cn ctx  -- is a ctor/postulate
     = match form ctx args args'
 
 -- forced patterns always match, not generating anything
 matchTm form ctx (Forced _) tm
-    = OK $ M.empty
+    = Yep M.empty
 
 -- equal terms match
 matchTm form ctx tm tm'
     | tm == tm'
-    = OK $ M.empty
+    = Yep M.empty
 
-matchTm form ctx _ _ = Unknown
+matchTm form ctx _ _ = Nope
