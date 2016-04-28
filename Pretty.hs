@@ -1,5 +1,5 @@
-{-# LANGUAGE FlexibleContexts, FlexibleInstances, StandaloneDeriving #-}
-module Pretty (PrettyR(..)) where
+{-# LANGUAGE FlexibleContexts, FlexibleInstances, StandaloneDeriving, ConstraintKinds #-}
+module Pretty (PrettyR(..), IsRelevance) where
 
 import TT
 import Util.PrettyPrint
@@ -92,6 +92,8 @@ instance PrettyR r => Show (TT r) where
 deriving instance (Show (cs r), PrettyR r) => Show (Def r cs)
 deriving instance PrettyR r => Show (Clause r)
 deriving instance PrettyR r => Show (Body r)
+
+type IsRelevance r = (PrettyR r, Eq r)
 
 lam = text "\\"
 indent = nest 2

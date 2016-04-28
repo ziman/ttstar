@@ -10,21 +10,21 @@ import Debug.Trace
 
 data Form = NF | WHNF
 
-whnf :: PrettyR r => Ctx r cs -> TT r -> TT r
+whnf :: IsRelevance r => Ctx r cs -> TT r -> TT r
 whnf = red WHNF
 
-nf :: PrettyR r => Ctx r cs -> TT r -> TT r
+nf :: IsRelevance r => Ctx r cs -> TT r -> TT r
 nf = red NF
 
-redDef :: PrettyR r => Form -> Ctx r cs -> Def r cs' -> Def r cs'
+redDef :: IsRelevance r => Form -> Ctx r cs -> Def r cs' -> Def r cs'
 redDef form ctx (Def n r ty body cs) = Def n r (red form ctx ty) (redBody form ctx body) cs
 
-redBody :: PrettyR r => Form -> Ctx r cs -> Body r -> Body r
+redBody :: IsRelevance r => Form -> Ctx r cs -> Body r -> Body r
 redBody form ctx (Abstract a)  = Abstract a
 redBody form ctx (Term tm)     = Term (red form ctx tm)
 redBody form ctx (Clauses cls) = Clauses $ map (redClause form ctx) cls
 
-redClause :: PrettyR r => Form -> Ctx r cs -> Clause r -> Clause r
+redClause :: IsRelevance r => Form -> Ctx r cs -> Clause r -> Clause r
 redClause WHNF ctx clause = clause
 redClause NF ctx (Clause pvs lhs rhs)
     = Clause
@@ -32,7 +32,7 @@ redClause NF ctx (Clause pvs lhs rhs)
         (red NF ctx lhs)
         (red NF ctx rhs)
 
-red :: PrettyR r => Form -> Ctx r cs -> TT r -> TT r
+red :: IsRelevance r => Form -> Ctx r cs -> TT r -> TT r
 red form ctx t@(V n)
     | Just (Def _n r ty body cs) <- M.lookup n ctx
     = case body of
@@ -119,7 +119,7 @@ instance Monad Tri where
     return = OK
     x >>= f = triJoin $ fmap f x
 
-redClauses :: PrettyR r => Form -> Ctx r cs -> [Clause r] -> TT r -> TT r
+redClauses :: IsRelevance r => Form -> Ctx r cs -> [Clause r] -> TT r -> TT r
 redClauses form ctx [] tm = tm
 redClauses form ctx (c : cs) tm
     = case redClause' form ctx c tm of
@@ -127,7 +127,7 @@ redClauses form ctx (c : cs) tm
         Nope    -> redClauses form ctx cs tm
         Unknown -> tm
 
-redClause' :: PrettyR r => Form -> Ctx r cs -> Clause r -> TT r -> Tri (TT r)
+redClause' :: IsRelevance r => Form -> Ctx r cs -> Clause r -> TT r -> Tri (TT r)
 redClause' form ctx (Clause pvs lhs rhs) tm
     | tmDepth < patDepth = Unknown  -- undersaturated
 
@@ -140,11 +140,31 @@ redClause' form ctx (Clause pvs lhs rhs) tm
     (tm', extra) = unwrap (tmDepth - patDepth) tm
     ctx' = foldr (M.insert <$> defName <*> csDef) ctx pvs
 
-match :: PrettyR r => Form -> Ctx r cs -> [TT r] -> [TT r] -> Tri (Ctx r cs)
+match :: IsRelevance r => Form -> Ctx r cs -> [TT r] -> [TT r] -> Tri (Ctx r cs)
 match form ctx ls rs = M.unions <$> zipWithM (matchTm form ctx) ls rs
 
-matchTm :: PrettyR r => Form -> Ctx r cs -> TT r -> TT r -> Tri (Ctx r cs)
+matchTm :: IsRelevance r => Form -> Ctx r cs -> TT r -> TT r -> Tri (Ctx r cs)
+
+-- patvars match anything
 matchTm form ctx (V n) tm
     | Just d@(Def _ _ _ (Abstract Var) Nothing) <- M.lookup n ctx
     = OK $ M.singleton n d
+
+-- data constructors match
+matchTm form ctx pattern@(App _ _ _) tm@(App _ _ _)
+    | (V cn , args ) <- unApply pattern
+    , (V cn', args') <- unApply tm
+    , cn == cn'  -- heads are the same
+    , Just (Def _ _ _ (Abstract Postulate) Nothing) <- M.lookup cn ctx  -- is a ctor/postulate
+    = match form ctx args args'
+
+-- forced patterns always match, not generating anything
+matchTm form ctx (Forced _) tm
+    = OK $ M.empty
+
+-- equal terms match
+matchTm form ctx tm tm'
+    | tm == tm'
+    = OK $ M.empty
+
 matchTm form ctx _ _ = Unknown
