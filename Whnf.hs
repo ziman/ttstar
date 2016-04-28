@@ -56,7 +56,7 @@ red  NF  ctx t@(Bind b d tm) = Bind b (redDef NF ctx d) (red NF ctx' tm)
 red form ctx t@(App r f x)
     | (V fn, args) <- unApply t
     , Just (Def _ _ _ (Clauses cls) _) <- M.lookup fn ctx
-    = redClauses cls t
+    = redClauses form ctx cls t
 
 red WHNF ctx t@(App r f x)
     -- TODO: look up name in context, reduce clauses
@@ -119,30 +119,31 @@ instance Monad Tri where
     return = OK
     x >>= f = triJoin $ fmap f x
 
-redClauses :: PrettyR r => [Clause r] -> TT r -> TT r
-redClauses [] tm = tm
-redClauses (c : cs) tm
-    = case ("RED-CLAUSE", c, tm) `traceShow` redClause' c tm of
+redClauses :: PrettyR r => Form -> Ctx r cs -> [Clause r] -> TT r -> TT r
+redClauses form ctx [] tm = tm
+redClauses form ctx (c : cs) tm
+    = case ("RED-CLAUSE", c, tm) `traceShow` redClause' form ctx c tm of
         OK tm'  -> tm'
-        Nope    -> redClauses cs tm
+        Nope    -> redClauses form ctx cs tm
         Unknown -> tm
 
-redClause' :: PrettyR r => Clause r -> TT r -> Tri (TT r)
-redClause' (Clause pvs lhs rhs) tm
+redClause' :: PrettyR r => Form -> Ctx r cs -> Clause r -> TT r -> Tri (TT r)
+redClause' form ctx (Clause pvs lhs rhs) tm
     | tmDepth < patDepth = Unknown  -- undersaturated
 
     | otherwise = do
-        ctx <- match [lhs] [tm']
+        ctx <- match form ctx' [lhs] [tm']
         return $ rewrap (substMany ctx rhs) extra
   where
     patDepth = appDepth lhs
     tmDepth = appDepth tm
     (tm', extra) = unwrap (tmDepth - patDepth) tm
+    ctx' = foldl (\c (Def n r ty Abstract Nothing) -> M.insert (Def n r ty Abstract Nothing) c) ctx pvs
 
-match :: PrettyR r => [TT r] -> [TT r] -> Tri (Ctx r cs)
-match ls rs = M.unions <$> zipWithM matchTm ls rs
+match :: PrettyR r => Form -> Ctx r cs -> [TT r] -> [TT r] -> Tri (Ctx r cs)
+match form ctx ls rs = M.unions <$> zipWithM (matchTm form ctx) ls rs
 
-matchTm :: PrettyR r => TT r -> TT r -> Tri (Ctx r cs)
-matchTm (V n) tm = OK $ M.singleton n (Def 
-matchTm (V n) 
-matchTm _ _ = Unknown
+matchTm :: PrettyR r => Form -> Ctx -> TT r -> TT r -> Tri (Ctx r cs)
+matchTm form ctx (V n) tm = OK $ M.singleton n (Def 
+matchTm form ctx (V n) 
+matchTm form ctx _ _ = Unknown
