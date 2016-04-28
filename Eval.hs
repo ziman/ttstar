@@ -1,6 +1,8 @@
+{-# LANGUAGE FlexibleContexts #-}
 module Eval (eval) where
 
 import TT
+import Pretty
 import Whnf
 import qualified Data.Map as M
 
@@ -11,5 +13,5 @@ defs2tt :: [Def r cs] -> TT r
 defs2tt [] = V $ UN "main"
 defs2tt (Def n r ty body cs : ds) = Bind Let (Def n r ty body Nothing) $ defs2tt ds
 
-eval :: Form -> Program r cs -> TT r
+eval :: PrettyR r => Form -> Program r cs -> TT r
 eval form = red form M.empty . prog2tt

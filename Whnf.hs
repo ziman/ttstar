@@ -1,27 +1,30 @@
 module Whnf (Form(..), red, whnf, nf) where
 
 import TT
+import Pretty
 
 import Control.Monad
 import qualified Data.Map as M
 
+import Debug.Trace
+
 data Form = NF | WHNF
 
-whnf :: Ctx r cs -> TT r -> TT r
+whnf :: PrettyR r => Ctx r cs -> TT r -> TT r
 whnf = red WHNF
 
-nf :: Ctx r cs -> TT r -> TT r
+nf :: PrettyR r => Ctx r cs -> TT r -> TT r
 nf = red NF
 
-redDef :: Form -> Ctx r cs -> Def r cs' -> Def r cs'
+redDef :: PrettyR r => Form -> Ctx r cs -> Def r cs' -> Def r cs'
 redDef form ctx (Def n r ty body cs) = Def n r (red form ctx ty) (redBody form ctx body) cs
 
-redBody :: Form -> Ctx r cs -> Body r -> Body r
+redBody :: PrettyR r => Form -> Ctx r cs -> Body r -> Body r
 redBody form ctx Abstract = Abstract
 redBody form ctx (Term tm) = Term (red form ctx tm)
 redBody form ctx (Clauses cls) = Clauses $ map (redClause form ctx) cls
 
-redClause :: Form -> Ctx r cs -> Clause r -> Clause r
+redClause :: PrettyR r => Form -> Ctx r cs -> Clause r -> Clause r
 redClause WHNF ctx clause = clause
 redClause NF ctx (Clause pvs lhs rhs)
     = Clause
@@ -29,10 +32,10 @@ redClause NF ctx (Clause pvs lhs rhs)
         (red NF ctx lhs)
         (red NF ctx rhs)
 
-red :: Form -> Ctx r cs -> TT r -> TT r
+red :: PrettyR r => Form -> Ctx r cs -> TT r -> TT r
 red form ctx t@(V n)
     | Just (Def _n r ty body cs) <- M.lookup n ctx
-    = case body of
+    = case ("VAR-NF", n, body) `traceShow` body of
         Abstract -> t
         Term tm  -> red form ctx tm
         Clauses cls -> t
@@ -116,15 +119,15 @@ instance Monad Tri where
     return = OK
     x >>= f = triJoin $ fmap f x
 
-redClauses :: [Clause r] -> TT r -> TT r
+redClauses :: PrettyR r => [Clause r] -> TT r -> TT r
 redClauses [] tm = tm
 redClauses (c : cs) tm
-    = case redClause' c tm of
+    = case ("RED-CLAUSE", c, tm) `traceShow` redClause' c tm of
         OK tm'  -> tm'
         Nope    -> redClauses cs tm
         Unknown -> tm
 
-redClause' :: Clause r -> TT r -> Tri (TT r)
+redClause' :: PrettyR r => Clause r -> TT r -> Tri (TT r)
 redClause' (Clause pvs lhs rhs) tm
     | tmDepth < patDepth = Unknown  -- undersaturated
 
@@ -136,8 +139,10 @@ redClause' (Clause pvs lhs rhs) tm
     tmDepth = appDepth tm
     (tm', extra) = unwrap (tmDepth - patDepth) tm
 
-match :: [TT r] -> [TT r] -> Tri (Ctx r cs)
+match :: PrettyR r => [TT r] -> [TT r] -> Tri (Ctx r cs)
 match ls rs = M.unions <$> zipWithM matchTm ls rs
 
-matchTm :: TT r -> TT r -> Tri (Ctx r cs)
+matchTm :: PrettyR r => TT r -> TT r -> Tri (Ctx r cs)
+matchTm (V n) tm = OK $ M.singleton n (Def 
+matchTm (V n) 
 matchTm _ _ = Unknown
