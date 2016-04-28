@@ -51,8 +51,14 @@ not : Bool -> Bool.
   not True  = False,
   not False = True.
 
-main :R: Bool.
-  main = not True.
+plus : Nat -> Nat -> Nat.
+  pat (n : Nat).
+    plus Z n = n,
+  pat (m : Nat) (n : Nat).
+    plus (S m) n = S (plus m n).
+
+main :R: Nat.
+  main = plus 3 4.
 
 {-
 main :R: Nat.
