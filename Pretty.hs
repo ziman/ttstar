@@ -50,14 +50,18 @@ instance PrettyR r => Pretty (Program r cs) where
                 $$ indent (pretty body) $$ blankLine
 
 instance PrettyR r => Pretty (Def r cs) where
-    pretty (Def n r Erased (Abstract _) Nothing) = pretty n
-    pretty (Def n r ty     (Abstract _) Nothing) = pretty n <+> prettyCol r <+> pretty ty
-    pretty (Def n r ty    (Term   tm) Nothing) = pretty n <+> prettyCol r <+> pretty ty <+> text "=" <+> pretty tm
-    pretty (Def n r ty    (Clauses cls) Nothing)
-        = pretty (Def n r ty (Abstract Var) Nothing)
-            $$ indent (vcat $ map pretty cls)
-    pretty (Def n r ty cls (Just cs))
-        = pretty (Def n r ty cls Nothing) <+> text "{- constraints apply -}"
+    pretty (Def n r ty body cs) =
+        pretty n
+        <+> case ty of
+                Erased -> empty
+                _      -> prettyCol r <+> pretty ty
+        <+> case body of
+                Abstract _  -> empty
+                Term tm     -> text "=" <+> pretty tm
+                Clauses cls -> blankLine $$ indent (vcat $ map pretty cls)
+        <+> case cs of
+                Nothing -> empty
+                Just _  -> text "{- constraints apply -}"
 
 instance PrettyR r => Pretty (TT r) where
     pretty (V n) = pretty n

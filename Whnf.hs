@@ -35,7 +35,7 @@ redClause NF ctx (Clause pvs lhs rhs)
 red :: PrettyR r => Form -> Ctx r cs -> TT r -> TT r
 red form ctx t@(V n)
     | Just (Def _n r ty body cs) <- M.lookup n ctx
-    = case ("VAR-NF", n, body) `traceShow` body of
+    = case body of
         Abstract _   -> t
         Term     tm  -> red form ctx tm
         Clauses  cls -> t
@@ -122,7 +122,7 @@ instance Monad Tri where
 redClauses :: PrettyR r => Form -> Ctx r cs -> [Clause r] -> TT r -> TT r
 redClauses form ctx [] tm = tm
 redClauses form ctx (c : cs) tm
-    = case ("RED-CLAUSE", c, tm) `traceShow` redClause' form ctx c tm of
+    = case redClause' form ctx c tm of
         OK tm'  -> tm'
         Nope    -> redClauses form ctx cs tm
         Unknown -> tm
