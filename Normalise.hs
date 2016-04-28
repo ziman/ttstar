@@ -1,4 +1,4 @@
-module Whnf (Form(..), red, whnf, nf) where
+module Normalise (Form(..), red, whnf, nf) where
 
 import TT
 import Pretty

@@ -3,7 +3,7 @@ module Eval (eval) where
 
 import TT
 import Pretty
-import Whnf
+import Normalise
 import qualified Data.Map as M
 
 prog2tt :: Program r cs -> TT r

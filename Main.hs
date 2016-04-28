@@ -8,7 +8,7 @@ import Pretty
 {-
 import Explorer
 -}
-import Whnf
+import Normalise
 import Eval
 
 import Util.PrettyPrint

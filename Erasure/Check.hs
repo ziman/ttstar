@@ -4,7 +4,7 @@ module Erasure.Check (check, instantiate) where
 
 import TT
 import TTLens
-import Whnf
+import Normalise
 import Erasure.Meta
 import Erasure.Solve
 
