@@ -28,8 +28,11 @@ data TT r
     | Forced (TT r)  -- forced pattern
     deriving (Eq, Ord)
 
+-- The difference between Var and Postulate is that for Var, the value is unknown,
+-- for postulate; the term itself is the value.
+data Abstractness = Var | Postulate deriving (Eq, Ord, Show)
+data Body r = Abstract Abstractness | Term (TT r) | Clauses [Clause r] deriving (Eq, Ord)
 data Clause r = Clause { pvars :: [Def r VoidConstrs], lhs :: TT r,  rhs :: TT r } deriving (Eq, Ord)
-data Body r = Abstract | Term (TT r) | Clauses [Clause r] deriving (Eq, Ord)
 data Def r cs = Def Name r (TT r) (Body r) (Maybe (cs r)) deriving (Eq, Ord)
 type Ctx r cs = M.Map Name (Def r cs)
 
@@ -68,7 +71,7 @@ substDef :: Name -> TT r -> Def r cs -> Def r cs
 substDef n tm (Def dn r ty body mcs) = Def dn r (subst n tm ty) (substBody n tm body) mcs
 
 substBody :: Name -> TT r -> Body r -> Body r
-substBody n tm Abstract = Abstract
+substBody n tm (Abstract a) = Abstract a
 substBody n tm (Term t) = Term $ subst n tm t
 substBody n tm (Clauses cls) = Clauses $ map (substClause n tm) cls
 

@@ -34,7 +34,7 @@ defRelevance' csRelevance f (Def n r ty body mcs)
         <*> traverse (csRelevance f) mcs
 
 bodyRelevance :: Traversal (Body r) (Body r') r r'
-bodyRelevance f Abstract = pure Abstract
+bodyRelevance f (Abstract a) = pure $ Abstract a
 bodyRelevance f (Term tm) = Term <$> ttRelevance f tm
 bodyRelevance f (Clauses cls) = Clauses <$> traverse (clauseRelevance f) cls
 

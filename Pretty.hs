@@ -34,27 +34,27 @@ instance PrettyR r => Pretty (Clause r) where
         $$ indent (pretty $ Clause [] lhs rhs)
 
 instance PrettyR r => Pretty (Body r) where
-    pretty Abstract = empty
+    pretty (Abstract _) = empty
     pretty (Term tm) = text "=" <+> pretty tm
     pretty (Clauses cls) = vcat $ map pretty cls
 
 instance PrettyR r => Pretty (Program r cs) where
     pretty (Prog defs) = vcat $ map fmtDef defs
       where
-        fmtDef (Def n r ty Abstract cs)
-            = text "postulate" <+> pretty (Def n r ty Abstract Nothing)
+        fmtDef (Def n r ty (Abstract Postulate) cs)
+            = text "postulate" <+> pretty (Def n r ty (Abstract Postulate) Nothing)
                 $$ blankLine
         fmtDef (Def n r Erased body cs) = indent (pretty body) $$ blankLine
         fmtDef (Def n r ty body cs)
-            = pretty (Def n r ty Abstract Nothing)
+            = pretty (Def n r ty (Abstract Var) Nothing)
                 $$ indent (pretty body) $$ blankLine
 
 instance PrettyR r => Pretty (Def r cs) where
-    pretty (Def n r Erased Abstract   Nothing) = pretty n
-    pretty (Def n r ty     Abstract   Nothing) = pretty n <+> prettyCol r <+> pretty ty
+    pretty (Def n r Erased (Abstract _) Nothing) = pretty n
+    pretty (Def n r ty     (Abstract _) Nothing) = pretty n <+> prettyCol r <+> pretty ty
     pretty (Def n r ty    (Term   tm) Nothing) = pretty n <+> prettyCol r <+> pretty ty <+> text "=" <+> pretty tm
     pretty (Def n r ty    (Clauses cls) Nothing)
-        = pretty (Def n r ty Abstract Nothing)
+        = pretty (Def n r ty (Abstract Var) Nothing)
             $$ indent (vcat $ map pretty cls)
     pretty (Def n r ty cls (Just cs))
         = pretty (Def n r ty cls Nothing) <+> text "{- constraints apply -}"

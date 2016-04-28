@@ -64,7 +64,7 @@ atomic = parens expr
 arrow :: Parser (TT MRel)
 arrow = (<?> "arrow type") $ do
     ty <- try (atomic <* kwd "->")
-    Bind Pi (Def (UN "_") Nothing ty Abstract Nothing) <$> expr
+    Bind Pi (Def (UN "_") Nothing ty (Abstract Var) Nothing) <$> expr
 
 lambda :: Parser (TT MRel)
 lambda = (<?> "lambda") $ do
@@ -93,7 +93,7 @@ let_ :: Parser (TT MRel)
 let_ = (<?> "let expression") $ do
     kwd "let"
     kwd "("
-    Def n r ty Abstract Nothing <- typing
+    Def n r ty (Abstract Var) Nothing <- typing
     kwd "="
     body <- Term <$> expr
     kwd ")"
@@ -127,10 +127,14 @@ typing = (<?> "name binding") $ do
     n <- name
     r <- rcolon
     ty <- expr
-    return $ Def n r ty Abstract Nothing
+    return $ Def n r ty (Abstract Var) Nothing
 
 postulate :: Parser (Def MRel VoidConstrs)
-postulate = kwd "postulate" *> typing <* kwd "." <?> "postulate"
+postulate = (<?> "postulate") $ do
+    kwd "postulate"
+    Def n r ty (Abstract Var) Nothing <- typing
+    kwd "."
+    return $ Def n r ty (Abstract Postulate) Nothing
 
 patvars :: Parser [Def MRel VoidConstrs]
 patvars = (<?> "pattern variables") $ do
@@ -149,7 +153,7 @@ clause = (<?> "clause") $ do
 
 fundef :: Parser (Def MRel VoidConstrs)
 fundef = (<?> "function definition") $ do
-    Def n r ty Abstract Nothing <- typing
+    Def n r ty (Abstract Var) Nothing <- typing
     kwd "."
     cls <- clause `sepBy` kwd ","
     kwd "."
