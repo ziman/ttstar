@@ -11,8 +11,8 @@ import Debug.Trace
 data Form = NF | WHNF deriving Show
 
 dbg :: Show a => a -> b -> b
--- dbg = traceShow
-dbg _ x = x
+dbg = traceShow
+-- dbg _ x = x
 
 dbgS :: (Show a, Show b) => a -> b -> b
 dbgS x y = (x, y) `dbg` y
@@ -188,3 +188,16 @@ matchTm form ctx tm tm'
     = Yep M.empty
 
 matchTm form ctx _ _ = Nope
+
+freshen :: Ctx r cs -> Clause r -> Clause r
+freshen ctx (Clause [] rhs lhs) = Clause [] rhs lhs
+freshen ctx (Clause (d:ds) rhs lhs)
+    | n `M.member` ctx
+    = let n' = getFreshName ctx n
+        in Clause (d{ defName = n' } :ds') (rename n n' rhs') (rename n n' lhs')
+    | otherwise = c'
+  where
+    n = defName d
+    c'@(Clause ds' rhs' lhs') = freshen ctx $ Clause ds rhs lhs
+
+-- TODO: remove `Forced` from matched contexts

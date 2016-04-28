@@ -286,8 +286,8 @@ conv' (V n) (V n') = bt ("C-VAR", n, n') $ do
 conv' p@(Bind b (Def n r ty (Abstract Var) Nothing) tm) q@(Bind b' (Def n' r' ty' (Abstract Var) Nothing) tm')
     = bt ("C-BIND", p, q) $ do
         require (b == b') $ Mismatch (show b) (show b')
-        xs <- conv ty (rename [n'] [n] ty')
-        ys <- with (Def n r ty (Abstract Var) Nothing) $ conv tm (rename [n'] [n] tm')
+        xs <- conv ty (rename n' n ty')
+        ys <- with (Def n r ty (Abstract Var) Nothing) $ conv tm (rename n' n tm')
         return $ xs /\ ys /\ r <--> r'
 
 -- whnf is application (application of something irreducible)
@@ -296,30 +296,9 @@ conv' p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do
     ys <- conv x x'
     return $ xs /\ ys /\ r <--> r'
 
-{-
-conv' p@(Let (Def n r ty mtm Nothing) tm) q@(Let (Def n' r' ty' mtm' Nothing) tm') = bt ("C-LET", p, q) $ do
-    (val, val') <- case (mtm, mtm') of
-        (Just t, Just t') -> return (t, t')
-        (Nothing, Nothing) -> return (Erased, Erased)
-        _ -> tcfail $ Mismatch (show mtm) (show mtm')
-
-    xs <- conv ty (rename [n'] [n] ty')
-    (valty, valcs) <- checkTm val
-    tycs <- conv ty valty
-    vcs <- conv val val'
-    let letcs = valcs /\ tycs
-    ys <- with (Def n r ty mtm (Just letcs)) $ conv tm (rename [n'] [n] tm')
-    return $ letcs /\ ys /\ vcs /\ r <--> r'
--}
-
 conv' (Forced l) r = conv l r
 conv' l (Forced r) = conv l r
 conv' Type   Type   = return noConstrs
 conv' Erased Erased = return noConstrs
 
 conv' p q = tcfail $ CantConvert p q
-
-rename :: [Name] -> [Name] -> TTmeta -> TTmeta
-rename [] [] tm = tm
-rename (n : ns) (n' : ns') tm = rename ns ns' $ subst n (V n') tm
-rename _ _ _ = error "rename: incoherent args"

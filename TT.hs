@@ -29,7 +29,8 @@ data TT r
     deriving (Eq, Ord)
 
 -- The difference between Var and Postulate is that for Var, the value is unknown,
--- for postulate; the term itself is the value.
+-- for postulate; the term itself is the value. A variable stands for something else,
+-- a postulate stands for itself.
 data Abstractness = Var | Postulate deriving (Eq, Ord, Show)
 data Body r = Abstract Abstractness | Term (TT r) | Clauses [Clause r] deriving (Eq, Ord)
 data Clause r = Clause { pvars :: [Def r VoidConstrs], lhs :: TT r,  rhs :: TT r } deriving (Eq, Ord)
@@ -60,6 +61,9 @@ substMany ctx tm = foldl phi tm $ M.toList ctx
     phi t (n, Def _ _ _ body Nothing)
         = error $ "trying to substMany something strange:\n  " ++ show n ++ " ~> " ++ show body
 
+rename :: Name -> Name -> TT r -> TT r
+rename fromN toN = subst fromN (V toN)
+
 subst :: Name -> TT r -> TT r -> TT r
 subst n tm t@(V n')
     | n' == n   = tm
@@ -81,7 +85,12 @@ substCtx n tm = M.map $ substDef n tm
 
 substDef :: Name -> TT r -> Def r cs -> Def r cs
 -- XXX TODO HACK: what do we do with constraints here?
-substDef n tm (Def dn r ty body mcs) = Def dn r (subst n tm ty) (substBody n tm body) mcs
+substDef n tm (Def dn r ty body mcs)
+    | n == dn
+    = Def dn r (subst n tm ty) body mcs  -- don't subst in body because those vars refer to `dn`
+
+    | otherwise
+    = Def dn r (subst n tm ty) (substBody n tm body) mcs
 
 substBody :: Name -> TT r -> Body r -> Body r
 substBody n tm (Abstract a) = Abstract a
@@ -91,12 +100,6 @@ substBody n tm (Clauses cls) = Clauses $ map (substClause n tm) cls
 substClause :: Name -> TT r -> Clause r -> Clause r
 substClause n tm (Clause pvs lhs rhs) = Clause (substDef n tm <$> pvs) (subst n tm lhs) (subst n tm rhs)
 
-{-
--- split a Pat-packed pattern into 1. pattern vars, 2. RHS
-splitBinder :: Binder -> TT r -> ([Def r], TT r)
-splitBinder bnd (Bind b d tm)
-    | b == bnd = (d : args, rhs)
-  where
-    (args, rhs) = splitBinder bnd tm
-splitBinder bnd tm = ([], tm)
--}
+getFreshName :: Ctx r cs -> Name -> Name
+getFreshName ctx (UN n) = head $ filter (`M.notMember` ctx) [UN (n ++ show i) | i <- [0..]]
+getFreshName ctx n = error $ "trying to refresh non-UN: " ++ show n
