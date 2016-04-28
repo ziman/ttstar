@@ -92,13 +92,9 @@ app = foldl (App Nothing) <$> atomic <*> many atomic <?> "application"
 let_ :: Parser (TT MRel)
 let_ = (<?> "let expression") $ do
     kwd "let"
-    kwd "("
-    Def n r ty (Abstract Var) Nothing <- typing
-    kwd "="
-    body <- Term <$> expr
-    kwd ")"
+    d <- parseDef
     kwd "in"
-    Bind Let (Def n r ty body Nothing) <$> expr
+    Bind Let d <$> expr
 
 instOrForced :: Parser (TT MRel)
 instOrForced = kwd "[" >> (try inst <|> forced)
@@ -153,14 +149,28 @@ clause = (<?> "clause") $ do
 
 fundef :: Parser (Def MRel VoidConstrs)
 fundef = (<?> "function definition") $ do
-    Def n r ty (Abstract Var) Nothing <- typing
-    kwd "."
+    -- we try typing because it may be a mldef
+    Def n r ty (Abstract Var) Nothing <- try (typing <* kwd ".")
     cls <- clause `sepBy` kwd ","
     kwd "."
     return $ Def n r ty (Clauses cls) Nothing
 
+mldef :: Parser (Def MRel VoidConstrs)
+mldef = (<?> "ml-style definition") $ do
+    n <- name
+    args <- many $ parens typing
+    r <- rcolon
+    retTy <- expr
+    kwd "="
+    tm <- expr
+    kwd "."
+    return $ Def n r (chain Pi args retTy) (Term $ chain Lam args tm) Nothing
+  where
+    chain bnd [] tm = tm
+    chain bnd (d : args) tm = Bind bnd d $ chain bnd args tm
+
 parseDef :: Parser (Def MRel VoidConstrs)
-parseDef = postulate <|> fundef <?> "definition"
+parseDef = postulate <|> fundef <|> mldef <?> "definition"
 
 parseProg :: Parser (Program MRel VoidConstrs)
 parseProg = Prog <$> many parseDef <?> "program"

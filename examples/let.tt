@@ -1,16 +1,19 @@
--- vim: ft=agda
+-- vim: ft=idris
 
 postulate Nat : *.
 postulate Z : Nat.
 postulate S : (n :R: Nat) -> Nat.
 
-plus (x : Nat) (y : Nat) : Nat
-    = case (x) of
-        Z -> y,
-        S (xx : Nat) -> S (plus xx y).
+plus : Nat -> Nat -> Nat.
+  pat (n : Nat).
+    plus Z n = n,
+  pat (m : Nat) (n : Nat).
+    plus (S m) n = S (plus m n).
 
-id : Nat -> Nat = \y : Nat. y.
-const (x : Nat) : Nat -> Nat = \_ : Nat. x.
+id : Nat -> Nat.
+  id = \x : Nat. x.
+
+const (x : Nat) (y : Nat) : Nat = x.
 
 main :R: Nat
     = let apply (f : Nat -> Nat) (x : Nat) : Nat = f x.
