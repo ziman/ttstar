@@ -1,4 +1,4 @@
--- vim: ft=agda
+-- vim: ft=idris
 
 postulate N : *.
 postulate Z : N.
@@ -8,25 +8,17 @@ postulate Vec : N -> * -> *.
 postulate Nil : (a : *) -> Vec Z a.
 postulate Cons : (a : *) -> (n : N) -> (x : a) -> (xs : Vec n a) -> Vec (S n) a.
 
-plus (x : N) (y : N) : N
-    = case (x) of
-        Z         -> y,
-        S (z : N) -> S (plus z y).
+plus : N -> N -> N.
+  pat (n : N).
+    plus Z n = n,
+  pat (m : N) (n : N).
+    plus (S m) n = S (plus m n).
 
-append (a : *) (m : N) (n : N) (xs : Vec m a) (ys : Vec n a)
-    : Vec (plus m n) a
-    = case (xs) returns (Vec (plus m n) a) of
-        Nil (aa : *)
-            -> (
-                case (m) returns (Vec (plus m n) a) of
-                    Z -> ys
-            ),
-        Cons (aa :*) (mm : N) (x : a) (zs : Vec mm a)
-            -> (
-                case (m) returns (Vec (plus m n) a) of
-                    S (mmm : N)
-                        -> Cons aa mm x (append a mmm n zs ys)
-            ).
+append : (a : *) -> (m : N) -> (n : N) -> (xs : Vec m a) -> (ys : Vec n a) -> (Vec (plus m n) a).
+  pat (a : *) (n : N) (ys : Vec n a).
+    append a Z n Nil ys = ys,
+  pat (a : *) (m : N) (n : N) (x : a) (xs : Vec m a) (ys : Vec n a).
+    append a (S m) n (Cons a m x xs) ys = Cons a (plus m n) x (append a m n xs ys).
 
 main :R: Vec Z N
-    = Nil N.
+    = append N 0 1 (Nil N) (Cons N Z 42 (Nil N)).

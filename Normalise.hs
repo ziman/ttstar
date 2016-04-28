@@ -11,8 +11,8 @@ import Debug.Trace
 data Form = NF | WHNF deriving Show
 
 dbg :: Show a => a -> b -> b
-dbg = traceShow
--- dbg _ x = x
+-- dbg = traceShow
+dbg _ x = x
 
 dbgS :: (Show a, Show b) => a -> b -> b
 dbgS x y = (x, y) `dbg` y
