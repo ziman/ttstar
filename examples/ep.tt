@@ -1,22 +1,27 @@
--- vim: ft=agda
+-- vim: ft=idris
 
 postulate T : *.
 postulate A : T.
 postulate B : T.
 postulate Op : (x :R: T) -> (y :R: T) -> T.
 
-id : T -> T = \y : T. y.
+id : T -> T.
+  pat (y : T).
+    id y = y.
 
-constA : T -> T = \_ : T. A.
+constA : T -> T.
+  pat (x : T).
+    constA x = A.
 
-apply (f : T -> T) : T -> T
-    = \x : T. f x.
+apply : (T -> T) -> T -> T.
+  pat (f : T -> T) (x : T).
+    apply f x = f x.
 
-test1 : T
-    = [apply : (T -> T) -> T -> T] id B.
+test1 : T.
+  test1 = [apply : (T -> T) -> T -> T] id B.
 
-test2 : T
-    = [apply : (T -> T) -> T -> T] constA B.
+test2 : T.
+  test2 = [apply : (T -> T) -> T -> T] constA B.
 
-main :R: T
-    = Op test1 test2.
+main :R: T.
+  main = Op test1 test2.

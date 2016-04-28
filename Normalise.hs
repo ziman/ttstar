@@ -14,6 +14,9 @@ dbg :: Show a => a -> b -> b
 -- dbg = traceShow
 dbg _ x = x
 
+dbgS :: (Show a, Show b) => a -> b -> b
+dbgS x y = (x, y) `dbg` y
+
 whnf :: IsRelevance r => Ctx r cs -> TT r -> TT r
 whnf = red WHNF
 
@@ -150,7 +153,8 @@ redClause' form ctx (Clause pvs lhs rhs) tm
     ctx' = foldr (M.insert <$> defName <*> csDef) ctx pvs
 
 match :: IsRelevance r => Form -> Ctx r cs -> [TT r] -> [TT r] -> Tri (Ctx r cs)
-match form ctx ls rs = M.unions <$> zipWithM (matchTm form ctx) ls rs
+match form ctx ls rs
+    = M.unions <$> zipWithM (matchTm form ctx) ls rs
 
 matchTm :: IsRelevance r => Form -> Ctx r cs -> TT r -> TT r -> Tri (Ctx r cs)
 matchTm form ctx pat tm
@@ -168,7 +172,7 @@ matchTm form ctx pattern@(App _ _ _) tm@(App _ _ _)
     , (V cn', args') <- unApply tm
     , cn == cn'  -- heads are the same
 --    , Just (Def _ _ _ (Abstract Postulate) Nothing) <- M.lookup cn ctx  -- is a ctor/postulate
-    = match form ctx args args'
+    = match form ctx (map (red form ctx) args) (map (red form ctx) args')
 
 -- forced patterns always match, not generating anything
 matchTm form ctx (Forced _) tm
