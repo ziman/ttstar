@@ -176,11 +176,12 @@ checkDef (Def n r ty (Clauses cls) Nothing) = bt ("DEF-CLAUSES", n) $ do
     return $ Def n r ty (Clauses cls) (Just cs)
 
 checkClause :: Name -> Meta -> Type -> Clause Meta -> TC Constrs
-checkClause fn fr fty (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
-    (lty, lcs) <- withDefs pvs $ checkTm lhs
-    (rty, rcs) <- withDefs pvs $ checkTm rhs
-    ccs <- conv lty rty
-    return $ flipConstrs lcs /\ rcs /\ ccs
+checkClause fn fr fty (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $
+    withDefs pvs $ do
+        (lty, lcs) <- checkTm lhs
+        (rty, rcs) <- checkTm rhs
+        ccs <- conv lty rty
+        return $ flipConstrs lcs /\ rcs /\ ccs
 
 withDefs :: [Def Meta cs] -> TC a -> TC a
 withDefs (Def n r ty body Nothing : ds) = with (Def n r ty body Nothing) . withDefs ds

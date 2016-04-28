@@ -11,8 +11,8 @@ import Debug.Trace
 data Form = NF | WHNF deriving Show
 
 dbg :: Show a => a -> b -> b
--- dbg = traceShow
-dbg _ x = x
+dbg = traceShow
+-- dbg _ x = x
 
 dbgS :: (Show a, Show b) => a -> b -> b
 dbgS x y = (x, y) `dbg` y
@@ -51,7 +51,7 @@ red form ctx t@(V n)
         Term     tm  -> red form ctx tm
         Clauses  cls -> redClauses form ctx cls t
 
-    | otherwise = t  -- unknown variable
+    | otherwise = error $ "unknown variable: " ++ show n  -- unknown variable
 
 red form ctx t@(I n i) = red form ctx (V n)
 
@@ -144,13 +144,17 @@ redClause' form ctx (Clause pvs lhs rhs) tm
     | tmDepth < patDepth = Unknown  -- undersaturated
 
     | otherwise = do
-        patSubst <- match form ctx' [lhs] [tm']
-        return . red form ctx $ rewrap (substMany patSubst rhs) extra
+        patSubst <- match form patVars [lhs] [tm']
+        let patValues = foldr (M.insert <$> defName <*> id) ctx patSubst
+        if M.keysSet patVars /= M.keysSet patValues
+            then error "not all pattern vars bound in match"
+            else return ()
+        return . red form patValues $ rewrap rhs extra
   where
     patDepth = appDepth lhs
     tmDepth = appDepth tm
     (tm', extra) = unwrap (tmDepth - patDepth) tm
-    ctx' = foldr (M.insert <$> defName <*> csDef) ctx pvs
+    patVars = foldr (M.insert <$> defName <*> csDef) ctx pvs
 
 match :: IsRelevance r => Form -> Ctx r cs -> [TT r] -> [TT r] -> Tri (Ctx r cs)
 match form ctx ls rs
