@@ -1,1 +1,4 @@
-main (x :E: *) :R: * = x.
+-- vim: ft=idris
+main :R: (x :E: *) -> *.
+  pat (x : *).
+    main x = x.
