@@ -16,7 +16,7 @@ plus : N -> N -> N.
 
 append : (a : *) -> (m : N) -> (n : N) -> (xs : Vec m a) -> (ys : Vec n a) -> (Vec (plus m n) a).
   pat (a : *) (n : N) (ys : Vec n a).
-    append a Z n Nil ys = ys,
+    append a Z n (Nil a) ys = ys,
   pat (a : *) (m : N) (n : N) (x : a) (xs : Vec m a) (ys : Vec n a).
     append a (S m) n (Cons a m x xs) ys = Cons a (plus m n) x (append a m n xs ys).
 
