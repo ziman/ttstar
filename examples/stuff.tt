@@ -37,6 +37,7 @@ f : (g : Nat -> Nat) -> (z : Nat) -> (h : Nat -> Nat) -> (w : Nat) -> Nat.
   pat (g : Nat -> Nat) (z : Nat) (h : Nat -> Nat) (w : Nat).
     f g z h w = Plus (g z) (h w).
 
+{-
 apply : (f : Nat -> Nat) -> Nat -> Nat.
   pat (f : Nat -> Nat) (x : Nat).
     apply f x = f x.
@@ -44,9 +45,14 @@ apply : (f : Nat -> Nat) -> Nat -> Nat.
 test_1 : Nat.
   test_1 = Plus (apply id 2) (apply const_3 two).
 
+-}
 test_2 : Nat.
   test_2 = f id 2 const_3 1.
 
+main :R: Nat.
+  main = {- Plus test_1 -} test_2.
+
+{-
 not : Bool -> Bool.
   not True  = False,
   not False = True.
@@ -60,9 +66,7 @@ plus : Nat -> Nat -> Nat.
 main :R: Nat.
   main = plus 3 4.
 
-{-
-main :R: Nat.
-  main = Plus test_1 test_2.
+---------
 
 postulate T : *.
 postulate A : T.

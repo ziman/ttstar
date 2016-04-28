@@ -64,27 +64,30 @@ instance PrettyR r => Pretty (Def r cs) where
                 Just _  -> text "{- constraints apply -}"
 
 instance PrettyR r => Pretty (TT r) where
-    pretty (V n) = pretty n
-    pretty (I n ty) = parens (pretty n <+> colon <+> pretty ty)
-    pretty (Bind Pi d tm) = parens (pretty d) <+> arrow <+> pretty tm
-    pretty (Bind Lam d tm) = parens (lam <> pretty d <> dot <+> pretty tm)
-    pretty (Bind Let d tm) =
-        blankLine
-        $$ indent (text "let" <+> pretty d
-            $$ text "in" <+> pretty tm
-        )
-    pretty (App r (V (UN "S")) x) | Just i <- fromNat x = int $ 1+i
+    pretty tm = pretty' False tm
       where
-        fromNat (V (UN "Z")) = Just 0
-        fromNat (App r (V (UN "S")) x) = (1 +) `fmap` fromNat x
-        fromNat _ = Nothing
-    pretty (App r f x) = parens $ show' r f x
-      where
-        show' r (App r' f' x') x = show' r' f' x' <> prettyApp r <> pretty x
-        show' r f x = pretty f <> prettyApp r <> pretty x
-    pretty (Forced tm) = text "[" <> pretty tm <> text "]"
-    pretty Erased = text "____"
-    pretty Type = text "*"
+        pretty' pp (V n) = pretty n
+        pretty' pp (I n ty) = parens (pretty n <+> colon <+> pretty ty)
+        pretty' pp (Bind Pi d tm) = parens (pretty d) <+> arrow <+> pretty tm
+        pretty' pp (Bind Lam d tm) = parens (lam <> pretty d <> dot <+> pretty tm)
+        pretty' pp (Bind Let d tm) =
+            blankLine
+            $$ indent (text "let" <+> pretty d
+                $$ text "in" <+> pretty tm
+            )
+        pretty' pp (App r (V (UN "S")) x) | Just i <- fromNat x = int $ 1+i
+          where
+            fromNat (V (UN "Z")) = Just 0
+            fromNat (App r (V (UN "S")) x) = (1 +) `fmap` fromNat x
+            fromNat _ = Nothing
+        pretty' pp (App r f x) = ps $ show' r f x
+          where
+            ps = if pp then parens else id
+            show' r (App r' f' x') x = show' r' f' x' <> prettyApp r <> pretty' True x
+            show' r f x = pretty f <> prettyApp r <> pretty' True x
+        pretty' pp (Forced tm) = text "[" <> pretty tm <> text "]"
+        pretty' pp Erased = text "____"
+        pretty' pp Type = text "*"
 
 instance PrettyR r => Show (TT r) where
     show = prettyShow
