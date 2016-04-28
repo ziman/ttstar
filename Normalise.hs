@@ -8,7 +8,11 @@ import qualified Data.Map as M
 
 import Debug.Trace
 
-data Form = NF | WHNF
+data Form = NF | WHNF deriving Show
+
+dbg :: Show a => a -> b -> b
+-- dbg = traceShow
+dbg _ x = x
 
 whnf :: IsRelevance r => Ctx r cs -> TT r -> TT r
 whnf = red WHNF
@@ -33,12 +37,16 @@ redClause NF ctx (Clause pvs lhs rhs)
         (red NF ctx rhs)
 
 red :: IsRelevance r => Form -> Ctx r cs -> TT r -> TT r
+red form ctx t
+    | ("REDUCING", form, t, M.keys ctx) `dbg` False
+    = undefined
+
 red form ctx t@(V n)
     | Just (Def _n r ty body cs) <- M.lookup n ctx
     = case body of
         Abstract _   -> t
         Term     tm  -> red form ctx tm
-        Clauses  cls -> t
+        Clauses  cls -> redClauses form ctx cls t
 
     | otherwise = t  -- unknown variable
 
@@ -132,8 +140,8 @@ redClause' form ctx (Clause pvs lhs rhs) tm
     | tmDepth < patDepth = Unknown  -- undersaturated
 
     | otherwise = do
-        ctx <- match form ctx' [lhs] [tm']
-        return $ rewrap (substMany ctx rhs) extra
+        patSubst <- match form ctx' [lhs] [tm']
+        return . red form ctx $ rewrap (substMany patSubst rhs) extra
   where
     patDepth = appDepth lhs
     tmDepth = appDepth tm
