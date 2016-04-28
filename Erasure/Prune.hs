@@ -12,8 +12,8 @@ pruneDef (Def n E ty body mcs) = []
 pruneDef (Def n R ty body mcs) = [Def n () Erased (pruneBody body) Nothing]
 
 pruneBody :: Body Relevance -> Body ()
-pruneBody Abstract = Abstract
-pruneBody (Term tm) = Term $ pruneTm tm
+pruneBody (Abstract a)  = Abstract a
+pruneBody (Term tm)     = Term $ pruneTm tm
 pruneBody (Clauses cls) = Clauses $ map pruneClause cls
 
 pruneClause :: Clause Relevance -> Clause ()

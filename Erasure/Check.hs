@@ -164,7 +164,7 @@ checkDefs cs (d:ds) = do
     bare (Def n r ty mtm Nothing) = Def n r ty mtm Nothing
 
 checkDef :: Def Meta VoidConstrs -> TC (Def Meta Constrs')
-checkDef (Def n r ty Abstract Nothing) = return $ Def n r ty Abstract Nothing
+checkDef (Def n r ty (Abstract a) Nothing) = return $ Def n r ty (Abstract a) Nothing
 checkDef (Def n r ty (Term tm) Nothing) = bt ("DEF-TERM", n) $ do
     (tmty, tmcs) <- checkTm tm
     tycs <- conv ty tmty
@@ -183,7 +183,7 @@ checkClause fn fr fty (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
     return $ flipConstrs lcs /\ rcs /\ ccs
 
 withDefs :: [Def Meta cs] -> TC a -> TC a
-withDefs (Def n r ty Abstract Nothing : ds) = with (Def n r ty Abstract Nothing) . withDefs ds
+withDefs (Def n r ty body Nothing : ds) = with (Def n r ty body Nothing) . withDefs ds
 withDefs [] = id
 
 checkTm :: Term -> TC (Type, Constrs)
@@ -199,19 +199,19 @@ checkTm t@(I n ty) = bt ("INST", n, ty) $ do
     -- of this function that's runtime-relevant, not the function itself
     return (ty', cs' /\ convCs)
 
-checkTm t@(Bind Lam (Def n r ty Abstract Nothing) tm) = bt ("LAM", t) $ do
-    (tmty, tmcs) <- with (Def n r ty Abstract Nothing) $ checkTm tm
-    return (Bind Pi (Def n r ty Abstract Nothing) tmty, tmcs)
+checkTm t@(Bind Lam (Def n r ty (Abstract Var) Nothing) tm) = bt ("LAM", t) $ do
+    (tmty, tmcs) <- with (Def n r ty (Abstract Var) Nothing) $ checkTm tm
+    return (Bind Pi (Def n r ty (Abstract Var) Nothing) tmty, tmcs)
 
-checkTm t@(Bind Pi (Def n r ty Abstract Nothing) tm) = bt ("PI", t) $ do
-    (tmty, tmcs) <- with (Def n r ty Abstract Nothing) $ checkTm tm
+checkTm t@(Bind Pi (Def n r ty (Abstract Var) Nothing) tm) = bt ("PI", t) $ do
+    (tmty, tmcs) <- with (Def n r ty (Abstract Var) Nothing) $ checkTm tm
     return (Type, tmcs)
 
 checkTm t@(App app_r f x) = bt ("APP", t) $ do
     (fty, fcs) <- checkTm f
     (xty, xcs) <- checkTm x
     case fty of
-        Bind Pi (Def n' pi_r ty' Abstract Nothing) retTy -> do
+        Bind Pi (Def n' pi_r ty' (Abstract Var) Nothing) retTy -> do
             tycs <- conv xty ty'
             let cs =
                     tycs
@@ -229,7 +229,8 @@ checkTm t@(Bind Let (Def n r ty body Nothing) tm) = bt ("LET", t) $ do
             (valty, valcs) <- checkTm t
             tycs <- conv ty valty
             return $ Just (valcs /\ tycs)
-        Abstract -> return Nothing
+        Abstract Postulate -> return Nothing
+        Abstract Var -> error "abstract var bound by let"
         Clauses cls -> error "trying to check let-bound clauses"
 
     (tmty, tmcs) <-
@@ -281,11 +282,11 @@ conv' (V n) (V n') = bt ("C-VAR", n, n') $ do
     require (n == n') $ Mismatch (show n) (show n')
     return noConstrs
 
-conv' p@(Bind b (Def n r ty Abstract Nothing) tm) q@(Bind b' (Def n' r' ty' Abstract Nothing) tm')
+conv' p@(Bind b (Def n r ty (Abstract Var) Nothing) tm) q@(Bind b' (Def n' r' ty' (Abstract Var) Nothing) tm')
     = bt ("C-BIND", p, q) $ do
         require (b == b') $ Mismatch (show b) (show b')
         xs <- conv ty (rename [n'] [n] ty')
-        ys <- with (Def n r ty Abstract Nothing) $ conv tm (rename [n'] [n] tm')
+        ys <- with (Def n r ty (Abstract Var) Nothing) $ conv tm (rename [n'] [n] tm')
         return $ xs /\ ys /\ r <--> r'
 
 -- whnf is application (application of something irreducible)

@@ -20,8 +20,8 @@ redDef :: PrettyR r => Form -> Ctx r cs -> Def r cs' -> Def r cs'
 redDef form ctx (Def n r ty body cs) = Def n r (red form ctx ty) (redBody form ctx body) cs
 
 redBody :: PrettyR r => Form -> Ctx r cs -> Body r -> Body r
-redBody form ctx Abstract = Abstract
-redBody form ctx (Term tm) = Term (red form ctx tm)
+redBody form ctx (Abstract a)  = Abstract a
+redBody form ctx (Term tm)     = Term (red form ctx tm)
 redBody form ctx (Clauses cls) = Clauses $ map (redClause form ctx) cls
 
 redClause :: PrettyR r => Form -> Ctx r cs -> Clause r -> Clause r
@@ -36,9 +36,9 @@ red :: PrettyR r => Form -> Ctx r cs -> TT r -> TT r
 red form ctx t@(V n)
     | Just (Def _n r ty body cs) <- M.lookup n ctx
     = case ("VAR-NF", n, body) `traceShow` body of
-        Abstract -> t
-        Term tm  -> red form ctx tm
-        Clauses cls -> t
+        Abstract _   -> t
+        Term     tm  -> red form ctx tm
+        Clauses  cls -> t
 
     | otherwise = t  -- unknown variable
 
@@ -60,7 +60,7 @@ red form ctx t@(App r f x)
 
 red WHNF ctx t@(App r f x)
     -- TODO: look up name in context, reduce clauses
-    | Bind Lam (Def n' r' ty' Abstract Nothing) tm' <- redF
+    | Bind Lam (Def n' r' ty' (Abstract Var) Nothing) tm' <- redF
     = red WHNF ctx $ subst n' x tm'
 
     | otherwise = t  -- not a redex
@@ -68,7 +68,7 @@ red WHNF ctx t@(App r f x)
     redF = red WHNF ctx f
 
 red NF ctx t@(App r f x)
-    | Bind Lam (Def n' r' ty' Abstract Nothing) tm' <- redF
+    | Bind Lam (Def n' r' ty' (Abstract Var) Nothing) tm' <- redF
     = red NF ctx $ subst n' redX tm'
 
     | otherwise = App r redF redX  -- not a redex
@@ -138,12 +138,13 @@ redClause' form ctx (Clause pvs lhs rhs) tm
     patDepth = appDepth lhs
     tmDepth = appDepth tm
     (tm', extra) = unwrap (tmDepth - patDepth) tm
-    ctx' = foldl (\c (Def n r ty Abstract Nothing) -> M.insert (Def n r ty Abstract Nothing) c) ctx pvs
+    ctx' = foldr (M.insert <$> defName <*> csDef) ctx pvs
 
 match :: PrettyR r => Form -> Ctx r cs -> [TT r] -> [TT r] -> Tri (Ctx r cs)
 match form ctx ls rs = M.unions <$> zipWithM (matchTm form ctx) ls rs
 
-matchTm :: PrettyR r => Form -> Ctx -> TT r -> TT r -> Tri (Ctx r cs)
-matchTm form ctx (V n) tm = OK $ M.singleton n (Def 
-matchTm form ctx (V n) 
+matchTm :: PrettyR r => Form -> Ctx r cs -> TT r -> TT r -> Tri (Ctx r cs)
+matchTm form ctx (V n) tm
+    | Just d@(Def _ _ _ (Abstract Var) Nothing) <- M.lookup n ctx
+    = OK $ M.singleton n d
 matchTm form ctx _ _ = Unknown

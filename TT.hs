@@ -33,10 +33,19 @@ data TT r
 data Abstractness = Var | Postulate deriving (Eq, Ord, Show)
 data Body r = Abstract Abstractness | Term (TT r) | Clauses [Clause r] deriving (Eq, Ord)
 data Clause r = Clause { pvars :: [Def r VoidConstrs], lhs :: TT r,  rhs :: TT r } deriving (Eq, Ord)
-data Def r cs = Def Name r (TT r) (Body r) (Maybe (cs r)) deriving (Eq, Ord)
+data Def r cs = Def
+    { defName :: Name
+    , defR    :: r
+    , defType :: TT r
+    , defBody :: Body r
+    , defConstraints :: Maybe (cs r)
+    } deriving (Eq, Ord)
 type Ctx r cs = M.Map Name (Def r cs)
 
 newtype Program r cs = Prog { getDefs :: [Def r cs] } deriving (Eq, Ord)
+
+csDef :: Def r cs -> Def r cs'
+csDef (Def n r ty body Nothing) = Def n r ty body Nothing
 
 unApply :: TT r -> (TT r, [TT r])
 unApply tm = ua tm []

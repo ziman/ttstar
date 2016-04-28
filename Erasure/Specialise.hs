@@ -84,8 +84,8 @@ specNDef (Def n r ty body Nothing)
     = Def n r <$> specNTm ty <*> specNBody body <*> pure Nothing
 
 specNBody :: Body Relevance -> Spec (Body Relevance)
-specNBody Abstract = pure Abstract
-specNBody (Term tm) = Term <$> specNTm tm
+specNBody (Abstract a)  = pure $ Abstract a
+specNBody (Term tm)     = Term <$> specNTm tm
 specNBody (Clauses cls) = Clauses <$> traverse specNClause cls
 
 specNClause :: Clause Relevance -> Spec (Clause Relevance)
