@@ -174,8 +174,8 @@ mldef = (<?> "ml-style definition") $ do
 dataDef :: Parser [Def MRel VoidConstrs]
 dataDef = (<?> "data definition") $ do
     kwd "data"
-    tfd <- parens $ typing Postulate
-    kwd "where"
+    tfd <- typing Postulate
+    kwd "."
     ctors <- typing Postulate `sepBy` kwd ","
     kwd "."
     return (tfd : ctors)

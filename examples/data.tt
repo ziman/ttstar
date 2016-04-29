@@ -1,6 +1,6 @@
 -- vim: ft=idris
 
-data (N : Type) where
+data N : Type.
   Z : N,
   S : N -> N.
 
