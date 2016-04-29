@@ -17,7 +17,7 @@ postulate Plus : (x :R: Nat) -> (y :R: Nat) -> Nat.
 id : Nat -> Nat.
   id Z = Z,
   pat (x : Nat).
-    id (S x) = let (result : Nat = S x) in result.
+    id (S x) = let result : Nat = S x. in result.
 
 const_3 : Nat -> Nat.
   pat (x : Nat).
