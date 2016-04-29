@@ -20,7 +20,19 @@ app : List -> List -> List.
 
 data Rev : List -> Type.
   RNil : Rev Nil,
-  RSnoc : (x : Bool) -> (xs : List) -> (rxs : Rev xs)
+  RSnoc : (xs : List) -> (x : Bool) -> (rxs : Rev xs)
     -> Rev (app xs (one x)).
 
 postulate rev : (xs : List) -> Rev xs.
+
+reverse_ : (xs : List) -> (rxs : Rev xs) -> List.
+  reverse_ Nil RNil = Nil,
+  pat (x : Bool) (xs : List) (rxs : Rev xs).
+    reverse_ [app xs (one x)] (RSnoc xs x rxs)
+      = Cons x (reverse_ xs rxs).
+
+reverse (xs : List) : List
+  = reverse_ xs (rev xs).
+
+main :R: List
+  = reverse (Cons T (Cons F (Cons T (Cons F Nil)))).
