@@ -69,13 +69,13 @@ arrow = (<?> "arrow type") $ do
 lambda :: Parser (TT MRel)
 lambda = (<?> "lambda") $ do
     kwd "\\"
-    d <- typing
+    d <- typing Var
     kwd "."
     Bind Lam d <$> expr
 
 bpi :: Parser (TT MRel)
 bpi = (<?> "pi") $ do
-    d <- try $ parens typing
+    d <- try $ parens (typing Var)
     kwd "->"
     Bind Pi d <$> expr
 
@@ -118,24 +118,27 @@ expr =  bind
     <|> app
     <?> "expression"  -- app includes nullary-applied atoms
 
-typing :: Parser (Def MRel VoidConstrs)
-typing = (<?> "name binding") $ do
+typing :: Abstractness -> Parser (Def MRel VoidConstrs)
+typing a = (<?> "name binding") $ do
     n <- name
     r <- rcolon
     ty <- expr
-    return $ Def n r ty (Abstract Var) Nothing
+    return $ Def n r ty (Abstract a) Nothing
 
 postulate :: Parser (Def MRel VoidConstrs)
 postulate = (<?> "postulate") $ do
     kwd "postulate"
-    Def n r ty (Abstract Var) Nothing <- typing
+    d <- typing Postulate
     kwd "."
-    return $ Def n r ty (Abstract Postulate) Nothing
+    return d
+
+mkPostulate :: Def MRel VoidConstrs -> Def MRel VoidConstrs
+mkPostulate (Def n r ty (Abstract Var) Nothing) = Def n r ty (Abstract Postulate) Nothing
 
 patvars :: Parser [Def MRel VoidConstrs]
 patvars = (<?> "pattern variables") $ do
     kwd "pat"
-    pvs <- many (parens typing)
+    pvs <- many (parens $ typing Var)
     kwd "."
     return pvs
 
@@ -150,7 +153,7 @@ clause = (<?> "clause") $ do
 fundef :: Parser (Def MRel VoidConstrs)
 fundef = (<?> "function definition") $ do
     -- we try typing because it may be a mldef
-    Def n r ty (Abstract Var) Nothing <- try (typing <* kwd ".")
+    Def n r ty (Abstract Var) Nothing <- try (typing Var <* kwd ".")
     cls <- clause `sepBy` kwd ","
     kwd "."
     return $ Def n r ty (Clauses cls) Nothing
@@ -158,7 +161,7 @@ fundef = (<?> "function definition") $ do
 mldef :: Parser (Def MRel VoidConstrs)
 mldef = (<?> "ml-style definition") $ do
     n <- name
-    args <- many $ parens typing
+    args <- many $ parens (typing Var)
     r <- rcolon
     retTy <- expr
     kwd "="
@@ -172,9 +175,9 @@ mldef = (<?> "ml-style definition") $ do
 dataDef :: Parser [Def MRel VoidConstrs]
 dataDef = (<?> "data definition") $ do
     kwd "data"
-    tfd <- parens typing
+    tfd <- parens $ typing Postulate
     kwd "where"
-    ctors <- typing `sepBy` kwd ","
+    ctors <- typing Postulate `sepBy` kwd ","
     kwd "."
     return (tfd : ctors)
 

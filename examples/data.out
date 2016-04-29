@@ -2,11 +2,11 @@
 
 ### Desugared ###
 
-N : *
+postulate N : *
 
-Z : N
+postulate Z : N
 
-S : (_ : N) -> N
+postulate S : (_ : N) -> N
 
 plus : (_ : N) -> (_ : N) -> N 
   pat (n : N).
@@ -18,11 +18,11 @@ main  -R-  N = plus 3 4
 
 ### Metaified ###
 
-N :?1: *
+postulate N :?1: *
 
-Z :?2: N
+postulate Z :?2: N
 
-S :?3: (_ :?4: N) -> N
+postulate S :?3: (_ :?4: N) -> N
 
 plus :?5: (_ :?6: N) -> (_ :?7: N) -> N 
   pat (n :?8: N).
@@ -34,11 +34,11 @@ main :!R: N = plus -?20- 3 -?19- 4
 
 ### Inferred definitions ###
 
-N :?1: *
+postulate N :?1: *
 
-S :?3: (_ :?4: N) -> N
+postulate S :?3: (_ :?4: N) -> N
 
-Z :?2: N
+postulate Z :?2: N
 
 main :!R: N = plus -?20- 3 -?19- 4
   [] -> [?5,!R]
@@ -95,11 +95,11 @@ plus :?5: (_ :?6: N) -> (_ :?7: N) -> N
 
 ### Annotated ###
 
-N :E: *
+postulate N :E: *
 
-Z :E: N
+postulate Z :E: N
 
-S :R: (_ :E: N) -> N
+postulate S :R: (_ :E: N) -> N
 
 plus :R: (_ :R: N) -> (_ :R: N) -> N 
   pat (n :R: N).
@@ -111,11 +111,11 @@ main :R: N = plus -R- 3 -R- 4
 
 ### Specialised ###
 
-N :!E: *
+postulate N :!E: *
 
-Z :!E: N
+postulate Z :!E: N
 
-S :!R: (_ :!E: N) -> N
+postulate S :!R: (_ :!E: N) -> N
 
 plus :!R: (_ :!R: N) -> (_ :!R: N) -> N 
   pat (n :!R: N).
@@ -127,11 +127,11 @@ main :!R: N = plus -!R- 3 -!R- 4
 
 ### Final annotation ###
 
-N :E: *
+postulate N :E: *
 
-Z :E: N
+postulate Z :E: N
 
-S :R: (_ :E: N) -> N
+postulate S :R: (_ :E: N) -> N
 
 plus :R: (_ :R: N) -> (_ :R: N) -> N 
   pat (n :R: N).
@@ -147,7 +147,7 @@ Verification successful.
 
 ### Pruned ###
 
-S
+postulate S
 
 plus 
   plus S _ = S
@@ -157,6 +157,6 @@ main = plus S S
 ### Normal forms ###
 
 unerased:
-  4
+  7
 erased:
   S
