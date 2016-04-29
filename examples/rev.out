@@ -2,6 +2,20 @@
 
 ### Desugared ###
 
+postulate Id : (a : Type) -> (x : a) -> (y : a) -> Type
+
+postulate Refl : (a : Type) -> (x : a) -> Id a x x
+
+id : (a : Type) -> (_ : a) -> a = (\a : Type. (\x : a. x))
+
+subst : (a : Type) -> (P : (_ : a) -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -> (_ : P x) -> P y 
+  pat (a : Type) (P : (_ : a) -> Type) (x : a) (eq : Id a x x).
+    subst a P x [x] (Refl [a] [x]) = (\y : P x. y)
+
+cong : (a : Type) -> (b : Type) -> (f : (_ : a) -> b) -> (x : a) -> (y : a) -> (eq : Id a x y) -> Id b (f x) (f y) 
+  pat (a : Type) (b : Type) (f : (_ : a) -> b) (x : a).
+    cong a b f x [x] (Refl a [x]) = Refl b (f x)
+
 postulate Bool : Type
 
 postulate T : Bool
@@ -22,193 +36,59 @@ app : (_ : List) -> (_ : List) -> List
   pat (x : Bool) (xs : List) (ys : List).
     app (Cons x xs) ys = Cons x (app xs ys)
 
-postulate Rev : (_ : List) -> Type
+appRightNeutral : (ys : List) -> Id List ys (app ys Nil) 
+  appRightNeutral Nil = Refl List Nil
+  pat (x : Bool) (xs : List).
+    appRightNeutral (Cons x xs) = cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs)
 
-postulate RNil : Rev Nil
+postulate appAssoc : (xs : List) -> (ys : List) -> (zs : List) -> Id List (app xs (app ys zs)) (app (app xs ys) zs)
 
-postulate RSnoc : (x : Bool) -> (xs : List) -> (rxs : Rev xs) -> Rev (app xs (one x))
-
-postulate rev : (xs : List) -> Rev xs
+main  -R-  Type = Type
 
 ### Metaified ###
 
-postulate Bool :?1: Type
+postulate Id :?1: (a :?2: Type) -> (x :?3: a) -> (y :?4: a) -> Type
 
-postulate T :?2: Bool
+postulate Refl :?5: (a :?6: Type) -> (x :?7: a) -> Id -?10- a -?9- x -?8- x
 
-postulate F :?3: Bool
+id :?11: (a :?12: Type) -> (_ :?13: a) -> a = (\a :?14: Type. (\x :?15: a. x))
 
-postulate List :?4: Type
+subst :?16: (a :?17: Type) -> (P :?18: (_ :?19: a) -> Type) -> (x :?20: a) -> (y :?21: a) -> (eq :?22: Id -?25- a -?24- x -?23- y) -> (_ :?26: P -?27- x) -> P -?28- y 
+  pat (a :?29: Type) (P :?30: (_ :?31: a) -> Type) (x :?32: a) (eq :?33: Id -?36- a -?35- x -?34- x).
+    subst -?41- a -?40- P -?39- x -?38- [x] -?37- (Refl -?43- [a] -?42- [x]) = (\y :?44: P -?45- x. y)
 
-postulate Nil :?5: List
+cong :?46: (a :?47: Type) -> (b :?48: Type) -> (f :?49: (_ :?50: a) -> b) -> (x :?51: a) -> (y :?52: a) -> (eq :?53: Id -?56- a -?55- x -?54- y) -> Id -?59- b -?58- (f -?60- x) -?57- (f -?61- y) 
+  pat (a :?62: Type) (b :?63: Type) (f :?64: (_ :?65: a) -> b) (x :?66: a).
+    cong -?72- a -?71- b -?70- f -?69- x -?68- [x] -?67- (Refl -?74- a -?73- [x]) = Refl -?76- b -?75- (f -?77- x)
 
-postulate Cons :?6: (x :!R: Bool) -> (xs :!R: List) -> List
+postulate Bool :?78: Type
 
-one :?7: (x :?8: Bool) -> List = (\x :?9: Bool. Cons -?11- x -?10- Nil)
+postulate T :?79: Bool
 
-app :?12: (_ :?13: List) -> (_ :?14: List) -> List 
-  pat (ys :?15: List).
-    app -?17- Nil -?16- ys = ys
-  pat (x :?18: Bool) (xs :?19: List) (ys :?20: List).
-    app -?22- (Cons -?24- x -?23- xs) -?21- ys = Cons -?26- x -?25- (app -?28- xs -?27- ys)
+postulate F :?80: Bool
 
-postulate Rev :?29: (_ :?30: List) -> Type
+postulate List :?81: Type
 
-postulate RNil :?31: Rev -?32- Nil
+postulate Nil :?82: List
 
-postulate RSnoc :?33: (x :?34: Bool) -> (xs :?35: List) -> (rxs :?36: Rev -?37- xs) -> Rev -?38- (app -?40- xs -?39- (one -?41- x))
+postulate Cons :?83: (x :!R: Bool) -> (xs :!R: List) -> List
 
-postulate rev :?42: (xs :?43: List) -> Rev -?44- xs
+one :?84: (x :?85: Bool) -> List = (\x :?86: Bool. Cons -?88- x -?87- Nil)
+
+app :?89: (_ :?90: List) -> (_ :?91: List) -> List 
+  pat (ys :?92: List).
+    app -?94- Nil -?93- ys = ys
+  pat (x :?95: Bool) (xs :?96: List) (ys :?97: List).
+    app -?99- (Cons -?101- x -?100- xs) -?98- ys = Cons -?103- x -?102- (app -?105- xs -?104- ys)
+
+appRightNeutral :?106: (ys :?107: List) -> Id -?110- List -?109- ys -?108- (app -?112- ys -?111- Nil) 
+  appRightNeutral -?113- Nil = Refl -?115- List -?114- Nil
+  pat (x :?116: Bool) (xs :?117: List).
+    appRightNeutral -?118- (Cons -?120- x -?119- xs) = cong -?126- List -?125- List -?124- (Cons -?127- x) -?123- xs -?122- (app -?129- xs -?128- Nil) -?121- (appRightNeutral -?130- xs)
+
+postulate appAssoc :?131: (xs :?132: List) -> (ys :?133: List) -> (zs :?134: List) -> Id -?137- List -?136- (app -?139- xs -?138- (app -?141- ys -?140- zs)) -?135- (app -?143- (app -?145- xs -?144- ys) -?142- zs)
+
+main :!R: Type = Type
 
 ### Inferred definitions ###
 
-postulate Bool :?1: Type
-
-postulate Cons :?6: (x :!R: Bool) -> (xs :!R: List) -> List
-
-postulate F :?3: Bool
-
-postulate List :?4: Type
-
-postulate Nil :?5: List
-
-postulate RNil :?31: Rev -?32- Nil
-
-postulate RSnoc :?33: (x :?34: Bool) -> (xs :?35: List) -> (rxs :?36: Rev -?37- xs) -> Rev -?38- (app -?40- xs -?39- (one -?41- x))
-
-postulate Rev :?29: (_ :?30: List) -> Type
-
-postulate T :?2: Bool
-
-postulate Type :!R: Type
-
-app :?12: (_ :?13: List) -> (_ :?14: List) -> List 
-  pat (ys :?15: List).
-    app -?17- Nil -?16- ys = ys
-  pat (x :?18: Bool) (xs :?19: List) (ys :?20: List).
-    app -?22- (Cons -?24- x -?23- xs) -?21- ys = Cons -?26- x -?25- (app -?28- xs -?27- ys)
-  [] -> [?6,?12,?13,?14,?15,?16,?17,?18,?19,?20,?21,?22,?23,?24,?25,?26,?27,?28,!R]
-
-one :?7: (x :?8: Bool) -> List = (\x :?9: Bool. Cons -?11- x -?10- Nil)
-  [] -> [?5,?6,?8,?9,?10,?11,!R]
-
-postulate rev :?42: (xs :?43: List) -> Rev -?44- xs
-
-
-### Constraints ###
-
-[] -> [?5,?6,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,?19,?20,?21,?22,?23,?24,?25,?26,?27,?28,!R]
-
-### Solution ###
-
-[?5,?6,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,?19,?20,?21,?22,?23,?24,?25,?26,?27,?28,!R]
-
-### Annotated ###
-
-postulate Bool :E: Type
-
-postulate T :E: Bool
-
-postulate F :E: Bool
-
-postulate List :E: Type
-
-postulate Nil :R: List
-
-postulate Cons :R: (x :R: Bool) -> (xs :R: List) -> List
-
-one :E: (x :R: Bool) -> List = (\x :R: Bool. Cons -R- x -R- Nil)
-
-app :R: (_ :R: List) -> (_ :R: List) -> List 
-  pat (ys :R: List).
-    app -R- Nil -R- ys = ys
-  pat (x :R: Bool) (xs :R: List) (ys :R: List).
-    app -R- (Cons -R- x -R- xs) -R- ys = Cons -R- x -R- (app -R- xs -R- ys)
-
-postulate Rev :E: (_ :E: List) -> Type
-
-postulate RNil :E: Rev -E- Nil
-
-postulate RSnoc :E: (x :E: Bool) -> (xs :E: List) -> (rxs :E: Rev -E- xs) -> Rev -E- (app -E- xs -E- (one -E- x))
-
-postulate rev :E: (xs :E: List) -> Rev -E- xs
-
-### Specialised ###
-
-postulate Bool :!E: Type
-
-postulate T :!E: Bool
-
-postulate F :!E: Bool
-
-postulate List :!E: Type
-
-postulate Nil :!R: List
-
-postulate Cons :!R: (x :!R: Bool) -> (xs :!R: List) -> List
-
-one :!E: (x :!R: Bool) -> List = (\x :!R: Bool. Cons -!R- x -!R- Nil)
-
-app :!R: (_ :!R: List) -> (_ :!R: List) -> List 
-  pat (ys :!R: List).
-    app -!R- Nil -!R- ys = ys
-  pat (x :!R: Bool) (xs :!R: List) (ys :!R: List).
-    app -!R- (Cons -!R- x -!R- xs) -!R- ys = Cons -!R- x -!R- (app -!R- xs -!R- ys)
-
-postulate Rev :!E: (_ :!E: List) -> Type
-
-postulate RNil :!E: Rev -!E- Nil
-
-postulate RSnoc :!E: (x :!E: Bool) -> (xs :!E: List) -> (rxs :!E: Rev -!E- xs) -> Rev -!E- (app -!E- xs -!E- (one -!E- x))
-
-postulate rev :!E: (xs :!E: List) -> Rev -!E- xs
-
-### Final annotation ###
-
-postulate Bool :E: Type
-
-postulate T :E: Bool
-
-postulate F :E: Bool
-
-postulate List :E: Type
-
-postulate Nil :R: List
-
-postulate Cons :R: (x :R: Bool) -> (xs :R: List) -> List
-
-one :E: (x :R: Bool) -> List = (\x :R: Bool. Cons -R- x -R- Nil)
-
-app :R: (_ :R: List) -> (_ :R: List) -> List 
-  pat (ys :R: List).
-    app -R- Nil -R- ys = ys
-  pat (x :R: Bool) (xs :R: List) (ys :R: List).
-    app -R- (Cons -R- x -R- xs) -R- ys = Cons -R- x -R- (app -R- xs -R- ys)
-
-postulate Rev :E: (_ :E: List) -> Type
-
-postulate RNil :E: Rev -E- Nil
-
-postulate RSnoc :E: (x :E: Bool) -> (xs :E: List) -> (rxs :E: Rev -E- xs) -> Rev -E- (app -E- xs -E- (one -E- x))
-
-postulate rev :E: (xs :E: List) -> Rev -E- xs
-
-### Verification ###
-
-Verification successful.
-
-### Pruned ###
-
-postulate Nil
-
-postulate Cons
-
-app 
-  pat ys.
-    app Nil ys = ys
-  pat x xs ys.
-    app (Cons x xs) ys = Cons x (app xs ys)
-
-### Normal forms ###
-
-unerased:

@@ -1,0 +1,86 @@
+-- vim: ft=agda
+
+### Desugared ###
+
+postulate Id : (a : Type) -> (x : a) -> (y : a) -> Type
+
+postulate Refl : (a : Type) -> (x : a) -> Id a x x
+
+id : (a : Type) -> (_ : a) -> a = (\a : Type. (\x : a. x))
+
+subst : (a : Type) -> (P : (_ : a) -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -> (_ : P x) -> P y 
+  pat (a : Type) (P : (_ : a) -> Type) (x : a) (eq : Id a x x).
+    subst a P x [x] (Refl [a] [x]) = (\y : P x. y)
+
+cong : (a : Type) -> (b : Type) -> (f : (_ : a) -> b) -> (x : a) -> (y : a) -> (eq : Id a x y) -> Id b (f x) (f y) 
+  pat (a : Type) (b : Type) (f : (_ : a) -> b) (x : a).
+    cong a b f x [x] (Refl a [x]) = Refl b (f x)
+
+postulate Bool : Type
+
+postulate T : Bool
+
+postulate F : Bool
+
+postulate List : Type
+
+postulate Nil : List
+
+postulate Cons : (x  -R-  Bool) -> (xs  -R-  List) -> List
+
+app : (_ : List) -> (_ : List) -> List 
+  pat (ys : List).
+    app Nil ys = ys
+  pat (x : Bool) (xs : List) (ys : List).
+    app (Cons x xs) ys = Cons x (app xs ys)
+
+appRightNeutral : (ys : List) -> Id List ys (app ys Nil) 
+  appRightNeutral Nil = Refl List Nil
+  pat (x : Bool) (xs : List).
+    appRightNeutral (Cons x xs) = cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs)
+
+main  -R-  Type = Type
+
+### Metaified ###
+
+postulate Id :?1: (a :?2: Type) -> (x :?3: a) -> (y :?4: a) -> Type
+
+postulate Refl :?5: (a :?6: Type) -> (x :?7: a) -> Id -?10- a -?9- x -?8- x
+
+id :?11: (a :?12: Type) -> (_ :?13: a) -> a = (\a :?14: Type. (\x :?15: a. x))
+
+subst :?16: (a :?17: Type) -> (P :?18: (_ :?19: a) -> Type) -> (x :?20: a) -> (y :?21: a) -> (eq :?22: Id -?25- a -?24- x -?23- y) -> (_ :?26: P -?27- x) -> P -?28- y 
+  pat (a :?29: Type) (P :?30: (_ :?31: a) -> Type) (x :?32: a) (eq :?33: Id -?36- a -?35- x -?34- x).
+    subst -?41- a -?40- P -?39- x -?38- [x] -?37- (Refl -?43- [a] -?42- [x]) = (\y :?44: P -?45- x. y)
+
+cong :?46: (a :?47: Type) -> (b :?48: Type) -> (f :?49: (_ :?50: a) -> b) -> (x :?51: a) -> (y :?52: a) -> (eq :?53: Id -?56- a -?55- x -?54- y) -> Id -?59- b -?58- (f -?60- x) -?57- (f -?61- y) 
+  pat (a :?62: Type) (b :?63: Type) (f :?64: (_ :?65: a) -> b) (x :?66: a).
+    cong -?72- a -?71- b -?70- f -?69- x -?68- [x] -?67- (Refl -?74- a -?73- [x]) = Refl -?76- b -?75- (f -?77- x)
+
+postulate Bool :?78: Type
+
+postulate T :?79: Bool
+
+postulate F :?80: Bool
+
+postulate List :?81: Type
+
+postulate Nil :?82: List
+
+postulate Cons :?83: (x :!R: Bool) -> (xs :!R: List) -> List
+
+app :?84: (_ :?85: List) -> (_ :?86: List) -> List 
+  pat (ys :?87: List).
+    app -?89- Nil -?88- ys = ys
+  pat (x :?90: Bool) (xs :?91: List) (ys :?92: List).
+    app -?94- (Cons -?96- x -?95- xs) -?93- ys = Cons -?98- x -?97- (app -?100- xs -?99- ys)
+
+appRightNeutral :?101: (ys :?102: List) -> Id -?105- List -?104- ys -?103- (app -?107- ys -?106- Nil) 
+  appRightNeutral -?108- Nil = Refl -?110- List -?109- Nil
+  pat (x :?111: Bool) (xs :?112: List).
+    appRightNeutral -?113- (Cons -?115- x -?114- xs) = cong -?121- List -?120- List -?119- (Cons -?122- x) -?118- xs -?117- (app -?124- xs -?123- Nil) -?116- (appRightNeutral -?125- xs)
+
+main :!R: Type = Type
+
+### Inferred definitions ###
+

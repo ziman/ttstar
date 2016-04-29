@@ -5,13 +5,48 @@ data Id : (a : Type) -> (x : a) -> (y : a) -> Type.
 
 id (a : Type) : a -> a = \x : a. x.
 
-subst : (a : Type) -> (P : a -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -> (P x) -> P y.
+subst : (a : Type) -> (P : a -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -> (P x) -> (P y).
   pat (a : Type) (P : a -> Type) (x : a) (eq : Id a x x).
     subst a P x [x] (Refl [a] [x]) = \y : P x. y.
 
 cong : (a : Type) -> (b : Type) -> (f : a -> b) -> (x : a) -> (y : a) -> (eq : Id a x y) -> Id b (f x) (f y).
   pat (a : Type) (b : Type) (f : a -> b) (x : a).
     cong a b f x [x] (Refl a [x]) = Refl b (f x).
+
+{-
+
+data Bool : Type.
+  T : Bool,
+  F : Bool.
+
+data A : Bool -> Type.
+  C : A T,
+  D : A F.
+
+data N : Type.
+  Z : N,
+  S : N -> N.
+
+plus : N -> N -> N.
+
+  pat (n : N).
+    plus Z n = n,
+
+  pat (m : N) (n : N).
+    plus (S m) n = S (plus m n).
+
+plusAssoc : (m : N) -> (n : N) -> (o : N) -> Id N (plus m (plus n o)) (plus (plus m n) o).
+
+  pat (n : N) (o : N).
+    plusAssoc Z n o = Refl N (plus n o),
+
+  pat (m : N) (n : N) (o : N).
+    plusAssoc (S m) n o = cong N N S (plus m (plus n o)) (plus (plus m n) o) (plusAssoc m n o).
+
+main :R: Type
+  = Bool.
+
+-}
 
 data Bool : Type.
   T : Bool,
@@ -31,24 +66,27 @@ app : List -> List -> List.
   pat (x : Bool) (xs : List) (ys : List).
     app (Cons x xs) ys = Cons x (app xs ys).
 
-postulate appRightNeutral : (ys : List) -> Id List ys (app ys Nil).
-postulate appAssoc : (xs : List) -> (ys : List) -> (zs : List)
-  -> Id List (app (app xs ys) zs) (app xs (app ys zs)).
---  -> Id List (app xs (app ys zs)) (app (app xs ys) zs).
-
-postulate lemma : (xs : List) -> (ys : List) -> (y : Bool) -> (Rev (app (app xs (one y)) ys)) -> Rev (app xs (Cons y ys)).
-
-{-
+appRightNeutral : (ys : List) -> Id List ys (app ys Nil).
   appRightNeutral Nil = Refl List Nil,
   pat (x : Bool) (xs : List).
-    appRightNeutral (Cons x xs)
-      = cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs).
--}
+    appRightNeutral (Cons x xs) = cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs).
 
+-- postulate appRightNeutral : (ys : List) -> Id List ys (app ys Nil).
+postulate appAssoc : (xs : List) -> (ys : List) -> (zs : List)
+  -> Id List (app xs (app ys zs)) (app (app xs ys) zs).
+
+main :R: Type = Type.
+
+{-
 data Rev : List -> Type.
   RNil : Rev Nil,
   RSnoc : (xs : List) -> (x : Bool) -> (rxs : Rev xs)
     -> Rev (app xs (one x)).
+
+postulate lemma' : (xs : List) -> (ys : List) -> (y : Bool) -> Id List (app (app xs (one y)) ys) (app xs (Cons y ys)).
+
+lemma (xs : List) (ys : List) (y : Bool) (val : Rev (app (app xs (one y)) ys)) : Rev (app xs (Cons y ys))
+  = subst List Rev (app (app xs (one y)) ys) (app xs (Cons y ys)) (lemma' xs ys y) val.
 
 rev' : (xs : List) -> (Rev xs) -> (ys : List) -> Rev (app xs ys).
   pat (xs : List) (rxs : Rev xs).
@@ -72,3 +110,4 @@ reverse (xs : List) : List
 
 main :R: List
   = reverse (Cons T (Cons F (Cons T (Cons F Nil)))).
+-}
