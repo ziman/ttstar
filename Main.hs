@@ -29,6 +29,11 @@ import System.Environment
 import qualified Data.Set as S
 import qualified Data.Map as M
 
+{- Questions for Edwin:
+ - * is evaluation per-clause okay with forced patterns?
+ - * prune is no longer trivial. Is that okay?
+ -}
+
 -- for every function f
 --   for every argument i
 --     if (Exists j. USED_f_i_j)
