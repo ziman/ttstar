@@ -173,7 +173,7 @@ matchTm form ctx pat tm
 -- patvars match anything
 matchTm form ctx (V n) tm
     | Just d@(Def n r ty (Abstract Var) Nothing) <- M.lookup n ctx
-    = Yep $ M.singleton n (Def n r ty (Term tm) Nothing)
+    = Yep $ M.singleton n (Def n r ty (Term $ rmForced tm) Nothing)
 
 -- data constructors match
 matchTm form ctx pattern@(App _ _ _) tm@(App _ _ _)

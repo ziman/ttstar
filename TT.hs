@@ -103,3 +103,20 @@ substClause n tm (Clause pvs lhs rhs) = Clause (substDef n tm <$> pvs) (subst n 
 getFreshName :: Ctx r cs -> Name -> Name
 getFreshName ctx (UN n) = head $ filter (`M.notMember` ctx) [UN (n ++ show i) | i <- [0..]]
 getFreshName ctx n = error $ "trying to refresh non-UN: " ++ show n
+
+rmForced :: TT r -> TT r
+rmForced t@(V n) = t
+rmForced (I n ty) = I n (rmForced ty)
+rmForced (Bind b d tm) = Bind b (rmForcedDef d) (rmForced tm)
+rmForced (App r f x) = App r (rmForced f) (rmForced x)
+rmForced (Forced t) = t
+rmForced Erased = Erased
+rmForced Type = Type
+
+rmForcedDef :: Def r cs -> Def r cs
+rmForcedDef (Def n r ty (Clauses cls) mcs) = Def n r ty (Clauses $ map rmForcedClause cls) mcs
+rmForcedDef (Def n r ty (Term tm) mcs) = Def n r ty (Term $ rmForced tm) mcs
+rmForcedDef d@(Def n r ty (Abstract a) mcs) = d
+
+rmForcedClause :: Clause r -> Clause r
+rmForcedClause (Clause pvs lhs rhs) = Clause (map rmForcedDef pvs) (rmForced lhs) (rmForced rhs)

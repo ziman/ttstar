@@ -180,7 +180,7 @@ checkClause fn fr fty (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $
     withDefs pvs $ do
         (lty, lcs) <- checkTm lhs
         (rty, rcs) <- checkTm rhs
-        ccs <- conv lty rty
+        ccs <- conv (rmForced lty) rty
         return $ flipConstrs lcs /\ rcs /\ ccs
 
 withDefs :: [Def Meta cs] -> TC a -> TC a
