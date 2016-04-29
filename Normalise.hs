@@ -73,6 +73,11 @@ red form ctx t@(App r f x)
     , Just (Def _ _ _ (Clauses cls) _) <- M.lookup fn ctx
     = redClauses form ctx cls t
 
+-- we reduce specialised terms as non-specialised terms
+red form ctx t@(App r f x)
+    | (I fn _ty, args) <- unApply t
+    = red form ctx (mkApp (V fn) args)
+
 red WHNF ctx t@(App r f x)
     -- lambdas
     | Bind Lam (Def n' r' ty' (Abstract Var) Nothing) tm' <- redF
