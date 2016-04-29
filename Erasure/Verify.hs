@@ -17,6 +17,9 @@ data VerError
     | InconsistentAnnotation
     deriving Show
 
+-- TODO: make this a separate/independent typechecker
+-- rather than reusing the possibly buggy typechecker-elaborator?
+
 verify :: Program Relevance VoidConstrs -> Either VerError ()
 verify prog =
     case check (prog & progRelevance %~ Fixed) of

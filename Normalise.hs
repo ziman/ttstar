@@ -206,4 +206,3 @@ freshen ctx (Clause (d:ds) rhs lhs)
     Clause ds' rhs' lhs' = freshen ctx $ Clause ds rhs lhs
 
 -- TODO: remove `Forced` from matched contexts
--- TODO: check pruned/annotated terms
