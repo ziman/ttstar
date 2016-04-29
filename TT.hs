@@ -48,11 +48,15 @@ newtype Program r cs = Prog { getDefs :: [Def r cs] } deriving (Eq, Ord)
 csDef :: Def r cs -> Def r cs'
 csDef (Def n r ty body Nothing) = Def n r ty body Nothing
 
-unApply :: TT r -> (TT r, [TT r])
+unApply :: TT r -> (TT r, [(r, TT r)])
 unApply tm = ua tm []
   where
-    ua (App _ f x) args = ua f (x : args)
+    ua (App r f x) args = ua f ((r, x) : args)
     ua tm args = (tm, args)
+
+mkApp :: TT r -> [(r, TT r)] -> TT r
+mkApp f [] = f
+mkApp f ((r, x) : xs) = mkApp (App r f x) xs
 
 substMany :: Show (Body r) => Ctx r cs -> TT r -> TT r
 substMany ctx tm = foldl phi tm $ M.toList ctx

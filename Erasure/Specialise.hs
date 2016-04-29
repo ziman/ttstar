@@ -21,14 +21,13 @@ import Lens.Family
 newtype Instances = Instances (M.Map Name (S.Set ErPattern))
 type ErPattern = [Relevance]
 type Spec = Writer Instances
-type Ext  = State Int
 
 instance Monoid Instances where
     mempty = Instances M.empty
     mappend (Instances p) (Instances q)
         = Instances $ M.unionWith S.union p q
 
-fresh :: Ext Int
+fresh :: State Int Int
 fresh = do
     i <- get
     put $ i+1
@@ -55,15 +54,26 @@ extend (Prog rawDefs) (Instances imap) prog@(Prog defs)
     initialState = 1 + maximum (0 : [i | MVar i <- prog ^.. progRelevance])
     rawDefMap = M.fromList [(n, d) | d@(Def n r ty _ _) <- rawDefs]
 
-    extendDefs n
+    extendDefs oldName
       = sequence
-          [ let Def _ r ty mtm Nothing = rawDefMap M.! n
+          [ let Def _ r ty body Nothing = rawDefMap M.! oldName
+                newName = specName oldName ep
               in instantiate fresh (bindMetas ep (ty ^.. ttRelevance))
-                   $ Def (specName n ep) r ty mtm Nothing
-          | ep <- S.toList $ M.findWithDefault S.empty n imap
+                   $ Def newName r ty (specLHS newName body) Nothing
+          | ep <- S.toList $ M.findWithDefault S.empty oldName imap
           ]
 
     expandDef (Def n r ty mtm Nothing) = (Def n r ty mtm Nothing :) <$> extendDefs n
+
+specLHS :: Name -> Body r -> Body r
+specLHS n (Clauses cls) = Clauses $ map (specLHS' n) cls
+specLHS n body = body
+
+specLHS' :: Name -> Clause r -> Clause r
+specLHS' n (Clause pvs lhs rhs) = Clause pvs lhs' rhs
+  where
+    (V _oldN, args) = unApply lhs
+    lhs' = mkApp (V n) args
 
 remetaify :: Program Relevance VoidConstrs -> Program Meta VoidConstrs
 remetaify = progRelevance %~ Fixed

@@ -69,7 +69,7 @@ red  NF  ctx t@(Bind b d tm) = Bind b (redDef NF ctx d) (red NF ctx' tm)
 
 -- pattern-matching definitions
 red form ctx t@(App r f x)
-    | (V fn, args) <- unApply t
+    | (V fn, _args) <- unApply t
     , Just (Def _ _ _ (Clauses cls) _) <- M.lookup fn ctx
     = redClauses form ctx cls t
 
@@ -195,7 +195,7 @@ matchTm form ctx pattern@(App _ _ _) tm@(App _ _ _)
     , (V cn', args') <- unApply tm
     , cn == cn'  -- heads are the same
 --    , Just (Def _ _ _ (Abstract Postulate) Nothing) <- M.lookup cn ctx  -- is a ctor/postulate
-    = matchTms form ctx (map (red form ctx) args) (map (red form ctx) args')
+    = matchTms form ctx (map (red form ctx . snd) args) (map (red form ctx . snd) args')
 
 -- forced patterns always match, not generating anything
 matchTm form ctx (Forced _) tm

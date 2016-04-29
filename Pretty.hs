@@ -39,19 +39,14 @@ instance PrettyR r => Pretty (Body r) where
     pretty (Clauses cls) = vcat $ map pretty cls
 
 instance PrettyR r => Pretty (Program r cs) where
-    pretty (Prog defs) = vcat $ map fmtDef defs
-      where
-        fmtDef (Def n r ty (Abstract Postulate) cs)
-            = text "postulate" <+> pretty (Def n r ty (Abstract Postulate) Nothing)
-                $$ blankLine
-        fmtDef (Def n r Erased body cs) = indent (pretty body) $$ blankLine
-        fmtDef (Def n r ty body cs)
-            = pretty (Def n r ty (Abstract Var) Nothing)
-                $$ indent (pretty body) $$ blankLine
+    pretty (Prog defs) = vcat $ map (\d -> pretty d $$ blankLine) defs
 
 instance PrettyR r => Pretty (Def r cs) where
     pretty (Def n r ty body cs) =
-        pretty n
+        case body of
+            Abstract Postulate -> text "postulate"
+            _ -> empty
+        <+> pretty n
         <+> case ty of
                 Erased -> empty
                 _      -> prettyCol r <+> pretty ty
@@ -97,6 +92,7 @@ instance PrettyR r => Show (Def r cs) where
 
 deriving instance PrettyR r => Show (Clause r)
 deriving instance PrettyR r => Show (Body r)
+deriving instance PrettyR r => Show (Program r VoidConstrs)
 
 type IsRelevance r = (PrettyR r, Eq r)
 
