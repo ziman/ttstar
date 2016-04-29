@@ -31,7 +31,7 @@ name = (<?> "name") $ do
     sp
     return $ UN (x : xs)
   where
-    idChar x = isAlpha x || x `elem` "_"
+    idChar x = isAlpha x || x `elem` "_'"
 
 rcolon :: Parser MRel
 rcolon =
