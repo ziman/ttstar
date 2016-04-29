@@ -34,7 +34,8 @@ app : List -> List -> List.
 appRightNeutral : (ys : List) -> Id List ys (app ys Nil).
   appRightNeutral Nil = Refl List Nil,
   pat (x : Bool) (xs : List).
-    appRightNeutral (Cons x xs) = cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs).
+    appRightNeutral (Cons x xs)
+      = cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs).
 
 postulate appAssoc : (xs : List) -> (ys : List) -> (zs : List)
   -> Id List (app (app xs ys) zs) (app xs (app ys zs)).
