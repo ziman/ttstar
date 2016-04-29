@@ -28,7 +28,7 @@ instance Pretty Name where
 
 instance PrettyR r => Pretty (Clause r) where
     pretty (Clause [] lhs rhs) =
-        pretty lhs <+> text " = " <+> pretty rhs
+        pretty lhs <+> text "=" <+> pretty rhs
     pretty (Clause pvs lhs rhs) =
         (text "pat" <+> hsep (map (parens . pretty) pvs) <> text ".")
         $$ indent (pretty $ Clause [] lhs rhs)
