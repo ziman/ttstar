@@ -212,6 +212,10 @@ f :R: (_ :R: (_ :R: T) -> T) -> (_ :R: T) -> (_ :R: (_ :E: T) -> T) -> (_ :E: T)
 main :R: T
   main  =  f -R- id -R- B -R- const_A -E- B
 
+### Verification ###
+
+Verification successful.
+
 ### Pruned ###
 
 postulate A

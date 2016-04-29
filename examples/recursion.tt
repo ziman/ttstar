@@ -14,9 +14,9 @@ postulate VCons : (a : *) -> (n : Nat) -> (x : a) -> (xs : Vec n a) -> Vec (S n)
 
 vlen : (a : *) -> (n : Nat) -> (Vec n a) -> Nat.
   pat (a : *).
-    vlen a Z (VNil a) = Z,
+    vlen [a] [Z] (VNil a) = Z,
   pat (a : *) (n : Nat) (x : a) (xs : Vec n a).
-    vlen a (S n) (VCons a n x xs) = S (vlen a n xs).
+    vlen [a] [S n] (VCons a n x xs) = S (vlen a n xs).
 
 testVec : Vec (S (S Z)) Bool
     = VCons Bool (S Z) True (VCons Bool Z False (VNil Bool)).

@@ -426,6 +426,10 @@ test2 :R: T
 main :R: T
   main  =  Op -R- test1 -R- test2
 
+### Verification ###
+
+Verification successful.
+
 ### Pruned ###
 
 postulate A

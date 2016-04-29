@@ -22,9 +22,9 @@ postulate VCons : (a : *) -> (n : Nat) -> (x : a) -> (xs : Vec n a) -> Vec (S n)
 
 vlen : (a : *) -> (n : Nat) -> (_ : Vec n a) -> Nat
   pat (a : *).
-    vlen a Z (VNil a)  =  Z
+    vlen [a] [Z] (VNil a)  =  Z
   pat (a : *) (n : Nat) (x : a) (xs : Vec n a).
-    vlen a (S n) (VCons a n x xs)  =  S (vlen a n xs)
+    vlen [a] [S n] (VCons a n x xs)  =  S (vlen a n xs)
 
 testVec : Vec 2 Bool
   = VCons Bool 1 True (VCons Bool Z False (VNil Bool))
@@ -54,9 +54,9 @@ postulate VCons :?14: (a :?15: *) -> (n :?16: Nat) -> (x :?17: a) -> (xs :?18: V
 
 vlen :?24: (a :?25: *) -> (n :?26: Nat) -> (_ :?27: Vec -?29- n -?28- a) -> Nat
   pat (a :?30: *).
-    vlen -?33- a -?32- Z -?31- (VNil -?34- a)  =  Z
+    vlen -?33- [a] -?32- [Z] -?31- (VNil -?34- a)  =  Z
   pat (a :?35: *) (n :?36: Nat) (x :?37: a) (xs :?38: Vec -?40- n -?39- a).
-    vlen -?43- a -?42- (S -?44- n) -?41- (VCons -?48- a -?47- n -?46- x -?45- xs)  =  S -?49- (vlen -?52- a -?51- n -?50- xs)
+    vlen -?43- [a] -?42- [S -?44- n] -?41- (VCons -?48- a -?47- n -?46- x -?45- xs)  =  S -?49- (vlen -?52- a -?51- n -?50- xs)
 
 testVec :?53: Vec -?55- 2 -?54- Bool
   = VCons -?61- Bool -?60- 1 -?59- True -?58- (VCons -?66- Bool -?65- Z -?64- False -?63- (VNil -?67- Bool))
@@ -137,51 +137,71 @@ testVec :?53: Vec -?55- 2 -?54- Bool = VCons -?61- Bool -?60- 1 -?59- True -?58-
 
 vlen :?24: (a :?25: *) -> (n :?26: Nat) -> (_ :?27: Vec -?29- n -?28- a) -> Nat 
   pat (a :?30: *).
-    vlen -?33- a -?32- Z -?31- (VNil -?34- a)  =  Z
+    vlen -?33- [a] -?32- [Z] -?31- (VNil -?34- a)  =  Z
   pat (a :?35: *) (n :?36: Nat) (x :?37: a) (xs :?38: Vec -?40- n -?39- a).
-    vlen -?43- a -?42- (S -?44- n) -?41- (VCons -?48- a -?47- n -?46- x -?45- xs)  =  S -?49- (vlen -?52- a -?51- n -?50- xs)
-  [] -> [?5,?6,?16,?18,?23,?24,?26,?27,?31,?32,?36,?38,?41,?42,?44,?45,?47,?49,?50,?51,!R]
-  [?11] -> [?34]
+    vlen -?43- [a] -?42- [S -?44- n] -?41- (VCons -?48- a -?47- n -?46- x -?45- xs)  =  S -?49- (vlen -?52- a -?51- n -?50- xs)
+  [] -> [?5,?6,?24,?49,!R]
+  [?10] -> [?27]
+  [?11] -> [?27,?34]
   [?12] -> [?28]
   [?13] -> [?29]
-  [?15] -> [?48]
-  [?17] -> [?46]
-  [?19] -> [?39]
-  [?20] -> [?40]
+  [?14] -> [?27]
+  [?15] -> [?27,?48]
+  [?16] -> [?27,?47]
+  [?17] -> [?27,?46]
+  [?18] -> [?27,?45]
+  [?19] -> [?27,?39]
+  [?20] -> [?27,?40]
   [?21] -> [?28]
   [?22] -> [?29]
+  [?23] -> [?44]
   [?25] -> [?33,?35,?43,?52]
+  [?26] -> [?32,?36,?42,?51]
+  [?27] -> [?31,?38,?41,?50]
   [?28] -> [?12,?21,?39]
   [?29] -> [?13,?22,?40]
-  [?30] -> [?11,?25]
+  [?30] -> [?11,?27]
+  [?31] -> [?27]
+  [?32] -> [?26]
   [?33] -> [?25]
-  [?34] -> [?11]
-  [?35] -> [?15,?25]
-  [?37] -> [?17]
-  [?39] -> [?19,?28]
-  [?40] -> [?20,?29]
+  [?34] -> [?11,?27]
+  [?35] -> [?15,?27]
+  [?36] -> [?16,?27]
+  [?37] -> [?17,?27]
+  [?38] -> [?18,?27]
+  [?39] -> [?19,?27,?28]
+  [?40] -> [?20,?27,?29]
+  [?41] -> [?27]
+  [?42] -> [?26]
   [?43] -> [?25]
-  [?46] -> [?17]
-  [?48] -> [?15]
+  [?44] -> [?23]
+  [?45] -> [?18,?27]
+  [?46] -> [?17,?27]
+  [?47] -> [?16,?27]
+  [?48] -> [?15,?27]
+  [?50] -> [?27]
+  [?51] -> [?26]
   [?52] -> [?25]
 
 
 ### Constraints ###
 
-[] -> [?5,?6,?14,?16,?18,?23,?24,?26,?27,?31,?32,?36,?38,?41,?42,?44,?45,?47,?49,?50,?51,!R]
-[?11] -> [?34]
+[] -> [?5,?6,?14,?24,?49,!R]
+[?10] -> [?27]
+[?11] -> [?27,?34]
 [?11,?18] -> [?1,?67]
 [?12] -> [?28]
 [?12,?18] -> [?19]
 [?13] -> [?29]
 [?13,?18] -> [?20]
-[?15] -> [?1,?48,?61]
+[?14] -> [?27]
+[?15] -> [?1,?27,?48,?61]
 [?15,?18] -> [?1,?66]
-[?16] -> [?5,?6,?60,?62]
+[?16] -> [?5,?6,?27,?47,?60,?62]
 [?16,?18] -> [?5,?65]
-[?17] -> [?2,?46,?59]
+[?17] -> [?2,?27,?46,?59]
 [?17,?18] -> [?3,?64]
-[?18] -> [?10,?58,?63]
+[?18] -> [?10,?27,?45,?58,?63]
 [?18,?19] -> [?12]
 [?18,?20] -> [?13]
 [?18,?63] -> [?18]
@@ -189,26 +209,37 @@ vlen :?24: (a :?25: *) -> (n :?26: Nat) -> (_ :?27: Vec -?29- n -?28- a) -> Nat
 [?18,?65] -> [?16]
 [?18,?66] -> [?15]
 [?18,?67] -> [?11]
-[?19] -> [?21,?39]
-[?20] -> [?22,?40]
+[?19] -> [?21,?27,?39]
+[?20] -> [?22,?27,?40]
 [?21] -> [?19,?28,?54]
 [?22] -> [?20,?29,?55]
-[?23] -> [?56,?62]
+[?23] -> [?44,?56,?62]
 [?25] -> [?1,?33,?35,?43,?52,?70]
-[?26] -> [?5,?6,?69,?71,?72]
-[?27] -> [?53,?68]
+[?26] -> [?5,?6,?32,?36,?42,?51,?69,?71,?72]
+[?27] -> [?31,?38,?41,?50,?53,?68]
 [?28] -> [?12,?21,?39,?54]
 [?29] -> [?13,?22,?40,?55]
-[?30] -> [?11,?25]
+[?30] -> [?11,?27]
+[?31] -> [?27]
+[?32] -> [?26]
 [?33] -> [?25]
-[?34] -> [?11]
-[?35] -> [?15,?25]
-[?37] -> [?17]
-[?39] -> [?19,?28]
-[?40] -> [?20,?29]
+[?34] -> [?11,?27]
+[?35] -> [?15,?27]
+[?36] -> [?16,?27]
+[?37] -> [?17,?27]
+[?38] -> [?18,?27]
+[?39] -> [?19,?27,?28]
+[?40] -> [?20,?27,?29]
+[?41] -> [?27]
+[?42] -> [?26]
 [?43] -> [?25]
-[?46] -> [?17]
-[?48] -> [?15]
+[?44] -> [?23]
+[?45] -> [?18,?27]
+[?46] -> [?17,?27]
+[?47] -> [?16,?27]
+[?48] -> [?15,?27]
+[?50] -> [?27]
+[?51] -> [?26]
 [?52] -> [?25]
 [?54] -> [?21,?28]
 [?55] -> [?22,?29]
@@ -227,7 +258,7 @@ vlen :?24: (a :?25: *) -> (n :?26: Nat) -> (_ :?27: Vec -?29- n -?28- a) -> Nat
 
 ### Solution ###
 
-[?5,?6,?10,?14,?16,?18,?23,?24,?26,?27,?31,?32,?36,?38,?41,?42,?44,?45,?47,?49,?50,?51,?53,?56,?57,?58,?60,?62,?63,?65,?68,?69,?71,?72,!R]
+[?5,?6,?10,?14,?18,?24,?27,?31,?38,?41,?45,?49,?50,?53,?58,?63,?68,!R]
 
 ### Annotated ###
 
@@ -247,19 +278,19 @@ postulate Vec :E: (_ :E: Nat) -> (_ :E: *) -> *
 
 postulate VNil :R: (a :E: *) -> Vec -E- Z -E- a
 
-postulate VCons :R: (a :E: *) -> (n :R: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -R- n) -E- a
+postulate VCons :R: (a :E: *) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
 
-vlen :R: (a :E: *) -> (n :R: Nat) -> (_ :R: Vec -E- n -E- a) -> Nat
+vlen :R: (a :E: *) -> (n :E: Nat) -> (_ :R: Vec -E- n -E- a) -> Nat
   pat (a :E: *).
-    vlen -E- a -R- Z -R- (VNil -E- a)  =  Z
-  pat (a :E: *) (n :R: Nat) (x :E: a) (xs :R: Vec -E- n -E- a).
-    vlen -E- a -R- (S -R- n) -R- (VCons -E- a -R- n -E- x -R- xs)  =  S -R- (vlen -E- a -R- n -R- xs)
+    vlen -E- [a] -E- [Z] -R- (VNil -E- a)  =  Z
+  pat (a :E: *) (n :E: Nat) (x :E: a) (xs :R: Vec -E- n -E- a).
+    vlen -E- [a] -E- [S -E- n] -R- (VCons -E- a -E- n -E- x -R- xs)  =  S -R- (vlen -E- a -E- n -R- xs)
 
 testVec :R: Vec -E- 2 -E- Bool
-  = VCons -E- Bool -R- 1 -E- True -R- (VCons -E- Bool -R- Z -E- False -R- (VNil -E- Bool))
+  = VCons -E- Bool -E- 1 -E- True -R- (VCons -E- Bool -E- Z -E- False -R- (VNil -E- Bool))
 
 main :R: Nat
-  = vlen -E- Bool -R- 2 -R- testVec
+  = vlen -E- Bool -E- 2 -R- testVec
 
 ### Specialised ###
 
@@ -279,19 +310,19 @@ postulate Vec :!E: (_ :!E: Nat) -> (_ :!E: *) -> *
 
 postulate VNil :!R: (a :!E: *) -> Vec -!E- Z -!E- a
 
-postulate VCons :!R: (a :!E: *) -> (n :!R: Nat) -> (x :!E: a) -> (xs :!R: Vec -!E- n -!E- a) -> Vec -!E- (S -!R- n) -!E- a
+postulate VCons :!R: (a :!E: *) -> (n :!E: Nat) -> (x :!E: a) -> (xs :!R: Vec -!E- n -!E- a) -> Vec -!E- (S -!E- n) -!E- a
 
-vlen :!R: (a :!E: *) -> (n :!R: Nat) -> (_ :!R: Vec -!E- n -!E- a) -> Nat
+vlen :!R: (a :!E: *) -> (n :!E: Nat) -> (_ :!R: Vec -!E- n -!E- a) -> Nat
   pat (a :!E: *).
-    vlen -!E- a -!R- Z -!R- (VNil -!E- a)  =  Z
-  pat (a :!E: *) (n :!R: Nat) (x :!E: a) (xs :!R: Vec -!E- n -!E- a).
-    vlen -!E- a -!R- (S -!R- n) -!R- (VCons -!E- a -!R- n -!E- x -!R- xs)  =  S -!R- (vlen -!E- a -!R- n -!R- xs)
+    vlen -!E- [a] -!E- [Z] -!R- (VNil -!E- a)  =  Z
+  pat (a :!E: *) (n :!E: Nat) (x :!E: a) (xs :!R: Vec -!E- n -!E- a).
+    vlen -!E- [a] -!E- [S -!E- n] -!R- (VCons -!E- a -!E- n -!E- x -!R- xs)  =  S -!R- (vlen -!E- a -!E- n -!R- xs)
 
 testVec :!R: Vec -!E- 2 -!E- Bool
-  = VCons -!E- Bool -!R- 1 -!E- True -!R- (VCons -!E- Bool -!R- Z -!E- False -!R- (VNil -!E- Bool))
+  = VCons -!E- Bool -!E- 1 -!E- True -!R- (VCons -!E- Bool -!E- Z -!E- False -!R- (VNil -!E- Bool))
 
 main :!R: Nat
-  = vlen -!E- Bool -!R- 2 -!R- testVec
+  = vlen -!E- Bool -!E- 2 -!R- testVec
 
 ### Final annotation ###
 
@@ -311,19 +342,23 @@ postulate Vec :E: (_ :E: Nat) -> (_ :E: *) -> *
 
 postulate VNil :R: (a :E: *) -> Vec -E- Z -E- a
 
-postulate VCons :R: (a :E: *) -> (n :R: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -R- n) -E- a
+postulate VCons :R: (a :E: *) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
 
-vlen :R: (a :E: *) -> (n :R: Nat) -> (_ :R: Vec -E- n -E- a) -> Nat
+vlen :R: (a :E: *) -> (n :E: Nat) -> (_ :R: Vec -E- n -E- a) -> Nat
   pat (a :E: *).
-    vlen -E- a -R- Z -R- (VNil -E- a)  =  Z
-  pat (a :E: *) (n :R: Nat) (x :E: a) (xs :R: Vec -E- n -E- a).
-    vlen -E- a -R- (S -R- n) -R- (VCons -E- a -R- n -E- x -R- xs)  =  S -R- (vlen -E- a -R- n -R- xs)
+    vlen -E- [a] -E- [Z] -R- (VNil -E- a)  =  Z
+  pat (a :E: *) (n :E: Nat) (x :E: a) (xs :R: Vec -E- n -E- a).
+    vlen -E- [a] -E- [S -E- n] -R- (VCons -E- a -E- n -E- x -R- xs)  =  S -R- (vlen -E- a -E- n -R- xs)
 
 testVec :R: Vec -E- 2 -E- Bool
-  = VCons -E- Bool -R- 1 -E- True -R- (VCons -E- Bool -R- Z -E- False -R- (VNil -E- Bool))
+  = VCons -E- Bool -E- 1 -E- True -R- (VCons -E- Bool -E- Z -E- False -R- (VNil -E- Bool))
 
 main :R: Nat
-  = vlen -E- Bool -R- 2 -R- testVec
+  = vlen -E- Bool -E- 2 -R- testVec
+
+### Verification ###
+
+Verification successful.
 
 ### Pruned ###
 
@@ -335,13 +370,13 @@ postulate VNil
 
 postulate VCons
 
-  vlen Z VNil  =  Z
-  pat (n) (xs).
-    vlen (S n) (VCons n xs)  =  S (vlen n xs)
+  vlen VNil  =  Z
+  pat (xs).
+    vlen (VCons xs)  =  S (vlen xs)
 
-  = VCons 1 (VCons Z VNil)
+  = VCons (VCons VNil)
 
-  = vlen 2 testVec
+  = vlen testVec
 
 ### Normal forms ###
 

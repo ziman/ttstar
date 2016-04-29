@@ -39,6 +39,10 @@ main :!R: (x :!R: *) -> *
 main :R: (x :R: *) -> *
   = (\x :R: *. x)
 
+### Verification ###
+
+Verification successful.
+
 ### Pruned ###
 
   = (\x. x)

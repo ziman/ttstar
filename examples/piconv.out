@@ -134,6 +134,10 @@ apply :R: (f :R: (x :E: T) -> T) -> (x :E: T) -> T
 main :R: T
   = apply -R- const_A -E- B
 
+### Verification ###
+
+Verification successful.
+
 ### Pruned ###
 
 postulate A

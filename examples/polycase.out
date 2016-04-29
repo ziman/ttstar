@@ -342,6 +342,10 @@ invert :R: (t :R: Bool) -> (_ :R: retTy -E- t) -> retTy -E- t
 main :R: Mool
   = invert -R- F -R- Q
 
+### Verification ###
+
+Verification successful.
+
 ### Pruned ###
 
 postulate Mool

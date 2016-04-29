@@ -189,6 +189,10 @@ notnot :R: (x :R: Bool) -> Id -E- x -E- (not -E- (not -E- x))
 main :R: Id -E- F -E- (not -E- (not -E- F))
   main  =  notnot -R- F
 
+### Verification ###
+
+Verification successful.
+
 ### Pruned ###
 
 postulate T

@@ -143,6 +143,10 @@ subst :E: (A :E: *) -> (P :E: (_ :E: A) -> *) -> (x :R: A) -> (y :E: A) -> (eq :
 main :R: *
   = *
 
+### Verification ###
+
+Verification successful.
+
 ### Pruned ###
 
   = *

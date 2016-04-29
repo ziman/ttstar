@@ -227,6 +227,10 @@ main :R: Nat
         let three :R: Nat = 3
         in plus -R- (apply -R- id -R- 2) -R- (apply -R- (const -R- Q) -R- three)
 
+### Verification ###
+
+Verification successful.
+
 ### Pruned ###
 
 postulate Z
