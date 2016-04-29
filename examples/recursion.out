@@ -362,7 +362,7 @@ postulate VCons
 
 vlen 
   vlen VNil = Z
-  pat (xs).
+  pat xs.
     vlen (VCons xs) = S (vlen xs)
 
 testVec = VCons (VCons VNil)

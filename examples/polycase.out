@@ -366,9 +366,9 @@ mot
   mot W = Q
 
 invert 
-  pat (x).
+  pat x.
     invert T x = not x
-  pat (x).
+  pat x.
     invert F x = mot x
 
 main = invert F Q

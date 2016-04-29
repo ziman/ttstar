@@ -30,8 +30,11 @@ instance PrettyR r => Pretty (Clause r) where
     pretty (Clause [] lhs rhs) =
         pretty lhs <+> text "=" <+> pretty rhs
     pretty (Clause pvs lhs rhs) =
-        (text "pat" <+> hsep (map (parens . pretty) pvs) <> text ".")
+        (text "pat" <+> hsep (map prettyPVar pvs) <> text ".")
         $$ indent (pretty $ Clause [] lhs rhs)
+      where
+        prettyPVar d@(Def _ _ (V Blank) _ _) = pretty d
+        prettyPVar d = parens (pretty d)
 
 instance PrettyR r => Pretty (Body r) where
     pretty (Abstract _) = empty

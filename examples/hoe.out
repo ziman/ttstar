@@ -225,14 +225,14 @@ postulate B
 postulate Op
 
 id 
-  pat (x).
+  pat x.
     id x = x
 
 const_A 
   const_A = A
 
 f 
-  pat (g) (z) (h).
+  pat g z h.
     f g z h = Op (g z) h
 
 main 

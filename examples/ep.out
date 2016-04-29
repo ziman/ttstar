@@ -430,18 +430,18 @@ postulate B
 postulate Op
 
 id 
-  pat (y).
+  pat y.
     id y = y
 
 constA 
   constA = A
 
 apply_REE 
-  pat (f).
+  pat f.
     apply_REE f = f
 
 apply_RRR 
-  pat (f) (x).
+  pat f x.
     apply_RRR f x = f x
 
 test1 

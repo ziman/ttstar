@@ -228,9 +228,9 @@ postulate Z
 postulate S
 
 plus 
-  pat (n).
+  pat n.
     plus Z n = n
-  pat (m) (n).
+  pat m n.
     plus (S m) n = S (plus m n)
 
 id 

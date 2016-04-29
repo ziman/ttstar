@@ -424,7 +424,7 @@ postulate Plus
 
 id 
   id Z = Z
-  pat (x).
+  pat x.
     id (S x) = 
       let result = S x
       in result
@@ -436,11 +436,11 @@ two
   two = 2
 
 f 
-  pat (g) (z) (h) (w).
+  pat g z h w.
     f g z h w = Plus (g z) (h w)
 
 apply 
-  pat (f) (x).
+  pat f x.
     apply f x = f x
 
 test_1 
