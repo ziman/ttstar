@@ -1,6 +1,6 @@
 -- vim: ft=idris
 
-postulate Nat : *.
+postulate Nat : Type.
 postulate Z : Nat.
 postulate S : (n :R: Nat) -> Nat.
 

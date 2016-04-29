@@ -4,11 +4,12 @@ module TT where
 import Control.Applicative
 import qualified Data.Map as M
 
-data Name = UN String | IN String [Relevance] | Blank deriving (Eq, Ord)
+data Name = UN String | IN String [Relevance] | Blank | Type deriving (Eq, Ord)
 data Relevance = E | R deriving (Eq, Ord, Show)
 data Binder = Lam | Pi | Let deriving (Eq, Ord, Show)
 
 instance Show Name where
+    show Type   = "Type"
     show Blank  = "_"
     show (UN n) = n
     show (IN n rs) = n ++ "_" ++ concatMap show rs
@@ -21,10 +22,9 @@ voidElim (Void v) = voidElim v
 
 data TT r
     = V Name
-    | I Name (TT r)  -- instance of a global definition with a specific type
+    | I Name (TT r)  -- instance of a global definition with a specific erasure type
     | Bind Binder (Def r VoidConstrs) (TT r)
     | App r (TT r) (TT r)
-    | Type
     | Forced (TT r)  -- forced pattern
     deriving (Eq, Ord)
 
@@ -81,7 +81,6 @@ subst n tm (Bind b d@(Def n' r ty body Nothing) tm')
             else subst n tm tm')
 subst n tm (App r f x) = App r (subst n tm f) (subst n tm x)
 subst n tm (Forced t) = Forced (subst n tm t)
-subst _ _  t@Type   = t
 
 substCtx :: Name -> TT r -> Ctx r cs -> Ctx r cs
 substCtx n tm = M.map $ substDef n tm
@@ -113,7 +112,6 @@ rmForced (I n ty) = I n (rmForced ty)
 rmForced (Bind b d tm) = Bind b (rmForcedDef d) (rmForced tm)
 rmForced (App r f x) = App r (rmForced f) (rmForced x)
 rmForced (Forced t) = t
-rmForced Type = Type
 
 rmForcedDef :: Def r cs -> Def r cs
 rmForcedDef (Def n r ty (Clauses cls) mcs) = Def n r ty (Clauses $ map rmForcedClause cls) mcs
@@ -129,4 +127,8 @@ refersTo (I n ty) n' = n == n'
 refersTo (Bind b d tm) n' = error $ "binder in pattern: " ++ show b
 refersTo (App r f x) n' = (f `refersTo` n') || (x `refersTo` n')
 refersTo (Forced t) n' = t `refersTo` n'
-refersTo Type n' = False
+
+builtins :: r -> Ctx r cs
+builtins r = M.fromList
+    [ (Type, Def Type r (V Type) (Abstract Postulate) Nothing)
+    ]

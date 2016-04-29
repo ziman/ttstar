@@ -1,6 +1,6 @@
 -- vim: ft=idris
 
-postulate T : *.
+postulate T : Type.
 postulate A : T.
 postulate B : T.
 

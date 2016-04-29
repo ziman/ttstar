@@ -1,10 +1,10 @@
 -- vim: ft=idris
 
-postulate Id : (A : *) -> A -> A -> *.
-postulate Refl : (A : *) -> (x : A) -> Id A x x.
+postulate Id : (A : Type) -> A -> A -> Type.
+postulate Refl : (A : Type) -> (x : A) -> Id A x x.
 
-subst : (A : *) -> (P : A -> *) -> (x : A) -> (y : A) -> (eq : Id A x y) -> (px : P x) -> A {- P y -}.
-  pat (A : *) (P : A -> *) (x : A) (px : P x).
+subst : (A : Type) -> (P : A -> Type) -> (x : A) -> (y : A) -> (eq : Id A x y) -> (px : P x) -> A {- P y -}.
+  pat (A : Type) (P : A -> Type) (x : A) (px : P x).
     subst A P x [x] (Refl A [x]) px = x {- px -}.
 
-main :R: * = *.
+main :R: Type = Type.

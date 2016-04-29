@@ -1,1 +1,1 @@
-main (x : *) :R: * = x.
+main (x : Type) :R: Type = x.

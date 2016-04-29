@@ -84,7 +84,6 @@ instance PrettyR r => Pretty (TT r) where
             show' r (App r' f' x') x = show' r' f' x' <> prettyApp r <> pretty' True x
             show' r f x = pretty f <> prettyApp r <> pretty' True x
         pretty' pp (Forced tm) = text "[" <> pretty tm <> text "]"
-        pretty' pp Type = text "*"
 
 instance PrettyR r => Show (TT r) where
     show = prettyShow

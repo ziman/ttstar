@@ -22,7 +22,6 @@ ttRelevance f = g
         App r fun arg
             -> App <$> f r <*> g fun <*> g arg
         Forced tm -> Forced <$> g tm
-        Type -> pure Type
 
 defRelevance' :: Traversal (cs r) (cs' r') r r' -> Traversal (Def r cs) (Def r' cs') r r'
 defRelevance' csRelevance f (Def n r ty body mcs)

@@ -1,11 +1,11 @@
 -- vim: ft=idris
 
-postulate Bool : *.
+postulate Bool : Type.
 postulate T : Bool.
 postulate F : Bool.
 
-postulate Id : (a : *) -> (x : a) -> (y : a) -> *.
-postulate Refl : (a : *) -> (x : a) -> Id x x.
+postulate Id : (a : Type) -> (x : a) -> (y : a) -> Type.
+postulate Refl : (a : Type) -> (x : a) -> Id x x.
 
 not : Bool -> Bool.
   not T = F,

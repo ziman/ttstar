@@ -1,7 +1,7 @@
 -- vim: ft=idris
 
 -- declare a data type
-postulate T : *.
+postulate T : Type.
 postulate A : T.
 postulate B : T.
 

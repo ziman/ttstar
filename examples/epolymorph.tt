@@ -1,14 +1,14 @@
 -- vim: ft=idris
 
-postulate Bool : *.
+postulate Bool : Type.
 postulate True : Bool.
 postulate False : Bool.
 
-postulate Maybe : * -> *.
-postulate Just : (a : *) -> a -> *.
-postulate Nothing : (a : *) -> *.
+postulate Maybe : Type -> Type.
+postulate Just : (a : Type) -> a -> Type.
+postulate Nothing : (a : Type) -> Type.
 
-postulate Nat : *.
+postulate Nat : Type.
 postulate Z : Nat.
 postulate S : (n :R: Nat) -> Nat.
 

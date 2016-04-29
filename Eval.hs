@@ -13,5 +13,5 @@ defs2tt :: [Def r cs] -> TT r
 defs2tt [] = V $ UN "main"
 defs2tt (Def n r ty body cs : ds) = Bind Let (Def n r ty body Nothing) $ defs2tt ds
 
-eval :: IsRelevance r => Form -> Program r cs -> TT r
-eval form = red form M.empty . prog2tt
+eval :: IsRelevance r => Form -> Ctx r cs -> Program r cs -> TT r
+eval form ctx = red form ctx . prog2tt

@@ -143,13 +143,15 @@ runTC :: Int -> Ctx Meta Constrs' -> TC a -> Either TCFailure a
 runTC maxTag ctx tc = evalState (runExceptT $ runReaderT tc ([], ctx)) maxTag
 
 check :: Program Meta VoidConstrs -> Either TCFailure (Ctx Meta Constrs', Constrs)
-check prog@(Prog defs) = runTC maxTag M.empty $ checkDefs (CS M.empty) defs
+check prog@(Prog defs) = runTC maxTag ctx $ checkDefs (CS M.empty) defs
   where
     getTag (MVar i) = i
     getTag _        = 0  -- whatever, we're looking for maximum
 
     allTags = prog ^.. progRelevance . to getTag
     maxTag = L.maximum allTags
+
+    ctx = builtins (Fixed R)
 
 checkDefs :: Constrs -> [Def Meta VoidConstrs] -> TC (Ctx Meta Constrs', Constrs)
 checkDefs cs [] = do
@@ -209,7 +211,7 @@ checkTm t@(Bind Lam (Def n r ty (Abstract Var) Nothing) tm) = bt ("LAM", t) $ do
 
 checkTm t@(Bind Pi (Def n r ty (Abstract Var) Nothing) tm) = bt ("PI", t) $ do
     (tmty, tmcs) <- with (Def n r ty (Abstract Var) Nothing) $ checkTm tm
-    return (Type, tmcs)
+    return (V Type, tmcs)
 
 checkTm t@(App app_r f x) = bt ("APP", t) $ do
     (fty, fcs) <- checkTm f
@@ -248,8 +250,6 @@ checkTm t@(Bind Let (Def n r ty body Nothing) tm) = bt ("LET", t) $ do
 checkTm (Forced tm) = do
     (ty, cs) <- checkTm tm
     return (ty, noConstrs)
-
-checkTm Type   = return (Type,   noConstrs)
 
 newtype TC' a = LiftTC' { runTC' :: TC a } deriving (Functor, Applicative, Monad)
 type ITC = StateT (IM.IntMap Int) TC'
@@ -298,8 +298,6 @@ conv' p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do
     ys <- conv x x'
     return $ xs /\ ys /\ r <--> r'
 
-conv' (Forced l) r = conv l r
-conv' l (Forced r) = conv l r
-conv' Type   Type   = return noConstrs
+conv' (Forced l) (Forced r) = conv l r
 
 conv' p q = tcfail $ CantConvert p q

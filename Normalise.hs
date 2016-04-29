@@ -100,7 +100,6 @@ red NF ctx t@(App r f x)
     redX = red NF ctx x
 
 red form ctx (Forced tm) = Forced $ red form ctx tm
-red form ctx t@Type   = t
 
 appDepth :: TT r -> Int
 appDepth (App r f x) = 1 + appDepth f

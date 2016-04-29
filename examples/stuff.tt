@@ -1,21 +1,21 @@
 -- vim: ft=idris
 
-postulate Id : (A : *) -> A -> A -> *.
-postulate Refl : (A : *) -> (x : A) -> Id A x x.
+postulate Id : (A : Type) -> A -> A -> Type.
+postulate Refl : (A : Type) -> (x : A) -> Id A x x.
 
-subst : (A : *) -> (P : A -> *) -> (x : A) -> (y : A) -> (eq : Id A x y) -> (px : P x) -> P y.
-  pat (A : *) (P : A -> *) (x : A) (px : P x).
+subst : (A : Type) -> (P : A -> Type) -> (x : A) -> (y : A) -> (eq : Id A x y) -> (px : P x) -> P y.
+  pat (A : Type) (P : A -> Type) (x : A) (px : P x).
     subst A P x [x] (Refl A [x]) px = px.
 
-postulate Bool : *.
+postulate Bool : Type.
 postulate True : Bool.
 postulate False : Bool.
 
-postulate Maybe : * -> *.
-postulate Just : (a : *) -> a -> *.
-postulate Nothing : (a : *) -> *.
+postulate Maybe : Type -> Type.
+postulate Just : (a : Type) -> a -> Type.
+postulate Nothing : (a : Type) -> Type.
 
-postulate Nat : *.
+postulate Nat : Type.
 postulate Z : Nat.
 postulate S : (n :R: Nat) -> Nat.
 
@@ -68,7 +68,7 @@ main :R: Nat.
 
 ---------
 
-postulate T : *.
+postulate T : Type.
 postulate A : T.
 postulate B : T.
 

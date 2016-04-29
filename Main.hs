@@ -173,9 +173,9 @@ main = do
 
             putStrLn "### Normal forms ###\n"
             putStrLn "unerased:"
-            putStrLn $ "  " ++ show (eval NF prog)
+            putStrLn $ "  " ++ show (eval NF (builtins $ Just R) prog)
             putStrLn "erased:"
-            putStrLn $ "  " ++ show (eval NF pruned)
+            putStrLn $ "  " ++ show (eval NF (builtins ()) pruned)
   where
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
 

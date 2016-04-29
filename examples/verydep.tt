@@ -1,24 +1,24 @@
 -- vim: ft=agda
 
-postulate Void : *.
+postulate Void : Type.
 
-postulate Maybe : * -> *.
-postulate Just : (a : *) -> (x : a) -> Maybe a.
-postulate Nothing : (a : *) -> Maybe a.
+postulate Maybe : Type -> Type.
+postulate Just : (a : Type) -> (x : a) -> Maybe a.
+postulate Nothing : (a : Type) -> Maybe a.
 
-postulate Bool : *.
+postulate Bool : Type.
 postulate True : Bool.
 postulate False : Bool.
 
-retTy (x : Maybe Bool) : *
+retTy (x : Maybe Bool) : Type
     = case (x) of
-        Just    (a : *) (t : a) -> Bool,
-        Nothing (a : *)         -> *.
+        Just    (a : Type) (t : a) -> Bool,
+        Nothing (a : Type)         -> Type.
 
 f (x : Maybe Bool) : retTy x
     = case (x) of
-        Just    (a : *) (b : a)  -> b,
-        Nothing (a : *)          -> Bool.
+        Just    (a : Type) (b : a)  -> b,
+        Nothing (a : Type)          -> Bool.
 
 main :R: Bool
     = f (Just Bool False).

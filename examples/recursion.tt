@@ -1,21 +1,21 @@
 -- vim: ft=idris
 
-postulate Bool : *.
+postulate Bool : Type.
 postulate True : Bool.
 postulate False : Bool.
 
-postulate Nat : *.
+postulate Nat : Type.
 postulate Z : Nat.
 postulate S : (n :R: Nat) -> Nat.
 
-postulate Vec : Nat -> * -> *.
-postulate VNil : (a : *) -> Vec Z a.
-postulate VCons : (a : *) -> (n : Nat) -> (x : a) -> (xs : Vec n a) -> Vec (S n) a.
+postulate Vec : Nat -> Type -> Type.
+postulate VNil : (a : Type) -> Vec Z a.
+postulate VCons : (a : Type) -> (n : Nat) -> (x : a) -> (xs : Vec n a) -> Vec (S n) a.
 
-vlen : (a : *) -> (n : Nat) -> (Vec n a) -> Nat.
-  pat (a : *).
+vlen : (a : Type) -> (n : Nat) -> (Vec n a) -> Nat.
+  pat (a : Type).
     vlen [a] [Z] (VNil a) = Z,
-  pat (a : *) (n : Nat) (x : a) (xs : Vec n a).
+  pat (a : Type) (n : Nat) (x : a) (xs : Vec n a).
     vlen [a] [S n] (VCons a n x xs) = S (vlen a n xs).
 
 testVec : Vec (S (S Z)) Bool
