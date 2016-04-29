@@ -7,8 +7,10 @@ Besides what the original paper had, we have:
 * [P] changing arities of functions
 * [M] data constructor support
     * because M-L avoids case-expressions
-* [MP] erasure polymorphism for top-level-bound names
-    * but not for let- or lambda-bound names
+* [MP] erasure polymorphism for let-bound names (includes top-level)
+    * but not lambda-bound names
+* local pattern-matching clauses in let
+    * only one definition per let at the moment; absolutely not necessary, I just can't be bothered to invent good syntax for it
 
 [P] = improvement over previous paper, [M] = improvement over Mishra-Linger
 
