@@ -4,12 +4,11 @@ module TT where
 import Control.Applicative
 import qualified Data.Map as M
 
-data Name = UN String | IN String [Relevance] | Blank | Type deriving (Eq, Ord)
+data Name = UN String | IN String [Relevance] | Blank deriving (Eq, Ord)
 data Relevance = E | R deriving (Eq, Ord, Show)
 data Binder = Lam | Pi | Let deriving (Eq, Ord, Show)
 
 instance Show Name where
-    show Type   = "Type"
     show Blank  = "_"
     show (UN n) = n
     show (IN n rs) = n ++ "_" ++ concatMap show rs
@@ -130,5 +129,5 @@ refersTo (Forced t) n' = t `refersTo` n'
 
 builtins :: r -> Ctx r cs
 builtins r = M.fromList
-    [ (Type, Def Type r (V Type) (Abstract Postulate) Nothing)
+    [ (UN "Type", Def (UN "Type") r (V $ UN "Type") (Abstract Postulate) Nothing)
     ]

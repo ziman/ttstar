@@ -211,7 +211,7 @@ checkTm t@(Bind Lam (Def n r ty (Abstract Var) Nothing) tm) = bt ("LAM", t) $ do
 
 checkTm t@(Bind Pi (Def n r ty (Abstract Var) Nothing) tm) = bt ("PI", t) $ do
     (tmty, tmcs) <- with (Def n r ty (Abstract Var) Nothing) $ checkTm tm
-    return (V Type, tmcs)
+    return (V $ UN "Type", tmcs)
 
 checkTm t@(App app_r f x) = bt ("APP", t) $ do
     (fty, fcs) <- checkTm f

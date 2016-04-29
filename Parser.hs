@@ -56,7 +56,6 @@ natural = mkNat . read <$> (many1 (satisfy isDigit) <* sp) <?> "number"
 atomic :: Parser (TT MRel)
 atomic = parens expr
     <|> instOrForced
-    <|> (kwd "Type" *> pure (V Type))
     <|> var
     <|> natural
     <?> "atomic expression"
