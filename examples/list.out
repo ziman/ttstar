@@ -34,12 +34,9 @@ app : (_ : List) -> (_ : List) -> List
   pat (x : Bool) (xs : List) (ys : List).
     app (Cons x xs) ys = Cons x (app xs ys)
 
-appRightNeutral : (ys : List) -> Id List ys (app ys Nil) 
-  appRightNeutral Nil = Refl List Nil
-  pat (x : Bool) (xs : List).
-    appRightNeutral (Cons x xs) = cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs)
+postulate appRightNeutral : (ys : List) -> Id List ys (app ys Nil)
 
-main  -R-  Type = Type
+main  -R-  (x : Bool) -> (xs : List) -> Id List (Cons x xs) (app (Cons x xs) Nil) = (\x : Bool. (\xs : List. cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs)))
 
 ### Metaified ###
 
@@ -75,12 +72,412 @@ app :?84: (_ :?85: List) -> (_ :?86: List) -> List
   pat (x :?90: Bool) (xs :?91: List) (ys :?92: List).
     app -?94- (Cons -?96- x -?95- xs) -?93- ys = Cons -?98- x -?97- (app -?100- xs -?99- ys)
 
-appRightNeutral :?101: (ys :?102: List) -> Id -?105- List -?104- ys -?103- (app -?107- ys -?106- Nil) 
-  appRightNeutral -?108- Nil = Refl -?110- List -?109- Nil
-  pat (x :?111: Bool) (xs :?112: List).
-    appRightNeutral -?113- (Cons -?115- x -?114- xs) = cong -?121- List -?120- List -?119- (Cons -?122- x) -?118- xs -?117- (app -?124- xs -?123- Nil) -?116- (appRightNeutral -?125- xs)
+postulate appRightNeutral :?101: (ys :?102: List) -> Id -?105- List -?104- ys -?103- (app -?107- ys -?106- Nil)
 
-main :!R: Type = Type
+main :!R: (x :?108: Bool) -> (xs :?109: List) -> Id -?112- List -?111- (Cons -?114- x -?113- xs) -?110- (app -?116- (Cons -?118- x -?117- xs) -?115- Nil) = (\x :?119: Bool. (\xs :?120: List. cong -?126- List -?125- List -?124- (Cons -?127- x) -?123- xs -?122- (app -?129- xs -?128- Nil) -?121- (appRightNeutral -?130- xs)))
 
 ### Inferred definitions ###
 
+postulate Bool :?78: Type
+
+postulate Cons :?83: (x :!R: Bool) -> (xs :!R: List) -> List
+
+postulate F :?80: Bool
+
+postulate Id :?1: (a :?2: Type) -> (x :?3: a) -> (y :?4: a) -> Type
+
+postulate List :?81: Type
+
+postulate Nil :?82: List
+
+postulate Refl :?5: (a :?6: Type) -> (x :?7: a) -> Id -?10- a -?9- x -?8- x
+
+postulate T :?79: Bool
+
+postulate Type :!R: Type
+
+app :?84: (_ :?85: List) -> (_ :?86: List) -> List 
+  pat (ys :?87: List).
+    app -?89- Nil -?88- ys = ys
+  pat (x :?90: Bool) (xs :?91: List) (ys :?92: List).
+    app -?94- (Cons -?96- x -?95- xs) -?93- ys = Cons -?98- x -?97- (app -?100- xs -?99- ys)
+  [] -> [?83,?84,?85,?86,?87,?88,?89,?90,?91,?92,?93,?94,?95,?96,?97,?98,?99,?100,!R]
+
+postulate appRightNeutral :?101: (ys :?102: List) -> Id -?105- List -?104- ys -?103- (app -?107- ys -?106- Nil)
+
+cong :?46: (a :?47: Type) -> (b :?48: Type) -> (f :?49: (_ :?50: a) -> b) -> (x :?51: a) -> (y :?52: a) -> (eq :?53: Id -?56- a -?55- x -?54- y) -> Id -?59- b -?58- (f -?60- x) -?57- (f -?61- y) 
+  pat (a :?62: Type) (b :?63: Type) (f :?64: (_ :?65: a) -> b) (x :?66: a).
+    cong -?72- a -?71- b -?70- f -?69- x -?68- [x] -?67- (Refl -?74- a -?73- [x]) = Refl -?76- b -?75- (f -?77- x)
+  [] -> [?5,?53,?67,!R]
+  [?6] -> [?63,?74,?76]
+  [?7] -> [?64,?73,?75]
+  [?7,?65] -> [?66,?77]
+  [?7,?77] -> [?65]
+  [?8] -> [?54,?57]
+  [?9] -> [?55,?58]
+  [?10] -> [?56,?59]
+  [?47] -> [?72]
+  [?48] -> [?71]
+  [?49] -> [?70]
+  [?50] -> [?65]
+  [?51] -> [?69]
+  [?52] -> [?68]
+  [?54] -> [?8]
+  [?55] -> [?9]
+  [?56] -> [?10]
+  [?57] -> [?8]
+  [?58] -> [?9]
+  [?59] -> [?10]
+  [?60] -> [?77]
+  [?61] -> [?77]
+  [?62] -> [?6,?47]
+  [?63] -> [?48]
+  [?64] -> [?49]
+  [?65] -> [?50]
+  [?66] -> [?51]
+  [?68] -> [?52]
+  [?69] -> [?51]
+  [?70] -> [?49]
+  [?71] -> [?48]
+  [?72] -> [?47]
+  [?73] -> [?7]
+  [?74] -> [?6]
+  [?75] -> [?7]
+  [?76] -> [?6]
+  [?77] -> [?60,?61]
+
+id :?11: (a :?12: Type) -> (_ :?13: a) -> a = (\a :?14: Type. (\x :?15: a. x))
+  [] -> [?13,?15,!R]
+  [?12] -> [?14]
+  [?14] -> [?12]
+
+main :!R: (x :?108: Bool) -> (xs :?109: List) -> Id -?112- List -?111- (Cons -?114- x -?113- xs) -?110- (app -?116- (Cons -?118- x -?117- xs) -?115- Nil) = (\x :?119: Bool. (\xs :?120: List. cong -?126- List -?125- List -?124- (Cons -?127- x) -?123- xs -?122- (app -?129- xs -?128- Nil) -?121- (appRightNeutral -?130- xs)))
+  [] -> [?46,?50,!R]
+  [?47] -> [?81,?126]
+  [?48] -> [?81,?125]
+  [?49] -> [?83,?119,?124,?127]
+  [?51] -> [?120,?123]
+  [?52] -> [?84,?122]
+  [?52,?85] -> [?120,?129]
+  [?52,?86] -> [?82,?128]
+  [?52,?128] -> [?86]
+  [?52,?129] -> [?85]
+  [?53] -> [?101,?121]
+  [?53,?102] -> [?120,?130]
+  [?53,?130] -> [?102]
+  [?54] -> [?103]
+  [?55] -> [?104]
+  [?56] -> [?105]
+  [?57] -> [?110]
+  [?58] -> [?111]
+  [?59] -> [?112]
+  [?60] -> [?113]
+  [?61] -> [?97]
+  [?97] -> [?61]
+  [?98] -> [?127]
+  [?99] -> [?128]
+  [?100] -> [?129]
+  [?103] -> [?54]
+  [?104] -> [?55]
+  [?105] -> [?56]
+  [?106] -> [?128]
+  [?107] -> [?129]
+  [?108] -> [?119]
+  [?109] -> [?120]
+  [?110] -> [?57]
+  [?111] -> [?58]
+  [?112] -> [?59]
+  [?113] -> [?60]
+  [?114] -> [?127]
+  [?119] -> [?108]
+  [?120] -> [?109]
+  [?121] -> [?53]
+  [?122] -> [?52]
+  [?123] -> [?51]
+  [?124] -> [?49]
+  [?125] -> [?48]
+  [?126] -> [?47]
+  [?127] -> [?98,?114]
+  [?128] -> [?99,?106]
+  [?129] -> [?100,?107]
+
+subst :?16: (a :?17: Type) -> (P :?18: (_ :?19: a) -> Type) -> (x :?20: a) -> (y :?21: a) -> (eq :?22: Id -?25- a -?24- x -?23- y) -> (_ :?26: P -?27- x) -> P -?28- y 
+  pat (a :?29: Type) (P :?30: (_ :?31: a) -> Type) (x :?32: a) (eq :?33: Id -?36- a -?35- x -?34- x).
+    subst -?41- a -?40- P -?39- x -?38- [x] -?37- (Refl -?43- [a] -?42- [x]) = (\y :?44: P -?45- x. y)
+  [] -> [?26,?44,!R]
+  [?5] -> [?22]
+  [?6] -> [?22,?43]
+  [?7] -> [?22,?42]
+  [?8] -> [?23]
+  [?9] -> [?24]
+  [?10] -> [?25]
+  [?17] -> [?41]
+  [?18] -> [?40]
+  [?19] -> [?31]
+  [?20] -> [?39]
+  [?21] -> [?38]
+  [?22] -> [?37]
+  [?23] -> [?8]
+  [?24] -> [?9]
+  [?25] -> [?10]
+  [?27] -> [?45]
+  [?28] -> [?45]
+  [?29] -> [?17]
+  [?30] -> [?18]
+  [?31] -> [?19]
+  [?32] -> [?20]
+  [?37] -> [?22]
+  [?38] -> [?21]
+  [?39] -> [?20]
+  [?40] -> [?18]
+  [?41] -> [?17]
+  [?42] -> [?7,?22]
+  [?43] -> [?6,?22]
+  [?45] -> [?27,?28]
+
+
+### Constraints ###
+
+[] -> [?5,?13,?15,?26,?44,?46,?50,?53,?67,?83,?84,?85,?86,?87,?88,?89,?90,?91,?92,?93,?94,?95,?96,?97,?98,?99,?100,!R]
+[?5] -> [?22]
+[?6] -> [?22,?43,?63,?74,?76]
+[?7] -> [?22,?42,?64,?73,?75]
+[?7,?65] -> [?66,?77]
+[?7,?77] -> [?65]
+[?8] -> [?23,?54,?57]
+[?9] -> [?24,?55,?58]
+[?10] -> [?25,?56,?59]
+[?12] -> [?14]
+[?14] -> [?12]
+[?17] -> [?41]
+[?18] -> [?40]
+[?19] -> [?31]
+[?20] -> [?39]
+[?21] -> [?38]
+[?22] -> [?37]
+[?23] -> [?8]
+[?24] -> [?9]
+[?25] -> [?10]
+[?27] -> [?45]
+[?28] -> [?45]
+[?29] -> [?17]
+[?30] -> [?18]
+[?31] -> [?19]
+[?32] -> [?20]
+[?37] -> [?22]
+[?38] -> [?21]
+[?39] -> [?20]
+[?40] -> [?18]
+[?41] -> [?17]
+[?42] -> [?7,?22]
+[?43] -> [?6,?22]
+[?45] -> [?27,?28]
+[?47] -> [?72,?81,?126]
+[?48] -> [?71,?81,?125]
+[?49] -> [?70,?83,?119,?124,?127]
+[?50] -> [?65]
+[?51] -> [?69,?120,?123]
+[?52] -> [?68,?84,?122]
+[?52,?85] -> [?120,?129]
+[?52,?86] -> [?82,?128]
+[?52,?128] -> [?86]
+[?52,?129] -> [?85]
+[?53] -> [?101,?121]
+[?53,?102] -> [?120,?130]
+[?53,?130] -> [?102]
+[?54] -> [?8,?103]
+[?55] -> [?9,?104]
+[?56] -> [?10,?105]
+[?57] -> [?8,?110]
+[?58] -> [?9,?111]
+[?59] -> [?10,?112]
+[?60] -> [?77,?113]
+[?61] -> [?77,?97]
+[?62] -> [?6,?47]
+[?63] -> [?48]
+[?64] -> [?49]
+[?65] -> [?50]
+[?66] -> [?51]
+[?68] -> [?52]
+[?69] -> [?51]
+[?70] -> [?49]
+[?71] -> [?48]
+[?72] -> [?47]
+[?73] -> [?7]
+[?74] -> [?6]
+[?75] -> [?7]
+[?76] -> [?6]
+[?77] -> [?60,?61]
+[?97] -> [?61]
+[?98] -> [?127]
+[?99] -> [?128]
+[?100] -> [?129]
+[?103] -> [?54]
+[?104] -> [?55]
+[?105] -> [?56]
+[?106] -> [?128]
+[?107] -> [?129]
+[?108] -> [?119]
+[?109] -> [?120]
+[?110] -> [?57]
+[?111] -> [?58]
+[?112] -> [?59]
+[?113] -> [?60]
+[?114] -> [?127]
+[?119] -> [?108]
+[?120] -> [?109]
+[?121] -> [?53]
+[?122] -> [?52]
+[?123] -> [?51]
+[?124] -> [?49]
+[?125] -> [?48]
+[?126] -> [?47]
+[?127] -> [?98,?114]
+[?128] -> [?99,?106]
+[?129] -> [?100,?107]
+
+### Solution ###
+
+[?5,?13,?15,?22,?26,?37,?44,?46,?50,?53,?60,?61,?65,?67,?77,?83,?84,?85,?86,?87,?88,?89,?90,?91,?92,?93,?94,?95,?96,?97,?98,?99,?100,?101,?106,?107,?113,?114,?121,?127,?128,?129,!R]
+
+### Annotated ###
+
+postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
+
+postulate Refl :R: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+
+id :E: (a :E: Type) -> (_ :R: a) -> a = (\a :E: Type. (\x :R: a. x))
+
+subst :E: (a :E: Type) -> (P :E: (_ :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (eq :R: Id -E- a -E- x -E- y) -> (_ :R: P -E- x) -> P -E- y 
+  pat (a :E: Type) (P :E: (_ :E: a) -> Type) (x :E: a) (eq :E: Id -E- a -E- x -E- x).
+    subst -E- a -E- P -E- x -E- [x] -R- (Refl -E- [a] -E- [x]) = (\y :R: P -E- x. y)
+
+cong :R: (a :E: Type) -> (b :E: Type) -> (f :E: (_ :R: a) -> b) -> (x :E: a) -> (y :E: a) -> (eq :R: Id -E- a -E- x -E- y) -> Id -E- b -E- (f -R- x) -E- (f -R- y) 
+  pat (a :E: Type) (b :E: Type) (f :E: (_ :R: a) -> b) (x :E: a).
+    cong -E- a -E- b -E- f -E- x -E- [x] -R- (Refl -E- a -E- [x]) = Refl -E- b -E- (f -R- x)
+
+postulate Bool :E: Type
+
+postulate T :E: Bool
+
+postulate F :E: Bool
+
+postulate List :E: Type
+
+postulate Nil :E: List
+
+postulate Cons :R: (x :R: Bool) -> (xs :R: List) -> List
+
+app :R: (_ :R: List) -> (_ :R: List) -> List 
+  pat (ys :R: List).
+    app -R- Nil -R- ys = ys
+  pat (x :R: Bool) (xs :R: List) (ys :R: List).
+    app -R- (Cons -R- x -R- xs) -R- ys = Cons -R- x -R- (app -R- xs -R- ys)
+
+postulate appRightNeutral :R: (ys :E: List) -> Id -E- List -E- ys -E- (app -R- ys -R- Nil)
+
+main :R: (x :E: Bool) -> (xs :E: List) -> Id -E- List -E- (Cons -R- x -R- xs) -E- (app -E- (Cons -E- x -E- xs) -E- Nil) = (\x :E: Bool. (\xs :E: List. cong -E- List -E- List -E- (Cons -R- x) -E- xs -E- (app -R- xs -R- Nil) -R- (appRightNeutral -E- xs)))
+
+### Specialised ###
+
+postulate Id :!E: (a :!E: Type) -> (x :!E: a) -> (y :!E: a) -> Type
+
+postulate Refl :!R: (a :!E: Type) -> (x :!E: a) -> Id -!E- a -!E- x -!E- x
+
+id :!E: (a :!E: Type) -> (_ :!R: a) -> a = (\a :!E: Type. (\x :!R: a. x))
+
+subst :!E: (a :!E: Type) -> (P :!E: (_ :!E: a) -> Type) -> (x :!E: a) -> (y :!E: a) -> (eq :!R: Id -!E- a -!E- x -!E- y) -> (_ :!R: P -!E- x) -> P -!E- y 
+  pat (a :!E: Type) (P :!E: (_ :!E: a) -> Type) (x :!E: a) (eq :!E: Id -!E- a -!E- x -!E- x).
+    subst -!E- a -!E- P -!E- x -!E- [x] -!R- (Refl -!E- [a] -!E- [x]) = (\y :!R: P -!E- x. y)
+
+cong :!R: (a :!E: Type) -> (b :!E: Type) -> (f :!E: (_ :!R: a) -> b) -> (x :!E: a) -> (y :!E: a) -> (eq :!R: Id -!E- a -!E- x -!E- y) -> Id -!E- b -!E- (f -!R- x) -!E- (f -!R- y) 
+  pat (a :!E: Type) (b :!E: Type) (f :!E: (_ :!R: a) -> b) (x :!E: a).
+    cong -!E- a -!E- b -!E- f -!E- x -!E- [x] -!R- (Refl -!E- a -!E- [x]) = Refl -!E- b -!E- (f -!R- x)
+
+postulate Bool :!E: Type
+
+postulate T :!E: Bool
+
+postulate F :!E: Bool
+
+postulate List :!E: Type
+
+postulate Nil :!E: List
+
+postulate Cons :!R: (x :!R: Bool) -> (xs :!R: List) -> List
+
+app :!R: (_ :!R: List) -> (_ :!R: List) -> List 
+  pat (ys :!R: List).
+    app -!R- Nil -!R- ys = ys
+  pat (x :!R: Bool) (xs :!R: List) (ys :!R: List).
+    app -!R- (Cons -!R- x -!R- xs) -!R- ys = Cons -!R- x -!R- (app -!R- xs -!R- ys)
+
+postulate appRightNeutral :!R: (ys :!E: List) -> Id -!E- List -!E- ys -!E- (app -!R- ys -!R- Nil)
+
+main :!R: (x :!E: Bool) -> (xs :!E: List) -> Id -!E- List -!E- (Cons -!R- x -!R- xs) -!E- (app -!E- (Cons -!E- x -!E- xs) -!E- Nil) = (\x :!E: Bool. (\xs :!E: List. cong -!E- List -!E- List -!E- (Cons -!R- x) -!E- xs -!E- (app -!R- xs -!R- Nil) -!R- (appRightNeutral -!E- xs)))
+
+### Final annotation ###
+
+postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
+
+postulate Refl :R: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+
+id :E: (a :E: Type) -> (_ :R: a) -> a = (\a :E: Type. (\x :R: a. x))
+
+subst :E: (a :E: Type) -> (P :E: (_ :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (eq :R: Id -E- a -E- x -E- y) -> (_ :R: P -E- x) -> P -E- y 
+  pat (a :E: Type) (P :E: (_ :E: a) -> Type) (x :E: a) (eq :E: Id -E- a -E- x -E- x).
+    subst -E- a -E- P -E- x -E- [x] -R- (Refl -E- [a] -E- [x]) = (\y :R: P -E- x. y)
+
+cong :R: (a :E: Type) -> (b :E: Type) -> (f :E: (_ :R: a) -> b) -> (x :E: a) -> (y :E: a) -> (eq :R: Id -E- a -E- x -E- y) -> Id -E- b -E- (f -R- x) -E- (f -R- y) 
+  pat (a :E: Type) (b :E: Type) (f :E: (_ :R: a) -> b) (x :E: a).
+    cong -E- a -E- b -E- f -E- x -E- [x] -R- (Refl -E- a -E- [x]) = Refl -E- b -E- (f -R- x)
+
+postulate Bool :E: Type
+
+postulate T :E: Bool
+
+postulate F :E: Bool
+
+postulate List :E: Type
+
+postulate Nil :E: List
+
+postulate Cons :R: (x :R: Bool) -> (xs :R: List) -> List
+
+app :R: (_ :R: List) -> (_ :R: List) -> List 
+  pat (ys :R: List).
+    app -R- Nil -R- ys = ys
+  pat (x :R: Bool) (xs :R: List) (ys :R: List).
+    app -R- (Cons -R- x -R- xs) -R- ys = Cons -R- x -R- (app -R- xs -R- ys)
+
+postulate appRightNeutral :R: (ys :E: List) -> Id -E- List -E- ys -E- (app -R- ys -R- Nil)
+
+main :R: (x :E: Bool) -> (xs :E: List) -> Id -E- List -E- (Cons -R- x -R- xs) -E- (app -E- (Cons -E- x -E- xs) -E- Nil) = (\x :E: Bool. (\xs :E: List. cong -E- List -E- List -E- (Cons -R- x) -E- xs -E- (app -R- xs -R- Nil) -R- (appRightNeutral -E- xs)))
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+postulate Refl
+
+cong 
+  cong Refl = Refl
+
+postulate Cons
+
+app 
+  pat x xs ys.
+    app (Cons x xs) ys = Cons x (app xs ys)
+
+postulate appRightNeutral
+
+main = cong appRightNeutral
+
+### Normal forms ###
+
+unerased:
+  (\x : Bool. (\xs : List. cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs)))
+erased:
+  cong appRightNeutral
