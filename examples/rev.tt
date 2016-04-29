@@ -37,7 +37,7 @@ appRightNeutral : (ys : List) -> Id List ys (app ys Nil).
     appRightNeutral (Cons x xs) = cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs).
 
 postulate appAssoc : (xs : List) -> (ys : List) -> (zs : List)
-  -> Id List (app xs (app ys zs)) (app (app xs ys) zs).
+  -> Id List (app (app xs ys) zs) (app xs (app ys zs)).
 
 data Rev : List -> Type.
   RNil : Rev Nil,
