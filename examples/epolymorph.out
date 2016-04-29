@@ -8,9 +8,9 @@ postulate True : Bool
 
 postulate False : Bool
 
-postulate Maybe : (_ : *) -> *
+postulate Maybe : (__ : *) -> *
 
-postulate Just : (a : *) -> (_ : a) -> *
+postulate Just : (a : *) -> (__ : a) -> *
 
 postulate Nothing : (a : *) -> *
 
@@ -22,26 +22,26 @@ postulate S : (n  -R-  Nat) -> Nat
 
 postulate Plus : (x  -R-  Nat) -> (y  -R-  Nat) -> Nat
 
-id : (_ : Nat) -> Nat 
+id : (__ : Nat) -> Nat 
   id Z  =  Z
   pat (x : Nat).
     id (S x)  =  
       let result : Nat = S x
       in result
 
-const_3 : (_ : Nat) -> Nat 
+const_3 : (__ : Nat) -> Nat 
   pat (x : Nat).
     const_3 x  =  3
 
 two : Nat 
   two  =  2
 
-f : (g : (_ : Nat) -> Nat) -> (z : Nat) -> (h : (_ : Nat) -> Nat) -> (w : Nat) -> Nat 
-  pat (g : (_ : Nat) -> Nat) (z : Nat) (h : (_ : Nat) -> Nat) (w : Nat).
+f : (g : (__ : Nat) -> Nat) -> (z : Nat) -> (h : (__ : Nat) -> Nat) -> (w : Nat) -> Nat 
+  pat (g : (__ : Nat) -> Nat) (z : Nat) (h : (__ : Nat) -> Nat) (w : Nat).
     f g z h w  =  Plus (g z) (h w)
 
-apply : (f : (_ : Nat) -> Nat) -> (_ : Nat) -> Nat 
-  pat (f : (_ : Nat) -> Nat) (x : Nat).
+apply : (f : (__ : Nat) -> Nat) -> (__ : Nat) -> Nat 
+  pat (f : (__ : Nat) -> Nat) (x : Nat).
     apply f x  =  f x
 
 test_1 : Nat 
@@ -61,9 +61,9 @@ postulate True :?2: Bool
 
 postulate False :?3: Bool
 
-postulate Maybe :?4: (_ :?5: *) -> *
+postulate Maybe :?4: (__ :?5: *) -> *
 
-postulate Just :?6: (a :?7: *) -> (_ :?8: a) -> *
+postulate Just :?6: (a :?7: *) -> (__ :?8: a) -> *
 
 postulate Nothing :?9: (a :?10: *) -> *
 
@@ -75,26 +75,26 @@ postulate S :?13: (n :!R: Nat) -> Nat
 
 postulate Plus :?14: (x :!R: Nat) -> (y :!R: Nat) -> Nat
 
-id :?15: (_ :?16: Nat) -> Nat 
+id :?15: (__ :?16: Nat) -> Nat 
   id -?17- Z  =  Z
   pat (x :?18: Nat).
     id -?19- (S -?20- x)  =  
       let result :?21: Nat = S -?22- x
       in result
 
-const_3 :?23: (_ :?24: Nat) -> Nat 
+const_3 :?23: (__ :?24: Nat) -> Nat 
   pat (x :?25: Nat).
     const_3 -?26- x  =  3
 
 two :?30: Nat 
   two  =  2
 
-f :?33: (g :?34: (_ :?35: Nat) -> Nat) -> (z :?36: Nat) -> (h :?37: (_ :?38: Nat) -> Nat) -> (w :?39: Nat) -> Nat 
-  pat (g :?40: (_ :?41: Nat) -> Nat) (z :?42: Nat) (h :?43: (_ :?44: Nat) -> Nat) (w :?45: Nat).
+f :?33: (g :?34: (__ :?35: Nat) -> Nat) -> (z :?36: Nat) -> (h :?37: (__ :?38: Nat) -> Nat) -> (w :?39: Nat) -> Nat 
+  pat (g :?40: (__ :?41: Nat) -> Nat) (z :?42: Nat) (h :?43: (__ :?44: Nat) -> Nat) (w :?45: Nat).
     f -?49- g -?48- z -?47- h -?46- w  =  Plus -?51- (g -?52- z) -?50- (h -?53- w)
 
-apply :?54: (f :?55: (_ :?56: Nat) -> Nat) -> (_ :?57: Nat) -> Nat 
-  pat (f :?58: (_ :?59: Nat) -> Nat) (x :?60: Nat).
+apply :?54: (f :?55: (__ :?56: Nat) -> Nat) -> (__ :?57: Nat) -> Nat 
+  pat (f :?58: (__ :?59: Nat) -> Nat) (x :?60: Nat).
     apply -?62- f -?61- x  =  f -?63- x
 
 test_1 :?64: Nat 
@@ -112,9 +112,9 @@ postulate Bool :?1: *
 
 postulate False :?3: Bool
 
-postulate Just :?6: (a :?7: *) -> (_ :?8: a) -> *
+postulate Just :?6: (a :?7: *) -> (__ :?8: a) -> *
 
-postulate Maybe :?4: (_ :?5: *) -> *
+postulate Maybe :?4: (__ :?5: *) -> *
 
 postulate Nat :?11: *
 
@@ -128,8 +128,8 @@ postulate True :?2: Bool
 
 postulate Z :?12: Nat
 
-apply :?54: (f :?55: (_ :?56: Nat) -> Nat) -> (_ :?57: Nat) -> Nat 
-  pat (f :?58: (_ :?59: Nat) -> Nat) (x :?60: Nat).
+apply :?54: (f :?55: (__ :?56: Nat) -> Nat) -> (__ :?57: Nat) -> Nat 
+  pat (f :?58: (__ :?59: Nat) -> Nat) (x :?60: Nat).
     apply -?62- f -?61- x  =  f -?63- x
   [] -> [?55,?58,?62,!R]
   [?56] -> [?59]
@@ -139,7 +139,7 @@ apply :?54: (f :?55: (_ :?56: Nat) -> Nat) -> (_ :?57: Nat) -> Nat
   [?61] -> [?57]
   [?63] -> [?59]
 
-const_3 :?23: (_ :?24: Nat) -> Nat 
+const_3 :?23: (__ :?24: Nat) -> Nat 
   pat (x :?25: Nat).
     const_3 -?26- x  =  3
   [] -> [?12,?13,?27,?28,?29,!R]
@@ -147,8 +147,8 @@ const_3 :?23: (_ :?24: Nat) -> Nat
   [?25] -> [?24]
   [?26] -> [?24]
 
-f :?33: (g :?34: (_ :?35: Nat) -> Nat) -> (z :?36: Nat) -> (h :?37: (_ :?38: Nat) -> Nat) -> (w :?39: Nat) -> Nat 
-  pat (g :?40: (_ :?41: Nat) -> Nat) (z :?42: Nat) (h :?43: (_ :?44: Nat) -> Nat) (w :?45: Nat).
+f :?33: (g :?34: (__ :?35: Nat) -> Nat) -> (z :?36: Nat) -> (h :?37: (__ :?38: Nat) -> Nat) -> (w :?39: Nat) -> Nat 
+  pat (g :?40: (__ :?41: Nat) -> Nat) (z :?42: Nat) (h :?43: (__ :?44: Nat) -> Nat) (w :?45: Nat).
     f -?49- g -?48- z -?47- h -?46- w  =  Plus -?51- (g -?52- z) -?50- (h -?53- w)
   [] -> [?14,?34,?37,?40,?43,?47,?49,?50,?51,!R]
   [?35] -> [?41]
@@ -164,7 +164,7 @@ f :?33: (g :?34: (_ :?35: Nat) -> Nat) -> (z :?36: Nat) -> (h :?37: (_ :?38: Nat
   [?52] -> [?41]
   [?53] -> [?44]
 
-id :?15: (_ :?16: Nat) -> Nat 
+id :?15: (__ :?16: Nat) -> Nat 
   id -?17- Z  =  Z
   pat (x :?18: Nat).
     id -?19- (S -?20- x)  =  
@@ -259,9 +259,9 @@ postulate True :E: Bool
 
 postulate False :E: Bool
 
-postulate Maybe :E: (_ :E: *) -> *
+postulate Maybe :E: (__ :E: *) -> *
 
-postulate Just :E: (a :E: *) -> (_ :E: a) -> *
+postulate Just :E: (a :E: *) -> (__ :E: a) -> *
 
 postulate Nothing :E: (a :E: *) -> *
 
@@ -273,26 +273,26 @@ postulate S :R: (n :R: Nat) -> Nat
 
 postulate Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
 
-id :R: (_ :R: Nat) -> Nat 
+id :R: (__ :R: Nat) -> Nat 
   id -R- Z  =  Z
   pat (x :R: Nat).
     id -R- (S -R- x)  =  
       let result :R: Nat = S -R- x
       in result
 
-const_3 :R: (_ :R: Nat) -> Nat 
+const_3 :R: (__ :R: Nat) -> Nat 
   pat (x :E: Nat).
     const_3 -R- x  =  3
 
 two :R: Nat 
   two  =  2
 
-f :R: (g :R: (_ :R: Nat) -> Nat) -> (z :R: Nat) -> (h :R: (_ :R: Nat) -> Nat) -> (w :R: Nat) -> Nat 
-  pat (g :R: (_ :R: Nat) -> Nat) (z :R: Nat) (h :R: (_ :R: Nat) -> Nat) (w :R: Nat).
+f :R: (g :R: (__ :R: Nat) -> Nat) -> (z :R: Nat) -> (h :R: (__ :R: Nat) -> Nat) -> (w :R: Nat) -> Nat 
+  pat (g :R: (__ :R: Nat) -> Nat) (z :R: Nat) (h :R: (__ :R: Nat) -> Nat) (w :R: Nat).
     f -R- g -R- z -R- h -R- w  =  Plus -R- (g -R- z) -R- (h -R- w)
 
-apply :R: (f :R: (_ :R: Nat) -> Nat) -> (_ :R: Nat) -> Nat 
-  pat (f :R: (_ :R: Nat) -> Nat) (x :R: Nat).
+apply :R: (f :R: (__ :R: Nat) -> Nat) -> (__ :R: Nat) -> Nat 
+  pat (f :R: (__ :R: Nat) -> Nat) (x :R: Nat).
     apply -R- f -R- x  =  f -R- x
 
 test_1 :R: Nat 
@@ -312,9 +312,9 @@ postulate True :!E: Bool
 
 postulate False :!E: Bool
 
-postulate Maybe :!E: (_ :!E: *) -> *
+postulate Maybe :!E: (__ :!E: *) -> *
 
-postulate Just :!E: (a :!E: *) -> (_ :!E: a) -> *
+postulate Just :!E: (a :!E: *) -> (__ :!E: a) -> *
 
 postulate Nothing :!E: (a :!E: *) -> *
 
@@ -326,26 +326,26 @@ postulate S :!R: (n :!R: Nat) -> Nat
 
 postulate Plus :!R: (x :!R: Nat) -> (y :!R: Nat) -> Nat
 
-id :!R: (_ :!R: Nat) -> Nat 
+id :!R: (__ :!R: Nat) -> Nat 
   id -!R- Z  =  Z
   pat (x :!R: Nat).
     id -!R- (S -!R- x)  =  
       let result :!R: Nat = S -!R- x
       in result
 
-const_3 :!R: (_ :!R: Nat) -> Nat 
+const_3 :!R: (__ :!R: Nat) -> Nat 
   pat (x :!E: Nat).
     const_3 -!R- x  =  3
 
 two :!R: Nat 
   two  =  2
 
-f :!R: (g :!R: (_ :!R: Nat) -> Nat) -> (z :!R: Nat) -> (h :!R: (_ :!R: Nat) -> Nat) -> (w :!R: Nat) -> Nat 
-  pat (g :!R: (_ :!R: Nat) -> Nat) (z :!R: Nat) (h :!R: (_ :!R: Nat) -> Nat) (w :!R: Nat).
+f :!R: (g :!R: (__ :!R: Nat) -> Nat) -> (z :!R: Nat) -> (h :!R: (__ :!R: Nat) -> Nat) -> (w :!R: Nat) -> Nat 
+  pat (g :!R: (__ :!R: Nat) -> Nat) (z :!R: Nat) (h :!R: (__ :!R: Nat) -> Nat) (w :!R: Nat).
     f -!R- g -!R- z -!R- h -!R- w  =  Plus -!R- (g -!R- z) -!R- (h -!R- w)
 
-apply :!R: (f :!R: (_ :!R: Nat) -> Nat) -> (_ :!R: Nat) -> Nat 
-  pat (f :!R: (_ :!R: Nat) -> Nat) (x :!R: Nat).
+apply :!R: (f :!R: (__ :!R: Nat) -> Nat) -> (__ :!R: Nat) -> Nat 
+  pat (f :!R: (__ :!R: Nat) -> Nat) (x :!R: Nat).
     apply -!R- f -!R- x  =  f -!R- x
 
 test_1 :!R: Nat 
@@ -365,9 +365,9 @@ postulate True :E: Bool
 
 postulate False :E: Bool
 
-postulate Maybe :E: (_ :E: *) -> *
+postulate Maybe :E: (__ :E: *) -> *
 
-postulate Just :E: (a :E: *) -> (_ :E: a) -> *
+postulate Just :E: (a :E: *) -> (__ :E: a) -> *
 
 postulate Nothing :E: (a :E: *) -> *
 
@@ -379,26 +379,26 @@ postulate S :R: (n :R: Nat) -> Nat
 
 postulate Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
 
-id :R: (_ :R: Nat) -> Nat 
+id :R: (__ :R: Nat) -> Nat 
   id -R- Z  =  Z
   pat (x :R: Nat).
     id -R- (S -R- x)  =  
       let result :R: Nat = S -R- x
       in result
 
-const_3 :R: (_ :R: Nat) -> Nat 
+const_3 :R: (__ :R: Nat) -> Nat 
   pat (x :E: Nat).
     const_3 -R- x  =  3
 
 two :R: Nat 
   two  =  2
 
-f :R: (g :R: (_ :R: Nat) -> Nat) -> (z :R: Nat) -> (h :R: (_ :R: Nat) -> Nat) -> (w :R: Nat) -> Nat 
-  pat (g :R: (_ :R: Nat) -> Nat) (z :R: Nat) (h :R: (_ :R: Nat) -> Nat) (w :R: Nat).
+f :R: (g :R: (__ :R: Nat) -> Nat) -> (z :R: Nat) -> (h :R: (__ :R: Nat) -> Nat) -> (w :R: Nat) -> Nat 
+  pat (g :R: (__ :R: Nat) -> Nat) (z :R: Nat) (h :R: (__ :R: Nat) -> Nat) (w :R: Nat).
     f -R- g -R- z -R- h -R- w  =  Plus -R- (g -R- z) -R- (h -R- w)
 
-apply :R: (f :R: (_ :R: Nat) -> Nat) -> (_ :R: Nat) -> Nat 
-  pat (f :R: (_ :R: Nat) -> Nat) (x :R: Nat).
+apply :R: (f :R: (__ :R: Nat) -> Nat) -> (__ :R: Nat) -> Nat 
+  pat (f :R: (__ :R: Nat) -> Nat) (x :R: Nat).
     apply -R- f -R- x  =  f -R- x
 
 test_1 :R: Nat 
@@ -430,7 +430,7 @@ id
       in result
 
 const_3 
-  const_3 x  =  3
+  const_3 __  =  3
 
 two 
   two  =  2
@@ -457,3 +457,4 @@ main
 unerased:
   Plus (Plus 2 3) (Plus 2 3)
 erased:
+  Plus (Plus 2 3) (Plus 2 3)

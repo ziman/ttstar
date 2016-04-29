@@ -10,16 +10,16 @@ postulate B : T
 
 postulate Op : (x  -R-  T) -> (y  -R-  T) -> T
 
-id : (_ : T) -> T 
+id : (__ : T) -> T 
   pat (x : T).
     id x  =  x
 
-const_A : (_ : T) -> T 
+const_A : (__ : T) -> T 
   pat (x : T).
     const_A x  =  A
 
-f : (_ : (_ : T) -> T) -> (_ : T) -> (_ : (_ : T) -> T) -> (_ : T) -> T 
-  pat (g : (_ : T) -> T) (z : T) (h : (_ : T) -> T) (w : T).
+f : (__ : (__ : T) -> T) -> (__ : T) -> (__ : (__ : T) -> T) -> (__ : T) -> T 
+  pat (g : (__ : T) -> T) (z : T) (h : (__ : T) -> T) (w : T).
     f g z h w  =  Op (g z) (h w)
 
 main  -R-  T 
@@ -35,16 +35,16 @@ postulate B :?3: T
 
 postulate Op :?4: (x :!R: T) -> (y :!R: T) -> T
 
-id :?5: (_ :?6: T) -> T 
+id :?5: (__ :?6: T) -> T 
   pat (x :?7: T).
     id -?8- x  =  x
 
-const_A :?9: (_ :?10: T) -> T 
+const_A :?9: (__ :?10: T) -> T 
   pat (x :?11: T).
     const_A -?12- x  =  A
 
-f :?13: (_ :?14: (_ :?15: T) -> T) -> (_ :?16: T) -> (_ :?17: (_ :?18: T) -> T) -> (_ :?19: T) -> T 
-  pat (g :?20: (_ :?21: T) -> T) (z :?22: T) (h :?23: (_ :?24: T) -> T) (w :?25: T).
+f :?13: (__ :?14: (__ :?15: T) -> T) -> (__ :?16: T) -> (__ :?17: (__ :?18: T) -> T) -> (__ :?19: T) -> T 
+  pat (g :?20: (__ :?21: T) -> T) (z :?22: T) (h :?23: (__ :?24: T) -> T) (w :?25: T).
     f -?29- g -?28- z -?27- h -?26- w  =  Op -?31- (g -?32- z) -?30- (h -?33- w)
 
 main :!R: T 
@@ -60,7 +60,7 @@ postulate Op :?4: (x :!R: T) -> (y :!R: T) -> T
 
 postulate T :?1: *
 
-const_A :?9: (_ :?10: T) -> T 
+const_A :?9: (__ :?10: T) -> T 
   pat (x :?11: T).
     const_A -?12- x  =  A
   [] -> [?2,!R]
@@ -68,8 +68,8 @@ const_A :?9: (_ :?10: T) -> T
   [?11] -> [?10]
   [?12] -> [?10]
 
-f :?13: (_ :?14: (_ :?15: T) -> T) -> (_ :?16: T) -> (_ :?17: (_ :?18: T) -> T) -> (_ :?19: T) -> T 
-  pat (g :?20: (_ :?21: T) -> T) (z :?22: T) (h :?23: (_ :?24: T) -> T) (w :?25: T).
+f :?13: (__ :?14: (__ :?15: T) -> T) -> (__ :?16: T) -> (__ :?17: (__ :?18: T) -> T) -> (__ :?19: T) -> T 
+  pat (g :?20: (__ :?21: T) -> T) (z :?22: T) (h :?23: (__ :?24: T) -> T) (w :?25: T).
     f -?29- g -?28- z -?27- h -?26- w  =  Op -?31- (g -?32- z) -?30- (h -?33- w)
   [] -> [?4,?14,?17,?20,?23,?27,?29,?30,?31,!R]
   [?15] -> [?21]
@@ -85,7 +85,7 @@ f :?13: (_ :?14: (_ :?15: T) -> T) -> (_ :?16: T) -> (_ :?17: (_ :?18: T) -> T) 
   [?32] -> [?21]
   [?33] -> [?24]
 
-id :?5: (_ :?6: T) -> T 
+id :?5: (__ :?6: T) -> T 
   pat (x :?7: T).
     id -?8- x  =  x
   [] -> [?6,?7,?8,!R]
@@ -147,16 +147,16 @@ postulate B :R: T
 
 postulate Op :R: (x :R: T) -> (y :R: T) -> T
 
-id :R: (_ :R: T) -> T 
+id :R: (__ :R: T) -> T 
   pat (x :R: T).
     id -R- x  =  x
 
-const_A :R: (_ :E: T) -> T 
+const_A :R: (__ :E: T) -> T 
   pat (x :E: T).
     const_A -E- x  =  A
 
-f :R: (_ :R: (_ :R: T) -> T) -> (_ :R: T) -> (_ :R: (_ :E: T) -> T) -> (_ :E: T) -> T 
-  pat (g :R: (_ :R: T) -> T) (z :R: T) (h :R: (_ :E: T) -> T) (w :E: T).
+f :R: (__ :R: (__ :R: T) -> T) -> (__ :R: T) -> (__ :R: (__ :E: T) -> T) -> (__ :E: T) -> T 
+  pat (g :R: (__ :R: T) -> T) (z :R: T) (h :R: (__ :E: T) -> T) (w :E: T).
     f -R- g -R- z -R- h -E- w  =  Op -R- (g -R- z) -R- (h -E- w)
 
 main :R: T 
@@ -172,16 +172,16 @@ postulate B :!R: T
 
 postulate Op :!R: (x :!R: T) -> (y :!R: T) -> T
 
-id :!R: (_ :!R: T) -> T 
+id :!R: (__ :!R: T) -> T 
   pat (x :!R: T).
     id -!R- x  =  x
 
-const_A :!R: (_ :!E: T) -> T 
+const_A :!R: (__ :!E: T) -> T 
   pat (x :!E: T).
     const_A -!E- x  =  A
 
-f :!R: (_ :!R: (_ :!R: T) -> T) -> (_ :!R: T) -> (_ :!R: (_ :!E: T) -> T) -> (_ :!E: T) -> T 
-  pat (g :!R: (_ :!R: T) -> T) (z :!R: T) (h :!R: (_ :!E: T) -> T) (w :!E: T).
+f :!R: (__ :!R: (__ :!R: T) -> T) -> (__ :!R: T) -> (__ :!R: (__ :!E: T) -> T) -> (__ :!E: T) -> T 
+  pat (g :!R: (__ :!R: T) -> T) (z :!R: T) (h :!R: (__ :!E: T) -> T) (w :!E: T).
     f -!R- g -!R- z -!R- h -!E- w  =  Op -!R- (g -!R- z) -!R- (h -!E- w)
 
 main :!R: T 
@@ -197,16 +197,16 @@ postulate B :R: T
 
 postulate Op :R: (x :R: T) -> (y :R: T) -> T
 
-id :R: (_ :R: T) -> T 
+id :R: (__ :R: T) -> T 
   pat (x :R: T).
     id -R- x  =  x
 
-const_A :R: (_ :E: T) -> T 
+const_A :R: (__ :E: T) -> T 
   pat (x :E: T).
     const_A -E- x  =  A
 
-f :R: (_ :R: (_ :R: T) -> T) -> (_ :R: T) -> (_ :R: (_ :E: T) -> T) -> (_ :E: T) -> T 
-  pat (g :R: (_ :R: T) -> T) (z :R: T) (h :R: (_ :E: T) -> T) (w :E: T).
+f :R: (__ :R: (__ :R: T) -> T) -> (__ :R: T) -> (__ :R: (__ :E: T) -> T) -> (__ :E: T) -> T 
+  pat (g :R: (__ :R: T) -> T) (z :R: T) (h :R: (__ :E: T) -> T) (w :E: T).
     f -R- g -R- z -R- h -E- w  =  Op -R- (g -R- z) -R- (h -E- w)
 
 main :R: T 

@@ -8,19 +8,19 @@ postulate Z : Nat
 
 postulate S : (n  -R-  Nat) -> Nat
 
-plus : (_ : Nat) -> (_ : Nat) -> Nat 
+plus : (__ : Nat) -> (__ : Nat) -> Nat 
   pat (n : Nat).
     plus Z n  =  n
   pat (m : Nat) (n : Nat).
     plus (S m) n  =  S (plus m n)
 
-id : (_ : Nat) -> Nat 
+id : (__ : Nat) -> Nat 
   id  =  (\x : Nat. x)
 
 const : (x : Nat) -> (y : Nat) -> Nat = (\x : Nat. (\y : Nat. x))
 
 main  -R-  Nat = 
-  let apply : (f : (_ : Nat) -> Nat) -> (x : Nat) -> Nat = (\f : (_ : Nat) -> Nat. (\x : Nat. f x))
+  let apply : (f : (__ : Nat) -> Nat) -> (x : Nat) -> Nat = (\f : (__ : Nat) -> Nat. (\x : Nat. f x))
   in 
     let postulate Q : Nat
     in 
@@ -35,19 +35,19 @@ postulate Z :?2: Nat
 
 postulate S :?3: (n :!R: Nat) -> Nat
 
-plus :?4: (_ :?5: Nat) -> (_ :?6: Nat) -> Nat 
+plus :?4: (__ :?5: Nat) -> (__ :?6: Nat) -> Nat 
   pat (n :?7: Nat).
     plus -?9- Z -?8- n  =  n
   pat (m :?10: Nat) (n :?11: Nat).
     plus -?13- (S -?14- m) -?12- n  =  S -?15- (plus -?17- m -?16- n)
 
-id :?18: (_ :?19: Nat) -> Nat 
+id :?18: (__ :?19: Nat) -> Nat 
   id  =  (\x :?20: Nat. x)
 
 const :?21: (x :?22: Nat) -> (y :?23: Nat) -> Nat = (\x :?24: Nat. (\y :?25: Nat. x))
 
 main :!R: Nat = 
-  let apply :?26: (f :?27: (_ :?28: Nat) -> Nat) -> (x :?29: Nat) -> Nat = (\f :?30: (_ :?31: Nat) -> Nat. (\x :?32: Nat. f -?33- x))
+  let apply :?26: (f :?27: (__ :?28: Nat) -> Nat) -> (x :?29: Nat) -> Nat = (\f :?30: (__ :?31: Nat) -> Nat. (\x :?32: Nat. f -?33- x))
   in 
     let postulate Q :?34: Nat
     in 
@@ -67,12 +67,12 @@ const :?21: (x :?22: Nat) -> (y :?23: Nat) -> Nat = (\x :?24: Nat. (\y :?25: Nat
   [?23] -> [?25]
   [?25] -> [?23]
 
-id :?18: (_ :?19: Nat) -> Nat 
+id :?18: (__ :?19: Nat) -> Nat 
   id  =  (\x :?20: Nat. x)
   [] -> [?19,?20,!R]
 
 main :!R: Nat = 
-  let apply :?26: (f :?27: (_ :?28: Nat) -> Nat) -> (x :?29: Nat) -> Nat = (\f :?30: (_ :?31: Nat) -> Nat. (\x :?32: Nat. f -?33- x))
+  let apply :?26: (f :?27: (__ :?28: Nat) -> Nat) -> (x :?29: Nat) -> Nat = (\f :?30: (__ :?31: Nat) -> Nat. (\x :?32: Nat. f -?33- x))
   in 
     let postulate Q :?34: Nat
     in 
@@ -99,7 +99,7 @@ main :!R: Nat =
   [?39] -> [?6]
   [?40] -> [?5]
 
-plus :?4: (_ :?5: Nat) -> (_ :?6: Nat) -> Nat 
+plus :?4: (__ :?5: Nat) -> (__ :?6: Nat) -> Nat 
   pat (n :?7: Nat).
     plus -?9- Z -?8- n  =  n
   pat (m :?10: Nat) (n :?11: Nat).
@@ -144,19 +144,19 @@ postulate Z :R: Nat
 
 postulate S :R: (n :R: Nat) -> Nat
 
-plus :R: (_ :R: Nat) -> (_ :R: Nat) -> Nat 
+plus :R: (__ :R: Nat) -> (__ :R: Nat) -> Nat 
   pat (n :R: Nat).
     plus -R- Z -R- n  =  n
   pat (m :R: Nat) (n :R: Nat).
     plus -R- (S -R- m) -R- n  =  S -R- (plus -R- m -R- n)
 
-id :R: (_ :R: Nat) -> Nat 
+id :R: (__ :R: Nat) -> Nat 
   id  =  (\x :R: Nat. x)
 
 const :R: (x :R: Nat) -> (y :R: Nat) -> Nat = (\x :R: Nat. (\y :R: Nat. x))
 
 main :R: Nat = 
-  let apply :R: (f :R: (_ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = (\f :R: (_ :R: Nat) -> Nat. (\x :R: Nat. f -R- x))
+  let apply :R: (f :R: (__ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = (\f :R: (__ :R: Nat) -> Nat. (\x :R: Nat. f -R- x))
   in 
     let postulate Q :R: Nat
     in 
@@ -171,19 +171,19 @@ postulate Z :!R: Nat
 
 postulate S :!R: (n :!R: Nat) -> Nat
 
-plus :!R: (_ :!R: Nat) -> (_ :!R: Nat) -> Nat 
+plus :!R: (__ :!R: Nat) -> (__ :!R: Nat) -> Nat 
   pat (n :!R: Nat).
     plus -!R- Z -!R- n  =  n
   pat (m :!R: Nat) (n :!R: Nat).
     plus -!R- (S -!R- m) -!R- n  =  S -!R- (plus -!R- m -!R- n)
 
-id :!R: (_ :!R: Nat) -> Nat 
+id :!R: (__ :!R: Nat) -> Nat 
   id  =  (\x :!R: Nat. x)
 
 const :!R: (x :!R: Nat) -> (y :!R: Nat) -> Nat = (\x :!R: Nat. (\y :!R: Nat. x))
 
 main :!R: Nat = 
-  let apply :!R: (f :!R: (_ :!R: Nat) -> Nat) -> (x :!R: Nat) -> Nat = (\f :!R: (_ :!R: Nat) -> Nat. (\x :!R: Nat. f -!R- x))
+  let apply :!R: (f :!R: (__ :!R: Nat) -> Nat) -> (x :!R: Nat) -> Nat = (\f :!R: (__ :!R: Nat) -> Nat. (\x :!R: Nat. f -!R- x))
   in 
     let postulate Q :!R: Nat
     in 
@@ -198,19 +198,19 @@ postulate Z :R: Nat
 
 postulate S :R: (n :R: Nat) -> Nat
 
-plus :R: (_ :R: Nat) -> (_ :R: Nat) -> Nat 
+plus :R: (__ :R: Nat) -> (__ :R: Nat) -> Nat 
   pat (n :R: Nat).
     plus -R- Z -R- n  =  n
   pat (m :R: Nat) (n :R: Nat).
     plus -R- (S -R- m) -R- n  =  S -R- (plus -R- m -R- n)
 
-id :R: (_ :R: Nat) -> Nat 
+id :R: (__ :R: Nat) -> Nat 
   id  =  (\x :R: Nat. x)
 
 const :R: (x :R: Nat) -> (y :R: Nat) -> Nat = (\x :R: Nat. (\y :R: Nat. x))
 
 main :R: Nat = 
-  let apply :R: (f :R: (_ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = (\f :R: (_ :R: Nat) -> Nat. (\x :R: Nat. f -R- x))
+  let apply :R: (f :R: (__ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = (\f :R: (__ :R: Nat) -> Nat. (\x :R: Nat. f -R- x))
   in 
     let postulate Q :R: Nat
     in 

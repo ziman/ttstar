@@ -8,13 +8,13 @@ postulate Z : N
 
 postulate S : (x  -R-  N) -> N
 
-postulate Vec : (_ : N) -> (_ : *) -> *
+postulate Vec : (__ : N) -> (__ : *) -> *
 
 postulate Nil : (a : *) -> Vec Z a
 
 postulate Cons : (a : *) -> (n : N) -> (x  -R-  a) -> (xs  -R-  Vec n a) -> Vec (S n) a
 
-plus : (_ : N) -> (_ : N) -> N 
+plus : (__ : N) -> (__ : N) -> N 
   pat (n : N).
     plus Z n  =  n
   pat (m : N) (n : N).
@@ -36,13 +36,13 @@ postulate Z :?2: N
 
 postulate S :?3: (x :!R: N) -> N
 
-postulate Vec :?4: (_ :?5: N) -> (_ :?6: *) -> *
+postulate Vec :?4: (__ :?5: N) -> (__ :?6: *) -> *
 
 postulate Nil :?7: (a :?8: *) -> Vec -?10- Z -?9- a
 
 postulate Cons :?11: (a :?12: *) -> (n :?13: N) -> (x :!R: a) -> (xs :!R: Vec -?15- n -?14- a) -> Vec -?17- (S -?18- n) -?16- a
 
-plus :?19: (_ :?20: N) -> (_ :?21: N) -> N 
+plus :?19: (__ :?20: N) -> (__ :?21: N) -> N 
   pat (n :?22: N).
     plus -?24- Z -?23- n  =  n
   pat (m :?25: N) (n :?26: N).
@@ -66,7 +66,7 @@ postulate Nil :?7: (a :?8: *) -> Vec -?10- Z -?9- a
 
 postulate S :?3: (x :!R: N) -> N
 
-postulate Vec :?4: (_ :?5: N) -> (_ :?6: *) -> *
+postulate Vec :?4: (__ :?5: N) -> (__ :?6: *) -> *
 
 postulate Z :?2: N
 
@@ -173,7 +173,7 @@ main :!R: Vec -?90- 1 -?89- N = append -?96- N -?95- Z -?94- 1 -?93- (Nil -?98- 
   [?96] -> [?34]
   [?97] -> [?18,?91]
 
-plus :?19: (_ :?20: N) -> (_ :?21: N) -> N 
+plus :?19: (__ :?20: N) -> (__ :?21: N) -> N 
   pat (n :?22: N).
     plus -?24- Z -?23- n  =  n
   pat (m :?25: N) (n :?26: N).
@@ -276,13 +276,13 @@ postulate Z :R: N
 
 postulate S :R: (x :R: N) -> N
 
-postulate Vec :E: (_ :E: N) -> (_ :E: *) -> *
+postulate Vec :E: (__ :E: N) -> (__ :E: *) -> *
 
 postulate Nil :R: (a :E: *) -> Vec -E- Z -E- a
 
 postulate Cons :R: (a :E: *) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -R- n) -E- a
 
-plus :R: (_ :R: N) -> (_ :R: N) -> N 
+plus :R: (__ :R: N) -> (__ :R: N) -> N 
   pat (n :R: N).
     plus -R- Z -R- n  =  n
   pat (m :R: N) (n :R: N).
@@ -304,13 +304,13 @@ postulate Z :!R: N
 
 postulate S :!R: (x :!R: N) -> N
 
-postulate Vec :!E: (_ :!E: N) -> (_ :!E: *) -> *
+postulate Vec :!E: (__ :!E: N) -> (__ :!E: *) -> *
 
 postulate Nil :!R: (a :!E: *) -> Vec -!E- Z -!E- a
 
 postulate Cons :!R: (a :!E: *) -> (n :!E: N) -> (x :!R: a) -> (xs :!R: Vec -!E- n -!E- a) -> Vec -!E- (S -!R- n) -!E- a
 
-plus :!R: (_ :!R: N) -> (_ :!R: N) -> N 
+plus :!R: (__ :!R: N) -> (__ :!R: N) -> N 
   pat (n :!R: N).
     plus -!R- Z -!R- n  =  n
   pat (m :!R: N) (n :!R: N).
@@ -332,13 +332,13 @@ postulate Z :R: N
 
 postulate S :R: (x :R: N) -> N
 
-postulate Vec :E: (_ :E: N) -> (_ :E: *) -> *
+postulate Vec :E: (__ :E: N) -> (__ :E: *) -> *
 
 postulate Nil :R: (a :E: *) -> Vec -E- Z -E- a
 
 postulate Cons :R: (a :E: *) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -R- n) -E- a
 
-plus :R: (_ :R: N) -> (_ :R: N) -> N 
+plus :R: (__ :R: N) -> (__ :R: N) -> N 
   pat (n :R: N).
     plus -R- Z -R- n  =  n
   pat (m :R: N) (n :R: N).

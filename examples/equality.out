@@ -12,7 +12,7 @@ postulate Id : (a : *) -> (x : a) -> (y : a) -> *
 
 postulate Refl : (a : *) -> (x : a) -> Id x x
 
-not : (_ : Bool) -> Bool 
+not : (__ : Bool) -> Bool 
   not T  =  F
   not F  =  T
 
@@ -35,7 +35,7 @@ postulate Id :?4: (a :?5: *) -> (x :?6: a) -> (y :?7: a) -> *
 
 postulate Refl :?8: (a :?9: *) -> (x :?10: a) -> Id -?12- x -?11- x
 
-not :?13: (_ :?14: Bool) -> Bool 
+not :?13: (__ :?14: Bool) -> Bool 
   not -?15- T  =  F
   not -?16- F  =  T
 
@@ -68,7 +68,7 @@ main :!R: Id -?30- F -?29- (not -?31- (not -?32- F))
   [?30] -> [?20]
   [?33] -> [?18]
 
-not :?13: (_ :?14: Bool) -> Bool 
+not :?13: (__ :?14: Bool) -> Bool 
   not -?15- T  =  F
   not -?16- F  =  T
   [] -> [?2,?3,?14,?15,?16,!R]
@@ -132,7 +132,7 @@ postulate Id :E: (a :E: *) -> (x :E: a) -> (y :E: a) -> *
 
 postulate Refl :R: (a :E: *) -> (x :E: a) -> Id -E- x -E- x
 
-not :E: (_ :R: Bool) -> Bool 
+not :E: (__ :R: Bool) -> Bool 
   not -R- T  =  F
   not -R- F  =  T
 
@@ -155,7 +155,7 @@ postulate Id :!E: (a :!E: *) -> (x :!E: a) -> (y :!E: a) -> *
 
 postulate Refl :!R: (a :!E: *) -> (x :!E: a) -> Id -!E- x -!E- x
 
-not :!E: (_ :!R: Bool) -> Bool 
+not :!E: (__ :!R: Bool) -> Bool 
   not -!R- T  =  F
   not -!R- F  =  T
 
@@ -178,7 +178,7 @@ postulate Id :E: (a :E: *) -> (x :E: a) -> (y :E: a) -> *
 
 postulate Refl :R: (a :E: *) -> (x :E: a) -> Id -E- x -E- x
 
-not :E: (_ :R: Bool) -> Bool 
+not :E: (__ :R: Bool) -> Bool 
   not -R- T  =  F
   not -R- F  =  T
 
