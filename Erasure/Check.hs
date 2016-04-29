@@ -179,14 +179,14 @@ checkDef (Def n r ty (Clauses cls) Nothing) = bt ("DEF-CLAUSES", n) $ do
 
 checkClause :: Name -> Meta -> Type -> Clause Meta -> TC Constrs
 checkClause fn fr fty (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $
-    withDefs pvs $ do
+    withDefs (map csDef pvs) $ do
         (lty, lcs) <- checkTm lhs
         (rty, rcs) <- checkTm rhs
         ccs <- conv (rmForced lty) rty
         return $ flipConstrs lcs /\ rcs /\ ccs
 
-withDefs :: [Def Meta cs] -> TC a -> TC a
-withDefs (Def n r ty body Nothing : ds) = with (Def n r ty body Nothing) . withDefs ds
+withDefs :: [Def Meta Constrs'] -> TC a -> TC a
+withDefs (Def n r ty body cs : ds) = with (Def n r ty body cs) . withDefs ds
 withDefs [] = id
 
 checkTm :: Term -> TC (Type, Constrs)
@@ -229,20 +229,10 @@ checkTm t@(App app_r f x) = bt ("APP", t) $ do
         _ -> do
             tcfail $ NonFunction f fty
 
-checkTm t@(Bind Let (Def n r ty body Nothing) tm) = bt ("LET", t) $ do
-    letcs <- case body of
-        Term t -> do
-            (valty, valcs) <- checkTm t
-            tycs <- conv ty valty
-            return $ Just (valcs /\ tycs)
-        Abstract Postulate -> return Nothing
-        Abstract Var -> error "abstract var bound by let"
-        Clauses cls -> error "trying to check let-bound clauses"
-
-    (tmty, tmcs) <-
-        with (Def n r ty body letcs)
-            $ checkTm tm
-    return (tmty, tmcs /\ fromMaybe noConstrs letcs)
+checkTm t@(Bind Let d tm) = bt ("LET", t) $ do
+    (ds, dcs) <- checkDefs noConstrs [d]
+    (tmty, tmcs) <- withDefs (M.elems ds) $ checkTm tm
+    return (tmty, dcs /\ tmcs)
 
 -- forced patterns don't produce constraints (?)
 -- TODO: is that okay?

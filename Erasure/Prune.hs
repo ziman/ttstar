@@ -47,7 +47,7 @@ pruneTm eds (V n) = V n
 pruneTm eds (I n ty) = error $ "non-specialised instance found in pruneTm: " ++ show (n, ty)
 pruneTm eds (Bind b d tm)
     = case pruneDef eds d of
-        []   -> pruneTm eds tm
+        []   -> pruneTm (S.insert (defName d) eds) tm  -- remember the elided definition
         [d'] -> Bind b d' (pruneTm eds tm)
 pruneTm eds (App E f x) = pruneTm eds f
 pruneTm eds (App R f x) = App () (pruneTm eds f) (pruneTm eds x)

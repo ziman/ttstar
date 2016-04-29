@@ -11,4 +11,8 @@ plus : N -> N -> N.
     plus (S m) n = S (plus m n).
 
 main :R: N
-  = plus 3 4.
+  = let
+      id : N -> N.
+        pat (x : N).
+          id x = x.
+    in plus (id 3) (id 4).
