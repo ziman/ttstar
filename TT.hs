@@ -122,3 +122,11 @@ rmForcedDef d@(Def n r ty (Abstract a) mcs) = d
 
 rmForcedClause :: Clause r -> Clause r
 rmForcedClause (Clause pvs lhs rhs) = Clause (map rmForcedDef pvs) (rmForced lhs) (rmForced rhs)
+
+refersTo :: TT r -> Name -> Bool
+refersTo (V n) n' = n == n'
+refersTo (I n ty) n' = n == n'
+refersTo (Bind b d tm) n' = error $ "binder in pattern: " ++ show b
+refersTo (App r f x) n' = (f `refersTo` n') || (x `refersTo` n')
+refersTo (Forced t) n' = t `refersTo` n'
+refersTo Type n' = False
