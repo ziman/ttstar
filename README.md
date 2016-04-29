@@ -9,6 +9,8 @@ Besides what the original paper had, we have:
     * because M-L avoids case-expressions
 * [MP] erasure polymorphism for let-bound names (includes top-level)
     * but not lambda-bound names
+* pruning LHSs of clauses
+* irrelevant clause removal
 * local pattern-matching clauses in let
     * only one definition per let at the moment; absolutely not necessary, I just can't be bothered to invent good syntax for it
 
