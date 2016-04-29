@@ -28,9 +28,14 @@ app : List -> List -> List.
   pat (x : Bool) (xs : List) (ys : List).
     app (Cons x xs) ys = Cons x (app xs ys).
 
+postulate appRightNeutral : (ys : List) -> Id List ys (app ys Nil).
+{-
 appRightNeutral : (ys : List) -> Id List ys (app ys Nil).
   appRightNeutral Nil = Refl List Nil,
   pat (x : Bool) (xs : List).
     appRightNeutral (Cons x xs) = cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs).
+-}
 
-main :R: Type = Type.
+main (x : Bool) (xs : List)
+  :R: Id List (Cons x xs) (app (Cons x xs) Nil)
+  = cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs).

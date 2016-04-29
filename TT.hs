@@ -71,13 +71,22 @@ subst :: Name -> TT r -> TT r -> TT r
 subst n tm t@(V n')
     | n' == n   = tm
     | otherwise = t
+
 subst n tm t@(I n' ty) = I n' $ subst n tm ty
+
 subst n tm (Bind b d@(Def n' r ty body Nothing) tm')
-    = Bind b
-        (substDef n tm d)
-        (if n == n'
-            then tm'
-            else subst n tm tm')
+    | n == n'
+    = Bind b d' tm'
+
+    | n' `occursIn` tm
+    = Bind b d'{ defName = freshName } (subst n tm . subst n' (V freshName) $ tm')
+
+    | otherwise
+    = Bind b d' (subst n tm tm')
+  where
+    freshName = head . filter (not . (`occursIn` tm)) $ [UN (show n' ++ show i) | i <- [0..]]
+    d' = substDef n tm d
+
 subst n tm (App r f x) = App r (subst n tm f) (subst n tm x)
 subst n tm (Forced t) = Forced (subst n tm t)
 
@@ -120,12 +129,41 @@ rmForcedDef d@(Def n r ty (Abstract a) mcs) = d
 rmForcedClause :: Clause r -> Clause r
 rmForcedClause (Clause pvs lhs rhs) = Clause (map rmForcedDef pvs) (rmForced lhs) (rmForced rhs)
 
+-- this is only for patterns
 refersTo :: TT r -> Name -> Bool
 refersTo (V n) n' = n == n'
 refersTo (I n ty) n' = n == n'
 refersTo (Bind b d tm) n' = error $ "binder in pattern: " ++ show b
 refersTo (App r f x) n' = (f `refersTo` n') || (x `refersTo` n')
 refersTo (Forced t) n' = t `refersTo` n'
+
+occursIn :: Name -> TT r -> Bool
+n `occursIn` V n' = (n == n')
+n `occursIn` I n' ty = (n == n') || (n `occursIn` ty)
+n `occursIn` Bind b d tm = (n `occursInDef` d) || (n `occursIn` tm)
+n `occursIn` App r f x = (n `occursIn` f) || (n `occursIn` x)
+n `occursIn` Forced tm = n `occursIn` tm
+
+occursInDef :: Name -> Def r cs -> Bool
+occursInDef n (Def n' r ty body cs)
+    | n == n'
+    = n `occursIn` ty
+
+    | otherwise
+    = (n `occursIn` ty) || (n `occursInBody` body)
+
+occursInBody :: Name -> Body r -> Bool
+occursInBody n (Abstract _) = False
+occursInBody n (Term tm) = n `occursIn` tm
+occursInBody n (Clauses cls) = any (n `occursInClause`) cls
+
+occursInClause :: Name -> Clause r -> Bool
+occursInClause n (Clause pvs lhs rhs)
+    | n `elem` map defName pvs
+    = False
+
+    | otherwise
+    = (n `occursIn` lhs) || (n `occursIn` rhs)
 
 builtins :: r -> Ctx r cs
 builtins r = M.fromList
