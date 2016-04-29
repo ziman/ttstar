@@ -3,6 +3,7 @@ module Erasure.Prune where
 import TT
 import Pretty
 import Control.Applicative
+import qualified Data.Set as S
 
 prune :: Program Relevance VoidConstrs -> Program () VoidConstrs
 prune (Prog defs) = Prog $ concatMap pruneDef defs
@@ -20,8 +21,15 @@ pruneClause :: Clause Relevance -> Clause ()
 pruneClause (Clause pvs lhs rhs)
     = Clause
         (concatMap pruneDef pvs)
-        (pruneTm lhs)
+        (pruneLHS pvs $ pruneTm lhs)
         (pruneTm rhs)
+  where
+
+-- replace erased patvars with ____
+pruneLHS :: [Def Relevance VoidConstrs] -> TT () -> TT ()
+pruneLHS pvs lhs = foldr (\n -> subst n Erased) lhs elidedPVars
+  where
+    elidedPVars = S.fromList [n | Def n E _ _ _ <- pvs]
 
 pruneTm :: TT Relevance -> TT ()
 pruneTm (V n) = V n

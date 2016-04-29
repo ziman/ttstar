@@ -6,12 +6,11 @@ postulate Id : (A : *) -> (_ : A) -> (_ : A) -> *
 
 postulate Refl : (A : *) -> (x : A) -> Id A x x
 
-subst : (A : *) -> (P : (_ : A) -> *) -> (x : A) -> (y : A) -> (eq : Id A x y) -> (px : P x) -> A
+subst : (A : *) -> (P : (_ : A) -> *) -> (x : A) -> (y : A) -> (eq : Id A x y) -> (px : P x) -> A 
   pat (A : *) (P : (_ : A) -> *) (x : A) (px : P x).
     subst A P x [x] (Refl A [x]) px  =  x
 
-main  -R-  *
-  = *
+main  -R-  * = *
 
 ### Metaified ###
 
@@ -19,18 +18,17 @@ postulate Id :?1: (A :?2: *) -> (_ :?3: A) -> (_ :?4: A) -> *
 
 postulate Refl :?5: (A :?6: *) -> (x :?7: A) -> Id -?10- A -?9- x -?8- x
 
-subst :?11: (A :?12: *) -> (P :?13: (_ :?14: A) -> *) -> (x :?15: A) -> (y :?16: A) -> (eq :?17: Id -?20- A -?19- x -?18- y) -> (px :?21: P -?22- x) -> A
+subst :?11: (A :?12: *) -> (P :?13: (_ :?14: A) -> *) -> (x :?15: A) -> (y :?16: A) -> (eq :?17: Id -?20- A -?19- x -?18- y) -> (px :?21: P -?22- x) -> A 
   pat (A :?23: *) (P :?24: (_ :?25: A) -> *) (x :?26: A) (px :?27: P -?28- x).
     subst -?34- A -?33- P -?32- x -?31- [x] -?30- (Refl -?36- A -?35- [x]) -?29- px  =  x
 
-main :!R: *
-  = *
+main :!R: * = *
 
 ### Inferred definitions ###
 
-Id :?1: (A :?2: *) -> (_ :?3: A) -> (_ :?4: A) -> *
+postulate Id :?1: (A :?2: *) -> (_ :?3: A) -> (_ :?4: A) -> *
 
-Refl :?5: (A :?6: *) -> (x :?7: A) -> Id -?10- A -?9- x -?8- x
+postulate Refl :?5: (A :?6: *) -> (x :?7: A) -> Id -?10- A -?9- x -?8- x
 
 main :!R: * = *
 
@@ -110,12 +108,11 @@ postulate Id :E: (A :E: *) -> (_ :E: A) -> (_ :E: A) -> *
 
 postulate Refl :E: (A :E: *) -> (x :E: A) -> Id -E- A -E- x -E- x
 
-subst :E: (A :E: *) -> (P :E: (_ :E: A) -> *) -> (x :R: A) -> (y :E: A) -> (eq :E: Id -E- A -E- x -E- y) -> (px :E: P -E- x) -> A
+subst :E: (A :E: *) -> (P :E: (_ :E: A) -> *) -> (x :R: A) -> (y :E: A) -> (eq :E: Id -E- A -E- x -E- y) -> (px :E: P -E- x) -> A 
   pat (A :E: *) (P :E: (_ :E: A) -> *) (x :R: A) (px :E: P -E- x).
     subst -E- A -E- P -R- x -E- [x] -E- (Refl -E- A -E- [x]) -E- px  =  x
 
-main :R: *
-  = *
+main :R: * = *
 
 ### Specialised ###
 
@@ -123,12 +120,11 @@ postulate Id :!E: (A :!E: *) -> (_ :!E: A) -> (_ :!E: A) -> *
 
 postulate Refl :!E: (A :!E: *) -> (x :!E: A) -> Id -!E- A -!E- x -!E- x
 
-subst :!E: (A :!E: *) -> (P :!E: (_ :!E: A) -> *) -> (x :!R: A) -> (y :!E: A) -> (eq :!E: Id -!E- A -!E- x -!E- y) -> (px :!E: P -!E- x) -> A
+subst :!E: (A :!E: *) -> (P :!E: (_ :!E: A) -> *) -> (x :!R: A) -> (y :!E: A) -> (eq :!E: Id -!E- A -!E- x -!E- y) -> (px :!E: P -!E- x) -> A 
   pat (A :!E: *) (P :!E: (_ :!E: A) -> *) (x :!R: A) (px :!E: P -!E- x).
     subst -!E- A -!E- P -!R- x -!E- [x] -!E- (Refl -!E- A -!E- [x]) -!E- px  =  x
 
-main :!R: *
-  = *
+main :!R: * = *
 
 ### Final annotation ###
 
@@ -136,12 +132,11 @@ postulate Id :E: (A :E: *) -> (_ :E: A) -> (_ :E: A) -> *
 
 postulate Refl :E: (A :E: *) -> (x :E: A) -> Id -E- A -E- x -E- x
 
-subst :E: (A :E: *) -> (P :E: (_ :E: A) -> *) -> (x :R: A) -> (y :E: A) -> (eq :E: Id -E- A -E- x -E- y) -> (px :E: P -E- x) -> A
+subst :E: (A :E: *) -> (P :E: (_ :E: A) -> *) -> (x :R: A) -> (y :E: A) -> (eq :E: Id -E- A -E- x -E- y) -> (px :E: P -E- x) -> A 
   pat (A :E: *) (P :E: (_ :E: A) -> *) (x :R: A) (px :E: P -E- x).
     subst -E- A -E- P -R- x -E- [x] -E- (Refl -E- A -E- [x]) -E- px  =  x
 
-main :R: *
-  = *
+main :R: * = *
 
 ### Verification ###
 
@@ -149,7 +144,7 @@ Verification successful.
 
 ### Pruned ###
 
-  = *
+main = *
 
 ### Normal forms ###
 

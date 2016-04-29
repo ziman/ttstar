@@ -2,13 +2,11 @@
 
 ### Desugared ###
 
-main  -R-  *
-  = *
+main  -R-  * = *
 
 ### Metaified ###
 
-main :!R: *
-  = *
+main :!R: * = *
 
 ### Inferred definitions ###
 
@@ -24,18 +22,15 @@ main :!R: * = *
 
 ### Annotated ###
 
-main :R: *
-  = *
+main :R: * = *
 
 ### Specialised ###
 
-main :!R: *
-  = *
+main :!R: * = *
 
 ### Final annotation ###
 
-main :R: *
-  = *
+main :R: * = *
 
 ### Verification ###
 
@@ -43,7 +38,7 @@ Verification successful.
 
 ### Pruned ###
 
-  = *
+main = *
 
 ### Normal forms ###
 

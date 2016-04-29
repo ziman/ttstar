@@ -18,30 +18,29 @@ postulate Id : (a : *) -> (x : a) -> (y : a) -> *
 
 postulate Refl : (a : *) -> (x : a) -> Id x x
 
-not : (_ : Bool) -> Bool
+not : (_ : Bool) -> Bool 
   not T  =  F
   not F  =  T
 
-notnot : (x : Bool) -> Id x (not (not x))
+notnot : (x : Bool) -> Id x (not (not x)) 
   notnot T  =  Refl Bool T
   notnot F  =  Refl Bool F
 
-retTy : (_ : Bool) -> *
+retTy : (_ : Bool) -> * 
   retTy T  =  Bool
   retTy F  =  Mool
 
-mot : (_ : Mool) -> Mool
+mot : (_ : Mool) -> Mool 
   mot Q  =  W
   mot W  =  Q
 
-invert : (t : Bool) -> (_ : retTy t) -> retTy t
+invert : (t : Bool) -> (_ : retTy t) -> retTy t 
   pat (x : Bool).
     invert T x  =  not x
   pat (x : Mool).
     invert F x  =  mot x
 
-main  -R-  Mool
-  = invert F Q
+main  -R-  Mool = invert F Q
 
 ### Metaified ###
 
@@ -61,48 +60,47 @@ postulate Id :?7: (a :?8: *) -> (x :?9: a) -> (y :?10: a) -> *
 
 postulate Refl :?11: (a :?12: *) -> (x :?13: a) -> Id -?15- x -?14- x
 
-not :?16: (_ :?17: Bool) -> Bool
+not :?16: (_ :?17: Bool) -> Bool 
   not -?18- T  =  F
   not -?19- F  =  T
 
-notnot :?20: (x :?21: Bool) -> Id -?23- x -?22- (not -?24- (not -?25- x))
+notnot :?20: (x :?21: Bool) -> Id -?23- x -?22- (not -?24- (not -?25- x)) 
   notnot -?26- T  =  Refl -?28- Bool -?27- T
   notnot -?29- F  =  Refl -?31- Bool -?30- F
 
-retTy :?32: (_ :?33: Bool) -> *
+retTy :?32: (_ :?33: Bool) -> * 
   retTy -?34- T  =  Bool
   retTy -?35- F  =  Mool
 
-mot :?36: (_ :?37: Mool) -> Mool
+mot :?36: (_ :?37: Mool) -> Mool 
   mot -?38- Q  =  W
   mot -?39- W  =  Q
 
-invert :?40: (t :?41: Bool) -> (_ :?42: retTy -?43- t) -> retTy -?44- t
+invert :?40: (t :?41: Bool) -> (_ :?42: retTy -?43- t) -> retTy -?44- t 
   pat (x :?45: Bool).
     invert -?47- T -?46- x  =  not -?48- x
   pat (x :?49: Mool).
     invert -?51- F -?50- x  =  mot -?52- x
 
-main :!R: Mool
-  = invert -?54- F -?53- Q
+main :!R: Mool = invert -?54- F -?53- Q
 
 ### Inferred definitions ###
 
-Bool :?4: *
+postulate Bool :?4: *
 
-F :?6: Bool
+postulate F :?6: Bool
 
-Id :?7: (a :?8: *) -> (x :?9: a) -> (y :?10: a) -> *
+postulate Id :?7: (a :?8: *) -> (x :?9: a) -> (y :?10: a) -> *
 
-Mool :?1: *
+postulate Mool :?1: *
 
-Q :?2: Mool
+postulate Q :?2: Mool
 
-Refl :?11: (a :?12: *) -> (x :?13: a) -> Id -?15- x -?14- x
+postulate Refl :?11: (a :?12: *) -> (x :?13: a) -> Id -?15- x -?14- x
 
-T :?5: Bool
+postulate T :?5: Bool
 
-W :?3: Mool
+postulate W :?3: Mool
 
 invert :?40: (t :?41: Bool) -> (_ :?42: retTy -?43- t) -> retTy -?44- t 
   pat (x :?45: Bool).
@@ -231,30 +229,29 @@ postulate Id :E: (a :E: *) -> (x :E: a) -> (y :E: a) -> *
 
 postulate Refl :R: (a :E: *) -> (x :E: a) -> Id -E- x -E- x
 
-not :R: (_ :R: Bool) -> Bool
+not :R: (_ :R: Bool) -> Bool 
   not -R- T  =  F
   not -R- F  =  T
 
-notnot :E: (x :R: Bool) -> Id -E- x -E- (not -E- (not -E- x))
+notnot :E: (x :R: Bool) -> Id -E- x -E- (not -E- (not -E- x)) 
   notnot -R- T  =  Refl -E- Bool -E- T
   notnot -R- F  =  Refl -E- Bool -E- F
 
-retTy :E: (_ :R: Bool) -> *
+retTy :E: (_ :R: Bool) -> * 
   retTy -R- T  =  Bool
   retTy -R- F  =  Mool
 
-mot :R: (_ :R: Mool) -> Mool
+mot :R: (_ :R: Mool) -> Mool 
   mot -R- Q  =  W
   mot -R- W  =  Q
 
-invert :R: (t :R: Bool) -> (_ :R: retTy -E- t) -> retTy -E- t
+invert :R: (t :R: Bool) -> (_ :R: retTy -E- t) -> retTy -E- t 
   pat (x :R: Bool).
     invert -R- T -R- x  =  not -R- x
   pat (x :R: Mool).
     invert -R- F -R- x  =  mot -R- x
 
-main :R: Mool
-  = invert -R- F -R- Q
+main :R: Mool = invert -R- F -R- Q
 
 ### Specialised ###
 
@@ -274,30 +271,29 @@ postulate Id :!E: (a :!E: *) -> (x :!E: a) -> (y :!E: a) -> *
 
 postulate Refl :!R: (a :!E: *) -> (x :!E: a) -> Id -!E- x -!E- x
 
-not :!R: (_ :!R: Bool) -> Bool
+not :!R: (_ :!R: Bool) -> Bool 
   not -!R- T  =  F
   not -!R- F  =  T
 
-notnot :!E: (x :!R: Bool) -> Id -!E- x -!E- (not -!E- (not -!E- x))
+notnot :!E: (x :!R: Bool) -> Id -!E- x -!E- (not -!E- (not -!E- x)) 
   notnot -!R- T  =  Refl -!E- Bool -!E- T
   notnot -!R- F  =  Refl -!E- Bool -!E- F
 
-retTy :!E: (_ :!R: Bool) -> *
+retTy :!E: (_ :!R: Bool) -> * 
   retTy -!R- T  =  Bool
   retTy -!R- F  =  Mool
 
-mot :!R: (_ :!R: Mool) -> Mool
+mot :!R: (_ :!R: Mool) -> Mool 
   mot -!R- Q  =  W
   mot -!R- W  =  Q
 
-invert :!R: (t :!R: Bool) -> (_ :!R: retTy -!E- t) -> retTy -!E- t
+invert :!R: (t :!R: Bool) -> (_ :!R: retTy -!E- t) -> retTy -!E- t 
   pat (x :!R: Bool).
     invert -!R- T -!R- x  =  not -!R- x
   pat (x :!R: Mool).
     invert -!R- F -!R- x  =  mot -!R- x
 
-main :!R: Mool
-  = invert -!R- F -!R- Q
+main :!R: Mool = invert -!R- F -!R- Q
 
 ### Final annotation ###
 
@@ -317,30 +313,29 @@ postulate Id :E: (a :E: *) -> (x :E: a) -> (y :E: a) -> *
 
 postulate Refl :R: (a :E: *) -> (x :E: a) -> Id -E- x -E- x
 
-not :R: (_ :R: Bool) -> Bool
+not :R: (_ :R: Bool) -> Bool 
   not -R- T  =  F
   not -R- F  =  T
 
-notnot :E: (x :R: Bool) -> Id -E- x -E- (not -E- (not -E- x))
+notnot :E: (x :R: Bool) -> Id -E- x -E- (not -E- (not -E- x)) 
   notnot -R- T  =  Refl -E- Bool -E- T
   notnot -R- F  =  Refl -E- Bool -E- F
 
-retTy :E: (_ :R: Bool) -> *
+retTy :E: (_ :R: Bool) -> * 
   retTy -R- T  =  Bool
   retTy -R- F  =  Mool
 
-mot :R: (_ :R: Mool) -> Mool
+mot :R: (_ :R: Mool) -> Mool 
   mot -R- Q  =  W
   mot -R- W  =  Q
 
-invert :R: (t :R: Bool) -> (_ :R: retTy -E- t) -> retTy -E- t
+invert :R: (t :R: Bool) -> (_ :R: retTy -E- t) -> retTy -E- t 
   pat (x :R: Bool).
     invert -R- T -R- x  =  not -R- x
   pat (x :R: Mool).
     invert -R- F -R- x  =  mot -R- x
 
-main :R: Mool
-  = invert -R- F -R- Q
+main :R: Mool = invert -R- F -R- Q
 
 ### Verification ###
 
@@ -362,18 +357,21 @@ postulate F
 
 postulate Refl
 
+not 
   not T  =  F
   not F  =  T
 
+mot 
   mot Q  =  W
   mot W  =  Q
 
+invert 
   pat (x).
     invert T x  =  not x
   pat (x).
     invert F x  =  mot x
 
-  = invert F Q
+main = invert F Q
 
 ### Normal forms ###
 

@@ -20,17 +20,15 @@ postulate VNil : (a : *) -> Vec Z a
 
 postulate VCons : (a : *) -> (n : Nat) -> (x : a) -> (xs : Vec n a) -> Vec (S n) a
 
-vlen : (a : *) -> (n : Nat) -> (_ : Vec n a) -> Nat
+vlen : (a : *) -> (n : Nat) -> (_ : Vec n a) -> Nat 
   pat (a : *).
     vlen [a] [Z] (VNil a)  =  Z
   pat (a : *) (n : Nat) (x : a) (xs : Vec n a).
     vlen [a] [S n] (VCons a n x xs)  =  S (vlen a n xs)
 
-testVec : Vec 2 Bool
-  = VCons Bool 1 True (VCons Bool Z False (VNil Bool))
+testVec : Vec 2 Bool = VCons Bool 1 True (VCons Bool Z False (VNil Bool))
 
-main  -R-  Nat
-  = vlen Bool 2 testVec
+main  -R-  Nat = vlen Bool 2 testVec
 
 ### Metaified ###
 
@@ -52,37 +50,35 @@ postulate VNil :?10: (a :?11: *) -> Vec -?13- Z -?12- a
 
 postulate VCons :?14: (a :?15: *) -> (n :?16: Nat) -> (x :?17: a) -> (xs :?18: Vec -?20- n -?19- a) -> Vec -?22- (S -?23- n) -?21- a
 
-vlen :?24: (a :?25: *) -> (n :?26: Nat) -> (_ :?27: Vec -?29- n -?28- a) -> Nat
+vlen :?24: (a :?25: *) -> (n :?26: Nat) -> (_ :?27: Vec -?29- n -?28- a) -> Nat 
   pat (a :?30: *).
     vlen -?33- [a] -?32- [Z] -?31- (VNil -?34- a)  =  Z
   pat (a :?35: *) (n :?36: Nat) (x :?37: a) (xs :?38: Vec -?40- n -?39- a).
     vlen -?43- [a] -?42- [S -?44- n] -?41- (VCons -?48- a -?47- n -?46- x -?45- xs)  =  S -?49- (vlen -?52- a -?51- n -?50- xs)
 
-testVec :?53: Vec -?55- 2 -?54- Bool
-  = VCons -?61- Bool -?60- 1 -?59- True -?58- (VCons -?66- Bool -?65- Z -?64- False -?63- (VNil -?67- Bool))
+testVec :?53: Vec -?55- 2 -?54- Bool = VCons -?61- Bool -?60- 1 -?59- True -?58- (VCons -?66- Bool -?65- Z -?64- False -?63- (VNil -?67- Bool))
 
-main :!R: Nat
-  = vlen -?70- Bool -?69- 2 -?68- testVec
+main :!R: Nat = vlen -?70- Bool -?69- 2 -?68- testVec
 
 ### Inferred definitions ###
 
-Bool :?1: *
+postulate Bool :?1: *
 
-False :?3: Bool
+postulate False :?3: Bool
 
-Nat :?4: *
+postulate Nat :?4: *
 
-S :?6: (n :!R: Nat) -> Nat
+postulate S :?6: (n :!R: Nat) -> Nat
 
-True :?2: Bool
+postulate True :?2: Bool
 
-VCons :?14: (a :?15: *) -> (n :?16: Nat) -> (x :?17: a) -> (xs :?18: Vec -?20- n -?19- a) -> Vec -?22- (S -?23- n) -?21- a
+postulate VCons :?14: (a :?15: *) -> (n :?16: Nat) -> (x :?17: a) -> (xs :?18: Vec -?20- n -?19- a) -> Vec -?22- (S -?23- n) -?21- a
 
-VNil :?10: (a :?11: *) -> Vec -?13- Z -?12- a
+postulate VNil :?10: (a :?11: *) -> Vec -?13- Z -?12- a
 
-Vec :?7: (_ :?8: Nat) -> (_ :?9: *) -> *
+postulate Vec :?7: (_ :?8: Nat) -> (_ :?9: *) -> *
 
-Z :?5: Nat
+postulate Z :?5: Nat
 
 main :!R: Nat = vlen -?70- Bool -?69- 2 -?68- testVec
   [] -> [?24,!R]
@@ -280,17 +276,15 @@ postulate VNil :R: (a :E: *) -> Vec -E- Z -E- a
 
 postulate VCons :R: (a :E: *) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
 
-vlen :R: (a :E: *) -> (n :E: Nat) -> (_ :R: Vec -E- n -E- a) -> Nat
+vlen :R: (a :E: *) -> (n :E: Nat) -> (_ :R: Vec -E- n -E- a) -> Nat 
   pat (a :E: *).
     vlen -E- [a] -E- [Z] -R- (VNil -E- a)  =  Z
   pat (a :E: *) (n :E: Nat) (x :E: a) (xs :R: Vec -E- n -E- a).
     vlen -E- [a] -E- [S -E- n] -R- (VCons -E- a -E- n -E- x -R- xs)  =  S -R- (vlen -E- a -E- n -R- xs)
 
-testVec :R: Vec -E- 2 -E- Bool
-  = VCons -E- Bool -E- 1 -E- True -R- (VCons -E- Bool -E- Z -E- False -R- (VNil -E- Bool))
+testVec :R: Vec -E- 2 -E- Bool = VCons -E- Bool -E- 1 -E- True -R- (VCons -E- Bool -E- Z -E- False -R- (VNil -E- Bool))
 
-main :R: Nat
-  = vlen -E- Bool -E- 2 -R- testVec
+main :R: Nat = vlen -E- Bool -E- 2 -R- testVec
 
 ### Specialised ###
 
@@ -312,17 +306,15 @@ postulate VNil :!R: (a :!E: *) -> Vec -!E- Z -!E- a
 
 postulate VCons :!R: (a :!E: *) -> (n :!E: Nat) -> (x :!E: a) -> (xs :!R: Vec -!E- n -!E- a) -> Vec -!E- (S -!E- n) -!E- a
 
-vlen :!R: (a :!E: *) -> (n :!E: Nat) -> (_ :!R: Vec -!E- n -!E- a) -> Nat
+vlen :!R: (a :!E: *) -> (n :!E: Nat) -> (_ :!R: Vec -!E- n -!E- a) -> Nat 
   pat (a :!E: *).
     vlen -!E- [a] -!E- [Z] -!R- (VNil -!E- a)  =  Z
   pat (a :!E: *) (n :!E: Nat) (x :!E: a) (xs :!R: Vec -!E- n -!E- a).
     vlen -!E- [a] -!E- [S -!E- n] -!R- (VCons -!E- a -!E- n -!E- x -!R- xs)  =  S -!R- (vlen -!E- a -!E- n -!R- xs)
 
-testVec :!R: Vec -!E- 2 -!E- Bool
-  = VCons -!E- Bool -!E- 1 -!E- True -!R- (VCons -!E- Bool -!E- Z -!E- False -!R- (VNil -!E- Bool))
+testVec :!R: Vec -!E- 2 -!E- Bool = VCons -!E- Bool -!E- 1 -!E- True -!R- (VCons -!E- Bool -!E- Z -!E- False -!R- (VNil -!E- Bool))
 
-main :!R: Nat
-  = vlen -!E- Bool -!E- 2 -!R- testVec
+main :!R: Nat = vlen -!E- Bool -!E- 2 -!R- testVec
 
 ### Final annotation ###
 
@@ -344,17 +336,15 @@ postulate VNil :R: (a :E: *) -> Vec -E- Z -E- a
 
 postulate VCons :R: (a :E: *) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
 
-vlen :R: (a :E: *) -> (n :E: Nat) -> (_ :R: Vec -E- n -E- a) -> Nat
+vlen :R: (a :E: *) -> (n :E: Nat) -> (_ :R: Vec -E- n -E- a) -> Nat 
   pat (a :E: *).
     vlen -E- [a] -E- [Z] -R- (VNil -E- a)  =  Z
   pat (a :E: *) (n :E: Nat) (x :E: a) (xs :R: Vec -E- n -E- a).
     vlen -E- [a] -E- [S -E- n] -R- (VCons -E- a -E- n -E- x -R- xs)  =  S -R- (vlen -E- a -E- n -R- xs)
 
-testVec :R: Vec -E- 2 -E- Bool
-  = VCons -E- Bool -E- 1 -E- True -R- (VCons -E- Bool -E- Z -E- False -R- (VNil -E- Bool))
+testVec :R: Vec -E- 2 -E- Bool = VCons -E- Bool -E- 1 -E- True -R- (VCons -E- Bool -E- Z -E- False -R- (VNil -E- Bool))
 
-main :R: Nat
-  = vlen -E- Bool -E- 2 -R- testVec
+main :R: Nat = vlen -E- Bool -E- 2 -R- testVec
 
 ### Verification ###
 
@@ -370,13 +360,14 @@ postulate VNil
 
 postulate VCons
 
+vlen 
   vlen VNil  =  Z
   pat (xs).
     vlen (VCons xs)  =  S (vlen xs)
 
-  = VCons (VCons VNil)
+testVec = VCons (VCons VNil)
 
-  = vlen testVec
+main = vlen testVec
 
 ### Normal forms ###
 

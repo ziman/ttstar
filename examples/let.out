@@ -8,26 +8,24 @@ postulate Z : Nat
 
 postulate S : (n  -R-  Nat) -> Nat
 
-plus : (_ : Nat) -> (_ : Nat) -> Nat
+plus : (_ : Nat) -> (_ : Nat) -> Nat 
   pat (n : Nat).
     plus Z n  =  n
   pat (m : Nat) (n : Nat).
     plus (S m) n  =  S (plus m n)
 
-id : (_ : Nat) -> Nat
+id : (_ : Nat) -> Nat 
   id  =  (\x : Nat. x)
 
-const : (x : Nat) -> (y : Nat) -> Nat
-  = (\x : Nat. (\y : Nat. x))
+const : (x : Nat) -> (y : Nat) -> Nat = (\x : Nat. (\y : Nat. x))
 
-main  -R-  Nat
-  = 
-    let apply : (f : (_ : Nat) -> Nat) -> (x : Nat) -> Nat = (\f : (_ : Nat) -> Nat. (\x : Nat. f x))
+main  -R-  Nat = 
+  let apply : (f : (_ : Nat) -> Nat) -> (x : Nat) -> Nat = (\f : (_ : Nat) -> Nat. (\x : Nat. f x))
+  in 
+    let postulate Q : Nat
     in 
-      let Q : Nat
-      in 
-        let three : Nat = 3
-        in plus (apply id 2) (apply (const Q) three)
+      let three : Nat = 3
+      in plus (apply id 2) (apply (const Q) three)
 
 ### Metaified ###
 
@@ -37,34 +35,32 @@ postulate Z :?2: Nat
 
 postulate S :?3: (n :!R: Nat) -> Nat
 
-plus :?4: (_ :?5: Nat) -> (_ :?6: Nat) -> Nat
+plus :?4: (_ :?5: Nat) -> (_ :?6: Nat) -> Nat 
   pat (n :?7: Nat).
     plus -?9- Z -?8- n  =  n
   pat (m :?10: Nat) (n :?11: Nat).
     plus -?13- (S -?14- m) -?12- n  =  S -?15- (plus -?17- m -?16- n)
 
-id :?18: (_ :?19: Nat) -> Nat
+id :?18: (_ :?19: Nat) -> Nat 
   id  =  (\x :?20: Nat. x)
 
-const :?21: (x :?22: Nat) -> (y :?23: Nat) -> Nat
-  = (\x :?24: Nat. (\y :?25: Nat. x))
+const :?21: (x :?22: Nat) -> (y :?23: Nat) -> Nat = (\x :?24: Nat. (\y :?25: Nat. x))
 
-main :!R: Nat
-  = 
-    let apply :?26: (f :?27: (_ :?28: Nat) -> Nat) -> (x :?29: Nat) -> Nat = (\f :?30: (_ :?31: Nat) -> Nat. (\x :?32: Nat. f -?33- x))
+main :!R: Nat = 
+  let apply :?26: (f :?27: (_ :?28: Nat) -> Nat) -> (x :?29: Nat) -> Nat = (\f :?30: (_ :?31: Nat) -> Nat. (\x :?32: Nat. f -?33- x))
+  in 
+    let postulate Q :?34: Nat
     in 
-      let Q :?34: Nat
-      in 
-        let three :?35: Nat = 3
-        in plus -?40- (apply -?42- id -?41- 2) -?39- (apply -?46- (const -?47- Q) -?45- three)
+      let three :?35: Nat = 3
+      in plus -?40- (apply -?42- id -?41- 2) -?39- (apply -?46- (const -?47- Q) -?45- three)
 
 ### Inferred definitions ###
 
-Nat :?1: *
+postulate Nat :?1: *
 
-S :?3: (n :!R: Nat) -> Nat
+postulate S :?3: (n :!R: Nat) -> Nat
 
-Z :?2: Nat
+postulate Z :?2: Nat
 
 const :?21: (x :?22: Nat) -> (y :?23: Nat) -> Nat = (\x :?24: Nat. (\y :?25: Nat. x))
   [] -> [?22,?24,!R]
@@ -78,7 +74,7 @@ id :?18: (_ :?19: Nat) -> Nat
 main :!R: Nat = 
   let apply :?26: (f :?27: (_ :?28: Nat) -> Nat) -> (x :?29: Nat) -> Nat = (\f :?30: (_ :?31: Nat) -> Nat. (\x :?32: Nat. f -?33- x))
   in 
-    let Q :?34: Nat
+    let postulate Q :?34: Nat
     in 
       let three :?35: Nat = 3
       in plus -?40- (apply -?42- id -?41- 2) -?39- (apply -?46- (const -?47- Q) -?45- three)
@@ -148,26 +144,24 @@ postulate Z :R: Nat
 
 postulate S :R: (n :R: Nat) -> Nat
 
-plus :R: (_ :R: Nat) -> (_ :R: Nat) -> Nat
+plus :R: (_ :R: Nat) -> (_ :R: Nat) -> Nat 
   pat (n :R: Nat).
     plus -R- Z -R- n  =  n
   pat (m :R: Nat) (n :R: Nat).
     plus -R- (S -R- m) -R- n  =  S -R- (plus -R- m -R- n)
 
-id :R: (_ :R: Nat) -> Nat
+id :R: (_ :R: Nat) -> Nat 
   id  =  (\x :R: Nat. x)
 
-const :R: (x :R: Nat) -> (y :R: Nat) -> Nat
-  = (\x :R: Nat. (\y :R: Nat. x))
+const :R: (x :R: Nat) -> (y :R: Nat) -> Nat = (\x :R: Nat. (\y :R: Nat. x))
 
-main :R: Nat
-  = 
-    let apply :R: (f :R: (_ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = (\f :R: (_ :R: Nat) -> Nat. (\x :R: Nat. f -R- x))
+main :R: Nat = 
+  let apply :R: (f :R: (_ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = (\f :R: (_ :R: Nat) -> Nat. (\x :R: Nat. f -R- x))
+  in 
+    let postulate Q :R: Nat
     in 
-      let Q :R: Nat
-      in 
-        let three :R: Nat = 3
-        in plus -R- (apply -R- id -R- 2) -R- (apply -R- (const -R- Q) -R- three)
+      let three :R: Nat = 3
+      in plus -R- (apply -R- id -R- 2) -R- (apply -R- (const -R- Q) -R- three)
 
 ### Specialised ###
 
@@ -177,26 +171,24 @@ postulate Z :!R: Nat
 
 postulate S :!R: (n :!R: Nat) -> Nat
 
-plus :!R: (_ :!R: Nat) -> (_ :!R: Nat) -> Nat
+plus :!R: (_ :!R: Nat) -> (_ :!R: Nat) -> Nat 
   pat (n :!R: Nat).
     plus -!R- Z -!R- n  =  n
   pat (m :!R: Nat) (n :!R: Nat).
     plus -!R- (S -!R- m) -!R- n  =  S -!R- (plus -!R- m -!R- n)
 
-id :!R: (_ :!R: Nat) -> Nat
+id :!R: (_ :!R: Nat) -> Nat 
   id  =  (\x :!R: Nat. x)
 
-const :!R: (x :!R: Nat) -> (y :!R: Nat) -> Nat
-  = (\x :!R: Nat. (\y :!R: Nat. x))
+const :!R: (x :!R: Nat) -> (y :!R: Nat) -> Nat = (\x :!R: Nat. (\y :!R: Nat. x))
 
-main :!R: Nat
-  = 
-    let apply :!R: (f :!R: (_ :!R: Nat) -> Nat) -> (x :!R: Nat) -> Nat = (\f :!R: (_ :!R: Nat) -> Nat. (\x :!R: Nat. f -!R- x))
+main :!R: Nat = 
+  let apply :!R: (f :!R: (_ :!R: Nat) -> Nat) -> (x :!R: Nat) -> Nat = (\f :!R: (_ :!R: Nat) -> Nat. (\x :!R: Nat. f -!R- x))
+  in 
+    let postulate Q :!R: Nat
     in 
-      let Q :!R: Nat
-      in 
-        let three :!R: Nat = 3
-        in plus -!R- (apply -!R- id -!R- 2) -!R- (apply -!R- (const -!R- Q) -!R- three)
+      let three :!R: Nat = 3
+      in plus -!R- (apply -!R- id -!R- 2) -!R- (apply -!R- (const -!R- Q) -!R- three)
 
 ### Final annotation ###
 
@@ -206,26 +198,24 @@ postulate Z :R: Nat
 
 postulate S :R: (n :R: Nat) -> Nat
 
-plus :R: (_ :R: Nat) -> (_ :R: Nat) -> Nat
+plus :R: (_ :R: Nat) -> (_ :R: Nat) -> Nat 
   pat (n :R: Nat).
     plus -R- Z -R- n  =  n
   pat (m :R: Nat) (n :R: Nat).
     plus -R- (S -R- m) -R- n  =  S -R- (plus -R- m -R- n)
 
-id :R: (_ :R: Nat) -> Nat
+id :R: (_ :R: Nat) -> Nat 
   id  =  (\x :R: Nat. x)
 
-const :R: (x :R: Nat) -> (y :R: Nat) -> Nat
-  = (\x :R: Nat. (\y :R: Nat. x))
+const :R: (x :R: Nat) -> (y :R: Nat) -> Nat = (\x :R: Nat. (\y :R: Nat. x))
 
-main :R: Nat
-  = 
-    let apply :R: (f :R: (_ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = (\f :R: (_ :R: Nat) -> Nat. (\x :R: Nat. f -R- x))
+main :R: Nat = 
+  let apply :R: (f :R: (_ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = (\f :R: (_ :R: Nat) -> Nat. (\x :R: Nat. f -R- x))
+  in 
+    let postulate Q :R: Nat
     in 
-      let Q :R: Nat
-      in 
-        let three :R: Nat = 3
-        in plus -R- (apply -R- id -R- 2) -R- (apply -R- (const -R- Q) -R- three)
+      let three :R: Nat = 3
+      in plus -R- (apply -R- id -R- 2) -R- (apply -R- (const -R- Q) -R- three)
 
 ### Verification ###
 
@@ -237,22 +227,24 @@ postulate Z
 
 postulate S
 
+plus 
   pat (n).
     plus Z n  =  n
   pat (m) (n).
     plus (S m) n  =  S (plus m n)
 
+id 
   id  =  (\x. x)
 
-  = (\x. (\y. x))
+const = (\x. (\y. x))
 
-  = 
-    let apply = (\f. (\x. f x))
+main = 
+  let apply = (\f. (\x. f x))
+  in 
+    let postulate Q
     in 
-      let Q
-      in 
-        let three = 3
-        in plus (apply id 2) (apply (const Q) three)
+      let three = 3
+      in plus (apply id 2) (apply (const Q) three)
 
 ### Normal forms ###
 

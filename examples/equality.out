@@ -12,15 +12,15 @@ postulate Id : (a : *) -> (x : a) -> (y : a) -> *
 
 postulate Refl : (a : *) -> (x : a) -> Id x x
 
-not : (_ : Bool) -> Bool
+not : (_ : Bool) -> Bool 
   not T  =  F
   not F  =  T
 
-notnot : (x : Bool) -> Id x (not (not x))
+notnot : (x : Bool) -> Id x (not (not x)) 
   notnot T  =  Refl Bool T
   notnot F  =  Refl Bool F
 
-main  -R-  Id F (not (not F))
+main  -R-  Id F (not (not F)) 
   main  =  notnot F
 
 ### Metaified ###
@@ -35,28 +35,28 @@ postulate Id :?4: (a :?5: *) -> (x :?6: a) -> (y :?7: a) -> *
 
 postulate Refl :?8: (a :?9: *) -> (x :?10: a) -> Id -?12- x -?11- x
 
-not :?13: (_ :?14: Bool) -> Bool
+not :?13: (_ :?14: Bool) -> Bool 
   not -?15- T  =  F
   not -?16- F  =  T
 
-notnot :?17: (x :?18: Bool) -> Id -?20- x -?19- (not -?21- (not -?22- x))
+notnot :?17: (x :?18: Bool) -> Id -?20- x -?19- (not -?21- (not -?22- x)) 
   notnot -?23- T  =  Refl -?25- Bool -?24- T
   notnot -?26- F  =  Refl -?28- Bool -?27- F
 
-main :!R: Id -?30- F -?29- (not -?31- (not -?32- F))
+main :!R: Id -?30- F -?29- (not -?31- (not -?32- F)) 
   main  =  notnot -?33- F
 
 ### Inferred definitions ###
 
-Bool :?1: *
+postulate Bool :?1: *
 
-F :?3: Bool
+postulate F :?3: Bool
 
-Id :?4: (a :?5: *) -> (x :?6: a) -> (y :?7: a) -> *
+postulate Id :?4: (a :?5: *) -> (x :?6: a) -> (y :?7: a) -> *
 
-Refl :?8: (a :?9: *) -> (x :?10: a) -> Id -?12- x -?11- x
+postulate Refl :?8: (a :?9: *) -> (x :?10: a) -> Id -?12- x -?11- x
 
-T :?2: Bool
+postulate T :?2: Bool
 
 main :!R: Id -?30- F -?29- (not -?31- (not -?32- F)) 
   main  =  notnot -?33- F
@@ -132,15 +132,15 @@ postulate Id :E: (a :E: *) -> (x :E: a) -> (y :E: a) -> *
 
 postulate Refl :R: (a :E: *) -> (x :E: a) -> Id -E- x -E- x
 
-not :E: (_ :R: Bool) -> Bool
+not :E: (_ :R: Bool) -> Bool 
   not -R- T  =  F
   not -R- F  =  T
 
-notnot :R: (x :R: Bool) -> Id -E- x -E- (not -E- (not -E- x))
+notnot :R: (x :R: Bool) -> Id -E- x -E- (not -E- (not -E- x)) 
   notnot -R- T  =  Refl -E- Bool -E- T
   notnot -R- F  =  Refl -E- Bool -E- F
 
-main :R: Id -E- F -E- (not -E- (not -E- F))
+main :R: Id -E- F -E- (not -E- (not -E- F)) 
   main  =  notnot -R- F
 
 ### Specialised ###
@@ -155,15 +155,15 @@ postulate Id :!E: (a :!E: *) -> (x :!E: a) -> (y :!E: a) -> *
 
 postulate Refl :!R: (a :!E: *) -> (x :!E: a) -> Id -!E- x -!E- x
 
-not :!E: (_ :!R: Bool) -> Bool
+not :!E: (_ :!R: Bool) -> Bool 
   not -!R- T  =  F
   not -!R- F  =  T
 
-notnot :!R: (x :!R: Bool) -> Id -!E- x -!E- (not -!E- (not -!E- x))
+notnot :!R: (x :!R: Bool) -> Id -!E- x -!E- (not -!E- (not -!E- x)) 
   notnot -!R- T  =  Refl -!E- Bool -!E- T
   notnot -!R- F  =  Refl -!E- Bool -!E- F
 
-main :!R: Id -!E- F -!E- (not -!E- (not -!E- F))
+main :!R: Id -!E- F -!E- (not -!E- (not -!E- F)) 
   main  =  notnot -!R- F
 
 ### Final annotation ###
@@ -178,15 +178,15 @@ postulate Id :E: (a :E: *) -> (x :E: a) -> (y :E: a) -> *
 
 postulate Refl :R: (a :E: *) -> (x :E: a) -> Id -E- x -E- x
 
-not :E: (_ :R: Bool) -> Bool
+not :E: (_ :R: Bool) -> Bool 
   not -R- T  =  F
   not -R- F  =  T
 
-notnot :R: (x :R: Bool) -> Id -E- x -E- (not -E- (not -E- x))
+notnot :R: (x :R: Bool) -> Id -E- x -E- (not -E- (not -E- x)) 
   notnot -R- T  =  Refl -E- Bool -E- T
   notnot -R- F  =  Refl -E- Bool -E- F
 
-main :R: Id -E- F -E- (not -E- (not -E- F))
+main :R: Id -E- F -E- (not -E- (not -E- F)) 
   main  =  notnot -R- F
 
 ### Verification ###
@@ -201,9 +201,11 @@ postulate F
 
 postulate Refl
 
+notnot 
   notnot T  =  Refl
   notnot F  =  Refl
 
+main 
   main  =  notnot F
 
 ### Normal forms ###

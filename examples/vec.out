@@ -14,20 +14,19 @@ postulate Nil : (a : *) -> Vec Z a
 
 postulate Cons : (a : *) -> (n : N) -> (x  -R-  a) -> (xs  -R-  Vec n a) -> Vec (S n) a
 
-plus : (_ : N) -> (_ : N) -> N
+plus : (_ : N) -> (_ : N) -> N 
   pat (n : N).
     plus Z n  =  n
   pat (m : N) (n : N).
     plus (S m) n  =  S (plus m n)
 
-append : (a : *) -> (m : N) -> (n : N) -> (xs : Vec m a) -> (ys : Vec n a) -> Vec (plus m n) a
+append : (a : *) -> (m : N) -> (n : N) -> (xs : Vec m a) -> (ys : Vec n a) -> Vec (plus m n) a 
   pat (a : *) (n : N) (ys : Vec n a).
     append a [Z] n (Nil [a]) ys  =  ys
   pat (a : *) (m : N) (n : N) (x : a) (xs : Vec m a) (ys : Vec n a).
     append a [S m] n (Cons [a] m x xs) ys  =  Cons a (plus m n) x (append a m n xs ys)
 
-main  -R-  Vec 1 N
-  = append N Z 1 (Nil N) (Cons N Z 42 (Nil N))
+main  -R-  Vec 1 N = append N Z 1 (Nil N) (Cons N Z 42 (Nil N))
 
 ### Metaified ###
 
@@ -43,34 +42,33 @@ postulate Nil :?7: (a :?8: *) -> Vec -?10- Z -?9- a
 
 postulate Cons :?11: (a :?12: *) -> (n :?13: N) -> (x :!R: a) -> (xs :!R: Vec -?15- n -?14- a) -> Vec -?17- (S -?18- n) -?16- a
 
-plus :?19: (_ :?20: N) -> (_ :?21: N) -> N
+plus :?19: (_ :?20: N) -> (_ :?21: N) -> N 
   pat (n :?22: N).
     plus -?24- Z -?23- n  =  n
   pat (m :?25: N) (n :?26: N).
     plus -?28- (S -?29- m) -?27- n  =  S -?30- (plus -?32- m -?31- n)
 
-append :?33: (a :?34: *) -> (m :?35: N) -> (n :?36: N) -> (xs :?37: Vec -?39- m -?38- a) -> (ys :?40: Vec -?42- n -?41- a) -> Vec -?44- (plus -?46- m -?45- n) -?43- a
+append :?33: (a :?34: *) -> (m :?35: N) -> (n :?36: N) -> (xs :?37: Vec -?39- m -?38- a) -> (ys :?40: Vec -?42- n -?41- a) -> Vec -?44- (plus -?46- m -?45- n) -?43- a 
   pat (a :?47: *) (n :?48: N) (ys :?49: Vec -?51- n -?50- a).
     append -?56- a -?55- [Z] -?54- n -?53- (Nil -?57- [a]) -?52- ys  =  ys
   pat (a :?58: *) (m :?59: N) (n :?60: N) (x :?61: a) (xs :?62: Vec -?64- m -?63- a) (ys :?65: Vec -?67- n -?66- a).
     append -?72- a -?71- [S -?73- m] -?70- n -?69- (Cons -?77- [a] -?76- m -?75- x -?74- xs) -?68- ys  =  Cons -?81- a -?80- (plus -?83- m -?82- n) -?79- x -?78- (append -?88- a -?87- m -?86- n -?85- xs -?84- ys)
 
-main :!R: Vec -?90- 1 -?89- N
-  = append -?96- N -?95- Z -?94- 1 -?93- (Nil -?98- N) -?92- (Cons -?102- N -?101- Z -?100- 42 -?99- (Nil -?145- N))
+main :!R: Vec -?90- 1 -?89- N = append -?96- N -?95- Z -?94- 1 -?93- (Nil -?98- N) -?92- (Cons -?102- N -?101- Z -?100- 42 -?99- (Nil -?145- N))
 
 ### Inferred definitions ###
 
-Cons :?11: (a :?12: *) -> (n :?13: N) -> (x :!R: a) -> (xs :!R: Vec -?15- n -?14- a) -> Vec -?17- (S -?18- n) -?16- a
+postulate Cons :?11: (a :?12: *) -> (n :?13: N) -> (x :!R: a) -> (xs :!R: Vec -?15- n -?14- a) -> Vec -?17- (S -?18- n) -?16- a
 
-N :?1: *
+postulate N :?1: *
 
-Nil :?7: (a :?8: *) -> Vec -?10- Z -?9- a
+postulate Nil :?7: (a :?8: *) -> Vec -?10- Z -?9- a
 
-S :?3: (x :!R: N) -> N
+postulate S :?3: (x :!R: N) -> N
 
-Vec :?4: (_ :?5: N) -> (_ :?6: *) -> *
+postulate Vec :?4: (_ :?5: N) -> (_ :?6: *) -> *
 
-Z :?2: N
+postulate Z :?2: N
 
 append :?33: (a :?34: *) -> (m :?35: N) -> (n :?36: N) -> (xs :?37: Vec -?39- m -?38- a) -> (ys :?40: Vec -?42- n -?41- a) -> Vec -?44- (plus -?46- m -?45- n) -?43- a 
   pat (a :?47: *) (n :?48: N) (ys :?49: Vec -?51- n -?50- a).
@@ -284,20 +282,19 @@ postulate Nil :R: (a :E: *) -> Vec -E- Z -E- a
 
 postulate Cons :R: (a :E: *) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -R- n) -E- a
 
-plus :R: (_ :R: N) -> (_ :R: N) -> N
+plus :R: (_ :R: N) -> (_ :R: N) -> N 
   pat (n :R: N).
     plus -R- Z -R- n  =  n
   pat (m :R: N) (n :R: N).
     plus -R- (S -R- m) -R- n  =  S -R- (plus -R- m -R- n)
 
-append :R: (a :E: *) -> (m :E: N) -> (n :E: N) -> (xs :R: Vec -E- m -E- a) -> (ys :R: Vec -E- n -E- a) -> Vec -E- (plus -R- m -R- n) -E- a
+append :R: (a :E: *) -> (m :E: N) -> (n :E: N) -> (xs :R: Vec -E- m -E- a) -> (ys :R: Vec -E- n -E- a) -> Vec -E- (plus -R- m -R- n) -E- a 
   pat (a :E: *) (n :E: N) (ys :R: Vec -E- n -E- a).
     append -E- a -E- [Z] -E- n -R- (Nil -E- [a]) -R- ys  =  ys
   pat (a :E: *) (m :E: N) (n :E: N) (x :R: a) (xs :R: Vec -E- m -E- a) (ys :R: Vec -E- n -E- a).
     append -E- a -E- [S -R- m] -E- n -R- (Cons -E- [a] -E- m -R- x -R- xs) -R- ys  =  Cons -E- a -E- (plus -R- m -R- n) -R- x -R- (append -E- a -E- m -E- n -R- xs -R- ys)
 
-main :R: Vec -E- 1 -E- N
-  = append -E- N -E- Z -E- 1 -R- (Nil -E- N) -R- (Cons -E- N -E- Z -R- 42 -R- (Nil -E- N))
+main :R: Vec -E- 1 -E- N = append -E- N -E- Z -E- 1 -R- (Nil -E- N) -R- (Cons -E- N -E- Z -R- 42 -R- (Nil -E- N))
 
 ### Specialised ###
 
@@ -313,20 +310,19 @@ postulate Nil :!R: (a :!E: *) -> Vec -!E- Z -!E- a
 
 postulate Cons :!R: (a :!E: *) -> (n :!E: N) -> (x :!R: a) -> (xs :!R: Vec -!E- n -!E- a) -> Vec -!E- (S -!R- n) -!E- a
 
-plus :!R: (_ :!R: N) -> (_ :!R: N) -> N
+plus :!R: (_ :!R: N) -> (_ :!R: N) -> N 
   pat (n :!R: N).
     plus -!R- Z -!R- n  =  n
   pat (m :!R: N) (n :!R: N).
     plus -!R- (S -!R- m) -!R- n  =  S -!R- (plus -!R- m -!R- n)
 
-append :!R: (a :!E: *) -> (m :!E: N) -> (n :!E: N) -> (xs :!R: Vec -!E- m -!E- a) -> (ys :!R: Vec -!E- n -!E- a) -> Vec -!E- (plus -!R- m -!R- n) -!E- a
+append :!R: (a :!E: *) -> (m :!E: N) -> (n :!E: N) -> (xs :!R: Vec -!E- m -!E- a) -> (ys :!R: Vec -!E- n -!E- a) -> Vec -!E- (plus -!R- m -!R- n) -!E- a 
   pat (a :!E: *) (n :!E: N) (ys :!R: Vec -!E- n -!E- a).
     append -!E- a -!E- [Z] -!E- n -!R- (Nil -!E- [a]) -!R- ys  =  ys
   pat (a :!E: *) (m :!E: N) (n :!E: N) (x :!R: a) (xs :!R: Vec -!E- m -!E- a) (ys :!R: Vec -!E- n -!E- a).
     append -!E- a -!E- [S -!R- m] -!E- n -!R- (Cons -!E- [a] -!E- m -!R- x -!R- xs) -!R- ys  =  Cons -!E- a -!E- (plus -!R- m -!R- n) -!R- x -!R- (append -!E- a -!E- m -!E- n -!R- xs -!R- ys)
 
-main :!R: Vec -!E- 1 -!E- N
-  = append -!E- N -!E- Z -!E- 1 -!R- (Nil -!E- N) -!R- (Cons -!E- N -!E- Z -!R- 42 -!R- (Nil -!E- N))
+main :!R: Vec -!E- 1 -!E- N = append -!E- N -!E- Z -!E- 1 -!R- (Nil -!E- N) -!R- (Cons -!E- N -!E- Z -!R- 42 -!R- (Nil -!E- N))
 
 ### Final annotation ###
 
@@ -342,20 +338,19 @@ postulate Nil :R: (a :E: *) -> Vec -E- Z -E- a
 
 postulate Cons :R: (a :E: *) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -R- n) -E- a
 
-plus :R: (_ :R: N) -> (_ :R: N) -> N
+plus :R: (_ :R: N) -> (_ :R: N) -> N 
   pat (n :R: N).
     plus -R- Z -R- n  =  n
   pat (m :R: N) (n :R: N).
     plus -R- (S -R- m) -R- n  =  S -R- (plus -R- m -R- n)
 
-append :R: (a :E: *) -> (m :E: N) -> (n :E: N) -> (xs :R: Vec -E- m -E- a) -> (ys :R: Vec -E- n -E- a) -> Vec -E- (plus -R- m -R- n) -E- a
+append :R: (a :E: *) -> (m :E: N) -> (n :E: N) -> (xs :R: Vec -E- m -E- a) -> (ys :R: Vec -E- n -E- a) -> Vec -E- (plus -R- m -R- n) -E- a 
   pat (a :E: *) (n :E: N) (ys :R: Vec -E- n -E- a).
     append -E- a -E- [Z] -E- n -R- (Nil -E- [a]) -R- ys  =  ys
   pat (a :E: *) (m :E: N) (n :E: N) (x :R: a) (xs :R: Vec -E- m -E- a) (ys :R: Vec -E- n -E- a).
     append -E- a -E- [S -R- m] -E- n -R- (Cons -E- [a] -E- m -R- x -R- xs) -R- ys  =  Cons -E- a -E- (plus -R- m -R- n) -R- x -R- (append -E- a -E- m -E- n -R- xs -R- ys)
 
-main :R: Vec -E- 1 -E- N
-  = append -E- N -E- Z -E- 1 -R- (Nil -E- N) -R- (Cons -E- N -E- Z -R- 42 -R- (Nil -E- N))
+main :R: Vec -E- 1 -E- N = append -E- N -E- Z -E- 1 -R- (Nil -E- N) -R- (Cons -E- N -E- Z -R- 42 -R- (Nil -E- N))
 
 ### Verification ###
 
@@ -371,17 +366,19 @@ postulate Nil
 
 postulate Cons
 
+plus 
   pat (n).
     plus Z n  =  n
   pat (m) (n).
     plus (S m) n  =  S (plus m n)
 
+append 
   pat (ys).
     append Nil ys  =  ys
   pat (x) (xs) (ys).
     append (Cons x xs) ys  =  Cons x (append xs ys)
 
-  = append Nil (Cons 42 Nil)
+main = append Nil (Cons 42 Nil)
 
 ### Normal forms ###
 
