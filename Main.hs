@@ -19,6 +19,7 @@ import Erasure.Solve
 import Erasure.Annotate
 import Erasure.Specialise
 import Erasure.Prune
+import Erasure.Verify
 
 import Lens.Family2
 
@@ -160,6 +161,11 @@ main = do
             putStrLn "### Final annotation ###\n"
             -- let annotated = annotate S.empty specialised  -- no usage set needed, everything is Fixed
             printP $ annotated
+
+            putStrLn "### Verification ###\n"
+            case verify annotated of
+                Left err -> error $ "!! verification failed: " ++ err
+                Right () -> return ()
 
             putStrLn "### Pruned ###\n"
             let pruned = prune annotated -- specialised

@@ -11,7 +11,7 @@ import Debug.Trace
 data Form = NF | WHNF deriving Show
 
 dbg :: Show a => a -> b -> b
---dbg = traceShow
+-- dbg = traceShow
 dbg _ x = x
 
 dbgS :: (Show a, Show b) => a -> b -> b
@@ -206,3 +206,4 @@ freshen ctx (Clause (d:ds) rhs lhs)
     Clause ds' rhs' lhs' = freshen ctx $ Clause ds rhs lhs
 
 -- TODO: remove `Forced` from matched contexts
+-- TODO: check pruned/annotated terms
