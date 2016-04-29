@@ -164,8 +164,8 @@ main = do
 
             putStrLn "### Verification ###\n"
             case verify annotated of
-                Left err -> error $ "!! verification failed: " ++ err
-                Right () -> return ()
+                Left err -> error $ "!! verification failed: " ++ show err
+                Right () -> putStrLn "Verification successful.\n"
 
             putStrLn "### Pruned ###\n"
             let pruned = prune annotated -- specialised
