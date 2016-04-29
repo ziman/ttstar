@@ -3,8 +3,10 @@ module Normalise (Form(..), red, whnf, nf) where
 import TT
 import Pretty
 
+import Data.List
 import Control.Monad
 import qualified Data.Map as M
+import qualified Data.Set as S
 
 import Debug.Trace
 
@@ -151,8 +153,9 @@ redClause' form ctx (Clause pvs lhs rhs) tm
     | otherwise = do
         patSubst <- matchTm form patVars lhs tm'
         let patValues = patSubst `M.union` ctx
-        if M.keysSet patVars /= M.keysSet patValues
-            then error "not all pattern vars bound in match"
+        let diff = M.keysSet patVars `S.difference` M.keysSet patValues
+        if not (S.null diff)
+            then error $ "pattern vars not bound in match: " ++ intercalate ", " (map show $ S.toList diff)
             else return ()
         return . red form ctx $ rewrap (substMany patSubst rhs) extra
   where
