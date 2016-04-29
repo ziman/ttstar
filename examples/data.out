@@ -2,7 +2,7 @@
 
 ### Desugared ###
 
-postulate N : *
+postulate N : Type
 
 postulate Z : N
 
@@ -18,7 +18,7 @@ main  -R-  N = plus 3 4
 
 ### Metaified ###
 
-postulate N :?1: *
+postulate N :?1: Type
 
 postulate Z :?2: N
 
@@ -34,9 +34,11 @@ main :!R: N = plus -?20- 3 -?19- 4
 
 ### Inferred definitions ###
 
-postulate N :?1: *
+postulate N :?1: Type
 
 postulate S :?3: (_ :?4: N) -> N
+
+postulate Type :!R: Type
 
 postulate Z :?2: N
 
@@ -95,7 +97,7 @@ plus :?5: (_ :?6: N) -> (_ :?7: N) -> N
 
 ### Annotated ###
 
-postulate N :E: *
+postulate N :E: Type
 
 postulate Z :E: N
 
@@ -111,7 +113,7 @@ main :R: N = plus -R- 3 -R- 4
 
 ### Specialised ###
 
-postulate N :!E: *
+postulate N :!E: Type
 
 postulate Z :!E: N
 
@@ -127,7 +129,7 @@ main :!R: N = plus -!R- 3 -!R- 4
 
 ### Final annotation ###
 
-postulate N :E: *
+postulate N :E: Type
 
 postulate Z :E: N
 

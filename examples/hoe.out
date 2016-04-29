@@ -2,7 +2,7 @@
 
 ### Desugared ###
 
-postulate T : *
+postulate T : Type
 
 postulate A : T
 
@@ -27,7 +27,7 @@ main  -R-  T
 
 ### Metaified ###
 
-postulate T :?1: *
+postulate T :?1: Type
 
 postulate A :?2: T
 
@@ -58,7 +58,9 @@ postulate B :?3: T
 
 postulate Op :?4: (x :!R: T) -> (y :!R: T) -> T
 
-postulate T :?1: *
+postulate T :?1: Type
+
+postulate Type :!R: Type
 
 const_A :?9: (_ :?10: T) -> T 
   pat (x :?11: T).
@@ -139,7 +141,7 @@ main :!R: T
 
 ### Annotated ###
 
-postulate T :E: *
+postulate T :E: Type
 
 postulate A :R: T
 
@@ -164,7 +166,7 @@ main :R: T
 
 ### Specialised ###
 
-postulate T :!E: *
+postulate T :!E: Type
 
 postulate A :!R: T
 
@@ -189,7 +191,7 @@ main :!R: T
 
 ### Final annotation ###
 
-postulate T :E: *
+postulate T :E: Type
 
 postulate A :R: T
 

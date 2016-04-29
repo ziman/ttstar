@@ -2,19 +2,19 @@
 
 ### Desugared ###
 
-postulate Bool : *
+postulate Bool : Type
 
 postulate True : Bool
 
 postulate False : Bool
 
-postulate Maybe : (_ : *) -> *
+postulate Maybe : (_ : Type) -> Type
 
-postulate Just : (a : *) -> (_ : a) -> *
+postulate Just : (a : Type) -> (_ : a) -> Type
 
-postulate Nothing : (a : *) -> *
+postulate Nothing : (a : Type) -> Type
 
-postulate Nat : *
+postulate Nat : Type
 
 postulate Z : Nat
 
@@ -55,19 +55,19 @@ main  -R-  Nat
 
 ### Metaified ###
 
-postulate Bool :?1: *
+postulate Bool :?1: Type
 
 postulate True :?2: Bool
 
 postulate False :?3: Bool
 
-postulate Maybe :?4: (_ :?5: *) -> *
+postulate Maybe :?4: (_ :?5: Type) -> Type
 
-postulate Just :?6: (a :?7: *) -> (_ :?8: a) -> *
+postulate Just :?6: (a :?7: Type) -> (_ :?8: a) -> Type
 
-postulate Nothing :?9: (a :?10: *) -> *
+postulate Nothing :?9: (a :?10: Type) -> Type
 
-postulate Nat :?11: *
+postulate Nat :?11: Type
 
 postulate Z :?12: Nat
 
@@ -108,23 +108,25 @@ main :!R: Nat
 
 ### Inferred definitions ###
 
-postulate Bool :?1: *
+postulate Bool :?1: Type
 
 postulate False :?3: Bool
 
-postulate Just :?6: (a :?7: *) -> (_ :?8: a) -> *
+postulate Just :?6: (a :?7: Type) -> (_ :?8: a) -> Type
 
-postulate Maybe :?4: (_ :?5: *) -> *
+postulate Maybe :?4: (_ :?5: Type) -> Type
 
-postulate Nat :?11: *
+postulate Nat :?11: Type
 
-postulate Nothing :?9: (a :?10: *) -> *
+postulate Nothing :?9: (a :?10: Type) -> Type
 
 postulate Plus :?14: (x :!R: Nat) -> (y :!R: Nat) -> Nat
 
 postulate S :?13: (n :!R: Nat) -> Nat
 
 postulate True :?2: Bool
+
+postulate Type :!R: Type
 
 postulate Z :?12: Nat
 
@@ -253,19 +255,19 @@ two :?30: Nat
 
 ### Annotated ###
 
-postulate Bool :E: *
+postulate Bool :E: Type
 
 postulate True :E: Bool
 
 postulate False :E: Bool
 
-postulate Maybe :E: (_ :E: *) -> *
+postulate Maybe :E: (_ :E: Type) -> Type
 
-postulate Just :E: (a :E: *) -> (_ :E: a) -> *
+postulate Just :E: (a :E: Type) -> (_ :E: a) -> Type
 
-postulate Nothing :E: (a :E: *) -> *
+postulate Nothing :E: (a :E: Type) -> Type
 
-postulate Nat :E: *
+postulate Nat :E: Type
 
 postulate Z :R: Nat
 
@@ -306,19 +308,19 @@ main :R: Nat
 
 ### Specialised ###
 
-postulate Bool :!E: *
+postulate Bool :!E: Type
 
 postulate True :!E: Bool
 
 postulate False :!E: Bool
 
-postulate Maybe :!E: (_ :!E: *) -> *
+postulate Maybe :!E: (_ :!E: Type) -> Type
 
-postulate Just :!E: (a :!E: *) -> (_ :!E: a) -> *
+postulate Just :!E: (a :!E: Type) -> (_ :!E: a) -> Type
 
-postulate Nothing :!E: (a :!E: *) -> *
+postulate Nothing :!E: (a :!E: Type) -> Type
 
-postulate Nat :!E: *
+postulate Nat :!E: Type
 
 postulate Z :!R: Nat
 
@@ -359,19 +361,19 @@ main :!R: Nat
 
 ### Final annotation ###
 
-postulate Bool :E: *
+postulate Bool :E: Type
 
 postulate True :E: Bool
 
 postulate False :E: Bool
 
-postulate Maybe :E: (_ :E: *) -> *
+postulate Maybe :E: (_ :E: Type) -> Type
 
-postulate Just :E: (a :E: *) -> (_ :E: a) -> *
+postulate Just :E: (a :E: Type) -> (_ :E: a) -> Type
 
-postulate Nothing :E: (a :E: *) -> *
+postulate Nothing :E: (a :E: Type) -> Type
 
-postulate Nat :E: *
+postulate Nat :E: Type
 
 postulate Z :R: Nat
 

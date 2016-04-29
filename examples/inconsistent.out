@@ -2,20 +2,22 @@
 
 ### Desugared ###
 
-main  -R-  (x  -E-  *) -> * 
-  pat (x : *).
+main  -R-  (x  -E-  Type) -> Type 
+  pat (x : Type).
     main x = x
 
 ### Metaified ###
 
-main :!R: (x :!E: *) -> * 
-  pat (x :?1: *).
+main :!R: (x :!E: Type) -> Type 
+  pat (x :?1: Type).
     main -?2- x = x
 
 ### Inferred definitions ###
 
-main :!R: (x :!E: *) -> * 
-  pat (x :?1: *).
+postulate Type :!R: Type
+
+main :!R: (x :!E: Type) -> Type 
+  pat (x :?1: Type).
     main -?2- x = x
   [] -> [?1,?2,!E,!R]
 

@@ -2,7 +2,7 @@
 
 ### Desugared ###
 
-postulate T : *
+postulate T : Type
 
 postulate A : T
 
@@ -33,7 +33,7 @@ main  -R-  T
 
 ### Metaified ###
 
-postulate T :?1: *
+postulate T :?1: Type
 
 postulate A :?2: T
 
@@ -70,7 +70,9 @@ postulate B :?3: T
 
 postulate Op :?4: (x :!R: T) -> (y :!R: T) -> T
 
-postulate T :?1: *
+postulate T :?1: Type
+
+postulate Type :!R: Type
 
 apply :?13: (_ :?14: (_ :?15: T) -> T) -> (_ :?16: T) -> T 
   pat (f :?17: (_ :?18: T) -> T) (x :?19: T).
@@ -167,7 +169,7 @@ test2 :?29: T
 
 ### Annotated ###
 
-postulate T :E: *
+postulate T :E: Type
 
 postulate A :R: T
 
@@ -198,7 +200,7 @@ main :R: T
 
 ### Specialised ###
 
-postulate T :!E: *
+postulate T :!E: Type
 
 postulate A :!R: T
 
@@ -243,7 +245,9 @@ postulate B :!R: T
 
 postulate Op :!R: (x :!R: T) -> (y :!R: T) -> T
 
-postulate T :!E: *
+postulate T :!E: Type
+
+postulate Type :!R: Type
 
 apply :!E: (_ :!R: (_ :!E: T) -> T) -> (_ :!E: T) -> T 
   pat (f :!R: (_ :!E: T) -> T) (x :!E: T).
@@ -302,7 +306,7 @@ apply_RRR :?8: (_ :!R: (_ :!R: T) -> T) -> (_ :!R: T) -> T
 
 ### Annotated ###
 
-postulate T :E: *
+postulate T :E: Type
 
 postulate A :R: T
 
@@ -341,7 +345,7 @@ main :R: T
 
 ### Specialised ###
 
-postulate T :!E: *
+postulate T :!E: Type
 
 postulate A :!R: T
 
@@ -380,7 +384,7 @@ main :!R: T
 
 ### Final annotation ###
 
-postulate T :E: *
+postulate T :E: Type
 
 postulate A :R: T
 

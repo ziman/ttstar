@@ -2,21 +2,21 @@
 
 ### Desugared ###
 
-postulate Mool : *
+postulate Mool : Type
 
 postulate Q : Mool
 
 postulate W : Mool
 
-postulate Bool : *
+postulate Bool : Type
 
 postulate T : Bool
 
 postulate F : Bool
 
-postulate Id : (a : *) -> (x : a) -> (y : a) -> *
+postulate Id : (a : Type) -> (x : a) -> (y : a) -> Type
 
-postulate Refl : (a : *) -> (x : a) -> Id x x
+postulate Refl : (a : Type) -> (x : a) -> Id x x
 
 not : (_ : Bool) -> Bool 
   not T = F
@@ -26,7 +26,7 @@ notnot : (x : Bool) -> Id x (not (not x))
   notnot T = Refl Bool T
   notnot F = Refl Bool F
 
-retTy : (_ : Bool) -> * 
+retTy : (_ : Bool) -> Type 
   retTy T = Bool
   retTy F = Mool
 
@@ -44,21 +44,21 @@ main  -R-  Mool = invert F Q
 
 ### Metaified ###
 
-postulate Mool :?1: *
+postulate Mool :?1: Type
 
 postulate Q :?2: Mool
 
 postulate W :?3: Mool
 
-postulate Bool :?4: *
+postulate Bool :?4: Type
 
 postulate T :?5: Bool
 
 postulate F :?6: Bool
 
-postulate Id :?7: (a :?8: *) -> (x :?9: a) -> (y :?10: a) -> *
+postulate Id :?7: (a :?8: Type) -> (x :?9: a) -> (y :?10: a) -> Type
 
-postulate Refl :?11: (a :?12: *) -> (x :?13: a) -> Id -?15- x -?14- x
+postulate Refl :?11: (a :?12: Type) -> (x :?13: a) -> Id -?15- x -?14- x
 
 not :?16: (_ :?17: Bool) -> Bool 
   not -?18- T = F
@@ -68,7 +68,7 @@ notnot :?20: (x :?21: Bool) -> Id -?23- x -?22- (not -?24- (not -?25- x))
   notnot -?26- T = Refl -?28- Bool -?27- T
   notnot -?29- F = Refl -?31- Bool -?30- F
 
-retTy :?32: (_ :?33: Bool) -> * 
+retTy :?32: (_ :?33: Bool) -> Type 
   retTy -?34- T = Bool
   retTy -?35- F = Mool
 
@@ -86,19 +86,21 @@ main :!R: Mool = invert -?54- F -?53- Q
 
 ### Inferred definitions ###
 
-postulate Bool :?4: *
+postulate Bool :?4: Type
 
 postulate F :?6: Bool
 
-postulate Id :?7: (a :?8: *) -> (x :?9: a) -> (y :?10: a) -> *
+postulate Id :?7: (a :?8: Type) -> (x :?9: a) -> (y :?10: a) -> Type
 
-postulate Mool :?1: *
+postulate Mool :?1: Type
 
 postulate Q :?2: Mool
 
-postulate Refl :?11: (a :?12: *) -> (x :?13: a) -> Id -?15- x -?14- x
+postulate Refl :?11: (a :?12: Type) -> (x :?13: a) -> Id -?15- x -?14- x
 
 postulate T :?5: Bool
+
+postulate Type :!R: Type
 
 postulate W :?3: Mool
 
@@ -160,7 +162,7 @@ notnot :?20: (x :?21: Bool) -> Id -?23- x -?22- (not -?24- (not -?25- x))
   [?30] -> [?13]
   [?31] -> [?12]
 
-retTy :?32: (_ :?33: Bool) -> * 
+retTy :?32: (_ :?33: Bool) -> Type 
   retTy -?34- T = Bool
   retTy -?35- F = Mool
   [] -> [?1,?4,!R]
@@ -213,21 +215,21 @@ retTy :?32: (_ :?33: Bool) -> *
 
 ### Annotated ###
 
-postulate Mool :R: *
+postulate Mool :R: Type
 
 postulate Q :R: Mool
 
 postulate W :R: Mool
 
-postulate Bool :R: *
+postulate Bool :R: Type
 
 postulate T :R: Bool
 
 postulate F :R: Bool
 
-postulate Id :E: (a :E: *) -> (x :E: a) -> (y :E: a) -> *
+postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
 
-postulate Refl :R: (a :E: *) -> (x :E: a) -> Id -E- x -E- x
+postulate Refl :R: (a :E: Type) -> (x :E: a) -> Id -E- x -E- x
 
 not :R: (_ :R: Bool) -> Bool 
   not -R- T = F
@@ -237,7 +239,7 @@ notnot :E: (x :R: Bool) -> Id -E- x -E- (not -E- (not -E- x))
   notnot -R- T = Refl -E- Bool -E- T
   notnot -R- F = Refl -E- Bool -E- F
 
-retTy :E: (_ :R: Bool) -> * 
+retTy :E: (_ :R: Bool) -> Type 
   retTy -R- T = Bool
   retTy -R- F = Mool
 
@@ -255,21 +257,21 @@ main :R: Mool = invert -R- F -R- Q
 
 ### Specialised ###
 
-postulate Mool :!R: *
+postulate Mool :!R: Type
 
 postulate Q :!R: Mool
 
 postulate W :!R: Mool
 
-postulate Bool :!R: *
+postulate Bool :!R: Type
 
 postulate T :!R: Bool
 
 postulate F :!R: Bool
 
-postulate Id :!E: (a :!E: *) -> (x :!E: a) -> (y :!E: a) -> *
+postulate Id :!E: (a :!E: Type) -> (x :!E: a) -> (y :!E: a) -> Type
 
-postulate Refl :!R: (a :!E: *) -> (x :!E: a) -> Id -!E- x -!E- x
+postulate Refl :!R: (a :!E: Type) -> (x :!E: a) -> Id -!E- x -!E- x
 
 not :!R: (_ :!R: Bool) -> Bool 
   not -!R- T = F
@@ -279,7 +281,7 @@ notnot :!E: (x :!R: Bool) -> Id -!E- x -!E- (not -!E- (not -!E- x))
   notnot -!R- T = Refl -!E- Bool -!E- T
   notnot -!R- F = Refl -!E- Bool -!E- F
 
-retTy :!E: (_ :!R: Bool) -> * 
+retTy :!E: (_ :!R: Bool) -> Type 
   retTy -!R- T = Bool
   retTy -!R- F = Mool
 
@@ -297,21 +299,21 @@ main :!R: Mool = invert -!R- F -!R- Q
 
 ### Final annotation ###
 
-postulate Mool :R: *
+postulate Mool :R: Type
 
 postulate Q :R: Mool
 
 postulate W :R: Mool
 
-postulate Bool :R: *
+postulate Bool :R: Type
 
 postulate T :R: Bool
 
 postulate F :R: Bool
 
-postulate Id :E: (a :E: *) -> (x :E: a) -> (y :E: a) -> *
+postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
 
-postulate Refl :R: (a :E: *) -> (x :E: a) -> Id -E- x -E- x
+postulate Refl :R: (a :E: Type) -> (x :E: a) -> Id -E- x -E- x
 
 not :R: (_ :R: Bool) -> Bool 
   not -R- T = F
@@ -321,7 +323,7 @@ notnot :E: (x :R: Bool) -> Id -E- x -E- (not -E- (not -E- x))
   notnot -R- T = Refl -E- Bool -E- T
   notnot -R- F = Refl -E- Bool -E- F
 
-retTy :E: (_ :R: Bool) -> * 
+retTy :E: (_ :R: Bool) -> Type 
   retTy -R- T = Bool
   retTy -R- F = Mool
 

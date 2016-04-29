@@ -298,6 +298,7 @@ conv' p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do
     ys <- conv x x'
     return $ xs /\ ys /\ r <--> r'
 
-conv' (Forced l) (Forced r) = conv l r
+conv' (Forced l) r = conv l r
+conv' l (Forced r) = conv l r
 
 conv' p q = tcfail $ CantConvert p q

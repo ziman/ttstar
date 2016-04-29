@@ -2,7 +2,7 @@
 
 ### Desugared ###
 
-postulate Nat : *
+postulate Nat : Type
 
 postulate Z : Nat
 
@@ -29,7 +29,7 @@ main  -R-  Nat =
 
 ### Metaified ###
 
-postulate Nat :?1: *
+postulate Nat :?1: Type
 
 postulate Z :?2: Nat
 
@@ -56,9 +56,11 @@ main :!R: Nat =
 
 ### Inferred definitions ###
 
-postulate Nat :?1: *
+postulate Nat :?1: Type
 
 postulate S :?3: (n :!R: Nat) -> Nat
+
+postulate Type :!R: Type
 
 postulate Z :?2: Nat
 
@@ -138,7 +140,7 @@ plus :?4: (_ :?5: Nat) -> (_ :?6: Nat) -> Nat
 
 ### Annotated ###
 
-postulate Nat :E: *
+postulate Nat :E: Type
 
 postulate Z :R: Nat
 
@@ -165,7 +167,7 @@ main :R: Nat =
 
 ### Specialised ###
 
-postulate Nat :!E: *
+postulate Nat :!E: Type
 
 postulate Z :!R: Nat
 
@@ -192,7 +194,7 @@ main :!R: Nat =
 
 ### Final annotation ###
 
-postulate Nat :E: *
+postulate Nat :E: Type
 
 postulate Z :R: Nat
 

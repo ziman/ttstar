@@ -2,7 +2,7 @@
 
 ### Desugared ###
 
-postulate T : *
+postulate T : Type
 
 postulate A : T
 
@@ -16,7 +16,7 @@ main  -R-  T = apply const_A B
 
 ### Metaified ###
 
-postulate T :?1: *
+postulate T :?1: Type
 
 postulate A :?2: T
 
@@ -34,7 +34,9 @@ postulate A :?2: T
 
 postulate B :?3: T
 
-postulate T :?1: *
+postulate T :?1: Type
+
+postulate Type :!R: Type
 
 apply :?7: (f :?8: (x :?9: T) -> T) -> (x :?10: T) -> T = (\f :?11: (_ :?12: T) -> T. (\x :?13: T. f -?14- x))
   [] -> [?8,?11,!R]
@@ -79,7 +81,7 @@ main :!R: T = apply -?16- const_A -?15- B
 
 ### Annotated ###
 
-postulate T :E: *
+postulate T :E: Type
 
 postulate A :R: T
 
@@ -93,7 +95,7 @@ main :R: T = apply -R- const_A -E- B
 
 ### Specialised ###
 
-postulate T :!E: *
+postulate T :!E: Type
 
 postulate A :!R: T
 
@@ -107,7 +109,7 @@ main :!R: T = apply -!R- const_A -!E- B
 
 ### Final annotation ###
 
-postulate T :E: *
+postulate T :E: Type
 
 postulate A :R: T
 

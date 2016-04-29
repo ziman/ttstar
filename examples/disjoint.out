@@ -2,15 +2,17 @@
 
 ### Desugared ###
 
-main  -R-  * = *
+main  -R-  Type = Type
 
 ### Metaified ###
 
-main :!R: * = *
+main :!R: Type = Type
 
 ### Inferred definitions ###
 
-main :!R: * = *
+postulate Type :!R: Type
+
+main :!R: Type = Type
 
 
 ### Constraints ###
@@ -22,15 +24,15 @@ main :!R: * = *
 
 ### Annotated ###
 
-main :R: * = *
+main :R: Type = Type
 
 ### Specialised ###
 
-main :!R: * = *
+main :!R: Type = Type
 
 ### Final annotation ###
 
-main :R: * = *
+main :R: Type = Type
 
 ### Verification ###
 
@@ -38,11 +40,11 @@ Verification successful.
 
 ### Pruned ###
 
-main = *
+main = Type
 
 ### Normal forms ###
 
 unerased:
-  *
+  Type
 erased:
-  *
+  Type
