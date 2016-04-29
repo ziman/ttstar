@@ -4,11 +4,12 @@ module TT where
 import Control.Applicative
 import qualified Data.Map as M
 
-data Name = UN String | IN String [Relevance] deriving (Eq, Ord)
+data Name = UN String | IN String [Relevance] | Blank deriving (Eq, Ord)
 data Relevance = E | R deriving (Eq, Ord, Show)
 data Binder = Lam | Pi | Let deriving (Eq, Ord, Show)
 
 instance Show Name where
+    show Blank  = "_"
     show (UN n) = n
     show (IN n rs) = n ++ "_" ++ concatMap show rs
 
@@ -24,7 +25,6 @@ data TT r
     | Bind Binder (Def r VoidConstrs) (TT r)
     | App r (TT r) (TT r)
     | Type
-    | Erased
     | Forced (TT r)  -- forced pattern
     deriving (Eq, Ord)
 
@@ -81,7 +81,6 @@ subst n tm (Bind b d@(Def n' r ty body Nothing) tm')
             else subst n tm tm')
 subst n tm (App r f x) = App r (subst n tm f) (subst n tm x)
 subst n tm (Forced t) = Forced (subst n tm t)
-subst _ _  t@Erased = t
 subst _ _  t@Type   = t
 
 substCtx :: Name -> TT r -> Ctx r cs -> Ctx r cs
@@ -114,7 +113,6 @@ rmForced (I n ty) = I n (rmForced ty)
 rmForced (Bind b d tm) = Bind b (rmForcedDef d) (rmForced tm)
 rmForced (App r f x) = App r (rmForced f) (rmForced x)
 rmForced (Forced t) = t
-rmForced Erased = Erased
 rmForced Type = Type
 
 rmForcedDef :: Def r cs -> Def r cs

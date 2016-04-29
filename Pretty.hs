@@ -48,8 +48,8 @@ instance PrettyR r => Pretty (Def r cs) where
             _ -> empty
         <+> pretty n
         <+> case ty of
-                Erased -> empty
-                _      -> prettyCol r <+> pretty ty
+                V Blank -> empty
+                _       -> prettyCol r <+> pretty ty
         <+> case body of
                 Abstract _  -> empty
                 Term tm     -> text "=" <+> pretty tm
@@ -81,7 +81,6 @@ instance PrettyR r => Pretty (TT r) where
             show' r (App r' f' x') x = show' r' f' x' <> prettyApp r <> pretty' True x
             show' r f x = pretty f <> prettyApp r <> pretty' True x
         pretty' pp (Forced tm) = text "[" <> pretty tm <> text "]"
-        pretty' pp Erased = text "____"
         pretty' pp Type = text "*"
 
 instance PrettyR r => Show (TT r) where

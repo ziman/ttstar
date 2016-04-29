@@ -117,7 +117,7 @@ specNTm (Bind b d tm) = Bind b <$> specNDef d <*> specNTm tm
 specNTm (App r f x) = App r <$> specNTm f <*> specNTm x
 specNTm (Forced tm) = Forced <$> specNTm tm
 specNTm  Type = pure Type
-specNTm  Erased = pure Erased
 
 specName :: Name -> ErPattern -> Name
 specName (UN n) epat = IN n epat
+specName n _ = error $ "trying to specialise a strange name: " ++ show n

@@ -64,7 +64,7 @@ atomic = parens expr
 arrow :: Parser (TT MRel)
 arrow = (<?> "arrow type") $ do
     ty <- try (atomic <* kwd "->")
-    Bind Pi (Def (UN "_") Nothing ty (Abstract Var) Nothing) <$> expr
+    Bind Pi (Def Blank Nothing ty (Abstract Var) Nothing) <$> expr
 
 lambda :: Parser (TT MRel)
 lambda = (<?> "lambda") $ do

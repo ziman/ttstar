@@ -189,6 +189,9 @@ withDefs [] = id
 
 checkTm :: Term -> TC (Type, Constrs)
 
+-- this is sketchy
+checkTm (V Blank) = return (V Blank, noConstrs)
+
 checkTm t@(V n) = bt ("VAR", n) $ do
     Def _n r ty mtm mcs <- lookup n
     return (ty, Fixed R --> r)
@@ -246,7 +249,6 @@ checkTm (Forced tm) = do
     (ty, cs) <- checkTm tm
     return (ty, noConstrs)
 
-checkTm Erased = return (Erased, noConstrs)
 checkTm Type   = return (Type,   noConstrs)
 
 newtype TC' a = LiftTC' { runTC' :: TC a } deriving (Functor, Applicative, Monad)
@@ -299,6 +301,5 @@ conv' p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do
 conv' (Forced l) r = conv l r
 conv' l (Forced r) = conv l r
 conv' Type   Type   = return noConstrs
-conv' Erased Erased = return noConstrs
 
 conv' p q = tcfail $ CantConvert p q

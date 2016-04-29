@@ -10,7 +10,7 @@ prune (Prog defs) = Prog $ concatMap pruneDef defs
 
 pruneDef :: Def Relevance VoidConstrs -> [Def () VoidConstrs]
 pruneDef (Def n E ty body mcs) = []
-pruneDef (Def n R ty body mcs) = [Def n () Erased (pruneBody body) Nothing]
+pruneDef (Def n R ty body mcs) = [Def n () (V Blank) (pruneBody body) Nothing]
 
 pruneBody :: Body Relevance -> Body ()
 pruneBody (Abstract a)  = Abstract a
@@ -27,7 +27,7 @@ pruneClause (Clause pvs lhs rhs)
 
 -- replace erased patvars with ____
 pruneLHS :: [Def Relevance VoidConstrs] -> TT () -> TT ()
-pruneLHS pvs lhs = foldr (\n -> subst n Erased) lhs elidedPVars
+pruneLHS pvs lhs = foldr (\n -> subst n (V Blank)) lhs elidedPVars
   where
     elidedPVars = S.fromList [n | Def n E _ _ _ <- pvs]
 
@@ -37,9 +37,8 @@ pruneTm (I n ty) = error $ "non-specialised instance found in pruneTm: " ++ show
 pruneTm (Bind b (Def n E ty body cs) tm)
     = pruneTm tm
 pruneTm (Bind b (Def n R ty body cs) tm)
-    = Bind b (Def n () Erased (pruneBody body) Nothing) (pruneTm tm)
+    = Bind b (Def n () (V Blank) (pruneBody body) Nothing) (pruneTm tm)
 pruneTm (App E f x) = pruneTm f
 pruneTm (App R f x) = App () (pruneTm f) (pruneTm x)
 pruneTm (Forced t) = Forced $ pruneTm t
-pruneTm Erased = Erased
 pruneTm Type = Type

@@ -43,6 +43,8 @@ redClause NF ctx (Clause pvs lhs rhs)
 
 red :: IsRelevance r => Form -> Ctx r cs -> TT r -> TT r
 
+red form ctx t@(V Blank) = t
+
 red form ctx t@(V n)
     | Just (Def _n r ty body cs) <- M.lookup n ctx
     = case body of
@@ -98,7 +100,6 @@ red NF ctx t@(App r f x)
     redX = red NF ctx x
 
 red form ctx (Forced tm) = Forced $ red form ctx tm
-red form ctx t@Erased = t
 red form ctx t@Type   = t
 
 appDepth :: TT r -> Int
@@ -188,6 +189,9 @@ matchTm :: IsRelevance r => Form -> Ctx r cs -> TT r -> TT r -> Tri (Ctx r cs)
 matchTm form ctx pat tm
     | ("MATCH-TM", pat, tm, M.keys ctx) `dbg` False
     = undefined
+
+-- the blank pattern matches everything, generates nothing
+matchTm form ctx (V Blank) tm = Yep M.empty
 
 -- patvars match anything
 matchTm form ctx (V n) tm
