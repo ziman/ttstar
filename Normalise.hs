@@ -165,8 +165,19 @@ redClause' form ctx (Clause pvs lhs rhs) tm
     patVars = foldr (M.insert <$> defName <*> csDef) ctx pvs
 
 matchTms :: IsRelevance r => Form -> Ctx r cs -> [TT r] -> [TT r] -> Tri (Ctx r cs)
-matchTms form ctx ls rs
-    = M.unions <$> zipWithM (matchTm form ctx) ls rs
+matchTms form ctx ls rs = do
+    ss <- zipWithM (matchTm form ctx) ls rs
+    let joined = M.unions ss
+    if M.size joined == sum (map M.size ss)
+        then return joined  -- all OK
+        else do
+            let badvars = S.unions [S.intersection (M.keysSet p) (M.keysSet q) | (p, qs) <- lup ss, q <- qs]
+            error $ "multiple occurrence of patvars: " ++ intercalate ", " (map show $ S.toList badvars)
+
+lup :: [a] -> [(a, [a])]
+lup [] = []
+lup [x] = []
+lup (x : ys) = (x, ys) : lup ys
 
 matchTm :: IsRelevance r => Form -> Ctx r cs -> TT r -> TT r -> Tri (Ctx r cs)
 matchTm form ctx pat tm
