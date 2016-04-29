@@ -1,0 +1,26 @@
+-- vim: ft=idris
+
+data Bool : Type.
+  T : Bool,
+  F : Bool.
+
+-- We annotate this type manually to emulate usage caused by I/O actions.
+data List : Type.
+  Nil : List,
+  Cons : (x :R: Bool) -> (xs :R: List) -> List.
+
+one (x : Bool) : List
+  = Cons x Nil.
+
+app : List -> List -> List.
+  pat (ys : List).
+    app Nil ys = ys,
+  pat (x : Bool) (xs : List) (ys : List).
+    app (Cons x xs) ys = Cons x (app xs ys).
+
+data Rev : List -> Type.
+  RNil : Rev Nil,
+  RSnoc : (x : Bool) -> (xs : List) -> (rxs : Rev xs)
+    -> Rev (app xs (one x)).
+
+postulate rev : (xs : List) -> Rev xs.
