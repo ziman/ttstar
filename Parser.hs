@@ -92,7 +92,7 @@ app = foldl (App Nothing) <$> atomic <*> many atomic <?> "application"
 let_ :: Parser (TT MRel)
 let_ = (<?> "let expression") $ do
     kwd "let"
-    d <- parseDef
+    d <- simpleDef
     kwd "in"
     Bind Let d <$> expr
 
@@ -169,11 +169,23 @@ mldef = (<?> "ml-style definition") $ do
     chain bnd [] tm = tm
     chain bnd (d : args) tm = Bind bnd d $ chain bnd args tm
 
-parseDef :: Parser (Def MRel VoidConstrs)
-parseDef = postulate <|> fundef <|> mldef <?> "definition"
+dataDef :: Parser [Def MRel VoidConstrs]
+dataDef = (<?> "data definition") $ do
+    kwd "data"
+    tfd <- parens typing
+    kwd "where"
+    ctors <- typing `sepBy` kwd ","
+    kwd "."
+    return (tfd : ctors)
+
+simpleDef :: Parser (Def MRel VoidConstrs)
+simpleDef = postulate <|> fundef <|> mldef <?> "simple definition"
+
+definition :: Parser [Def MRel VoidConstrs]
+definition = dataDef <|> (pure <$> simpleDef) <?> "definition"
 
 parseProg :: Parser (Program MRel VoidConstrs)
-parseProg = Prog <$> many parseDef <?> "program"
+parseProg = Prog . concat <$> many definition <?> "program"
 
 ttProgram :: Parser (Program MRel VoidConstrs)
 ttProgram = sp *> parseProg <* eof
