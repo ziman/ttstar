@@ -150,8 +150,6 @@ Verification successful.
 S
 
 plus 
-  pat n.
-    plus Z n = n
   plus S _ = S
 
 main = plus S S
@@ -161,3 +159,4 @@ main = plus S S
 unerased:
   4
 erased:
+  S
