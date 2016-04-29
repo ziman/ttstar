@@ -79,7 +79,8 @@ subst n tm (Bind b d@(Def n' r ty body Nothing) tm')
     = Bind b d' tm'
 
     | n' `occursIn` tm
-    = Bind b d'{ defName = freshName } (subst n tm . subst n' (V freshName) $ tm')
+    = let d'' = d'{ defName = freshName, defBody = substBody n' (V freshName) (defBody d') }
+        in Bind b d'' (subst n tm . subst n' (V freshName) $ tm')
 
     | otherwise
     = Bind b d' (subst n tm tm')
