@@ -159,6 +159,11 @@ main = do
 
                     -- TODO: check for useless pattern columns
                     -- no vars bound, same ctor (could be nested inside other ctors)
+                    --
+                    -- separate pattern fragment?
+                    -- + separate typechecker for patterns?
+                    --
+                    -- + perhaps separate verification checker?
 
                     if ndefs specialised == ndefs annotated
                         then return annotated  -- fixed point reached
