@@ -1107,7 +1107,7 @@ rev = (\xs. rev' Nil RNil xs)
 reverse' 
   reverse' Nil RNil = Nil
   pat x xs rxs.
-    reverse' [app xs one] (RSnoc xs x rxs) = Cons x (reverse' xs rxs)
+    reverse' _ (RSnoc xs x rxs) = Cons x (reverse' xs rxs)
 
 reverse = (\xs. reverse' xs (rev xs))
 
