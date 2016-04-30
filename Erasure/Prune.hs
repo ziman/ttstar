@@ -51,4 +51,4 @@ pruneTm eds (Bind b d tm)
         [d'] -> Bind b d' (pruneTm eds tm)
 pruneTm eds (App E f x) = pruneTm eds f
 pruneTm eds (App R f x) = App () (pruneTm eds f) (pruneTm eds x)
-pruneTm eds (Forced t) = Forced $ pruneTm eds t
+pruneTm eds (Forced t) = V Blank
