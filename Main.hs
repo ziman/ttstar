@@ -157,6 +157,9 @@ main = do
                     let specialised = specialise metaified annotated
                     printP $ specialised
 
+                    -- TODO: check for useless pattern columns
+                    -- no vars bound, same ctor (could be nested inside other ctors)
+
                     if ndefs specialised == ndefs annotated
                         then return annotated  -- fixed point reached
                         else iterSpecialisation specialised
