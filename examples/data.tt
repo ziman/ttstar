@@ -4,11 +4,13 @@ data N : Type.
   Z : N,
   S : N -> N.
 
-plus : N -> N -> N.
-  pat (n : N).
-    plus Z n = n,
-  pat (m : N) (n : N).
-    plus (S m) n = S (plus m n).
+plus (m : N) (n : N) : N
+  = case f m.
+      f : N -> N.
+      f Z = n,
+      pat (m : N).
+        f (S m) = S (plus m n).
+  .
 
 main :R: N
   = let

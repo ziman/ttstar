@@ -112,8 +112,18 @@ forced = (<?> "forced pattern") $ do
     kwd "]"
     return $ Forced tm
 
+case_ :: Parser (TT MRel)
+case_ = (<?> "case expression") $ do
+    kwd "case"
+    tm <- expr
+    kwd "."
+    d <- simpleDef
+    return $ Bind Let d tm
+
 expr :: Parser (TT MRel)
-expr =  bind
+expr = 
+        case_
+    <|> bind
     <|> app
     <?> "expression"  -- app includes nullary-applied atoms
 
