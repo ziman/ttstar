@@ -151,10 +151,22 @@ patvars = (<?> "pattern variables") $ do
     kwd "."
     return pvs
 
-clause :: Parser (Clause MRel)
-clause = (<?> "clause") $ do
+patAtom :: Parser (Pat MRel)
+patAtom =
+    (PV <$> name <?> "pattern variable")
+    (kwd "[" *> (PForced <$> expr) *< kwd "]" <?> "forced pattern")
+    <|> parens patApp
+
+patterns :: Name -> Parser (Pat MRel)
+patterns n =
+    (PApp n <$> many patAtom)
+    <?> "patterns"
+
+clause :: Name -> Parser (Clause MRel)
+clause n = (<?> "clause") $ do
     pvs <- patvars <|> return []
-    lhs <- expr
+    kwd "|"
+    lhs <- patterns n
     kwd "="
     rhs <- expr
     return $ Clause pvs lhs rhs
@@ -163,7 +175,7 @@ fundef :: Parser (Def MRel VoidConstrs)
 fundef = (<?> "function definition") $ do
     -- we try typing because it may be a mldef
     Def n r ty (Abstract Var) Nothing <- try (typing Var <* kwd ".")
-    cls <- clause `sepBy` kwd ","
+    cls <- clause n `sepBy` kwd ","
     kwd "."
     return $ Def n r ty (Clauses cls) Nothing
 

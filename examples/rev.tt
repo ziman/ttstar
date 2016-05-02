@@ -6,8 +6,8 @@ data Id : (a : Type) -> (x : a) -> (y : a) -> Type.
 id (a : Type) : a -> a = \x : a. x.
 
 subst : (a : Type) -> (P : a -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -> (P x) -> (P y).
-  pat (a : Type) (P : a -> Type) (x : a).
-    subst a P x [x] (Refl [a] [x]) = \y : P x. y.
+  pat (a : Type) (P : a -> Type) (x : a)
+  | a P x [x] (Refl [a] [x]) = \y : P x. y.
 
 cong : (a : Type) -> (b : Type) -> (f : a -> b) -> (x : a) -> (y : a) -> (eq : Id a x y) -> Id b (f x) (f y).
   pat (a : Type) (b : Type) (f : a -> b) (x : a).

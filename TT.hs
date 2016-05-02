@@ -24,15 +24,20 @@ data TT r
     | I Name (TT r)  -- instance of a global definition with a specific erasure type
     | Bind Binder (Def r VoidConstrs) (TT r)
     | App r (TT r) (TT r)
-    | Forced (TT r)  -- forced pattern
     deriving (Eq, Ord)
+
+data Pat r
+    = PV Name
+    | PApp (Pat r) (Pat r)
+    | PForced (TT r)
+    deriving (Eq, Ord, Show)
 
 -- The difference between Var and Postulate is that for Var, the value is unknown,
 -- for postulate; the term itself is the value. A variable stands for something else,
 -- a postulate stands for itself.
 data Abstractness = Var | Postulate deriving (Eq, Ord, Show)
 data Body r = Abstract Abstractness | Term (TT r) | Clauses [Clause r] deriving (Eq, Ord)
-data Clause r = Clause { pvars :: [Def r VoidConstrs], lhs :: TT r,  rhs :: TT r } deriving (Eq, Ord)
+data Clause r = Clause { pvars :: [Def r VoidConstrs], lhs :: [Pat r],  rhs :: TT r } deriving (Eq, Ord)
 data Def r cs = Def
     { defName :: Name
     , defR    :: r
