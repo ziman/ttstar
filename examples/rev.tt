@@ -3,15 +3,16 @@
 data Id : (a : Type) -> (x : a) -> (y : a) -> Type.
   Refl : (a : Type) -> (x : a) -> Id a x x.
 
-id (a : Type) : a -> a = \x : a. x.
+id (a : Type) : a -> a
+  = \x : a. x.
 
 subst : (a : Type) -> (P : a -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -> (P x) -> (P y).
-  pat (a : Type) (P : a -> Type) (x : a)
+  pat (a : Type) (P : a -> Type) (x : a).
   | a P x [x] (Refl [a] [x]) = \y : P x. y.
 
 cong : (a : Type) -> (b : Type) -> (f : a -> b) -> (x : a) -> (y : a) -> (eq : Id a x y) -> Id b (f x) (f y).
   pat (a : Type) (b : Type) (f : a -> b) (x : a).
-    cong a b f x [x] (Refl [a] [x]) = Refl b (f x).
+  | a b f x [x] (Refl [a] [x]) = Refl b (f x).
 
 data Bool : Type.
   T : Bool,
@@ -27,22 +28,26 @@ one (x : Bool) : List
 
 app : List -> List -> List.
   pat (ys : List).
-    app Nil ys = ys,
+  | Nil ys = ys,
   pat (x : Bool) (xs : List) (ys : List).
-    app (Cons x xs) ys = Cons x (app xs ys).
+  | (Cons x xs) ys = Cons x (app xs ys).
 
 appRightNeutral : (ys : List) -> Id List ys (app ys Nil).
-  appRightNeutral Nil = Refl List Nil,
+  pat.
+  | Nil
+      = Refl List Nil,
   pat (x : Bool) (xs : List).
-    appRightNeutral (Cons x xs)
+  | (Cons x xs)
       = cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs).
 
 appAssoc : (xs : List) -> (ys : List) -> (zs : List)
   -> Id List (app (app xs ys) zs) (app xs (app ys zs)).
+
   pat (ys : List) (zs : List).
-    appAssoc Nil ys zs = Refl List (app ys zs),
+  | Nil ys zs = Refl List (app ys zs),
+
   pat (x : Bool) (xs : List) (ys : List) (zs : List).
-    appAssoc (Cons x xs) ys zs
+  | (Cons x xs) ys zs
       = cong List List (Cons x) (app (app xs ys) zs) (app xs (app ys zs)) (appAssoc xs ys zs).
 
 data Rev : List -> Type.
@@ -52,10 +57,11 @@ data Rev : List -> Type.
 
 rev' : (xs : List) -> (Rev xs) -> (ys : List) -> Rev (app xs ys).
   pat (xs : List) (rxs : Rev xs).
-    rev' xs rxs Nil
+  | xs rxs Nil
       = subst List Rev xs (app xs Nil) (appRightNeutral xs) rxs,
+
   pat (xs : List) (rxs : Rev xs) (y : Bool) (ys : List).
-    rev' xs rxs (Cons y ys)
+  | xs rxs (Cons y ys)
       = subst List Rev
           (app (app xs (one y)) ys)
           (app xs (Cons y ys))
@@ -66,9 +72,11 @@ rev (xs : List) : Rev xs
   = rev' Nil RNil xs.
 
 reverse' : (xs : List) -> (rxs : Rev xs) -> List.
-  reverse' Nil RNil = Nil,
+  pat.
+  | Nil RNil = Nil,
+
   pat (x : Bool) (xs : List) (rxs : Rev xs).
-    reverse' [app xs (one x)] (RSnoc xs x rxs)
+  | [app xs (one x)] (RSnoc xs x rxs)
       = Cons x (reverse' xs rxs).
 
 reverse (xs : List) : List

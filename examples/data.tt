@@ -5,11 +5,10 @@ data N : Type.
   S : N -> N.
 
 plus (m : N) (n : N) : N
-  = case f m.
-      f : N -> N.
-      f Z = n,
-      pat (m : N).
-        f (S m) = S (plus m n).
+  = case (f m) where f : N -> N.
+      | Z -> n,
+      pat (m : N)
+      | (S m) -> S (plus m n).
   .
 
 main :R: N

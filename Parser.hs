@@ -107,8 +107,8 @@ erasureInstance = (<?> "erasure instance") $ do
 case_ :: Parser (TT MRel)
 case_ = (<?> "case expression") $ do
     kwd "case"
-    tm <- expr
-    kwd "."
+    tm <- parens expr
+    kwd "where"
     d <- simpleDef
     return $ Bind Let d tm
 
@@ -140,7 +140,6 @@ patvars :: Parser [Def MRel VoidConstrs]
 patvars = (<?> "pattern variables") $ do
     kwd "pat"
     pvs <- many (parens $ typing Var)
-    kwd "."
     return pvs
 
 patAtom :: Parser (Pat MRel)
@@ -156,12 +155,15 @@ patApp head = foldl (PApp Nothing) <$> head <*> many patAtom <?> "pattern applic
 pattern :: Parser (Pat MRel)
 pattern = patApp patAtom <?> "pattern"
 
+clauseLHS :: Name -> Parser (Pat MRel)
+clauseLHS n =
+            (kwd "|" *> patApp (pure $ PV n) <* kwd "->")   -- case-style clause
+        <|> (kwd "." *> patApp patAtom       <* kwd "=")    -- idris-style clause
+
 clause :: Name -> Parser (Clause MRel)
 clause n = (<?> "clause") $ do
     pvs <- patvars <|> return []
-    kwd "|"
-    lhs <- patApp $ pure (PV n)
-    kwd "="
+    lhs <- clauseLHS n
     rhs <- expr
     return $ Clause pvs lhs rhs
 
