@@ -38,7 +38,7 @@ redClause WHNF ctx clause = clause
 redClause NF ctx (Clause pvs lhs rhs)
     = Clause
         (map (redDef NF ctx) pvs)
-        (red NF ctx lhs)
+        lhs
         (red NF ctx rhs)
 
 red :: IsRelevance r => Form -> Ctx r cs -> TT r -> TT r
@@ -98,6 +98,10 @@ red NF ctx t@(App r f x)
   where
     redF = red NF ctx f
     redX = red NF ctx x
+
+pappDepth :: Pat r -> Int
+pappDepth (PApp r f x) = 1 + pappDepth f
+pappDepth _ = 0
 
 appDepth :: TT r -> Int
 appDepth (App r f x) = 1 + appDepth f
@@ -162,12 +166,12 @@ redClause' form ctx (Clause pvs lhs rhs) tm
             else return ()
         return . red form ctx $ rewrap (substMany patSubst rhs) extra
   where
-    patDepth = appDepth lhs
+    patDepth = pappDepth lhs
     tmDepth = appDepth tm
     (tm', extra) = unwrap (tmDepth - patDepth) tm
     patVars = foldr (M.insert <$> defName <*> csDef) ctx pvs
 
-matchTms :: IsRelevance r => Form -> Ctx r cs -> [TT r] -> [TT r] -> Tri (Ctx r cs)
+matchTms :: IsRelevance r => Form -> Ctx r cs -> [Pat r] -> [TT r] -> Tri (Ctx r cs)
 matchTms form ctx ls rs = do
     ss <- zipWithM (matchTm form ctx) ls rs
     let joined = M.unions ss
@@ -182,47 +186,43 @@ lup [] = []
 lup [x] = []
 lup (x : ys) = (x, ys) : lup ys
 
-matchTm :: IsRelevance r => Form -> Ctx r cs -> TT r -> TT r -> Tri (Ctx r cs)
+matchTm :: IsRelevance r => Form -> Ctx r cs -> Pat r -> TT r -> Tri (Ctx r cs)
 matchTm form ctx pat tm
     | ("MATCH-TM", pat, tm, M.keys ctx) `dbg` False
     = undefined
 
 -- the blank pattern matches everything, generates nothing
-matchTm form ctx (V Blank) tm = Yep M.empty
+matchTm form ctx (PV Blank) tm = Yep M.empty
 
 -- patvars match anything
-matchTm form ctx (V n) tm
+matchTm form ctx (PV n) tm
     | Just d@(Def n r ty (Abstract Var) Nothing) <- M.lookup n ctx
-    = Yep $ M.singleton n (Def n r ty (Term $ rmForced tm) Nothing)
+    = Yep $ M.singleton n (Def n r ty (Term tm) Nothing)
 
 -- data constructors match
-matchTm form ctx pattern@(App _ _ _) tm@(App _ _ _)
-    | (V cn , args ) <- unApply pattern
-    , (V cn', args') <- unApply tm
+matchTm form ctx pat@(PApp _ _ _) tm@(App _ _ _)
+    | (PV cn , args ) <- patUnApply pat
+    , (V  cn', args') <- unApply tm
     , cn == cn'  -- heads are the same
 --    , Just (Def _ _ _ (Abstract Postulate) Nothing) <- M.lookup cn ctx  -- is a ctor/postulate
-    = matchTms form ctx (map (red form ctx . snd) args) (map (red form ctx . snd) args')
+    = matchTms form ctx (map snd args) (map (red form ctx . snd) args')
 
 -- forced patterns always match, not generating anything
-matchTm form ctx (Forced _) tm
+matchTm form ctx (PForced _) tm
     = Yep M.empty
 
--- equal terms match
-matchTm form ctx tm tm'
-    | tm == tm'
-    = Yep M.empty
-
+-- no match otherwise
 matchTm form ctx _ _ = Nope
 
 freshen :: Ctx r cs -> Clause r -> Clause r
-freshen ctx (Clause [] rhs lhs) = Clause [] rhs lhs
-freshen ctx (Clause (d:ds) rhs lhs)
+freshen ctx (Clause [] lhs rhs) = Clause [] lhs rhs
+freshen ctx (Clause (d:ds) lhs rhs)
     | n `M.member` ctx
     = let n' = getFreshName ctx n
-        in Clause (d{ defName = n' } :ds') (rename n n' rhs') (rename n n' lhs')
-    | otherwise = Clause (d:ds') rhs' lhs'
+        in Clause (d{ defName = n' } :ds') (patRename n n' lhs') (rename n n' rhs')
+    | otherwise = Clause (d:ds') lhs' rhs'
   where
     n = defName d
-    Clause ds' rhs' lhs' = freshen ctx $ Clause ds rhs lhs
+    Clause ds' lhs' rhs' = freshen ctx $ Clause ds lhs rhs
 
 -- TODO: remove `Forced` from matched contexts

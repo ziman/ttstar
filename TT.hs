@@ -58,6 +58,12 @@ unApply tm = ua tm []
     ua (App r f x) args = ua f ((r, x) : args)
     ua tm args = (tm, args)
 
+patUnApply :: Pat r -> (Pat r, [(r, Pat r)])
+patUnApply tm = ua tm []
+  where
+    ua (PApp r f x) args = ua f ((r, x) : args)
+    ua tm args = (tm, args)
+
 mkApp :: TT r -> [(r, TT r)] -> TT r
 mkApp f [] = f
 mkApp f ((r, x) : xs) = mkApp (App r f x) xs
@@ -71,6 +77,9 @@ substMany ctx tm = foldl phi tm $ M.toList ctx
 
 rename :: Name -> Name -> TT r -> TT r
 rename fromN toN = subst fromN (V toN)
+
+patRename :: Name -> Name -> Pat r -> Pat r
+patRename fromN toN = substPat fromN (V toN)
 
 subst :: Name -> TT r -> TT r -> TT r
 subst n tm t@(V n')

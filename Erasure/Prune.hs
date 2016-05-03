@@ -31,7 +31,7 @@ pruneClause eds (Clause pvs lhs rhs)
 pruneClause eds (Clause pvs lhs rhs)
     = [Clause
         (concatMap (pruneDef eds) pvs)
-        (pruneLHS epvs $ pruneTm eds lhs)
+        (pruneLHS epvs $ prunePat eds lhs)
         (pruneTm eds rhs)]
   where
     -- elided patvars
@@ -51,4 +51,9 @@ pruneTm eds (Bind b d tm)
         [d'] -> Bind b d' (pruneTm eds tm)
 pruneTm eds (App E f x) = pruneTm eds f
 pruneTm eds (App R f x) = App () (pruneTm eds f) (pruneTm eds x)
-pruneTm eds (Forced t) = V Blank
+
+prunePat :: S.Set Name -> Pat Relevance -> Pat ()
+prunePat eds (PV n) = PV n
+prunePat eds (PApp E f x) = prunePat eds f
+prunePat eds (PApp R f x) = App () (prunePat eds f) (prunePat eds x)
+prunePat eds (PForced tm) = PForced (pruneTm eds tm)
