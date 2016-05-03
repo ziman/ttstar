@@ -180,9 +180,9 @@ checkDef (Def n r ty (Clauses cls) Nothing) = bt ("DEF-CLAUSES", n) $ do
 checkClause :: Name -> Meta -> Type -> Clause Meta -> TC Constrs
 checkClause fn fr fty (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $
     withDefs (map csDef pvs) $ do
-        (lty, lcs) <- checkTm lhs
+        (lty, lcs) <- checkTm (pat2tt lhs)
         (rty, rcs) <- checkTm rhs
-        ccs <- conv (rmForced lty) rty
+        ccs <- conv lty rty
         return $ flipConstrs lcs /\ rcs /\ ccs
 
 withDefs :: [Def Meta Constrs'] -> TC a -> TC a
@@ -234,13 +234,6 @@ checkTm t@(Bind Let d tm) = bt ("LET", t) $ do
     (tmty, tmcs) <- withDefs (M.elems ds) $ checkTm tm
     return (tmty, dcs /\ tmcs)
 
--- forced patterns don't produce constraints (?)
--- TODO: is that okay?
--- probably yes, because relevance is also propagated via the type signature
-checkTm (Forced tm) = do
-    (ty, cs) <- checkTm tm
-    return (ty, noConstrs)
-
 newtype TC' a = LiftTC' { runTC' :: TC a } deriving (Functor, Applicative, Monad)
 type ITC = StateT (IM.IntMap Int) TC'
 
@@ -287,8 +280,5 @@ conv' p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do
     xs <- conv f f'
     ys <- conv x x'
     return $ xs /\ ys /\ r <--> r'
-
-conv' (Forced l) r = conv l r
-conv' l (Forced r) = conv l r
 
 conv' p q = tcfail $ CantConvert p q

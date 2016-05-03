@@ -39,8 +39,8 @@ pruneClause eds (Clause pvs lhs rhs)
 
 -- replace erased patvars with ____
 -- remove clauses mentioning elided defs on the LHS
-pruneLHS :: S.Set Name -> TT () -> TT ()
-pruneLHS epvs lhs = foldr (\n -> subst n (V Blank)) lhs (S.toList epvs)
+pruneLHS :: S.Set Name -> Pat () -> Pat ()
+pruneLHS epvs lhs = foldr (\n -> substPat n (V Blank)) lhs (S.toList epvs)
 
 pruneTm :: S.Set Name -> TT Relevance -> TT ()
 pruneTm eds (V n) = V n
@@ -55,5 +55,5 @@ pruneTm eds (App R f x) = App () (pruneTm eds f) (pruneTm eds x)
 prunePat :: S.Set Name -> Pat Relevance -> Pat ()
 prunePat eds (PV n) = PV n
 prunePat eds (PApp E f x) = prunePat eds f
-prunePat eds (PApp R f x) = App () (prunePat eds f) (prunePat eds x)
+prunePat eds (PApp R f x) = PApp () (prunePat eds f) (prunePat eds x)
 prunePat eds (PForced tm) = PForced (pruneTm eds tm)

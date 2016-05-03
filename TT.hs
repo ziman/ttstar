@@ -68,6 +68,10 @@ mkApp :: TT r -> [(r, TT r)] -> TT r
 mkApp f [] = f
 mkApp f ((r, x) : xs) = mkApp (App r f x) xs
 
+patMkApp :: Pat r -> [(r, Pat r)] -> Pat r
+patMkApp f [] = f
+patMkApp f ((r, x) : xs) = patMkApp (PApp r f x) xs
+
 substMany :: Show (Body r) => Ctx r cs -> TT r -> TT r
 substMany ctx tm = foldl phi tm $ M.toList ctx
   where
@@ -141,17 +145,17 @@ pat2tt (PV n) = V n
 pat2tt (PApp r f x) = App r (pat2tt f) (pat2tt x)
 pat2tt (PForced tm) = tm
 
--- this is only for patterns
-refersTo :: TT r -> Name -> Bool
-refersTo (V n) n' = n == n'
-refersTo (I n ty) n' = n == n'
-refersTo (Bind b d tm) n' = error $ "binder in pattern: " ++ show b
-refersTo (App r f x) n' = (f `refersTo` n') || (x `refersTo` n')
+refersTo :: Pat r -> Name -> Bool
+refersTo (PV n)       n' = n == n'
+refersTo (PApp r f x) n' = (f `refersTo` n') || (x `refersTo` n')
+refersTo (PForced tm) n' = n' `occursIn` tm
 
 occursIn :: Name -> TT r -> Bool
 n `occursIn` V n' = (n == n')
 n `occursIn` I n' ty = (n == n') || (n `occursIn` ty)
-n `occursIn` Bind b d tm = (n `occursInDef` d) || (n `occursIn` tm)
+n `occursIn` Bind b d tm
+    | n == defName d = (n `occursInDef` d)
+    | otherwise      = (n `occursInDef` d) || (n `occursIn` tm)
 n `occursIn` App r f x = (n `occursIn` f) || (n `occursIn` x)
 
 occursInDef :: Name -> Def r cs -> Bool

@@ -65,6 +65,7 @@ extend (Prog rawDefs) (Instances imap) prog@(Prog defs)
 
     expandDef (Def n r ty mtm Nothing) = (Def n r ty mtm Nothing :) <$> extendDefs n
 
+-- since we renamed the function, we need to change its name on the LHS of all clauses
 specLHS :: Name -> Body r -> Body r
 specLHS n (Clauses cls) = Clauses $ map (specLHS' n) cls
 specLHS n body = body
@@ -72,8 +73,8 @@ specLHS n body = body
 specLHS' :: Name -> Clause r -> Clause r
 specLHS' n (Clause pvs lhs rhs) = Clause pvs lhs' rhs
   where
-    (V _oldN, args) = unApply lhs
-    lhs' = mkApp (V n) args
+    (PV _oldN, args) = patUnApply lhs
+    lhs' = patMkApp (PV n) args
 
 remetaify :: Program Relevance VoidConstrs -> Program Meta VoidConstrs
 remetaify = progRelevance %~ Fixed
@@ -100,7 +101,7 @@ specNBody (Clauses cls) = Clauses <$> traverse specNClause cls
 
 specNClause :: Clause Relevance -> Spec (Clause Relevance)
 specNClause (Clause pvs lhs rhs)
-    = Clause <$> traverse specNDef pvs <*> specNTm lhs <*> specNTm rhs
+    = Clause <$> traverse specNDef pvs <*> specNPat lhs <*> specNTm rhs
 
 specNTm :: TT Relevance -> Spec (TT Relevance)
 specNTm (V n) = pure $ V n
@@ -115,7 +116,11 @@ specNTm (I n@(UN ns) ty) = do
 
 specNTm (Bind b d tm) = Bind b <$> specNDef d <*> specNTm tm
 specNTm (App r f x) = App r <$> specNTm f <*> specNTm x
-specNTm (Forced tm) = Forced <$> specNTm tm
+
+specNPat :: Pat Relevance -> Spec (Pat Relevance)
+specNPat (PV n) = pure $ PV n
+specNPat (PApp r f x) = PApp r <$> specNPat f <*> specNPat x
+specNPat (PForced tm) = PForced <$> specNTm tm
 
 specName :: Name -> ErPattern -> Name
 specName (UN n) epat = IN n epat
