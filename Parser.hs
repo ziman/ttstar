@@ -55,7 +55,7 @@ natural = mkNat . read <$> (many1 (satisfy isDigit) <* sp) <?> "number"
 
 atomic :: Parser (TT MRel)
 atomic = parens expr
-    <|> instOrForced
+    <|> erasureInstance
     <|> var
     <|> natural
     <?> "atomic expression"
@@ -95,22 +95,14 @@ let_ = (<?> "let expression") $ do
     kwd "in"
     Bind Let d <$> expr
 
-instOrForced :: Parser (TT MRel)
-instOrForced = kwd "[" >> (try inst <|> forced)
-
-inst :: Parser (TT MRel)
-inst = (<?> "erasure instance") $ do
+erasureInstance :: Parser (TT MRel)
+erasureInstance = (<?> "erasure instance") $ do
+    kwd "["
     n <- name
     kwd ":"
     ty <- expr
     kwd "]"
     return $ I n ty
-
-forced :: Parser (TT MRel)
-forced = (<?> "forced pattern") $ do
-    tm <- expr
-    kwd "]"
-    return $ Forced tm
 
 case_ :: Parser (TT MRel)
 case_ = (<?> "case expression") $ do
@@ -154,19 +146,21 @@ patvars = (<?> "pattern variables") $ do
 patAtom :: Parser (Pat MRel)
 patAtom =
     (PV <$> name <?> "pattern variable")
-    (kwd "[" *> (PForced <$> expr) *< kwd "]" <?> "forced pattern")
-    <|> parens patApp
+    <|> (kwd "[" *> (PForced <$> expr) <* kwd "]" <?> "forced pattern")
+    <|> (parens pattern <?> "parenthesized pattern")
+    <?> "atomic pattern"
 
-patterns :: Name -> Parser (Pat MRel)
-patterns n =
-    (PApp n <$> many patAtom)
-    <?> "patterns"
+patApp :: Parser (Pat MRel) -> Parser (Pat MRel)
+patApp head = foldl (PApp Nothing) <$> head <*> many patAtom <?> "pattern application"
+
+pattern :: Parser (Pat MRel)
+pattern = patApp patAtom <?> "pattern"
 
 clause :: Name -> Parser (Clause MRel)
 clause n = (<?> "clause") $ do
     pvs <- patvars <|> return []
     kwd "|"
-    lhs <- patterns n
+    lhs <- patApp $ pure (PV n)
     kwd "="
     rhs <- expr
     return $ Clause pvs lhs rhs

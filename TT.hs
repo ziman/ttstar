@@ -28,16 +28,16 @@ data TT r
 
 data Pat r
     = PV Name
-    | PApp (Pat r) (Pat r)
+    | PApp r (Pat r) (Pat r)
     | PForced (TT r)
-    deriving (Eq, Ord, Show)
+    deriving (Eq, Ord)
 
 -- The difference between Var and Postulate is that for Var, the value is unknown,
 -- for postulate; the term itself is the value. A variable stands for something else,
 -- a postulate stands for itself.
 data Abstractness = Var | Postulate deriving (Eq, Ord, Show)
 data Body r = Abstract Abstractness | Term (TT r) | Clauses [Clause r] deriving (Eq, Ord)
-data Clause r = Clause { pvars :: [Def r VoidConstrs], lhs :: [Pat r],  rhs :: TT r } deriving (Eq, Ord)
+data Clause r = Clause { pvars :: [Def r VoidConstrs], lhs :: Pat r,  rhs :: TT r } deriving (Eq, Ord)
 data Def r cs = Def
     { defName :: Name
     , defR    :: r
@@ -94,7 +94,6 @@ subst n tm (Bind b d@(Def n' r ty body Nothing) tm')
     d' = substDef n tm d
 
 subst n tm (App r f x) = App r (subst n tm f) (subst n tm x)
-subst n tm (Forced t) = Forced (subst n tm t)
 
 substCtx :: Name -> TT r -> Ctx r cs -> Ctx r cs
 substCtx n tm = M.map $ substDef n tm
@@ -114,26 +113,24 @@ substBody n tm (Term t) = Term $ subst n tm t
 substBody n tm (Clauses cls) = Clauses $ map (substClause n tm) cls
 
 substClause :: Name -> TT r -> Clause r -> Clause r
-substClause n tm (Clause pvs lhs rhs) = Clause (substDef n tm <$> pvs) (subst n tm lhs) (subst n tm rhs)
+substClause n tm (Clause pvs lhs rhs) = Clause (substDef n tm <$> pvs) (substPat n tm lhs) (subst n tm rhs)
+
+substPat :: Name -> TT r -> Pat r -> Pat r
+substPat n tm pat@(PV n')
+    | n /= n'     = pat
+    | V n'' <- tm = PV n''
+    | otherwise   = error  $ "cannot substitute arbitrary terms in patterns"
+substPat n tm (PApp r f x) = PApp r (substPat n tm f) (substPat n tm x)
+substPat n tm (PForced t) = PForced $ subst n tm t
 
 getFreshName :: Ctx r cs -> Name -> Name
 getFreshName ctx (UN n) = head $ filter (`M.notMember` ctx) [UN (n ++ show i) | i <- [0..]]
 getFreshName ctx n = error $ "trying to refresh non-UN: " ++ show n
 
-rmForced :: TT r -> TT r
-rmForced t@(V n) = t
-rmForced (I n ty) = I n (rmForced ty)
-rmForced (Bind b d tm) = Bind b (rmForcedDef d) (rmForced tm)
-rmForced (App r f x) = App r (rmForced f) (rmForced x)
-rmForced (Forced t) = t
-
-rmForcedDef :: Def r cs -> Def r cs
-rmForcedDef (Def n r ty (Clauses cls) mcs) = Def n r ty (Clauses $ map rmForcedClause cls) mcs
-rmForcedDef (Def n r ty (Term tm) mcs) = Def n r ty (Term $ rmForced tm) mcs
-rmForcedDef d@(Def n r ty (Abstract a) mcs) = d
-
-rmForcedClause :: Clause r -> Clause r
-rmForcedClause (Clause pvs lhs rhs) = Clause (map rmForcedDef pvs) (rmForced lhs) (rmForced rhs)
+pat2tt :: Pat r -> TT r
+pat2tt (PV n) = V n
+pat2tt (PApp r f x) = App r (pat2tt f) (pat2tt x)
+pat2tt (PForced tm) = tm
 
 -- this is only for patterns
 refersTo :: TT r -> Name -> Bool
@@ -141,14 +138,12 @@ refersTo (V n) n' = n == n'
 refersTo (I n ty) n' = n == n'
 refersTo (Bind b d tm) n' = error $ "binder in pattern: " ++ show b
 refersTo (App r f x) n' = (f `refersTo` n') || (x `refersTo` n')
-refersTo (Forced t) n' = t `refersTo` n'
 
 occursIn :: Name -> TT r -> Bool
 n `occursIn` V n' = (n == n')
 n `occursIn` I n' ty = (n == n') || (n `occursIn` ty)
 n `occursIn` Bind b d tm = (n `occursInDef` d) || (n `occursIn` tm)
 n `occursIn` App r f x = (n `occursIn` f) || (n `occursIn` x)
-n `occursIn` Forced tm = n `occursIn` tm
 
 occursInDef :: Name -> Def r cs -> Bool
 occursInDef n (Def n' r ty body cs)
@@ -169,7 +164,12 @@ occursInClause n (Clause pvs lhs rhs)
     = False
 
     | otherwise
-    = (n `occursIn` lhs) || (n `occursIn` rhs)
+    = (n `occursInPat` lhs) || (n `occursIn` rhs)
+
+occursInPat :: Name -> Pat r -> Bool
+occursInPat n (PV n') = n == n'
+occursInPat n (PApp r f x) = (n `occursInPat` f) || (n `occursInPat` x)
+occursInPat n (PForced tm) = n `occursIn` tm
 
 builtins :: r -> Ctx r cs
 builtins r = M.fromList

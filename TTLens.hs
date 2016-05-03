@@ -21,7 +21,6 @@ ttRelevance f = g
             -> Bind b <$> defRelevance f d <*> g tm
         App r fun arg
             -> App <$> f r <*> g fun <*> g arg
-        Forced tm -> Forced <$> g tm
 
 defRelevance' :: Traversal (cs r) (cs' r') r r' -> Traversal (Def r cs) (Def r' cs') r r'
 defRelevance' csRelevance f (Def n r ty body mcs)
@@ -38,7 +37,7 @@ bodyRelevance f (Clauses cls) = Clauses <$> traverse (clauseRelevance f) cls
 
 clauseRelevance :: Traversal (Clause r) (Clause r') r r'
 clauseRelevance f (Clause pvs lhs rhs)
-    = Clause <$> traverse (defRelevance f) pvs <*> ttRelevance f lhs <*> ttRelevance f rhs
+    = Clause <$> traverse (defRelevance f) pvs <*> patRelevance f lhs <*> ttRelevance f rhs
 
 defRelevance :: Traversal (Def r VoidConstrs) (Def r' cs') r r'
 defRelevance = defRelevance' voidRelevance
@@ -48,3 +47,12 @@ progRelevance' csRelevance f (Prog defs) = Prog <$> traverse (defRelevance' csRe
 
 progRelevance :: Traversal (Program r VoidConstrs) (Program r' cs') r r'
 progRelevance = progRelevance' voidRelevance
+
+patRelevance :: Traversal (Pat r) (Pat r') r r'
+patRelevance f = g
+  where
+    g pat = case pat of
+        PV n -> pure $ PV n 
+        PApp r pf px -> PApp <$> f r <*> patRelevance f pf <*> patRelevance f px
+        PForced tm -> PForced <$> ttRelevance f tm
+

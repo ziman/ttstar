@@ -83,9 +83,22 @@ instance PrettyR r => Pretty (TT r) where
             ps = if pp then parens else id
             show' r (App r' f' x') x = show' r' f' x' <> prettyApp r <> pretty' True x
             show' r f x = pretty f <> prettyApp r <> pretty' True x
-        pretty' pp (Forced tm) = text "[" <> pretty tm <> text "]"
+
+instance PrettyR r => Pretty (Pat r) where
+    pretty tm = pretty' False tm
+      where
+        pretty' pp (PV n) = pretty n
+        pretty' pp (PApp r f x) = ps $ show' r f x 
+          where
+            ps = if pp then parens else id
+            show' r (PApp r' f' x') x = show' r' f' x' <> prettyApp r <> pretty' True x
+            show' r f x = pretty f <> prettyApp r <> pretty' True x
+        pretty' pp (PForced tm) = text "[" <> pretty tm <> text "]"
 
 instance PrettyR r => Show (TT r) where
+    show = prettyShow
+
+instance PrettyR r => Show (Pat r) where
     show = prettyShow
 
 instance PrettyR r => Show (Def r cs) where
