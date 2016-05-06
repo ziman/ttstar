@@ -7,6 +7,7 @@ import TTLens
 import Normalise
 import Erasure.Meta
 import Erasure.Solve
+import qualified Case
 
 import Prelude hiding (lookup)
 
@@ -174,7 +175,12 @@ checkDef (Def n r ty (Term tm) Nothing) = bt ("DEF-TERM", n) $ do
     return $ Def n r ty (Term tm) (Just cs)
 
 checkDef (Def n r ty (Clauses cls) Nothing) = bt ("DEF-CLAUSES", n) $ do
+    -- first, typecheck the clauses
     cs <- unions <$> traverse (checkClause n r ty) cls
+
+    -- now that we know that everything is well-typed, we can build the case tree
+    let ctree = Case.compile cls
+
     return $ Def n r ty (Clauses cls) (Just cs)
 
 checkClause :: Name -> Meta -> Type -> Clause Meta -> TC Constrs
