@@ -1,8 +1,5 @@
 {-# LANGUAGE FlexibleContexts, FlexibleInstances, StandaloneDeriving, ConstraintKinds #-}
-module Pretty
-    ( PrettyR(..), IsRelevance
-    , indent, arrow
-    ) where
+module Pretty (PrettyR(..)) where
 
 import TT
 import Util.PrettyPrint
@@ -59,8 +56,8 @@ instance PrettyR r => Pretty (TT r) where
       where
         pretty' pp (V n) = pretty n
         pretty' pp (I n ty) = parens (pretty n <+> colon <+> pretty ty)
-        pretty' pp (Bind Pi d tm) = parens (pretty d) <+> arrow <+> pretty tm
-        pretty' pp (Bind Lam d tm) = parens (lam <> pretty d <> dot <+> pretty tm)
+        pretty' pp (Bind Pi d tm) = parens (pretty d) <+> text "->" <+> pretty tm
+        pretty' pp (Bind Lam d tm) = parens (text "\\" <> pretty d <> dot <+> pretty tm)
         pretty' pp (Bind Let d tm) =
             blankLine
             $$ indent (text "let" <+> pretty d
@@ -86,8 +83,6 @@ instance PrettyR r => Show (Def r cs) where
 deriving instance PrettyR r => Show (Body r)
 deriving instance PrettyR r => Show (Program r VoidConstrs)
 
-type IsRelevance r = (PrettyR r, Eq r)
-
 instance PrettyR r => Pretty (CaseFun r) where
     pretty (CaseFun ns t) =
         text "\\" <> hsep (map (parens . pretty) ns) <> text "."
@@ -100,18 +95,18 @@ instance PrettyR r => Pretty (CaseTree r) where
         $$ indent (vcat $ map pretty alts)
 
 instance PrettyR r => Pretty (Alt r) where
-    pretty (Alt lhs rhs) = pretty lhs <+> arrow <+> pretty rhs
+    pretty (Alt lhs rhs) = pretty lhs $$ indent (text "=>" <+> pretty rhs)
 
 instance PrettyR r => Pretty (AltLHS r) where
     pretty Wildcard = text "_"
     pretty (Ctor cn args eqs)
         = pretty cn
-            <+> hsep (map pretty args)
-            <+> hsep [text "|" <+> pretty n <+> text "=" <+> pretty tm | (n, tm) <- eqs]
+            <+> hsep (map (parens . pretty) args)
+            $+$ indent (
+                    foldr ($$) empty [text "|" <+> pretty n <+> text "=" <+> pretty tm | (n, tm) <- eqs]
+                )
 
 instance PrettyR r => Show (CaseFun r) where
     show = prettyShow
 
-lam = text "\\"
 indent = nest 2
-arrow = text "->"

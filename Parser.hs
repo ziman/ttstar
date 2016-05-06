@@ -166,7 +166,7 @@ caseLHSCtor :: Parser (AltLHS MRel)
 caseLHSCtor
     = Ctor
         <$> name
-        <*> many (typing Var)
+        <*> many (parens $ typing Var)
         <*> many caseEq
         <?> "constructor case LHS"
 
@@ -174,7 +174,7 @@ caseAlt :: Parser (Alt MRel)
 caseAlt
     = Alt
         <$> caseLHS
-        <*> (kwd "->" *> caseTree)
+        <*> (kwd "=>" *> caseTree)
         <?> "constructor-matching case branch"
 
 fundef :: Parser (Def MRel VoidConstrs)
@@ -193,7 +193,7 @@ fundef = (<?> "function definition") $ do
             return $ Def n r ty (Term $ chain Lam args tm) Nothing
 
     let matchingDef = do
-            ct <- try caseTree
+            ct <- realCaseTree  -- `caseTree` allows plain terms but we don't want those here
             return $ Def n r ty (Patterns $ CaseFun args ct) Nothing
 
     matchingDef <|> lambdaDef

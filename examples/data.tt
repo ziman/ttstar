@@ -6,8 +6,8 @@ data N : Type.
 
 plus (m : N) (n : N) : N =
   case m of
-    Z    -> n,
-    S m' -> S (plus m' n).
+    Z          => n,
+    S (m' : N) => S (plus m' n).
 
 data Vect : N -> Type.
   Nil : Vect Z,
@@ -15,19 +15,21 @@ data Vect : N -> Type.
 
 zipWith (n : N) (f : N -> N -> N) (xs : Vect n) (ys : Vect n) : Vect n
   = case xs of
-      Cons n1 x1 xs1
+      Cons (n1 : N) (x1 : N) (xs1 : Vect n1)
         | n = S n1
-        -> case ys of
-            Cons n2 x2 xs2
+        => case ys of
+            Cons (n2 : N) (x2 : N) (xs2 : Vect n1)  -- n1 = n2, so this should typecheck
               | n2 = n1
-              -> Cons n1 (f x1 x2) (zipWith n1 f xs1 xs2).,
+              => Cons n1 (f x1 x2) (zipWith n1 f xs1 xs2).,
       Nil
         | n = Z
-        -> case ys of
-            Nil -> Nil..
+        => case ys of
+            Nil => Nil..
 
 main :R: N
   = let
-      id : N -> N.
-      id (x : N) = x.
-    in plus (id 3) (id 4).
+      pred (x : N) : N =
+        case x of
+          Z => Z,
+          S (x' : N) => x'.
+    in plus (pred 4) (pred 5).
