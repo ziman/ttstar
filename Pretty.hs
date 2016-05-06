@@ -101,10 +101,18 @@ instance PrettyR r => Pretty (AltLHS r) where
     pretty Wildcard = text "_"
     pretty (Ctor cn args eqs)
         = pretty cn
-            <+> hsep (map (parens . pretty) args)
+            <+> hsep (map prettyParens args)
             $+$ indent (
                     foldr ($$) empty [text "|" <+> pretty n <+> text "=" <+> pretty tm | (n, tm) <- eqs]
                 )
+
+prettyParens :: PrettyR r => Def r cs -> Doc
+prettyParens d
+    | V Blank <- defType d
+    = pretty d
+
+    | otherwise
+    = parens $ pretty d
 
 instance PrettyR r => Show (CaseFun r) where
     show = prettyShow
