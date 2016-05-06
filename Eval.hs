@@ -6,8 +6,6 @@ import Pretty
 import Normalise
 import qualified Data.Map as M
 
-type IsRelevance r = (PrettyR r, Eq r)
-
 prog2tt :: Program r cs -> TT r
 prog2tt (Prog defs) = defs2tt defs
 

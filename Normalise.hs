@@ -1,14 +1,18 @@
-module Normalise (Form(..), red, whnf, nf) where
+{-# LANGUAGE ConstraintKinds #-}
+module Normalise (IsRelevance, Form(..), red, whnf, nf) where
 
 import TT
 import Pretty
 
 import Data.List
+import Data.Maybe
 import Control.Monad
 import qualified Data.Map as M
 import qualified Data.Set as S
 
 import Debug.Trace
+
+type IsRelevance r = (PrettyR r, Eq r)
 
 data Form = NF | WHNF deriving Show
 
@@ -31,15 +35,27 @@ redDef form ctx (Def n r ty body cs) = Def n r (red form ctx ty) (redBody form c
 redBody :: IsRelevance r => Form -> Ctx r cs -> Body r -> Body r
 redBody form ctx (Abstract a)  = Abstract a
 redBody form ctx (Term tm)     = Term (red form ctx tm)
-redBody form ctx (Clauses cls) = Clauses $ map (redClause form ctx) cls
+redBody NF   ctx (Patterns cf) = Patterns (redCaseFun NF ctx cf)
+redBody WHNF ctx body@(Patterns cf) = body
 
-redClause :: IsRelevance r => Form -> Ctx r cs -> Clause r -> Clause r
-redClause WHNF ctx clause = clause
-redClause NF ctx (Clause pvs lhs rhs)
-    = Clause
-        (map (redDef NF ctx) pvs)
-        lhs
-        (red NF ctx rhs)
+redCaseFun :: IsRelevance r => Form -> Ctx r cs -> CaseFun r -> CaseFun r
+redCaseFun NF ctx (CaseFun args ct) = go ctx [] args
+  where
+    go ctx rargs [] = CaseFun (reverse rargs) (redCaseTree NF ctx ct)
+    go ctx rargs (d:ds) =
+        let d' = csDef $ redDef NF ctx d
+          in go (M.insert (defName d) d' ctx) (d':rargs) ds
+
+redCaseTree :: IsRelevance r => Form -> Ctx r cs -> CaseTree r -> CaseTree r
+redCaseTree NF ctx (PlainTerm tm) = PlainTerm $ red NF ctx tm
+redCaseTree NF ctx (Case v alts) = Case v $ map (redAlt NF ctx) alts
+
+redAlt :: IsRelevance r => Form -> Ctx r cs -> Alt r -> Alt r
+redAlt NF ctx (Alt lhs rhs) = Alt (redAltLHS NF ctx lhs) (redCaseTree NF ctx rhs)
+
+redAltLHS :: IsRelevance r => Form -> Ctx r cs -> AltLHS r -> AltLHS r
+redAltLHS NF ctx Wildcard = Wildcard
+redAltLHS NF ctx (Ctor cn args eqs) = Ctor cn (map (redDef NF ctx) args) [(n, red NF ctx tm) | (n, tm) <- eqs]
 
 red :: IsRelevance r => Form -> Ctx r cs -> TT r -> TT r
 
@@ -48,9 +64,9 @@ red form ctx t@(V Blank) = t
 red form ctx t@(V n)
     | Just (Def _n r ty body cs) <- M.lookup n ctx
     = case body of
-        Abstract _   -> t
-        Term     tm  -> red form ctx tm
-        Clauses  cls -> redClauses form ctx cls t
+        Abstract _  -> t
+        Term     tm -> red form ctx tm
+        Patterns cf -> t
 
     | otherwise = error $ "unknown variable: " ++ show n  -- unknown variable
 
@@ -72,8 +88,8 @@ red  NF  ctx t@(Bind b d tm) = Bind b (redDef NF ctx d) (red NF ctx' tm)
 -- pattern-matching definitions
 red form ctx t@(App r f x)
     | (V fn, _args) <- unApply t
-    , Just (Def _ _ _ (Clauses cls) _) <- M.lookup fn ctx
-    = redClauses form ctx cls t
+    , Just (Def _ _ _ (Patterns cf) _) <- M.lookup fn ctx
+    = fromMaybe t $ redPatterns form ctx cf t
 
 -- we reduce specialised terms as non-specialised terms
 red form ctx t@(App r f x)
@@ -99,10 +115,10 @@ red NF ctx t@(App r f x)
     redF = red NF ctx f
     redX = red NF ctx x
 
-pappDepth :: Pat r -> Int
-pappDepth (PApp r f x) = 1 + pappDepth f
-pappDepth _ = 0
+redPatterns :: Form -> Ctx r cs -> CaseFun r -> TT r -> Maybe (TT r)
+redPatterns form ctx cf t = Nothing
 
+{-
 appDepth :: TT r -> Int
 appDepth (App r f x) = 1 + appDepth f
 appDepth _ = 0
@@ -226,3 +242,4 @@ freshen ctx (Clause (d:ds) lhs rhs)
     Clause ds' lhs' rhs' = freshen ctx $ Clause ds lhs rhs
 
 -- TODO: remove `Forced` from matched contexts
+-}

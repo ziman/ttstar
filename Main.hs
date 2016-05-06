@@ -7,9 +7,9 @@ import Pretty
 import TTLens
 {-
 import Explorer
+-}
 import Normalise
 import Eval
--}
 
 import Util.PrettyPrint
 
