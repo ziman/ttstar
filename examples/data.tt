@@ -4,12 +4,27 @@ data N : Type.
   Z : N,
   S : N -> N.
 
-plus : N -> N -> N.
-plus (m : N) (n : n) =
-  case m
-  | Z    -> n
-  | S m' -> S (plus m' n)
-  .
+plus (m : N) (n : N) : N =
+  case m of
+    Z    -> n,
+    S m' -> S (plus m' n).
+
+data Vect : N -> Type.
+  Nil : Vect Z,
+  Cons : (n : N) -> (x : N) -> (xs : Vect n) -> Vect (S n).
+
+zipWith (n : N) (f : N -> N -> N) (xs : Vect n) (ys : Vect n) : Vect n
+  = case xs of
+      Cons n1 x1 xs1
+        | n = S n1
+        -> case ys of
+            Cons n2 x2 xs2
+              | n2 = n1
+              -> Cons n1 (f x1 x2) (zipWith n1 f xs1 xs2).,
+      Nil
+        | n = Z
+        -> case ys of
+            Nil -> Nil..
 
 main :R: N
   = let

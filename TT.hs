@@ -34,23 +34,17 @@ data CaseTree r
     deriving (Eq, Ord)
 
 data AltLHS r
-    = Ctor Name [CtorArg r]
+    = Ctor Name [Def r VoidConstrs] [(Name, TT r)]
     | Wildcard
     deriving (Eq, Ord)
 
-data CtorArg r
-    = PV Name
-    | Forced (TT r)
-    deriving (Eq, Ord)
-
-data Alt r = Alt AltLHS (CaseTree r) deriving (Eq, Ord)
+data Alt r = Alt (AltLHS r) (CaseTree r) deriving (Eq, Ord)
 
 -- The difference between Var and Postulate is that for Var, the value is unknown,
 -- for postulate; the term itself is the value. A variable stands for something else,
 -- a postulate stands for itself.
 data Abstractness = Var | Postulate deriving (Eq, Ord, Show)
 data Body r = Abstract Abstractness | Term (TT r) | Patterns (CaseFun r) deriving (Eq, Ord)
-data Clause r = Clause { pvars :: [Def r VoidConstrs], lhs :: Pat r,  rhs :: TT r } deriving (Eq, Ord)
 data Def r cs = Def
     { defName :: Name
     , defR    :: r
@@ -72,19 +66,9 @@ unApply tm = ua tm []
     ua (App r f x) args = ua f ((r, x) : args)
     ua tm args = (tm, args)
 
-patUnApply :: Pat r -> (Pat r, [(r, Pat r)])
-patUnApply tm = ua tm []
-  where
-    ua (PApp r f x) args = ua f ((r, x) : args)
-    ua tm args = (tm, args)
-
 mkApp :: TT r -> [(r, TT r)] -> TT r
 mkApp f [] = f
 mkApp f ((r, x) : xs) = mkApp (App r f x) xs
-
-patMkApp :: Pat r -> [(r, Pat r)] -> Pat r
-patMkApp f [] = f
-patMkApp f ((r, x) : xs) = patMkApp (PApp r f x) xs
 
 substMany :: Show (Body r) => Ctx r cs -> TT r -> TT r
 substMany ctx tm = foldl phi tm $ M.toList ctx
@@ -95,9 +79,6 @@ substMany ctx tm = foldl phi tm $ M.toList ctx
 
 rename :: Name -> Name -> TT r -> TT r
 rename fromN toN = subst fromN (V toN)
-
-patRename :: Name -> Name -> Pat r -> Pat r
-patRename fromN toN = substPat fromN (V toN)
 
 subst :: Name -> TT r -> TT r -> TT r
 subst n tm t@(V n')
@@ -137,32 +118,36 @@ substDef n tm (Def dn r ty body mcs)
 substBody :: Name -> TT r -> Body r -> Body r
 substBody n tm (Abstract a) = Abstract a
 substBody n tm (Term t) = Term $ subst n tm t
-substBody n tm (Clauses cls) = Clauses $ map (substClause n tm) cls
+substBody n tm (Patterns cf) = Patterns $ substCaseFun n tm cf
 
-substClause :: Name -> TT r -> Clause r -> Clause r
-substClause n tm (Clause pvs lhs rhs) = Clause (substDef n tm <$> pvs) (substPat n tm lhs) (subst n tm rhs)
+substCaseFun :: Name -> TT r -> CaseFun r -> CaseFun r
+substCaseFun n tm cf@(CaseFun args ct)
+    | n `elem` map defName args = cf
+    | otherwise = CaseFun args $ substCaseTree n tm ct
 
-substPat :: Name -> TT r -> Pat r -> Pat r
-substPat n tm pat@(PV n')
-    | n /= n'     = pat
-    | V n'' <- tm = PV n''
-    | otherwise   = error  $ "cannot substitute arbitrary terms in patterns"
-substPat n tm (PApp r f x) = PApp r (substPat n tm f) (substPat n tm x)
-substPat n tm (PForced t) = PForced $ subst n tm t
+substCaseTree :: Name -> TT r -> CaseTree r -> CaseTree r
+substCaseTree n tm (PlainTerm t) = PlainTerm $ subst n tm t
+substCaseTree n tm (Case v alts)
+    | v == n
+    = error "subst in case scrutinee"
+    -- There is no technical reason for the above error -- we could just rename the variable.
+    -- However, this should never happen because all case-inspected variables should come
+    -- from pattern matching, and therefore shouldn't be touched by renaming.
+substCaseTree n tm (Case v alts) = Case v $ map (substAlt n tm) alts
+
+-- equations are pattern-only so they are not touched by substitution
+substAlt :: Name -> TT r -> Alt r -> Alt r
+substAlt n tm (Alt Wildcard rhs) = Alt Wildcard $ substCaseTree n tm rhs
+substAlt n tm alt@(Alt lhs@(Ctor cn args eqs) rhs)
+    | n `elem` map defName args
+    = alt  -- let's see if we can get away without substitution in the types of args
+
+    | otherwise
+    = Alt lhs (substCaseTree n tm rhs)
 
 getFreshName :: Ctx r cs -> Name -> Name
 getFreshName ctx (UN n) = head $ filter (`M.notMember` ctx) [UN (n ++ show i) | i <- [0..]]
 getFreshName ctx n = error $ "trying to refresh non-UN: " ++ show n
-
-pat2tt :: Pat r -> TT r
-pat2tt (PV n) = V n
-pat2tt (PApp r f x) = App r (pat2tt f) (pat2tt x)
-pat2tt (PForced tm) = tm
-
-refersTo :: Pat r -> Name -> Bool
-refersTo (PV n)       n' = n == n'
-refersTo (PApp r f x) n' = (f `refersTo` n') || (x `refersTo` n')
-refersTo (PForced tm) n' = n' `occursIn` tm
 
 occursIn :: Name -> TT r -> Bool
 n `occursIn` V n' = (n == n')
@@ -183,20 +168,22 @@ occursInDef n (Def n' r ty body cs)
 occursInBody :: Name -> Body r -> Bool
 occursInBody n (Abstract _) = False
 occursInBody n (Term tm) = n `occursIn` tm
-occursInBody n (Clauses cls) = any (n `occursInClause`) cls
+occursInBody n (Patterns cf) = n `occursInCaseFun` cf
 
-occursInClause :: Name -> Clause r -> Bool
-occursInClause n (Clause pvs lhs rhs)
-    | n `elem` map defName pvs
-    = False
+occursInCaseFun :: Name -> CaseFun r -> Bool
+occursInCaseFun n (CaseFun args ct)
+    = (n `notElem` map defName args)
+    && (n `occursInCaseTree` ct)
 
-    | otherwise
-    = (n `occursInPat` lhs) || (n `occursIn` rhs)
+occursInCaseTree :: Name -> CaseTree r -> Bool
+occursInCaseTree n (PlainTerm tm) = n `occursIn` tm
+occursInCaseTree n (Case v alts) = (v == n) || ((n `occursInAlt`) `any` alts)
 
-occursInPat :: Name -> Pat r -> Bool
-occursInPat n (PV n') = n == n'
-occursInPat n (PApp r f x) = (n `occursInPat` f) || (n `occursInPat` x)
-occursInPat n (PForced tm) = n `occursIn` tm
+occursInAlt :: Name -> Alt r -> Bool
+occursInAlt n (Alt Wildcard rhs) = n `occursInCaseTree` rhs
+occursInAlt n (Alt (Ctor cn args eqs) rhs)
+    = (n `notElem` map defName args)
+    && (n `occursInCaseTree` rhs)
 
 builtins :: r -> Ctx r cs
 builtins r = M.fromList
