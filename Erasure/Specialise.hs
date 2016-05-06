@@ -59,22 +59,11 @@ extend (Prog rawDefs) (Instances imap) prog@(Prog defs)
           [ let Def _ r ty body Nothing = rawDefMap M.! oldName
                 newName = specName oldName ep
               in instantiate fresh (bindMetas ep (ty ^.. ttRelevance))
-                   $ Def newName r ty (specLHS newName body) Nothing
+                   $ Def newName r ty body Nothing
           | ep <- S.toList $ M.findWithDefault S.empty oldName imap
           ]
 
     expandDef (Def n r ty mtm Nothing) = (Def n r ty mtm Nothing :) <$> extendDefs n
-
--- since we renamed the function, we need to change its name on the LHS of all clauses
-specLHS :: Name -> Body r -> Body r
-specLHS n (Clauses cls) = Clauses $ map (specLHS' n) cls
-specLHS n body = body
-
-specLHS' :: Name -> Clause r -> Clause r
-specLHS' n (Clause pvs lhs rhs) = Clause pvs lhs' rhs
-  where
-    (PV _oldN, args) = patUnApply lhs
-    lhs' = patMkApp (PV n) args
 
 remetaify :: Program Relevance VoidConstrs -> Program Meta VoidConstrs
 remetaify = progRelevance %~ Fixed
@@ -97,11 +86,23 @@ specNDef (Def n r ty body Nothing)
 specNBody :: Body Relevance -> Spec (Body Relevance)
 specNBody (Abstract a)  = pure $ Abstract a
 specNBody (Term tm)     = Term <$> specNTm tm
-specNBody (Clauses cls) = Clauses <$> traverse specNClause cls
+specNBody (Patterns cf) = Patterns <$> specNCaseFun cf
 
-specNClause :: Clause Relevance -> Spec (Clause Relevance)
-specNClause (Clause pvs lhs rhs)
-    = Clause <$> traverse specNDef pvs <*> specNPat lhs <*> specNTm rhs
+specNCaseFun :: CaseFun Relevance -> Spec (CaseFun Relevance)
+specNCaseFun (CaseFun args ct) = CaseFun <$> traverse specNDef args <*> specNCaseTree ct
+
+specNCaseTree :: CaseTree Relevance -> Spec (CaseTree Relevance)
+specNCaseTree (PlainTerm tm) = PlainTerm <$> specNTm tm
+specNCaseTree (Case s alts) = Case <$> specNTm s <*> traverse specNAlt alts
+
+specNAlt :: Alt Relevance -> Spec (Alt Relevance)
+specNAlt (Alt lhs rhs) = Alt <$> specNLHS lhs <*> specNCaseTree rhs
+
+specNLHS :: AltLHS Relevance -> Spec (AltLHS Relevance)
+specNLHS Wildcard = pure Wildcard
+specNLHS (Ctor cn args eqs) = Ctor cn <$> traverse specNDef args <*> traverse specEq eqs
+  where
+    specEq (n, tm) = (,) n <$> specNTm tm
 
 specNTm :: TT Relevance -> Spec (TT Relevance)
 specNTm (V n) = pure $ V n
@@ -116,11 +117,6 @@ specNTm (I n@(UN ns) ty) = do
 
 specNTm (Bind b d tm) = Bind b <$> specNDef d <*> specNTm tm
 specNTm (App r f x) = App r <$> specNTm f <*> specNTm x
-
-specNPat :: Pat Relevance -> Spec (Pat Relevance)
-specNPat (PV n) = pure $ PV n
-specNPat (PApp r f x) = PApp r <$> specNPat f <*> specNPat x
-specNPat (PForced tm) = PForced <$> specNTm tm
 
 specName :: Name -> ErPattern -> Name
 specName (UN n) epat = IN n epat

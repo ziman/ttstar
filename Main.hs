@@ -17,11 +17,9 @@ import Erasure.Meta
 import Erasure.Check
 import Erasure.Solve
 import Erasure.Annotate
-{-
 import Erasure.Specialise
 import Erasure.Prune
 import Erasure.Verify
--}
 
 import Lens.Family2
 
@@ -158,8 +156,6 @@ main = do
 
                     return annotated
 
-            annotated <- iterSpecialisation metaified
-{-
                     putStrLn "### Specialised ###\n"
                     let specialised = specialise metaified annotated
                     printP $ specialised
@@ -191,14 +187,11 @@ main = do
             let pruned = prune annotated -- specialised
             printP $ pruned
 
--}
             putStrLn "### Normal forms ###\n"
             putStrLn "unerased:"
             putStrLn $ "  " ++ show (eval NF (builtins $ Just R) prog)
-{-
             putStrLn "erased:"
             putStrLn $ "  " ++ show (eval NF (builtins ()) pruned)
--}
   where
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
 

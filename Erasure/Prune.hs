@@ -6,7 +6,7 @@ import Control.Applicative
 import qualified Data.Set as S
 
 prune :: Program Relevance VoidConstrs -> Program () VoidConstrs
-prune (Prog defs) = Prog $ concatMap (pruneDef eds) defs
+prune (Prog defs) = Prog $ pruneDefs eds defs
   where
     -- elided defs
     eds = S.fromList [n | Def n E _ _ _ <- defs]
@@ -18,29 +18,26 @@ pruneDef eds (Def n R ty body mcs) = [Def n () (V Blank) (pruneBody eds body) No
 pruneBody :: S.Set Name -> Body Relevance -> Body ()
 pruneBody eds (Abstract a)  = Abstract a
 pruneBody eds (Term tm)     = Term $ pruneTm eds tm
-pruneBody eds (Clauses cls) = Clauses $ concatMap (pruneClause eds) cls
+pruneBody eds (Patterns cf) = Patterns $ pruneCaseFun eds cf
 
-pruneClause :: S.Set Name -> Clause Relevance -> [Clause ()]
+pruneCaseFun :: S.Set Name -> CaseFun Relevance -> CaseFun ()
+pruneCaseFun eds (CaseFun args ct)
+    = CaseFun (pruneDefs eds args) (pruneCaseTree eds ct)
 
--- remove all clauses that refer to erased postulates
--- those clauses can never be matched because those postulates are never instantiated
-pruneClause eds (Clause pvs lhs rhs)
-    | or [lhs `refersTo` n | n <- S.toList eds]
-    = []
+pruneCaseTree :: S.Set Name -> CaseTree Relevance -> CaseTree ()
+pruneCaseTree eds (PlainTerm tm) = PlainTerm $ pruneTm eds tm
+pruneCaseTree eds (Case s alts) = Case (pruneTm eds s) $ map (pruneAlt eds) alts
 
-pruneClause eds (Clause pvs lhs rhs)
-    = [Clause
-        (concatMap (pruneDef eds) pvs)
-        (pruneLHS epvs $ prunePat eds lhs)
-        (pruneTm eds rhs)]
-  where
-    -- elided patvars
-    epvs = S.fromList [n | Def n E _ _ _ <- pvs]
+pruneAlt :: S.Set Name -> Alt Relevance -> Alt ()
+pruneAlt eds (Alt lhs rhs) = Alt (pruneAltLHS eds lhs) (pruneCaseTree eds rhs)
 
--- replace erased patvars with ____
--- remove clauses mentioning elided defs on the LHS
-pruneLHS :: S.Set Name -> Pat () -> Pat ()
-pruneLHS epvs lhs = foldr (\n -> substPat n (V Blank)) lhs (S.toList epvs)
+pruneAltLHS :: S.Set Name -> AltLHS Relevance -> AltLHS ()
+pruneAltLHS eds Wildcard = Wildcard
+pruneAltLHS eds (Ctor cn args eqs)
+    = Ctor cn (pruneDefs eds args) [(n, pruneTm eds tm) | (n, tm) <- eqs]
+
+pruneDefs :: S.Set Name -> [Def Relevance VoidConstrs] -> [Def () VoidConstrs]
+pruneDefs eds = concatMap (pruneDef eds)
 
 pruneTm :: S.Set Name -> TT Relevance -> TT ()
 pruneTm eds (V n) = V n
@@ -51,9 +48,3 @@ pruneTm eds (Bind b d tm)
         [d'] -> Bind b d' (pruneTm eds tm)
 pruneTm eds (App E f x) = pruneTm eds f
 pruneTm eds (App R f x) = App () (pruneTm eds f) (pruneTm eds x)
-
-prunePat :: S.Set Name -> Pat Relevance -> Pat ()
-prunePat eds (PV n) = PV n
-prunePat eds (PApp E f x) = prunePat eds f
-prunePat eds (PApp R f x) = PApp () (prunePat eds f) (prunePat eds x)
-prunePat eds (PForced tm) = PForced (pruneTm eds tm)
