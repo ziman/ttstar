@@ -136,55 +136,67 @@ postulate = (<?> "postulate") $ do
 mkPostulate :: Def MRel VoidConstrs -> Def MRel VoidConstrs
 mkPostulate (Def n r ty (Abstract Var) Nothing) = Def n r ty (Abstract Postulate) Nothing
 
-patvars :: Parser [Def MRel VoidConstrs]
-patvars = (<?> "pattern variables") $ do
-    kwd "pat"
-    pvs <- many (parens $ typing Var)
-    return pvs
+caseTree :: Parser (CaseTree MRel)
+caseTree = realCaseTree <|> plainTerm <?> "case tree or term"
 
-patAtom :: Parser (Pat MRel)
-patAtom =
-    (PV <$> name <?> "pattern variable")
-    <|> (kwd "[" *> (PForced <$> expr) <* kwd "]" <?> "forced pattern")
-    <|> (parens pattern <?> "parenthesized pattern")
-    <?> "atomic pattern"
+plainTerm :: Parser (CaseTree MRel)
+plainTerm = PlainTerm <$> expr
 
-patApp :: Parser (Pat MRel) -> Parser (Pat MRel)
-patApp head = foldl (PApp Nothing) <$> head <*> many patAtom <?> "pattern application"
+realCaseTree :: Parser (CaseTree MRel)
+realCaseTree = (<?> "case tree") $ do
+    try $ kwd "case"
+    v <- name
+    kwd "of"
+    alts <- caseAlt `sepBy` kwd ","
+    kwd "."
+    return $ Case v alts
 
-pattern :: Parser (Pat MRel)
-pattern = patApp patAtom <?> "pattern"
+caseEq :: Parser (Name, TT MRel)
+caseEq = (<?> "case equality") $ do
+    kwd "|"
+    n <- name
+    kwd "="
+    tm <- expr
+    return (n, tm)
 
-clauseLHS :: Name -> Parser (Pat MRel)
-clauseLHS n =
-            (kwd "|" *> patApp (pure $ PV n) <* kwd "->")   -- case-style clause
-        <|> (kwd "." *> patApp patAtom       <* kwd "=")    -- idris-style clause
+caseLHS :: Parser (AltLHS MRel)
+caseLHS = caseLHSCtor <|> (kwd "_" *> pure Wildcard) <?> "case LHS"
 
-clause :: Name -> Parser (Clause MRel)
-clause n = (<?> "clause") $ do
-    pvs <- patvars <|> return []
-    lhs <- clauseLHS n
-    rhs <- expr
-    return $ Clause pvs lhs rhs
+caseLHSCtor :: Parser (AltLHS MRel)
+caseLHSCtor
+    = Ctor
+        <$> name
+        <*> many (typing Var)
+        <*> many caseEq
+        <?> "constructor case LHS"
+
+caseAlt :: Parser (Alt MRel)
+caseAlt
+    = Alt
+        <$> caseLHS
+        <*> (kwd "->" *> caseTree)
+        <?> "constructor-matching case branch"
 
 fundef :: Parser (Def MRel VoidConstrs)
 fundef = (<?> "function definition") $ do
-    -- we try typing because it may be a mldef
-    Def n r ty (Abstract Var) Nothing <- try (typing Var <* kwd ".")
-    cls <- clause n `sepBy` kwd ","
-    kwd "."
-    return $ Def n r ty (Clauses cls) Nothing
-
-mldef :: Parser (Def MRel VoidConstrs)
-mldef = (<?> "ml-style definition") $ do
     n <- name
     args <- many $ parens (typing Var)
     r <- rcolon
     retTy <- expr
     kwd "="
-    tm <- expr
-    kwd "."
-    return $ Def n r (chain Pi args retTy) (Term $ chain Lam args tm) Nothing
+
+    let ty = chain Pi args retTy
+
+    let lambdaDef = do
+            tm <- expr
+            kwd "."
+            return $ Def n r ty (Term $ chain Lam args tm) Nothing
+
+    let matchingDef = do
+            ct <- try caseTree
+            return $ Def n r ty (Patterns $ CaseFun args ct) Nothing
+
+    matchingDef <|> lambdaDef
   where
     chain bnd [] tm = tm
     chain bnd (d : args) tm = Bind bnd d $ chain bnd args tm
@@ -199,7 +211,7 @@ dataDef = (<?> "data definition") $ do
     return (tfd : ctors)
 
 simpleDef :: Parser (Def MRel VoidConstrs)
-simpleDef = postulate <|> fundef <|> mldef <?> "simple definition"
+simpleDef = postulate <|> fundef <?> "simple definition"
 
 definition :: Parser [Def MRel VoidConstrs]
 definition = dataDef <|> (pure <$> simpleDef) <?> "definition"
