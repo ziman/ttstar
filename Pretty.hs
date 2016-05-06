@@ -1,5 +1,8 @@
 {-# LANGUAGE FlexibleContexts, FlexibleInstances, StandaloneDeriving, ConstraintKinds #-}
-module Pretty (PrettyR(..), IsRelevance) where
+module Pretty
+    ( PrettyR(..), IsRelevance
+    , indent, arrow
+    ) where
 
 import TT
 import Util.PrettyPrint
