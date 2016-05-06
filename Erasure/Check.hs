@@ -211,9 +211,11 @@ checkAlt lhs n (Alt (Ctor cn args eqs) rhs)
         $ withDefs (map csDef args')
             $ checkCaseTree lhs' rhs'
   where
+    -- don't forget to rewrite in pat!
     pat = mkApp (V cn) [(r, V n) | Def n r ty (Abstract Var) Nothing <- args]
+    pat' = substLots subst eqs pat
 
-    substs = (n, pat) : eqs
+    substs = (n, pat') : eqs
     lhs' = substLots subst substs lhs
     rhs' = substLots substCaseTree substs rhs
 
