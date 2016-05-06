@@ -109,4 +109,10 @@ instance PrettyR r => Pretty (AltLHS r) where
 instance PrettyR r => Show (CaseFun r) where
     show = prettyShow
 
+instance PrettyR r => Show (CaseTree r) where
+    show = prettyShow
+
+instance PrettyR r => Show (Alt r) where
+    show = prettyShow
+
 indent = nest 2

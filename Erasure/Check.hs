@@ -174,39 +174,50 @@ checkDef (Def n r ty (Term tm) Nothing) = bt ("DEF-TERM", n) $ do
     let cs = tycs /\ tmcs
     return $ Def n r ty (Term tm) (Just cs)
 
-checkDef (Def n r ty (Patterns cf) Nothing) = bt ("DEF-CLAUSES", n) $ do
+checkDef (Def n r ty (Patterns cf) Nothing) = bt ("DEF-PATTERNS", n) $ do
     cs <- checkCaseFun n cf
     return $ Def n r ty (Patterns cf) (Just cs)
 
 checkCaseFun :: Name -> CaseFun Meta -> TC Constrs
 checkCaseFun fn (CaseFun args ct)
-    = withDefs (map csDef args)
-        $ checkCaseTree lhs ct
+    = bt ("CASE-FUN", fn)
+        $ withDefs (map csDef args)
+            $ checkCaseTree lhs ct
   where
     lhs = mkApp (V fn) args'
     args' = [(r, V n) | Def n r ty (Abstract Var) Nothing <- args]
 
 checkCaseTree :: TT Meta -> CaseTree Meta -> TC Constrs
-checkCaseTree lhs (PlainTerm rhs) = do
+checkCaseTree lhs (PlainTerm rhs) = bt ("PLAIN-TERM", lhs, rhs) $ do
     (lty, lcs) <- checkTm lhs
     (rty, rcs) <- checkTm rhs
     ccs <- conv lty rty
     return $ lcs /\ rcs /\ ccs
 
-checkCaseTree lhs (Case (V n) alts) =
+checkCaseTree lhs ct@(Case (V n) alts) = bt ("CASE", lhs, ct) $ do
     unions <$> traverse (checkAlt lhs n) alts
 
 checkCaseTree lhs (Case s alts) =
     tcfail $ NonVariableScrutinee s
 
 checkAlt :: TT Meta -> Name -> Alt Meta -> TC Constrs
-checkAlt lhs n (Alt Wildcard rhs) = checkCaseTree lhs rhs
-checkAlt lhs n (Alt (Ctor cn args eqs) rhs) = checkCaseTree lhs' rhs'
+
+checkAlt lhs n (Alt Wildcard rhs)
+    = bt ("ALT-WILDCARD") $
+        checkCaseTree lhs rhs
+
+checkAlt lhs n (Alt (Ctor cn args eqs) rhs)
+    = bt ("ALT-CTOR", pat)
+        $ withDefs (map csDef args')
+            $ checkCaseTree lhs' rhs'
   where
     pat = mkApp (V cn) [(r, V n) | Def n r ty (Abstract Var) Nothing <- args]
+
     substs = (n, pat) : eqs
     lhs' = substLots subst substs lhs
     rhs' = substLots substCaseTree substs rhs
+
+    args' = [d{ defType = substLots subst substs $ defType d } | d <- args]
 
     substLots :: (Name -> TT r -> a -> a) -> [(Name, TT r)] -> a -> a
     substLots substF ss x = foldr (uncurry substF) x ss
