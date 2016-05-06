@@ -180,6 +180,7 @@ checkDef (Def n r ty (Clauses cls) Nothing) = bt ("DEF-CLAUSES", n) $ do
 
     -- now that we know that everything is well-typed, we can build the case tree
     let ctree = Case.compile cls
+    () <- ("CTREE", n, ctree) `traceShow` return ()
 
     return $ Def n r ty (Clauses cls) (Just cs)
 

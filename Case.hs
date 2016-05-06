@@ -31,5 +31,8 @@ instance Pretty AltLHS where
     pretty Wildcard = text "_"
     pretty (Ctor cn args) = (hsep . map pretty) (cn : args)
 
+instance PrettyR r => Show (CaseDef r) where
+    show = prettyShow
+
 compile :: [Clause r] -> CaseDef r
 compile = undefined
