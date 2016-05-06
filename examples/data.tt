@@ -4,16 +4,15 @@ data N : Type.
   Z : N,
   S : N -> N.
 
-plus (m : N) (n : N) : N
-  = case (f m) where f : N -> N.
-      | Z -> n,
-      pat (m : N)
-      | (S m) -> S (plus m n).
+plus : N -> N -> N.
+plus (m : N) (n : n) =
+  case m
+  | Z    -> n
+  | S m' -> S (plus m' n)
   .
 
 main :R: N
   = let
       id : N -> N.
-        pat (x : N).
-          id x = x.
+      id (x : N) = x.
     in plus (id 3) (id 4).

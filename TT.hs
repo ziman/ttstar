@@ -26,17 +26,30 @@ data TT r
     | App r (TT r) (TT r)
     deriving (Eq, Ord)
 
-data Pat r
-    = PV Name
-    | PApp r (Pat r) (Pat r)
-    | PForced (TT r)
+data CaseFun r = CaseFun [Def r VoidConstrs] (CaseTree r) deriving (Eq, Ord)
+
+data CaseTree r
+    = PlainTerm (TT r)
+    | Case Name [Alt r]
     deriving (Eq, Ord)
+
+data AltLHS r
+    = Ctor Name [CtorArg r]
+    | Wildcard
+    deriving (Eq, Ord)
+
+data CtorArg r
+    = PV Name
+    | Forced (TT r)
+    deriving (Eq, Ord)
+
+data Alt r = Alt AltLHS (CaseTree r) deriving (Eq, Ord)
 
 -- The difference between Var and Postulate is that for Var, the value is unknown,
 -- for postulate; the term itself is the value. A variable stands for something else,
 -- a postulate stands for itself.
 data Abstractness = Var | Postulate deriving (Eq, Ord, Show)
-data Body r = Abstract Abstractness | Term (TT r) | Clauses [Clause r] deriving (Eq, Ord)
+data Body r = Abstract Abstractness | Term (TT r) | Patterns (CaseFun r) deriving (Eq, Ord)
 data Clause r = Clause { pvars :: [Def r VoidConstrs], lhs :: Pat r,  rhs :: TT r } deriving (Eq, Ord)
 data Def r cs = Def
     { defName :: Name
@@ -45,6 +58,7 @@ data Def r cs = Def
     , defBody :: Body r
     , defConstraints :: Maybe (cs r)
     } deriving (Eq, Ord)
+
 type Ctx r cs = M.Map Name (Def r cs)
 
 newtype Program r cs = Prog { getDefs :: [Def r cs] } deriving (Eq, Ord)

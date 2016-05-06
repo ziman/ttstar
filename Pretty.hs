@@ -113,6 +113,31 @@ deriving instance PrettyR r => Show (Program r VoidConstrs)
 
 type IsRelevance r = (PrettyR r, Eq r)
 
+instance PrettyR r => Pretty (CaseFun r) where
+    pretty (CaseFun ns t) =
+        text "\\" <> hsep (map (parens . pretty) ns) <> text "."
+        $$ indent (pretty t)
+
+instance PrettyR r => Pretty (Tree r) where
+    pretty (PlainTerm tm) = pretty tm
+    pretty (Case n alts) =
+        text "case" <+> pretty n <+> text "of"
+        $$ indent (vcat $ map pretty alts)
+
+instance PrettyR r => Pretty (Alt r) where
+    pretty (Alt lhs rhs) = pretty lhs <+> arrow <+> pretty rhs
+
+instance PrettyR r => Pretty (AltLHS r) where
+    pretty Wildcard = text "_"
+    pretty (Ctor cn args) = (hsep . map pretty) (cn : args)
+
+instance PrettyR r => Pretty (CtorArg r) where
+    pretty (PV n) = pretty n
+    pretty (Forced tm) = text "[" <> pretty tm <> text "]"
+
+instance PrettyR r => Show (CaseDef r) where
+    show = prettyShow
+
 lam = text "\\"
 indent = nest 2
 arrow = text "->"

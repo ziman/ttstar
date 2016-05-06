@@ -7,7 +7,6 @@ import TTLens
 import Normalise
 import Erasure.Meta
 import Erasure.Solve
-import Case
 
 import Prelude hiding (lookup)
 
