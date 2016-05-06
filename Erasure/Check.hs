@@ -39,6 +39,7 @@ data TCError
     | NonFunction TTmeta TTmeta  -- term, type
     | EmptyCaseTree TTmeta
     | CantMatch TTmeta TTmeta
+    | NonVariableScrutinee TTmeta
     | InconsistentErasure Name
     | NotImplemented String
     | Other String
@@ -173,23 +174,42 @@ checkDef (Def n r ty (Term tm) Nothing) = bt ("DEF-TERM", n) $ do
     let cs = tycs /\ tmcs
     return $ Def n r ty (Term tm) (Just cs)
 
-checkDef (Def n r ty (Clauses cls) Nothing) = bt ("DEF-CLAUSES", n) $ do
-    -- first, typecheck the clauses
-    cs <- unions <$> traverse (checkClause n r ty) cls
+checkDef (Def n r ty (Patterns cf) Nothing) = bt ("DEF-CLAUSES", n) $ do
+    cs <- checkCaseFun n cf
+    return $ Def n r ty (Patterns cf) (Just cs)
 
-    -- now that we know that everything is well-typed, we can build the case tree
-    let ctree = Case.compile cls
-    () <- ("CTREE", n, ctree) `traceShow` return ()
+checkCaseFun :: Name -> CaseFun Meta -> TC Constrs
+checkCaseFun fn (CaseFun args ct)
+    = withDefs (map csDef args)
+        $ checkCaseTree lhs ct
+  where
+    lhs = mkApp (V fn) args'
+    args' = [(r, V n) | Def n r ty (Abstract Var) Nothing <- args]
 
-    return $ Def n r ty (Clauses cls) (Just cs)
+checkCaseTree :: TT Meta -> CaseTree Meta -> TC Constrs
+checkCaseTree lhs (PlainTerm rhs) = do
+    (lty, lcs) <- checkTm lhs
+    (rty, rcs) <- checkTm rhs
+    ccs <- conv lty rty
+    return $ lcs /\ rcs /\ ccs
 
-checkClause :: Name -> Meta -> Type -> Clause Meta -> TC Constrs
-checkClause fn fr fty (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $
-    withDefs (map csDef pvs) $ do
-        (lty, lcs) <- checkTm (pat2tt lhs)
-        (rty, rcs) <- checkTm rhs
-        ccs <- conv lty rty
-        return $ flipConstrs lcs /\ rcs /\ ccs
+checkCaseTree lhs (Case (V n) alts) =
+    unions <$> traverse (checkAlt lhs n) alts
+
+checkCaseTree lhs (Case s alts) =
+    tcfail $ NonVariableScrutinee s
+
+checkAlt :: TT Meta -> Name -> Alt Meta -> TC Constrs
+checkAlt lhs n (Alt Wildcard rhs) = checkCaseTree lhs rhs
+checkAlt lhs n (Alt (Ctor cn args eqs) rhs) = checkCaseTree lhs' rhs'
+  where
+    pat = mkApp (V cn) [(r, V n) | Def n r ty (Abstract Var) Nothing <- args]
+    substs = (n, pat) : eqs
+    lhs' = substLots subst substs lhs
+    rhs' = substLots substCaseTree substs rhs
+
+    substLots :: (Name -> TT r -> a -> a) -> [(Name, TT r)] -> a -> a
+    substLots substF ss x = foldr (uncurry substF) x ss
 
 withDefs :: [Def Meta Constrs'] -> TC a -> TC a
 withDefs (Def n r ty body cs : ds) = with (Def n r ty body cs) . withDefs ds

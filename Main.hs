@@ -14,10 +14,10 @@ import Eval
 import Util.PrettyPrint
 
 import Erasure.Meta
-{-
 import Erasure.Check
 import Erasure.Solve
 import Erasure.Annotate
+{-
 import Erasure.Specialise
 import Erasure.Prune
 import Erasure.Verify
@@ -131,7 +131,6 @@ main = do
             let metaified = meta prog
             printP metaified
 
-{-
             let iterSpecialisation metaified = do
                     putStrLn "### Inferred definitions ###\n"
                     let (ctx, cs) = either (error . show) id . check $ metaified
@@ -152,10 +151,15 @@ main = do
                     then error "!! inconsistent annotation"
                     else return ()
 
+
                     putStrLn "### Annotated ###\n"
                     let annotated = annotate uses $ metaified
                     printP $ annotated
 
+                    return annotated
+
+            annotated <- iterSpecialisation metaified
+{-
                     putStrLn "### Specialised ###\n"
                     let specialised = specialise metaified annotated
                     printP $ specialised
@@ -194,6 +198,7 @@ main = do
 {-
             putStrLn "erased:"
             putStrLn $ "  " ++ show (eval NF (builtins ()) pruned)
+-}
   where
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
 
@@ -205,4 +210,3 @@ main = do
         ++ unlines (map (("  " ++) . fmtCtr) $ M.toList cs)
 
     ndefs (Prog defs) = length defs
--}
