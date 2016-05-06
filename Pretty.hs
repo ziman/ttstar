@@ -29,20 +29,10 @@ instance PrettyR (Maybe Relevance) where
 instance Pretty Name where
     pretty = text . show
 
-instance PrettyR r => Pretty (Clause r) where
-    pretty (Clause [] lhs rhs) =
-        pretty lhs <+> text "=" <+> pretty rhs
-    pretty (Clause pvs lhs rhs) =
-        (text "pat" <+> hsep (map prettyPVar pvs) <> text ".")
-        $$ indent (pretty $ Clause [] lhs rhs)
-      where
-        prettyPVar d@(Def _ _ (V Blank) _ _) = pretty d
-        prettyPVar d = parens (pretty d)
-
 instance PrettyR r => Pretty (Body r) where
     pretty (Abstract _) = empty
     pretty (Term tm) = text "=" <+> pretty tm
-    pretty (Clauses cls) = vcat $ map pretty cls
+    pretty (Patterns cf) = pretty cf
 
 instance PrettyR r => Pretty (Program r cs) where
     pretty (Prog defs) = vcat $ map (\d -> pretty d $$ blankLine) defs
@@ -59,7 +49,7 @@ instance PrettyR r => Pretty (Def r cs) where
         <+> case body of
                 Abstract _  -> empty
                 Term tm     -> text "=" <+> pretty tm
-                Clauses cls -> blankLine $$ indent (vcat $ map pretty cls)
+                Patterns cf -> blankLine $$ indent (pretty cf)
         <+> case cs of
                 Nothing -> empty
                 Just _  -> text "{- constraints apply -}"
@@ -87,27 +77,12 @@ instance PrettyR r => Pretty (TT r) where
             show' r (App r' f' x') x = show' r' f' x' <> prettyApp r <> pretty' True x
             show' r f x = pretty f <> prettyApp r <> pretty' True x
 
-instance PrettyR r => Pretty (Pat r) where
-    pretty tm = pretty' False tm
-      where
-        pretty' pp (PV n) = pretty n
-        pretty' pp (PApp r f x) = ps $ show' r f x 
-          where
-            ps = if pp then parens else id
-            show' r (PApp r' f' x') x = show' r' f' x' <> prettyApp r <> pretty' True x
-            show' r f x = pretty f <> prettyApp r <> pretty' True x
-        pretty' pp (PForced tm) = text "[" <> pretty tm <> text "]"
-
 instance PrettyR r => Show (TT r) where
-    show = prettyShow
-
-instance PrettyR r => Show (Pat r) where
     show = prettyShow
 
 instance PrettyR r => Show (Def r cs) where
     show = prettyShow
 
-deriving instance PrettyR r => Show (Clause r)
 deriving instance PrettyR r => Show (Body r)
 deriving instance PrettyR r => Show (Program r VoidConstrs)
 
@@ -118,7 +93,7 @@ instance PrettyR r => Pretty (CaseFun r) where
         text "\\" <> hsep (map (parens . pretty) ns) <> text "."
         $$ indent (pretty t)
 
-instance PrettyR r => Pretty (Tree r) where
+instance PrettyR r => Pretty (CaseTree r) where
     pretty (PlainTerm tm) = pretty tm
     pretty (Case n alts) =
         text "case" <+> pretty n <+> text "of"
@@ -129,13 +104,12 @@ instance PrettyR r => Pretty (Alt r) where
 
 instance PrettyR r => Pretty (AltLHS r) where
     pretty Wildcard = text "_"
-    pretty (Ctor cn args) = (hsep . map pretty) (cn : args)
+    pretty (Ctor cn args eqs)
+        = pretty cn
+            <+> hsep (map pretty args)
+            <+> hsep [text "|" <+> pretty n <+> text "=" <+> pretty tm | (n, tm) <- eqs]
 
-instance PrettyR r => Pretty (CtorArg r) where
-    pretty (PV n) = pretty n
-    pretty (Forced tm) = text "[" <> pretty tm <> text "]"
-
-instance PrettyR r => Show (CaseDef r) where
+instance PrettyR r => Show (CaseFun r) where
     show = prettyShow
 
 lam = text "\\"
