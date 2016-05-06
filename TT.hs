@@ -30,7 +30,7 @@ data CaseFun r = CaseFun [Def r VoidConstrs] (CaseTree r) deriving (Eq, Ord)
 
 data CaseTree r
     = PlainTerm (TT r)
-    | Case Name [Alt r]
+    | Case (TT r) [Alt r]
     deriving (Eq, Ord)
 
 data AltLHS r
@@ -127,13 +127,7 @@ substCaseFun n tm cf@(CaseFun args ct)
 
 substCaseTree :: Name -> TT r -> CaseTree r -> CaseTree r
 substCaseTree n tm (PlainTerm t) = PlainTerm $ subst n tm t
-substCaseTree n tm (Case v alts)
-    | v == n
-    = error "subst in case scrutinee"
-    -- There is no technical reason for the above error -- we could just rename the variable.
-    -- However, this should never happen because all case-inspected variables should come
-    -- from pattern matching, and therefore shouldn't be touched by renaming.
-substCaseTree n tm (Case v alts) = Case v $ map (substAlt n tm) alts
+substCaseTree n tm (Case s alts) = Case (subst n tm s) $ map (substAlt n tm) alts
 
 -- equations are pattern-only so they are not touched by substitution
 substAlt :: Name -> TT r -> Alt r -> Alt r
@@ -177,7 +171,7 @@ occursInCaseFun n (CaseFun args ct)
 
 occursInCaseTree :: Name -> CaseTree r -> Bool
 occursInCaseTree n (PlainTerm tm) = n `occursIn` tm
-occursInCaseTree n (Case v alts) = (v == n) || ((n `occursInAlt`) `any` alts)
+occursInCaseTree n (Case s alts) = (n `occursIn` s) || ((n `occursInAlt`) `any` alts)
 
 occursInAlt :: Name -> Alt r -> Bool
 occursInAlt n (Alt Wildcard rhs) = n `occursInCaseTree` rhs

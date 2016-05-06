@@ -116,36 +116,41 @@ red NF ctx t@(App r f x)
     redF = red NF ctx f
     redX = red NF ctx x
 
-augCtx :: Ctx r cs -> [Def r cs'] -> [(r, TT r)] -> Maybe (Ctx r cs, [(r, TT r)])
-augCtx ctx [] args = Just (ctx, args)
-augCtx ctx ds []   = Nothing  -- not enough args to reduce
-augCtx ctx (d:ds) ((_,arg):args)
+substVars :: Ctx r cs -> [Def r cs'] -> [(r, TT r)] -> Maybe (Ctx r cs, [(r, TT r)])
+substVars ctx [] args = Just (ctx, args)
+substVars ctx ds []   = Nothing  -- not enough args to reduce
+substVars ctx (d:ds) ((_,arg):args)
     = let d' = d{ defBody = Term arg, defConstraints = Nothing }
-        in augCtx (M.insert (defName d') d' ctx) ds args
+        in substVars (M.insert (defName d) d' ctx) ds args
 
 evalPatterns :: IsRelevance r => Form -> Ctx r cs -> CaseFun r -> TT r -> Maybe (TT r)
 evalPatterns form ctx (CaseFun argvars ct) tm = do
-    (ctx', extras) <- augCtx ctx argvars argvals
-    rhs <- evalCaseTree form ctx' ct
-    return $ red form ctx' (mkApp rhs extras)
+    (argCtx, extras) <- substVars M.empty argvars argvals
+    rhs <- evalCaseTree form ctx $ substCtxTree argCtx ct
+    return $ red form ctx (mkApp rhs extras)
   where
     (V _fn, argvals) = unApply tm
 
 evalCaseTree :: IsRelevance r => Form -> Ctx r cs -> CaseTree r -> Maybe (TT r)
 evalCaseTree form ctx (PlainTerm tm) = Just $ red form ctx tm
-evalCaseTree form ctx (Case v alts)
-    | Just (Def n r ty (Term tm) Nothing) <- M.lookup v ctx
-    = let tm' = red WHNF ctx tm
-        in foldr ((<|>) . evalAlt form ctx tm') empty alts
+evalCaseTree form ctx (Case tm alts)
+    = firstMatch $ map (evalAlt form ctx tm') alts
+  where
+    tm' = red WHNF ctx tm
 
-    | otherwise
-    = error $ "case-inspection of something strange: " ++ show (M.lookup v ctx)
+firstMatch :: Alternative f => [f a] -> f a
+firstMatch = foldr (<|>) empty
 
 -- here, the term tm is in WHNF
 evalAlt :: IsRelevance r => Form -> Ctx r cs -> TT r -> Alt r -> Maybe (TT r)
 evalAlt form ctx tm (Alt lhs rhs) = do
     matchCtx <- match lhs tm
-    evalCaseTree form (matchCtx `M.union` ctx) rhs
+    evalCaseTree form (matchCtx `M.union` ctx) (substCtxTree matchCtx rhs)
+
+substCtxTree :: Ctx r cs -> CaseTree r -> CaseTree r
+substCtxTree ctx ct = foldr substOne ct (M.elems ctx)
+  where
+    substOne (Def n r ty (Term tm) Nothing) ct = substCaseTree n tm ct
 
 match :: AltLHS r -> TT r -> Maybe (Ctx r cs)
 match Wildcard _ = Just M.empty
@@ -153,7 +158,7 @@ match (Ctor cn argvars eqs) tm
     | (V cn', argvals) <- unApply tm
     , cn == cn'
     = do
-        (ctx, []) <- augCtx M.empty argvars argvals
+        (ctx, []) <- substVars M.empty argvars argvals
         return ctx
 
 match _ _ = Nothing

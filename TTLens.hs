@@ -43,7 +43,7 @@ caseFunRelevance f (CaseFun args ct)
 
 caseTreeRelevance :: Traversal (CaseTree r) (CaseTree r') r r'
 caseTreeRelevance f (PlainTerm tm) = PlainTerm <$> ttRelevance f tm
-caseTreeRelevance f (Case v alts) = Case v <$> traverse (altRelevance f) alts
+caseTreeRelevance f (Case s alts) = Case <$> ttRelevance f s <*> traverse (altRelevance f) alts
 
 altRelevance :: Traversal (Alt r) (Alt r') r r'
 altRelevance f (Alt lhs rhs) = Alt <$> altLHSRelevance f lhs <*> caseTreeRelevance f rhs
