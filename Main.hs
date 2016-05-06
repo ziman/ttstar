@@ -4,8 +4,8 @@ module Main where
 import TT
 import Parser
 import Pretty
-{-
 import TTLens
+{-
 import Explorer
 import Normalise
 import Eval

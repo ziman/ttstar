@@ -33,11 +33,30 @@ defRelevance' csRelevance f (Def n r ty body mcs)
 bodyRelevance :: Traversal (Body r) (Body r') r r'
 bodyRelevance f (Abstract a) = pure $ Abstract a
 bodyRelevance f (Term tm) = Term <$> ttRelevance f tm
-bodyRelevance f (Clauses cls) = Clauses <$> traverse (clauseRelevance f) cls
+bodyRelevance f (Patterns cf) = Patterns <$> caseFunRelevance f cf
 
-clauseRelevance :: Traversal (Clause r) (Clause r') r r'
-clauseRelevance f (Clause pvs lhs rhs)
-    = Clause <$> traverse (defRelevance f) pvs <*> patRelevance f lhs <*> ttRelevance f rhs
+caseFunRelevance :: Traversal (CaseFun r) (CaseFun r') r r'
+caseFunRelevance f (CaseFun args ct)
+    = CaseFun
+        <$> traverse (defRelevance f) args
+        <*> caseTreeRelevance f ct
+
+caseTreeRelevance :: Traversal (CaseTree r) (CaseTree r') r r'
+caseTreeRelevance f (PlainTerm tm) = PlainTerm <$> ttRelevance f tm
+caseTreeRelevance f (Case v alts) = Case v <$> traverse (altRelevance f) alts
+
+altRelevance :: Traversal (Alt r) (Alt r') r r'
+altRelevance f (Alt lhs rhs) = Alt <$> altLHSRelevance f lhs <*> caseTreeRelevance f rhs
+
+altLHSRelevance :: Traversal (AltLHS r) (AltLHS r') r r'
+altLHSRelevance f Wildcard = pure $ Wildcard
+altLHSRelevance f (Ctor cn args eqs)
+    = Ctor cn
+        <$> traverse (defRelevance f) args
+        <*> traverse (caseEqRelevance f) eqs
+
+caseEqRelevance :: Traversal (Name, TT r) (Name, TT r') r r'
+caseEqRelevance f (n, tm) = (,) n <$> ttRelevance f tm
 
 defRelevance :: Traversal (Def r VoidConstrs) (Def r' cs') r r'
 defRelevance = defRelevance' voidRelevance
@@ -47,12 +66,3 @@ progRelevance' csRelevance f (Prog defs) = Prog <$> traverse (defRelevance' csRe
 
 progRelevance :: Traversal (Program r VoidConstrs) (Program r' cs') r r'
 progRelevance = progRelevance' voidRelevance
-
-patRelevance :: Traversal (Pat r) (Pat r') r r'
-patRelevance f = g
-  where
-    g pat = case pat of
-        PV n -> pure $ PV n 
-        PApp r pf px -> PApp <$> f r <*> patRelevance f pf <*> patRelevance f px
-        PForced tm -> PForced <$> ttRelevance f tm
-
