@@ -189,10 +189,10 @@ checkCaseFun fn (CaseFun args ct)
 
 checkCaseTree :: TT Meta -> CaseTree Meta -> TC Constrs
 checkCaseTree lhs (Leaf rhs) = bt ("PLAIN-TERM", lhs, rhs) $ do
-    (lty,  _ ) <- checkTm lhs  -- we don't take constraints from here because they're too strict
+    (lty, lcs) <- checkTm lhs  -- we don't take constraints from here because they're too strict
     (rty, rcs) <- checkTm rhs
     ccs <- conv lty rty
-    return $ rcs /\ ccs
+    return $ flipConstrs lcs /\ rcs /\ ccs
 
 checkCaseTree lhs ct@(Case (V n) alts) = bt ("CASE", lhs, ct) $ do
     r <- defR <$> lookup n
