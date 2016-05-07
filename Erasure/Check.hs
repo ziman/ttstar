@@ -188,7 +188,7 @@ checkCaseFun fn (CaseFun args ct)
     args' = [(r, V n) | Def n r ty (Abstract Var) Nothing <- args]
 
 checkCaseTree :: TT Meta -> CaseTree Meta -> TC Constrs
-checkCaseTree lhs (PlainTerm rhs) = bt ("PLAIN-TERM", lhs, rhs) $ do
+checkCaseTree lhs (Leaf rhs) = bt ("PLAIN-TERM", lhs, rhs) $ do
     (lty,  _ ) <- checkTm lhs  -- we don't take constraints from here because they're too strict
     (rty, rcs) <- checkTm rhs
     ccs <- conv lty rty
@@ -212,10 +212,10 @@ checkAlt lhs n sr (Alt Wildcard rhs) = bt ("ALT-WILDCARD") $ do
 
 checkAlt lhs n sr (Alt (Ctor cn args eqs) rhs) = bt ("ALT-CTOR", pat) $ do
     cs <- withDefs (map csDef args') $ do
-            -- get constraints from the pattern
-            -- *type*checking will be done eventually in the leaf case for PlainTerm
-            -- that ensures that (lty `conv` scrutTy) but maybe we could check here to be extra sure (?)
-            -- at least we know that this has got *some* type and it isn't absolute rubbish
+            -- Get constraints from the pattern.
+            -- *Type*checking will be done eventually in the case for Leaf,
+            -- which ensures that (lty `conv` scrutTy) but maybe we could check here to be extra sure (?).
+            -- At least we know that this has got *some* type and it isn't absolute rubbish.
             (patTy, patCs) <- checkTm pat'
             cs <- checkCaseTree lhs' rhs'
             return $ cs /\ flipConstrs patCs

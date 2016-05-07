@@ -25,7 +25,7 @@ pruneCaseFun eds (CaseFun args ct)
     = CaseFun (pruneDefs eds args) (pruneCaseTree eds ct)
 
 pruneCaseTree :: S.Set Name -> CaseTree Relevance -> CaseTree ()
-pruneCaseTree eds (PlainTerm tm) = PlainTerm $ pruneTm eds tm
+pruneCaseTree eds (Leaf tm) = Leaf $ pruneTm eds tm
 pruneCaseTree eds (Case s alts) = Case (pruneTm eds s) $ map (pruneAlt eds) alts
 
 pruneAlt :: S.Set Name -> Alt Relevance -> Alt ()

@@ -92,7 +92,7 @@ specNCaseFun :: CaseFun Relevance -> Spec (CaseFun Relevance)
 specNCaseFun (CaseFun args ct) = CaseFun <$> traverse specNDef args <*> specNCaseTree ct
 
 specNCaseTree :: CaseTree Relevance -> Spec (CaseTree Relevance)
-specNCaseTree (PlainTerm tm) = PlainTerm <$> specNTm tm
+specNCaseTree (Leaf tm) = Leaf <$> specNTm tm
 specNCaseTree (Case s alts) = Case <$> specNTm s <*> traverse specNAlt alts
 
 specNAlt :: Alt Relevance -> Spec (Alt Relevance)

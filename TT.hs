@@ -29,7 +29,7 @@ data TT r
 data CaseFun r = CaseFun [Def r VoidConstrs] (CaseTree r) deriving (Eq, Ord)
 
 data CaseTree r
-    = PlainTerm (TT r)
+    = Leaf (TT r)
     | Case (TT r) [Alt r]
     deriving (Eq, Ord)
 
@@ -129,7 +129,7 @@ substCaseFun n tm cf@(CaseFun args ct)
     | otherwise = CaseFun args $ substCaseTree n tm ct
 
 substCaseTree :: Name -> TT r -> CaseTree r -> CaseTree r
-substCaseTree n tm (PlainTerm t) = PlainTerm $ subst n tm t
+substCaseTree n tm (Leaf t) = Leaf $ subst n tm t
 substCaseTree n tm (Case s alts) = Case (subst n tm s) $ map (substAlt n tm) alts
 
 -- equations are pattern-only so they are not touched by substitution
@@ -173,7 +173,7 @@ occursInCaseFun n (CaseFun args ct)
     && (n `occursInCaseTree` ct)
 
 occursInCaseTree :: Name -> CaseTree r -> Bool
-occursInCaseTree n (PlainTerm tm) = n `occursIn` tm
+occursInCaseTree n (Leaf tm) = n `occursIn` tm
 occursInCaseTree n (Case s alts) = (n `occursIn` s) || ((n `occursInAlt`) `any` alts)
 
 occursInAlt :: Name -> Alt r -> Bool

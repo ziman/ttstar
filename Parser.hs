@@ -137,10 +137,10 @@ mkPostulate :: Def MRel VoidConstrs -> Def MRel VoidConstrs
 mkPostulate (Def n r ty (Abstract Var) Nothing) = Def n r ty (Abstract Postulate) Nothing
 
 caseTree :: Parser (CaseTree MRel)
-caseTree = realCaseTree <|> plainTerm <?> "case tree or term"
+caseTree = realCaseTree <|> leaf <?> "case tree or term"
 
-plainTerm :: Parser (CaseTree MRel)
-plainTerm = PlainTerm <$> expr
+leaf :: Parser (CaseTree MRel)
+leaf = Leaf <$> expr
 
 realCaseTree :: Parser (CaseTree MRel)
 realCaseTree = (<?> "case tree") $ do

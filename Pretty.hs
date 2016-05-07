@@ -89,7 +89,7 @@ instance PrettyR r => Pretty (CaseFun r) where
         $$ indent (pretty t)
 
 instance PrettyR r => Pretty (CaseTree r) where
-    pretty (PlainTerm tm) = pretty tm
+    pretty (Leaf tm) = pretty tm
     pretty (Case n alts) =
         text "case" <+> pretty n <+> text "of"
         $$ indent (vcat $ map pretty alts)
