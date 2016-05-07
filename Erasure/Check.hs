@@ -192,7 +192,7 @@ checkCaseTree lhs (PlainTerm rhs) = bt ("PLAIN-TERM", lhs, rhs) $ do
     (lty, lcs) <- checkTm lhs
     (rty, rcs) <- checkTm rhs
     ccs <- conv lty rty
-    return $ lcs /\ rcs /\ ccs
+    return $ flipConstrs lcs /\ rcs /\ ccs
 
 checkCaseTree lhs ct@(Case (V n) alts) = bt ("CASE", lhs, ct) $ do
     unions <$> traverse (checkAlt lhs n) alts
