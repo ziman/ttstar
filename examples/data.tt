@@ -2,7 +2,7 @@
 
 data N : Type.
   Z : N,
-  S : N -> N.
+  S : (x :R: N) -> N.
 
 plus (m : N) (n : N) : N =
   case m of

@@ -70,6 +70,9 @@ mkApp :: TT r -> [(r, TT r)] -> TT r
 mkApp f [] = f
 mkApp f ((r, x) : xs) = mkApp (App r f x) xs
 
+substLots :: (Name -> TT r -> a -> a) -> [(Name, TT r)] -> a -> a
+substLots substF ss x = foldr (uncurry substF) x ss
+
 substMany :: Show (Body r) => Ctx r cs -> TT r -> TT r
 substMany ctx tm = foldl phi tm $ M.toList ctx
   where

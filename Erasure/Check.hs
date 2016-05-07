@@ -189,27 +189,37 @@ checkCaseFun fn (CaseFun args ct)
 
 checkCaseTree :: TT Meta -> CaseTree Meta -> TC Constrs
 checkCaseTree lhs (PlainTerm rhs) = bt ("PLAIN-TERM", lhs, rhs) $ do
-    (lty, lcs) <- checkTm lhs
+    (lty,  _ ) <- checkTm lhs  -- we don't take constraints from here because they're too strict
     (rty, rcs) <- checkTm rhs
     ccs <- conv lty rty
-    return $ flipConstrs lcs /\ rcs /\ ccs
+    return $ rcs /\ ccs
 
 checkCaseTree lhs ct@(Case (V n) alts) = bt ("CASE", lhs, ct) $ do
-    unions <$> traverse (checkAlt lhs n) alts
+    r <- defR <$> lookup n
+    cs <- unions <$> traverse (checkAlt lhs n r) alts
+    if length alts > 1
+        then return $ cs /\ Fixed R --> r
+        else return cs
 
 checkCaseTree lhs (Case s alts) =
     tcfail $ NonVariableScrutinee s
 
-checkAlt :: TT Meta -> Name -> Alt Meta -> TC Constrs
 
-checkAlt lhs n (Alt Wildcard rhs)
-    = bt ("ALT-WILDCARD") $
-        checkCaseTree lhs rhs
+checkAlt :: TT Meta -> Name -> Meta -> Alt Meta -> TC Constrs
 
-checkAlt lhs n (Alt (Ctor cn args eqs) rhs)
-    = bt ("ALT-CTOR", pat)
-        $ withDefs (map csDef args')
-            $ checkCaseTree lhs' rhs'
+checkAlt lhs n sr (Alt Wildcard rhs) = bt ("ALT-WILDCARD") $ do
+    checkCaseTree lhs rhs
+
+checkAlt lhs n sr (Alt (Ctor cn args eqs) rhs) = bt ("ALT-CTOR", pat) $ do
+    cs <- withDefs (map csDef args') $ do
+            -- get constraints from the pattern
+            -- *type*checking will be done eventually in the leaf case for PlainTerm
+            -- that ensures that (lty `conv` scrutTy) but maybe we could check here to be extra sure (?)
+            -- at least we know that this has got *some* type and it isn't absolute rubbish
+            (patTy, patCs) <- checkTm pat'
+            cs <- checkCaseTree lhs' rhs'
+            return $ cs /\ flipConstrs patCs
+    return $ cs /\ scrutCs
   where
     -- don't forget to rewrite in pat!
     pat = mkApp (V cn) [(r, V n) | Def n r ty (Abstract Var) Nothing <- args]
@@ -221,8 +231,9 @@ checkAlt lhs n (Alt (Ctor cn args eqs) rhs)
 
     args' = [d{ defType = substLots subst substs $ defType d } | d <- args]
 
-    substLots :: (Name -> TT r -> a -> a) -> [(Name, TT r)] -> a -> a
-    substLots substF ss x = foldr (uncurry substF) x ss
+    -- bindings from the individual vars to the scrutinee
+    scrutCs = unions [defR d --> sr | d <- args']
+
 
 withDefs :: [Def Meta Constrs'] -> TC a -> TC a
 withDefs (Def n r ty body cs : ds) = with (Def n r ty body cs) . withDefs ds
