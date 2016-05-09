@@ -50,12 +50,12 @@ appRightNeutral (ys : List) : Id List ys (app ys Nil)
 
 appAssoc (xs : List) (ys : List) (zs : List)
   : Id List (app (app xs ys) zs) (app xs (app ys zs))
-  = case ys of
+  = case xs of
       Nil
         => Refl List (app ys zs),
 
       Cons (x : Bool) (xs' : List)
-        => cong List List (Cons x) (app (app xs ys) zs) (app xs (app ys zs)) (appAssoc xs ys zs).
+        => cong List List (Cons x) (app (app xs' ys) zs) (app xs' (app ys zs)) (appAssoc xs' ys zs).
 
 data Rev : List -> Type.
   RNil : Rev Nil,
@@ -68,10 +68,10 @@ rev' (xs : List) (rxs : Rev xs) (ys : List) : Rev (app xs ys)
         => subst List Rev xs (app xs Nil) (appRightNeutral xs) rxs,
       Cons (y : Bool) (ys' : List)
         => subst List Rev
-            (app (app xs (one y)) ys)
-            (app xs (Cons y ys))
-            (appAssoc xs (one y) ys)
-            (rev' (app xs (one y)) (RSnoc xs y rxs) ys).
+            (app (app xs (one y)) ys')
+            (app xs (Cons y ys'))
+            (appAssoc xs (one y) ys')
+            (rev' (app xs (one y)) (RSnoc xs y rxs) ys').
 
 rev (xs : List) : Rev xs
   = rev' Nil RNil xs.
