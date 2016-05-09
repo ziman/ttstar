@@ -29,13 +29,13 @@ instance Termy (TT r) where
 
     subst n tm (Bind b d rhs) = Bind b d' rhs'
       where
-        (_, d', rhs') = substBinder n tm d rhs
+        ([d'], rhs') = substBinder n tm [d] rhs
 
     subst n tm (App r f x) = App r (subst n tm f) (subst n tm x)
 
     freeVars (V n) = S.singleton n
     freeVars (I n ty) = S.insert n $ freeVars ty
-    freeVars (Bind b d tm) = S.delete (defName d) (freeVars tm)
+    freeVars (Bind b d tm) = freeVarsBinder [d] tm
     freeVars (App r f x) = freeVars f `S.union` freeVars x
 
 instance Termy (Def r cs) where
@@ -64,11 +64,18 @@ instance Termy (CaseFun r) where
       where
         (ds', ct') = substBinder n tm d ct
 
-    freeVars (CaseFun []     ct) = freeVars ct
-    freeVars (CaseFun (d:ds) ct)
-        = freeVars (defType d)
-            `S.union`
-                S.delete (defName d) (freeVars $ CaseFun ds ct)
+    freeVars (CaseFun ds ct) = freeVarsBinder ds ct
+
+freeVarsBinder :: Termy a => [Def r cs] -> a -> S.Set Name
+freeVarsBinder [] rhs = freeVars rhs
+freeVarsBinder (d:ds) rhs
+    = freeVars (defType d)
+        `S.union`
+            S.delete (defName d)
+                (freeVars (defBody d)
+                    `S.union`
+                        freeVarsBinder ds rhs
+                )
 
 substBinder :: Termy a => Name -> TT r -> [Def r cs] -> a -> ([Def r cs], a)
 substBinder n tm [] rhs = ([], subst n tm rhs)
@@ -115,8 +122,8 @@ instance Termy (Alt r) where
     -- equations are pattern-only so they are not touched by substitution
     -- (but they must be rewritten if we rename the binders!)
     substAlt n tm (Alt Wildcard rhs) = Alt Wildcard $ substCaseTree n tm rhs
-    substAlt n tm alt@(Alt lhs@(Ctor cn args eqs) rhs)
-        = error "TODO: this is tricky!"
+    substAlt n tm (Alt (Ctor cn args eqs) rhs)
+        = Alt
 
     freeVars (Alt Wildcard rhs) = freeVars rhs
     freeVars (Alt (Ctor cn [] eqs) rhs) = freeVars rhs
