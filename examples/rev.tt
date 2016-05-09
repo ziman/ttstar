@@ -6,7 +6,8 @@ data Id : (a : Type) -> (x : a) -> (y : a) -> Type.
 id (a : Type) : a -> a
   = \x : a. x.
 
-subst : (a : Type) -> (P : a -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -> (P x) -> (P y)
+subst (a : Type) (P : a -> Type) (x : a) (y : a) (eq : Id a x y)
+  : (P x) -> P y
   = case eq of
       Refl (a' : Type) (x' : a)
         | a' = a
@@ -14,7 +15,8 @@ subst : (a : Type) -> (P : a -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -
         | y  = x
         => \w : P x'. w.  -- `x'` instead of `x` just to be mean to the typechecker
 
-cong : (a : Type) -> (b : Type) -> (f : a -> b) -> (x : a) -> (y : a) -> (eq : Id a x y) -> Id b (f x) (f y)
+cong (a : Type) (b : Type) (f : a -> b) (x : a) (y : a) (eq : Id a x y)
+  : Id b (f x) (f y)
   = case eq of
       Refl (a' : Type) (x' : a)
         | a' = a
@@ -34,20 +36,20 @@ data List : Type.
 one (x : Bool) : List
   = Cons x Nil.
 
-app : (xs : List) -> (ys : List) -> List
+app (xs : List) (ys : List) : List
   = case xs of
       Nil => ys,
       Cons (x : Bool) (xs' : List) => Cons x (app xs' ys).
 
-appRightNeutral : (ys : List) -> Id List ys (app ys Nil)
+appRightNeutral (ys : List) : Id List ys (app ys Nil)
   = case ys of
       Nil
         => Refl List Nil,
       Cons (x : Bool) (xs : List)
         => cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs).
 
-appAssoc : (xs : List) -> (ys : List) -> (zs : List)
-  -> Id List (app (app xs ys) zs) (app xs (app ys zs))
+appAssoc (xs : List) (ys : List) (zs : List)
+  : Id List (app (app xs ys) zs) (app xs (app ys zs))
   = case ys of
       Nil
         => Refl List (app ys zs),
@@ -60,7 +62,7 @@ data Rev : List -> Type.
   RSnoc : (xs : List) -> (x : Bool) -> (rxs : Rev xs)
     -> Rev (app xs (one x)).
 
-rev' : (xs : List) -> (rxs : Rev xs) -> (ys : List) -> Rev (app xs ys)
+rev' (xs : List) (rxs : Rev xs) (ys : List) : Rev (app xs ys)
   = case ys of
       Nil
         => subst List Rev xs (app xs Nil) (appRightNeutral xs) rxs,
@@ -74,7 +76,7 @@ rev' : (xs : List) -> (rxs : Rev xs) -> (ys : List) -> Rev (app xs ys)
 rev (xs : List) : Rev xs
   = rev' Nil RNil xs.
 
-reverse' : (xs : List) -> (rxs : Rev xs) -> List
+reverse' (xs : List) (rxs : Rev xs) : List
   = case rxs of
       RNil
         | xs = Nil
