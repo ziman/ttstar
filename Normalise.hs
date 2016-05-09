@@ -2,6 +2,7 @@
 module Normalise (IsRelevance, Form(..), red, whnf, nf) where
 
 import TT
+import TTUtils
 import Pretty
 
 import Data.List
@@ -126,7 +127,7 @@ substVars ctx (d:ds) ((_,arg):args)
 evalPatterns :: IsRelevance r => Form -> Ctx r cs -> CaseFun r -> TT r -> Maybe (TT r)
 evalPatterns form ctx (CaseFun argvars ct) tm = do
     (argCtx, extras) <- substVars M.empty argvars argvals
-    rhs <- evalCaseTree form ctx $ substCtxTree argCtx ct
+    rhs <- evalCaseTree form ctx $ substCtx argCtx ct
     return $ red form ctx (mkApp rhs extras)
   where
     (V _fn, argvals) = unApply tm
@@ -145,12 +146,7 @@ firstMatch = foldr (<|>) empty
 evalAlt :: IsRelevance r => Form -> Ctx r cs -> TT r -> Alt r -> Maybe (TT r)
 evalAlt form ctx tm (Alt lhs rhs) = do
     matchCtx <- match lhs tm
-    evalCaseTree form (matchCtx `M.union` ctx) (substCtxTree matchCtx rhs)
-
-substCtxTree :: Ctx r cs -> CaseTree r -> CaseTree r
-substCtxTree ctx ct = foldr substOne ct (M.elems ctx)
-  where
-    substOne (Def n r ty (Term tm) Nothing) ct = substCaseTree n tm ct
+    evalCaseTree form (matchCtx `M.union` ctx) (substCtx matchCtx rhs)
 
 match :: AltLHS r -> TT r -> Maybe (Ctx r cs)
 match Wildcard _ = Just M.empty

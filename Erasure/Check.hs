@@ -4,6 +4,7 @@ module Erasure.Check (check, instantiate, TCFailure) where
 
 import TT
 import TTLens
+import TTUtils
 import Normalise
 import Erasure.Meta
 import Erasure.Solve
@@ -223,13 +224,13 @@ checkAlt lhs n sr (Alt (Ctor cn args eqs) rhs) = bt ("ALT-CTOR", pat) $ do
   where
     -- don't forget to rewrite in pat!
     pat = mkApp (V cn) [(r, V n) | Def n r ty (Abstract Var) Nothing <- args]
-    pat' = substLots subst eqs pat
+    pat' = substs eqs pat
 
-    substs = (n, pat') : eqs
-    lhs' = substLots subst substs lhs
-    rhs' = substLots substCaseTree substs rhs
+    eqs' = (n, pat') : eqs
+    lhs' = substs eqs' lhs
+    rhs' = substs eqs' rhs
 
-    args' = [d{ defType = substLots subst substs $ defType d } | d <- args]
+    args' = [d{ defType = substs eqs' $ defType d } | d <- args]
 
     -- bindings from the individual vars to the scrutinee
     scrutCs = unions [defR d --> sr | d <- args']
