@@ -48,6 +48,7 @@ appRightNeutral (ys : List) : Id List ys (app ys Nil)
       Cons (x : Bool) (xs : List)
         => cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs).
 
+{-
 appAssoc (xs : List) (ys : List) (zs : List)
   : Id List (app (app xs ys) zs) (app xs (app ys zs))
   = case xs of
@@ -57,6 +58,21 @@ appAssoc (xs : List) (ys : List) (zs : List)
       Cons (x : Bool) (xs' : List)
         => cong List List (Cons x) (app (app xs' ys) zs) (app xs' (app ys zs)) (appAssoc xs' ys zs).
 
+-}
+{-
+-----------
+appAssoc (Cons x xs') ys zs
+  cong List List (Cons x) (app (app xs' ys) zs) (app xs' (app ys zs)) (appAssoc xs' ys zs)
+
+app (app xs' zs) zs,
+app (app xs' ys) zs
+
+Id List (app (app (Cons x xs') ys) zs),
+
+----------
+---}
+
+{-
 data Rev : List -> Type.
   RNil : Rev Nil,
   RSnoc : (xs : List) -> (x : Bool) -> (rxs : Rev xs)
@@ -72,6 +88,7 @@ rev' (xs : List) (rxs : Rev xs) (ys : List) : Rev (app xs ys)
             (app xs (Cons y ys'))
             (appAssoc xs (one y) ys')
             (rev' (app xs (one y)) (RSnoc xs y rxs) ys').
+-}
 
 {-
 rev (xs : List) : Rev xs
@@ -94,8 +111,8 @@ main :R: List
   = reverse (Cons T (Cons F (Cons T (Cons F Nil)))).
 -}
 
-xs : List
+xs' : List
   = Cons T (Cons F Nil).
 
-main :R: List
-  = app Nil xs.
+main (x : Bool) (xs' : List) (ys : List) (zs : List) :R: List
+  = (app (app (Cons x xs') ys) zs).

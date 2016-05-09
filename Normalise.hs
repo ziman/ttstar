@@ -117,17 +117,19 @@ red NF ctx t@(App r f x)
     redF = red NF ctx f
     redX = red NF ctx x
 
-substVars :: Ctx r cs -> [Def r cs'] -> [(r, TT r)] -> Maybe (Ctx r cs, [(r, TT r)])
-substVars ctx [] args = Just (ctx, args)
-substVars ctx ds []   = Nothing  -- not enough args to reduce
-substVars ctx (d:ds) ((_,arg):args)
-    = let d' = d{ defBody = Term arg, defConstraints = Nothing }
-        in substVars (M.insert (defName d) d' ctx) ds args
+substArgs :: Termy f => [Def r cs] -> [(r, TT r)] -> f r -> Maybe (f r, [(r, TT r)])
+substArgs []     extras rhs = Just (rhs, extras)
+substArgs (d:ds) []     rhs = Nothing  -- ran out of values
+substArgs (d:ds) ((r,v):vs) rhs =
+    substArgs ds' vs rhs'
+  where
+    (ds', [], rhs') = substBinder n v ds [] rhs
+    n = defName d
 
 evalPatterns :: IsRelevance r => Form -> Ctx r cs -> CaseFun r -> TT r -> Maybe (TT r)
 evalPatterns form ctx (CaseFun argvars ct) tm = do
-    (argCtx, extras) <- substVars M.empty argvars argvals
-    rhs <- evalCaseTree form ctx $ substCtx argCtx ct
+    (ct', extras) <- substArgs argvars argvals ct
+    rhs <- evalCaseTree form ctx ct'
     return $ red form ctx (mkApp rhs extras)
   where
     (V _fn, argvals) = unApply tm
@@ -135,26 +137,23 @@ evalPatterns form ctx (CaseFun argvars ct) tm = do
 evalCaseTree :: IsRelevance r => Form -> Ctx r cs -> CaseTree r -> Maybe (TT r)
 evalCaseTree form ctx (Leaf tm) = Just $ red form ctx tm
 evalCaseTree form ctx (Case tm alts)
-    = firstMatch $ map (evalAlt form ctx tm') alts
+    = firstMatch $ map (evalAlt form ctx tmWHNF) alts
   where
-    tm' = red WHNF ctx tm
+    tmWHNF = red WHNF ctx tm
 
 firstMatch :: Alternative f => [f a] -> f a
 firstMatch = foldr (<|>) empty
 
 -- here, the term tm is in WHNF
 evalAlt :: IsRelevance r => Form -> Ctx r cs -> TT r -> Alt r -> Maybe (TT r)
-evalAlt form ctx tm (Alt lhs rhs) = do
-    matchCtx <- match lhs tm
-    evalCaseTree form (matchCtx `M.union` ctx) (substCtx matchCtx rhs)
+evalAlt form ctx tm (Alt Wildcard rhs)
+    = evalCaseTree form ctx rhs
 
-match :: AltLHS r -> TT r -> Maybe (Ctx r cs)
-match Wildcard _ = Just M.empty
-match (Ctor cn argvars eqs) tm
+evalAlt form ctx tm (Alt (Ctor cn argvars eqs) rhs)
     | (V cn', argvals) <- unApply tm
-    , cn == cn'
+    , cn' == cn
     = do
-        (ctx, []) <- substVars M.empty argvars argvals
-        return ctx
+        (rhs', []) <- substArgs argvars argvals rhs
+        evalCaseTree form ctx rhs'
 
-match _ _ = Nothing
+evalAlt form ctx tm alt = Nothing
