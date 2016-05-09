@@ -29,13 +29,13 @@ instance Termy (TT r) where
 
     subst n tm (Bind b d rhs) = Bind b d' rhs'
       where
-        ([d'], rhs') = substBinder n tm [d] rhs
+        ([d'], rhs') = substBinder n tm [d] [] rhs
 
     subst n tm (App r f x) = App r (subst n tm f) (subst n tm x)
 
     freeVars (V n) = S.singleton n
     freeVars (I n ty) = S.insert n $ freeVars ty
-    freeVars (Bind b d tm) = freeVarsBinder [d] tm
+    freeVars (Bind b d tm) = freeVarsBinder [d] [] tm
     freeVars (App r f x) = freeVars f `S.union` freeVars x
 
 instance Termy (Def r cs) where
@@ -64,26 +64,44 @@ instance Termy (CaseFun r) where
       where
         (ds', ct') = substBinder n tm d ct
 
-    freeVars (CaseFun ds ct) = freeVarsBinder ds ct
+    freeVars (CaseFun ds ct) = freeVarsBinder ds [] ct
 
-freeVarsBinder :: Termy a => [Def r cs] -> a -> S.Set Name
-freeVarsBinder [] rhs = freeVars rhs
-freeVarsBinder (d:ds) rhs
+instance Termy (Name, TT r) where
+    subst n tm@(V n') (en, etm)
+        | n == en
+        = (n', subst n tm etm)
+
+        | (en, subst n tm etm)
+
+    subst n tm (en, etm)
+        | n == en
+        = error $ "trying to substitute something strange in eqs: " ++ show n ++ " ~> " ++ show tm
+
+        | otherwise
+        = (en, subst n tm etm)
+
+    freeVars (en, etm) = S.insert en (freeVars etm)
+
+-- eqs are lumped together with rhs, all the way under all defs,
+-- which means we don't have to worry about them until we've reached the base case
+freeVarsBinder :: Termy a => [Def r cs] -> [(Name, TT r)] -> a -> S.Set Name
+freeVarsBinder [] eqs rhs = S.unions (freeVars rhs : map freeVars eqs)
+freeVarsBinder (d:ds) eqs rhs
     = freeVars (defType d)
         `S.union`
             S.delete (defName d)
                 (freeVars (defBody d)
                     `S.union`
-                        freeVarsBinder ds rhs
+                        freeVarsBinder ds eqs rhs
                 )
 
-substBinder :: Termy a => Name -> TT r -> [Def r cs] -> a -> ([Def r cs], a)
-substBinder n tm [] rhs = ([], subst n tm rhs)
-substBinder n tm (d:ds) rhs
+substBinder :: Termy a => Name -> TT r -> [Def r cs] -> [(Name, TT r)] -> a -> ([Def r cs], [(Name, TT r)], a)
+substBinder n tm [] eqs rhs = ([], map (subst n tm) eqs, subst n tm rhs)
+substBinder n tm (d:ds) eqs rhs
     | n == boundName
     -- Name bound here, substitute only in the type of d.
     -- (The subst routine for Def will know not to subst in the body of d.)
-    = (subst n tm d : ds, rhs)
+    = (subst n tm d : ds, eqs, rhs)
 
     | boundName `occursIn` tm
     -- we need to rename the binder
@@ -91,19 +109,19 @@ substBinder n tm (d:ds) rhs
         -- just a call to `freshen` won't work here because we're renaming the name of the def
         d'   = d{ defName = freshName, defBody = freshen (defBody d) }
         -- now we can perform the substitution we want
-        (ds', rhs') = substBinder n tm (freshen ds') (freshen rhs')
+        (ds', eqs', rhs') = substBinder n tm (freshen ds) (map freshen eqs) (freshen rhs)
       in 
-        (subst n tm d' : ds', rhs')
+        (subst n tm d' : ds', eqs', rhs')
 
     | otherwise  -- boring easy case, we just plug it in
     = let
-        (ds', rhs') = substBinder n tm ds rhs
+        (ds', eqs', rhs') = substBinder n tm ds rhs
       in 
-        (subst n tm d : ds', rhs')
+        (subst n tm d : ds', eqs', rhs')
   where
     boundName  = defName d
     freshName  = head [n | n <- nameSource, n `S.notMember` takenNames]
-    takenNames = S.union (freeVars rhs) (freeVars . defBody $ d)
+    takenNames = S.unions (freeVars rhs : (freeVars . defBody $ d) : map freeVars eqs)
     nameSource = [UN (show boundName ++ show i) | i <- [0..]]
 
     freshen :: Termy a => a -> a
@@ -123,14 +141,13 @@ instance Termy (Alt r) where
     -- (but they must be rewritten if we rename the binders!)
     substAlt n tm (Alt Wildcard rhs) = Alt Wildcard $ substCaseTree n tm rhs
     substAlt n tm (Alt (Ctor cn args eqs) rhs)
-        = Alt
+        = Alt (Ctor cn args' eqs') rhs'
+      where
+        (args', eqs', rhs') = substBinder n tm args eqs rhs
 
     freeVars (Alt Wildcard rhs) = freeVars rhs
-    freeVars (Alt (Ctor cn [] eqs) rhs) = freeVars rhs
-    freeVars (Alt (Ctor cn (d:ds) eqs) rhs)
-        = freeVars (defType d)
-            `S.union`
-                S.delete (defName d) (freeVars $ Alt (Ctor cn ds eqs) rhs)
+    freeVars (Alt (Ctor cn args eqs) rhs)
+        = freeVarsBinder args eqs rhs
 
 occursIn :: Termy a => Name -> a -> Bool
 n `occursIn` tm = n `S.member` freeVars tm
