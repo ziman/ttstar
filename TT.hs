@@ -137,7 +137,12 @@ substAlt :: Name -> TT r -> Alt r -> Alt r
 substAlt n tm (Alt Wildcard rhs) = Alt Wildcard $ substCaseTree n tm rhs
 substAlt n tm alt@(Alt lhs@(Ctor cn args eqs) rhs)
     | n `elem` map defName args
-    = alt  -- let's see if we can get away without substitution in the types of args
+    = alt  -- types of args refer to names bound here so there's nothing to do
+
+{-
+    -- if any bound name occurs in `tm`, we have to rename it
+    | (`occursIn` tm) `any` (map defName args)
+-}
 
     | otherwise
     = Alt lhs (substCaseTree n tm rhs)

@@ -73,6 +73,7 @@ rev' (xs : List) (rxs : Rev xs) (ys : List) : Rev (app xs ys)
             (appAssoc xs (one y) ys')
             (rev' (app xs (one y)) (RSnoc xs y rxs) ys').
 
+{-
 rev (xs : List) : Rev xs
   = rev' Nil RNil xs.
 
@@ -91,3 +92,10 @@ reverse (xs : List) : List
 
 main :R: List
   = reverse (Cons T (Cons F (Cons T (Cons F Nil)))).
+-}
+
+xs : List
+  = Cons T (Cons F Nil).
+
+main :R: List
+  = app Nil xs.
