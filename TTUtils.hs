@@ -27,26 +27,9 @@ instance Termy (TT r) where
 
     subst n tm (I n' ty) = I n' $ subst n tm ty
 
-    subst n tm (Bind b d rhs)
-        | n == boundName
-        -- name bound here, substitute only in the type of d
-        -- (the subst routine for Def will know it must not subst in the body of d)
-        = Bind b (subst n tm d) rhs
-
-        | boundName `occursIn` rhs
-        -- we need to rename the binder
-        = let
-            d' = d{ defName = freshName, defBody = rename boundName freshName (defBody d) }
-            rhs' = rename boundName freshName $ rhs
-          in Bind b (subst n tm d') (subst n tm rhs')
-
-        | otherwise  -- boring easy case
-        = Bind b (subst n tm d) (subst n tm rhs)
-    where
-        boundName  = defName d
-        freshName  = head [n | n <- nameSource, n `S.notMember` takenNames]
-        takenNames = S.union (freeVars rhs) (freeVars . defBody $ d)
-        nameSource = [UN (show n' ++ show i) | i <- [0..]]
+    subst n tm (Bind b d rhs) = Bind b d' rhs'
+      where
+        (_, d', rhs') = substBinder n tm d rhs
 
     subst n tm (App r f x) = App r (subst n tm f) (subst n tm x)
 
@@ -54,9 +37,6 @@ instance Termy (TT r) where
     freeVars (I n ty) = S.insert n $ freeVars ty
     freeVars (Bind b d tm) = S.delete (defName d) (freeVars tm)
     freeVars (App r f x) = freeVars f `S.union` freeVars x
-
-substCtx :: Name -> TT r -> Ctx r cs -> Ctx r cs
-substCtx n tm = M.map $ substDef n tm
 
 instance Termy (Def r cs) where
     subst n tm (Def dn r ty body mcs)
@@ -79,14 +59,48 @@ instance Termy (Body r) where
     freeVars (Patterns cf) = freeVars cf
 
 instance Termy (CaseFun r) where
-    subst n tm (CaseFun args ct)
-        = error "TODO: this is tricky!"
+    -- see (subst n tm (Bind b d rhs)) for the general approach to subst under binders
+    subst n tm (CaseFun ds ct) = CaseFun ds' ct'
+      where
+        (ds', ct') = substBinder n tm d ct
 
     freeVars (CaseFun []     ct) = freeVars ct
     freeVars (CaseFun (d:ds) ct)
         = freeVars (defType d)
             `S.union`
                 S.delete (defName d) (freeVars $ CaseFun ds ct)
+
+substBinder :: Termy a => Name -> TT r -> [Def r cs] -> a -> ([Def r cs], a)
+substBinder n tm [] rhs = ([], subst n tm rhs)
+substBinder n tm (d:ds) rhs
+    | n == boundName
+    -- Name bound here, substitute only in the type of d.
+    -- (The subst routine for Def will know not to subst in the body of d.)
+    = (subst n tm d : ds, rhs)
+
+    | boundName `occursIn` tm
+    -- we need to rename the binder
+    = let
+        -- just a call to `freshen` won't work here because we're renaming the name of the def
+        d'   = d{ defName = freshName, defBody = freshen (defBody d) }
+        -- now we can perform the substitution we want
+        (ds', rhs') = substBinder n tm (freshen ds') (freshen rhs')
+      in 
+        (subst n tm d' : ds', rhs')
+
+    | otherwise  -- boring easy case, we just plug it in
+    = let
+        (ds', rhs') = substBinder n tm ds rhs
+      in 
+        (subst n tm d : ds', rhs')
+  where
+    boundName  = defName d
+    freshName  = head [n | n <- nameSource, n `S.notMember` takenNames]
+    takenNames = S.union (freeVars rhs) (freeVars . defBody $ d)
+    nameSource = [UN (show boundName ++ show i) | i <- [0..]]
+
+    freshen :: Termy a => a -> a
+    freshen = rename boundName freshName
 
 instance Termy (CaseTree r) where
     subst n tm (Leaf t)
@@ -117,8 +131,8 @@ n `occursIn` tm = n `S.member` freeVars tm
 rename :: Termy a => Name -> Name -> a -> a
 rename fromN toN = subst fromN (V toN)
 
-substLots :: (Name -> TT r -> a -> a) -> [(Name, TT r)] -> a -> a
-substLots substF ss x = foldr (uncurry substF) x ss
+substs :: Termy a => [(Name, TT r)] -> a -> a
+substs ss x = foldr (uncurry subst) x ss
 
 substMany :: Show (Body r) => Ctx r cs -> TT r -> TT r
 substMany ctx tm = foldl phi tm $ M.toList ctx
