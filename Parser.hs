@@ -194,6 +194,8 @@ fundef = (<?> "function definition") $ do
 
     let matchingDef = do
             ct <- realCaseTree  -- `caseTree` allows plain terms but we don't want those here
+            -- also, don't require the dot after the case expression because
+            -- the case expression knows when to terminate itself
             return $ Def n r ty (Patterns $ CaseFun args ct) Nothing
 
     matchingDef <|> lambdaDef
