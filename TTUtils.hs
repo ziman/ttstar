@@ -42,10 +42,13 @@ instance Termy TT where
 
     subst n tm (App r f x) = App r (subst n tm f) (subst n tm x)
 
+    subst n tm (Forced t) = Forced (subst n tm t)
+
     freeVars (V n) = S.singleton n
     freeVars (I n ty) = S.insert n $ freeVars ty
     freeVars (Bind b d tm) = freeVarsBinder [d] [] tm
     freeVars (App r f x) = freeVars f `S.union` freeVars x
+    freeVars (Forced tm) = freeVars tm
 
 instance Termy' Def where
     subst' n tm (Def dn r ty body mcs)

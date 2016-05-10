@@ -24,6 +24,7 @@ data TT r
     | I Name (TT r)  -- instance of a global definition with a specific erasure type
     | Bind Binder (Def r VoidConstrs) (TT r)
     | App r (TT r) (TT r)
+    | Forced (TT r)  -- forced terms don't generate constraints
     deriving (Eq, Ord)
 
 data CaseFun r = CaseFun

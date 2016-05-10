@@ -190,28 +190,29 @@ checkCaseFun fn (CaseFun args ct)
 
 checkCaseTree :: TT Meta -> CaseTree Meta -> TC Constrs
 checkCaseTree lhs (Leaf rhs) = bt ("PLAIN-TERM", lhs, rhs) $ do
-    (lty, lcs) <- checkTm lhs  -- we don't take constraints from here because they're too strict
+    (lty, lcs) <- checkTm lhs
     (rty, rcs) <- checkTm rhs
     ccs <- conv lty rty
     return $ flipConstrs lcs /\ rcs /\ ccs
 
 checkCaseTree lhs ct@(Case (V n) alts) = bt ("CASE", lhs, ct) $ do
     r <- defR <$> lookup n
-    cs <- unions <$> traverse (checkAlt lhs n r) alts
-    if length alts > 1
-        then return $ cs /\ Fixed R --> r
-        else return cs
+    unions <$> traverse (checkAlt isSingleBranch lhs n r) alts
+  where
+    isSingleBranch
+        | [_] <- alts = True
+        | otherwise   = False
 
 checkCaseTree lhs (Case s alts) =
     tcfail $ NonVariableScrutinee s
 
 
-checkAlt :: TT Meta -> Name -> Meta -> Alt Meta -> TC Constrs
+checkAlt :: Bool -> TT Meta -> Name -> Meta -> Alt Meta -> TC Constrs
 
-checkAlt lhs n sr (Alt Wildcard rhs) = bt ("ALT-WILDCARD") $ do
+checkAlt isSingleBranch lhs n sr (Alt Wildcard rhs) = bt ("ALT-WILDCARD") $ do
     checkCaseTree lhs rhs
 
-checkAlt lhs n sr (Alt (Ctor cn args eqs) rhs) = bt ("ALT-CTOR", pat) $ do
+checkAlt isSingleBranch lhs n sr (Alt (Ctor cn args eqs) rhs) = bt ("ALT-CTOR", pat) $ do
     cs <- withDefs (map csDef args') $ do
             -- Get constraints from the pattern.
             -- *Type*checking will be done eventually in the case for Leaf,
@@ -222,8 +223,12 @@ checkAlt lhs n sr (Alt (Ctor cn args eqs) rhs) = bt ("ALT-CTOR", pat) $ do
             return $ cs /\ flipConstrs patCs
     return $ cs /\ scrutCs
   where
+    ctor
+        | isSingleBranch = Forced (V cn)
+        | otherwise      = V cn
+
     -- don't forget to rewrite in pat!
-    pat = mkApp (V cn) [(r, V n) | Def n r ty (Abstract Var) Nothing <- args]
+    pat = mkApp ctor [(r, V n) | Def n r ty (Abstract Var) Nothing <- args]
     pat' = substs eqs pat
 
     eqs' = (n, pat') : eqs
@@ -284,6 +289,10 @@ checkTm t@(Bind Let d tm) = bt ("LET", t) $ do
     (ds, dcs) <- checkDefs noConstrs [d]
     (tmty, tmcs) <- withDefs (M.elems ds) $ checkTm tm
     return (tmty, dcs /\ tmcs)
+
+checkTm (Forced tm) = bt ("FORCED", tm) $ do
+    (ty, _cs) <- checkTm tm
+    return (ty, noConstrs)
 
 newtype TC' a = LiftTC' { runTC' :: TC a } deriving (Functor, Applicative, Monad)
 type ITC = StateT (IM.IntMap Int) TC'
