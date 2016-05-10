@@ -46,7 +46,7 @@ instance PrettyR r => Pretty (Def r cs) where
         <+> case body of
                 Abstract _  -> empty
                 Term tm     -> text "=" <+> pretty tm
-                Patterns cf -> blankLine $$ indent (pretty cf)
+                Patterns cf -> text "=" <+> pretty cf
         <+> case cs of
                 Nothing -> empty
                 Just _  -> text "{- constraints apply -}"
@@ -85,8 +85,9 @@ deriving instance PrettyR r => Show (Body r)
 deriving instance PrettyR r => Show (Program r VoidConstrs)
 
 instance PrettyR r => Pretty (CaseFun r) where
+    pretty (CaseFun [] t) = pretty t
     pretty (CaseFun ns t) =
-        text "\\" <> hsep (map (parens . pretty) ns) <> text "."
+        text "\\" <> hsep (map prettyParens ns) <> text "."
         $$ indent (pretty t)
 
 instance PrettyR r => Pretty (CaseTree r) where
