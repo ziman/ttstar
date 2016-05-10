@@ -213,7 +213,7 @@ checkAlt :: Bool -> TT Meta -> Name -> Meta -> Alt Meta -> TC Constrs
 checkAlt isSingleBranch lhs n sr (Alt Wildcard rhs) = bt ("ALT-WILDCARD") $ do
     checkCaseTree lhs rhs
 
-checkAlt isSingleBranch lhs n sr (Alt (Ctor cn args eqs) rhs) = bt ("ALT-CTOR", pat) $ do
+checkAlt isSingleBranch lhs n sr (Alt (Ctor cn args eqs_NF) rhs) = bt ("ALT-CTOR", pat) $ do
     cs <- withDefs (map csDef args') $ do
             -- Get constraints from the pattern.
             -- *Type*checking will be done eventually in the case for Leaf,
@@ -227,6 +227,8 @@ checkAlt isSingleBranch lhs n sr (Alt (Ctor cn args eqs) rhs) = bt ("ALT-CTOR", 
     ctor
         | isSingleBranch = Forced (V cn)
         | otherwise      = V cn
+
+    eqs = [(n, Forced tm) | (n, tm) <- eqs_NF]
 
     -- don't forget to rewrite in pat!
     pat = mkApp ctor [(r, V n) | Def n r ty (Abstract Var) Nothing <- args]
@@ -341,5 +343,8 @@ conv' p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do
     xs <- conv f f'
     ys <- conv x x'
     return $ xs /\ ys /\ r <--> r'
+
+conv' (Forced p) q = conv' p q
+conv' p (Forced q) = conv' p q
 
 conv' p q = tcfail $ CantConvert p q

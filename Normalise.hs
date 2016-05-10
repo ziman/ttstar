@@ -117,6 +117,8 @@ red NF ctx t@(App r f x)
     redF = red NF ctx f
     redX = red NF ctx x
 
+red form ctx (Forced tm) = Forced (red form ctx tm)
+
 substArgs :: Termy f => [Def r cs] -> [(r, TT r)] -> f r -> Maybe (f r, [(r, TT r)])
 substArgs []     extras rhs = Just (rhs, extras)
 substArgs (d:ds) []     rhs = Nothing  -- ran out of values
