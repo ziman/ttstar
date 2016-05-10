@@ -91,8 +91,8 @@ instance PrettyR r => Pretty (CaseFun r) where
 
 instance PrettyR r => Pretty (CaseTree r) where
     pretty (Leaf tm) = pretty tm
-    pretty (Case n alts) =
-        text "case" <+> pretty n <+> text "of"
+    pretty (Case r n alts) =
+        text "case" <> prettyApp r <> pretty n <+> text "of"
         $$ indent (vcat $ map pretty alts)
 
 instance PrettyR r => Pretty (Alt r) where

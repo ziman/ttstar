@@ -152,11 +152,11 @@ substBinder n tm (d:ds) eqs rhs
 instance Termy CaseTree where
     subst n tm (Leaf t)
         = Leaf $ subst n tm t
-    subst n tm (Case s alts)
-        = Case (subst n tm s) $ map (subst n tm) alts
+    subst n tm (Case r s alts)
+        = Case r (subst n tm s) $ map (subst n tm) alts
 
     freeVars (Leaf tm) = freeVars tm
-    freeVars (Case s alts) = S.unions (freeVars s : map freeVars alts)
+    freeVars (Case r s alts) = S.unions (freeVars s : map freeVars alts)
 
 instance Termy Alt where
     -- equations are pattern-only so they are not touched by substitution

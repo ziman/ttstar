@@ -50,7 +50,7 @@ redCaseFun NF ctx (CaseFun args ct) = go ctx [] args
 
 redCaseTree :: IsRelevance r => Form -> Ctx r cs -> CaseTree r -> CaseTree r
 redCaseTree NF ctx (Leaf tm) = Leaf $ red NF ctx tm
-redCaseTree NF ctx (Case v alts) = Case v $ map (redAlt NF ctx) alts
+redCaseTree NF ctx (Case r v alts) = Case r v $ map (redAlt NF ctx) alts
 
 redAlt :: IsRelevance r => Form -> Ctx r cs -> Alt r -> Alt r
 redAlt NF ctx (Alt lhs rhs) = Alt (redAltLHS NF ctx lhs) (redCaseTree NF ctx rhs)
@@ -136,7 +136,7 @@ evalPatterns form ctx (CaseFun argvars ct) tm = do
 
 evalCaseTree :: IsRelevance r => Form -> Ctx r cs -> CaseTree r -> Maybe (TT r)
 evalCaseTree form ctx (Leaf tm) = Just $ red form ctx tm
-evalCaseTree form ctx (Case tm alts)
+evalCaseTree form ctx (Case r tm alts)
     = firstMatch $ map (evalAlt form ctx tmWHNF) alts
   where
     tmWHNF = red WHNF ctx tm

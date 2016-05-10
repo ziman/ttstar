@@ -149,7 +149,7 @@ realCaseTree = (<?> "case tree") $ do
     kwd "of"
     alts <- caseAlt `sepBy` kwd ","
     kwd "."
-    return $ Case (V v) alts
+    return $ Case Nothing (V v) alts
 
 caseEq :: Parser (Name, TT MRel)
 caseEq = (<?> "case equality") $ do

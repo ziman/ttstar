@@ -195,15 +195,16 @@ checkCaseTree lhs (Leaf rhs) = bt ("PLAIN-TERM", lhs, rhs) $ do
     ccs <- conv lty rty
     return $ flipConstrs lcs /\ rcs /\ ccs
 
-checkCaseTree lhs ct@(Case (V n) alts) = bt ("CASE", lhs, ct) $ do
-    r <- defR <$> lookup n
-    unions <$> traverse (checkAlt isSingleBranch lhs n r) alts
+checkCaseTree lhs ct@(Case r (V n) alts) = bt ("CASE", lhs, ct) $ do
+    nr <- defR <$> lookup n
+    cs <- unions <$> traverse (checkAlt isSingleBranch lhs n r) alts
+    return $ cs /\ r --> nr
   where
     isSingleBranch
         | [_] <- alts = True
         | otherwise   = False
 
-checkCaseTree lhs (Case s alts) =
+checkCaseTree lhs (Case r s alts) =
     tcfail $ NonVariableScrutinee s
 
 

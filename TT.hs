@@ -34,7 +34,7 @@ data CaseFun r = CaseFun
 
 data CaseTree r
     = Leaf (TT r)
-    | Case (TT r) [Alt r]
+    | Case r (TT r) [Alt r]
     deriving (Eq, Ord)
 
 data AltLHS r
