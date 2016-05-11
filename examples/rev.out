@@ -1171,10 +1171,8 @@ rev = (\xs. rev' RNil xs)
 reverse' = \rxs.
   case rxs of
     RNil
-      | xs = Nil
       => Nil
     RSnoc x rxs'
-      | xs = app xs' one
       => Cons x (reverse' rxs')
 
 reverse = (\xs. reverse' (rev xs))

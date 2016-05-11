@@ -287,10 +287,8 @@ postulate False
 f = \x.
   case x of
     Just b
-      | a = Bool
       => b
     Nothing
-      | a = Bool
       => Bool
 
 main = f (Just False)

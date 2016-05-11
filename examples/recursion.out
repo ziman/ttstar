@@ -367,12 +367,8 @@ postulate VCons
 vlen = \xs.
   case xs of
     VNil
-      | a = a'
-      | n = Z
       => Z
     VCons xs'
-      | a = a'
-      | n = S
       => S (vlen xs')
 
 testVec = VCons (VCons VNil)
