@@ -33,7 +33,7 @@ pruneAlt (Alt lhs rhs) = Alt (pruneAltLHS lhs) (pruneCaseTree rhs)
 pruneAltLHS :: AltLHS Relevance -> AltLHS ()
 pruneAltLHS Wildcard = Wildcard
 pruneAltLHS (Ctor cn args eqs)
-    = Ctor cn (pruneDefs args) [(n, pruneTm tm) | (n, tm) <- eqs]
+    = Ctor cn (pruneDefs args) []  -- just remove all eqs
 
 pruneDefs :: [Def Relevance VoidConstrs] -> [Def () VoidConstrs]
 pruneDefs = concatMap pruneDef
