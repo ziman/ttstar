@@ -218,14 +218,8 @@ checkAlt isSingleBranch lhs n sr (Alt Wildcard rhs) = bt ("ALT-WILDCARD") $ do
     checkCaseTree lhs rhs
 
 checkAlt isSingleBranch lhs n sr (Alt (Ctor cn args eqs_NF) rhs) = bt ("ALT-CTOR", pat) $ do
-    cs <- withDefs (map csDef args') $ do
-            -- Get constraints from the pattern.
-            -- *Type*checking will be done eventually in the case for Leaf,
-            -- which ensures that (lty `conv` scrutTy) but maybe we could check here to be extra sure (?).
-            -- At least we know that this has got *some* type and it isn't absolute rubbish.
-            (patTy, patCs) <- checkTm pat'
-            cs <- checkCaseTree lhs' rhs'
-            return $ cs /\ flipConstrs patCs
+    -- Typechecking will be done eventually in the case for Leaf.
+    cs <- withDefs (map csDef args') $ checkCaseTree lhs' rhs'
     return $ cs /\ scrutCs
   where
     ctor
