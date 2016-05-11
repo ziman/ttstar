@@ -1,24 +1,29 @@
 -- vim: ft=idris
 
-postulate N : Type.
-postulate Z : N.
-postulate S : (x :R: N) -> N.
+data N : Type.
+  Z : N,
+  S : (x :R: N) -> N.
 
-postulate Vec : N -> Type -> Type.
-postulate Nil : (a : Type) -> Vec Z a.
-postulate Cons : (a : Type) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a.
+data Vec : N -> Type -> Type.
+  Nil : (a : Type) -> Vec Z a,
+  Cons : (a : Type) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a.
 
-plus : N -> N -> N.
-  pat (n : N).
-    plus Z n = n,
-  pat (m : N) (n : N).
-    plus (S m) n = S (plus m n).
+plus (m : N) (n : N) : N
+  = case m of
+      Z => n,
+      S (m' : N) => S (plus m' n).
 
-append : (a : Type) -> (m : N) -> (n : N) -> (xs : Vec m a) -> (ys : Vec n a) -> (Vec (plus m n) a).
-  pat (a : Type) (n : N) (ys : Vec n a).
-    append a [Z] n (Nil [a]) ys = ys,
-  pat (a : Type) (m : N) (n : N) (x : a) (xs : Vec m a) (ys : Vec n a).
-    append a [S m] n (Cons [a] m x xs) ys = Cons a (plus m n) x (append a m n xs ys).
+append (a : Type) (m : N) (n : N) (xs : Vec m a) (ys : Vec n a) : Vec (plus m n) a
+  = case xs of
+      Nil (a' : Type)
+        | a = a'
+        | m = Z
+        => ys,
+
+      Cons (a' : Type) (m' : N) (x : a') (xs : Vec m' a')
+        | a = a'
+        | m = S m'
+        => Cons a (plus m' n) x (append a m' n xs ys).
 
 main :R: Vec 1 N
     = append N 0 1 (Nil N) (Cons N Z 42 (Nil N)).
