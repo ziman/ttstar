@@ -1,27 +1,23 @@
 -- vim: ft=idris
 
-postulate T : Type.
-postulate A : T.
-postulate B : T.
+data T : Type.
+  A : T,
+  B : T.
+
+-- built-in primitive op
 postulate Op : (x :R: T) -> (y :R: T) -> T.
 
-id : T -> T.
-  pat (y : T).
-    id y = y.
+id (y : T) : T = y.
 
-constA : T -> T.
-  pat (x : T).
-    constA x = A.
+constA (_ : T) : T = A.
 
-apply : (T -> T) -> T -> T.
-  pat (f : T -> T) (x : T).
-    apply f x = f x.
+apply (f : T -> T) (x : T) : T = f x.
 
-test1 : T.
-  test1 = [apply : (T -> T) -> T -> T] id B.
+test1 : T
+  = [apply : (T -> T) -> T -> T] id B.
 
-test2 : T.
-  test2 = [apply : (T -> T) -> T -> T] constA B.
+test2 : T
+  = [apply : (T -> T) -> T -> T] constA B.
 
-main :R: T.
-  main = Op test1 test2.
+main :R: T
+  = Op test1 test2.
