@@ -1,4 +1,2 @@
 -- vim: ft=idris
-main :R: (x :E: Type) -> Type.
-  pat (x : Type).
-    main x = x.
+main (x :E: Type) :R: Type = x.
