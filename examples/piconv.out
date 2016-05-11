@@ -8,7 +8,7 @@ postulate A : T
 
 postulate B : T
 
-const_A : (x : T) -> T = (\_ : T. A)
+const_A : (_ : T) -> T = (\_ : T. A)
 
 apply : (f : (x : T) -> T) -> (x : T) -> T = (\f : (_ : T) -> T. (\x : T. f x))
 
@@ -22,7 +22,7 @@ postulate A :?2: T
 
 postulate B :?3: T
 
-const_A :?4: (x :?5: T) -> T = (\_ :?6: T. A)
+const_A :?4: (_ :?5: T) -> T = (\_ :?6: T. A)
 
 apply :?7: (f :?8: (x :?9: T) -> T) -> (x :?10: T) -> T = (\f :?11: (_ :?12: T) -> T. (\x :?13: T. f -?14- x))
 
@@ -46,7 +46,7 @@ apply :?7: (f :?8: (x :?9: T) -> T) -> (x :?10: T) -> T = (\f :?11: (_ :?12: T) 
   [?13] -> [?10]
   [?14] -> [?12]
 
-const_A :?4: (x :?5: T) -> T = (\_ :?6: T. A)
+const_A :?4: (_ :?5: T) -> T = (\_ :?6: T. A)
   [] -> [?2,!R]
   [?5] -> [?6]
   [?6] -> [?5]
@@ -87,7 +87,7 @@ postulate A :R: T
 
 postulate B :E: T
 
-const_A :R: (x :E: T) -> T = (\_ :E: T. A)
+const_A :R: (_ :E: T) -> T = (\_ :E: T. A)
 
 apply :R: (f :R: (x :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_ :E: T) -> T. (\x :E: T. f -E- x))
 
@@ -101,7 +101,7 @@ postulate A :!R: T
 
 postulate B :!E: T
 
-const_A :!R: (x :!E: T) -> T = (\_ :!E: T. A)
+const_A :!R: (_ :!E: T) -> T = (\_ :!E: T. A)
 
 apply :!R: (f :!R: (x :!E: T) -> T) -> (x :!E: T) -> T = (\f :!R: (_ :!E: T) -> T. (\x :!E: T. f -!E- x))
 
@@ -115,7 +115,7 @@ postulate A :R: T
 
 postulate B :E: T
 
-const_A :R: (x :E: T) -> T = (\_ :E: T. A)
+const_A :R: (_ :E: T) -> T = (\_ :E: T. A)
 
 apply :R: (f :R: (x :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_ :E: T) -> T. (\x :E: T. f -E- x))
 

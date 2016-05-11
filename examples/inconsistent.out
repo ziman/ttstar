@@ -2,31 +2,25 @@
 
 ### Desugared ###
 
-main  -R-  (x  -E-  Type) -> Type 
-  pat (x : Type).
-    main x = x
+main  -R-  (x  -E-  Type) -> Type = (\x  -E-  Type. x)
 
 ### Metaified ###
 
-main :!R: (x :!E: Type) -> Type 
-  pat (x :?1: Type).
-    main -?2- x = x
+main :!R: (x :!E: Type) -> Type = (\x :!E: Type. x)
 
 ### Inferred definitions ###
 
 postulate Type :!R: Type
 
-main :!R: (x :!E: Type) -> Type 
-  pat (x :?1: Type).
-    main -?2- x = x
-  [] -> [?1,?2,!E,!R]
+main :!R: (x :!E: Type) -> Type = (\x :!E: Type. x)
+  [] -> [!E,!R]
 
 
 ### Constraints ###
 
-[] -> [?1,?2,!E,!R]
+[] -> [!E,!R]
 
 ### Solution ###
 
-[?1,?2,!E,!R]
+[!E,!R]
 

@@ -12,16 +12,21 @@ postulate Id : (a : Type) -> (x : a) -> (y : a) -> Type
 
 postulate Refl : (a : Type) -> (x : a) -> Id x x
 
-not : (_ : Bool) -> Bool 
-  not T = F
-  not F = T
+not : (x : Bool) -> Bool = \(x : Bool).
+  case x of
+    T
+      => F
+    F
+      => T
 
-notnot : (x : Bool) -> Id x (not (not x)) 
-  notnot T = Refl Bool T
-  notnot F = Refl Bool F
+notnot : (x : Bool) -> Id x (not (not x)) = \(x : Bool).
+  case x of
+    T
+      => Refl Bool T
+    F
+      => Refl Bool F
 
-main  -R-  Id F (not (not F)) 
-  main = notnot F
+main  -R-  Id F (not (not F)) = notnot F
 
 ### Metaified ###
 
@@ -35,16 +40,21 @@ postulate Id :?4: (a :?5: Type) -> (x :?6: a) -> (y :?7: a) -> Type
 
 postulate Refl :?8: (a :?9: Type) -> (x :?10: a) -> Id -?12- x -?11- x
 
-not :?13: (_ :?14: Bool) -> Bool 
-  not -?15- T = F
-  not -?16- F = T
+not :?13: (x :?14: Bool) -> Bool = \(x :?15: Bool).
+  case -?16- x of
+    T
+      => F
+    F
+      => T
 
-notnot :?17: (x :?18: Bool) -> Id -?20- x -?19- (not -?21- (not -?22- x)) 
-  notnot -?23- T = Refl -?25- Bool -?24- T
-  notnot -?26- F = Refl -?28- Bool -?27- F
+notnot :?17: (x :?18: Bool) -> Id -?20- x -?19- (not -?21- (not -?22- x)) = \(x :?23: Bool).
+  case -?24- x of
+    T
+      => Refl -?26- Bool -?25- T
+    F
+      => Refl -?28- Bool -?27- F
 
-main :!R: Id -?30- F -?29- (not -?31- (not -?32- F)) 
-  main = notnot -?33- F
+main :!R: Id -?30- F -?29- (not -?31- (not -?32- F)) = notnot -?33- F
 
 ### Inferred definitions ###
 
@@ -60,8 +70,7 @@ postulate T :?2: Bool
 
 postulate Type :!R: Type
 
-main :!R: Id -?30- F -?29- (not -?31- (not -?32- F)) 
-  main = notnot -?33- F
+main :!R: Id -?30- F -?29- (not -?31- (not -?32- F)) = notnot -?33- F
   [] -> [?17,!R]
   [?18] -> [?3,?33]
   [?19] -> [?29]
@@ -70,48 +79,45 @@ main :!R: Id -?30- F -?29- (not -?31- (not -?32- F))
   [?30] -> [?20]
   [?33] -> [?18]
 
-not :?13: (_ :?14: Bool) -> Bool 
-  not -?15- T = F
-  not -?16- F = T
+not :?13: (x :?14: Bool) -> Bool = \(x :?15: Bool).
+  case -?16- x of
+    T
+      => F
+    F
+      => T
   [] -> [?2,?3,?14,?15,?16,!R]
 
-notnot :?17: (x :?18: Bool) -> Id -?20- x -?19- (not -?21- (not -?22- x)) 
-  notnot -?23- T = Refl -?25- Bool -?24- T
-  notnot -?26- F = Refl -?28- Bool -?27- F
-  [] -> [?8,!R]
-  [?2] -> [?18]
-  [?3] -> [?18]
-  [?9] -> [?1,?25,?28]
-  [?10] -> [?2,?3,?24,?27]
+notnot :?17: (x :?18: Bool) -> Id -?20- x -?19- (not -?21- (not -?22- x)) = \(x :?23: Bool).
+  case -?24- x of
+    T
+      => Refl -?26- Bool -?25- T
+    F
+      => Refl -?28- Bool -?27- F
+  [] -> [?8,?18,?23,?24,!R]
+  [?9] -> [?1,?26,?28]
+  [?10] -> [?2,?3,?25,?27]
   [?11] -> [?19]
   [?12] -> [?20]
-  [?18] -> [?23,?26]
   [?19] -> [?11]
   [?20] -> [?12]
-  [?23] -> [?18]
-  [?24] -> [?10]
-  [?25] -> [?9]
-  [?26] -> [?18]
+  [?25] -> [?10]
+  [?26] -> [?9]
   [?27] -> [?10]
   [?28] -> [?9]
 
 
 ### Constraints ###
 
-[] -> [?2,?3,?8,?14,?15,?16,?17,!R]
-[?2] -> [?18]
-[?3] -> [?18]
-[?9] -> [?1,?25,?28]
-[?10] -> [?2,?3,?24,?27]
+[] -> [?2,?3,?8,?14,?15,?16,?17,?18,?23,?24,!R]
+[?9] -> [?1,?26,?28]
+[?10] -> [?2,?3,?25,?27]
 [?11] -> [?19]
 [?12] -> [?20]
-[?18] -> [?3,?23,?26,?33]
+[?18] -> [?3,?33]
 [?19] -> [?11,?29]
 [?20] -> [?12,?30]
-[?23] -> [?18]
-[?24] -> [?10]
-[?25] -> [?9]
-[?26] -> [?18]
+[?25] -> [?10]
+[?26] -> [?9]
 [?27] -> [?10]
 [?28] -> [?9]
 [?29] -> [?19]
@@ -120,7 +126,7 @@ notnot :?17: (x :?18: Bool) -> Id -?20- x -?19- (not -?21- (not -?22- x))
 
 ### Solution ###
 
-[?2,?3,?8,?14,?15,?16,?17,?18,?23,?26,?33,!R]
+[?2,?3,?8,?14,?15,?16,?17,?18,?23,?24,?33,!R]
 
 ### Annotated ###
 
@@ -134,16 +140,21 @@ postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
 
 postulate Refl :R: (a :E: Type) -> (x :E: a) -> Id -E- x -E- x
 
-not :E: (_ :R: Bool) -> Bool 
-  not -R- T = F
-  not -R- F = T
+not :E: (x :R: Bool) -> Bool = \(x :R: Bool).
+  case -R- x of
+    T
+      => F
+    F
+      => T
 
-notnot :R: (x :R: Bool) -> Id -E- x -E- (not -E- (not -E- x)) 
-  notnot -R- T = Refl -E- Bool -E- T
-  notnot -R- F = Refl -E- Bool -E- F
+notnot :R: (x :R: Bool) -> Id -E- x -E- (not -E- (not -E- x)) = \(x :R: Bool).
+  case -R- x of
+    T
+      => Refl -E- Bool -E- T
+    F
+      => Refl -E- Bool -E- F
 
-main :R: Id -E- F -E- (not -E- (not -E- F)) 
-  main = notnot -R- F
+main :R: Id -E- F -E- (not -E- (not -E- F)) = notnot -R- F
 
 ### Specialised ###
 
@@ -157,16 +168,21 @@ postulate Id :!E: (a :!E: Type) -> (x :!E: a) -> (y :!E: a) -> Type
 
 postulate Refl :!R: (a :!E: Type) -> (x :!E: a) -> Id -!E- x -!E- x
 
-not :!E: (_ :!R: Bool) -> Bool 
-  not -!R- T = F
-  not -!R- F = T
+not :!E: (x :!R: Bool) -> Bool = \(x :!R: Bool).
+  case -!R- x of
+    T
+      => F
+    F
+      => T
 
-notnot :!R: (x :!R: Bool) -> Id -!E- x -!E- (not -!E- (not -!E- x)) 
-  notnot -!R- T = Refl -!E- Bool -!E- T
-  notnot -!R- F = Refl -!E- Bool -!E- F
+notnot :!R: (x :!R: Bool) -> Id -!E- x -!E- (not -!E- (not -!E- x)) = \(x :!R: Bool).
+  case -!R- x of
+    T
+      => Refl -!E- Bool -!E- T
+    F
+      => Refl -!E- Bool -!E- F
 
-main :!R: Id -!E- F -!E- (not -!E- (not -!E- F)) 
-  main = notnot -!R- F
+main :!R: Id -!E- F -!E- (not -!E- (not -!E- F)) = notnot -!R- F
 
 ### Final annotation ###
 
@@ -180,16 +196,21 @@ postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
 
 postulate Refl :R: (a :E: Type) -> (x :E: a) -> Id -E- x -E- x
 
-not :E: (_ :R: Bool) -> Bool 
-  not -R- T = F
-  not -R- F = T
+not :E: (x :R: Bool) -> Bool = \(x :R: Bool).
+  case -R- x of
+    T
+      => F
+    F
+      => T
 
-notnot :R: (x :R: Bool) -> Id -E- x -E- (not -E- (not -E- x)) 
-  notnot -R- T = Refl -E- Bool -E- T
-  notnot -R- F = Refl -E- Bool -E- F
+notnot :R: (x :R: Bool) -> Id -E- x -E- (not -E- (not -E- x)) = \(x :R: Bool).
+  case -R- x of
+    T
+      => Refl -E- Bool -E- T
+    F
+      => Refl -E- Bool -E- F
 
-main :R: Id -E- F -E- (not -E- (not -E- F)) 
-  main = notnot -R- F
+main :R: Id -E- F -E- (not -E- (not -E- F)) = notnot -R- F
 
 ### Verification ###
 
@@ -203,12 +224,14 @@ postulate F
 
 postulate Refl
 
-notnot 
-  notnot T = Refl
-  notnot F = Refl
+notnot = \x.
+  case x of
+    T
+      => Refl
+    F
+      => Refl
 
-main 
-  main = notnot F
+main = notnot F
 
 ### Normal forms ###
 
