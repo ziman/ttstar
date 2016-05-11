@@ -1,22 +1,24 @@
 -- vim: ft=idris
 
-postulate Nat : Type.
-postulate Z : Nat.
-postulate S : (n :R: Nat) -> Nat.
+data Nat : Type.
+  Z : Nat,
+  S : (_ :R: Nat) -> Nat.
 
-plus : Nat -> Nat -> Nat.
-  pat (n : Nat).
-    plus Z n = n,
-  pat (m : Nat) (n : Nat).
-    plus (S m) n = S (plus m n).
+plus (n : Nat) (m : Nat) : Nat
+  = case n of
+      Z => m,
+      S (n' : Nat) => S (plus n' m).
 
-id : Nat -> Nat.
-  id = \x : Nat. x.
+id (x : Nat) : Nat = x.
 
 const (x : Nat) (y : Nat) : Nat = x.
 
 main :R: Nat
-    = let apply (f : Nat -> Nat) (x : Nat) : Nat = f x.
-   in let postulate Q : Nat.
-   in let three : Nat = 3.
-   in plus (apply id 2) (apply (const Q) three).
+    = let
+        apply (f : Nat -> Nat) (x : Nat) : Nat
+          = case x of
+              Z => f Z,
+              S (x' : Nat) => f (S x').
+      in let postulate Q : Nat.
+      in let three : Nat = 3.
+      in plus (apply id 2) (apply (const Q) three).
