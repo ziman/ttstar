@@ -30,7 +30,6 @@ data Bool : Type.
 
 -- We annotate this type manually to emulate usage caused by I/O actions.
 data List : Type.
-  Cuckoo : List,
   Nil : List,
   Cons : (x :R: Bool) -> (xs :R: List) -> List.
 
