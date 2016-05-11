@@ -5,13 +5,16 @@
 Besides what the original paper had, we have:
 * [P] higher-order erasure
 * [P] changing arities of functions
-* [M] data constructor support
-    * because M-L avoids case-expressions
+* [M] support of inductive families and full dependent pattern matching
+    * M-L avoids this entirely
 * [MP] erasure polymorphism for let-bound names (includes top-level)
     * but not lambda-bound names
-* pruning LHSs of clauses
-* irrelevant clause removal
+* checkable result of erasure
+* an erasure calculus
+* equivalence of pattern clauses vs. case trees
+* pruning case trees
 * local pattern-matching clauses in let
+    * actually, let is fully equivalent to top-level
     * only one definition per let at the moment; absolutely not necessary, I just can't be bothered to invent good syntax for it
 
 [P] = improvement over previous paper, [M] = improvement over Mishra-Linger
@@ -20,10 +23,13 @@ Besides what the original paper had, we have:
 ### TODO
 * good error reporting
 * first-order evars for unlimited-rank polymorphism
+* dead constructors (`Cuckoo`)
 
 ### Secondary features
+* backtrace in typechecker
 * erasure explorer
 * including very dependent functions
 * erasure of whole functions (dead function removal)
 * recursion
-* `ConCase` represented with `Bind Pat`
+* every binder is a `Def`
+* `Refl` is erased
