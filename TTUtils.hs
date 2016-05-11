@@ -180,9 +180,20 @@ rename fromN toN = subst fromN (V toN)
 substs :: Termy a => [(Name, TT r)] -> a r -> a r
 substs ss x = foldr (uncurry subst) x ss
 
+substs' :: Termy' a => [(Name, TT r)] -> a r cs -> a r cs
+substs' ss x = foldr (uncurry subst') x ss
+
 substCtx :: (Termy a, Show (Body r)) => Ctx r cs -> a r -> a r
 substCtx ctx tm = foldl phi tm $ M.toList ctx
   where
     phi t (n, Def _ _ _ (Term tm) Nothing) = subst n tm t
     phi t (n, Def _ _ _ body Nothing)
         = error $ "trying to substMany something strange:\n  " ++ show n ++ " ~> " ++ show body
+
+substsInCtx :: [(Name, TT r)] -> Ctx r cs -> Ctx r cs
+substsInCtx eqs = foldr step M.empty . M.toList
+  where
+    elidedNames = S.fromList $ map fst eqs
+    step (n, d) ctx
+        | n `S.member` elidedNames = ctx
+        | otherwise = M.insert n (substs' eqs d) ctx

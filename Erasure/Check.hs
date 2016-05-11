@@ -103,7 +103,10 @@ cond :: Meta -> Constrs -> Constrs
 cond r = CS . M.mapKeysWith S.union (S.insert r) . runCS
 
 with :: Def Meta Constrs' -> TC a -> TC a
-with d@(Def n r ty mtm mcs) = local $ \(tb, ctx) -> (tb, M.insert n d ctx)
+with d@(Def n r ty mtm mcs) = with' $ M.insert n d
+
+with' :: (Ctx Meta Constrs' -> Ctx Meta Constrs') -> TC a -> TC a
+with' f = local $ \(tb, ctx) -> (tb, f ctx)
 
 bt :: Show a => a -> TC b -> TC b
 bt dbg sub = do
@@ -219,7 +222,9 @@ checkAlt isSingleBranch lhs n sr (Alt Wildcard rhs) = bt ("ALT-WILDCARD") $ do
 
 checkAlt isSingleBranch lhs n sr (Alt (Ctor cn args eqs_NF) rhs) = bt ("ALT-CTOR", pat) $ do
     -- Typechecking will be done eventually in the case for Leaf.
-    cs <- withDefs (map csDef args') $ checkCaseTree lhs' rhs'
+    cs <- withDefs (map csDef args) $
+            with' (substsInCtx eqs') $  -- will substitute in args as well
+                checkCaseTree lhs' rhs'
     return $ cs /\ scrutCs
   where
     ctor
@@ -236,10 +241,8 @@ checkAlt isSingleBranch lhs n sr (Alt (Ctor cn args eqs_NF) rhs) = bt ("ALT-CTOR
     lhs' = substs eqs' lhs
     rhs' = substs eqs' rhs
 
-    args' = [d{ defType = substs eqs' $ defType d } | d <- args]
-
     -- bindings from the individual vars to the scrutinee
-    scrutCs = unions [defR d --> sr | d <- args']
+    scrutCs = unions [defR d --> sr | d <- args]
 
 
 withDefs :: [Def Meta Constrs'] -> TC a -> TC a

@@ -20,10 +20,10 @@ append (a : Type) (m : N) (n : N) (xs : Vec m a) (ys : Vec n a) : Vec (plus m n)
         | m = Z
         => ys,
 
-      Cons (a' : Type) (m' : N) (x : a') (xs : Vec m' a')
+      Cons (a' : Type) (m' : N) (x : a') (xs' : Vec m' a')
         | a = a'
         | m = S m'
-        => Cons a (plus m' n) x (append a m' n xs ys).
+        => Cons a (plus m' n) x (append a m' n xs' ys).
 
 main :R: Vec 1 N
     = append N 0 1 (Nil N) (Cons N Z 42 (Nil N)).
