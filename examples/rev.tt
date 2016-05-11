@@ -39,7 +39,6 @@ one (x : Bool) : List
 app (xs : List) (ys : List) : List
   = case xs of
       Nil => ys,
-      Cuckoo => Nil,
       Cons (x : Bool) (xs' : List) => Cons x (app xs' ys).
 
 appRightNeutral (ys : List) : Id List ys (app ys Nil)
