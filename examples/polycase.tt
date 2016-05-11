@@ -1,36 +1,39 @@
 -- vim: ft=idris
 
-postulate Mool : Type.
-postulate Q : Mool.
-postulate W : Mool.
+data Mool : Type.
+  Q : Mool,
+  W : Mool.
 
-postulate Bool : Type.
-postulate T : Bool.
-postulate F : Bool.
+data Bool : Type.
+  T : Bool,
+  F : Bool.
 
-postulate Id : (a : Type) -> (x : a) -> (y : a) -> Type.
-postulate Refl : (a : Type) -> (x : a) -> Id x x.
+data Id : (a : Type) -> (x : a) -> (y : a) -> Type.
+  Refl : (a : Type) -> (x : a) -> Id x x.
 
-not : Bool -> Bool.
-  not T = F,
-  not F = T.
+not (x : Bool) : Bool
+  = case x of
+      T => F,
+      F => T.
 
-notnot : (x : Bool) -> Id x (not (not x)).
-  notnot T = Refl Bool T,
-  notnot F = Refl Bool F.
+notnot (x : Bool) : Id x (not (not x))
+  = case x of
+      T => Refl Bool T,
+      F => Refl Bool F.
 
-retTy : Bool -> Type.
-  retTy T = Bool,
-  retTy F = Mool.
+retTy (x : Bool) : Type
+  = case x of
+      T => Bool,
+      F => Mool.
 
-mot : Mool -> Mool.
-  mot Q = W,
-  mot W = Q.
+mot (m : Mool) : Mool
+  = case m of
+      Q => W,
+      W => Q.
 
-invert : (t : Bool) -> (retTy t) -> retTy t.
-  pat (x : Bool).
-    invert T x = not x,
-  pat (x : Mool).
-    invert F x = mot x.
+invert (t : Bool) (x : retTy t) : retTy t
+  = case t of
+      T => not x,
+      F => mot x.
 
 main :R: Mool = invert F Q.
