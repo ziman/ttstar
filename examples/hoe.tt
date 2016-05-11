@@ -1,28 +1,23 @@
 -- vim: ft=idris
 
 -- declare a data type
-postulate T : Type.
-postulate A : T.
-postulate B : T.
+data T : Type.
+  A : T,
+  B : T.
 
 -- any old binary operation on the data type
 -- NB. we need to postulate (ir-)relevance, too.
 postulate Op : (x :R: T) -> (y :R: T) -> T.
 
 -- we can use lambdas to define functions
-id : T -> T.
-  pat (x : T).
-    id x = x.
+id (x : T) : T = x.
 
-const_A : T -> T.
-  pat (x : T).
-    const_A x = A.
+const_A (x : T) : T = A.
 
 -- but there are also ML-style definitions, for convenience
-f : (T -> T) -> T -> (T -> T) -> T -> T.
-  pat (g : T -> T) (z : T) (h : T -> T) (w : T).
-    f g z h w = Op (g z) (h w).
+f (g : T -> T) (z : T) (h : T -> T) (w : T) : T
+  = Op (g z) (h w).
 
 -- main, manually marked as relevant
-main :R: T.
-main = f id B const_A B.
+main :R: T
+  = f id B const_A B.
