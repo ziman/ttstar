@@ -1,10 +1,10 @@
 -- vim: ft=idris
 
-postulate T : Type.
-postulate A : T.
-postulate B : T.
+data T : Type.
+  A : T,
+  B : T.
 
-const_A : (x : T) -> T = \_ : T. A.
+const_A : T -> T = \_ : T. A.
 apply : (f : (x : T) -> T) -> (x : T) -> T = \f : T -> T. \x : T. f x.
 
 main :R: T = apply const_A B.
