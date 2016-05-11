@@ -198,8 +198,12 @@ checkCaseTree lhs (Leaf rhs) = bt ("PLAIN-TERM", lhs, rhs) $ do
 checkCaseTree lhs ct@(Case r (V n) alts) = bt ("CASE", lhs, ct) $ do
     nr <- defR <$> lookup n
     cs <- unions <$> traverse (checkAlt isSingleBranch lhs n r) alts
-    return $ cs /\ r --> nr
+    return $ cs /\ r --> nr /\ scrutineeCs
   where
+    scrutineeCs
+        | isSingleBranch = noConstrs
+        | otherwise      = Fixed R --> r
+
     isSingleBranch
         | [_] <- alts = True
         | otherwise   = False

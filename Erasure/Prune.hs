@@ -25,6 +25,7 @@ pruneCaseTree :: CaseTree Relevance -> CaseTree ()
 pruneCaseTree (Leaf tm) = Leaf $ pruneTm tm
 pruneCaseTree (Case E s [Alt lhs rhs]) = pruneCaseTree rhs
 pruneCaseTree (Case R s alts) = Case () (pruneTm s) $ map pruneAlt alts
+pruneCaseTree t@(Case E s alts) = error $ "trying to prune non-singleton tree: " ++ show t
 
 pruneAlt :: Alt Relevance -> Alt ()
 pruneAlt (Alt lhs rhs) = Alt (pruneAltLHS lhs) (pruneCaseTree rhs)

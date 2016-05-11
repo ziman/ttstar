@@ -1,44 +1,42 @@
 -- vim: ft=idris
 
-postulate Bool : Type.
-postulate True : Bool.
-postulate False : Bool.
+data Bool : Type.
+  True : Bool,
+  False : Bool.
 
-postulate Maybe : Type -> Type.
-postulate Just : (a : Type) -> a -> Type.
-postulate Nothing : (a : Type) -> Type.
+data Maybe : Type -> Type.
+  Just : (a : Type) -> a -> Type,
+  Nothing : (a : Type) -> Type.
 
-postulate Nat : Type.
-postulate Z : Nat.
-postulate S : (n :R: Nat) -> Nat.
+data Nat : Type.
+  Z : Nat,
+  S : (n :R: Nat) -> Nat.
 
+-- let's say this is a built-in primitive function
 postulate Plus : (x :R: Nat) -> (y :R: Nat) -> Nat.
 
-id : Nat -> Nat.
-  id Z = Z,
-  pat (x : Nat).
-    id (S x) = let result : Nat = S x. in result.
+id (x : Nat) : Nat
+  = case x of
+      Z => Z,
+      S (y : Nat)
+        => let result : Nat = S y. in result.
 
-const_3 : Nat -> Nat.
-  pat (x : Nat).
-    const_3 x = 3.
+const_3 (_ : Nat) : Nat = 3.
 
-two : Nat.
-  two = S (S Z).
+two : Nat = S (S Z).
 
-f : (g : Nat -> Nat) -> (z : Nat) -> (h : Nat -> Nat) -> (w : Nat) -> Nat.
-  pat (g : Nat -> Nat) (z : Nat) (h : Nat -> Nat) (w : Nat).
-    f g z h w = Plus (g z) (h w).
+f (g : Nat -> Nat) (z : Nat) (h : Nat -> Nat) (w : Nat) : Nat
+  = Plus (g z) (h w).
 
-apply : (f : Nat -> Nat) -> Nat -> Nat.
-  pat (f : Nat -> Nat) (x : Nat).
-    apply f x = f x.
+apply (f : Nat -> Nat) (x : Nat) : Nat = f x.
 
-test_1 : Nat.
-  test_1 = Plus (apply id 2) (apply const_3 two).
+-- WARNING: this is not meant to be erasure-polymorphic
+-- because instances of apply have not been requested!
+test_1 : Nat
+  = Plus (apply id 2) (apply const_3 two).
 
-test_2 : Nat.
-  test_2 = f id 2 const_3 1.
+test_2 : Nat
+  = f id 2 const_3 1.
 
-main :R: Nat.
-  main = Plus test_1 test_2.
+main :R: Nat
+  = Plus test_1 test_2.
