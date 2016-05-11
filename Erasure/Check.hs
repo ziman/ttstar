@@ -223,7 +223,7 @@ checkAlt isSingleBranch lhs n sr (Alt Wildcard rhs) = bt ("ALT-WILDCARD") $ do
 checkAlt isSingleBranch lhs n sr (Alt (Ctor cn args eqs_NF) rhs) = bt ("ALT-CTOR", pat) $ do
     -- Typechecking will be done eventually in the case for Leaf.
     cs <- withDefs (map csDef args) $
-            with' (substsInCtx eqs') $  -- will substitute in args as well
+            with' (substsInCtx eqs') $  -- substitutes in args, too; must use eqs', which includes (n, pat')
                 checkCaseTree lhs' rhs'
     return $ cs /\ scrutCs
   where
