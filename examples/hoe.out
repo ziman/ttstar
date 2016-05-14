@@ -8,7 +8,7 @@ postulate A : T
 
 postulate B : T
 
-postulate Op : (x :ᴿ T) -> (y :ᴿ T) -> T
+postulate Op : (x :R: T) -> (y :R: T) -> T
 
 id : (x : T) -> T = (\x : T. x)
 
@@ -16,44 +16,44 @@ const_A : (x : T) -> T = (\x : T. A)
 
 f : (g : (_ : T) -> T) -> (z : T) -> (h : (_ : T) -> T) -> (w : T) -> T = (\g : (_ : T) -> T. (\z : T. (\h : (_ : T) -> T. (\w : T. Op (g z) (h w)))))
 
-main :ᴿ T = f id B const_A B
+main :R: T = f id B const_A B
 
 ### Metaified ###
 
-postulate T :¹ Type
+postulate T :1: Type
 
-postulate A :² T
+postulate A :2: T
 
-postulate B :³ T
+postulate B :3: T
 
-postulate Op :⁴ (x :ᴿ T) -> (y :ᴿ T) -> T
+postulate Op :4: (x :R: T) -> (y :R: T) -> T
 
-id :⁵ (x :⁶ T) -> T = (\x :⁷ T. x)
+id :5: (x :6: T) -> T = (\x :7: T. x)
 
-const_A :⁸ (x :⁹ T) -> T = (\x :¹⁰ T. A)
+const_A :8: (x :9: T) -> T = (\x :10: T. A)
 
-f :¹¹ (g :¹² (_ :¹³ T) -> T) -> (z :¹⁴ T) -> (h :¹⁵ (_ :¹⁶ T) -> T) -> (w :¹⁷ T) -> T = (\g :¹⁸ (_ :¹⁹ T) -> T. (\z :²⁰ T. (\h :²¹ (_ :²² T) -> T. (\w :²³ T. Op ²⁵ (g ²⁶ z) ²⁴ (h ²⁷ w)))))
+f :11: (g :12: (_ :13: T) -> T) -> (z :14: T) -> (h :15: (_ :16: T) -> T) -> (w :17: T) -> T = (\g :18: (_ :19: T) -> T. (\z :20: T. (\h :21: (_ :22: T) -> T. (\w :23: T. Op -25- (g -26- z) -24- (h -27- w)))))
 
-main :ᴿ T = f ³¹ id ³⁰ B ²⁹ const_A ²⁸ B
+main :R: T = f -31- id -30- B -29- const_A -28- B
 
 ### Inferred definitions ###
 
-postulate A :² T
+postulate A :2: T
 
-postulate B :³ T
+postulate B :3: T
 
-postulate Op :⁴ (x :ᴿ T) -> (y :ᴿ T) -> T
+postulate Op :4: (x :R: T) -> (y :R: T) -> T
 
-postulate T :¹ Type
+postulate T :1: Type
 
-postulate Type :ᴿ Type
+postulate Type :R: Type
 
-const_A :⁸ (x :⁹ T) -> T = (\x :¹⁰ T. A)
+const_A :8: (x :9: T) -> T = (\x :10: T. A)
   [8] -> [2]
   [8,9] -> [10]
   [8,10] -> [9]
 
-f :¹¹ (g :¹² (_ :¹³ T) -> T) -> (z :¹⁴ T) -> (h :¹⁵ (_ :¹⁶ T) -> T) -> (w :¹⁷ T) -> T = (\g :¹⁸ (_ :¹⁹ T) -> T. (\z :²⁰ T. (\h :²¹ (_ :²² T) -> T. (\w :²³ T. Op ²⁵ (g ²⁶ z) ²⁴ (h ²⁷ w)))))
+f :11: (g :12: (_ :13: T) -> T) -> (z :14: T) -> (h :15: (_ :16: T) -> T) -> (w :17: T) -> T = (\g :18: (_ :19: T) -> T. (\z :20: T. (\h :21: (_ :22: T) -> T. (\w :23: T. Op -25- (g -26- z) -24- (h -27- w)))))
   [11] -> [4,18,21,24,25]
   [11,12] -> [18]
   [11,13] -> [19]
@@ -70,12 +70,12 @@ f :¹¹ (g :¹² (_ :¹³ T) -> T) -> (z :¹⁴ T) -> (h :¹⁵ (_ :¹⁶ T) -> 
   [11,26] -> [19]
   [11,27] -> [22]
 
-id :⁵ (x :⁶ T) -> T = (\x :⁷ T. x)
+id :5: (x :6: T) -> T = (\x :7: T. x)
   [5] -> [7]
   [5,6] -> [7]
   [5,7] -> [6]
 
-main :ᴿ T = f ³¹ id ³⁰ B ²⁹ const_A ²⁸ B
+main :R: T = f -31- id -30- B -29- const_A -28- B
   [] -> [11,R]
   [6] -> [13]
   [9] -> [16]
@@ -134,57 +134,57 @@ main :ᴿ T = f ³¹ id ³⁰ B ²⁹ const_A ²⁸ B
 
 ### Annotated ###
 
-postulate T :ᴱ Type
+postulate T :E: Type
 
-postulate A :ᴿ T
+postulate A :R: T
 
-postulate B :ᴿ T
+postulate B :R: T
 
-postulate Op :ᴿ (x :ᴿ T) -> (y :ᴿ T) -> T
+postulate Op :R: (x :R: T) -> (y :R: T) -> T
 
-id :ᴿ (x :ᴿ T) -> T = (\x :ᴿ T. x)
+id :R: (x :R: T) -> T = (\x :R: T. x)
 
-const_A :ᴿ (x :ᴱ T) -> T = (\x :ᴱ T. A)
+const_A :R: (x :E: T) -> T = (\x :E: T. A)
 
-f :ᴿ (g :ᴿ (_ :ᴿ T) -> T) -> (z :ᴿ T) -> (h :ᴿ (_ :ᴱ T) -> T) -> (w :ᴱ T) -> T = (\g :ᴿ (_ :ᴿ T) -> T. (\z :ᴿ T. (\h :ᴿ (_ :ᴱ T) -> T. (\w :ᴱ T. Op ᴿ (g ᴿ z) ᴿ (h ᴱ w)))))
+f :R: (g :R: (_ :R: T) -> T) -> (z :R: T) -> (h :R: (_ :E: T) -> T) -> (w :E: T) -> T = (\g :R: (_ :R: T) -> T. (\z :R: T. (\h :R: (_ :E: T) -> T. (\w :E: T. Op -R- (g -R- z) -R- (h -E- w)))))
 
-main :ᴿ T = f ᴿ id ᴿ B ᴿ const_A ᴱ B
+main :R: T = f -R- id -R- B -R- const_A -E- B
 
 ### Specialised ###
 
-postulate T :ᴱ Type
+postulate T :E: Type
 
-postulate A :ᴿ T
+postulate A :R: T
 
-postulate B :ᴿ T
+postulate B :R: T
 
-postulate Op :ᴿ (x :ᴿ T) -> (y :ᴿ T) -> T
+postulate Op :R: (x :R: T) -> (y :R: T) -> T
 
-id :ᴿ (x :ᴿ T) -> T = (\x :ᴿ T. x)
+id :R: (x :R: T) -> T = (\x :R: T. x)
 
-const_A :ᴿ (x :ᴱ T) -> T = (\x :ᴱ T. A)
+const_A :R: (x :E: T) -> T = (\x :E: T. A)
 
-f :ᴿ (g :ᴿ (_ :ᴿ T) -> T) -> (z :ᴿ T) -> (h :ᴿ (_ :ᴱ T) -> T) -> (w :ᴱ T) -> T = (\g :ᴿ (_ :ᴿ T) -> T. (\z :ᴿ T. (\h :ᴿ (_ :ᴱ T) -> T. (\w :ᴱ T. Op ᴿ (g ᴿ z) ᴿ (h ᴱ w)))))
+f :R: (g :R: (_ :R: T) -> T) -> (z :R: T) -> (h :R: (_ :E: T) -> T) -> (w :E: T) -> T = (\g :R: (_ :R: T) -> T. (\z :R: T. (\h :R: (_ :E: T) -> T. (\w :E: T. Op -R- (g -R- z) -R- (h -E- w)))))
 
-main :ᴿ T = f ᴿ id ᴿ B ᴿ const_A ᴱ B
+main :R: T = f -R- id -R- B -R- const_A -E- B
 
 ### Final annotation ###
 
-postulate T :ᴱ Type
+postulate T :E: Type
 
-postulate A :ᴿ T
+postulate A :R: T
 
-postulate B :ᴿ T
+postulate B :R: T
 
-postulate Op :ᴿ (x :ᴿ T) -> (y :ᴿ T) -> T
+postulate Op :R: (x :R: T) -> (y :R: T) -> T
 
-id :ᴿ (x :ᴿ T) -> T = (\x :ᴿ T. x)
+id :R: (x :R: T) -> T = (\x :R: T. x)
 
-const_A :ᴿ (x :ᴱ T) -> T = (\x :ᴱ T. A)
+const_A :R: (x :E: T) -> T = (\x :E: T. A)
 
-f :ᴿ (g :ᴿ (_ :ᴿ T) -> T) -> (z :ᴿ T) -> (h :ᴿ (_ :ᴱ T) -> T) -> (w :ᴱ T) -> T = (\g :ᴿ (_ :ᴿ T) -> T. (\z :ᴿ T. (\h :ᴿ (_ :ᴱ T) -> T. (\w :ᴱ T. Op ᴿ (g ᴿ z) ᴿ (h ᴱ w)))))
+f :R: (g :R: (_ :R: T) -> T) -> (z :R: T) -> (h :R: (_ :E: T) -> T) -> (w :E: T) -> T = (\g :R: (_ :R: T) -> T. (\z :R: T. (\h :R: (_ :E: T) -> T. (\w :E: T. Op -R- (g -R- z) -R- (h -E- w)))))
 
-main :ᴿ T = f ᴿ id ᴿ B ᴿ const_A ᴱ B
+main :R: T = f -R- id -R- B -R- const_A -E- B
 
 ### Verification ###
 

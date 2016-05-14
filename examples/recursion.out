@@ -12,7 +12,7 @@ postulate Nat : Type
 
 postulate Z : Nat
 
-postulate S : (n :ᴿ Nat) -> Nat
+postulate S : (n :R: Nat) -> Nat
 
 postulate Vec : (_ : Nat) -> (_ : Type) -> Type
 
@@ -33,66 +33,66 @@ vlen : (a : Type) -> (n : Nat) -> (xs : Vec n a) -> Nat = \(a : Type) (n : Nat) 
 
 testVec : Vec 2 Bool = VCons Bool 1 True (VCons Bool Z False (VNil Bool))
 
-main :ᴿ Nat = vlen Bool 2 testVec
+main :R: Nat = vlen Bool 2 testVec
 
 ### Metaified ###
 
-postulate Bool :¹ Type
+postulate Bool :1: Type
 
-postulate True :² Bool
+postulate True :2: Bool
 
-postulate False :³ Bool
+postulate False :3: Bool
 
-postulate Nat :⁴ Type
+postulate Nat :4: Type
 
-postulate Z :⁵ Nat
+postulate Z :5: Nat
 
-postulate S :⁶ (n :ᴿ Nat) -> Nat
+postulate S :6: (n :R: Nat) -> Nat
 
-postulate Vec :⁷ (_ :⁸ Nat) -> (_ :⁹ Type) -> Type
+postulate Vec :7: (_ :8: Nat) -> (_ :9: Type) -> Type
 
-postulate VNil :¹⁰ (a :¹¹ Type) -> Vec ¹³ Z ¹² a
+postulate VNil :10: (a :11: Type) -> Vec -13- Z -12- a
 
-postulate VCons :¹⁴ (a :¹⁵ Type) -> (n :¹⁶ Nat) -> (x :¹⁷ a) -> (xs :¹⁸ Vec ²⁰ n ¹⁹ a) -> Vec ²² (S ²³ n) ²¹ a
+postulate VCons :14: (a :15: Type) -> (n :16: Nat) -> (x :17: a) -> (xs :18: Vec -20- n -19- a) -> Vec -22- (S -23- n) -21- a
 
-vlen :²⁴ (a :²⁵ Type) -> (n :²⁶ Nat) -> (xs :²⁷ Vec ²⁹ n ²⁸ a) -> Nat = \(a :³⁰ Type) (n :³¹ Nat) (xs :³² Vec ³⁴ n ³³ a).
-  case ³⁵ xs of
-    VNil (a' :³⁶ Type)
+vlen :24: (a :25: Type) -> (n :26: Nat) -> (xs :27: Vec -29- n -28- a) -> Nat = \(a :30: Type) (n :31: Nat) (xs :32: Vec -34- n -33- a).
+  case -35- xs of
+    VNil (a' :36: Type)
       | a = a'
       | n = Z
       => Z
-    VCons (a' :³⁷ Type) (n' :³⁸ Nat) (x' :³⁹ a) (xs' :⁴⁰ Vec ⁴² n' ⁴¹ a)
+    VCons (a' :37: Type) (n' :38: Nat) (x' :39: a) (xs' :40: Vec -42- n' -41- a)
       | a = a'
-      | n = S ⁴³ n'
-      => S ⁴⁴ (vlen ⁴⁷ a ⁴⁶ n' ⁴⁵ xs')
+      | n = S -43- n'
+      => S -44- (vlen -47- a -46- n' -45- xs')
 
-testVec :⁴⁸ Vec ⁵⁰ 2 ⁴⁹ Bool = VCons ⁵⁶ Bool ⁵⁵ 1 ⁵⁴ True ⁵³ (VCons ⁶¹ Bool ⁶⁰ Z ⁵⁹ False ⁵⁸ (VNil ⁶² Bool))
+testVec :48: Vec -50- 2 -49- Bool = VCons -56- Bool -55- 1 -54- True -53- (VCons -61- Bool -60- Z -59- False -58- (VNil -62- Bool))
 
-main :ᴿ Nat = vlen ⁶⁵ Bool ⁶⁴ 2 ⁶³ testVec
+main :R: Nat = vlen -65- Bool -64- 2 -63- testVec
 
 ### Inferred definitions ###
 
-postulate Bool :¹ Type
+postulate Bool :1: Type
 
-postulate False :³ Bool
+postulate False :3: Bool
 
-postulate Nat :⁴ Type
+postulate Nat :4: Type
 
-postulate S :⁶ (n :ᴿ Nat) -> Nat
+postulate S :6: (n :R: Nat) -> Nat
 
-postulate True :² Bool
+postulate True :2: Bool
 
-postulate Type :ᴿ Type
+postulate Type :R: Type
 
-postulate VCons :¹⁴ (a :¹⁵ Type) -> (n :¹⁶ Nat) -> (x :¹⁷ a) -> (xs :¹⁸ Vec ²⁰ n ¹⁹ a) -> Vec ²² (S ²³ n) ²¹ a
+postulate VCons :14: (a :15: Type) -> (n :16: Nat) -> (x :17: a) -> (xs :18: Vec -20- n -19- a) -> Vec -22- (S -23- n) -21- a
 
-postulate VNil :¹⁰ (a :¹¹ Type) -> Vec ¹³ Z ¹² a
+postulate VNil :10: (a :11: Type) -> Vec -13- Z -12- a
 
-postulate Vec :⁷ (_ :⁸ Nat) -> (_ :⁹ Type) -> Type
+postulate Vec :7: (_ :8: Nat) -> (_ :9: Type) -> Type
 
-postulate Z :⁵ Nat
+postulate Z :5: Nat
 
-main :ᴿ Nat = vlen ⁶⁵ Bool ⁶⁴ 2 ⁶³ testVec
+main :R: Nat = vlen -65- Bool -64- 2 -63- testVec
   [] -> [24,R]
   [25] -> [1,65]
   [26] -> [5,6,64,66,67]
@@ -109,7 +109,7 @@ main :ᴿ Nat = vlen ⁶⁵ Bool ⁶⁴ 2 ⁶³ testVec
   [66] -> [51]
   [67] -> [52]
 
-testVec :⁴⁸ Vec ⁵⁰ 2 ⁴⁹ Bool = VCons ⁵⁶ Bool ⁵⁵ 1 ⁵⁴ True ⁵³ (VCons ⁶¹ Bool ⁶⁰ Z ⁵⁹ False ⁵⁸ (VNil ⁶² Bool))
+testVec :48: Vec -50- 2 -49- Bool = VCons -56- Bool -55- 1 -54- True -53- (VCons -61- Bool -60- Z -59- False -58- (VNil -62- Bool))
   [11,18,48] -> [1,62]
   [12,18,48] -> [19]
   [13,18,48] -> [20]
@@ -143,16 +143,16 @@ testVec :⁴⁸ Vec ⁵⁰ 2 ⁴⁹ Bool = VCons ⁵⁶ Bool ⁵⁵ 1 ⁵⁴ Tru
   [48,56] -> [15]
   [48,57] -> [23,52]
 
-vlen :²⁴ (a :²⁵ Type) -> (n :²⁶ Nat) -> (xs :²⁷ Vec ²⁹ n ²⁸ a) -> Nat = \(a :³⁰ Type) (n :³¹ Nat) (xs :³² Vec ³⁴ n ³³ a).
-  case ³⁵ xs of
-    VNil (a' :³⁶ Type)
+vlen :24: (a :25: Type) -> (n :26: Nat) -> (xs :27: Vec -29- n -28- a) -> Nat = \(a :30: Type) (n :31: Nat) (xs :32: Vec -34- n -33- a).
+  case -35- xs of
+    VNil (a' :36: Type)
       | a = a'
       | n = Z
       => Z
-    VCons (a' :³⁷ Type) (n' :³⁸ Nat) (x' :³⁹ a) (xs' :⁴⁰ Vec ⁴² n' ⁴¹ a)
+    VCons (a' :37: Type) (n' :38: Nat) (x' :39: a) (xs' :40: Vec -42- n' -41- a)
       | a = a'
-      | n = S ⁴³ n'
-      => S ⁴⁴ (vlen ⁴⁷ a ⁴⁶ n' ⁴⁵ xs')
+      | n = S -43- n'
+      => S -44- (vlen -47- a -46- n' -45- xs')
   [10,24] -> [27]
   [11,24] -> [27,36]
   [12,24] -> [28]
@@ -281,108 +281,108 @@ vlen :²⁴ (a :²⁵ Type) -> (n :²⁶ Nat) -> (xs :²⁷ Vec ²⁹ n ²⁸ a)
 
 ### Annotated ###
 
-postulate Bool :ᴱ Type
+postulate Bool :E: Type
 
-postulate True :ᴱ Bool
+postulate True :E: Bool
 
-postulate False :ᴱ Bool
+postulate False :E: Bool
 
-postulate Nat :ᴱ Type
+postulate Nat :E: Type
 
-postulate Z :ᴿ Nat
+postulate Z :R: Nat
 
-postulate S :ᴿ (n :ᴿ Nat) -> Nat
+postulate S :R: (n :R: Nat) -> Nat
 
-postulate Vec :ᴱ (_ :ᴱ Nat) -> (_ :ᴱ Type) -> Type
+postulate Vec :E: (_ :E: Nat) -> (_ :E: Type) -> Type
 
-postulate VNil :ᴿ (a :ᴱ Type) -> Vec ᴱ Z ᴱ a
+postulate VNil :R: (a :E: Type) -> Vec -E- Z -E- a
 
-postulate VCons :ᴿ (a :ᴱ Type) -> (n :ᴱ Nat) -> (x :ᴱ a) -> (xs :ᴿ Vec ᴱ n ᴱ a) -> Vec ᴱ (S ᴱ n) ᴱ a
+postulate VCons :R: (a :E: Type) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
 
-vlen :ᴿ (a :ᴱ Type) -> (n :ᴱ Nat) -> (xs :ᴿ Vec ᴱ n ᴱ a) -> Nat = \(a :ᴱ Type) (n :ᴱ Nat) (xs :ᴿ Vec ᴱ n ᴱ a).
-  case ᴿ xs of
-    VNil (a' :ᴱ Type)
+vlen :R: (a :E: Type) -> (n :E: Nat) -> (xs :R: Vec -E- n -E- a) -> Nat = \(a :E: Type) (n :E: Nat) (xs :R: Vec -E- n -E- a).
+  case -R- xs of
+    VNil (a' :E: Type)
       | a = a'
       | n = Z
       => Z
-    VCons (a' :ᴱ Type) (n' :ᴱ Nat) (x' :ᴱ a) (xs' :ᴿ Vec ᴱ n' ᴱ a)
+    VCons (a' :E: Type) (n' :E: Nat) (x' :E: a) (xs' :R: Vec -E- n' -E- a)
       | a = a'
-      | n = S ᴱ n'
-      => S ᴿ (vlen ᴱ a ᴱ n' ᴿ xs')
+      | n = S -E- n'
+      => S -R- (vlen -E- a -E- n' -R- xs')
 
-testVec :ᴿ Vec ᴱ 2 ᴱ Bool = VCons ᴱ Bool ᴱ 1 ᴱ True ᴿ (VCons ᴱ Bool ᴱ Z ᴱ False ᴿ (VNil ᴱ Bool))
+testVec :R: Vec -E- 2 -E- Bool = VCons -E- Bool -E- 1 -E- True -R- (VCons -E- Bool -E- Z -E- False -R- (VNil -E- Bool))
 
-main :ᴿ Nat = vlen ᴱ Bool ᴱ 2 ᴿ testVec
+main :R: Nat = vlen -E- Bool -E- 2 -R- testVec
 
 ### Specialised ###
 
-postulate Bool :ᴱ Type
+postulate Bool :E: Type
 
-postulate True :ᴱ Bool
+postulate True :E: Bool
 
-postulate False :ᴱ Bool
+postulate False :E: Bool
 
-postulate Nat :ᴱ Type
+postulate Nat :E: Type
 
-postulate Z :ᴿ Nat
+postulate Z :R: Nat
 
-postulate S :ᴿ (n :ᴿ Nat) -> Nat
+postulate S :R: (n :R: Nat) -> Nat
 
-postulate Vec :ᴱ (_ :ᴱ Nat) -> (_ :ᴱ Type) -> Type
+postulate Vec :E: (_ :E: Nat) -> (_ :E: Type) -> Type
 
-postulate VNil :ᴿ (a :ᴱ Type) -> Vec ᴱ Z ᴱ a
+postulate VNil :R: (a :E: Type) -> Vec -E- Z -E- a
 
-postulate VCons :ᴿ (a :ᴱ Type) -> (n :ᴱ Nat) -> (x :ᴱ a) -> (xs :ᴿ Vec ᴱ n ᴱ a) -> Vec ᴱ (S ᴱ n) ᴱ a
+postulate VCons :R: (a :E: Type) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
 
-vlen :ᴿ (a :ᴱ Type) -> (n :ᴱ Nat) -> (xs :ᴿ Vec ᴱ n ᴱ a) -> Nat = \(a :ᴱ Type) (n :ᴱ Nat) (xs :ᴿ Vec ᴱ n ᴱ a).
-  case ᴿ xs of
-    VNil (a' :ᴱ Type)
+vlen :R: (a :E: Type) -> (n :E: Nat) -> (xs :R: Vec -E- n -E- a) -> Nat = \(a :E: Type) (n :E: Nat) (xs :R: Vec -E- n -E- a).
+  case -R- xs of
+    VNil (a' :E: Type)
       | a = a'
       | n = Z
       => Z
-    VCons (a' :ᴱ Type) (n' :ᴱ Nat) (x' :ᴱ a) (xs' :ᴿ Vec ᴱ n' ᴱ a)
+    VCons (a' :E: Type) (n' :E: Nat) (x' :E: a) (xs' :R: Vec -E- n' -E- a)
       | a = a'
-      | n = S ᴱ n'
-      => S ᴿ (vlen ᴱ a ᴱ n' ᴿ xs')
+      | n = S -E- n'
+      => S -R- (vlen -E- a -E- n' -R- xs')
 
-testVec :ᴿ Vec ᴱ 2 ᴱ Bool = VCons ᴱ Bool ᴱ 1 ᴱ True ᴿ (VCons ᴱ Bool ᴱ Z ᴱ False ᴿ (VNil ᴱ Bool))
+testVec :R: Vec -E- 2 -E- Bool = VCons -E- Bool -E- 1 -E- True -R- (VCons -E- Bool -E- Z -E- False -R- (VNil -E- Bool))
 
-main :ᴿ Nat = vlen ᴱ Bool ᴱ 2 ᴿ testVec
+main :R: Nat = vlen -E- Bool -E- 2 -R- testVec
 
 ### Final annotation ###
 
-postulate Bool :ᴱ Type
+postulate Bool :E: Type
 
-postulate True :ᴱ Bool
+postulate True :E: Bool
 
-postulate False :ᴱ Bool
+postulate False :E: Bool
 
-postulate Nat :ᴱ Type
+postulate Nat :E: Type
 
-postulate Z :ᴿ Nat
+postulate Z :R: Nat
 
-postulate S :ᴿ (n :ᴿ Nat) -> Nat
+postulate S :R: (n :R: Nat) -> Nat
 
-postulate Vec :ᴱ (_ :ᴱ Nat) -> (_ :ᴱ Type) -> Type
+postulate Vec :E: (_ :E: Nat) -> (_ :E: Type) -> Type
 
-postulate VNil :ᴿ (a :ᴱ Type) -> Vec ᴱ Z ᴱ a
+postulate VNil :R: (a :E: Type) -> Vec -E- Z -E- a
 
-postulate VCons :ᴿ (a :ᴱ Type) -> (n :ᴱ Nat) -> (x :ᴱ a) -> (xs :ᴿ Vec ᴱ n ᴱ a) -> Vec ᴱ (S ᴱ n) ᴱ a
+postulate VCons :R: (a :E: Type) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
 
-vlen :ᴿ (a :ᴱ Type) -> (n :ᴱ Nat) -> (xs :ᴿ Vec ᴱ n ᴱ a) -> Nat = \(a :ᴱ Type) (n :ᴱ Nat) (xs :ᴿ Vec ᴱ n ᴱ a).
-  case ᴿ xs of
-    VNil (a' :ᴱ Type)
+vlen :R: (a :E: Type) -> (n :E: Nat) -> (xs :R: Vec -E- n -E- a) -> Nat = \(a :E: Type) (n :E: Nat) (xs :R: Vec -E- n -E- a).
+  case -R- xs of
+    VNil (a' :E: Type)
       | a = a'
       | n = Z
       => Z
-    VCons (a' :ᴱ Type) (n' :ᴱ Nat) (x' :ᴱ a) (xs' :ᴿ Vec ᴱ n' ᴱ a)
+    VCons (a' :E: Type) (n' :E: Nat) (x' :E: a) (xs' :R: Vec -E- n' -E- a)
       | a = a'
-      | n = S ᴱ n'
-      => S ᴿ (vlen ᴱ a ᴱ n' ᴿ xs')
+      | n = S -E- n'
+      => S -R- (vlen -E- a -E- n' -R- xs')
 
-testVec :ᴿ Vec ᴱ 2 ᴱ Bool = VCons ᴱ Bool ᴱ 1 ᴱ True ᴿ (VCons ᴱ Bool ᴱ Z ᴱ False ᴿ (VNil ᴱ Bool))
+testVec :R: Vec -E- 2 -E- Bool = VCons -E- Bool -E- 1 -E- True -R- (VCons -E- Bool -E- Z -E- False -R- (VNil -E- Bool))
 
-main :ᴿ Nat = vlen ᴱ Bool ᴱ 2 ᴿ testVec
+main :R: Nat = vlen -E- Bool -E- 2 -R- testVec
 
 ### Verification ###
 

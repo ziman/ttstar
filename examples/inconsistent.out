@@ -2,17 +2,17 @@
 
 ### Desugared ###
 
-main :ᴿ (x :ᴱ Type) -> Type = (\x :ᴱ Type. x)
+main :R: (x :E: Type) -> Type = (\x :E: Type. x)
 
 ### Metaified ###
 
-main :ᴿ (x :ᴱ Type) -> Type = (\x :ᴱ Type. x)
+main :R: (x :E: Type) -> Type = (\x :E: Type. x)
 
 ### Inferred definitions ###
 
-postulate Type :ᴿ Type
+postulate Type :R: Type
 
-main :ᴿ (x :ᴱ Type) -> Type = (\x :ᴱ Type. x)
+main :R: (x :E: Type) -> Type = (\x :E: Type. x)
   [] -> [E,R]
 
 

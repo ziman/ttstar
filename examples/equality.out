@@ -26,51 +26,51 @@ notnot : (x : Bool) -> Id x (not (not x)) = \(x : Bool).
     F
       => Refl Bool F
 
-main :ᴿ Id F (not (not F)) = notnot F
+main :R: Id F (not (not F)) = notnot F
 
 ### Metaified ###
 
-postulate Bool :¹ Type
+postulate Bool :1: Type
 
-postulate T :² Bool
+postulate T :2: Bool
 
-postulate F :³ Bool
+postulate F :3: Bool
 
-postulate Id :⁴ (a :⁵ Type) -> (x :⁶ a) -> (y :⁷ a) -> Type
+postulate Id :4: (a :5: Type) -> (x :6: a) -> (y :7: a) -> Type
 
-postulate Refl :⁸ (a :⁹ Type) -> (x :¹⁰ a) -> Id ¹² x ¹¹ x
+postulate Refl :8: (a :9: Type) -> (x :10: a) -> Id -12- x -11- x
 
-not :¹³ (x :¹⁴ Bool) -> Bool = \(x :¹⁵ Bool).
-  case ¹⁶ x of
+not :13: (x :14: Bool) -> Bool = \(x :15: Bool).
+  case -16- x of
     T
       => F
     F
       => T
 
-notnot :¹⁷ (x :¹⁸ Bool) -> Id ²⁰ x ¹⁹ (not ²¹ (not ²² x)) = \(x :²³ Bool).
-  case ²⁴ x of
+notnot :17: (x :18: Bool) -> Id -20- x -19- (not -21- (not -22- x)) = \(x :23: Bool).
+  case -24- x of
     T
-      => Refl ²⁶ Bool ²⁵ T
+      => Refl -26- Bool -25- T
     F
-      => Refl ²⁸ Bool ²⁷ F
+      => Refl -28- Bool -27- F
 
-main :ᴿ Id ³⁰ F ²⁹ (not ³¹ (not ³² F)) = notnot ³³ F
+main :R: Id -30- F -29- (not -31- (not -32- F)) = notnot -33- F
 
 ### Inferred definitions ###
 
-postulate Bool :¹ Type
+postulate Bool :1: Type
 
-postulate F :³ Bool
+postulate F :3: Bool
 
-postulate Id :⁴ (a :⁵ Type) -> (x :⁶ a) -> (y :⁷ a) -> Type
+postulate Id :4: (a :5: Type) -> (x :6: a) -> (y :7: a) -> Type
 
-postulate Refl :⁸ (a :⁹ Type) -> (x :¹⁰ a) -> Id ¹² x ¹¹ x
+postulate Refl :8: (a :9: Type) -> (x :10: a) -> Id -12- x -11- x
 
-postulate T :² Bool
+postulate T :2: Bool
 
-postulate Type :ᴿ Type
+postulate Type :R: Type
 
-main :ᴿ Id ³⁰ F ²⁹ (not ³¹ (not ³² F)) = notnot ³³ F
+main :R: Id -30- F -29- (not -31- (not -32- F)) = notnot -33- F
   [] -> [17,R]
   [18] -> [3,33]
   [19] -> [29]
@@ -79,8 +79,8 @@ main :ᴿ Id ³⁰ F ²⁹ (not ³¹ (not ³² F)) = notnot ³³ F
   [30] -> [20]
   [33] -> [18]
 
-not :¹³ (x :¹⁴ Bool) -> Bool = \(x :¹⁵ Bool).
-  case ¹⁶ x of
+not :13: (x :14: Bool) -> Bool = \(x :15: Bool).
+  case -16- x of
     T
       => F
     F
@@ -92,12 +92,12 @@ not :¹³ (x :¹⁴ Bool) -> Bool = \(x :¹⁵ Bool).
   [13,15] -> [14]
   [13,16] -> [15]
 
-notnot :¹⁷ (x :¹⁸ Bool) -> Id ²⁰ x ¹⁹ (not ²¹ (not ²² x)) = \(x :²³ Bool).
-  case ²⁴ x of
+notnot :17: (x :18: Bool) -> Id -20- x -19- (not -21- (not -22- x)) = \(x :23: Bool).
+  case -24- x of
     T
-      => Refl ²⁶ Bool ²⁵ T
+      => Refl -26- Bool -25- T
     F
-      => Refl ²⁸ Bool ²⁷ F
+      => Refl -28- Bool -27- F
   [2,17] -> [18]
   [3,17] -> [18]
   [9,17] -> [1,26,28]
@@ -154,87 +154,87 @@ notnot :¹⁷ (x :¹⁸ Bool) -> Id ²⁰ x ¹⁹ (not ²¹ (not ²² x)) = \(x 
 
 ### Annotated ###
 
-postulate Bool :ᴱ Type
+postulate Bool :E: Type
 
-postulate T :ᴱ Bool
+postulate T :E: Bool
 
-postulate F :ᴿ Bool
+postulate F :R: Bool
 
-postulate Id :ᴱ (a :ᴱ Type) -> (x :ᴱ a) -> (y :ᴱ a) -> Type
+postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
 
-postulate Refl :ᴿ (a :ᴱ Type) -> (x :ᴱ a) -> Id ᴱ x ᴱ x
+postulate Refl :R: (a :E: Type) -> (x :E: a) -> Id -E- x -E- x
 
-not :ᴱ (x :ᴱ Bool) -> Bool = \(x :ᴱ Bool).
-  case ᴱ x of
+not :E: (x :E: Bool) -> Bool = \(x :E: Bool).
+  case -E- x of
     T
       => F
     F
       => T
 
-notnot :ᴿ (x :ᴿ Bool) -> Id ᴱ x ᴱ (not ᴱ (not ᴱ x)) = \(x :ᴿ Bool).
-  case ᴿ x of
+notnot :R: (x :R: Bool) -> Id -E- x -E- (not -E- (not -E- x)) = \(x :R: Bool).
+  case -R- x of
     T
-      => Refl ᴱ Bool ᴱ T
+      => Refl -E- Bool -E- T
     F
-      => Refl ᴱ Bool ᴱ F
+      => Refl -E- Bool -E- F
 
-main :ᴿ Id ᴱ F ᴱ (not ᴱ (not ᴱ F)) = notnot ᴿ F
+main :R: Id -E- F -E- (not -E- (not -E- F)) = notnot -R- F
 
 ### Specialised ###
 
-postulate Bool :ᴱ Type
+postulate Bool :E: Type
 
-postulate T :ᴱ Bool
+postulate T :E: Bool
 
-postulate F :ᴿ Bool
+postulate F :R: Bool
 
-postulate Id :ᴱ (a :ᴱ Type) -> (x :ᴱ a) -> (y :ᴱ a) -> Type
+postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
 
-postulate Refl :ᴿ (a :ᴱ Type) -> (x :ᴱ a) -> Id ᴱ x ᴱ x
+postulate Refl :R: (a :E: Type) -> (x :E: a) -> Id -E- x -E- x
 
-not :ᴱ (x :ᴱ Bool) -> Bool = \(x :ᴱ Bool).
-  case ᴱ x of
+not :E: (x :E: Bool) -> Bool = \(x :E: Bool).
+  case -E- x of
     T
       => F
     F
       => T
 
-notnot :ᴿ (x :ᴿ Bool) -> Id ᴱ x ᴱ (not ᴱ (not ᴱ x)) = \(x :ᴿ Bool).
-  case ᴿ x of
+notnot :R: (x :R: Bool) -> Id -E- x -E- (not -E- (not -E- x)) = \(x :R: Bool).
+  case -R- x of
     T
-      => Refl ᴱ Bool ᴱ T
+      => Refl -E- Bool -E- T
     F
-      => Refl ᴱ Bool ᴱ F
+      => Refl -E- Bool -E- F
 
-main :ᴿ Id ᴱ F ᴱ (not ᴱ (not ᴱ F)) = notnot ᴿ F
+main :R: Id -E- F -E- (not -E- (not -E- F)) = notnot -R- F
 
 ### Final annotation ###
 
-postulate Bool :ᴱ Type
+postulate Bool :E: Type
 
-postulate T :ᴱ Bool
+postulate T :E: Bool
 
-postulate F :ᴿ Bool
+postulate F :R: Bool
 
-postulate Id :ᴱ (a :ᴱ Type) -> (x :ᴱ a) -> (y :ᴱ a) -> Type
+postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
 
-postulate Refl :ᴿ (a :ᴱ Type) -> (x :ᴱ a) -> Id ᴱ x ᴱ x
+postulate Refl :R: (a :E: Type) -> (x :E: a) -> Id -E- x -E- x
 
-not :ᴱ (x :ᴱ Bool) -> Bool = \(x :ᴱ Bool).
-  case ᴱ x of
+not :E: (x :E: Bool) -> Bool = \(x :E: Bool).
+  case -E- x of
     T
       => F
     F
       => T
 
-notnot :ᴿ (x :ᴿ Bool) -> Id ᴱ x ᴱ (not ᴱ (not ᴱ x)) = \(x :ᴿ Bool).
-  case ᴿ x of
+notnot :R: (x :R: Bool) -> Id -E- x -E- (not -E- (not -E- x)) = \(x :R: Bool).
+  case -R- x of
     T
-      => Refl ᴱ Bool ᴱ T
+      => Refl -E- Bool -E- T
     F
-      => Refl ᴱ Bool ᴱ F
+      => Refl -E- Bool -E- F
 
-main :ᴿ Id ᴱ F ᴱ (not ᴱ (not ᴱ F)) = notnot ᴿ F
+main :R: Id -E- F -E- (not -E- (not -E- F)) = notnot -R- F
 
 ### Verification ###
 

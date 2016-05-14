@@ -2,17 +2,17 @@
 
 ### Desugared ###
 
-main :ᴿ (x : Type) -> Type = (\x : Type. x)
+main :R: (x : Type) -> Type = (\x : Type. x)
 
 ### Metaified ###
 
-main :ᴿ (x :¹ Type) -> Type = (\x :² Type. x)
+main :R: (x :1: Type) -> Type = (\x :2: Type. x)
 
 ### Inferred definitions ###
 
-postulate Type :ᴿ Type
+postulate Type :R: Type
 
-main :ᴿ (x :¹ Type) -> Type = (\x :² Type. x)
+main :R: (x :1: Type) -> Type = (\x :2: Type. x)
   [] -> [1,2,R]
 
 
@@ -26,15 +26,15 @@ main :ᴿ (x :¹ Type) -> Type = (\x :² Type. x)
 
 ### Annotated ###
 
-main :ᴿ (x :ᴿ Type) -> Type = (\x :ᴿ Type. x)
+main :R: (x :R: Type) -> Type = (\x :R: Type. x)
 
 ### Specialised ###
 
-main :ᴿ (x :ᴿ Type) -> Type = (\x :ᴿ Type. x)
+main :R: (x :R: Type) -> Type = (\x :R: Type. x)
 
 ### Final annotation ###
 
-main :ᴿ (x :ᴿ Type) -> Type = (\x :ᴿ Type. x)
+main :R: (x :R: Type) -> Type = (\x :R: Type. x)
 
 ### Verification ###
 

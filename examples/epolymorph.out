@@ -18,9 +18,9 @@ postulate Nat : Type
 
 postulate Z : Nat
 
-postulate S : (n :ᴿ Nat) -> Nat
+postulate S : (n :R: Nat) -> Nat
 
-postulate Plus : (x :ᴿ Nat) -> (y :ᴿ Nat) -> Nat
+postulate Plus : (x :R: Nat) -> (y :R: Nat) -> Nat
 
 id : (x : Nat) -> Nat = \(x : Nat).
   case x of
@@ -43,78 +43,78 @@ test_1 : Nat = Plus (apply id 2) (apply const_3 two)
 
 test_2 : Nat = f id 2 const_3 1
 
-main :ᴿ Nat = Plus test_1 test_2
+main :R: Nat = Plus test_1 test_2
 
 ### Metaified ###
 
-postulate Bool :¹ Type
+postulate Bool :1: Type
 
-postulate True :² Bool
+postulate True :2: Bool
 
-postulate False :³ Bool
+postulate False :3: Bool
 
-postulate Maybe :⁴ (_ :⁵ Type) -> Type
+postulate Maybe :4: (_ :5: Type) -> Type
 
-postulate Just :⁶ (a :⁷ Type) -> (_ :⁸ a) -> Type
+postulate Just :6: (a :7: Type) -> (_ :8: a) -> Type
 
-postulate Nothing :⁹ (a :¹⁰ Type) -> Type
+postulate Nothing :9: (a :10: Type) -> Type
 
-postulate Nat :¹¹ Type
+postulate Nat :11: Type
 
-postulate Z :¹² Nat
+postulate Z :12: Nat
 
-postulate S :¹³ (n :ᴿ Nat) -> Nat
+postulate S :13: (n :R: Nat) -> Nat
 
-postulate Plus :¹⁴ (x :ᴿ Nat) -> (y :ᴿ Nat) -> Nat
+postulate Plus :14: (x :R: Nat) -> (y :R: Nat) -> Nat
 
-id :¹⁵ (x :¹⁶ Nat) -> Nat = \(x :¹⁷ Nat).
-  case ¹⁸ x of
+id :15: (x :16: Nat) -> Nat = \(x :17: Nat).
+  case -18- x of
     Z
       => Z
-    S (y :¹⁹ Nat)
+    S (y :19: Nat)
       => 
-        let result :²⁰ Nat = S ²¹ y
+        let result :20: Nat = S -21- y
         in result
 
-const_3 :²² (_ :²³ Nat) -> Nat = (\_ :²⁴ Nat. 3)
+const_3 :22: (_ :23: Nat) -> Nat = (\_ :24: Nat. 3)
 
-two :²⁸ Nat = 2
+two :28: Nat = 2
 
-f :³¹ (g :³² (_ :³³ Nat) -> Nat) -> (z :³⁴ Nat) -> (h :³⁵ (_ :³⁶ Nat) -> Nat) -> (w :³⁷ Nat) -> Nat = (\g :³⁸ (_ :³⁹ Nat) -> Nat. (\z :⁴⁰ Nat. (\h :⁴¹ (_ :⁴² Nat) -> Nat. (\w :⁴³ Nat. Plus ⁴⁵ (g ⁴⁶ z) ⁴⁴ (h ⁴⁷ w)))))
+f :31: (g :32: (_ :33: Nat) -> Nat) -> (z :34: Nat) -> (h :35: (_ :36: Nat) -> Nat) -> (w :37: Nat) -> Nat = (\g :38: (_ :39: Nat) -> Nat. (\z :40: Nat. (\h :41: (_ :42: Nat) -> Nat. (\w :43: Nat. Plus -45- (g -46- z) -44- (h -47- w)))))
 
-apply :⁴⁸ (f :⁴⁹ (_ :⁵⁰ Nat) -> Nat) -> (x :⁵¹ Nat) -> Nat = (\f :⁵² (_ :⁵³ Nat) -> Nat. (\x :⁵⁴ Nat. f ⁵⁵ x))
+apply :48: (f :49: (_ :50: Nat) -> Nat) -> (x :51: Nat) -> Nat = (\f :52: (_ :53: Nat) -> Nat. (\x :54: Nat. f -55- x))
 
-test_1 :⁵⁶ Nat = Plus ⁵⁸ (apply ⁶⁰ id ⁵⁹ 2) ⁵⁷ (apply ⁶⁴ const_3 ⁶³ two)
+test_1 :56: Nat = Plus -58- (apply -60- id -59- 2) -57- (apply -64- const_3 -63- two)
 
-test_2 :⁶⁵ Nat = f ⁶⁹ id ⁶⁸ 2 ⁶⁷ const_3 ⁶⁶ 1
+test_2 :65: Nat = f -69- id -68- 2 -67- const_3 -66- 1
 
-main :ᴿ Nat = Plus ⁷⁴ test_1 ⁷³ test_2
+main :R: Nat = Plus -74- test_1 -73- test_2
 
 ### Inferred definitions ###
 
-postulate Bool :¹ Type
+postulate Bool :1: Type
 
-postulate False :³ Bool
+postulate False :3: Bool
 
-postulate Just :⁶ (a :⁷ Type) -> (_ :⁸ a) -> Type
+postulate Just :6: (a :7: Type) -> (_ :8: a) -> Type
 
-postulate Maybe :⁴ (_ :⁵ Type) -> Type
+postulate Maybe :4: (_ :5: Type) -> Type
 
-postulate Nat :¹¹ Type
+postulate Nat :11: Type
 
-postulate Nothing :⁹ (a :¹⁰ Type) -> Type
+postulate Nothing :9: (a :10: Type) -> Type
 
-postulate Plus :¹⁴ (x :ᴿ Nat) -> (y :ᴿ Nat) -> Nat
+postulate Plus :14: (x :R: Nat) -> (y :R: Nat) -> Nat
 
-postulate S :¹³ (n :ᴿ Nat) -> Nat
+postulate S :13: (n :R: Nat) -> Nat
 
-postulate True :² Bool
+postulate True :2: Bool
 
-postulate Type :ᴿ Type
+postulate Type :R: Type
 
-postulate Z :¹² Nat
+postulate Z :12: Nat
 
-apply :⁴⁸ (f :⁴⁹ (_ :⁵⁰ Nat) -> Nat) -> (x :⁵¹ Nat) -> Nat = (\f :⁵² (_ :⁵³ Nat) -> Nat. (\x :⁵⁴ Nat. f ⁵⁵ x))
+apply :48: (f :49: (_ :50: Nat) -> Nat) -> (x :51: Nat) -> Nat = (\f :52: (_ :53: Nat) -> Nat. (\x :54: Nat. f -55- x))
   [48] -> [52]
   [48,49] -> [52]
   [48,50] -> [53]
@@ -124,12 +124,12 @@ apply :⁴⁸ (f :⁴⁹ (_ :⁵⁰ Nat) -> Nat) -> (x :⁵¹ Nat) -> Nat = (\f 
   [48,54] -> [51]
   [48,55] -> [53]
 
-const_3 :²² (_ :²³ Nat) -> Nat = (\_ :²⁴ Nat. 3)
+const_3 :22: (_ :23: Nat) -> Nat = (\_ :24: Nat. 3)
   [22] -> [12,13,25,26,27]
   [22,23] -> [24]
   [22,24] -> [23]
 
-f :³¹ (g :³² (_ :³³ Nat) -> Nat) -> (z :³⁴ Nat) -> (h :³⁵ (_ :³⁶ Nat) -> Nat) -> (w :³⁷ Nat) -> Nat = (\g :³⁸ (_ :³⁹ Nat) -> Nat. (\z :⁴⁰ Nat. (\h :⁴¹ (_ :⁴² Nat) -> Nat. (\w :⁴³ Nat. Plus ⁴⁵ (g ⁴⁶ z) ⁴⁴ (h ⁴⁷ w)))))
+f :31: (g :32: (_ :33: Nat) -> Nat) -> (z :34: Nat) -> (h :35: (_ :36: Nat) -> Nat) -> (w :37: Nat) -> Nat = (\g :38: (_ :39: Nat) -> Nat. (\z :40: Nat. (\h :41: (_ :42: Nat) -> Nat. (\w :43: Nat. Plus -45- (g -46- z) -44- (h -47- w)))))
   [31] -> [14,38,41,44,45]
   [31,32] -> [38]
   [31,33] -> [39]
@@ -146,13 +146,13 @@ f :³¹ (g :³² (_ :³³ Nat) -> Nat) -> (z :³⁴ Nat) -> (h :³⁵ (_ :³⁶ 
   [31,46] -> [39]
   [31,47] -> [42]
 
-id :¹⁵ (x :¹⁶ Nat) -> Nat = \(x :¹⁷ Nat).
-  case ¹⁸ x of
+id :15: (x :16: Nat) -> Nat = \(x :17: Nat).
+  case -18- x of
     Z
       => Z
-    S (y :¹⁹ Nat)
+    S (y :19: Nat)
       => 
-        let result :²⁰ Nat = S ²¹ y
+        let result :20: Nat = S -21- y
         in result
   [12,15] -> [16]
   [13,15] -> [16]
@@ -163,10 +163,10 @@ id :¹⁵ (x :¹⁶ Nat) -> Nat = \(x :¹⁷ Nat).
   [15,19] -> [16,18]
   [15,20] -> [13,19,21]
 
-main :ᴿ Nat = Plus ⁷⁴ test_1 ⁷³ test_2
+main :R: Nat = Plus -74- test_1 -73- test_2
   [] -> [14,56,65,73,74,R]
 
-test_1 :⁵⁶ Nat = Plus ⁵⁸ (apply ⁶⁰ id ⁵⁹ 2) ⁵⁷ (apply ⁶⁴ const_3 ⁶³ two)
+test_1 :56: Nat = Plus -58- (apply -60- id -59- 2) -57- (apply -64- const_3 -63- two)
   [16,56] -> [50]
   [23,56] -> [50]
   [49,56] -> [15,22,60,64]
@@ -178,7 +178,7 @@ test_1 :⁵⁶ Nat = Plus ⁵⁸ (apply ⁶⁰ id ⁵⁹ 2) ⁵⁷ (apply ⁶⁴
   [56,63] -> [51]
   [56,64] -> [49]
 
-test_2 :⁶⁵ Nat = f ⁶⁹ id ⁶⁸ 2 ⁶⁷ const_3 ⁶⁶ 1
+test_2 :65: Nat = f -69- id -68- 2 -67- const_3 -66- 1
   [16,65] -> [33]
   [23,65] -> [36]
   [32,65] -> [15,69]
@@ -193,7 +193,7 @@ test_2 :⁶⁵ Nat = f ⁶⁹ id ⁶⁸ 2 ⁶⁷ const_3 ⁶⁶ 1
   [65,68] -> [34]
   [65,69] -> [32]
 
-two :²⁸ Nat = 2
+two :28: Nat = 2
   [28] -> [12,13,29,30]
 
 
@@ -265,138 +265,138 @@ two :²⁸ Nat = 2
 
 ### Annotated ###
 
-postulate Bool :ᴱ Type
+postulate Bool :E: Type
 
-postulate True :ᴱ Bool
+postulate True :E: Bool
 
-postulate False :ᴱ Bool
+postulate False :E: Bool
 
-postulate Maybe :ᴱ (_ :ᴱ Type) -> Type
+postulate Maybe :E: (_ :E: Type) -> Type
 
-postulate Just :ᴱ (a :ᴱ Type) -> (_ :ᴱ a) -> Type
+postulate Just :E: (a :E: Type) -> (_ :E: a) -> Type
 
-postulate Nothing :ᴱ (a :ᴱ Type) -> Type
+postulate Nothing :E: (a :E: Type) -> Type
 
-postulate Nat :ᴱ Type
+postulate Nat :E: Type
 
-postulate Z :ᴿ Nat
+postulate Z :R: Nat
 
-postulate S :ᴿ (n :ᴿ Nat) -> Nat
+postulate S :R: (n :R: Nat) -> Nat
 
-postulate Plus :ᴿ (x :ᴿ Nat) -> (y :ᴿ Nat) -> Nat
+postulate Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
 
-id :ᴿ (x :ᴿ Nat) -> Nat = \(x :ᴿ Nat).
-  case ᴿ x of
+id :R: (x :R: Nat) -> Nat = \(x :R: Nat).
+  case -R- x of
     Z
       => Z
-    S (y :ᴿ Nat)
+    S (y :R: Nat)
       => 
-        let result :ᴿ Nat = S ᴿ y
+        let result :R: Nat = S -R- y
         in result
 
-const_3 :ᴿ (_ :ᴿ Nat) -> Nat = (\_ :ᴿ Nat. 3)
+const_3 :R: (_ :R: Nat) -> Nat = (\_ :R: Nat. 3)
 
-two :ᴿ Nat = 2
+two :R: Nat = 2
 
-f :ᴿ (g :ᴿ (_ :ᴿ Nat) -> Nat) -> (z :ᴿ Nat) -> (h :ᴿ (_ :ᴿ Nat) -> Nat) -> (w :ᴿ Nat) -> Nat = (\g :ᴿ (_ :ᴿ Nat) -> Nat. (\z :ᴿ Nat. (\h :ᴿ (_ :ᴿ Nat) -> Nat. (\w :ᴿ Nat. Plus ᴿ (g ᴿ z) ᴿ (h ᴿ w)))))
+f :R: (g :R: (_ :R: Nat) -> Nat) -> (z :R: Nat) -> (h :R: (_ :R: Nat) -> Nat) -> (w :R: Nat) -> Nat = (\g :R: (_ :R: Nat) -> Nat. (\z :R: Nat. (\h :R: (_ :R: Nat) -> Nat. (\w :R: Nat. Plus -R- (g -R- z) -R- (h -R- w)))))
 
-apply :ᴿ (f :ᴿ (_ :ᴿ Nat) -> Nat) -> (x :ᴿ Nat) -> Nat = (\f :ᴿ (_ :ᴿ Nat) -> Nat. (\x :ᴿ Nat. f ᴿ x))
+apply :R: (f :R: (_ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = (\f :R: (_ :R: Nat) -> Nat. (\x :R: Nat. f -R- x))
 
-test_1 :ᴿ Nat = Plus ᴿ (apply ᴿ id ᴿ 2) ᴿ (apply ᴿ const_3 ᴿ two)
+test_1 :R: Nat = Plus -R- (apply -R- id -R- 2) -R- (apply -R- const_3 -R- two)
 
-test_2 :ᴿ Nat = f ᴿ id ᴿ 2 ᴿ const_3 ᴿ 1
+test_2 :R: Nat = f -R- id -R- 2 -R- const_3 -R- 1
 
-main :ᴿ Nat = Plus ᴿ test_1 ᴿ test_2
+main :R: Nat = Plus -R- test_1 -R- test_2
 
 ### Specialised ###
 
-postulate Bool :ᴱ Type
+postulate Bool :E: Type
 
-postulate True :ᴱ Bool
+postulate True :E: Bool
 
-postulate False :ᴱ Bool
+postulate False :E: Bool
 
-postulate Maybe :ᴱ (_ :ᴱ Type) -> Type
+postulate Maybe :E: (_ :E: Type) -> Type
 
-postulate Just :ᴱ (a :ᴱ Type) -> (_ :ᴱ a) -> Type
+postulate Just :E: (a :E: Type) -> (_ :E: a) -> Type
 
-postulate Nothing :ᴱ (a :ᴱ Type) -> Type
+postulate Nothing :E: (a :E: Type) -> Type
 
-postulate Nat :ᴱ Type
+postulate Nat :E: Type
 
-postulate Z :ᴿ Nat
+postulate Z :R: Nat
 
-postulate S :ᴿ (n :ᴿ Nat) -> Nat
+postulate S :R: (n :R: Nat) -> Nat
 
-postulate Plus :ᴿ (x :ᴿ Nat) -> (y :ᴿ Nat) -> Nat
+postulate Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
 
-id :ᴿ (x :ᴿ Nat) -> Nat = \(x :ᴿ Nat).
-  case ᴿ x of
+id :R: (x :R: Nat) -> Nat = \(x :R: Nat).
+  case -R- x of
     Z
       => Z
-    S (y :ᴿ Nat)
+    S (y :R: Nat)
       => 
-        let result :ᴿ Nat = S ᴿ y
+        let result :R: Nat = S -R- y
         in result
 
-const_3 :ᴿ (_ :ᴿ Nat) -> Nat = (\_ :ᴿ Nat. 3)
+const_3 :R: (_ :R: Nat) -> Nat = (\_ :R: Nat. 3)
 
-two :ᴿ Nat = 2
+two :R: Nat = 2
 
-f :ᴿ (g :ᴿ (_ :ᴿ Nat) -> Nat) -> (z :ᴿ Nat) -> (h :ᴿ (_ :ᴿ Nat) -> Nat) -> (w :ᴿ Nat) -> Nat = (\g :ᴿ (_ :ᴿ Nat) -> Nat. (\z :ᴿ Nat. (\h :ᴿ (_ :ᴿ Nat) -> Nat. (\w :ᴿ Nat. Plus ᴿ (g ᴿ z) ᴿ (h ᴿ w)))))
+f :R: (g :R: (_ :R: Nat) -> Nat) -> (z :R: Nat) -> (h :R: (_ :R: Nat) -> Nat) -> (w :R: Nat) -> Nat = (\g :R: (_ :R: Nat) -> Nat. (\z :R: Nat. (\h :R: (_ :R: Nat) -> Nat. (\w :R: Nat. Plus -R- (g -R- z) -R- (h -R- w)))))
 
-apply :ᴿ (f :ᴿ (_ :ᴿ Nat) -> Nat) -> (x :ᴿ Nat) -> Nat = (\f :ᴿ (_ :ᴿ Nat) -> Nat. (\x :ᴿ Nat. f ᴿ x))
+apply :R: (f :R: (_ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = (\f :R: (_ :R: Nat) -> Nat. (\x :R: Nat. f -R- x))
 
-test_1 :ᴿ Nat = Plus ᴿ (apply ᴿ id ᴿ 2) ᴿ (apply ᴿ const_3 ᴿ two)
+test_1 :R: Nat = Plus -R- (apply -R- id -R- 2) -R- (apply -R- const_3 -R- two)
 
-test_2 :ᴿ Nat = f ᴿ id ᴿ 2 ᴿ const_3 ᴿ 1
+test_2 :R: Nat = f -R- id -R- 2 -R- const_3 -R- 1
 
-main :ᴿ Nat = Plus ᴿ test_1 ᴿ test_2
+main :R: Nat = Plus -R- test_1 -R- test_2
 
 ### Final annotation ###
 
-postulate Bool :ᴱ Type
+postulate Bool :E: Type
 
-postulate True :ᴱ Bool
+postulate True :E: Bool
 
-postulate False :ᴱ Bool
+postulate False :E: Bool
 
-postulate Maybe :ᴱ (_ :ᴱ Type) -> Type
+postulate Maybe :E: (_ :E: Type) -> Type
 
-postulate Just :ᴱ (a :ᴱ Type) -> (_ :ᴱ a) -> Type
+postulate Just :E: (a :E: Type) -> (_ :E: a) -> Type
 
-postulate Nothing :ᴱ (a :ᴱ Type) -> Type
+postulate Nothing :E: (a :E: Type) -> Type
 
-postulate Nat :ᴱ Type
+postulate Nat :E: Type
 
-postulate Z :ᴿ Nat
+postulate Z :R: Nat
 
-postulate S :ᴿ (n :ᴿ Nat) -> Nat
+postulate S :R: (n :R: Nat) -> Nat
 
-postulate Plus :ᴿ (x :ᴿ Nat) -> (y :ᴿ Nat) -> Nat
+postulate Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
 
-id :ᴿ (x :ᴿ Nat) -> Nat = \(x :ᴿ Nat).
-  case ᴿ x of
+id :R: (x :R: Nat) -> Nat = \(x :R: Nat).
+  case -R- x of
     Z
       => Z
-    S (y :ᴿ Nat)
+    S (y :R: Nat)
       => 
-        let result :ᴿ Nat = S ᴿ y
+        let result :R: Nat = S -R- y
         in result
 
-const_3 :ᴿ (_ :ᴿ Nat) -> Nat = (\_ :ᴿ Nat. 3)
+const_3 :R: (_ :R: Nat) -> Nat = (\_ :R: Nat. 3)
 
-two :ᴿ Nat = 2
+two :R: Nat = 2
 
-f :ᴿ (g :ᴿ (_ :ᴿ Nat) -> Nat) -> (z :ᴿ Nat) -> (h :ᴿ (_ :ᴿ Nat) -> Nat) -> (w :ᴿ Nat) -> Nat = (\g :ᴿ (_ :ᴿ Nat) -> Nat. (\z :ᴿ Nat. (\h :ᴿ (_ :ᴿ Nat) -> Nat. (\w :ᴿ Nat. Plus ᴿ (g ᴿ z) ᴿ (h ᴿ w)))))
+f :R: (g :R: (_ :R: Nat) -> Nat) -> (z :R: Nat) -> (h :R: (_ :R: Nat) -> Nat) -> (w :R: Nat) -> Nat = (\g :R: (_ :R: Nat) -> Nat. (\z :R: Nat. (\h :R: (_ :R: Nat) -> Nat. (\w :R: Nat. Plus -R- (g -R- z) -R- (h -R- w)))))
 
-apply :ᴿ (f :ᴿ (_ :ᴿ Nat) -> Nat) -> (x :ᴿ Nat) -> Nat = (\f :ᴿ (_ :ᴿ Nat) -> Nat. (\x :ᴿ Nat. f ᴿ x))
+apply :R: (f :R: (_ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = (\f :R: (_ :R: Nat) -> Nat. (\x :R: Nat. f -R- x))
 
-test_1 :ᴿ Nat = Plus ᴿ (apply ᴿ id ᴿ 2) ᴿ (apply ᴿ const_3 ᴿ two)
+test_1 :R: Nat = Plus -R- (apply -R- id -R- 2) -R- (apply -R- const_3 -R- two)
 
-test_2 :ᴿ Nat = f ᴿ id ᴿ 2 ᴿ const_3 ᴿ 1
+test_2 :R: Nat = f -R- id -R- 2 -R- const_3 -R- 1
 
-main :ᴿ Nat = Plus ᴿ test_1 ᴿ test_2
+main :R: Nat = Plus -R- test_1 -R- test_2
 
 ### Verification ###
 

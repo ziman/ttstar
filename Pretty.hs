@@ -7,7 +7,7 @@ import TT
 import Util.PrettyPrint
 
 useUnicode :: Bool
-useUnicode = True
+useUnicode = False  -- True
 
 sup :: Char -> Char
 sup '0' = '⁰'
@@ -41,7 +41,7 @@ instance PrettyR Relevance where
 
     prettyApp x
         | useUnicode = text " " <> showUnicode x <> text " "
-        | otherwise  = text " " <> showd x <> text " "
+        | otherwise  = text " -" <> showd x <> text "- "
 
 instance PrettyR () where
     prettyCol _ = colon
@@ -86,7 +86,7 @@ instance PrettyR r => Pretty (TT r) where
     pretty tm = pretty' False tm
       where
         pretty' pp (V n) = pretty n
-        pretty' pp (I n ty) = parens (pretty n <+> colon <+> pretty ty)
+        pretty' pp (I n ty) = brackets (pretty n <+> colon <+> pretty ty)
         pretty' pp (Bind Pi d tm) = parens (pretty d) <+> text "->" <+> pretty tm
         pretty' pp (Bind Lam d tm) = parens (text "\\" <> pretty d <> dot <+> pretty tm)
         pretty' pp (Bind Let d tm) =

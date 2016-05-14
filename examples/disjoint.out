@@ -2,17 +2,17 @@
 
 ### Desugared ###
 
-main :ᴿ Type = Type
+main :R: Type = Type
 
 ### Metaified ###
 
-main :ᴿ Type = Type
+main :R: Type = Type
 
 ### Inferred definitions ###
 
-postulate Type :ᴿ Type
+postulate Type :R: Type
 
-main :ᴿ Type = Type
+main :R: Type = Type
 
 
 ### Constraints ###
@@ -24,15 +24,15 @@ main :ᴿ Type = Type
 
 ### Annotated ###
 
-main :ᴿ Type = Type
+main :R: Type = Type
 
 ### Specialised ###
 
-main :ᴿ Type = Type
+main :R: Type = Type
 
 ### Final annotation ###
 
-main :ᴿ Type = Type
+main :R: Type = Type
 
 ### Verification ###
 

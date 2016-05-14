@@ -8,7 +8,7 @@ postulate A : T
 
 postulate B : T
 
-postulate Op : (x :ᴿ T) -> (y :ᴿ T) -> T
+postulate Op : (x :R: T) -> (y :R: T) -> T
 
 id : (y : T) -> T = (\y : T. y)
 
@@ -16,47 +16,47 @@ constA : (_ : T) -> T = (\_ : T. A)
 
 apply : (f : (_ : T) -> T) -> (x : T) -> T = (\f : (_ : T) -> T. (\x : T. f x))
 
-test1 : T = (apply : (_ : (_ : T) -> T) -> (_ : T) -> T) id B
+test1 : T = [apply : (_ : (_ : T) -> T) -> (_ : T) -> T] id B
 
-test2 : T = (apply : (_ : (_ : T) -> T) -> (_ : T) -> T) constA B
+test2 : T = [apply : (_ : (_ : T) -> T) -> (_ : T) -> T] constA B
 
-main :ᴿ T = Op test1 test2
+main :R: T = Op test1 test2
 
 ### Metaified ###
 
-postulate T :¹ Type
+postulate T :1: Type
 
-postulate A :² T
+postulate A :2: T
 
-postulate B :³ T
+postulate B :3: T
 
-postulate Op :⁴ (x :ᴿ T) -> (y :ᴿ T) -> T
+postulate Op :4: (x :R: T) -> (y :R: T) -> T
 
-id :⁵ (y :⁶ T) -> T = (\y :⁷ T. y)
+id :5: (y :6: T) -> T = (\y :7: T. y)
 
-constA :⁸ (_ :⁹ T) -> T = (\_ :¹⁰ T. A)
+constA :8: (_ :9: T) -> T = (\_ :10: T. A)
 
-apply :¹¹ (f :¹² (_ :¹³ T) -> T) -> (x :¹⁴ T) -> T = (\f :¹⁵ (_ :¹⁶ T) -> T. (\x :¹⁷ T. f ¹⁸ x))
+apply :11: (f :12: (_ :13: T) -> T) -> (x :14: T) -> T = (\f :15: (_ :16: T) -> T. (\x :17: T. f -18- x))
 
-test1 :¹⁹ T = (apply : (_ :²² (_ :²³ T) -> T) -> (_ :²⁴ T) -> T) ²¹ id ²⁰ B
+test1 :19: T = [apply : (_ :22: (_ :23: T) -> T) -> (_ :24: T) -> T] -21- id -20- B
 
-test2 :²⁵ T = (apply : (_ :²⁸ (_ :²⁹ T) -> T) -> (_ :³⁰ T) -> T) ²⁷ constA ²⁶ B
+test2 :25: T = [apply : (_ :28: (_ :29: T) -> T) -> (_ :30: T) -> T] -27- constA -26- B
 
-main :ᴿ T = Op ³² test1 ³¹ test2
+main :R: T = Op -32- test1 -31- test2
 
 ### Inferred definitions ###
 
-postulate A :² T
+postulate A :2: T
 
-postulate B :³ T
+postulate B :3: T
 
-postulate Op :⁴ (x :ᴿ T) -> (y :ᴿ T) -> T
+postulate Op :4: (x :R: T) -> (y :R: T) -> T
 
-postulate T :¹ Type
+postulate T :1: Type
 
-postulate Type :ᴿ Type
+postulate Type :R: Type
 
-apply :¹¹ (f :¹² (_ :¹³ T) -> T) -> (x :¹⁴ T) -> T = (\f :¹⁵ (_ :¹⁶ T) -> T. (\x :¹⁷ T. f ¹⁸ x))
+apply :11: (f :12: (_ :13: T) -> T) -> (x :14: T) -> T = (\f :15: (_ :16: T) -> T. (\x :17: T. f -18- x))
   [11] -> [15]
   [11,12] -> [15]
   [11,13] -> [16]
@@ -66,20 +66,20 @@ apply :¹¹ (f :¹² (_ :¹³ T) -> T) -> (x :¹⁴ T) -> T = (\f :¹⁵ (_ :¹�
   [11,17] -> [14]
   [11,18] -> [16]
 
-constA :⁸ (_ :⁹ T) -> T = (\_ :¹⁰ T. A)
+constA :8: (_ :9: T) -> T = (\_ :10: T. A)
   [8] -> [2]
   [8,9] -> [10]
   [8,10] -> [9]
 
-id :⁵ (y :⁶ T) -> T = (\y :⁷ T. y)
+id :5: (y :6: T) -> T = (\y :7: T. y)
   [5] -> [7]
   [5,6] -> [7]
   [5,7] -> [6]
 
-main :ᴿ T = Op ³² test1 ³¹ test2
+main :R: T = Op -32- test1 -31- test2
   [] -> [4,19,25,31,32,R]
 
-test1 :¹⁹ T = (apply : (_ :²² (_ :²³ T) -> T) -> (_ :²⁴ T) -> T) ²¹ id ²⁰ B
+test1 :19: T = [apply : (_ :22: (_ :23: T) -> T) -> (_ :24: T) -> T] -21- id -20- B
   [6,19] -> [35]
   [19] -> [33]
   [19,20] -> [36]
@@ -99,7 +99,7 @@ test1 :¹⁹ T = (apply : (_ :²² (_ :²³ T) -> T) -> (_ :²⁴ T) -> T) ²¹ 
   [19,35] -> [6,23]
   [19,36] -> [3,20,24]
 
-test2 :²⁵ T = (apply : (_ :²⁸ (_ :²⁹ T) -> T) -> (_ :³⁰ T) -> T) ²⁷ constA ²⁶ B
+test2 :25: T = [apply : (_ :28: (_ :29: T) -> T) -> (_ :30: T) -> T] -27- constA -26- B
   [9,25] -> [43]
   [25] -> [41]
   [25,26] -> [44]
@@ -180,89 +180,89 @@ test2 :²⁵ T = (apply : (_ :²⁸ (_ :²⁹ T) -> T) -> (_ :³⁰ T) -> T) ²�
 
 ### Annotated ###
 
-postulate T :ᴱ Type
+postulate T :E: Type
 
-postulate A :ᴿ T
+postulate A :R: T
 
-postulate B :ᴿ T
+postulate B :R: T
 
-postulate Op :ᴿ (x :ᴿ T) -> (y :ᴿ T) -> T
+postulate Op :R: (x :R: T) -> (y :R: T) -> T
 
-id :ᴿ (y :ᴿ T) -> T = (\y :ᴿ T. y)
+id :R: (y :R: T) -> T = (\y :R: T. y)
 
-constA :ᴿ (_ :ᴱ T) -> T = (\_ :ᴱ T. A)
+constA :R: (_ :E: T) -> T = (\_ :E: T. A)
 
-apply :ᴱ (f :ᴱ (_ :ᴱ T) -> T) -> (x :ᴱ T) -> T = (\f :ᴱ (_ :ᴱ T) -> T. (\x :ᴱ T. f ᴱ x))
+apply :E: (f :E: (_ :E: T) -> T) -> (x :E: T) -> T = (\f :E: (_ :E: T) -> T. (\x :E: T. f -E- x))
 
-test1 :ᴿ T = (apply : (_ :ᴿ (_ :ᴿ T) -> T) -> (_ :ᴿ T) -> T) ᴿ id ᴿ B
+test1 :R: T = [apply : (_ :R: (_ :R: T) -> T) -> (_ :R: T) -> T] -R- id -R- B
 
-test2 :ᴿ T = (apply : (_ :ᴿ (_ :ᴱ T) -> T) -> (_ :ᴱ T) -> T) ᴿ constA ᴱ B
+test2 :R: T = [apply : (_ :R: (_ :E: T) -> T) -> (_ :E: T) -> T] -R- constA -E- B
 
-main :ᴿ T = Op ᴿ test1 ᴿ test2
+main :R: T = Op -R- test1 -R- test2
 
 ### Specialised ###
 
-postulate T :ᴱ Type
+postulate T :E: Type
 
-postulate A :ᴿ T
+postulate A :R: T
 
-postulate B :ᴿ T
+postulate B :R: T
 
-postulate Op :ᴿ (x :ᴿ T) -> (y :ᴿ T) -> T
+postulate Op :R: (x :R: T) -> (y :R: T) -> T
 
-id :ᴿ (y :ᴿ T) -> T = (\y :ᴿ T. y)
+id :R: (y :R: T) -> T = (\y :R: T. y)
 
-constA :ᴿ (_ :ᴱ T) -> T = (\_ :ᴱ T. A)
+constA :R: (_ :E: T) -> T = (\_ :E: T. A)
 
-apply :ᴱ (f :ᴱ (_ :ᴱ T) -> T) -> (x :ᴱ T) -> T = (\f :ᴱ (_ :ᴱ T) -> T. (\x :ᴱ T. f ᴱ x))
+apply :E: (f :E: (_ :E: T) -> T) -> (x :E: T) -> T = (\f :E: (_ :E: T) -> T. (\x :E: T. f -E- x))
 
-apply_REE :¹ (f :ᴿ (_ :ᴱ T) -> T) -> (x :ᴱ T) -> T = (\f :² (_ :³ T) -> T. (\x :⁴ T. f ⁵ x))
+apply_REE :1: (f :R: (_ :E: T) -> T) -> (x :E: T) -> T = (\f :2: (_ :3: T) -> T. (\x :4: T. f -5- x))
 
-apply_RRR :⁶ (f :ᴿ (_ :ᴿ T) -> T) -> (x :ᴿ T) -> T = (\f :⁷ (_ :⁸ T) -> T. (\x :⁹ T. f ¹⁰ x))
+apply_RRR :6: (f :R: (_ :R: T) -> T) -> (x :R: T) -> T = (\f :7: (_ :8: T) -> T. (\x :9: T. f -10- x))
 
-test1 :ᴿ T = apply_RRR ᴿ id ᴿ B
+test1 :R: T = apply_RRR -R- id -R- B
 
-test2 :ᴿ T = apply_REE ᴿ constA ᴱ B
+test2 :R: T = apply_REE -R- constA -E- B
 
-main :ᴿ T = Op ᴿ test1 ᴿ test2
+main :R: T = Op -R- test1 -R- test2
 
 ### Inferred definitions ###
 
-postulate A :ᴿ T
+postulate A :R: T
 
-postulate B :ᴿ T
+postulate B :R: T
 
-postulate Op :ᴿ (x :ᴿ T) -> (y :ᴿ T) -> T
+postulate Op :R: (x :R: T) -> (y :R: T) -> T
 
-postulate T :ᴱ Type
+postulate T :E: Type
 
-postulate Type :ᴿ Type
+postulate Type :R: Type
 
-apply :ᴱ (f :ᴱ (_ :ᴱ T) -> T) -> (x :ᴱ T) -> T = (\f :ᴱ (_ :ᴱ T) -> T. (\x :ᴱ T. f ᴱ x))
+apply :E: (f :E: (_ :E: T) -> T) -> (x :E: T) -> T = (\f :E: (_ :E: T) -> T. (\x :E: T. f -E- x))
   [E] -> [E]
 
-constA :ᴿ (_ :ᴱ T) -> T = (\_ :ᴱ T. A)
+constA :R: (_ :E: T) -> T = (\_ :E: T. A)
   [E] -> [E]
 
-id :ᴿ (y :ᴿ T) -> T = (\y :ᴿ T. y)
+id :R: (y :R: T) -> T = (\y :R: T. y)
 
-main :ᴿ T = Op ᴿ test1 ᴿ test2
+main :R: T = Op -R- test1 -R- test2
 
-test1 :ᴿ T = apply_RRR ᴿ id ᴿ B
+test1 :R: T = apply_RRR -R- id -R- B
   [] -> [6,R]
 
-test2 :ᴿ T = apply_REE ᴿ constA ᴱ B
+test2 :R: T = apply_REE -R- constA -E- B
   [] -> [1,R]
   [E] -> [E]
 
-apply_REE :¹ (f :ᴿ (_ :ᴱ T) -> T) -> (x :ᴱ T) -> T = (\f :² (_ :³ T) -> T. (\x :⁴ T. f ⁵ x))
+apply_REE :1: (f :R: (_ :E: T) -> T) -> (x :E: T) -> T = (\f :2: (_ :3: T) -> T. (\x :4: T. f -5- x))
   [1] -> [2]
   [1,3] -> [4,5,E]
   [1,4] -> [E]
   [1,5] -> [3]
   [1,E] -> [3,4]
 
-apply_RRR :⁶ (f :ᴿ (_ :ᴿ T) -> T) -> (x :ᴿ T) -> T = (\f :⁷ (_ :⁸ T) -> T. (\x :⁹ T. f ¹⁰ x))
+apply_RRR :6: (f :R: (_ :R: T) -> T) -> (x :R: T) -> T = (\f :7: (_ :8: T) -> T. (\x :9: T. f -10- x))
   [6] -> [7,8,9]
   [6,8] -> [9,10]
   [6,10] -> [8]
@@ -287,81 +287,81 @@ apply_RRR :⁶ (f :ᴿ (_ :ᴿ T) -> T) -> (x :ᴿ T) -> T = (\f :⁷ (_ :⁸ T)
 
 ### Annotated ###
 
-postulate T :ᴱ Type
+postulate T :E: Type
 
-postulate A :ᴿ T
+postulate A :R: T
 
-postulate B :ᴿ T
+postulate B :R: T
 
-postulate Op :ᴿ (x :ᴿ T) -> (y :ᴿ T) -> T
+postulate Op :R: (x :R: T) -> (y :R: T) -> T
 
-id :ᴿ (y :ᴿ T) -> T = (\y :ᴿ T. y)
+id :R: (y :R: T) -> T = (\y :R: T. y)
 
-constA :ᴿ (_ :ᴱ T) -> T = (\_ :ᴱ T. A)
+constA :R: (_ :E: T) -> T = (\_ :E: T. A)
 
-apply :ᴱ (f :ᴱ (_ :ᴱ T) -> T) -> (x :ᴱ T) -> T = (\f :ᴱ (_ :ᴱ T) -> T. (\x :ᴱ T. f ᴱ x))
+apply :E: (f :E: (_ :E: T) -> T) -> (x :E: T) -> T = (\f :E: (_ :E: T) -> T. (\x :E: T. f -E- x))
 
-apply_REE :ᴿ (f :ᴿ (_ :ᴱ T) -> T) -> (x :ᴱ T) -> T = (\f :ᴿ (_ :ᴱ T) -> T. (\x :ᴱ T. f ᴱ x))
+apply_REE :R: (f :R: (_ :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_ :E: T) -> T. (\x :E: T. f -E- x))
 
-apply_RRR :ᴿ (f :ᴿ (_ :ᴿ T) -> T) -> (x :ᴿ T) -> T = (\f :ᴿ (_ :ᴿ T) -> T. (\x :ᴿ T. f ᴿ x))
+apply_RRR :R: (f :R: (_ :R: T) -> T) -> (x :R: T) -> T = (\f :R: (_ :R: T) -> T. (\x :R: T. f -R- x))
 
-test1 :ᴿ T = apply_RRR ᴿ id ᴿ B
+test1 :R: T = apply_RRR -R- id -R- B
 
-test2 :ᴿ T = apply_REE ᴿ constA ᴱ B
+test2 :R: T = apply_REE -R- constA -E- B
 
-main :ᴿ T = Op ᴿ test1 ᴿ test2
+main :R: T = Op -R- test1 -R- test2
 
 ### Specialised ###
 
-postulate T :ᴱ Type
+postulate T :E: Type
 
-postulate A :ᴿ T
+postulate A :R: T
 
-postulate B :ᴿ T
+postulate B :R: T
 
-postulate Op :ᴿ (x :ᴿ T) -> (y :ᴿ T) -> T
+postulate Op :R: (x :R: T) -> (y :R: T) -> T
 
-id :ᴿ (y :ᴿ T) -> T = (\y :ᴿ T. y)
+id :R: (y :R: T) -> T = (\y :R: T. y)
 
-constA :ᴿ (_ :ᴱ T) -> T = (\_ :ᴱ T. A)
+constA :R: (_ :E: T) -> T = (\_ :E: T. A)
 
-apply :ᴱ (f :ᴱ (_ :ᴱ T) -> T) -> (x :ᴱ T) -> T = (\f :ᴱ (_ :ᴱ T) -> T. (\x :ᴱ T. f ᴱ x))
+apply :E: (f :E: (_ :E: T) -> T) -> (x :E: T) -> T = (\f :E: (_ :E: T) -> T. (\x :E: T. f -E- x))
 
-apply_REE :ᴿ (f :ᴿ (_ :ᴱ T) -> T) -> (x :ᴱ T) -> T = (\f :ᴿ (_ :ᴱ T) -> T. (\x :ᴱ T. f ᴱ x))
+apply_REE :R: (f :R: (_ :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_ :E: T) -> T. (\x :E: T. f -E- x))
 
-apply_RRR :ᴿ (f :ᴿ (_ :ᴿ T) -> T) -> (x :ᴿ T) -> T = (\f :ᴿ (_ :ᴿ T) -> T. (\x :ᴿ T. f ᴿ x))
+apply_RRR :R: (f :R: (_ :R: T) -> T) -> (x :R: T) -> T = (\f :R: (_ :R: T) -> T. (\x :R: T. f -R- x))
 
-test1 :ᴿ T = apply_RRR ᴿ id ᴿ B
+test1 :R: T = apply_RRR -R- id -R- B
 
-test2 :ᴿ T = apply_REE ᴿ constA ᴱ B
+test2 :R: T = apply_REE -R- constA -E- B
 
-main :ᴿ T = Op ᴿ test1 ᴿ test2
+main :R: T = Op -R- test1 -R- test2
 
 ### Final annotation ###
 
-postulate T :ᴱ Type
+postulate T :E: Type
 
-postulate A :ᴿ T
+postulate A :R: T
 
-postulate B :ᴿ T
+postulate B :R: T
 
-postulate Op :ᴿ (x :ᴿ T) -> (y :ᴿ T) -> T
+postulate Op :R: (x :R: T) -> (y :R: T) -> T
 
-id :ᴿ (y :ᴿ T) -> T = (\y :ᴿ T. y)
+id :R: (y :R: T) -> T = (\y :R: T. y)
 
-constA :ᴿ (_ :ᴱ T) -> T = (\_ :ᴱ T. A)
+constA :R: (_ :E: T) -> T = (\_ :E: T. A)
 
-apply :ᴱ (f :ᴱ (_ :ᴱ T) -> T) -> (x :ᴱ T) -> T = (\f :ᴱ (_ :ᴱ T) -> T. (\x :ᴱ T. f ᴱ x))
+apply :E: (f :E: (_ :E: T) -> T) -> (x :E: T) -> T = (\f :E: (_ :E: T) -> T. (\x :E: T. f -E- x))
 
-apply_REE :ᴿ (f :ᴿ (_ :ᴱ T) -> T) -> (x :ᴱ T) -> T = (\f :ᴿ (_ :ᴱ T) -> T. (\x :ᴱ T. f ᴱ x))
+apply_REE :R: (f :R: (_ :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_ :E: T) -> T. (\x :E: T. f -E- x))
 
-apply_RRR :ᴿ (f :ᴿ (_ :ᴿ T) -> T) -> (x :ᴿ T) -> T = (\f :ᴿ (_ :ᴿ T) -> T. (\x :ᴿ T. f ᴿ x))
+apply_RRR :R: (f :R: (_ :R: T) -> T) -> (x :R: T) -> T = (\f :R: (_ :R: T) -> T. (\x :R: T. f -R- x))
 
-test1 :ᴿ T = apply_RRR ᴿ id ᴿ B
+test1 :R: T = apply_RRR -R- id -R- B
 
-test2 :ᴿ T = apply_REE ᴿ constA ᴱ B
+test2 :R: T = apply_REE -R- constA -E- B
 
-main :ᴿ T = Op ᴿ test1 ᴿ test2
+main :R: T = Op -R- test1 -R- test2
 
 ### Verification ###
 

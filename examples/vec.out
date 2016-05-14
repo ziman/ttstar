@@ -6,13 +6,13 @@ postulate N : Type
 
 postulate Z : N
 
-postulate S : (x :ᴿ N) -> N
+postulate S : (x :R: N) -> N
 
 postulate Vec : (_ : N) -> (_ : Type) -> Type
 
 postulate Nil : (a : Type) -> Vec Z a
 
-postulate Cons : (a : Type) -> (n : N) -> (x :ᴿ a) -> (xs :ᴿ Vec n a) -> Vec (S n) a
+postulate Cons : (a : Type) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a
 
 plus : (m : N) -> (n : N) -> N = \(m : N) (n : N).
   case m of
@@ -32,68 +32,68 @@ append : (a : Type) -> (m : N) -> (n : N) -> (xs : Vec m a) -> (ys : Vec n a) ->
       | m = S m'
       => Cons a (plus m' n) x (append a m' n xs' ys)
 
-main :ᴿ Vec 1 N = append N Z 1 (Nil N) (Cons N Z 42 (Nil N))
+main :R: Vec 1 N = append N Z 1 (Nil N) (Cons N Z 42 (Nil N))
 
 ### Metaified ###
 
-postulate N :¹ Type
+postulate N :1: Type
 
-postulate Z :² N
+postulate Z :2: N
 
-postulate S :³ (x :ᴿ N) -> N
+postulate S :3: (x :R: N) -> N
 
-postulate Vec :⁴ (_ :⁵ N) -> (_ :⁶ Type) -> Type
+postulate Vec :4: (_ :5: N) -> (_ :6: Type) -> Type
 
-postulate Nil :⁷ (a :⁸ Type) -> Vec ¹⁰ Z ⁹ a
+postulate Nil :7: (a :8: Type) -> Vec -10- Z -9- a
 
-postulate Cons :¹¹ (a :¹² Type) -> (n :¹³ N) -> (x :ᴿ a) -> (xs :ᴿ Vec ¹⁵ n ¹⁴ a) -> Vec ¹⁷ (S ¹⁸ n) ¹⁶ a
+postulate Cons :11: (a :12: Type) -> (n :13: N) -> (x :R: a) -> (xs :R: Vec -15- n -14- a) -> Vec -17- (S -18- n) -16- a
 
-plus :¹⁹ (m :²⁰ N) -> (n :²¹ N) -> N = \(m :²² N) (n :²³ N).
-  case ²⁴ m of
+plus :19: (m :20: N) -> (n :21: N) -> N = \(m :22: N) (n :23: N).
+  case -24- m of
     Z
       => n
-    S (m' :²⁵ N)
-      => S ²⁶ (plus ²⁸ m' ²⁷ n)
+    S (m' :25: N)
+      => S -26- (plus -28- m' -27- n)
 
-append :²⁹ (a :³⁰ Type) -> (m :³¹ N) -> (n :³² N) -> (xs :³³ Vec ³⁵ m ³⁴ a) -> (ys :³⁶ Vec ³⁸ n ³⁷ a) -> Vec ⁴⁰ (plus ⁴² m ⁴¹ n) ³⁹ a = \(a :⁴³ Type) (m :⁴⁴ N) (n :⁴⁵ N) (xs :⁴⁶ Vec ⁴⁸ m ⁴⁷ a) (ys :⁴⁹ Vec ⁵¹ n ⁵⁰ a).
-  case ⁵² xs of
-    Nil (a' :⁵³ Type)
+append :29: (a :30: Type) -> (m :31: N) -> (n :32: N) -> (xs :33: Vec -35- m -34- a) -> (ys :36: Vec -38- n -37- a) -> Vec -40- (plus -42- m -41- n) -39- a = \(a :43: Type) (m :44: N) (n :45: N) (xs :46: Vec -48- m -47- a) (ys :49: Vec -51- n -50- a).
+  case -52- xs of
+    Nil (a' :53: Type)
       | a = a'
       | m = Z
       => ys
-    Cons (a' :⁵⁴ Type) (m' :⁵⁵ N) (x :⁵⁶ a') (xs' :⁵⁷ Vec ⁵⁹ m' ⁵⁸ a')
+    Cons (a' :54: Type) (m' :55: N) (x :56: a') (xs' :57: Vec -59- m' -58- a')
       | a = a'
-      | m = S ⁶⁰ m'
-      => Cons ⁶⁴ a ⁶³ (plus ⁶⁶ m' ⁶⁵ n) ⁶² x ⁶¹ (append ⁷¹ a ⁷⁰ m' ⁶⁹ n ⁶⁸ xs' ⁶⁷ ys)
+      | m = S -60- m'
+      => Cons -64- a -63- (plus -66- m' -65- n) -62- x -61- (append -71- a -70- m' -69- n -68- xs' -67- ys)
 
-main :ᴿ Vec ⁷³ 1 ⁷² N = append ⁷⁹ N ⁷⁸ Z ⁷⁷ 1 ⁷⁶ (Nil ⁸¹ N) ⁷⁵ (Cons ⁸⁵ N ⁸⁴ Z ⁸³ 42 ⁸² (Nil ¹²⁸ N))
+main :R: Vec -73- 1 -72- N = append -79- N -78- Z -77- 1 -76- (Nil -81- N) -75- (Cons -85- N -84- Z -83- 42 -82- (Nil -128- N))
 
 ### Inferred definitions ###
 
-postulate Cons :¹¹ (a :¹² Type) -> (n :¹³ N) -> (x :ᴿ a) -> (xs :ᴿ Vec ¹⁵ n ¹⁴ a) -> Vec ¹⁷ (S ¹⁸ n) ¹⁶ a
+postulate Cons :11: (a :12: Type) -> (n :13: N) -> (x :R: a) -> (xs :R: Vec -15- n -14- a) -> Vec -17- (S -18- n) -16- a
 
-postulate N :¹ Type
+postulate N :1: Type
 
-postulate Nil :⁷ (a :⁸ Type) -> Vec ¹⁰ Z ⁹ a
+postulate Nil :7: (a :8: Type) -> Vec -10- Z -9- a
 
-postulate S :³ (x :ᴿ N) -> N
+postulate S :3: (x :R: N) -> N
 
-postulate Type :ᴿ Type
+postulate Type :R: Type
 
-postulate Vec :⁴ (_ :⁵ N) -> (_ :⁶ Type) -> Type
+postulate Vec :4: (_ :5: N) -> (_ :6: Type) -> Type
 
-postulate Z :² N
+postulate Z :2: N
 
-append :²⁹ (a :³⁰ Type) -> (m :³¹ N) -> (n :³² N) -> (xs :³³ Vec ³⁵ m ³⁴ a) -> (ys :³⁶ Vec ³⁸ n ³⁷ a) -> Vec ⁴⁰ (plus ⁴² m ⁴¹ n) ³⁹ a = \(a :⁴³ Type) (m :⁴⁴ N) (n :⁴⁵ N) (xs :⁴⁶ Vec ⁴⁸ m ⁴⁷ a) (ys :⁴⁹ Vec ⁵¹ n ⁵⁰ a).
-  case ⁵² xs of
-    Nil (a' :⁵³ Type)
+append :29: (a :30: Type) -> (m :31: N) -> (n :32: N) -> (xs :33: Vec -35- m -34- a) -> (ys :36: Vec -38- n -37- a) -> Vec -40- (plus -42- m -41- n) -39- a = \(a :43: Type) (m :44: N) (n :45: N) (xs :46: Vec -48- m -47- a) (ys :49: Vec -51- n -50- a).
+  case -52- xs of
+    Nil (a' :53: Type)
       | a = a'
       | m = Z
       => ys
-    Cons (a' :⁵⁴ Type) (m' :⁵⁵ N) (x :⁵⁶ a') (xs' :⁵⁷ Vec ⁵⁹ m' ⁵⁸ a')
+    Cons (a' :54: Type) (m' :55: N) (x :56: a') (xs' :57: Vec -59- m' -58- a')
       | a = a'
-      | m = S ⁶⁰ m'
-      => Cons ⁶⁴ a ⁶³ (plus ⁶⁶ m' ⁶⁵ n) ⁶² x ⁶¹ (append ⁷¹ a ⁷⁰ m' ⁶⁹ n ⁶⁸ xs' ⁶⁷ ys)
+      | m = S -60- m'
+      => Cons -64- a -63- (plus -66- m' -65- n) -62- x -61- (append -71- a -70- m' -69- n -68- xs' -67- ys)
   [7,29] -> [33]
   [8,29] -> [33,53]
   [9,29] -> [34]
@@ -153,7 +153,7 @@ append :²⁹ (a :³⁰ Type) -> (m :³¹ N) -> (n :³² N) -> (xs :³³ Vec ³�
   [29,70] -> [31]
   [29,71] -> [30]
 
-main :ᴿ Vec ⁷³ 1 ⁷² N = append ⁷⁹ N ⁷⁸ Z ⁷⁷ 1 ⁷⁶ (Nil ⁸¹ N) ⁷⁵ (Cons ⁸⁵ N ⁸⁴ Z ⁸³ 42 ⁸² (Nil ¹²⁸ N))
+main :R: Vec -73- 1 -72- N = append -79- N -78- Z -77- 1 -76- (Nil -81- N) -75- (Cons -85- N -84- Z -83- 42 -82- (Nil -128- N))
   [] -> [29,R]
   [8,33] -> [1,81]
   [8,36] -> [1,128]
@@ -193,12 +193,12 @@ main :ᴿ Vec ⁷³ 1 ⁷² N = append ⁷⁹ N ⁷⁸ Z ⁷⁷ 1 ⁷⁶ (Nil �
   [79] -> [30]
   [80] -> [18,74]
 
-plus :¹⁹ (m :²⁰ N) -> (n :²¹ N) -> N = \(m :²² N) (n :²³ N).
-  case ²⁴ m of
+plus :19: (m :20: N) -> (n :21: N) -> N = \(m :22: N) (n :23: N).
+  case -24- m of
     Z
       => n
-    S (m' :²⁵ N)
-      => S ²⁶ (plus ²⁸ m' ²⁷ n)
+    S (m' :25: N)
+      => S -26- (plus -28- m' -27- n)
   [2,19] -> [20]
   [3,19] -> [20]
   [19] -> [3,19,20,23,24,25,26]
@@ -328,105 +328,105 @@ plus :¹⁹ (m :²⁰ N) -> (n :²¹ N) -> N = \(m :²² N) (n :²³ N).
 
 ### Annotated ###
 
-postulate N :ᴱ Type
+postulate N :E: Type
 
-postulate Z :ᴿ N
+postulate Z :R: N
 
-postulate S :ᴿ (x :ᴿ N) -> N
+postulate S :R: (x :R: N) -> N
 
-postulate Vec :ᴱ (_ :ᴱ N) -> (_ :ᴱ Type) -> Type
+postulate Vec :E: (_ :E: N) -> (_ :E: Type) -> Type
 
-postulate Nil :ᴿ (a :ᴱ Type) -> Vec ᴱ Z ᴱ a
+postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a
 
-postulate Cons :ᴿ (a :ᴱ Type) -> (n :ᴱ N) -> (x :ᴿ a) -> (xs :ᴿ Vec ᴱ n ᴱ a) -> Vec ᴱ (S ᴱ n) ᴱ a
+postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
 
-plus :ᴱ (m :ᴱ N) -> (n :ᴱ N) -> N = \(m :ᴱ N) (n :ᴱ N).
-  case ᴱ m of
+plus :E: (m :E: N) -> (n :E: N) -> N = \(m :E: N) (n :E: N).
+  case -E- m of
     Z
       => n
-    S (m' :ᴱ N)
-      => S ᴱ (plus ᴱ m' ᴱ n)
+    S (m' :E: N)
+      => S -E- (plus -E- m' -E- n)
 
-append :ᴿ (a :ᴱ Type) -> (m :ᴱ N) -> (n :ᴱ N) -> (xs :ᴿ Vec ᴱ m ᴱ a) -> (ys :ᴿ Vec ᴱ n ᴱ a) -> Vec ᴱ (plus ᴱ m ᴱ n) ᴱ a = \(a :ᴱ Type) (m :ᴱ N) (n :ᴱ N) (xs :ᴿ Vec ᴱ m ᴱ a) (ys :ᴿ Vec ᴱ n ᴱ a).
-  case ᴿ xs of
-    Nil (a' :ᴱ Type)
+append :R: (a :E: Type) -> (m :E: N) -> (n :E: N) -> (xs :R: Vec -E- m -E- a) -> (ys :R: Vec -E- n -E- a) -> Vec -E- (plus -E- m -E- n) -E- a = \(a :E: Type) (m :E: N) (n :E: N) (xs :R: Vec -E- m -E- a) (ys :R: Vec -E- n -E- a).
+  case -R- xs of
+    Nil (a' :E: Type)
       | a = a'
       | m = Z
       => ys
-    Cons (a' :ᴱ Type) (m' :ᴱ N) (x :ᴿ a') (xs' :ᴿ Vec ᴱ m' ᴱ a')
+    Cons (a' :E: Type) (m' :E: N) (x :R: a') (xs' :R: Vec -E- m' -E- a')
       | a = a'
-      | m = S ᴱ m'
-      => Cons ᴱ a ᴱ (plus ᴱ m' ᴱ n) ᴿ x ᴿ (append ᴱ a ᴱ m' ᴱ n ᴿ xs' ᴿ ys)
+      | m = S -E- m'
+      => Cons -E- a -E- (plus -E- m' -E- n) -R- x -R- (append -E- a -E- m' -E- n -R- xs' -R- ys)
 
-main :ᴿ Vec ᴱ 1 ᴱ N = append ᴱ N ᴱ Z ᴱ 1 ᴿ (Nil ᴱ N) ᴿ (Cons ᴱ N ᴱ Z ᴿ 42 ᴿ (Nil ᴱ N))
+main :R: Vec -E- 1 -E- N = append -E- N -E- Z -E- 1 -R- (Nil -E- N) -R- (Cons -E- N -E- Z -R- 42 -R- (Nil -E- N))
 
 ### Specialised ###
 
-postulate N :ᴱ Type
+postulate N :E: Type
 
-postulate Z :ᴿ N
+postulate Z :R: N
 
-postulate S :ᴿ (x :ᴿ N) -> N
+postulate S :R: (x :R: N) -> N
 
-postulate Vec :ᴱ (_ :ᴱ N) -> (_ :ᴱ Type) -> Type
+postulate Vec :E: (_ :E: N) -> (_ :E: Type) -> Type
 
-postulate Nil :ᴿ (a :ᴱ Type) -> Vec ᴱ Z ᴱ a
+postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a
 
-postulate Cons :ᴿ (a :ᴱ Type) -> (n :ᴱ N) -> (x :ᴿ a) -> (xs :ᴿ Vec ᴱ n ᴱ a) -> Vec ᴱ (S ᴱ n) ᴱ a
+postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
 
-plus :ᴱ (m :ᴱ N) -> (n :ᴱ N) -> N = \(m :ᴱ N) (n :ᴱ N).
-  case ᴱ m of
+plus :E: (m :E: N) -> (n :E: N) -> N = \(m :E: N) (n :E: N).
+  case -E- m of
     Z
       => n
-    S (m' :ᴱ N)
-      => S ᴱ (plus ᴱ m' ᴱ n)
+    S (m' :E: N)
+      => S -E- (plus -E- m' -E- n)
 
-append :ᴿ (a :ᴱ Type) -> (m :ᴱ N) -> (n :ᴱ N) -> (xs :ᴿ Vec ᴱ m ᴱ a) -> (ys :ᴿ Vec ᴱ n ᴱ a) -> Vec ᴱ (plus ᴱ m ᴱ n) ᴱ a = \(a :ᴱ Type) (m :ᴱ N) (n :ᴱ N) (xs :ᴿ Vec ᴱ m ᴱ a) (ys :ᴿ Vec ᴱ n ᴱ a).
-  case ᴿ xs of
-    Nil (a' :ᴱ Type)
+append :R: (a :E: Type) -> (m :E: N) -> (n :E: N) -> (xs :R: Vec -E- m -E- a) -> (ys :R: Vec -E- n -E- a) -> Vec -E- (plus -E- m -E- n) -E- a = \(a :E: Type) (m :E: N) (n :E: N) (xs :R: Vec -E- m -E- a) (ys :R: Vec -E- n -E- a).
+  case -R- xs of
+    Nil (a' :E: Type)
       | a = a'
       | m = Z
       => ys
-    Cons (a' :ᴱ Type) (m' :ᴱ N) (x :ᴿ a') (xs' :ᴿ Vec ᴱ m' ᴱ a')
+    Cons (a' :E: Type) (m' :E: N) (x :R: a') (xs' :R: Vec -E- m' -E- a')
       | a = a'
-      | m = S ᴱ m'
-      => Cons ᴱ a ᴱ (plus ᴱ m' ᴱ n) ᴿ x ᴿ (append ᴱ a ᴱ m' ᴱ n ᴿ xs' ᴿ ys)
+      | m = S -E- m'
+      => Cons -E- a -E- (plus -E- m' -E- n) -R- x -R- (append -E- a -E- m' -E- n -R- xs' -R- ys)
 
-main :ᴿ Vec ᴱ 1 ᴱ N = append ᴱ N ᴱ Z ᴱ 1 ᴿ (Nil ᴱ N) ᴿ (Cons ᴱ N ᴱ Z ᴿ 42 ᴿ (Nil ᴱ N))
+main :R: Vec -E- 1 -E- N = append -E- N -E- Z -E- 1 -R- (Nil -E- N) -R- (Cons -E- N -E- Z -R- 42 -R- (Nil -E- N))
 
 ### Final annotation ###
 
-postulate N :ᴱ Type
+postulate N :E: Type
 
-postulate Z :ᴿ N
+postulate Z :R: N
 
-postulate S :ᴿ (x :ᴿ N) -> N
+postulate S :R: (x :R: N) -> N
 
-postulate Vec :ᴱ (_ :ᴱ N) -> (_ :ᴱ Type) -> Type
+postulate Vec :E: (_ :E: N) -> (_ :E: Type) -> Type
 
-postulate Nil :ᴿ (a :ᴱ Type) -> Vec ᴱ Z ᴱ a
+postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a
 
-postulate Cons :ᴿ (a :ᴱ Type) -> (n :ᴱ N) -> (x :ᴿ a) -> (xs :ᴿ Vec ᴱ n ᴱ a) -> Vec ᴱ (S ᴱ n) ᴱ a
+postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
 
-plus :ᴱ (m :ᴱ N) -> (n :ᴱ N) -> N = \(m :ᴱ N) (n :ᴱ N).
-  case ᴱ m of
+plus :E: (m :E: N) -> (n :E: N) -> N = \(m :E: N) (n :E: N).
+  case -E- m of
     Z
       => n
-    S (m' :ᴱ N)
-      => S ᴱ (plus ᴱ m' ᴱ n)
+    S (m' :E: N)
+      => S -E- (plus -E- m' -E- n)
 
-append :ᴿ (a :ᴱ Type) -> (m :ᴱ N) -> (n :ᴱ N) -> (xs :ᴿ Vec ᴱ m ᴱ a) -> (ys :ᴿ Vec ᴱ n ᴱ a) -> Vec ᴱ (plus ᴱ m ᴱ n) ᴱ a = \(a :ᴱ Type) (m :ᴱ N) (n :ᴱ N) (xs :ᴿ Vec ᴱ m ᴱ a) (ys :ᴿ Vec ᴱ n ᴱ a).
-  case ᴿ xs of
-    Nil (a' :ᴱ Type)
+append :R: (a :E: Type) -> (m :E: N) -> (n :E: N) -> (xs :R: Vec -E- m -E- a) -> (ys :R: Vec -E- n -E- a) -> Vec -E- (plus -E- m -E- n) -E- a = \(a :E: Type) (m :E: N) (n :E: N) (xs :R: Vec -E- m -E- a) (ys :R: Vec -E- n -E- a).
+  case -R- xs of
+    Nil (a' :E: Type)
       | a = a'
       | m = Z
       => ys
-    Cons (a' :ᴱ Type) (m' :ᴱ N) (x :ᴿ a') (xs' :ᴿ Vec ᴱ m' ᴱ a')
+    Cons (a' :E: Type) (m' :E: N) (x :R: a') (xs' :R: Vec -E- m' -E- a')
       | a = a'
-      | m = S ᴱ m'
-      => Cons ᴱ a ᴱ (plus ᴱ m' ᴱ n) ᴿ x ᴿ (append ᴱ a ᴱ m' ᴱ n ᴿ xs' ᴿ ys)
+      | m = S -E- m'
+      => Cons -E- a -E- (plus -E- m' -E- n) -R- x -R- (append -E- a -E- m' -E- n -R- xs' -R- ys)
 
-main :ᴿ Vec ᴱ 1 ᴱ N = append ᴱ N ᴱ Z ᴱ 1 ᴿ (Nil ᴱ N) ᴿ (Cons ᴱ N ᴱ Z ᴿ 42 ᴿ (Nil ᴱ N))
+main :R: Vec -E- 1 -E- N = append -E- N -E- Z -E- 1 -R- (Nil -E- N) -R- (Cons -E- N -E- Z -R- 42 -R- (Nil -E- N))
 
 ### Verification ###
 

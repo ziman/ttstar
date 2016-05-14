@@ -6,7 +6,7 @@ postulate Nat : Type
 
 postulate Z : Nat
 
-postulate S : (_ :ᴿ Nat) -> Nat
+postulate S : (_ :R: Nat) -> Nat
 
 plus : (n : Nat) -> (m : Nat) -> Nat = \(n : Nat) (m : Nat).
   case n of
@@ -19,7 +19,7 @@ id : (x : Nat) -> Nat = (\x : Nat. x)
 
 const : (x : Nat) -> (y : Nat) -> Nat = (\x : Nat. (\y : Nat. x))
 
-main :ᴿ Nat = 
+main :R: Nat = 
   let apply : (f : (_ : Nat) -> Nat) -> (x : Nat) -> Nat = \(f : (_ : Nat) -> Nat) (x : Nat).
     case x of
       Z
@@ -34,70 +34,70 @@ main :ᴿ Nat =
 
 ### Metaified ###
 
-postulate Nat :¹ Type
+postulate Nat :1: Type
 
-postulate Z :² Nat
+postulate Z :2: Nat
 
-postulate S :³ (_ :ᴿ Nat) -> Nat
+postulate S :3: (_ :R: Nat) -> Nat
 
-plus :⁴ (n :⁵ Nat) -> (m :⁶ Nat) -> Nat = \(n :⁷ Nat) (m :⁸ Nat).
-  case ⁹ n of
+plus :4: (n :5: Nat) -> (m :6: Nat) -> Nat = \(n :7: Nat) (m :8: Nat).
+  case -9- n of
     Z
       => m
-    S (n' :¹⁰ Nat)
-      => S ¹¹ (plus ¹³ n' ¹² m)
+    S (n' :10: Nat)
+      => S -11- (plus -13- n' -12- m)
 
-id :¹⁴ (x :¹⁵ Nat) -> Nat = (\x :¹⁶ Nat. x)
+id :14: (x :15: Nat) -> Nat = (\x :16: Nat. x)
 
-const :¹⁷ (x :¹⁸ Nat) -> (y :¹⁹ Nat) -> Nat = (\x :²⁰ Nat. (\y :²¹ Nat. x))
+const :17: (x :18: Nat) -> (y :19: Nat) -> Nat = (\x :20: Nat. (\y :21: Nat. x))
 
-main :ᴿ Nat = 
-  let apply :²² (f :²³ (_ :²⁴ Nat) -> Nat) -> (x :²⁵ Nat) -> Nat = \(f :²⁶ (_ :²⁷ Nat) -> Nat) (x :²⁸ Nat).
-    case ²⁹ x of
+main :R: Nat = 
+  let apply :22: (f :23: (_ :24: Nat) -> Nat) -> (x :25: Nat) -> Nat = \(f :26: (_ :27: Nat) -> Nat) (x :28: Nat).
+    case -29- x of
       Z
-        => f ³⁰ Z
-      S (x' :³¹ Nat)
-        => f ³² (S ³³ x')
+        => f -30- Z
+      S (x' :31: Nat)
+        => f -32- (S -33- x')
   in 
-    let postulate Q :³⁴ Nat
+    let postulate Q :34: Nat
     in 
-      let three :³⁵ Nat = 3
-      in plus ⁴⁰ (apply ⁴² id ⁴¹ 2) ³⁹ (apply ⁴⁶ (const ⁴⁷ Q) ⁴⁵ three)
+      let three :35: Nat = 3
+      in plus -40- (apply -42- id -41- 2) -39- (apply -46- (const -47- Q) -45- three)
 
 ### Inferred definitions ###
 
-postulate Nat :¹ Type
+postulate Nat :1: Type
 
-postulate S :³ (_ :ᴿ Nat) -> Nat
+postulate S :3: (_ :R: Nat) -> Nat
 
-postulate Type :ᴿ Type
+postulate Type :R: Type
 
-postulate Z :² Nat
+postulate Z :2: Nat
 
-const :¹⁷ (x :¹⁸ Nat) -> (y :¹⁹ Nat) -> Nat = (\x :²⁰ Nat. (\y :²¹ Nat. x))
+const :17: (x :18: Nat) -> (y :19: Nat) -> Nat = (\x :20: Nat. (\y :21: Nat. x))
   [17] -> [20]
   [17,18] -> [20]
   [17,19] -> [21]
   [17,20] -> [18]
   [17,21] -> [19]
 
-id :¹⁴ (x :¹⁵ Nat) -> Nat = (\x :¹⁶ Nat. x)
+id :14: (x :15: Nat) -> Nat = (\x :16: Nat. x)
   [14] -> [16]
   [14,15] -> [16]
   [14,16] -> [15]
 
-main :ᴿ Nat = 
-  let apply :²² (f :²³ (_ :²⁴ Nat) -> Nat) -> (x :²⁵ Nat) -> Nat = \(f :²⁶ (_ :²⁷ Nat) -> Nat) (x :²⁸ Nat).
-    case ²⁹ x of
+main :R: Nat = 
+  let apply :22: (f :23: (_ :24: Nat) -> Nat) -> (x :25: Nat) -> Nat = \(f :26: (_ :27: Nat) -> Nat) (x :28: Nat).
+    case -29- x of
       Z
-        => f ³⁰ Z
-      S (x' :³¹ Nat)
-        => f ³² (S ³³ x')
+        => f -30- Z
+      S (x' :31: Nat)
+        => f -32- (S -33- x')
   in 
-    let postulate Q :³⁴ Nat
+    let postulate Q :34: Nat
     in 
-      let three :³⁵ Nat = 3
-      in plus ⁴⁰ (apply ⁴² id ⁴¹ 2) ³⁹ (apply ⁴⁶ (const ⁴⁷ Q) ⁴⁵ three)
+      let three :35: Nat = 3
+      in plus -40- (apply -42- id -41- 2) -39- (apply -46- (const -47- Q) -45- three)
   [] -> [4,R]
   [2,22] -> [25]
   [3,22] -> [25]
@@ -132,12 +132,12 @@ main :ᴿ Nat =
   [39] -> [6]
   [40] -> [5]
 
-plus :⁴ (n :⁵ Nat) -> (m :⁶ Nat) -> Nat = \(n :⁷ Nat) (m :⁸ Nat).
-  case ⁹ n of
+plus :4: (n :5: Nat) -> (m :6: Nat) -> Nat = \(n :7: Nat) (m :8: Nat).
+  case -9- n of
     Z
       => m
-    S (n' :¹⁰ Nat)
-      => S ¹¹ (plus ¹³ n' ¹² m)
+    S (n' :10: Nat)
+      => S -11- (plus -13- n' -12- m)
   [2,4] -> [5]
   [3,4] -> [5]
   [4] -> [3,4,5,8,9,10,11]
@@ -212,99 +212,99 @@ plus :⁴ (n :⁵ Nat) -> (m :⁶ Nat) -> Nat = \(n :⁷ Nat) (m :⁸ Nat).
 
 ### Annotated ###
 
-postulate Nat :ᴱ Type
+postulate Nat :E: Type
 
-postulate Z :ᴿ Nat
+postulate Z :R: Nat
 
-postulate S :ᴿ (_ :ᴿ Nat) -> Nat
+postulate S :R: (_ :R: Nat) -> Nat
 
-plus :ᴿ (n :ᴿ Nat) -> (m :ᴿ Nat) -> Nat = \(n :ᴿ Nat) (m :ᴿ Nat).
-  case ᴿ n of
+plus :R: (n :R: Nat) -> (m :R: Nat) -> Nat = \(n :R: Nat) (m :R: Nat).
+  case -R- n of
     Z
       => m
-    S (n' :ᴿ Nat)
-      => S ᴿ (plus ᴿ n' ᴿ m)
+    S (n' :R: Nat)
+      => S -R- (plus -R- n' -R- m)
 
-id :ᴿ (x :ᴿ Nat) -> Nat = (\x :ᴿ Nat. x)
+id :R: (x :R: Nat) -> Nat = (\x :R: Nat. x)
 
-const :ᴿ (x :ᴿ Nat) -> (y :ᴿ Nat) -> Nat = (\x :ᴿ Nat. (\y :ᴿ Nat. x))
+const :R: (x :R: Nat) -> (y :R: Nat) -> Nat = (\x :R: Nat. (\y :R: Nat. x))
 
-main :ᴿ Nat = 
-  let apply :ᴿ (f :ᴿ (_ :ᴿ Nat) -> Nat) -> (x :ᴿ Nat) -> Nat = \(f :ᴿ (_ :ᴿ Nat) -> Nat) (x :ᴿ Nat).
-    case ᴿ x of
+main :R: Nat = 
+  let apply :R: (f :R: (_ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = \(f :R: (_ :R: Nat) -> Nat) (x :R: Nat).
+    case -R- x of
       Z
-        => f ᴿ Z
-      S (x' :ᴿ Nat)
-        => f ᴿ (S ᴿ x')
+        => f -R- Z
+      S (x' :R: Nat)
+        => f -R- (S -R- x')
   in 
-    let postulate Q :ᴿ Nat
+    let postulate Q :R: Nat
     in 
-      let three :ᴿ Nat = 3
-      in plus ᴿ (apply ᴿ id ᴿ 2) ᴿ (apply ᴿ (const ᴿ Q) ᴿ three)
+      let three :R: Nat = 3
+      in plus -R- (apply -R- id -R- 2) -R- (apply -R- (const -R- Q) -R- three)
 
 ### Specialised ###
 
-postulate Nat :ᴱ Type
+postulate Nat :E: Type
 
-postulate Z :ᴿ Nat
+postulate Z :R: Nat
 
-postulate S :ᴿ (_ :ᴿ Nat) -> Nat
+postulate S :R: (_ :R: Nat) -> Nat
 
-plus :ᴿ (n :ᴿ Nat) -> (m :ᴿ Nat) -> Nat = \(n :ᴿ Nat) (m :ᴿ Nat).
-  case ᴿ n of
+plus :R: (n :R: Nat) -> (m :R: Nat) -> Nat = \(n :R: Nat) (m :R: Nat).
+  case -R- n of
     Z
       => m
-    S (n' :ᴿ Nat)
-      => S ᴿ (plus ᴿ n' ᴿ m)
+    S (n' :R: Nat)
+      => S -R- (plus -R- n' -R- m)
 
-id :ᴿ (x :ᴿ Nat) -> Nat = (\x :ᴿ Nat. x)
+id :R: (x :R: Nat) -> Nat = (\x :R: Nat. x)
 
-const :ᴿ (x :ᴿ Nat) -> (y :ᴿ Nat) -> Nat = (\x :ᴿ Nat. (\y :ᴿ Nat. x))
+const :R: (x :R: Nat) -> (y :R: Nat) -> Nat = (\x :R: Nat. (\y :R: Nat. x))
 
-main :ᴿ Nat = 
-  let apply :ᴿ (f :ᴿ (_ :ᴿ Nat) -> Nat) -> (x :ᴿ Nat) -> Nat = \(f :ᴿ (_ :ᴿ Nat) -> Nat) (x :ᴿ Nat).
-    case ᴿ x of
+main :R: Nat = 
+  let apply :R: (f :R: (_ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = \(f :R: (_ :R: Nat) -> Nat) (x :R: Nat).
+    case -R- x of
       Z
-        => f ᴿ Z
-      S (x' :ᴿ Nat)
-        => f ᴿ (S ᴿ x')
+        => f -R- Z
+      S (x' :R: Nat)
+        => f -R- (S -R- x')
   in 
-    let postulate Q :ᴿ Nat
+    let postulate Q :R: Nat
     in 
-      let three :ᴿ Nat = 3
-      in plus ᴿ (apply ᴿ id ᴿ 2) ᴿ (apply ᴿ (const ᴿ Q) ᴿ three)
+      let three :R: Nat = 3
+      in plus -R- (apply -R- id -R- 2) -R- (apply -R- (const -R- Q) -R- three)
 
 ### Final annotation ###
 
-postulate Nat :ᴱ Type
+postulate Nat :E: Type
 
-postulate Z :ᴿ Nat
+postulate Z :R: Nat
 
-postulate S :ᴿ (_ :ᴿ Nat) -> Nat
+postulate S :R: (_ :R: Nat) -> Nat
 
-plus :ᴿ (n :ᴿ Nat) -> (m :ᴿ Nat) -> Nat = \(n :ᴿ Nat) (m :ᴿ Nat).
-  case ᴿ n of
+plus :R: (n :R: Nat) -> (m :R: Nat) -> Nat = \(n :R: Nat) (m :R: Nat).
+  case -R- n of
     Z
       => m
-    S (n' :ᴿ Nat)
-      => S ᴿ (plus ᴿ n' ᴿ m)
+    S (n' :R: Nat)
+      => S -R- (plus -R- n' -R- m)
 
-id :ᴿ (x :ᴿ Nat) -> Nat = (\x :ᴿ Nat. x)
+id :R: (x :R: Nat) -> Nat = (\x :R: Nat. x)
 
-const :ᴿ (x :ᴿ Nat) -> (y :ᴿ Nat) -> Nat = (\x :ᴿ Nat. (\y :ᴿ Nat. x))
+const :R: (x :R: Nat) -> (y :R: Nat) -> Nat = (\x :R: Nat. (\y :R: Nat. x))
 
-main :ᴿ Nat = 
-  let apply :ᴿ (f :ᴿ (_ :ᴿ Nat) -> Nat) -> (x :ᴿ Nat) -> Nat = \(f :ᴿ (_ :ᴿ Nat) -> Nat) (x :ᴿ Nat).
-    case ᴿ x of
+main :R: Nat = 
+  let apply :R: (f :R: (_ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = \(f :R: (_ :R: Nat) -> Nat) (x :R: Nat).
+    case -R- x of
       Z
-        => f ᴿ Z
-      S (x' :ᴿ Nat)
-        => f ᴿ (S ᴿ x')
+        => f -R- Z
+      S (x' :R: Nat)
+        => f -R- (S -R- x')
   in 
-    let postulate Q :ᴿ Nat
+    let postulate Q :R: Nat
     in 
-      let three :ᴿ Nat = 3
-      in plus ᴿ (apply ᴿ id ᴿ 2) ᴿ (apply ᴿ (const ᴿ Q) ᴿ three)
+      let three :R: Nat = 3
+      in plus -R- (apply -R- id -R- 2) -R- (apply -R- (const -R- Q) -R- three)
 
 ### Verification ###
 
