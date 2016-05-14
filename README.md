@@ -5,6 +5,7 @@
 Besides what the original paper had, we have:
 * [P] higher-order erasure
 * [P] changing arities of functions
+* [P] dependent erasure (if `x == True` then erased else not erased)
 * [M] support of inductive families and full dependent pattern matching
     * M-L avoids this entirely
 * [MP] erasure polymorphism for let-bound names (includes top-level)
