@@ -171,16 +171,19 @@ checkDefs cs (d:ds) = do
     bare (Def n r ty mtm Nothing) = Def n r ty mtm Nothing
 
 checkDef :: Def Meta VoidConstrs -> TC (Def Meta Constrs')
-checkDef (Def n r ty (Abstract a) Nothing) = return $ Def n r ty (Abstract a) Nothing
+
+checkDef (Def n r ty (Abstract a) Nothing) = do
+    return $ Def n r ty (Abstract a) Nothing
+
 checkDef (Def n r ty (Term tm) Nothing) = bt ("DEF-TERM", n) $ do
     (tmty, tmcs) <- checkTm tm
     tycs <- conv ty tmty
     let cs = tycs /\ tmcs
-    return $ Def n r ty (Term tm) (Just cs)
+    return $ Def n r ty (Term tm) (Just $ cond r cs)
 
 checkDef (Def n r ty (Patterns cf) Nothing) = bt ("DEF-PATTERNS", n) $ do
     cs <- checkCaseFun n cf
-    return $ Def n r ty (Patterns cf) (Just cs)
+    return $ Def n r ty (Patterns cf) (Just $ cond r cs)
 
 checkCaseFun :: Name -> CaseFun Meta -> TC Constrs
 checkCaseFun fn (CaseFun args ct)
@@ -261,9 +264,20 @@ checkTm t@(V n) = bt ("VAR", n) $ do
 checkTm t@(I n ty) = bt ("INST", n, ty) $ do
     Def _n r ty' _mtm (fromMaybe noConstrs -> cs') <- instantiate freshTag IM.empty =<< lookup n
     convCs <- conv ty' ty
-    -- we do not include (Fixed R --> r) because it will be an instance
-    -- of this function that's runtime-relevant, not the function itself
-    return (ty', cs' /\ convCs)
+    -- This (Fixed R --> r) thing is tricky.
+    --
+    -- We should not include (Fixed R --> r) because it will be an instance
+    -- of this function that's runtime-relevant, not the function itself.
+    --
+    -- However, we must mark the instance as runtime-relevant, but it does not
+    -- exist yet. Hence we mark the original function as runtime-relevant as a proxy
+    -- for the relevance of the instance, and all instances will inherit this relevance.
+    --
+    -- In the next iteration of typechecking after specialisation,
+    -- the original function will be recognised as erased again, if necessary.
+    --
+    -- Also, all unused instances should be recognised as erased (I didn't check that).
+    return (ty', cs' /\ convCs /\ Fixed R --> r)
 
 checkTm t@(Bind Lam (Def n r ty (Abstract Var) Nothing) tm) = bt ("LAM", t) $ do
     (tmty, tmcs) <- with (Def n r ty (Abstract Var) Nothing) $ checkTm tm
