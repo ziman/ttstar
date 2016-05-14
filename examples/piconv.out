@@ -12,123 +12,123 @@ const_A : (_ : T) -> T = (\_ : T. A)
 
 apply : (f : (x : T) -> T) -> (x : T) -> T = (\f : (_ : T) -> T. (\x : T. f x))
 
-main  -R-  T = apply const_A B
+main :ᴿ T = apply const_A B
 
 ### Metaified ###
 
-postulate T :?1: Type
+postulate T :¹ Type
 
-postulate A :?2: T
+postulate A :² T
 
-postulate B :?3: T
+postulate B :³ T
 
-const_A :?4: (_ :?5: T) -> T = (\_ :?6: T. A)
+const_A :⁴ (_ :⁵ T) -> T = (\_ :⁶ T. A)
 
-apply :?7: (f :?8: (x :?9: T) -> T) -> (x :?10: T) -> T = (\f :?11: (_ :?12: T) -> T. (\x :?13: T. f -?14- x))
+apply :⁷ (f :⁸ (x :⁹ T) -> T) -> (x :¹⁰ T) -> T = (\f :¹¹ (_ :¹² T) -> T. (\x :¹³ T. f ¹⁴ x))
 
-main :!R: T = apply -?16- const_A -?15- B
+main :ᴿ T = apply ¹⁶ const_A ¹⁵ B
 
 ### Inferred definitions ###
 
-postulate A :?2: T
+postulate A :² T
 
-postulate B :?3: T
+postulate B :³ T
 
-postulate T :?1: Type
+postulate T :¹ Type
 
-postulate Type :!R: Type
+postulate Type :ᴿ Type
 
-apply :?7: (f :?8: (x :?9: T) -> T) -> (x :?10: T) -> T = (\f :?11: (_ :?12: T) -> T. (\x :?13: T. f -?14- x))
-  [?7] -> [?11]
-  [?7,?8] -> [?11]
-  [?7,?9] -> [?12]
-  [?7,?10] -> [?13]
-  [?7,?11] -> [?8]
-  [?7,?12] -> [?9,?13,?14]
-  [?7,?13] -> [?10]
-  [?7,?14] -> [?12]
+apply :⁷ (f :⁸ (x :⁹ T) -> T) -> (x :¹⁰ T) -> T = (\f :¹¹ (_ :¹² T) -> T. (\x :¹³ T. f ¹⁴ x))
+  [7] -> [11]
+  [7,8] -> [11]
+  [7,9] -> [12]
+  [7,10] -> [13]
+  [7,11] -> [8]
+  [7,12] -> [9,13,14]
+  [7,13] -> [10]
+  [7,14] -> [12]
 
-const_A :?4: (_ :?5: T) -> T = (\_ :?6: T. A)
-  [?4] -> [?2]
-  [?4,?5] -> [?6]
-  [?4,?6] -> [?5]
+const_A :⁴ (_ :⁵ T) -> T = (\_ :⁶ T. A)
+  [4] -> [2]
+  [4,5] -> [6]
+  [4,6] -> [5]
 
-main :!R: T = apply -?16- const_A -?15- B
-  [] -> [?7,!R]
-  [?5] -> [?9]
-  [?8] -> [?4,?16]
-  [?9] -> [?5]
-  [?10] -> [?3,?15]
-  [?15] -> [?10]
-  [?16] -> [?8]
+main :ᴿ T = apply ¹⁶ const_A ¹⁵ B
+  [] -> [7,R]
+  [5] -> [9]
+  [8] -> [4,16]
+  [9] -> [5]
+  [10] -> [3,15]
+  [15] -> [10]
+  [16] -> [8]
 
 
 ### Constraints ###
 
-[] -> [?7,!R]
-[?4] -> [?2]
-[?4,?5] -> [?6]
-[?4,?6] -> [?5]
-[?5] -> [?9]
-[?7] -> [?11]
-[?7,?8] -> [?11]
-[?7,?9] -> [?12]
-[?7,?10] -> [?13]
-[?7,?11] -> [?8]
-[?7,?12] -> [?9,?13,?14]
-[?7,?13] -> [?10]
-[?7,?14] -> [?12]
-[?8] -> [?4,?16]
-[?9] -> [?5]
-[?10] -> [?3,?15]
-[?15] -> [?10]
-[?16] -> [?8]
+[] -> [7,R]
+[4] -> [2]
+[4,5] -> [6]
+[4,6] -> [5]
+[5] -> [9]
+[7] -> [11]
+[7,8] -> [11]
+[7,9] -> [12]
+[7,10] -> [13]
+[7,11] -> [8]
+[7,12] -> [9,13,14]
+[7,13] -> [10]
+[7,14] -> [12]
+[8] -> [4,16]
+[9] -> [5]
+[10] -> [3,15]
+[15] -> [10]
+[16] -> [8]
 
 ### Solution ###
 
-[?2,?4,?7,?8,?11,?16,!R]
+[2,4,7,8,11,16,R]
 
 ### Annotated ###
 
-postulate T :E: Type
+postulate T :ᴱ Type
 
-postulate A :R: T
+postulate A :ᴿ T
 
-postulate B :E: T
+postulate B :ᴱ T
 
-const_A :R: (_ :E: T) -> T = (\_ :E: T. A)
+const_A :ᴿ (_ :ᴱ T) -> T = (\_ :ᴱ T. A)
 
-apply :R: (f :R: (x :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_ :E: T) -> T. (\x :E: T. f -E- x))
+apply :ᴿ (f :ᴿ (x :ᴱ T) -> T) -> (x :ᴱ T) -> T = (\f :ᴿ (_ :ᴱ T) -> T. (\x :ᴱ T. f ᴱ x))
 
-main :R: T = apply -R- const_A -E- B
+main :ᴿ T = apply ᴿ const_A ᴱ B
 
 ### Specialised ###
 
-postulate T :!E: Type
+postulate T :ᴱ Type
 
-postulate A :!R: T
+postulate A :ᴿ T
 
-postulate B :!E: T
+postulate B :ᴱ T
 
-const_A :!R: (_ :!E: T) -> T = (\_ :!E: T. A)
+const_A :ᴿ (_ :ᴱ T) -> T = (\_ :ᴱ T. A)
 
-apply :!R: (f :!R: (x :!E: T) -> T) -> (x :!E: T) -> T = (\f :!R: (_ :!E: T) -> T. (\x :!E: T. f -!E- x))
+apply :ᴿ (f :ᴿ (x :ᴱ T) -> T) -> (x :ᴱ T) -> T = (\f :ᴿ (_ :ᴱ T) -> T. (\x :ᴱ T. f ᴱ x))
 
-main :!R: T = apply -!R- const_A -!E- B
+main :ᴿ T = apply ᴿ const_A ᴱ B
 
 ### Final annotation ###
 
-postulate T :E: Type
+postulate T :ᴱ Type
 
-postulate A :R: T
+postulate A :ᴿ T
 
-postulate B :E: T
+postulate B :ᴱ T
 
-const_A :R: (_ :E: T) -> T = (\_ :E: T. A)
+const_A :ᴿ (_ :ᴱ T) -> T = (\_ :ᴱ T. A)
 
-apply :R: (f :R: (x :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_ :E: T) -> T. (\x :E: T. f -E- x))
+apply :ᴿ (f :ᴿ (x :ᴱ T) -> T) -> (x :ᴱ T) -> T = (\f :ᴿ (_ :ᴱ T) -> T. (\x :ᴱ T. f ᴱ x))
 
-main :R: T = apply -R- const_A -E- B
+main :ᴿ T = apply ᴿ const_A ᴱ B
 
 ### Verification ###
 

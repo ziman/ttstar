@@ -1,16 +1,47 @@
 {-# LANGUAGE FlexibleContexts, FlexibleInstances, StandaloneDeriving, ConstraintKinds #-}
-module Pretty (PrettyR(..)) where
+module Pretty (useUnicode, PrettyR(..), ShowUnicode (..), sup) where
+
+import Data.Char
 
 import TT
 import Util.PrettyPrint
+
+useUnicode :: Bool
+useUnicode = True
+
+sup :: Char -> Char
+sup '0' = '⁰'
+sup '1' = '¹'
+sup '2' = '²'
+sup '3' = '³'
+sup '4' = '⁴'
+sup '5' = '⁵'
+sup '6' = '⁶'
+sup '7' = '⁷'
+sup '8' = '⁸'
+sup '9' = '⁹'
+sup 'R' = 'ᴿ'
+sup 'E' = 'ᴱ'
+sup c = error $ "no unicode superscript for: " ++ show c
+
+class ShowUnicode a where
+    showUnicode :: a -> Doc
+
+instance ShowUnicode Relevance where
+    showUnicode = text . map sup . show
 
 class Show r => PrettyR r where
     prettyCol :: r -> Doc
     prettyApp :: r -> Doc
 
 instance PrettyR Relevance where
-    prettyCol x = colon <> showd x <> colon
-    prettyApp x = text " -" <> showd x <> text "- "
+    prettyCol x
+        | useUnicode = colon <> showUnicode x
+        | otherwise  = colon <> showd x <> colon
+
+    prettyApp x
+        | useUnicode = text " " <> showUnicode x <> text " "
+        | otherwise  = text " " <> showd x <> text " "
 
 instance PrettyR () where
     prettyCol _ = colon
@@ -18,7 +49,7 @@ instance PrettyR () where
 
 instance PrettyR (Maybe Relevance) where
     prettyCol Nothing = colon
-    prettyCol (Just r) = prettyApp r
+    prettyCol (Just r) = prettyCol r
 
     prettyApp Nothing = text " "
     prettyApp (Just r) = prettyApp r

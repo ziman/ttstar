@@ -2,25 +2,25 @@
 
 ### Desugared ###
 
-main  -R-  (x  -E-  Type) -> Type = (\x  -E-  Type. x)
+main :ᴿ (x :ᴱ Type) -> Type = (\x :ᴱ Type. x)
 
 ### Metaified ###
 
-main :!R: (x :!E: Type) -> Type = (\x :!E: Type. x)
+main :ᴿ (x :ᴱ Type) -> Type = (\x :ᴱ Type. x)
 
 ### Inferred definitions ###
 
-postulate Type :!R: Type
+postulate Type :ᴿ Type
 
-main :!R: (x :!E: Type) -> Type = (\x :!E: Type. x)
-  [] -> [!E,!R]
+main :ᴿ (x :ᴱ Type) -> Type = (\x :ᴱ Type. x)
+  [] -> [E,R]
 
 
 ### Constraints ###
 
-[] -> [!E,!R]
+[] -> [E,R]
 
 ### Solution ###
 
-[!E,!R]
+[E,R]
 

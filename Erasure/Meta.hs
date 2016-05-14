@@ -12,12 +12,20 @@ data Meta = MVar Int | Fixed Relevance deriving (Eq, Ord)
 type TTmeta = TT Meta
 
 instance Show Meta where
-    show (MVar  i) = "?" ++ show i
-    show (Fixed r) = "!" ++ show r
+    show (MVar  i) = show i
+    show (Fixed r) = show r
+
+instance ShowUnicode Meta where
+    showUnicode = text . map sup . show
 
 instance PrettyR Meta where
-    prettyCol x = colon <> showd x <> colon
-    prettyApp x = text " -" <> showd x <> text "- "
+    prettyCol x
+        | useUnicode = colon <> showUnicode x
+        | otherwise  = colon <> showd x <> colon
+
+    prettyApp x
+        | useUnicode = text " " <> showUnicode x <> text " "
+        | otherwise  = text " -" <> showd x <> text "- "
 
 meta :: Program (Maybe Relevance) VoidConstrs -> Program Meta VoidConstrs
 meta prog = evalState (progRelevance freshM prog) 0
