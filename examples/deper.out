@@ -1,0 +1,295 @@
+-- vim: ft=agda
+
+### Desugared ###
+
+postulate Bool : Type
+
+postulate T : Bool
+
+postulate F : Bool
+
+postulate TwoBools : Type
+
+postulate TB : (x :R: Bool) -> (y :R: Bool) -> TwoBools
+
+id : (x : Bool) -> Bool = (\x : Bool. x)
+
+constT : (_ : Bool) -> Bool = (\_ : Bool. T)
+
+fty : (x : Bool) -> Type = \(x : Bool).
+  case x of
+    T
+      => (_ : Bool) -> Bool
+    F
+      => (_ : Bool) -> Bool
+
+f : (x : Bool) -> fty x = \(x : Bool).
+  case x of
+    T
+      => id
+    F
+      => constT
+
+main :R: TwoBools = TB (f T F) (f F F)
+
+### Metaified ###
+
+postulate Bool :1: Type
+
+postulate T :2: Bool
+
+postulate F :3: Bool
+
+postulate TwoBools :4: Type
+
+postulate TB :5: (x :R: Bool) -> (y :R: Bool) -> TwoBools
+
+id :6: (x :7: Bool) -> Bool = (\x :8: Bool. x)
+
+constT :9: (_ :10: Bool) -> Bool = (\_ :11: Bool. T)
+
+fty :12: (x :13: Bool) -> Type = \(x :14: Bool).
+  case -15- x of
+    T
+      => (_ :16: Bool) -> Bool
+    F
+      => (_ :17: Bool) -> Bool
+
+f :18: (x :19: Bool) -> fty -20- x = \(x :21: Bool).
+  case -22- x of
+    T
+      => id
+    F
+      => constT
+
+main :R: TwoBools = TB -24- (f -26- T -25- F) -23- (f -28- F -27- F)
+
+### Inferred definitions ###
+
+postulate Bool :1: Type
+
+postulate F :3: Bool
+
+postulate T :2: Bool
+
+postulate TB :5: (x :R: Bool) -> (y :R: Bool) -> TwoBools
+
+postulate TwoBools :4: Type
+
+postulate Type :R: Type
+
+constT :9: (_ :10: Bool) -> Bool = (\_ :11: Bool. T)
+  [9] -> [2]
+  [9,10] -> [11]
+  [9,11] -> [10]
+
+f :18: (x :19: Bool) -> fty -20- x = \(x :21: Bool).
+  case -22- x of
+    T
+      => id
+    F
+      => constT
+  [2,18] -> [19]
+  [3,18] -> [19]
+  [7,18] -> [16]
+  [10,18] -> [17]
+  [16,18] -> [7]
+  [17,18] -> [10]
+  [18] -> [6,9,22]
+  [18,19] -> [21]
+  [18,21] -> [19]
+  [18,22] -> [21]
+
+fty :12: (x :13: Bool) -> Type = \(x :14: Bool).
+  case -15- x of
+    T
+      => (_ :16: Bool) -> Bool
+    F
+      => (_ :17: Bool) -> Bool
+  [2,12] -> [13]
+  [3,12] -> [13]
+  [12] -> [1,15]
+  [12,13] -> [14]
+  [12,14] -> [13]
+  [12,15] -> [14]
+
+id :6: (x :7: Bool) -> Bool = (\x :8: Bool. x)
+  [6] -> [8]
+  [6,7] -> [8]
+  [6,8] -> [7]
+
+main :R: TwoBools = TB -24- (f -26- T -25- F) -23- (f -28- F -27- F)
+  [] -> [5,18,23,24,R]
+  [16] -> [3,25]
+  [17] -> [3,27]
+  [19] -> [2,3,26,28]
+  [25] -> [16]
+  [26] -> [19]
+  [27] -> [17]
+  [28] -> [19]
+
+
+### Constraints ###
+
+[] -> [5,18,23,24,R]
+[2,12] -> [13]
+[2,18] -> [19]
+[3,12] -> [13]
+[3,18] -> [19]
+[6] -> [8]
+[6,7] -> [8]
+[6,8] -> [7]
+[7,18] -> [16]
+[9] -> [2]
+[9,10] -> [11]
+[9,11] -> [10]
+[10,18] -> [17]
+[12] -> [1,15]
+[12,13] -> [14]
+[12,14] -> [13]
+[12,15] -> [14]
+[16] -> [3,25]
+[16,18] -> [7]
+[17] -> [3,27]
+[17,18] -> [10]
+[18] -> [6,9,22]
+[18,19] -> [21]
+[18,21] -> [19]
+[18,22] -> [21]
+[19] -> [2,3,26,28]
+[25] -> [16]
+[26] -> [19]
+[27] -> [17]
+[28] -> [19]
+
+### Solution ###
+
+[2,3,5,6,7,8,9,16,18,19,21,22,23,24,25,26,28,R]
+
+### Annotated ###
+
+postulate Bool :E: Type
+
+postulate T :R: Bool
+
+postulate F :R: Bool
+
+postulate TwoBools :E: Type
+
+postulate TB :R: (x :R: Bool) -> (y :R: Bool) -> TwoBools
+
+id :R: (x :R: Bool) -> Bool = (\x :R: Bool. x)
+
+constT :R: (_ :E: Bool) -> Bool = (\_ :E: Bool. T)
+
+fty :E: (x :E: Bool) -> Type = \(x :E: Bool).
+  case -E- x of
+    T
+      => (_ :R: Bool) -> Bool
+    F
+      => (_ :E: Bool) -> Bool
+
+f :R: (x :R: Bool) -> fty -E- x = \(x :R: Bool).
+  case -R- x of
+    T
+      => id
+    F
+      => constT
+
+main :R: TwoBools = TB -R- (f -R- T -R- F) -R- (f -R- F -E- F)
+
+### Specialised ###
+
+postulate Bool :E: Type
+
+postulate T :R: Bool
+
+postulate F :R: Bool
+
+postulate TwoBools :E: Type
+
+postulate TB :R: (x :R: Bool) -> (y :R: Bool) -> TwoBools
+
+id :R: (x :R: Bool) -> Bool = (\x :R: Bool. x)
+
+constT :R: (_ :E: Bool) -> Bool = (\_ :E: Bool. T)
+
+fty :E: (x :E: Bool) -> Type = \(x :E: Bool).
+  case -E- x of
+    T
+      => (_ :R: Bool) -> Bool
+    F
+      => (_ :E: Bool) -> Bool
+
+f :R: (x :R: Bool) -> fty -E- x = \(x :R: Bool).
+  case -R- x of
+    T
+      => id
+    F
+      => constT
+
+main :R: TwoBools = TB -R- (f -R- T -R- F) -R- (f -R- F -E- F)
+
+### Final annotation ###
+
+postulate Bool :E: Type
+
+postulate T :R: Bool
+
+postulate F :R: Bool
+
+postulate TwoBools :E: Type
+
+postulate TB :R: (x :R: Bool) -> (y :R: Bool) -> TwoBools
+
+id :R: (x :R: Bool) -> Bool = (\x :R: Bool. x)
+
+constT :R: (_ :E: Bool) -> Bool = (\_ :E: Bool. T)
+
+fty :E: (x :E: Bool) -> Type = \(x :E: Bool).
+  case -E- x of
+    T
+      => (_ :R: Bool) -> Bool
+    F
+      => (_ :E: Bool) -> Bool
+
+f :R: (x :R: Bool) -> fty -E- x = \(x :R: Bool).
+  case -R- x of
+    T
+      => id
+    F
+      => constT
+
+main :R: TwoBools = TB -R- (f -R- T -R- F) -R- (f -R- F -E- F)
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+postulate T
+
+postulate F
+
+postulate TB
+
+id = (\x. x)
+
+constT = T
+
+f = \x.
+  case x of
+    T
+      => id
+    F
+      => constT
+
+main = TB (f T F) (f F)
+
+### Normal forms ###
+
+unerased:
+  TB F T
+erased:
+  TB F T

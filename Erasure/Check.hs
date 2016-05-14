@@ -290,7 +290,8 @@ checkTm t@(Bind Pi (Def n r ty (Abstract Var) Nothing) tm) = bt ("PI", t) $ do
 checkTm t@(App app_r f x) = bt ("APP", t) $ do
     (fty, fcs) <- checkTm f
     (xty, xcs) <- checkTm x
-    case fty of
+    ctx <- getCtx
+    case whnf ctx fty of
         Bind Pi (Def n' pi_r ty' (Abstract Var) Nothing) retTy -> do
             tycs <- conv xty ty'
             let cs =
