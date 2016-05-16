@@ -170,7 +170,7 @@ checkDef :: Def Meta VoidConstrs -> TC (Def Meta Constrs')
 checkDef (Def n r ty (Abstract a) Nothing) = do
     (tyty, tycs) <- checkTm ty
     tytyTypeCs <- conv tyty (V $ UN "Type")
-    let cs = tycs /\ tytyTypeCs
+    let cs = tycs /\ tytyTypeCs /\ Fixed R --> r
     return $ Def n r ty (Abstract a) (Just $ cond r cs)
 
 checkDef (Def n r ty (Term tm) Nothing) = bt ("DEF-TERM", n) $ do
@@ -178,24 +178,23 @@ checkDef (Def n r ty (Term tm) Nothing) = bt ("DEF-TERM", n) $ do
     (tyty, tycs) <- checkTm ty
     tytyTypeCs   <- conv tyty (V $ UN "Type")
     tyTmtyCs     <- conv ty tmty
-    let cs = tmcs /\ tycs /\ tytyTypeCs /\ tyTmtyCs
+    let cs = tmcs /\ tycs /\ tytyTypeCs /\ tyTmtyCs /\ Fixed R --> r
     return $ Def n r ty (Term tm) (Just $ cond r cs)
 
 checkDef (Def n r ty (Patterns cf) Nothing) = bt ("DEF-PATTERNS", n) $ do
     (tyty, tycs) <- checkTm ty
     tytyTypeCs   <- conv tyty (V $ UN "Type")
     cfCs <- checkCaseFun n cf
-    let cs = tycs /\ tytyTypeCs /\ cfCs
+    let cs = tycs /\ tytyTypeCs /\ cfCs /\ Fixed R --> r
     return $ Def n r ty (Patterns cf) (Just $ cond r cs)
 
 checkCaseFun :: Name -> CaseFun Meta -> TC Constrs
-checkCaseFun fn (CaseFun args ct)
-    = bt ("CASE-FUN", fn)
-        $ withDefs (map csDef args)
-            $ checkCaseTree lhs ct
+checkCaseFun fn (CaseFun args ct) = bt ("CASE-FUN", fn) $ do
+    argCtx <- checkDefs args
+    with' (M.union argCtx)
+        $ checkCaseTree lhs ct
   where
-    lhs = mkApp (V fn) args'
-    args' = [(r, V n) | Def n r ty (Abstract Var) Nothing <- args]
+    lhs = mkApp (V fn) [(r, V n) | Def n r ty (Abstract Var) Nothing <- args]
 
 checkCaseTree :: TT Meta -> CaseTree Meta -> TC Constrs
 checkCaseTree lhs (Leaf rhs) = bt ("PLAIN-TERM", lhs, rhs) $ do
@@ -227,8 +226,9 @@ checkAlt isSingleBranch lhs n sr (Alt Wildcard rhs) = bt ("ALT-WILDCARD") $ do
     checkCaseTree lhs rhs
 
 checkAlt isSingleBranch lhs n sr (Alt (Ctor cn args eqs_NF) rhs) = bt ("ALT-CTOR", pat) $ do
+    argCtx <- checkDefs args
     -- Typechecking will be done eventually in the case for Leaf.
-    cs <- withDefs (map csDef args) $
+    cs <- with' (M.union argCtx) $
             with' (substsInCtx eqs') $  -- substitutes in args, too; must use eqs', which includes (n, pat')
                 checkCaseTree lhs' rhs'
     return $ cs /\ scrutCs
@@ -263,13 +263,13 @@ checkTm (V Blank) = return (V Blank, noConstrs)
 checkTm t@(V n) = bt ("VAR", n) $ do
     -- at the point of usage of a bound name,
     -- the constraints associated with that name come in
-    Def _n r ty mtm (fromMaybe noConstrs -> cs) <- lookup n
-    return (ty, cs /\ Fixed R --> r)
+    d <- lookup n
+    return (defType d, defConstraints d)
 
 checkTm t@(I n ty) = bt ("INST", n, ty) $ do
     -- here, we need to freshen the constraints before bringing them up
-    Def _n r ty' _mtm (fromMaybe noConstrs -> cs') <- instantiate freshTag IM.empty =<< lookup n
-    convCs <- conv ty' ty
+    d <- instantiate freshTag IM.empty =<< lookup n
+    convCs <- conv (defType d) ty
     -- This (Fixed R --> r) thing is tricky.
     --
     -- We should not include (Fixed R --> r) because it will be an instance
@@ -283,7 +283,7 @@ checkTm t@(I n ty) = bt ("INST", n, ty) $ do
     -- the original function will be recognised as erased again, if necessary.
     --
     -- Also, all unused instances should be recognised as erased (I didn't check that).
-    return (ty', cs' /\ convCs /\ Fixed R --> r)
+    return (ty', defConstraints d /\ convCs)
 
 checkTm t@(Bind Lam d@(Def n r ty (Abstract Var) Nothing) tm) = bt ("LAM", t) $ do
     d' <- checkDef d
