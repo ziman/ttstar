@@ -147,8 +147,8 @@ freshTag = lift $ lift (modify (+1) >> get)
 runTC :: Int -> Ctx Meta Constrs' -> TC a -> Either TCFailure a
 runTC maxTag ctx tc = evalState (runExceptT $ runReaderT tc ([], ctx)) maxTag
 
-check :: Program Meta VoidConstrs -> Either TCFailure (Ctx Meta Constrs', Constrs)
-check prog@(Prog defs) = runTC maxTag ctx $ checkDefs (CS M.empty) defs
+check :: Program Meta VoidConstrs -> Either TCFailure (Ctx Meta Constrs')
+check prog@(Prog defs) = runTC maxTag ctx $ checkDefs defs
   where
     getTag (MVar i) = i
     getTag _        = 0  -- whatever, we're looking for maximum
@@ -158,17 +158,12 @@ check prog@(Prog defs) = runTC maxTag ctx $ checkDefs (CS M.empty) defs
 
     ctx = builtins (Fixed R)
 
-checkDefs :: Constrs -> [Def Meta VoidConstrs] -> TC (Ctx Meta Constrs', Constrs)
-checkDefs cs [] = do
-    ctx <- getCtx
-    return (ctx, cs)
-checkDefs cs (d:ds) = do
-    Def n r ty mtm dcs <- with (bare d) $ checkDef d
-    let dcs' = reduce <$> dcs
-    with (Def n r ty mtm dcs')
-        $ checkDefs (fromMaybe noConstrs dcs' `union` cs) ds
-  where
-    bare (Def n r ty mtm Nothing) = Def n r ty mtm Nothing
+checkDefs :: [Def Meta VoidConstrs] -> TC (Ctx Meta Constrs')
+checkDefs [] = getCtx
+checkDefs (d:ds) = do
+    d' <- with (csDef d) $ checkDef d
+    let d'' = d'{ defConstraints = reduce <$> defConstraints d' }
+    with d'' $ checkDefs ds
 
 checkDef :: Def Meta VoidConstrs -> TC (Def Meta Constrs')
 
@@ -293,7 +288,7 @@ checkTm t@(I n ty) = bt ("INST", n, ty) $ do
 checkTm t@(Bind Lam d@(Def n r ty (Abstract Var) Nothing) tm) = bt ("LAM", t) $ do
     d' <- checkDef d
     (tmty, tmcs) <- with d' $ checkTm tm
-    return (Bind Pi d' tmty, tmcs)
+    return (Bind Pi (csDef d') tmty, tmcs)
 
 checkTm t@(Bind Pi d@(Def n r ty (Abstract Var) Nothing) tm) = bt ("PI", t) $ do
     d' <- checkDef d

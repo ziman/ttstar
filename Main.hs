@@ -131,11 +131,12 @@ main = do
 
             let iterSpecialisation metaified = do
                     putStrLn "### Inferred definitions ###\n"
-                    let (ctx, cs) = either (error . show) id . check $ metaified
+                    let ctx = either (error . show) id . check $ metaified
                     mapM_ (putStrLn . fmtCtx) $ M.toList ctx
                     putStrLn ""
 
                     putStrLn "### Constraints ###\n"
+                    let Just cs = defConstraints (ctx M.! (UN "main"))
                     mapM_ (putStrLn . fmtCtr) $ M.toList (runCS cs)
                     putStrLn ""
 
