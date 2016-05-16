@@ -173,16 +173,24 @@ checkDefs cs (d:ds) = do
 checkDef :: Def Meta VoidConstrs -> TC (Def Meta Constrs')
 
 checkDef (Def n r ty (Abstract a) Nothing) = do
-    return $ Def n r ty (Abstract a) Nothing
+    (tyty, tycs) <- checkTm ty
+    tytyTypeCs <- conv tyty (V $ UN "Type")
+    let cs = tycs /\ tytyTypeCs
+    return $ Def n r ty (Abstract a) (Just $ cond r cs)
 
 checkDef (Def n r ty (Term tm) Nothing) = bt ("DEF-TERM", n) $ do
     (tmty, tmcs) <- checkTm tm
-    tycs <- conv ty tmty
-    let cs = tycs /\ tmcs
+    (tyty, tycs) <- checkTm ty
+    tytyTypeCs   <- conv tyty (V $ UN "Type")
+    tyTmtyCs     <- conv ty tmty
+    let cs = tmcs /\ tycs /\ tytyTypeCs /\ tyTmtyCs
     return $ Def n r ty (Term tm) (Just $ cond r cs)
 
 checkDef (Def n r ty (Patterns cf) Nothing) = bt ("DEF-PATTERNS", n) $ do
-    cs <- checkCaseFun n cf
+    (tyty, tycs) <- checkTm ty
+    tytyTypeCs   <- conv tyty (V $ UN "Type")
+    cfCs <- checkCaseFun n cf
+    let cs = tycs /\ tytyTypeCs /\ cfCs
     return $ Def n r ty (Patterns cf) (Just $ cond r cs)
 
 checkCaseFun :: Name -> CaseFun Meta -> TC Constrs
@@ -258,10 +266,13 @@ checkTm :: Term -> TC (Type, Constrs)
 checkTm (V Blank) = return (V Blank, noConstrs)
 
 checkTm t@(V n) = bt ("VAR", n) $ do
-    Def _n r ty mtm mcs <- lookup n
-    return (ty, Fixed R --> r)
+    -- at the point of usage of a bound name,
+    -- the constraints associated with that name come in
+    Def _n r ty mtm (fromMaybe noConstrs -> cs) <- lookup n
+    return (ty, cs /\ Fixed R --> r)
 
 checkTm t@(I n ty) = bt ("INST", n, ty) $ do
+    -- here, we need to freshen the constraints before bringing them up
     Def _n r ty' _mtm (fromMaybe noConstrs -> cs') <- instantiate freshTag IM.empty =<< lookup n
     convCs <- conv ty' ty
     -- This (Fixed R --> r) thing is tricky.
@@ -279,12 +290,14 @@ checkTm t@(I n ty) = bt ("INST", n, ty) $ do
     -- Also, all unused instances should be recognised as erased (I didn't check that).
     return (ty', cs' /\ convCs /\ Fixed R --> r)
 
-checkTm t@(Bind Lam (Def n r ty (Abstract Var) Nothing) tm) = bt ("LAM", t) $ do
-    (tmty, tmcs) <- with (Def n r ty (Abstract Var) Nothing) $ checkTm tm
-    return (Bind Pi (Def n r ty (Abstract Var) Nothing) tmty, tmcs)
+checkTm t@(Bind Lam d@(Def n r ty (Abstract Var) Nothing) tm) = bt ("LAM", t) $ do
+    d' <- checkDef d
+    (tmty, tmcs) <- with d' $ checkTm tm
+    return (Bind Pi d' tmty, tmcs)
 
-checkTm t@(Bind Pi (Def n r ty (Abstract Var) Nothing) tm) = bt ("PI", t) $ do
-    (tmty, tmcs) <- with (Def n r ty (Abstract Var) Nothing) $ checkTm tm
+checkTm t@(Bind Pi d@(Def n r ty (Abstract Var) Nothing) tm) = bt ("PI", t) $ do
+    d' <- checkDef d
+    (tmty, tmcs) <- with d' $ checkTm tm
     return (V $ UN "Type", tmcs)
 
 checkTm t@(App app_r f x) = bt ("APP", t) $ do
