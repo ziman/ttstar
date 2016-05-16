@@ -15,25 +15,21 @@ import Lens.Family2
 
 import Debug.Trace
 
-type Guards  = Guards'  Meta
-type Uses    = Uses'    Meta
-type Constrs = Constrs' Meta
-
 -- reduce the constraint set, keeping the empty-guard constraint
-reduce :: Constrs -> Constrs
+reduce :: Constrs Meta -> Constrs Meta
 reduce cs
     | S.null (S.delete (Fixed R) us) = residue
-    | otherwise = (CS . M.insert S.empty us . runCS) residue
+    | otherwise = M.insert S.empty us residue
   where
     (us, residue) = solve cs
 
-solve :: Constrs -> (Uses, Constrs)
+solve :: Constrs Meta -> (Uses Meta, Constrs Meta)
 solve = step $ S.singleton (Fixed R)
   where
-    step :: Uses -> Constrs -> (Uses, Constrs)
-    step ans (CS cs)
-        | S.null new = (ans, CS prunedCs)
-        | otherwise = step (S.union ans new) (CS prunedCs)
+    step :: Uses Meta -> Constrs Meta -> (Uses Meta, Constrs Meta)
+    step ans cs
+        | S.null new = (ans, prunedCs)
+        | otherwise = step (S.union ans new) prunedCs
       where
         prunedCs_ans = M.mapKeysWith S.union (S.\\ ans) . M.map (S.\\ ans) $ cs
         new = M.findWithDefault S.empty S.empty prunedCs_ans

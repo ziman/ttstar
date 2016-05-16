@@ -31,7 +31,7 @@ data TT r
     deriving (Eq, Ord)
 
 data CaseFun r = CaseFun
-    { cfArgs :: [Def r VoidConstrs]
+    { cfArgs :: [Def r]
     , cfTree :: CaseTree r
     } deriving (Eq, Ord)
 
@@ -41,7 +41,7 @@ data CaseTree r
     deriving (Eq, Ord)
 
 data AltLHS r
-    = Ctor Name [Def r VoidConstrs] [(Name, TT r)]
+    = Ctor Name [Def r] [(Name, TT r)]
     | Wildcard
     deriving (Eq, Ord)
 

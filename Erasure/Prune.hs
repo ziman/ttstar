@@ -5,12 +5,12 @@ import Pretty
 import Control.Applicative
 import qualified Data.Set as S
 
-prune :: Program Relevance VoidConstrs -> Program () VoidConstrs
+prune :: Program Relevance -> Program ()
 prune (Prog defs) = Prog $ pruneDefs defs
 
-pruneDef :: Def Relevance VoidConstrs -> [Def () VoidConstrs]
+pruneDef :: Def Relevance -> [Def ()]
 pruneDef (Def n E ty body mcs) = []
-pruneDef (Def n R ty body mcs) = [Def n () (V Blank) (pruneBody body) Nothing]
+pruneDef (Def n R ty body mcs) = [Def n () (V Blank) (pruneBody body) noConstrs]
 
 pruneBody :: Body Relevance -> Body ()
 pruneBody (Abstract a)  = Abstract a
@@ -35,7 +35,7 @@ pruneAltLHS Wildcard = Wildcard
 pruneAltLHS (Ctor cn args eqs)
     = Ctor cn (pruneDefs args) []  -- just remove all eqs
 
-pruneDefs :: [Def Relevance VoidConstrs] -> [Def () VoidConstrs]
+pruneDefs :: [Def Relevance] -> [Def ()]
 pruneDefs = concatMap pruneDef
 
 pruneTm :: TT Relevance -> TT ()
