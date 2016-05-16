@@ -12,29 +12,31 @@ main :R: (x :1: Type) -> Type = (\x :2: Type. x)
 
 postulate Type :R: Type
 
-main :R: (x :1: Type) -> Type = (\x :2: Type. x)
-  [] -> [1,2,R]
+main :R: (x :1: Type) -> Type = (\x :2: Type. x) {- constraints apply -}
+  [1] -> [2]
+  [2] -> [1,2]
 
 
 ### Constraints ###
 
-[] -> [1,2,R]
+[1] -> [2]
+[2] -> [1,2]
 
 ### Solution ###
 
-[1,2,R]
+[R]
 
 ### Annotated ###
 
-main :R: (x :R: Type) -> Type = (\x :R: Type. x)
+main :R: (x :E: Type) -> Type = (\x :E: Type. x)
 
 ### Specialised ###
 
-main :R: (x :R: Type) -> Type = (\x :R: Type. x)
+main :R: (x :E: Type) -> Type = (\x :E: Type. x)
 
 ### Final annotation ###
 
-main :R: (x :R: Type) -> Type = (\x :R: Type. x)
+main :R: (x :E: Type) -> Type = (\x :E: Type. x)
 
 ### Verification ###
 
@@ -42,11 +44,10 @@ Verification successful.
 
 ### Pruned ###
 
-main = (\x. x)
+main = x
 
 ### Normal forms ###
 
 unerased:
   (\x : Type. x)
 erased:
-  (\x. x)

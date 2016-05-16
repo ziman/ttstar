@@ -74,21 +74,38 @@ main :R: Bool = f -33- (Just -35- Bool -34- False)
 
 ### Inferred definitions ###
 
-postulate Bool :11: Type
+postulate Bool :11: Type {- constraints apply -}
+  [11] -> [11]
 
-postulate False :13: Bool
+postulate False :13: Bool {- constraints apply -}
+  [11,13] -> [11]
+  [13] -> [13]
 
-postulate Just :4: (a :5: Type) -> (x :6: a) -> Maybe -7- a
+postulate Just :4: (a :5: Type) -> (x :6: a) -> Maybe -7- a {- constraints apply -}
+  [2,4] -> [2]
+  [3,4] -> [7]
+  [3,4,5] -> [5]
+  [4] -> [4]
+  [4,7] -> [3]
 
-postulate Maybe :2: (_ :3: Type) -> Type
+postulate Maybe :2: (_ :3: Type) -> Type {- constraints apply -}
+  [2] -> [2]
 
-postulate Nothing :8: (a :9: Type) -> Maybe -10- a
+postulate Nothing :8: (a :9: Type) -> Maybe -10- a {- constraints apply -}
+  [2,8] -> [2]
+  [3,8] -> [10]
+  [3,8,9] -> [9]
+  [8] -> [8]
+  [8,10] -> [3]
 
-postulate True :12: Bool
+postulate True :12: Bool {- constraints apply -}
+  [11,12] -> [11]
+  [12] -> [12]
 
 postulate Type :R: Type
 
-postulate Void :1: Type
+postulate Void :1: Type {- constraints apply -}
+  [1] -> [1]
 
 f :23: (x :24: Maybe -25- Bool) -> retTy -26- x = \(x :27: Maybe -28- Bool).
   case -29- x of
@@ -97,29 +114,112 @@ f :23: (x :24: Maybe -25- Bool) -> retTy -26- x = \(x :27: Maybe -28- Bool).
       => b
     Nothing (a :32: Type)
       | a = Bool
-      => Bool
-  [4,23] -> [24]
-  [5,23] -> [24,30]
+      => Bool {- constraints apply -}
+  [2,14,23] -> [2,4,8,15]
+  [2,15,23,24] -> [2]
+  [2,23] -> [2,4,8,24]
+  [3,11,15,23,24] -> [11]
+  [3,14,23] -> [4,7,8,10,15]
+  [3,15,23,24] -> [25]
+  [3,23] -> [4,7,8,10,24]
+  [4,14,23] -> [4,15]
+  [4,23] -> [4,24]
+  [5,14,23] -> [3,4,5,15,20]
+  [5,23] -> [3,4,5,24,30]
+  [6,14,23] -> [15,21]
   [6,23] -> [24,31]
-  [7,23] -> [25]
-  [8,23] -> [24]
-  [9,23] -> [24,32]
-  [10,23] -> [25]
-  [23] -> [11,29,31]
+  [7,14,23] -> [3,4,15,16]
+  [7,23] -> [3,4,24,25]
+  [8,14,23] -> [8,15]
+  [8,23] -> [8,24]
+  [9,14,23] -> [3,8,9,15,22]
+  [9,23] -> [3,8,9,24,32]
+  [10,14,23] -> [3,8,15,16]
+  [10,23] -> [3,8,24,25]
+  [11,14,23] -> [11]
+  [11,23] -> [11]
+  [14,15,23] -> [17]
+  [14,16,23] -> [7,10]
+  [14,17,23] -> [15]
+  [14,19,23] -> [17]
+  [14,20,23] -> [5,6,15,19,20,21]
+  [14,21,23] -> [6,15,19,21]
+  [14,22,23] -> [9,15,19]
+  [14,23] -> [14,19]
+  [15,23] -> [26]
+  [15,23,24] -> [24]
+  [15,23,24,25] -> [3]
+  [16,23] -> [25]
+  [23] -> [23,29]
   [23,24] -> [27]
-  [23,25] -> [7,10]
+  [23,25] -> [7,10,16]
+  [23,26] -> [15]
   [23,27] -> [24]
   [23,29] -> [27]
-  [23,30] -> [5,24,29]
-  [23,31] -> [6,24,29]
+  [23,30] -> [5,6,24,29,30,31]
+  [23,30,31] -> [30]
+  [23,31] -> [6,24,29,31]
   [23,32] -> [9,24,29]
 
-main :R: Bool = f -33- (Just -35- Bool -34- False)
-  [] -> [23,R]
-  [5,24] -> [11,35]
-  [6,24] -> [13,34]
+main :R: Bool = f -33- (Just -35- Bool -34- False) {- constraints apply -}
+  [2,4,24] -> [2]
+  [2,14,23] -> [2,4,8,15]
+  [2,15,23,24] -> [2]
+  [2,23] -> [2,4,8,24]
+  [3,4,5,24] -> [5]
+  [3,4,24] -> [7]
+  [3,11,15,23,24] -> [11]
+  [3,14,23] -> [4,7,8,10,15]
+  [3,15,23,24] -> [25]
+  [3,23] -> [4,7,8,10,24]
+  [4,7,24] -> [3]
+  [4,14,23] -> [4,15]
+  [4,23] -> [4,24]
+  [4,24] -> [4]
+  [5,11,24] -> [11]
+  [5,14,23] -> [3,4,5,15,20]
+  [5,23] -> [3,4,5,24,30]
+  [5,24] -> [35]
+  [6,11,13,24] -> [11]
+  [6,13,24] -> [13]
+  [6,14,23] -> [15,21]
+  [6,23] -> [24,31]
+  [6,24] -> [34]
   [7] -> [25]
-  [24] -> [4,33]
+  [7,14,23] -> [3,4,15,16]
+  [7,23] -> [3,4,24,25]
+  [8,14,23] -> [8,15]
+  [8,23] -> [8,24]
+  [9,14,23] -> [3,8,9,15,22]
+  [9,23] -> [3,8,9,24,32]
+  [10,14,23] -> [3,8,15,16]
+  [10,23] -> [3,8,24,25]
+  [11] -> [11]
+  [11,14,23] -> [11]
+  [11,23] -> [11]
+  [14,15,23] -> [17]
+  [14,16,23] -> [7,10]
+  [14,17,23] -> [15]
+  [14,19,23] -> [17]
+  [14,20,23] -> [5,6,15,19,20,21]
+  [14,21,23] -> [6,15,19,21]
+  [14,22,23] -> [9,15,19]
+  [14,23] -> [14,19]
+  [15,23] -> [26]
+  [15,23,24] -> [24]
+  [15,23,24,25] -> [3]
+  [16,23] -> [25]
+  [23] -> [23,29]
+  [23,24] -> [27]
+  [23,25] -> [7,10,16]
+  [23,26] -> [15]
+  [23,27] -> [24]
+  [23,29] -> [27]
+  [23,30] -> [5,6,24,29,30,31]
+  [23,30,31] -> [30]
+  [23,31] -> [6,24,29,31]
+  [23,32] -> [9,24,29]
+  [24] -> [33]
   [24,34] -> [6]
   [24,35] -> [5]
   [25] -> [7]
@@ -132,61 +232,87 @@ retTy :14: (x :15: Maybe -16- Bool) -> Type = \(x :17: Maybe -18- Bool).
       => Bool
     Nothing (a :22: Type)
       | a = Bool
-      => Type
-  [4,14] -> [15]
-  [5,14] -> [15,20]
+      => Type {- constraints apply -}
+  [2,14] -> [2,4,8,15]
+  [3,14] -> [4,7,8,10,15]
+  [4,14] -> [4,15]
+  [5,14] -> [3,4,5,15,20]
   [6,14] -> [15,21]
-  [7,14] -> [16]
-  [8,14] -> [15]
-  [9,14] -> [15,22]
-  [10,14] -> [16]
-  [14] -> [11,19]
+  [7,14] -> [3,4,15,16]
+  [8,14] -> [8,15]
+  [9,14] -> [3,8,9,15,22]
+  [10,14] -> [3,8,15,16]
+  [11,14] -> [11]
+  [14] -> [14,19]
   [14,15] -> [17]
   [14,16] -> [7,10]
   [14,17] -> [15]
   [14,19] -> [17]
-  [14,20] -> [5,15,19]
-  [14,21] -> [6,15,19]
+  [14,20] -> [5,6,15,19,20,21]
+  [14,21] -> [6,15,19,21]
   [14,22] -> [9,15,19]
 
 
 ### Constraints ###
 
-[] -> [23,R]
-[4,14] -> [15]
-[4,23] -> [24]
-[5,14] -> [15,20]
-[5,23] -> [24,30]
-[5,24] -> [11,35]
-[6,14] -> [15,21]
+[2,4,24] -> [2]
+[2,14,23] -> [2,4,8,15]
+[2,15,23,24] -> [2]
+[2,23] -> [2,4,8,24]
+[3,4,5,24] -> [5]
+[3,4,24] -> [7]
+[3,11,15,23,24] -> [11]
+[3,14,23] -> [4,7,8,10,15]
+[3,15,23,24] -> [25]
+[3,23] -> [4,7,8,10,24]
+[4,7,24] -> [3]
+[4,14,23] -> [4,15]
+[4,23] -> [4,24]
+[4,24] -> [4]
+[5,11,24] -> [11]
+[5,14,23] -> [3,4,5,15,20]
+[5,23] -> [3,4,5,24,30]
+[5,24] -> [35]
+[6,11,13,24] -> [11]
+[6,13,24] -> [13]
+[6,14,23] -> [15,21]
 [6,23] -> [24,31]
-[6,24] -> [13,34]
+[6,24] -> [34]
 [7] -> [25]
-[7,14] -> [16]
-[7,23] -> [25]
-[8,14] -> [15]
-[8,23] -> [24]
-[9,14] -> [15,22]
-[9,23] -> [24,32]
-[10,14] -> [16]
-[10,23] -> [25]
-[14] -> [11,19]
-[14,15] -> [17]
-[14,16] -> [7,10]
-[14,17] -> [15]
-[14,19] -> [17]
-[14,20] -> [5,15,19]
-[14,21] -> [6,15,19]
-[14,22] -> [9,15,19]
-[23] -> [11,29,31]
+[7,14,23] -> [3,4,15,16]
+[7,23] -> [3,4,24,25]
+[8,14,23] -> [8,15]
+[8,23] -> [8,24]
+[9,14,23] -> [3,8,9,15,22]
+[9,23] -> [3,8,9,24,32]
+[10,14,23] -> [3,8,15,16]
+[10,23] -> [3,8,24,25]
+[11] -> [11]
+[11,14,23] -> [11]
+[11,23] -> [11]
+[14,15,23] -> [17]
+[14,16,23] -> [7,10]
+[14,17,23] -> [15]
+[14,19,23] -> [17]
+[14,20,23] -> [5,6,15,19,20,21]
+[14,21,23] -> [6,15,19,21]
+[14,22,23] -> [9,15,19]
+[14,23] -> [14,19]
+[15,23] -> [26]
+[15,23,24] -> [24]
+[15,23,24,25] -> [3]
+[16,23] -> [25]
+[23] -> [23,29]
 [23,24] -> [27]
-[23,25] -> [7,10]
+[23,25] -> [7,10,16]
+[23,26] -> [15]
 [23,27] -> [24]
 [23,29] -> [27]
-[23,30] -> [5,24,29]
-[23,31] -> [6,24,29]
+[23,30] -> [5,6,24,29,30,31]
+[23,30,31] -> [30]
+[23,31] -> [6,24,29,31]
 [23,32] -> [9,24,29]
-[24] -> [4,33]
+[24] -> [33]
 [24,34] -> [6]
 [24,35] -> [5]
 [25] -> [7]
@@ -194,7 +320,7 @@ retTy :14: (x :15: Maybe -16- Bool) -> Type = \(x :17: Maybe -18- Bool).
 
 ### Solution ###
 
-[4,6,11,13,23,24,27,29,31,33,34,R]
+[R]
 
 ### Annotated ###
 
@@ -202,15 +328,15 @@ postulate Void :E: Type
 
 postulate Maybe :E: (_ :E: Type) -> Type
 
-postulate Just :R: (a :E: Type) -> (x :R: a) -> Maybe -E- a
+postulate Just :E: (a :E: Type) -> (x :E: a) -> Maybe -E- a
 
 postulate Nothing :E: (a :E: Type) -> Maybe -E- a
 
-postulate Bool :R: Type
+postulate Bool :E: Type
 
 postulate True :E: Bool
 
-postulate False :R: Bool
+postulate False :E: Bool
 
 retTy :E: (x :E: Maybe -E- Bool) -> Type = \(x :E: Maybe -E- Bool).
   case -E- x of
@@ -221,16 +347,16 @@ retTy :E: (x :E: Maybe -E- Bool) -> Type = \(x :E: Maybe -E- Bool).
       | a = Bool
       => Type
 
-f :R: (x :R: Maybe -E- Bool) -> retTy -E- x = \(x :R: Maybe -E- Bool).
-  case -R- x of
-    Just (a :E: Type) (b :R: a)
+f :E: (x :E: Maybe -E- Bool) -> retTy -E- x = \(x :E: Maybe -E- Bool).
+  case -E- x of
+    Just (a :E: Type) (b :E: a)
       | a = Bool
       => b
     Nothing (a :E: Type)
       | a = Bool
       => Bool
 
-main :R: Bool = f -R- (Just -E- Bool -R- False)
+main :R: Bool = f -E- (Just -E- Bool -E- False)
 
 ### Specialised ###
 
@@ -238,15 +364,15 @@ postulate Void :E: Type
 
 postulate Maybe :E: (_ :E: Type) -> Type
 
-postulate Just :R: (a :E: Type) -> (x :R: a) -> Maybe -E- a
+postulate Just :E: (a :E: Type) -> (x :E: a) -> Maybe -E- a
 
 postulate Nothing :E: (a :E: Type) -> Maybe -E- a
 
-postulate Bool :R: Type
+postulate Bool :E: Type
 
 postulate True :E: Bool
 
-postulate False :R: Bool
+postulate False :E: Bool
 
 retTy :E: (x :E: Maybe -E- Bool) -> Type = \(x :E: Maybe -E- Bool).
   case -E- x of
@@ -257,16 +383,16 @@ retTy :E: (x :E: Maybe -E- Bool) -> Type = \(x :E: Maybe -E- Bool).
       | a = Bool
       => Type
 
-f :R: (x :R: Maybe -E- Bool) -> retTy -E- x = \(x :R: Maybe -E- Bool).
-  case -R- x of
-    Just (a :E: Type) (b :R: a)
+f :E: (x :E: Maybe -E- Bool) -> retTy -E- x = \(x :E: Maybe -E- Bool).
+  case -E- x of
+    Just (a :E: Type) (b :E: a)
       | a = Bool
       => b
     Nothing (a :E: Type)
       | a = Bool
       => Bool
 
-main :R: Bool = f -R- (Just -E- Bool -R- False)
+main :R: Bool = f -E- (Just -E- Bool -E- False)
 
 ### Final annotation ###
 
@@ -274,15 +400,15 @@ postulate Void :E: Type
 
 postulate Maybe :E: (_ :E: Type) -> Type
 
-postulate Just :R: (a :E: Type) -> (x :R: a) -> Maybe -E- a
+postulate Just :E: (a :E: Type) -> (x :E: a) -> Maybe -E- a
 
 postulate Nothing :E: (a :E: Type) -> Maybe -E- a
 
-postulate Bool :R: Type
+postulate Bool :E: Type
 
 postulate True :E: Bool
 
-postulate False :R: Bool
+postulate False :E: Bool
 
 retTy :E: (x :E: Maybe -E- Bool) -> Type = \(x :E: Maybe -E- Bool).
   case -E- x of
@@ -293,16 +419,16 @@ retTy :E: (x :E: Maybe -E- Bool) -> Type = \(x :E: Maybe -E- Bool).
       | a = Bool
       => Type
 
-f :R: (x :R: Maybe -E- Bool) -> retTy -E- x = \(x :R: Maybe -E- Bool).
-  case -R- x of
-    Just (a :E: Type) (b :R: a)
+f :E: (x :E: Maybe -E- Bool) -> retTy -E- x = \(x :E: Maybe -E- Bool).
+  case -E- x of
+    Just (a :E: Type) (b :E: a)
       | a = Bool
       => b
     Nothing (a :E: Type)
       | a = Bool
       => Bool
 
-main :R: Bool = f -R- (Just -E- Bool -R- False)
+main :R: Bool = f -E- (Just -E- Bool -E- False)
 
 ### Verification ###
 
@@ -310,24 +436,10 @@ Verification successful.
 
 ### Pruned ###
 
-postulate Just
-
-postulate Bool
-
-postulate False
-
-f = \x.
-  case x of
-    Just b
-      => b
-    Nothing
-      => Bool
-
-main = f (Just False)
+main = f
 
 ### Normal forms ###
 
 unerased:
   False
 erased:
-  False

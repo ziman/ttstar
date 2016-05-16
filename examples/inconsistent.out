@@ -12,15 +12,40 @@ main :R: (x :E: Type) -> Type = (\x :E: Type. x)
 
 postulate Type :R: Type
 
-main :R: (x :E: Type) -> Type = (\x :E: Type. x)
-  [] -> [E,R]
+main :R: (x :E: Type) -> Type = (\x :E: Type. x) {- constraints apply -}
+  [E] -> [E]
 
 
 ### Constraints ###
 
-[] -> [E,R]
+[E] -> [E]
 
 ### Solution ###
 
-[E,R]
+[R]
 
+### Annotated ###
+
+main :R: (x :E: Type) -> Type = (\x :E: Type. x)
+
+### Specialised ###
+
+main :R: (x :E: Type) -> Type = (\x :E: Type. x)
+
+### Final annotation ###
+
+main :R: (x :E: Type) -> Type = (\x :E: Type. x)
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+main = x
+
+### Normal forms ###
+
+unerased:
+  (\x :E: Type. x)
+erased:
