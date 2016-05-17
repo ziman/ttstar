@@ -39,13 +39,13 @@ main :R: T = f -31- id -30- B -29- const_A -28- B
 ### Inferred definitions ###
 
 postulate A :2: T {- constraints apply -}
-  [] -> [1,2,R]
+  [] -> [2,R]
 
 postulate B :3: T {- constraints apply -}
-  [] -> [1,3,R]
+  [] -> [3,R]
 
 postulate Op :4: (x :R: T) -> (y :R: T) -> T {- constraints apply -}
-  [] -> [1,4,R]
+  [] -> [4,R]
 
 postulate T :1: Type {- constraints apply -}
   [] -> [1,R]
@@ -53,12 +53,12 @@ postulate T :1: Type {- constraints apply -}
 postulate Type :R: Type
 
 const_A :8: (x :9: T) -> T = (\x :10: T. A) {- constraints apply -}
-  [] -> [1,2,8,R]
+  [] -> [2,8,R]
   [9] -> [10]
   [10] -> [9]
 
 f :11: (g :12: (_ :13: T) -> T) -> (z :14: T) -> (h :15: (_ :16: T) -> T) -> (w :17: T) -> T = (\g :18: (_ :19: T) -> T. (\z :20: T. (\h :21: (_ :22: T) -> T. (\w :23: T. Op -25- (g -26- z) -24- (h -27- w))))) {- constraints apply -}
-  [] -> [1,4,11,12,15,18,21,24,25,R]
+  [] -> [4,11,12,15,18,21,24,25,R]
   [13] -> [19]
   [14] -> [20]
   [16] -> [22]
@@ -71,10 +71,10 @@ f :11: (g :12: (_ :13: T) -> T) -> (z :14: T) -> (h :15: (_ :16: T) -> T) -> (w 
   [27] -> [22]
 
 id :5: (x :6: T) -> T = (\x :7: T. x) {- constraints apply -}
-  [] -> [1,5,6,7,R]
+  [] -> [5,6,7,R]
 
 main :R: T = f -31- id -30- B -29- const_A -28- B {- constraints apply -}
-  [] -> [1,2,3,4,5,6,7,8,11,12,13,14,15,18,19,20,21,24,25,26,29,30,31,R]
+  [] -> [2,3,4,5,6,7,8,11,12,13,14,15,18,19,20,21,24,25,26,29,30,31,R]
   [9] -> [10,16]
   [10] -> [9]
   [16] -> [9,22]
@@ -87,7 +87,7 @@ main :R: T = f -31- id -30- B -29- const_A -28- B {- constraints apply -}
 
 ### Constraints ###
 
-[] -> [1,2,3,4,5,6,7,8,11,12,13,14,15,18,19,20,21,24,25,26,29,30,31,R]
+[] -> [2,3,4,5,6,7,8,11,12,13,14,15,18,19,20,21,24,25,26,29,30,31,R]
 [9] -> [10,16]
 [10] -> [9]
 [16] -> [9,22]
@@ -99,11 +99,11 @@ main :R: T = f -31- id -30- B -29- const_A -28- B {- constraints apply -}
 
 ### Solution ###
 
-[1,2,3,4,5,6,7,8,11,12,13,14,15,18,19,20,21,24,25,26,29,30,31,R]
+[2,3,4,5,6,7,8,11,12,13,14,15,18,19,20,21,24,25,26,29,30,31,R]
 
 ### Annotated ###
 
-postulate T :R: Type
+postulate T :E: Type
 
 postulate A :R: T
 
@@ -121,7 +121,7 @@ main :R: T = f -R- id -R- B -R- const_A -E- B
 
 ### Specialised ###
 
-postulate T :R: Type
+postulate T :E: Type
 
 postulate A :R: T
 
@@ -139,7 +139,7 @@ main :R: T = f -R- id -R- B -R- const_A -E- B
 
 ### Final annotation ###
 
-postulate T :R: Type
+postulate T :E: Type
 
 postulate A :R: T
 
@@ -160,8 +160,6 @@ main :R: T = f -R- id -R- B -R- const_A -E- B
 Verification successful.
 
 ### Pruned ###
-
-postulate T
 
 postulate A
 

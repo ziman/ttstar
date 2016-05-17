@@ -116,7 +116,7 @@ postulate Bool :4: Type {- constraints apply -}
   [] -> [4,R]
 
 postulate F :6: Bool {- constraints apply -}
-  [] -> [4,6,R]
+  [] -> [6,R]
 
 postulate Id :7: (a :8: Type) -> (x :9: a) -> (y :10: a) -> Type {- constraints apply -}
   [] -> [7,R]
@@ -125,24 +125,18 @@ postulate Mool :1: Type {- constraints apply -}
   [] -> [1,R]
 
 postulate Q :2: Mool {- constraints apply -}
-  [] -> [1,2,R]
+  [] -> [2,R]
 
 postulate Refl :11: (a :12: Type) -> (x :13: a) -> Id -16- a -15- x -14- x {- constraints apply -}
-  [] -> [7,11,R]
-  [8] -> [12,16]
-  [9] -> [12,13,15]
-  [10] -> [12,13,14]
-  [14] -> [10]
-  [15] -> [9]
-  [16] -> [8]
+  [] -> [11,R]
 
 postulate T :5: Bool {- constraints apply -}
-  [] -> [4,5,R]
+  [] -> [5,R]
 
 postulate Type :R: Type
 
 postulate W :3: Mool {- constraints apply -}
-  [] -> [1,3,R]
+  [] -> [3,R]
 
 invert :42: (t :43: Bool) -> (x :44: retTy -45- t) -> retTy -46- t = \(t :47: Bool) (x :48: retTy -49- t).
   case -50- t of
@@ -150,10 +144,10 @@ invert :42: (t :43: Bool) -> (x :44: retTy -45- t) -> retTy -46- t = \(t :47: Bo
       => not -51- x
     F
       => mot -52- x {- constraints apply -}
-  [] -> [1,2,3,4,5,6,17,18,19,20,34,35,36,37,38,39,40,41,42,43,44,46,47,48,49,50,51,52,R]
+  [] -> [2,3,5,6,17,18,19,20,38,39,40,41,42,43,44,47,48,50,51,52,R]
 
 main :R: Mool = invert -54- F -53- Q {- constraints apply -}
-  [] -> [1,2,3,4,5,6,17,18,19,20,34,35,36,37,38,39,40,41,42,43,44,46,47,48,49,50,51,52,53,54,R]
+  [] -> [2,3,5,6,17,18,19,20,38,39,40,41,42,43,44,47,48,50,51,52,53,54,R]
 
 mot :38: (m :39: Mool) -> Mool = \(m :40: Mool).
   case -41- m of
@@ -161,7 +155,7 @@ mot :38: (m :39: Mool) -> Mool = \(m :40: Mool).
       => W
     W
       => Q {- constraints apply -}
-  [] -> [1,2,3,38,39,40,41,R]
+  [] -> [2,3,38,39,40,41,R]
 
 not :17: (x :18: Bool) -> Bool = \(x :19: Bool).
   case -20- x of
@@ -169,7 +163,7 @@ not :17: (x :18: Bool) -> Bool = \(x :19: Bool).
       => F
     F
       => T {- constraints apply -}
-  [] -> [4,5,6,17,18,19,20,R]
+  [] -> [5,6,17,18,19,20,R]
 
 notnot :21: (x :22: Bool) -> Id -25- Bool -24- x -23- (not -26- (not -27- x)) = \(x :28: Bool).
   case -29- x of
@@ -177,21 +171,15 @@ notnot :21: (x :22: Bool) -> Id -25- Bool -24- x -23- (not -26- (not -27- x)) = 
       => Refl -31- Bool -30- T
     F
       => Refl -33- Bool -32- F {- constraints apply -}
-  [] -> [7,11,21,22,28,29,R]
-  [8] -> [4,12,16,25]
-  [9] -> [4,12,13,15,24]
-  [10] -> [4,5,6,12,13,14,17,18,19,20,23]
-  [10,18] -> [4,5,6,17,18,19,20,26,27]
-  [10,18,27] -> [18]
-  [10,26] -> [18]
+  [] -> [11,21,22,28,29,R]
   [12] -> [4,31,33]
-  [13] -> [4,5,6,30,32]
-  [14] -> [10,23]
-  [15] -> [9,24]
-  [16] -> [8,25]
-  [23] -> [10,14]
-  [24] -> [9,15]
-  [25] -> [8,16]
+  [13] -> [5,6,30,32]
+  [14] -> [23]
+  [15] -> [24]
+  [16] -> [25]
+  [23] -> [14]
+  [24] -> [15]
+  [25] -> [16]
   [30] -> [13]
   [31] -> [12]
   [32] -> [13]
@@ -208,21 +196,21 @@ retTy :34: (x :35: Bool) -> Type = \(x :36: Bool).
 
 ### Constraints ###
 
-[] -> [1,2,3,4,5,6,17,18,19,20,34,35,36,37,38,39,40,41,42,43,44,46,47,48,49,50,51,52,53,54,R]
+[] -> [2,3,5,6,17,18,19,20,38,39,40,41,42,43,44,47,48,50,51,52,53,54,R]
 
 ### Solution ###
 
-[1,2,3,4,5,6,17,18,19,20,34,35,36,37,38,39,40,41,42,43,44,46,47,48,49,50,51,52,53,54,R]
+[2,3,5,6,17,18,19,20,38,39,40,41,42,43,44,47,48,50,51,52,53,54,R]
 
 ### Annotated ###
 
-postulate Mool :R: Type
+postulate Mool :E: Type
 
 postulate Q :R: Mool
 
 postulate W :R: Mool
 
-postulate Bool :R: Type
+postulate Bool :E: Type
 
 postulate T :R: Bool
 
@@ -246,8 +234,8 @@ notnot :E: (x :E: Bool) -> Id -E- Bool -E- x -E- (not -E- (not -E- x)) = \(x :E:
     F
       => Refl -E- Bool -E- F
 
-retTy :R: (x :R: Bool) -> Type = \(x :R: Bool).
-  case -R- x of
+retTy :E: (x :E: Bool) -> Type = \(x :E: Bool).
+  case -E- x of
     T
       => Bool
     F
@@ -260,7 +248,7 @@ mot :R: (m :R: Mool) -> Mool = \(m :R: Mool).
     W
       => Q
 
-invert :R: (t :R: Bool) -> (x :R: retTy -E- t) -> retTy -R- t = \(t :R: Bool) (x :R: retTy -R- t).
+invert :R: (t :R: Bool) -> (x :R: retTy -E- t) -> retTy -E- t = \(t :R: Bool) (x :R: retTy -E- t).
   case -R- t of
     T
       => not -R- x
@@ -271,13 +259,13 @@ main :R: Mool = invert -R- F -R- Q
 
 ### Specialised ###
 
-postulate Mool :R: Type
+postulate Mool :E: Type
 
 postulate Q :R: Mool
 
 postulate W :R: Mool
 
-postulate Bool :R: Type
+postulate Bool :E: Type
 
 postulate T :R: Bool
 
@@ -301,8 +289,8 @@ notnot :E: (x :E: Bool) -> Id -E- Bool -E- x -E- (not -E- (not -E- x)) = \(x :E:
     F
       => Refl -E- Bool -E- F
 
-retTy :R: (x :R: Bool) -> Type = \(x :R: Bool).
-  case -R- x of
+retTy :E: (x :E: Bool) -> Type = \(x :E: Bool).
+  case -E- x of
     T
       => Bool
     F
@@ -315,7 +303,7 @@ mot :R: (m :R: Mool) -> Mool = \(m :R: Mool).
     W
       => Q
 
-invert :R: (t :R: Bool) -> (x :R: retTy -E- t) -> retTy -R- t = \(t :R: Bool) (x :R: retTy -R- t).
+invert :R: (t :R: Bool) -> (x :R: retTy -E- t) -> retTy -E- t = \(t :R: Bool) (x :R: retTy -E- t).
   case -R- t of
     T
       => not -R- x
@@ -326,13 +314,13 @@ main :R: Mool = invert -R- F -R- Q
 
 ### Final annotation ###
 
-postulate Mool :R: Type
+postulate Mool :E: Type
 
 postulate Q :R: Mool
 
 postulate W :R: Mool
 
-postulate Bool :R: Type
+postulate Bool :E: Type
 
 postulate T :R: Bool
 
@@ -356,8 +344,8 @@ notnot :E: (x :E: Bool) -> Id -E- Bool -E- x -E- (not -E- (not -E- x)) = \(x :E:
     F
       => Refl -E- Bool -E- F
 
-retTy :R: (x :R: Bool) -> Type = \(x :R: Bool).
-  case -R- x of
+retTy :E: (x :E: Bool) -> Type = \(x :E: Bool).
+  case -E- x of
     T
       => Bool
     F
@@ -370,7 +358,7 @@ mot :R: (m :R: Mool) -> Mool = \(m :R: Mool).
     W
       => Q
 
-invert :R: (t :R: Bool) -> (x :R: retTy -E- t) -> retTy -R- t = \(t :R: Bool) (x :R: retTy -R- t).
+invert :R: (t :R: Bool) -> (x :R: retTy -E- t) -> retTy -E- t = \(t :R: Bool) (x :R: retTy -E- t).
   case -R- t of
     T
       => not -R- x
@@ -385,13 +373,9 @@ Verification successful.
 
 ### Pruned ###
 
-postulate Mool
-
 postulate Q
 
 postulate W
-
-postulate Bool
 
 postulate T
 
@@ -403,13 +387,6 @@ not = \x.
       => F
     F
       => T
-
-retTy = \x.
-  case x of
-    T
-      => Bool
-    F
-      => Mool
 
 mot = \m.
   case m of

@@ -169,7 +169,7 @@ checkDef :: Def Meta -> TC (Def Meta)
 checkDef (Def n r ty (Abstract a) _noCs) = do
     (tyty, tycs) <- checkTm ty
     tytyTypeCs <- conv tyty (V $ UN "Type")
-    let cs = tycs /\ tytyTypeCs /\ Fixed R --> r
+    let cs = {- tycs /\ -} tytyTypeCs /\ Fixed R --> r  -- in types, only conversion constraints matter
     return $ Def n r ty (Abstract a) cs
 
 checkDef d@(Def n r ty (Term tm) _noCs) = bt ("DEF-TERM", n) $ do
@@ -177,14 +177,14 @@ checkDef d@(Def n r ty (Term tm) _noCs) = bt ("DEF-TERM", n) $ do
     (tyty, tycs) <- checkTm ty
     tytyTypeCs   <- conv tyty (V $ UN "Type")
     tyTmtyCs     <- conv ty tmty
-    let cs = tmcs /\ tycs /\ tytyTypeCs /\ tyTmtyCs /\ Fixed R --> r
+    let cs = tmcs /\ {- tycs /\ -} tytyTypeCs /\ tyTmtyCs /\ Fixed R --> r  -- in types, only conversion constraints matter
     return $ Def n r ty (Term tm) cs
 
 checkDef d@(Def n r ty (Patterns cf) _noCs) = bt ("DEF-PATTERNS", n) $ do
     (tyty, tycs) <- checkTm ty
     tytyTypeCs   <- conv tyty (V $ UN "Type")
     cfCs <- with d $ checkCaseFun n cf  -- "with d" because it could be recursive
-    let cs = tycs /\ tytyTypeCs /\ cfCs /\ Fixed R --> r
+    let cs = {- tycs /\ -} tytyTypeCs /\ cfCs /\ Fixed R --> r  -- in types, only conversion constraints matter
     return $ Def n r ty (Patterns cf) cs
 
 checkCaseFun :: Name -> CaseFun Meta -> TC (Constrs Meta)
