@@ -170,7 +170,7 @@ checkDef (Def n r ty (Abstract a) _noCs) = do
     (tyty, tycs) <- checkTm ty
     tytyTypeCs <- conv tyty (V $ UN "Type")
     let cs = tycs /\ tytyTypeCs /\ Fixed R --> r
-    return $ Def n r ty (Abstract a) (cond r cs)
+    return $ Def n r ty (Abstract a) cs
 
 checkDef (Def n r ty (Term tm) _noCs) = bt ("DEF-TERM", n) $ do
     (tmty, tmcs) <- checkTm tm
@@ -178,14 +178,14 @@ checkDef (Def n r ty (Term tm) _noCs) = bt ("DEF-TERM", n) $ do
     tytyTypeCs   <- conv tyty (V $ UN "Type")
     tyTmtyCs     <- conv ty tmty
     let cs = tmcs /\ tycs /\ tytyTypeCs /\ tyTmtyCs /\ Fixed R --> r
-    return $ Def n r ty (Term tm) (cond r cs)
+    return $ Def n r ty (Term tm) cs
 
 checkDef (Def n r ty (Patterns cf) _noCs) = bt ("DEF-PATTERNS", n) $ do
     (tyty, tycs) <- checkTm ty
     tytyTypeCs   <- conv tyty (V $ UN "Type")
     cfCs <- checkCaseFun n cf
     let cs = tycs /\ tytyTypeCs /\ cfCs /\ Fixed R --> r
-    return $ Def n r ty (Patterns cf) (cond r cs)
+    return $ Def n r ty (Patterns cf) cs
 
 checkCaseFun :: Name -> CaseFun Meta -> TC (Constrs Meta)
 checkCaseFun fn (CaseFun args ct) = bt ("CASE-FUN", fn) $ do
