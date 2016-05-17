@@ -27,6 +27,30 @@ instance Html (Program Meta) where
 instance Html [Def Meta] where
     html ds = ul' "defs" <$> traverse html ds
 
+table :: String -> [[String]] -> String
+table cls rows =
+    element "table" "cellspacing=\"0\" cellpadding=\"0\"" cls
+        $ unlines [
+            element "tr" "" ""
+                $ unlines [
+                    element "td" "" "" cell
+                    | cell <- row
+                ]
+            | row <- rows
+        ]
+
+horiz :: [String] -> String
+horiz ss = table "horiz-pair" [ss]
+
+vert :: [String] -> String
+vert ss = table "vert-pair" [[s] | s <- ss]
+
+horiz' :: [PP String] -> String
+horiz' = fmap horiz . sequenceA
+
+vert' :: [PP String] -> String
+vert' = fmap vert . sequenceA
+
 element :: String -> String -> String -> String -> String
 element elm extra cls body
     = "<" ++ elm ++ " class=\"" ++ cls ++ "\" " ++ extra ++ ">" ++ body ++ "</" ++ elm ++ ">"
@@ -84,7 +108,37 @@ parens :: String -> String
 parens s = span "paren" "(" ++ s ++ span "paren" ")"
 
 instance Html (Def Meta) where
-    html (Def n r ty b cs) = nrty n r ty
+    html (Def n r ty (Abstract _) cs) = nrty n r ty
+    html (Def n r ty (Term tm) cs) = nrty n r ty <++> pure " = " <++> html tm
+    html (Def n r ty (Patterns cf) cs) =
+      div "def-pat" <$> (
+        (div "def-pat-type" <$> nrty n r ty)
+        <++> pure " = "
+        <++> (div "def-pat-body" <$> html cf)
+      )
+
+instance Html (CaseFun Meta) where
+    html (CaseFun [] ct) = html ct
+    html (CaseFun args ct) =
+        div "cfun" <$> (
+            (div "cfun-lam" <$> pure "&lambda; " <++> traverse html args <++> pure ".")
+            <++> (div "cfun-tree" <$> html ct)
+        )
+
+instance Html (CaseTree Meta) where
+    html (Leaf tm) = html tm
+    html (Case r n alts) =
+        div "case" <$> (
+            (div "case-scrut" <$> (
+                op' "case"
+                <++> nrty n r (V Blank)
+                <++> op' "of"
+            )
+            <++> (ul' "case-alts" <$> traverse html alts)
+        )
+
+instance Html (Alt Meta) where
+    html (Alt lhs rhs) = html lhs <++> op "=&gt;" <++> html rhs
 
 instance Html (TT Meta) where
     html (V n) = span "var" <$> html n

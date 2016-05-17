@@ -30,6 +30,9 @@ class Pretty a where
     prettyShow :: a -> String
     prettyShow = render "--" . pretty
 
+class Show d => Document d where
+    text :: String -> d
+
 printP :: Pretty a => a -> IO ()
 printP = putStrLn . prettyShow
 
@@ -41,6 +44,9 @@ instance Show Doc where
 infixr 6 <>, <+>
 infixr 5 $$, $+$
 infixl 1 <?>
+
+instance Document Doc where
+    text s = Doc [(s, "")]
 
 blankLine :: Doc
 blankLine = text ""
