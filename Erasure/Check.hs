@@ -165,6 +165,8 @@ checkDefs (d:ds) = do
     with d'' $ checkDefs ds
 
 checkDef :: Def Meta -> TC (Def Meta)
+-- In types, only conversion constraints matter but they *do* matter.
+-- We should probably explain on an example why.
 
 checkDef (Def n r ty (Abstract a) _noCs) = do
     (tyty, tycs) <- checkTm ty
