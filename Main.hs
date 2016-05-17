@@ -5,9 +5,7 @@ import TT
 import Parser
 import Pretty
 import TTLens
-{-
 import Explorer
--}
 import Normalise
 import Eval
 
@@ -143,7 +141,7 @@ main = do
                     putStrLn "### Solution ###\n"
                     let (uses, residue) = solve cs
                     print $ S.toList uses
-                    -- genHtml (fname ++ ".html") metaified cs uses
+                    genHtml (fname ++ ".html") metaified cs uses
                     putStrLn ""
 
                     if Fixed E `S.member` uses

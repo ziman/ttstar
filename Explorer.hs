@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances #-}
 module Explorer (genHtml) where
 
 import TT
@@ -6,109 +7,154 @@ import Erasure.Meta
 import Erasure.Check
 import Erasure.Solve
 
+import Control.Applicative
 import Data.Maybe (fromMaybe)
 import Data.List (intercalate)
 import Prelude hiding (div, span)
 import qualified Data.Set as S
 import qualified Data.Map as M
 
-htmlProg :: Uses -> Program Meta cs -> String
-htmlProg uses (Prog defs) = concatMap (htmlDef uses) defs
+import Control.Monad.Trans.Reader
+
+type PP = Reader (Uses Meta)
+
+class Html a where
+    html :: a -> PP String
+
+instance Html (Program Meta) where
+    html (Prog defs) = html defs
+
+instance Html [Def Meta] where
+    html ds = ul' "defs" <$> traverse html ds
+
+element :: String -> String -> String -> String -> String
+element elm extra cls body
+    = "<" ++ elm ++ " class=\"" ++ cls ++ "\" " ++ extra ++ ">" ++ body ++ "</" ++ elm ++ ">"
 
 div :: String -> String -> String
-div cls body = "<div class=\"" ++ cls ++ "\">\n" ++ body ++ "\n</div>\n"
+div = element "div" ""
 
 span :: String -> String -> String
-span cls body = "<span class=\"" ++ cls ++ "\">" ++ body ++ "</span>"
+span = element "span" ""
 
-rel :: Uses -> Meta -> String
-rel uses (Fixed R) = span "rel rel-R" " :<sub>R</sub> "
-rel uses (Fixed E) = span "rel rel-E" " :<sub>E</sub> "
-rel uses (MVar i) = span ("rel mvar-num-" ++ show i) (" :<sub>" ++ show i ++ "</sub> ")
+ul :: String -> String -> String
+ul = element "ul" ""
+
+ul' :: String -> [String] -> String
+ul' cls = ul cls . unlines . map (li "")
+
+li :: String -> String -> String
+li = element "li" ""
 
 link :: String -> String -> String
-link cls body = "<a class=\"" ++ cls ++ "\" href=\"#\">" ++ body ++ "</a>"
+link = element "a" "href=\"#\""
 
-name :: Name -> String
-name n = span ("name name-" ++ show n) (show n)
+infixr 3 <++>
+(<++>) :: PP String -> PP String -> PP String
+(<++>) = liftA2 (++)
+
+instance Html Meta where
+    html (Fixed R) = pure $ span "rel rel-R" " :<sub>R</sub> "
+    html (Fixed E) = pure $ span "rel rel-E" " :<sub>E</sub> "
+    html (MVar i)  = pure $ span ("rel mvar-num-" ++ show i) (" :<sub>" ++ show i ++ "</sub> ")
+
+instance Html Name where
+    html n = pure $ span ("name name-" ++ show n) (show n)
 
 op :: String -> String
 op = span "op"
 
-nrty :: Uses -> Name -> Meta -> TT Meta -> String
-nrty uses n r ty = erasedSpan uses r (name n ++ rel uses r ++ term uses ty ++ "\n")
-  where
-    wrap
-        | Fixed _ <- r = span ("nrty " ++ cls)
-        | MVar i <- r = span ("nrty nrty-" ++ show i ++ " " ++ cls)
+op' :: String -> PP String
+op' = pure . op
 
-    cls | r `S.member` uses = "nrty-R"
-        | otherwise = "nrty-E erased"
+nrty :: Name -> Meta -> TT Meta -> PP String
+nrty n r ty = do
+    uses <- ask
+    let
+        cls | r `S.member` uses = "nrty-R"
+            | otherwise         = "nrty-E erased"
+
+        wrap
+            | Fixed _ <- r = span ("nrty " ++ cls)
+            | MVar  i <- r = span ("nrty nrty-" ++ show i ++ " " ++ cls)
+
+    erasedSpan r =<< (html n <++> html r <++> html ty <++> pure "\n")
 
 parens :: String -> String
 parens s = span "paren" "(" ++ s ++ span "paren" ")"
 
-ul :: String -> [String] -> String
-ul cls lis = "<ul class=\"" ++ cls ++ "\">" ++ unlines ["<li>" ++ s ++ "</li>" | s <- lis] ++ "</ul>"
+instance Html (Def Meta) where
+    html (Def n r ty b cs) = nrty n r ty
 
-term :: Uses -> TT Meta -> String
-term uses (V n) = span "var" $ name n
-term uses (I n ty) = span "var instance" $ name n ++ " : " ++ term uses ty
-term uses (Bind Pi n r ty tm) = span "pi" $ parens (nrty uses n r ty) ++ op " &#8594; " ++ term uses tm
-term uses (Bind Lam n r ty tm) = span "lambda" $ span "head" (op "&lambda; " ++ nrty uses n r ty ++ op ".") ++ term uses tm
-term uses (Let (Def n r ty mtm Nothing) tm) =
-    span "let" $ nrty uses n r ty ++ " = " ++ term uses (fromMaybe Erased mtm) ++ " in " ++ term uses tm
-term uses (App r f x) = span "app" . parens $ term uses f ++ app r ++ erasedSpan uses r (term uses x)
-term uses Type = span "star" "*"
-term uses Erased = span "erased" "____"
-term uses (Case s ty alts) =
-    span "kwd" "case" ++ " " ++ term uses s ++ " " ++ ret ty ++ span "kwd" "of"
-    ++ ul "case" (map (alt uses) alts)
-  where
-    ret Nothing = ""
-    ret (Just ty) = span "kwd" "returns" ++ term uses ty
+instance Html (TT Meta) where
+    html (V n) = span "var" <$> html n
 
-alt :: Uses -> Alt Meta -> String
-alt uses (DefaultCase tm) = "_ -> " ++ term uses tm
-alt uses (ConCase cn tm) = unwords
-    [ show cn
-    , unwords $ map (\(n,r,ty) -> parens $ nrty uses n r ty) args
-    , "->"
-    , term uses rhs
-    ]
-  where
-    (args, rhs) = splitBinder Pat tm
+    html (I n ty) = span "var instance" <$> html n <++> pure " : " <++> html ty
+
+    html (Bind Pi d tm) =
+        span "pi" <$> (
+            (parens <$> html d)
+            <++> op' " &#8594; "
+            <++> html tm
+        )
+
+    html (Bind Lam d tm) =
+        span "lambda" <$> (
+            span "head" <$> (
+                op' "&lambda; "
+                <++> html d
+                <++> op' "."
+            )
+        )
+        <++> html tm
+
+    html (Bind Let d tm) =
+        span "let" <$> (
+            html d
+            <++> pure " in "
+            <++> html tm
+        )
+
+    html (App r f x) =
+        span "app" . parens <$> (
+            html f
+            <++> pure (app r)
+            <++> (erasedSpan r =<< html x)
+        )
 
 app :: Meta -> String
 app (Fixed R) = span "ap ap-R" "R"
 app (Fixed E) = span "ap ap-E" "E"
 app (MVar i) = span ("ap mvar-num-" ++ show i) (show i)
 
-erasedSpan :: Uses -> Meta -> String -> String
-erasedSpan uses m = span $ erasedCls uses m
+erasedSpan :: Meta -> String -> PP String
+erasedSpan m body = span <$> erasedCls m <*> pure body
 
-erasedCls :: Uses -> Meta -> String
-erasedCls uses m = erasure ++ " " ++ mvar
+erasedCls :: Meta -> PP String
+erasedCls m = do
+    uses <- ask
+    let erasure
+            | m `S.member` uses = "not-erased"
+            | otherwise = "erased"
+    pure $ erasure ++ " " ++ mvar
   where
-    erasure
-        | m `S.member` uses = "not-erased"
-        | otherwise = "erased"
-
     mvar
         | MVar i <- m = "mvar mvar-" ++ show i
         | otherwise = ""
 
-htmlDef :: Uses -> Def Meta cs -> String
-htmlDef uses (Def n r ty Nothing mcs) = div "def axiom" $ div "type" (nrty uses n r ty)
-htmlDef uses (Def n r ty (Just tm) mcs) =
+{-
+htmlDef :: Uses Meta -> Def Meta -> String
+htmlDef(Def n r ty Nothing mcs) = div "def axiom" $ div "type" (nrty n r ty)
+htmlDef(Def n r ty (Just tm) mcs) =
   div "def function" (
-    div "type" (nrty uses n r ty)
+    div "type" (nrty n r ty)
     ++ div "definition" (
-        name n ++ op " = " ++ term uses tm
+        name n ++ op " = " ++ html tm
     )
   )
+-}
 
-htmlConstr :: (Int, (Uses, Guards)) -> String
+htmlConstr :: (Int, (Uses Meta, Guards Meta)) -> String
 htmlConstr (i, (us, gs)) = span ("constr constr-" ++ show i) (
     span "uses" (htmlMetas $ S.toList us)
     ++ op " &#8594; "
@@ -123,20 +169,20 @@ htmlMeta (Fixed R) = span "meta-R" "R"
 htmlMeta (Fixed E) = span "meta-E" "E"
 htmlMeta (MVar i) = span ("meta mvar mvar-" ++ show i) (show i)
 
-jsConstr :: (Uses, Guards) -> String
+jsConstr :: (Uses Meta, Guards Meta) -> String
 jsConstr (us, gs) = show [map num $ S.toList us, map num $ S.toList gs] ++ ",\n"
   where
     num (Fixed r) = show r
     num (MVar i) = show i
 
-genHtml :: String -> Program Meta cs -> Constrs -> Uses -> IO ()
-genHtml fname prog (CS cs) uses = do
+genHtml :: String -> Program Meta -> Constrs Meta -> Uses Meta -> IO ()
+genHtml fname prog cs uses = do
     hdr <- readFile "html/header.html"
     writeFile fname (hdr ++ body)
   where
     body = unlines
         [ "<h2>Metaified program</h2>"
-        , htmlProg uses prog
+        , runReader (html prog) uses
         , "<h2>Constraints</h2>"
         , div "constraints" $ concatMap htmlConstr (zip [0..] $ M.toList cs)
         , "<script>var constrs=["
