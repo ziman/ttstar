@@ -167,6 +167,10 @@ checkDefs (d:ds) = do
 checkDef :: Def Meta -> TC (Def Meta)
 -- In types, only conversion constraints matter but they *do* matter.
 -- We should probably explain on an example why.
+--
+-- The point is that the conversion check binds the type signature (the asserted type)
+-- with the inferred type, also binding the metavars in them, so that the signature
+-- can later represent the whole definition.
 
 checkDef (Def n r ty (Abstract a) _noCs) = do
     (tyty, tycs) <- checkTm ty
