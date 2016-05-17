@@ -16,7 +16,7 @@ import qualified Data.Map as M
 import qualified Data.Set as S
 import qualified Data.IntMap as IM
 
-import Lens.Family
+import Lens.Family2
 
 newtype Instances = Instances (M.Map Name (S.Set ErPattern))
 type ErPattern = [Relevance]
@@ -44,44 +44,44 @@ bindMetas (r : rs) (m : ms) = bind r m $ bindMetas rs ms
 bindMetas rs ms = error $ "bindMetas: length mismatch: " ++ show (rs, ms)
 
 extend ::
-    Program Meta VoidConstrs
+    Program Meta
     -> Instances
-    -> Program Meta VoidConstrs
-    -> Program Meta VoidConstrs
+    -> Program Meta
+    -> Program Meta
 extend (Prog rawDefs) (Instances imap) prog@(Prog defs)
     = Prog $ evalState (concat <$> traverse expandDef defs) initialState
   where
-    initialState = 1 + maximum (0 : [i | MVar i <- prog ^.. progRelevance])
+    initialState = 1 + maximum (0 : [i | MVar i <- prog ^.. (progRelevance :: Traversal' (Program Meta) Meta)])
     rawDefMap = M.fromList [(n, d) | d@(Def n r ty _ _) <- rawDefs]
 
     extendDefs oldName
       = sequence
-          [ let Def _ r ty body Nothing = rawDefMap M.! oldName
+          [ let Def _ r ty body noCs = rawDefMap M.! oldName
                 newName = specName oldName ep
-              in instantiate fresh (bindMetas ep (ty ^.. ttRelevance))
-                   $ Def newName r ty body Nothing
+              in instantiate fresh (bindMetas ep (ty ^.. (ttRelevance :: Traversal' (TT Meta) Meta)))
+                   $ Def newName r ty body noCs
           | ep <- S.toList $ M.findWithDefault S.empty oldName imap
           ]
 
-    expandDef (Def n r ty mtm Nothing) = (Def n r ty mtm Nothing :) <$> extendDefs n
+    expandDef (Def n r ty body noCs) = (Def n r ty body noCs :) <$> extendDefs n
 
-remetaify :: Program Relevance VoidConstrs -> Program Meta VoidConstrs
+remetaify :: Program Relevance -> Program Meta
 remetaify = progRelevance %~ Fixed
 
 specialise ::
-    Program Meta VoidConstrs          -- raw, just metaified definitions (material to specialise)   
-    -> Program Relevance VoidConstrs  -- program to extend
-    -> Program Meta VoidConstrs       -- extended program
+    Program Meta          -- raw, just metaified definitions (material to specialise)   
+    -> Program Relevance  -- program to extend
+    -> Program Meta       -- extended program
 specialise raw prog = extend raw insts $ remetaify prog'
   where
     (prog', insts) = runWriter $ specNProg prog
 
-specNProg :: Program Relevance VoidConstrs -> Spec (Program Relevance VoidConstrs)
+specNProg :: Program Relevance -> Spec (Program Relevance)
 specNProg (Prog defs) = Prog <$> traverse specNDef defs
 
-specNDef :: Def Relevance VoidConstrs -> Spec (Def Relevance VoidConstrs)
-specNDef (Def n r ty body Nothing)
-    = Def n r <$> specNTm ty <*> specNBody body <*> pure Nothing
+specNDef :: Def Relevance -> Spec (Def Relevance)
+specNDef (Def n r ty body noCs)
+    = Def n r <$> specNTm ty <*> specNBody body <*> pure noCs
 
 specNBody :: Body Relevance -> Spec (Body Relevance)
 specNBody (Abstract a)  = pure $ Abstract a
@@ -108,7 +108,7 @@ specNTm :: TT Relevance -> Spec (TT Relevance)
 specNTm (V n) = pure $ V n
 
 specNTm (I n@(UN ns) ty) = do
-    let rs = ty ^.. ttRelevance
+    let rs = ty ^.. (ttRelevance :: Traversal' (TT Relevance) Relevance)
     tell $ spec n rs
     return $ V (IN ns rs)
   where

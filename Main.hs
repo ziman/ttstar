@@ -131,12 +131,13 @@ main = do
 
             let iterSpecialisation metaified = do
                     putStrLn "### Inferred definitions ###\n"
-                    let (ctx, cs) = either (error . show) id . check $ metaified
+                    let ctx = either (error . show) id . check $ metaified
                     mapM_ (putStrLn . fmtCtx) $ M.toList ctx
                     putStrLn ""
 
                     putStrLn "### Constraints ###\n"
-                    mapM_ (putStrLn . fmtCtr) $ M.toList (runCS cs)
+                    let cs = defConstraints (ctx M.! (UN "main"))
+                    mapM_ (putStrLn . fmtCtr) $ M.toList cs
                     putStrLn ""
 
                     putStrLn "### Solution ###\n"
@@ -195,11 +196,9 @@ main = do
   where
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
 
-    fmtCtx (n, (Def _n r ty body Nothing))
-        = prettyShow (Def n r ty body Nothing) ++ "\n"
-
-    fmtCtx (n, (Def _n r ty body (Just (CS cs))))
-        = prettyShow (Def n r ty body Nothing) ++ "\n"
-        ++ unlines (map (("  " ++) . fmtCtr) $ M.toList cs)
+    fmtCtx (n, (Def _n r ty body cs))
+        | M.null cs = prettyShow (Def n r ty body cs) ++ "\n"
+        | otherwise = prettyShow (Def n r ty body cs) ++ "\n"
+                        ++ unlines (map (("  " ++) . fmtCtr) $ M.toList cs)
 
     ndefs (Prog defs) = length defs

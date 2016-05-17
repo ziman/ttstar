@@ -7,9 +7,6 @@ import TTLens
 import qualified Data.Map as M
 import qualified Data.Set as S
 
-csDef :: Def r cs -> Def r cs'
-csDef (Def n r ty body Nothing) = Def n r ty body Nothing
-
 unApply :: TT r -> (TT r, [(r, TT r)])
 unApply tm = ua tm []
   where
@@ -23,11 +20,6 @@ mkApp f ((r, x) : xs) = mkApp (App r f x) xs
 class Termy f where
     subst :: Name -> TT r -> f r -> f r
     freeVars :: f r -> S.Set Name
-
--- it's really stupid this has to be a separate class
-class Termy' (f :: * -> (* -> *) -> *) where
-    subst' :: Name -> TT r -> f r cs -> f r cs
-    freeVars' :: f r cs -> S.Set Name
 
 instance Termy TT where
     subst n tm (V n')
@@ -50,15 +42,15 @@ instance Termy TT where
     freeVars (App r f x) = freeVars f `S.union` freeVars x
     freeVars (Forced tm) = freeVars tm
 
-instance Termy' Def where
-    subst' n tm (Def dn r ty body mcs)
+instance Termy Def where
+    subst n tm (Def dn r ty body mcs)
         | n == dn
         = Def dn r (subst n tm ty) body mcs  -- don't subst in body because those vars refer to `dn`
 
         | otherwise
         = Def dn r (subst n tm ty) (subst n tm body) mcs
 
-    freeVars' (Def dn r ty body mcs)
+    freeVars (Def dn r ty body mcs)
         = freeVars ty `S.union` S.delete dn (freeVars body)
 
 instance Termy Body where
@@ -98,7 +90,7 @@ freeVarsEq (en, etm) = S.insert en (freeVars etm)
 
 -- eqs are lumped together with rhs, all the way under all defs,
 -- which means we don't have to worry about them until we've reached the base case
-freeVarsBinder :: Termy a => [Def r cs] -> [(Name, TT r)] -> a r -> S.Set Name
+freeVarsBinder :: Termy a => [Def r] -> [(Name, TT r)] -> a r -> S.Set Name
 freeVarsBinder [] eqs rhs = S.unions (freeVars rhs : map freeVarsEq eqs)
 freeVarsBinder (d:ds) eqs rhs
     = freeVars (defType d)
@@ -111,14 +103,14 @@ freeVarsBinder (d:ds) eqs rhs
 
 substBinder :: Termy a
     => Name -> TT r
-    ->  [Def r cs] -> [(Name, TT r)] -> a r
-    -> ([Def r cs],   [(Name, TT r)],   a r)
+    ->  [Def r] -> [(Name, TT r)] -> a r
+    -> ([Def r],   [(Name, TT r)],   a r)
 substBinder n tm [] eqs rhs = ([], map (substEq n tm) eqs, subst n tm rhs)
 substBinder n tm (d:ds) eqs rhs
     | n == boundName
     -- Name bound here, substitute only in the type of d.
     -- (The subst routine for Def will know not to subst in the body of d.)
-    = (subst' n tm d : ds, eqs, rhs)
+    = (subst n tm d : ds, eqs, rhs)
 
     | boundName `occursIn` tm
     -- we need to rename the binder
@@ -126,15 +118,15 @@ substBinder n tm (d:ds) eqs rhs
         -- just a call to `freshen` won't work here because we're renaming the name of the def
         d'   = d{ defName = freshName, defBody = freshen (defBody d) }
         -- now we can perform the substitution we want
-        (ds', eqs', rhs') = substBinder n tm (map freshen' ds) (map freshenEq eqs) (freshen rhs)
+        (ds', eqs', rhs') = substBinder n tm (map freshen ds) (map freshenEq eqs) (freshen rhs)
       in 
-        (subst' n tm d' : ds', eqs', rhs')
+        (subst n tm d' : ds', eqs', rhs')
 
     | otherwise  -- boring easy case, we just plug it in
     = let
         (ds', eqs', rhs') = substBinder n tm ds eqs rhs
       in 
-        (subst' n tm d : ds', eqs', rhs')
+        (subst n tm d : ds', eqs', rhs')
   where
     boundName  = defName d
     freshName  = head [n | n <- nameSource, n `S.notMember` takenNames]
@@ -143,9 +135,6 @@ substBinder n tm (d:ds) eqs rhs
 
     freshen :: Termy a => a r -> a r
     freshen = rename boundName freshName
-
-    freshen' :: Termy' a => a r cs -> a r cs
-    freshen' = subst' boundName (V freshName)
 
     freshenEq = substEq boundName (V freshName)
 
@@ -180,20 +169,17 @@ rename fromN toN = subst fromN (V toN)
 substs :: Termy a => [(Name, TT r)] -> a r -> a r
 substs ss x = foldr (uncurry subst) x ss
 
-substs' :: Termy' a => [(Name, TT r)] -> a r cs -> a r cs
-substs' ss x = foldr (uncurry subst') x ss
-
-substCtx :: (Termy a, Show (Body r)) => Ctx r cs -> a r -> a r
+substCtx :: (Termy a, Show (Body r)) => Ctx r -> a r -> a r
 substCtx ctx tm = foldl phi tm $ M.toList ctx
   where
-    phi t (n, Def _ _ _ (Term tm) Nothing) = subst n tm t
-    phi t (n, Def _ _ _ body Nothing)
+    phi t (n, Def _ _ _ (Term tm) cs) = subst n tm t
+    phi t (n, Def _ _ _ body cs)
         = error $ "trying to substMany something strange:\n  " ++ show n ++ " ~> " ++ show body
 
-substsInCtx :: [(Name, TT r)] -> Ctx r cs -> Ctx r cs
+substsInCtx :: [(Name, TT r)] -> Ctx r -> Ctx r
 substsInCtx eqs = foldr step M.empty . M.toList
   where
     elidedNames = S.fromList $ map fst eqs
     step (n, d) ctx
         | n `S.member` elidedNames = ctx
-        | otherwise = M.insert n (substs' eqs d) ctx
+        | otherwise = M.insert n (substs eqs d) ctx

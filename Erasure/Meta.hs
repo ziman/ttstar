@@ -27,7 +27,7 @@ instance PrettyR Meta where
         | useUnicode = text " " <> showUnicode x <> text " "
         | otherwise  = text " -" <> showd x <> text "- "
 
-meta :: Program (Maybe Relevance) VoidConstrs -> Program Meta VoidConstrs
+meta :: Program (Maybe Relevance) -> Program Meta
 meta prog = evalState (progRelevance freshM prog) 0
 
 freshM :: Maybe Relevance -> State Int Meta

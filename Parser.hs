@@ -63,7 +63,7 @@ atomic = parens expr
 arrow :: Parser (TT MRel)
 arrow = (<?> "arrow type") $ do
     ty <- try (atomic <* kwd "->")
-    Bind Pi (Def Blank Nothing ty (Abstract Var) Nothing) <$> expr
+    Bind Pi (Def Blank Nothing ty (Abstract Var) noConstrs) <$> expr
 
 lambda :: Parser (TT MRel)
 lambda = (<?> "lambda") $ do
@@ -119,22 +119,23 @@ expr =
     <|> app
     <?> "expression"  -- app includes nullary-applied atoms
 
-typing :: Abstractness -> Parser (Def MRel VoidConstrs)
+typing :: Abstractness -> Parser (Def MRel)
 typing a = (<?> "name binding") $ do
     n <- name
     r <- rcolon
     ty <- expr
-    return $ Def n r ty (Abstract a) Nothing
+    return $ Def n r ty (Abstract a) noConstrs
 
-postulate :: Parser (Def MRel VoidConstrs)
+postulate :: Parser (Def MRel)
 postulate = (<?> "postulate") $ do
     kwd "postulate"
     d <- typing Postulate
     kwd "."
     return d
 
-mkPostulate :: Def MRel VoidConstrs -> Def MRel VoidConstrs
-mkPostulate (Def n r ty (Abstract Var) Nothing) = Def n r ty (Abstract Postulate) Nothing
+mkPostulate :: Def MRel -> Def MRel
+mkPostulate (Def n r ty (Abstract Var) cs)
+    = Def n r ty (Abstract Postulate) cs
 
 caseTree :: Parser (CaseTree MRel)
 caseTree = realCaseTree <|> leaf <?> "case tree or term"
@@ -177,7 +178,7 @@ caseAlt
         <*> (kwd "=>" *> caseTree)
         <?> "constructor-matching case branch"
 
-fundef :: Parser (Def MRel VoidConstrs)
+fundef :: Parser (Def MRel)
 fundef = (<?> "function definition") $ do
     n <- name
     args <- many $ parens (typing Var)
@@ -190,20 +191,20 @@ fundef = (<?> "function definition") $ do
     let lambdaDef = do
             tm <- expr
             kwd "."
-            return $ Def n r ty (Term $ chain Lam args tm) Nothing
+            return $ Def n r ty (Term $ chain Lam args tm) noConstrs
 
     let matchingDef = do
             ct <- realCaseTree  -- `caseTree` allows plain terms but we don't want those here
             -- also, don't require the dot after the case expression because
             -- the case expression knows when to terminate itself
-            return $ Def n r ty (Patterns $ CaseFun args ct) Nothing
+            return $ Def n r ty (Patterns $ CaseFun args ct) noConstrs
 
     matchingDef <|> lambdaDef
   where
     chain bnd [] tm = tm
     chain bnd (d : args) tm = Bind bnd d $ chain bnd args tm
 
-dataDef :: Parser [Def MRel VoidConstrs]
+dataDef :: Parser [Def MRel]
 dataDef = (<?> "data definition") $ do
     kwd "data"
     tfd <- typing Postulate
@@ -212,14 +213,14 @@ dataDef = (<?> "data definition") $ do
     kwd "."
     return (tfd : ctors)
 
-simpleDef :: Parser (Def MRel VoidConstrs)
+simpleDef :: Parser (Def MRel)
 simpleDef = postulate <|> fundef <?> "simple definition"
 
-definition :: Parser [Def MRel VoidConstrs]
+definition :: Parser [Def MRel]
 definition = dataDef <|> (pure <$> simpleDef) <?> "definition"
 
-parseProg :: Parser (Program MRel VoidConstrs)
+parseProg :: Parser (Program MRel)
 parseProg = Prog . concat <$> many definition <?> "program"
 
-ttProgram :: Parser (Program MRel VoidConstrs)
+ttProgram :: Parser (Program MRel)
 ttProgram = sp *> parseProg <* eof

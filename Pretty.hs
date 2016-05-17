@@ -5,6 +5,7 @@ import Data.Char
 
 import TT
 import Util.PrettyPrint
+import qualified Data.Map as M
 
 useUnicode :: Bool
 useUnicode = False  -- True
@@ -62,10 +63,10 @@ instance PrettyR r => Pretty (Body r) where
     pretty (Term tm) = text "=" <+> pretty tm
     pretty (Patterns cf) = pretty cf
 
-instance PrettyR r => Pretty (Program r cs) where
+instance PrettyR r => Pretty (Program r) where
     pretty (Prog defs) = vcat $ map (\d -> pretty d $$ blankLine) defs
 
-instance PrettyR r => Pretty (Def r cs) where
+instance PrettyR r => Pretty (Def r) where
     pretty (Def n r ty body cs) =
         case body of
             Abstract Postulate -> text "postulate"
@@ -78,9 +79,9 @@ instance PrettyR r => Pretty (Def r cs) where
                 Abstract _  -> empty
                 Term tm     -> text "=" <+> pretty tm
                 Patterns cf -> text "=" <+> pretty cf
-        <+> case cs of
-                Nothing -> empty
-                Just _  -> text "{- constraints apply -}"
+        <+> if M.null cs
+                then empty
+                else text "{- constraints apply -}"
 
 instance PrettyR r => Pretty (TT r) where
     pretty tm = pretty' False tm
@@ -109,11 +110,11 @@ instance PrettyR r => Pretty (TT r) where
 instance PrettyR r => Show (TT r) where
     show = prettyShow
 
-instance PrettyR r => Show (Def r cs) where
+instance PrettyR r => Show (Def r) where
     show = prettyShow
 
 deriving instance PrettyR r => Show (Body r)
-deriving instance PrettyR r => Show (Program r VoidConstrs)
+deriving instance PrettyR r => Show (Program r)
 
 instance PrettyR r => Pretty (CaseFun r) where
     pretty (CaseFun [] t) = pretty t
@@ -139,7 +140,7 @@ instance PrettyR r => Pretty (AltLHS r) where
                     foldr ($$) empty [text "|" <+> pretty n <+> text "=" <+> pretty tm | (n, tm) <- eqs]
                 )
 
-prettyParens :: PrettyR r => Def r cs -> Doc
+prettyParens :: PrettyR r => Def r -> Doc
 prettyParens d
     | V Blank <- defType d
     = pretty d

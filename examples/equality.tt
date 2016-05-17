@@ -5,16 +5,16 @@ data Bool : Type.
   F : Bool.
 
 data Id : (a : Type) -> (x : a) -> (y : a) -> Type.
-  Refl : (a : Type) -> (x : a) -> Id x x.
+  Refl : (a : Type) -> (x : a) -> Id a x x.
 
 not (x : Bool) : Bool
   = case x of
       T => F,
       F => T.
 
-notnot (x : Bool) : Id x (not (not x))
+notnot (x : Bool) : Id Bool x (not (not x))
   = case x of
       T => Refl Bool T,
       F => Refl Bool F.
 
-main :R: Id F (not (not F)) = notnot F.
+main :R: Id Bool F (not (not F)) = notnot F.

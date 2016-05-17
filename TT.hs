@@ -1,11 +1,16 @@
-{-# LANGUAGE FlexibleInstances, FlexibleContexts #-}
 module TT where
 
-import Control.Applicative
+import qualified Data.Set as S
 import qualified Data.Map as M
 
-data Name = UN String | IN String [Relevance] | Blank deriving (Eq, Ord)
+data Name
+    = UN String
+    | IN String [Relevance]
+    | Blank
+    deriving (Eq, Ord)
+
 data Relevance = E | R deriving (Eq, Ord, Show)
+
 data Binder = Lam | Pi | Let deriving (Eq, Ord, Show)
 
 instance Show Name where
@@ -13,22 +18,20 @@ instance Show Name where
     show (UN n) = n
     show (IN n rs) = n ++ "_" ++ concatMap show rs
 
-newtype Void = Void Void deriving (Eq, Ord, Show)
-type VoidConstrs = Const Void
-
-voidElim :: Void -> a
-voidElim (Void v) = voidElim v
+type Guards  r = S.Set r
+type Uses    r = S.Set r
+type Constrs r = M.Map (Guards r) (Uses r)
 
 data TT r
     = V Name
     | I Name (TT r)  -- instance of a global definition with a specific erasure type
-    | Bind Binder (Def r VoidConstrs) (TT r)
+    | Bind Binder (Def r) (TT r)
     | App r (TT r) (TT r)
     | Forced (TT r)  -- forced terms don't generate constraints
     deriving (Eq, Ord)
 
 data CaseFun r = CaseFun
-    { cfArgs :: [Def r VoidConstrs]
+    { cfArgs :: [Def r]
     , cfTree :: CaseTree r
     } deriving (Eq, Ord)
 
@@ -38,7 +41,7 @@ data CaseTree r
     deriving (Eq, Ord)
 
 data AltLHS r
-    = Ctor Name [Def r VoidConstrs] [(Name, TT r)]
+    = Ctor Name [Def r] [(Name, TT r)]
     | Wildcard
     deriving (Eq, Ord)
 
@@ -52,19 +55,22 @@ data Alt r = Alt
 -- a postulate stands for itself.
 data Abstractness = Var | Postulate deriving (Eq, Ord, Show)
 data Body r = Abstract Abstractness | Term (TT r) | Patterns (CaseFun r) deriving (Eq, Ord)
-data Def r cs = Def
+data Def r = Def
     { defName :: Name
     , defR    :: r
     , defType :: TT r
     , defBody :: Body r
-    , defConstraints :: Maybe (cs r)
+    , defConstraints :: Constrs r
     } deriving (Eq, Ord)
 
-type Ctx r cs = M.Map Name (Def r cs)
+type Ctx r = M.Map Name (Def r)
 
-newtype Program r cs = Prog { getDefs :: [Def r cs] } deriving (Eq, Ord)
+newtype Program r = Prog { getDefs :: [Def r] } deriving (Eq, Ord)
 
-builtins :: r -> Ctx r cs
+noConstrs :: Constrs r
+noConstrs = M.empty
+
+builtins :: r -> Ctx r
 builtins r = M.fromList
-    [ (UN "Type", Def (UN "Type") r (V $ UN "Type") (Abstract Postulate) Nothing)
+    [ (UN "Type", Def (UN "Type") r (V $ UN "Type") (Abstract Postulate) noConstrs)
     ]

@@ -12,7 +12,7 @@ main :R: (x :E: Type) -> Type = (\x :E: Type. x)
 
 postulate Type :R: Type
 
-main :R: (x :E: Type) -> Type = (\x :E: Type. x)
+main :R: (x :E: Type) -> Type = (\x :E: Type. x) {- constraints apply -}
   [] -> [E,R]
 
 

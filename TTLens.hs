@@ -3,15 +3,14 @@ module TTLens where
 
 import Data.Traversable
 import Control.Applicative
+import qualified Data.Map as M
+import qualified Data.Set as S
 
 import Lens.Family2.Unchecked
 
 import TT
 
-voidRelevance :: Traversal (VoidConstrs r) (cs' r') r r'
-voidRelevance f _ = error "void elimination"
-
-ttRelevance :: Traversal (TT r) (TT r') r r'
+ttRelevance :: Ord r' => Traversal (TT r) (TT r') r r'
 ttRelevance f = g
   where
     g tm = case tm of
@@ -22,47 +21,48 @@ ttRelevance f = g
         App r fun arg
             -> App <$> f r <*> g fun <*> g arg
 
-defRelevance' :: Traversal (cs r) (cs' r') r r' -> Traversal (Def r cs) (Def r' cs') r r'
-defRelevance' csRelevance f (Def n r ty body mcs)
+defRelevance :: Ord r' => Traversal (Def r) (Def r') r r'
+defRelevance f (Def n r ty body mcs)
     = Def n
         <$> f r
         <*> ttRelevance f ty
         <*> bodyRelevance f body
-        <*> traverse (csRelevance f) mcs
+        <*> csRelevance f mcs
 
-bodyRelevance :: Traversal (Body r) (Body r') r r'
+bodyRelevance :: Ord r' => Traversal (Body r) (Body r') r r'
 bodyRelevance f (Abstract a) = pure $ Abstract a
 bodyRelevance f (Term tm) = Term <$> ttRelevance f tm
 bodyRelevance f (Patterns cf) = Patterns <$> caseFunRelevance f cf
 
-caseFunRelevance :: Traversal (CaseFun r) (CaseFun r') r r'
+caseFunRelevance :: Ord r' => Traversal (CaseFun r) (CaseFun r') r r'
 caseFunRelevance f (CaseFun args ct)
     = CaseFun
         <$> traverse (defRelevance f) args
         <*> caseTreeRelevance f ct
 
-caseTreeRelevance :: Traversal (CaseTree r) (CaseTree r') r r'
+caseTreeRelevance :: Ord r' => Traversal (CaseTree r) (CaseTree r') r r'
 caseTreeRelevance f (Leaf tm) = Leaf <$> ttRelevance f tm
 caseTreeRelevance f (Case r s alts) = Case <$> f r <*> ttRelevance f s <*> traverse (altRelevance f) alts
 
-altRelevance :: Traversal (Alt r) (Alt r') r r'
+altRelevance :: Ord r' => Traversal (Alt r) (Alt r') r r'
 altRelevance f (Alt lhs rhs) = Alt <$> altLHSRelevance f lhs <*> caseTreeRelevance f rhs
 
-altLHSRelevance :: Traversal (AltLHS r) (AltLHS r') r r'
+altLHSRelevance :: Ord r' => Traversal (AltLHS r) (AltLHS r') r r'
 altLHSRelevance f Wildcard = pure $ Wildcard
 altLHSRelevance f (Ctor cn args eqs)
     = Ctor cn
         <$> traverse (defRelevance f) args
         <*> traverse (caseEqRelevance f) eqs
 
-caseEqRelevance :: Traversal (Name, TT r) (Name, TT r') r r'
+caseEqRelevance :: Ord r' => Traversal (Name, TT r) (Name, TT r') r r'
 caseEqRelevance f (n, tm) = (,) n <$> ttRelevance f tm
 
-defRelevance :: Traversal (Def r VoidConstrs) (Def r' cs') r r'
-defRelevance = defRelevance' voidRelevance
+progRelevance :: Ord r' => Traversal (Program r) (Program r') r r'
+progRelevance f (Prog defs) = Prog <$> traverse (defRelevance f) defs
 
-progRelevance' :: Traversal (cs r) (cs' r') r r' -> Traversal (Program r cs) (Program r' cs') r r'
-progRelevance' csRelevance f (Prog defs) = Prog <$> traverse (defRelevance' csRelevance f) defs
+csRelevance :: Ord r' => Traversal (Constrs r) (Constrs r') r r'
+csRelevance f = fmap M.fromList . traverse f' . M.toList
+  where
+    f' (x, y) = (,) <$> f'' x <*> f'' y
+    f'' = fmap S.fromList . traverse f . S.toList
 
-progRelevance :: Traversal (Program r VoidConstrs) (Program r' cs') r r'
-progRelevance = progRelevance' voidRelevance
