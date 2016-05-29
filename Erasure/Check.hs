@@ -1,6 +1,6 @@
 {-# LANGUAGE ViewPatterns, GeneralizedNewtypeDeriving #-}
 
-module Erasure.Check (check, instantiate, TCFailure) where
+module Erasure.Check (check, instantiate, unions, TCFailure) where
 
 import TT
 import TTLens

@@ -136,7 +136,10 @@ main = do
                     putStrLn ""
 
                     putStrLn "### Constraints ###\n"
-                    let cs = defConstraints (ctx M.! (UN "main"))
+                    let cs = unions [
+                            defConstraints (ctx M.! n)
+                            | Def n (Just R) _ _ _ <- getDefs prog
+                          ]
                     mapM_ (putStrLn . fmtCtr) $ M.toList cs
                     putStrLn ""
 
