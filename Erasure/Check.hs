@@ -378,7 +378,7 @@ conv' (V n) (V n') = bt ("C-VAR", n, n') $ do
 conv' p@(Bind b (Def n r ty (Abstract Var) _noCs) tm) q@(Bind b' (Def n' r' ty' (Abstract Var) _noCs') tm')
     = bt ("C-BIND", p, q) $ do
         require (b == b') $ Mismatch (show b) (show b')
-        xs <- conv ty (rename n' n ty')
+        xs <- conv ty ty' -- (rename n' n ty')
         ys <- with (Def n r ty (Abstract Var) noConstrs)
                 $ conv tm (rename n' n tm')
         return $ xs /\ ys /\ r <--> r'
