@@ -43,6 +43,7 @@ data TCError
     | NonVariableScrutinee TTmeta
     | InconsistentErasure Name
     | NotImplemented String
+    | NonPatvarInEq Name
     | Other String
     deriving (Eq, Ord, Show)
 
@@ -225,6 +226,16 @@ checkCaseTree lhs (Case r s alts) =
     tcfail $ NonVariableScrutinee s
 
 
+checkPatvar :: Name -> TC ()
+checkPatvar n = do
+    d <- lookup n
+    case d of
+        Def n r ty (Abstract Var) cs
+            -> return ()
+        _
+            -> tcfail $ NonPatvarInEq n
+
+
 checkAlt :: Bool -> TT Meta -> Name -> Meta -> Alt Meta -> TC (Constrs Meta)
 
 checkAlt isSingleBranch lhs n sr (Alt Wildcard rhs) = bt ("ALT-WILDCARD") $ do
@@ -233,7 +244,8 @@ checkAlt isSingleBranch lhs n sr (Alt Wildcard rhs) = bt ("ALT-WILDCARD") $ do
 checkAlt isSingleBranch lhs n sr (Alt (Ctor cn args eqs_NF) rhs) = bt ("ALT-CTOR", pat) $ do
     argCtx <- checkDefs args
     -- Typechecking will be done eventually in the case for Leaf.
-    cs <- with' (M.union argCtx) $
+    cs <- with' (M.union argCtx) $ do
+            traverse checkPatvar $ map fst eqs
             with' (substsInCtx eqs') $  -- substitutes in args, too; must use eqs', which includes (n, pat')
                 checkCaseTree lhs' rhs'
     return $ cs /\ scrutCs
