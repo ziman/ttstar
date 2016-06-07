@@ -309,10 +309,12 @@ checkTm t@(Bind Lam d@(Def n r ty (Abstract Var) _noCs) tm) = bt ("LAM", t) $ do
 
 checkTm t@(Bind Pi d@(Def n r ty (Abstract Var) _noCs) tm) = bt ("PI", t) $ do
     d' <- checkDef d
+    (tyty, _tycs) <- checkTm ty
+    cs' <- conv (V $ UN "Type") tyty
     tmcs <- with d' $ do
         (tmty, tmcs) <- checkTm tm
         cs <- conv (V $ UN "Type") tmty
-        return $ tmcs /\ cs
+        return $ tmcs /\ cs /\ cs'
     return (V $ UN "Type", tmcs)
 
 checkTm t@(Bind Let d tm) = bt ("LET", t) $ do
