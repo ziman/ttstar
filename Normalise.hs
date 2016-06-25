@@ -183,6 +183,15 @@ matchTm form ctx pattern@(App _ _ _) tm@(App _ _ _)
 --    , Just (Def _ _ _ (Abstract Postulate) Nothing) <- M.lookup cn ctx  -- is a ctor/postulate
     = matchTms form ctx (map (red form ctx) args) (map (red form ctx) args')
 
+-- forced match
+matchTm form ctx pattern@(App _ _ _) tm@(App _ _ _)
+    | (Forced (V cn), args ) <- unApply pattern
+    , (V cn', args') <- unApply tm
+--    , Just (Def _ _ _ (Abstract Postulate) Nothing) <- M.lookup cn ctx  -- is a ctor/postulate
+    = if (cn == cn')  -- heads are the same
+        then matchTms form ctx (map (red form ctx) args) (map (red form ctx) args')
+        else error $ "forced term does not match!"
+
 -- forced patterns always match, not generating anything
 matchTm form ctx (Forced _) tm
     = Yep M.empty
