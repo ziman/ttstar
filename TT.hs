@@ -26,14 +26,10 @@ data TT r
     = V Name
     | I Name (TT r)  -- instance of a global definition with a specific erasure type
     | Bind Binder (Def r) (TT r)
+    | PatLam (TT r) [Def r] (CaseTree r)
     | App r (TT r) (TT r)
     | Forced (TT r)  -- forced terms don't generate constraints
     deriving (Eq, Ord)
-
-data CaseFun r = CaseFun
-    { cfArgs :: [Def r]
-    , cfTree :: CaseTree r
-    } deriving (Eq, Ord)
 
 data CaseTree r
     = Leaf (TT r)
@@ -54,7 +50,7 @@ data Alt r = Alt
 -- for postulate; the term itself is the value. A variable stands for something else,
 -- a postulate stands for itself.
 data Abstractness = Var | Postulate deriving (Eq, Ord, Show)
-data Body r = Abstract Abstractness | Term (TT r) | Patterns (CaseFun r) deriving (Eq, Ord)
+data Body r = Abstract Abstractness | Term (TT r) deriving (Eq, Ord)
 data Def r = Def
     { defName :: Name
     , defR    :: r

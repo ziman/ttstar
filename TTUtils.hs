@@ -36,11 +36,18 @@ instance Termy TT where
 
     subst n tm (Forced t) = Forced (subst n tm t)
 
+    -- see (subst n tm (Bind b d rhs)) for the general approach to subst under binders
+    subst n tm (PatLam ty ds ct) = PatLam (subst n tm ty) ds' ct'
+      where
+        (ds', [], ct') = substBinder n tm ds [] ct
+
     freeVars (V n) = S.singleton n
     freeVars (I n ty) = S.insert n $ freeVars ty
     freeVars (Bind b d tm) = freeVarsBinder [d] [] tm
     freeVars (App r f x) = freeVars f `S.union` freeVars x
     freeVars (Forced tm) = freeVars tm
+    freeVars (PatLam ty ds ct) =
+        freeVars ty `S.union` freeVarsBinder ds [] ct
 
 instance Termy Def where
     subst n tm (Def dn r ty body mcs)
@@ -56,19 +63,9 @@ instance Termy Def where
 instance Termy Body where
     subst n tm (Abstract a)  = Abstract a
     subst n tm (Term t)      = Term $ subst n tm t
-    subst n tm (Patterns cf) = Patterns $ subst n tm cf
 
     freeVars (Abstract _)  = S.empty
     freeVars (Term tm)     = freeVars tm
-    freeVars (Patterns cf) = freeVars cf
-
-instance Termy CaseFun where
-    -- see (subst n tm (Bind b d rhs)) for the general approach to subst under binders
-    subst n tm (CaseFun ds ct) = CaseFun ds' ct'
-      where
-        (ds', [], ct') = substBinder n tm ds [] ct
-
-    freeVars (CaseFun ds ct) = freeVarsBinder ds [] ct
 
 substEq :: Name -> TT r -> (Name, TT r) -> (Name, TT r)
 substEq n tm@(V n') (en, etm)

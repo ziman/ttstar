@@ -61,7 +61,6 @@ instance Pretty Name where
 instance PrettyR r => Pretty (Body r) where
     pretty (Abstract _) = empty
     pretty (Term tm) = text "=" <+> pretty tm
-    pretty (Patterns cf) = pretty cf
 
 instance PrettyR r => Pretty (Program r) where
     pretty (Prog defs) = vcat $ map (\d -> pretty d $$ blankLine) defs
@@ -78,7 +77,6 @@ instance PrettyR r => Pretty (Def r) where
         <+> case body of
                 Abstract _  -> empty
                 Term tm     -> text "=" <+> pretty tm
-                Patterns cf -> text "=" <+> pretty cf
         <+> if M.null cs
                 then empty
                 else text "{- constraints apply -}"
@@ -107,6 +105,10 @@ instance PrettyR r => Pretty (TT r) where
             show' r f x = pretty f <> prettyApp r <> pretty' True x
         pretty' pp (Forced tm) = brackets (pretty' False tm) 
 
+        pretty' pp (PatLam ty ds ct) =
+            text "\\" <> hsep (map prettyParens ds) <+> parens (colon <+> pretty ty) <> text "."
+            $$ indent (pretty ct)
+
 instance PrettyR r => Show (TT r) where
     show = prettyShow
 
@@ -115,12 +117,6 @@ instance PrettyR r => Show (Def r) where
 
 deriving instance PrettyR r => Show (Body r)
 deriving instance PrettyR r => Show (Program r)
-
-instance PrettyR r => Pretty (CaseFun r) where
-    pretty (CaseFun [] t) = pretty t
-    pretty (CaseFun ns t) =
-        text "\\" <> hsep (map prettyParens ns) <> text "."
-        $$ indent (pretty t)
 
 instance PrettyR r => Pretty (CaseTree r) where
     pretty (Leaf tm) = pretty tm
@@ -147,9 +143,6 @@ prettyParens d
 
     | otherwise
     = parens $ pretty d
-
-instance PrettyR r => Show (CaseFun r) where
-    show = prettyShow
 
 instance PrettyR r => Show (CaseTree r) where
     show = prettyShow

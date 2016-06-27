@@ -20,6 +20,8 @@ ttRelevance f = g
             -> Bind b <$> defRelevance f d <*> g tm
         App r fun arg
             -> App <$> f r <*> g fun <*> g arg
+        PatLam ty ds ct
+            -> PatLam <$> g ty <*> traverse (defRelevance f) ds <*> caseTreeRelevance f ct
 
 defRelevance :: Ord r' => Traversal (Def r) (Def r') r r'
 defRelevance f (Def n r ty body mcs)
@@ -32,13 +34,6 @@ defRelevance f (Def n r ty body mcs)
 bodyRelevance :: Ord r' => Traversal (Body r) (Body r') r r'
 bodyRelevance f (Abstract a) = pure $ Abstract a
 bodyRelevance f (Term tm) = Term <$> ttRelevance f tm
-bodyRelevance f (Patterns cf) = Patterns <$> caseFunRelevance f cf
-
-caseFunRelevance :: Ord r' => Traversal (CaseFun r) (CaseFun r') r r'
-caseFunRelevance f (CaseFun args ct)
-    = CaseFun
-        <$> traverse (defRelevance f) args
-        <*> caseTreeRelevance f ct
 
 caseTreeRelevance :: Ord r' => Traversal (CaseTree r) (CaseTree r') r r'
 caseTreeRelevance f (Leaf tm) = Leaf <$> ttRelevance f tm

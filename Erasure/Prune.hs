@@ -15,11 +15,6 @@ pruneDef (Def n R ty body mcs) = [Def n () (V Blank) (pruneBody body) noConstrs]
 pruneBody :: Body Relevance -> Body ()
 pruneBody (Abstract a)  = Abstract a
 pruneBody (Term tm)     = Term $ pruneTm tm
-pruneBody (Patterns cf) = Patterns $ pruneCaseFun cf
-
-pruneCaseFun :: CaseFun Relevance -> CaseFun ()
-pruneCaseFun (CaseFun args ct)
-    = CaseFun (pruneDefs args) (pruneCaseTree ct)
 
 pruneCaseTree :: CaseTree Relevance -> CaseTree ()
 pruneCaseTree (Leaf tm) = Leaf $ pruneTm tm
@@ -47,3 +42,4 @@ pruneTm (Bind b d tm)
         [d'] -> Bind b d' (pruneTm tm)
 pruneTm (App E f x) = pruneTm f
 pruneTm (App R f x) = App () (pruneTm f) (pruneTm x)
+pruneTm (PatLam ty ds ct) = PatLam (V Blank) (pruneDefs ds) (pruneCaseTree ct)
