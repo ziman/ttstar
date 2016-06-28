@@ -187,21 +187,6 @@ checkDef d@(Def n r ty (Term tm) _noCs) = bt ("DEF-TERM", n) $ do
     let cs = tmcs /\ {- tycs /\ -} tytyTypeCs /\ tyTmtyCs /\ Fixed R --> r  -- in types, only conversion constraints matter
     return $ Def n r ty (Term tm) cs
 
-checkDef d@(Def n r ty (Patterns cf) _noCs) = bt ("DEF-PATTERNS", n) $ do
-    (tyty, tycs) <- checkTm ty
-    tytyTypeCs   <- conv tyty (V $ UN "Type")
-    cfCs <- with d $ checkCaseFun n cf  -- "with d" because it could be recursive
-    let cs = {- tycs /\ -} tytyTypeCs /\ cfCs /\ Fixed R --> r  -- in types, only conversion constraints matter
-    return $ Def n r ty (Patterns cf) cs
-
-checkCaseFun :: Name -> CaseFun Meta -> TC (Constrs Meta)
-checkCaseFun fn (CaseFun args ct) = bt ("CASE-FUN", fn) $ do
-    argCtx <- checkDefs args
-    with' (M.union argCtx)
-        $ checkCaseTree lhs ct
-  where
-    lhs = mkApp (V fn) [(r, V n) | Def n r ty (Abstract Var) cs <- args]
-
 checkCaseTree :: TT Meta -> CaseTree Meta -> TC (Constrs Meta)
 checkCaseTree lhs (Leaf rhs) = bt ("PLAIN-TERM", lhs, rhs) $ do
     (lty, lcs) <- checkTm lhs
@@ -338,6 +323,18 @@ checkTm t@(App app_r f x) = bt ("APP", t) $ do
 
         _ -> do
             tcfail $ NonFunction f fty
+
+checkTm t@(PatLam ty ds ct) = bt ("PATLAM", ty, ds) $ do
+    (tyty, tycs) <- checkTm ty
+    tytyTypeCs   <- conv tyty (V $ UN "Type")
+    argCtx <- checkDefs ds
+    -- TODO
+    //compileerror//
+    let lhs = mkApp (V fn) [(r, V n) | Def n r ty (Abstract Var) cs <- args]
+    with' (M.union argCtx)
+        $ checkCaseTree lhs ct
+    let cs = {- tycs /\ -} tytyTypeCs /\ cfCs /\ Fixed R --> r  -- in types, only conversion constraints matter
+    return (ty, cs)
 
 checkTm (Forced tm) = bt ("FORCED", tm) $ do
     (ty, _cs) <- checkTm tm
