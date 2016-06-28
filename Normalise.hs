@@ -64,6 +64,8 @@ red :: IsRelevance r => Form -> Ctx r -> TT r -> TT r
 
 red form ctx t@(V Blank) = t
 
+-- we need this because the top-level let does not substitute stuff correctly somewhere
+-- we'll probably implement the global let via the context
 red form ctx t@(V n)
     | Just (Def _n r ty body cs) <- M.lookup n ctx
     = case body of
@@ -96,6 +98,12 @@ red form ctx t@(App r f x)
     -- lambdas
     | Bind Lam (Def n' r' ty' (Abstract Var) cs) tm' <- redF
     = red form ctx $ subst n' redX tm'
+
+    -- pattern matching instance
+    | (I fn _, args) <- unApply t
+    , Just (Def _ _ _ (Patterns cf) _) <- M.lookup fn ctx
+    , length args == length (cfArgs cf)
+    = fromMaybe t $ evalPatterns form ctx cf t
 
     -- pattern-matching definitions
     | (V fn, args) <- unApply t

@@ -26,7 +26,9 @@ instance Termy TT where
         | n' == n   = tm
         | otherwise = V n'
 
-    subst n tm (I n' ty) = I n' $ subst n tm ty
+    subst n tm (I n' ty)
+        | n' == n   = tm
+        | otherwise = I n' $ subst n tm ty
 
     subst n tm (Bind b d rhs) = Bind b d' rhs'
       where
