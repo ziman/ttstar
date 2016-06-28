@@ -101,7 +101,7 @@ red form ctx t@(App r f x)
     | (V fn, args) <- unApply t
     , Just (Def _ _ _ (Patterns cf) _) <- M.lookup fn ctx
     , length args == length (cfArgs cf)
-    = fromMaybe t $ evalPatterns form ctx cf (mkApp (V fn) (map (second $ red form ctx) args))
+    = fromMaybe t $ evalPatterns form ctx cf t
 
     -- everything else
     | otherwise = App r redF redX  -- not a redex
