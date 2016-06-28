@@ -9,6 +9,7 @@ import Data.List
 import Data.Maybe
 import Control.Applicative
 import Control.Monad
+import Control.Arrow
 import qualified Data.Map as M
 import qualified Data.Set as S
 
@@ -86,35 +87,24 @@ red  NF  ctx t@(Bind b d tm) = Bind b (redDef NF ctx d) (red NF ctx' tm)
   where
     ctx' = M.insert (defName d) d ctx
 
--- pattern-matching definitions
 red form ctx t@(App r f x)
-    | (V fn, _args) <- unApply t
-    , Just (Def _ _ _ (Patterns cf) _) <- M.lookup fn ctx
-    = fromMaybe t $ evalPatterns form ctx cf t
-
--- we reduce specialised terms as non-specialised terms
-red form ctx t@(App r f x)
-    | (I fn _ty, args) <- unApply t
-    = red form ctx (mkApp (V fn) args)
-
-red WHNF ctx t@(App r f x)
     -- lambdas
     | Bind Lam (Def n' r' ty' (Abstract Var) cs) tm' <- redF
-    = red WHNF ctx $ subst n' x tm'
+    = red form ctx $ subst n' redX tm'
+
+    -- pattern-matching definitions
+    | (V fn, args) <- unApply t
+    , Just (Def _ _ _ (Patterns cf) _) <- M.lookup fn ctx
+    , length args == length (cfArgs cf)
+    = fromMaybe t $ evalPatterns form ctx cf (mkApp (V fn) (map (second $ red form ctx) args))
 
     -- everything else
-    | otherwise = t  -- not a redex
-  where
-    redF = red WHNF ctx f
-
-red NF ctx t@(App r f x)
-    | Bind Lam (Def n' r' ty' (Abstract Var) cs) tm' <- redF
-    = red NF ctx $ subst n' redX tm'
-
     | otherwise = App r redF redX  -- not a redex
   where
-    redF = red NF ctx f
-    redX = red NF ctx x
+    redF = red form ctx f
+    redX = case form of
+        NF   -> red NF ctx x
+        WHNF -> x
 
 red form ctx (Forced tm) = red form ctx tm
 
