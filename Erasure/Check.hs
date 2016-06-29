@@ -330,6 +330,9 @@ checkTm t@(App app_r f x) = bt ("APP", t) $ do
         Bind Pi (Def n' pi_r ty' (Abstract Var) _noCs) retTy -> do
             tycs <- conv xty ty'
             let cs =
+                    -- we can't leave tycs out entirely because
+                    -- if it's relevant, it needs to be erasure-correct as well
+                    -- but if it's not used, then it needn't be erasure-correct
                     cond pi_r tycs
                     /\ fcs
                     /\ cond pi_r xcs
