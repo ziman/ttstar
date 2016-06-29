@@ -330,7 +330,7 @@ checkTm t@(App app_r f x) = bt ("APP", t) $ do
         Bind Pi (Def n' pi_r ty' (Abstract Var) _noCs) retTy -> do
             tycs <- conv xty ty'
             let cs =
-                    tycs
+                    cond pi_r tycs
                     /\ fcs
                     /\ cond pi_r xcs
                     /\ pi_r <--> app_r
