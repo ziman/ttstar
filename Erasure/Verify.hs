@@ -22,6 +22,7 @@ import Control.Monad.Trans.Reader
 data VerError
     = UnknownName Name
     | RelevanceMismatch Relevance Relevance
+    | NotPatvar Name
     | NotImplemented
     deriving Show
 
@@ -144,7 +145,32 @@ verCase r lhs (Case s (V n) alts) = do
     mapM_ (verBranch Many r lhs n r) alts        
 
 verBranch :: Cardinality -> Relevance -> Pat -> Name -> Relevance -> Alt Relevance -> Ver ()
-verBranch q r lhs n s alt = verFail NotImplemented
+verBranch q r lhs n s (Alt Wildcard rhs) = do
+    verCase r lhs rhs
+verBranch q r lhs n s (Alt (Ctor cn ds eqs) rhs) = do
+    verDefs ds
+    localVars eqs
+    let pat = mkApp c' [(defR d, V $ defName d) | d <- ds]
+    let eqs' = [(n, Forced tm) | (n, tm) <- eqs]
+    let eqs'' = (n, substs eqs' pat) : eqs'
+    let lhs'' = substs eqs'' lhs
+    let rhs'' = substs eqs'' rhs
+    withs ds . with' (substs eqs'') $
+        verCase r lhs'' rhs''
+  where
+    c' :: Pat
+    c' = case q of
+            Single -> Forced (V cn)
+            Many   -> V cn
+
+    localVars :: [(Name, Term)] -> Ver ()
+    localVars [] = return ()
+    localVars ((n,tm):eqs) = do
+        d <- lookup n
+        case defBody d of
+            Abstract Var -> localVars eqs
+            _ -> verFail $ NotPatvar n
+
 
 verTm :: Relevance -> Term -> Ver Type
 verTm r tm = verFail NotImplemented
