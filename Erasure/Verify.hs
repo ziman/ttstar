@@ -38,11 +38,38 @@ verFail e = do
     (tb, ctx) <- ask
     lift . throwE $ VerFailure e tb
 
+with :: Def Relevance -> Ver a -> Ver a
+with d = with' $ M.insert (defName d) d
+
+with' :: (Ctx Relevance -> Ctx Relevance) -> Ver a -> Ver a
+with' f = local $ \(tb, ctx) -> (tb, f ctx)
+
+bt :: Show a => a -> Ver b -> Ver b
+bt dbg sub = do
+    ctx <- getCtx
+    let btLine = "In context:\n" ++ showCtx ctx ++ "\n" ++ show dbg ++ "\n"
+    local (\(tb,ctx) -> (btLine:tb,ctx)) sub
+
+showCtx :: Ctx Relevance -> String
+showCtx ctx = unlines
+    [ "  " ++ show (defName d) ++ " : " ++ show (defType d)
+    | d <- M.elems ctx
+    ]
+
+getCtx :: Ver (Ctx Relevance)
+getCtx = do
+    (tb, ctx) <- ask
+    return ctx
+
 verify :: Program Relevance -> Either VerFailure ()
 verify prog = runVer (builtins E) $ verProg prog
 
 verProg :: Program Relevance -> Ver ()
-verProg (Prog defs) = mapM_ verDef defs
+verProg (Prog defs) = verDefs defs
+
+verDefs :: [Def Relevance] -> Ver ()
+verDefs [] = return ()
+verDefs (d:ds) = verDef d *> with d (verDefs ds)
 
 verDef :: Def Relevance -> Ver ()
 verDef (Def n r ty b cs) = verFail NotImplemented
