@@ -20,15 +20,20 @@ import Control.Monad.Trans.Class
 import Control.Monad.Trans.Reader
 
 data VerError
-    = TCFailure TCFailure
-    | InconsistentAnnotation
+    = UnknownName Name
+    | RelevanceMismatch Relevance Relevance
     | NotImplemented
     deriving Show
 
+data Cardinality = Single | Many deriving (Eq, Ord, Show)
 
 data VerFailure = VerFailure VerError [String] deriving Show
 type Ver a = ReaderT (VerTraceback, Ctx Relevance) (Except VerFailure) a
 type VerTraceback = [String]
+
+type Term = TT Relevance
+type Type = TT Relevance
+type Pat  = TT Relevance
 
 runVer :: Ctx Relevance -> Ver a -> Either VerFailure a
 runVer ctx ver = runExcept $ runReaderT ver ([], ctx)
@@ -40,6 +45,10 @@ verFail e = do
 
 with :: Def Relevance -> Ver a -> Ver a
 with d = with' $ M.insert (defName d) d
+
+withs :: [Def Relevance] -> Ver a -> Ver a
+withs [] = id
+withs (d:ds) = with d . withs ds
 
 with' :: (Ctx Relevance -> Ctx Relevance) -> Ver a -> Ver a
 with' f = local $ \(tb, ctx) -> (tb, f ctx)
@@ -61,6 +70,25 @@ getCtx = do
     (tb, ctx) <- ask
     return ctx
 
+lookup :: Name -> ver (Def Meta)
+lookup n = do
+    ctx <- getCtx
+    case M.lookup n ctx of
+        Just x  -> return x
+        Nothing -> verFail $ UnknownName n
+
+eqR :: Relevance -> Relevance -> Ver ()
+eqR r s
+    | r == s = return ()
+    | otherwise = verFail $ RelevanceMismatch r s
+
+hasRelevance :: Name -> Relevance -> Ver ()
+hasRelevance n r = do
+    d <- lookup n
+    if (r == R) && (defR d == E)
+        then verFail $ RelevanceMismatch r (defR d)
+        else return ()
+
 verify :: Program Relevance -> Either VerFailure ()
 verify prog = runVer (builtins E) $ verProg prog
 
@@ -72,4 +100,57 @@ verDefs [] = return ()
 verDefs (d:ds) = verDef d *> with d (verDefs ds)
 
 verDef :: Def Relevance -> Ver ()
-verDef (Def n r ty b cs) = verFail NotImplemented
+verDef (Def n r ty (Abstract _) cs) = do
+    tyty <- verTm E ty
+    conv E tyty (V $ UN "Type")
+
+verDef d@(Def n r ty (Term tm) cs) = do
+    tyty <- verTm E ty
+    conv E tyty (V $ UN "Type")
+    tmty <- with d $ verTm r tm
+    conv r tmty ty
+
+verDef d@(Def n r ty (Patterns cf) cs) = do
+    tyty <- verTm E ty
+    conv E tyty (V $ UN "Type")
+    with d $
+        verCaseFun n r cf
+
+verCaseFun :: Name -> Relevance -> Case Relevance -> CaseFun Relevance -> Ver ()
+verCaseFun fn r (CaseFun ds ct) = do
+    verDefs ds
+    let lhs = mkApp (V fn) [(defR d, V $ defName d) | d <- ds]
+    withs ds $
+        verCase r lhs ct
+
+verCase :: Relevance -> Pat -> CaseTree Relevance -> Ver ()
+verCase r lhs (Leaf rhs) = do
+    lhsTy <- verPat r lhs
+    rhsTy <- verTm  r rhs
+    conv r lhsTy rhsTy
+
+verCase R lhs (Case s (V n) [alt]) = do
+    d <- lookup n    
+    eqR s (defR d)
+    verBranch Single R lhs n s alt
+
+verCase E lhs (Case E (V n) [alt]) = do
+    lookup n
+    verBranch Single E lhs n E alt
+
+verCase r lhs (Case s (V n) alts) = do
+    eqR r s
+    n `hasRelevance` r
+    mapM_ (verBranch Many r lhs n r) alts        
+
+verBranch :: Cardinality -> Relevance -> Pat -> Name -> Relevance -> Alt Relevance -> Ver ()
+verBranch q r lhs n s alt = verFail NotImplemented
+
+verTm :: Relevance -> Term -> Ver Type
+verTm r tm = verFail NotImplemented
+
+verPat :: Relevance -> Pat -> Ver Type
+verPat r pat = verFail NotImplemented
+
+conv :: Relevance -> Type -> Type -> Ver ()
+conv r p q = verFail NotImplemented
