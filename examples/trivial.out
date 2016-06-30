@@ -38,15 +38,3 @@ main :R: (x :R: Type) -> Type = (\x :R: Type. x)
 
 ### Verification ###
 
-Verification successful.
-
-### Pruned ###
-
-main = (\x. x)
-
-### Normal forms ###
-
-unerased:
-  (\x : Type. x)
-erased:
-  (\x. x)

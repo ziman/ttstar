@@ -126,21 +126,3 @@ main :R: T = apply -R- const_A -E- B
 
 ### Verification ###
 
-Verification successful.
-
-### Pruned ###
-
-postulate A
-
-const_A = A
-
-apply = (\f. f)
-
-main = apply const_A
-
-### Normal forms ###
-
-unerased:
-  A
-erased:
-  A

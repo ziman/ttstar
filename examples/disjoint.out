@@ -36,15 +36,3 @@ main :R: Type = Type
 
 ### Verification ###
 
-Verification successful.
-
-### Pruned ###
-
-main = Type
-
-### Normal forms ###
-
-unerased:
-  Type
-erased:
-  Type

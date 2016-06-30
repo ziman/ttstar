@@ -231,26 +231,3 @@ main :R: Id -E- Bool -E- F -E- (not -E- (not -E- F)) = notnot -R- F
 
 ### Verification ###
 
-Verification successful.
-
-### Pruned ###
-
-postulate F
-
-postulate Refl
-
-notnot = \x.
-  case x of
-    T
-      => Refl
-    F
-      => Refl
-
-main = notnot F
-
-### Normal forms ###
-
-unerased:
-  Refl Bool F
-erased:
-  Refl

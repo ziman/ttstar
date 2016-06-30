@@ -300,39 +300,3 @@ main :R: Vec -E- 1 -E- N = append -E- N -E- Z -R- 1 -R- (Nil -R- N) -R- (Cons -R
 
 ### Verification ###
 
-Verification successful.
-
-### Pruned ###
-
-postulate N
-
-postulate Z
-
-postulate S
-
-postulate Nil
-
-postulate Cons
-
-plus = \m n.
-  case m of
-    Z
-      => n
-    S m'
-      => S (plus m' n)
-
-append = \n xs ys.
-  case xs of
-    Nil a'
-      => ys
-    Cons a' m' x xs'
-      => Cons a (plus m' n) x (append n xs' ys)
-
-main = append 1 (Nil N) (Cons N Z 42 (Nil N))
-
-### Normal forms ###
-
-unerased:
-  Cons N Z 42 (Nil N)
-erased:
-  Cons N Z 42 (Nil N)

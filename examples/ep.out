@@ -313,33 +313,3 @@ main :R: T = Op -R- test1 -R- test2
 
 ### Verification ###
 
-Verification successful.
-
-### Pruned ###
-
-postulate A
-
-postulate B
-
-postulate Op
-
-id = (\y. y)
-
-constA = A
-
-apply_REE = (\f. f)
-
-apply_RRR = (\f. (\x. f x))
-
-test1 = apply_RRR id B
-
-test2 = apply_REE constA
-
-main = Op test1 test2
-
-### Normal forms ###
-
-unerased:
-  Op B A
-erased:
-  Op B A

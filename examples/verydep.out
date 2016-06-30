@@ -269,28 +269,3 @@ main :R: Bool = f -R- (Just -E- Bool -R- False)
 
 ### Verification ###
 
-Verification successful.
-
-### Pruned ###
-
-postulate Just
-
-postulate Bool
-
-postulate False
-
-f = \x.
-  case x of
-    Just b
-      => b
-    Nothing
-      => Bool
-
-main = f (Just False)
-
-### Normal forms ###
-
-unerased:
-  False
-erased:
-  False
