@@ -16,14 +16,8 @@ pruneBody :: Body Relevance -> Body ()
 pruneBody (Abstract a)  = Abstract a
 pruneBody (Term tm)     = Term $ pruneTm tm
 
-pruneCaseTree :: CaseTree Relevance -> CaseTree ()
-pruneCaseTree (Leaf tm) = Leaf $ pruneTm tm
-pruneCaseTree (Case E s [Alt lhs rhs]) = pruneCaseTree rhs
-pruneCaseTree (Case R s alts) = Case () (pruneTm s) $ map pruneAlt alts
-pruneCaseTree t@(Case E s alts) = error $ "trying to prune non-singleton tree: " ++ show t
-
 pruneAlt :: Alt Relevance -> Alt ()
-pruneAlt (Alt lhs rhs) = Alt (pruneAltLHS lhs) (pruneCaseTree rhs)
+pruneAlt (Alt lhs rhs) = Alt (pruneAltLHS lhs) (pruneTm rhs)
 
 pruneAltLHS :: AltLHS Relevance -> AltLHS ()
 pruneAltLHS Wildcard = Wildcard
@@ -42,4 +36,6 @@ pruneTm (Bind b d tm)
         [d'] -> Bind b d' (pruneTm tm)
 pruneTm (App E f x) = pruneTm f
 pruneTm (App R f x) = App () (pruneTm f) (pruneTm x)
-pruneTm (PatLam ty ds ct) = PatLam (V Blank) (pruneDefs ds) (pruneCaseTree ct)
+pruneTm (Case E s ty [Alt lhs rhs]) = pruneTm rhs
+pruneTm (Case R s ty alts) = Case () (pruneTm s) (V Blank) $ map pruneAlt alts
+pruneTm t@(Case E s ty alts) = error $ "trying to prune non-singleton tree: " ++ show t

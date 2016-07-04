@@ -20,8 +20,8 @@ ttRelevance f = g
             -> Bind b <$> defRelevance f d <*> g tm
         App r fun arg
             -> App <$> f r <*> g fun <*> g arg
-        PatLam ty ds ct
-            -> PatLam <$> g ty <*> traverse (defRelevance f) ds <*> caseTreeRelevance f ct
+        Case r s ty alts
+            -> Case <$> f r <*> g s <*> g ty <*> traverse (altRelevance f) alts
 
 defRelevance :: Ord r' => Traversal (Def r) (Def r') r r'
 defRelevance f (Def n r ty body mcs)
@@ -35,12 +35,8 @@ bodyRelevance :: Ord r' => Traversal (Body r) (Body r') r r'
 bodyRelevance f (Abstract a) = pure $ Abstract a
 bodyRelevance f (Term tm) = Term <$> ttRelevance f tm
 
-caseTreeRelevance :: Ord r' => Traversal (CaseTree r) (CaseTree r') r r'
-caseTreeRelevance f (Leaf tm) = Leaf <$> ttRelevance f tm
-caseTreeRelevance f (Case r s alts) = Case <$> f r <*> ttRelevance f s <*> traverse (altRelevance f) alts
-
 altRelevance :: Ord r' => Traversal (Alt r) (Alt r') r r'
-altRelevance f (Alt lhs rhs) = Alt <$> altLHSRelevance f lhs <*> caseTreeRelevance f rhs
+altRelevance f (Alt lhs rhs) = Alt <$> altLHSRelevance f lhs <*> ttRelevance f rhs
 
 altLHSRelevance :: Ord r' => Traversal (AltLHS r) (AltLHS r') r r'
 altLHSRelevance f Wildcard = pure $ Wildcard

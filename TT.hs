@@ -26,24 +26,20 @@ data TT r
     = V Name
     | I Name (TT r)  -- instance of a global definition with a specific erasure type
     | Bind Binder (Def r) (TT r)
-    | PatLam (TT r) [Def r] (CaseTree r)
+    | Case r (TT r) (TT r) [Alt r]  -- r, scrut, type, alts
     | App r (TT r) (TT r)
-    | Forced (TT r)  -- forced terms don't generate constraints
     deriving (Eq, Ord)
 
-data CaseTree r
-    = Leaf (TT r)
-    | Case r (TT r) [Alt r]
-    deriving (Eq, Ord)
+type Subst r = [(Name, TT r)]
 
 data AltLHS r
-    = Ctor Name [Def r] [(Name, TT r)]
+    = Ctor Name [Def r] (Subst r)
     | Wildcard
     deriving (Eq, Ord)
 
 data Alt r = Alt
     { altLHS :: AltLHS r
-    , altRHS :: CaseTree r
+    , altRHS :: TT r
     } deriving (Eq, Ord)
 
 -- The difference between Var and Postulate is that for Var, the value is unknown,

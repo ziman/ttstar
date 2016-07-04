@@ -34,20 +34,13 @@ instance Termy TT where
 
     subst n tm (App r f x) = App r (subst n tm f) (subst n tm x)
 
-    subst n tm (Forced t) = Forced (subst n tm t)
-
-    -- see (subst n tm (Bind b d rhs)) for the general approach to subst under binders
-    subst n tm (PatLam ty ds ct) = PatLam (subst n tm ty) ds' ct'
-      where
-        (ds', [], ct') = substBinder n tm ds [] ct
+    subst n tm (Case r s ty alts) = Case r (subst n tm s) (subst n tm ty) (map (subst n tm) alts)
 
     freeVars (V n) = S.singleton n
     freeVars (I n ty) = S.insert n $ freeVars ty
     freeVars (Bind b d tm) = freeVarsBinder [d] [] tm
     freeVars (App r f x) = freeVars f `S.union` freeVars x
-    freeVars (Forced tm) = freeVars tm
-    freeVars (PatLam ty ds ct) =
-        freeVars ty `S.union` freeVarsBinder ds [] ct
+    freeVars (Case r s ty alts) = S.unions [freeVars s, freeVars ty, S.unions $ map freeVars alts]
 
 instance Termy Def where
     subst n tm (Def dn r ty body mcs)
@@ -134,15 +127,6 @@ substBinder n tm (d:ds) eqs rhs
     freshen = rename boundName freshName
 
     freshenEq = substEq boundName (V freshName)
-
-instance Termy CaseTree where
-    subst n tm (Leaf t)
-        = Leaf $ subst n tm t
-    subst n tm (Case r s alts)
-        = Case r (subst n tm s) $ map (subst n tm) alts
-
-    freeVars (Leaf tm) = freeVars tm
-    freeVars (Case r s alts) = S.unions (freeVars s : map freeVars alts)
 
 instance Termy Alt where
     -- equations are pattern-only so they are not touched by substitution

@@ -103,11 +103,11 @@ instance PrettyR r => Pretty (TT r) where
             ps = if pp then parens else id
             show' r (App r' f' x') x = show' r' f' x' <> prettyApp r <> pretty' True x
             show' r f x = pretty f <> prettyApp r <> pretty' True x
-        pretty' pp (Forced tm) = brackets (pretty' False tm) 
 
-        pretty' pp (PatLam ty ds ct) =
-            text "\\" <> hsep (map prettyParens ds) <+> parens (colon <+> pretty ty) <> text "."
-            $$ indent (pretty ct)
+        pretty' pp (Case r s ty alts) =
+            text "case" <> prettyApp r <+> pretty s <+> text "returns" <+> pretty ty <> text "."
+            $$ indent (vcat $ map pretty alts)
+
 
 instance PrettyR r => Show (TT r) where
     show = prettyShow
@@ -117,12 +117,6 @@ instance PrettyR r => Show (Def r) where
 
 deriving instance PrettyR r => Show (Body r)
 deriving instance PrettyR r => Show (Program r)
-
-instance PrettyR r => Pretty (CaseTree r) where
-    pretty (Leaf tm) = pretty tm
-    pretty (Case r n alts) =
-        text "case" <> prettyApp r <> pretty n <+> text "of"
-        $$ indent (vcat $ map pretty alts)
 
 instance PrettyR r => Pretty (Alt r) where
     pretty (Alt lhs rhs) = pretty lhs $$ indent (text "=>" <+> pretty rhs)
@@ -143,9 +137,6 @@ prettyParens d
 
     | otherwise
     = parens $ pretty d
-
-instance PrettyR r => Show (CaseTree r) where
-    show = prettyShow
 
 instance PrettyR r => Show (Alt r) where
     show = prettyShow

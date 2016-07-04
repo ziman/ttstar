@@ -38,17 +38,6 @@ redBody :: IsRelevance r => Form -> Ctx r -> Body r -> Body r
 redBody form ctx (Abstract a)  = Abstract a
 redBody form ctx (Term tm)     = Term (red form ctx tm)
 
-redCaseTree :: IsRelevance r => Form -> Ctx r -> CaseTree r -> CaseTree r
-redCaseTree NF ctx (Leaf tm) = Leaf $ red NF ctx tm
-redCaseTree NF ctx (Case r v alts) = Case r v $ map (redAlt NF ctx) alts
-
-redAlt :: IsRelevance r => Form -> Ctx r -> Alt r -> Alt r
-redAlt NF ctx (Alt lhs rhs) = Alt (redAltLHS NF ctx lhs) (redCaseTree NF ctx rhs)
-
-redAltLHS :: IsRelevance r => Form -> Ctx r -> AltLHS r -> AltLHS r
-redAltLHS NF ctx Wildcard = Wildcard
-redAltLHS NF ctx (Ctor cn args eqs) = Ctor cn (map (redDef NF ctx) args) [(n, red NF ctx tm) | (n, tm) <- eqs]
-
 red :: IsRelevance r => Form -> Ctx r -> TT r -> TT r
 
 red form ctx t@(V Blank) = t
@@ -81,27 +70,10 @@ red  NF  ctx t@(Bind b d tm) = Bind b (redDef NF ctx d) (red NF ctx' tm)
   where
     ctx' = M.insert (defName d) d ctx
 
-{-
-redCaseFun :: IsRelevance r => Form -> Ctx r -> CaseFun r -> CaseFun r
-redCaseFun NF ctx (CaseFun args ct) = go ctx [] args
-  where
-    go ctx rargs [] = CaseFun (reverse rargs) (redCaseTree NF ctx ct)
-    go ctx rargs (d:ds) =
-        let d' = redDef NF ctx d
-          in go (M.insert (defName d) d' ctx) (d':rargs) ds
--}
-
 red form ctx t@(App r f x)
     -- lambdas
     | Bind Lam (Def n' r' ty' (Abstract Var) cs) tm' <- redF
     = red form ctx $ subst n' redX tm'
-
-    -- pattern lambdas
-    -- this deals correctly with under-/overapplied PatLams
-    -- because redF is computed recursively
-    | (PatLam ty ds ct, args) <- unApply t
-    , length ds == length args
-    = red form ctx . fromMaybe t $ evalPatLam form ctx ds ct t
 
     -- everything else
     | otherwise = App r redF redX  -- not a redex
@@ -111,7 +83,12 @@ red form ctx t@(App r f x)
         NF   -> red NF ctx x
         WHNF -> x
 
-red form ctx (Forced tm) = red form ctx tm
+red form ctx t@(Case r s ty alts) = 
+    case firstMatch $ map (evalAlt form ctx sWHNF) alts of
+        Just nf -> nf
+        Nothing -> error $ "pattern match failure: " ++ show t
+  where
+    sWHNF = red WHNF ctx s
 
 substArgs :: Termy f => [Def r] -> [(r, TT r)] -> f r -> Maybe (f r, [(r, TT r)])
 substArgs []     extras rhs = Just (rhs, extras)
@@ -122,34 +99,19 @@ substArgs (d:ds) ((r,v):vs) rhs =
     (ds', [], rhs') = substBinder n v ds [] rhs
     n = defName d
 
-evalPatLam :: IsRelevance r => Form -> Ctx r -> [Def r] -> CaseTree r -> TT r -> Maybe (TT r)
-evalPatLam form ctx argvars ct tm = do
-    (ct', []) <- substArgs argvars argvals ct
-    rhs <- evalCaseTree form ctx ct'
-    return $ red form ctx rhs
-  where
-    (_, argvals) = unApply tm
-
-evalCaseTree :: IsRelevance r => Form -> Ctx r -> CaseTree r -> Maybe (TT r)
-evalCaseTree form ctx (Leaf tm) = Just $ red form ctx tm
-evalCaseTree form ctx (Case r tm alts)
-    = firstMatch $ map (evalAlt form ctx tmWHNF) alts
-  where
-    tmWHNF = red WHNF ctx tm
-
 firstMatch :: Alternative f => [f a] -> f a
 firstMatch = foldr (<|>) empty
 
--- here, the term tm is in WHNF
+-- here, the scrutinee (tm) is in WHNF
 evalAlt :: IsRelevance r => Form -> Ctx r -> TT r -> Alt r -> Maybe (TT r)
 evalAlt form ctx tm (Alt Wildcard rhs)
-    = evalCaseTree form ctx rhs
+    = return $ red form ctx rhs
 
 evalAlt form ctx tm (Alt (Ctor cn argvars eqs) rhs)
     | (V cn', argvals) <- unApply tm
     , cn' == cn
     = do
         (rhs', []) <- substArgs argvars argvals rhs
-        evalCaseTree form ctx rhs'
+        return $ red form ctx rhs'
 
 evalAlt form ctx tm alt = Nothing

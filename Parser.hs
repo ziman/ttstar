@@ -104,14 +104,6 @@ erasureInstance = (<?> "erasure instance") $ do
     kwd "]"
     return $ I n ty
 
-case_ :: Parser (TT MRel)
-case_ = (<?> "case expression") $ do
-    kwd "case"
-    tm <- parens expr
-    kwd "where"
-    d <- simpleDef
-    return $ Bind Let d tm
-
 expr :: Parser (TT MRel)
 expr = 
         case_
@@ -137,20 +129,15 @@ mkPostulate :: Def MRel -> Def MRel
 mkPostulate (Def n r ty (Abstract Var) cs)
     = Def n r ty (Abstract Postulate) cs
 
-caseTree :: Parser (CaseTree MRel)
-caseTree = realCaseTree <|> leaf <?> "case tree or term"
-
-leaf :: Parser (CaseTree MRel)
-leaf = Leaf <$> expr
-
-realCaseTree :: Parser (CaseTree MRel)
-realCaseTree = (<?> "case tree") $ do
+case_ :: Parser (TT MRel)
+case_ = (<?> "case split") $ do
     try $ kwd "case"
     v <- name
-    kwd "of"
+    kwd "return"
+    ty <- expr <* kwd "."
     alts <- caseAlt `sepBy` kwd ","
     kwd "."
-    return $ Case Nothing (V v) alts
+    return $ Case Nothing (V v) ty alts
 
 caseEq :: Parser (Name, TT MRel)
 caseEq = (<?> "case equality") $ do
@@ -175,31 +162,20 @@ caseAlt :: Parser (Alt MRel)
 caseAlt
     = Alt
         <$> caseLHS
-        <*> (kwd "=>" *> caseTree)
+        <*> (kwd "=>" *> expr)
         <?> "constructor-matching case branch"
 
 fundef :: Parser (Def MRel)
 fundef = (<?> "function definition") $ do
-    n <- name
-    args <- many $ parens (typing Var)
-    r <- rcolon
-    retTy <- expr
-    kwd "="
+    n     <- name
+    args  <- many $ parens (typing Var)
+    r     <- rcolon
+    retTy <- expr <* kwd "="
+    tm    <- expr <* kwd "."
+    let ty   = chain Pi args retTy
+    let body = chain Lam args tm
 
-    let ty = chain Pi args retTy
-
-    let lambdaDef = do
-            tm <- expr
-            kwd "."
-            return $ Def n r ty (Term $ chain Lam args tm) noConstrs
-
-    let matchingDef = do
-            ct <- realCaseTree  -- `caseTree` allows plain terms but we don't want those here
-            -- also, don't require the dot after the case expression because
-            -- the case expression knows when to terminate itself
-            return $ Def n r ty (Term $ PatLam ty args ct) noConstrs
-
-    matchingDef <|> lambdaDef
+    return $ Def n r ty (Term body) noConstrs
   where
     chain bnd [] tm = tm
     chain bnd (d : args) tm = Bind bnd d $ chain bnd args tm
