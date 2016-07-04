@@ -132,12 +132,12 @@ mkPostulate (Def n r ty (Abstract Var) cs)
 case_ :: Parser (TT MRel)
 case_ = (<?> "case split") $ do
     try $ kwd "case"
-    v <- name
+    s <- parens expr
     kwd "return"
-    ty <- expr <* kwd "."
+    ty <- parens expr
     alts <- caseAlt `sepBy` kwd ","
     kwd "."
-    return $ Case Nothing (V v) ty alts
+    return $ Case Nothing s ty alts
 
 caseEq :: Parser (Name, TT MRel)
 caseEq = (<?> "case equality") $ do
