@@ -342,7 +342,8 @@ checkAlt sr sty goalTy (Alt Wildcard rhs) = bt ("ALT-WILD") $ do
     return rcs
 
 checkAlt sr sty goalTy (Alt (Ctor cn args eqs) rhs) = bt ("ALT-CTOR", cn) $ do
-    withDefs args $ do
+    args' <- checkDefs args
+    with' (M.union args') $ do
         (patTy, patcs) <- checkTm pat
         tccs <- conv (substs eqs patTy) (substs eqs sty)
 
