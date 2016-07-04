@@ -330,8 +330,8 @@ checkTm t@(Case r s ty alts) = bt ("CASE", s, ty) $ do
     (sty, scs) <- checkTm s
     altcs <- unions <$> traverse (checkAlt r sty ty) alts
 
-    let cs | length alts < 2 = altcs /\ Fixed R --> r /\ scs
-           | otherwise       = altcs /\ cond r scs
+    let cs | length alts < 2 = altcs /\ cond r scs
+           | otherwise       = altcs /\ Fixed R --> r /\ scs
 
     return (ty, cs)
 
@@ -352,7 +352,7 @@ checkAlt sr sty goalTy (Alt (Ctor cn args eqs) rhs) = bt ("ALT-CTOR", cn) $ do
             rccs <- conv rty (substs eqs goalTy)
 
             -- we should probably omit patcs
-            return $ cond sr tccs /\ rcs /\ rccs
+            return $ cond sr tccs /\ rcs /\ rccs /\ unions [defR d --> sr | d <- args]
   where
     pat = mkApp (V cn) [(defR d, V $ defName d) | d <- args]
 
