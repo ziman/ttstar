@@ -187,6 +187,7 @@ checkDef d@(Def n r ty (Term tm) _noCs) = bt ("DEF-TERM", n) $ do
     let cs = tmcs /\ {- tycs /\ -} tytyTypeCs /\ tyTmtyCs /\ Fixed R --> r  -- in types, only conversion constraints matter
     return $ Def n r ty (Term tm) cs
 
+{-
 checkCaseTree :: TT Meta -> CaseTree Meta -> TC (Constrs Meta)
 checkCaseTree lhs (Leaf rhs) = bt ("PLAIN-TERM", lhs, rhs) $ do
     (lty, lcs) <- checkTm lhs
@@ -209,7 +210,6 @@ checkCaseTree lhs ct@(Case r (V n) alts) = bt ("CASE", lhs, ct) $ do
 
 checkCaseTree lhs (Case r s alts) =
     tcfail $ NonVariableScrutinee s
-
 
 checkPatvar :: Name -> TC ()
 checkPatvar n = do
@@ -251,7 +251,7 @@ checkAlt isSingleBranch lhs n sr (Alt (Ctor cn args eqs_NF) rhs) = bt ("ALT-CTOR
 
     -- bindings from the individual vars to the scrutinee
     scrutCs = unions [defR d --> sr | d <- args]
-
+-}
 
 withDefs :: [Def Meta] -> TC a -> TC a
 withDefs (Def n r ty body cs : ds) = with (Def n r ty body cs) . withDefs ds
@@ -324,21 +324,36 @@ checkTm t@(App app_r f x) = bt ("APP", t) $ do
         _ -> do
             tcfail $ NonFunction f fty
 
-checkTm t@(PatLam ty ds ct) = bt ("PATLAM", ty, ds) $ do
+checkTm t@(Case r s ty alts) = bt ("CASE", s, ty) $ do
     (tyty, tycs) <- checkTm ty
-    tytyTypeCs   <- conv tyty (V $ UN "Type")
-    argCtx <- checkDefs ds
-    -- TODO
-    //compileerror//
-    let lhs = mkApp (V fn) [(r, V n) | Def n r ty (Abstract Var) cs <- args]
-    with' (M.union argCtx)
-        $ checkCaseTree lhs ct
-    let cs = {- tycs /\ -} tytyTypeCs /\ cfCs /\ Fixed R --> r  -- in types, only conversion constraints matter
+    conv tyty (V $ UN "Type")
+    (sty, scs) <- checkTm s
+    altcs <- unions <$> traverse (checkAlt r sty ty) alts
+
+    let cs | length alts < 2 = altcs /\ Fixed R --> r /\ scs
+           | otherwise       = altcs /\ cond r scs
+
     return (ty, cs)
 
-checkTm (Forced tm) = bt ("FORCED", tm) $ do
-    (ty, _cs) <- checkTm tm
-    return (ty, noConstrs)
+checkAlt :: Meta -> Type -> Type -> Alt Meta -> TC (Constrs Meta)
+checkAlt sr sty goalTy (Alt Wildcard rhs) = bt ("ALT-WILD") $ do
+    (rty, rcs) <- checkTm rhs
+    conv rty goalTy
+    return rcs
+
+checkAlt sr sty goalTy (Alt (Ctor cn args eqs) rhs) = bt ("ALT-CTOR", cn) $ do
+    withDefs args $ do
+        (patTy, patcs) <- checkTm pat
+        tccs <- conv (substs eqs patTy) (substs eqs sty)
+
+        with' (substsInCtx eqs) $ do
+            (rty, rcs) <- checkTm rhs
+            rccs <- conv rty (substs eqs goalTy)
+
+            -- we should probably omit patcs
+            return $ cond sr tccs /\ rcs /\ rccs
+  where
+    pat = mkApp (V cn) [(defR d, V $ defName d) | d <- args]
 
 newtype TC' a = LiftTC' { runTC' :: TC a } deriving (Functor, Applicative, Monad)
 type ITC = StateT (IM.IntMap Int) TC'
