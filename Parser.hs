@@ -136,8 +136,9 @@ case_ = (<?> "case split") $ do
     kwd "return"
     ty <- parens expr
     kwd "of"
+    kwd "{"
     alts <- caseAlt `sepBy` kwd ","
-    kwd "."
+    kwd "}"
     return $ Case Nothing s ty alts
 
 caseEq :: Parser (Name, TT MRel)
