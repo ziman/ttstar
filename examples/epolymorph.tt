@@ -16,7 +16,7 @@ data Nat : Type.
 postulate Plus : (x :R: Nat) -> (y :R: Nat) -> Nat.
 
 id (x : Nat) : Nat
-  = case x of
+  = case (x) return (Nat) of
       Z => Z,
       S (y : Nat)
         => let result : Nat = S y. in result.

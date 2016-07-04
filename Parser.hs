@@ -135,6 +135,7 @@ case_ = (<?> "case split") $ do
     s <- parens expr
     kwd "return"
     ty <- parens expr
+    kwd "of"
     alts <- caseAlt `sepBy` kwd ","
     kwd "."
     return $ Case Nothing s ty alts
