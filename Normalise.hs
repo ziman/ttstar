@@ -83,21 +83,35 @@ red form ctx t@(App r f x)
         NF   -> red NF ctx x
         WHNF -> x
 
-red form ctx t@(Case r s ty alts) = 
-    case firstMatch $ map (evalAlt form ctx sWHNF) alts of
+red NF ctx t@(Case r s ty alts) = 
+    case firstMatch $ map (evalAlt NF ctx sWHNF) alts of
         Just nf -> nf
-        Nothing -> error $ "pattern match failure: " ++ show t
+        Nothing ->
+            Case r (red NF ctx s) (red NF ctx ty) (map (redAltNF ctx) alts)
   where
     sWHNF = red WHNF ctx s
 
-substArgs :: Termy f => [Def r] -> [(r, TT r)] -> f r -> Maybe (f r, [(r, TT r)])
-substArgs []     extras rhs = Just (rhs, extras)
-substArgs (d:ds) []     rhs = Nothing  -- ran out of values
-substArgs (d:ds) ((r,v):vs) rhs =
-    substArgs ds' vs rhs'
+red WHNF ctx t@(Case r s ty alts) = 
+    case firstMatch $ map (evalAlt WHNF ctx sWHNF) alts of
+        Just nf -> nf
+        Nothing -> t
   where
-    (ds', [], rhs') = substBinder n v ds [] rhs
-    n = defName d
+    sWHNF = red WHNF ctx s
+
+redAltNF :: IsRelevance r => Ctx r -> Alt r -> Alt r
+redAltNF ctx (Alt lhs rhs) = Alt lhs $ red NF ctx rhs
+
+{-
+substArgs :: Termy f => [Def r] -> [(r, TT r)] -> f r -> f r
+substArgs []     []         rhs = rhs
+substArgs (d:ds) ((r,v):vs) rhs = subst
+substArgs (d:ds) ((r,v):vs) rhs = substArgs ds' vs rhs'
+  where
+    (ds', [], rhs') = substBinder (defName d) v ds [] rhs
+-}
+
+argSubst :: [Def r] -> [(r, TT r)] -> [(Name, TT r)]
+argSubst = zipWith $ \d (r,v) -> (defName d, v)
 
 firstMatch :: Alternative f => [f a] -> f a
 firstMatch = foldr (<|>) empty
@@ -110,8 +124,14 @@ evalAlt form ctx tm (Alt Wildcard rhs)
 evalAlt form ctx tm (Alt (Ctor cn argvars eqs) rhs)
     | (V cn', argvals) <- unApply tm
     , cn' == cn
-    = do
-        (rhs', []) <- substArgs argvars argvals rhs
-        return $ red form ctx rhs'
+    , length argvars == length argvals
+    = Just . red form ctx
+        $ substs (argSubst argvars argvals) rhs
+
+evalAlt form ctx tm (Alt (Ctor cn argvars eqs) rhs)
+    | (V cn', argvals) <- unApply tm
+    , cn' == cn
+    , length argvars /= length argvals
+    = error "constructor arity mismatch in pattern"
 
 evalAlt form ctx tm alt = Nothing

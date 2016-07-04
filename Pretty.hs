@@ -104,10 +104,17 @@ instance PrettyR r => Pretty (TT r) where
             show' r (App r' f' x') x = show' r' f' x' <> prettyApp r <> pretty' True x
             show' r f x = pretty f <> prettyApp r <> pretty' True x
 
-        pretty' pp (Case r s ty alts) =
-            text "case" <> prettyApp r <+> pretty s <+> text "returns" <+> pretty ty <> text "."
-            $$ indent (vcat $ map pretty alts)
+        pretty' pp (Case r s (V Blank) alts) =
+            blankLine $$ indent (
+                text "case" <+> pretty s <+> text "of"
+                $$ indent (vcat $ map pretty alts)
+            )
 
+        pretty' pp (Case r s ty alts) =
+            blankLine $$ indent (
+                text "case" <> prettyApp r <+> pretty s <+> text "returns" <+> pretty ty <> text "."
+                $$ indent (vcat $ map pretty alts)
+            )
 
 instance PrettyR r => Show (TT r) where
     show = prettyShow
