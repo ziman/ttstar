@@ -86,17 +86,9 @@ specNDef (Def n r ty body noCs)
 specNBody :: Body Relevance -> Spec (Body Relevance)
 specNBody (Abstract a)  = pure $ Abstract a
 specNBody (Term tm)     = Term <$> specNTm tm
-specNBody (Patterns cf) = Patterns <$> specNCaseFun cf
-
-specNCaseFun :: CaseFun Relevance -> Spec (CaseFun Relevance)
-specNCaseFun (CaseFun args ct) = CaseFun <$> traverse specNDef args <*> specNCaseTree ct
-
-specNCaseTree :: CaseTree Relevance -> Spec (CaseTree Relevance)
-specNCaseTree (Leaf tm) = Leaf <$> specNTm tm
-specNCaseTree (Case r s alts) = Case r <$> specNTm s <*> traverse specNAlt alts
 
 specNAlt :: Alt Relevance -> Spec (Alt Relevance)
-specNAlt (Alt lhs rhs) = Alt <$> specNLHS lhs <*> specNCaseTree rhs
+specNAlt (Alt lhs rhs) = Alt <$> specNLHS lhs <*> specNTm rhs
 
 specNLHS :: AltLHS Relevance -> Spec (AltLHS Relevance)
 specNLHS Wildcard = pure Wildcard
@@ -117,6 +109,7 @@ specNTm (I n@(UN ns) ty) = do
 
 specNTm (Bind b d tm) = Bind b <$> specNDef d <*> specNTm tm
 specNTm (App r f x) = App r <$> specNTm f <*> specNTm x
+specNTm (Case r s ty alts) = Case r <$> specNTm s <*> specNTm ty <*> traverse specNAlt alts
 
 specName :: Name -> ErPattern -> Name
 specName (UN n) epat = IN n epat
