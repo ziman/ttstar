@@ -328,33 +328,51 @@ checkTm t@(Case r s ty alts) = bt ("CASE", s, ty) $ do
     (tyty, tycs) <- checkTm ty
     conv tyty (V $ UN "Type")
     (sty, scs) <- checkTm s
-    altcs <- unions <$> traverse (checkAlt r sty ty) alts
+    let msn = case s of
+                V n -> Just n
+                _   -> Nothing
+    altcs <- unions <$> traverse (checkAlt r sty ty s) alts
 
     let cs | length alts < 2 = altcs /\ cond r scs
            | otherwise       = altcs /\ Fixed R --> r /\ scs
 
     return (ty, cs)
 
-checkAlt :: Meta -> Type -> Type -> Alt Meta -> TC (Constrs Meta)
-checkAlt sr sty goalTy (Alt Wildcard rhs) = bt ("ALT-WILD") $ do
+checkPatvar :: Name -> TC ()
+checkPatvar n = do
+    d <- lookup n
+    case d of
+        Def n r ty (Abstract Var) cs
+            -> return ()
+        _
+            -> tcfail $ NonPatvarInEq n
+
+checkAlt :: Meta -> Type -> Type -> Term -> Alt Meta -> TC (Constrs Meta)
+checkAlt sr sty goalTy s (Alt Wildcard rhs) = bt ("ALT-WILD") $ do
     (rty, rcs) <- checkTm rhs
     conv rty goalTy
     return rcs
 
-checkAlt sr sty goalTy (Alt (Ctor cn args eqs) rhs) = bt ("ALT-CTOR", cn) $ do
-    args' <- checkDefs args
-    with' (M.union args') $ do
-        (patTy, patcs) <- checkTm pat
-        tccs <- conv (substs eqs patTy) (substs eqs sty)
+checkAlt sr sty goalTy s (Alt (Ctor cn args eqs) rhs) = bt ("ALT-CTOR", cn) $ do
+    argCtx <- checkDefs args
+    with' (M.union argCtx) $ do
+        traverse checkPatvar $ map fst eqs
 
-        with' (substsInCtx eqs) $ do
-            (rty, rcs) <- checkTm rhs
-            rccs <- conv rty (substs eqs goalTy)
+        (patTy, patcs) <- checkTm pat'
+        tccs <- conv (substs eqs' patTy) (substs eqs' sty)
+
+        with' (substsInCtx eqs') $ do
+            (rty, rcs) <- checkTm $ substs eqs' rhs
+            rccs <- conv rty (substs eqs' goalTy)
 
             -- we should probably omit patcs
             return $ cond sr tccs /\ rcs /\ rccs /\ unions [defR d --> sr | d <- args]
   where
     pat = mkApp (V cn) [(defR d, V $ defName d) | d <- args]
+    pat' = substs eqs pat
+    eqs' = case s of
+            V n -> (n,pat') : eqs
+            _   -> eqs
 
 newtype TC' a = LiftTC' { runTC' :: TC a } deriving (Functor, Applicative, Monad)
 type ITC = StateT (IM.IntMap Int) TC'
