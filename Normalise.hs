@@ -99,7 +99,11 @@ red WHNF ctx t@(Case r s ty alts) =
     sWHNF = red WHNF ctx s
 
 redAltNF :: IsRelevance r => Ctx r -> Alt r -> Alt r
-redAltNF ctx (Alt lhs rhs) = Alt lhs $ red NF ctx rhs
+redAltNF ctx (Alt Wildcard rhs) = Alt Wildcard $ red NF ctx rhs
+redAltNF ctx (Alt lhs@(Ctor cn args eqs) rhs)
+    = Alt lhs $ red NF ctx' rhs
+  where
+    ctx' = foldr (\d -> M.insert (defName d) d) ctx args
 
 {-
 substArgs :: Termy f => [Def r] -> [(r, TT r)] -> f r -> f r
