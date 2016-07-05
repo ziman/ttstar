@@ -29,6 +29,10 @@ import System.Environment
 import qualified Data.Set as S
 import qualified Data.Map as M
 
+-- TODO:
+-- * make all variables unique
+-- * number all lambdas as fixpoints
+
 {- Questions for Edwin:
  - * is evaluation per-clause okay with forced patterns?
  - * prune is no longer trivial. Is that okay?

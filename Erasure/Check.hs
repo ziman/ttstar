@@ -365,8 +365,7 @@ checkAlt sr sty goalTy s (Alt (Ctor cn args eqs) rhs) = bt ("ALT-CTOR", cn) $ do
             (rty, rcs) <- checkTm $ substs eqs' rhs
             rccs <- conv rty (substs eqs' goalTy)
 
-            -- we should probably omit patcs
-            return $ cond sr tccs /\ rcs /\ rccs /\ unions [defR d --> sr | d <- args]
+            return $ cond sr (tccs /\ flipConstrs patcs) /\ rcs /\ rccs /\ unions [defR d --> sr | d <- args]
   where
     pat = mkApp (V cn) [(defR d, V $ defName d) | d <- args]
     pat' = substs eqs pat

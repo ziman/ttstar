@@ -61,9 +61,13 @@ red form ctx t@(Bind Let d tm)
         Abstract Var
             -> error "trying to substitute a variable"
         Abstract Postulate
-            -> red form (M.insert (defName d) d ctx) tm
+            -> red form ctx' tm
         Term val
-            -> red form ctx $ subst (defName d) val tm
+            -- we insert stuff into the context for recursive definitions
+            -- and substitute for WHNF unevaluated terms
+            -> red form ctx' $ subst (defName d) val tm
+  where
+    ctx' = M.insert (defName d) d ctx
 
 red WHNF ctx t@(Bind b d tm) = t
 red  NF  ctx t@(Bind b d tm) = Bind b (redDef NF ctx d) (red NF ctx' tm)
@@ -87,7 +91,7 @@ red NF ctx t@(Case r s ty alts) =
     case firstMatch $ map (evalAlt NF ctx sWHNF) alts of
         Just nf -> nf
         Nothing ->
-            Case r (red NF ctx s) (red NF ctx ty) (map (redAltNF ctx) alts)
+            t -- Case r (red NF ctx s) (red NF ctx ty) (map (redAltNF ctx) alts)
   where
     sWHNF = red WHNF ctx s
 
