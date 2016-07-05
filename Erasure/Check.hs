@@ -399,9 +399,11 @@ instantiate freshTag metaMap def = evalStateT refresh metaMap
 
 -- left: from context (from outside), right: from expression (from inside)
 conv :: Type -> Type -> TC (Constrs Meta)
-conv p q = do
-    ctx <- getCtx
-    conv' (whnf ctx p) (whnf ctx q)
+conv p q
+    | p == q = return noConstrs
+    | otherwise = do
+        ctx <- getCtx
+        conv' (whnf ctx p) (whnf ctx q)
 
 -- note that this function gets arguments in WHNF
 conv' :: Type -> Type -> TC (Constrs Meta)
@@ -438,6 +440,11 @@ conv' p@(Case r s ty alts) q@(Case r' s' ty' alts') = bt ("C-CASE", p, q) $ do
 conv' p q = tcfail $ CantConvert p q
 
 convAlt :: Alt Meta -> Alt Meta -> TC (Constrs Meta)
-convAlt alt@(Alt lhs rhs) alt'@(Alt lhs' rhs') = bt ("CONV-ALT", alt, alt') $ do
-    require (lhs == lhs') $ Mismatch (show lhs) (show lhs')
+convAlt (Alt Wildcard rhs) (Alt Wildcard rhs') = bt ("CONV-ALT-WILD", rhs, rhs') $ do
     conv rhs rhs'
+
+convAlt alt@(Alt lhs@(Ctor cn args eqs) rhs) alt'@(Alt lhs'@(Ctor cn' args' eqs') rhs') = bt ("CONV-ALT", alt, alt') $ do
+    require (lhs == lhs') $ Mismatch (show lhs) (show lhs')
+    withDefs args $ conv rhs rhs'
+
+convAlt p q = tcfail $ Mismatch (show p) (show q)

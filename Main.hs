@@ -32,6 +32,7 @@ import qualified Data.Map as M
 -- TODO:
 -- * make all variables unique
 -- * number all lambdas as fixpoints
+-- * move (-> r) from checkDef to Var-Delta
 
 {- Questions for Edwin:
  - * is evaluation per-clause okay with forced patterns?

@@ -20,8 +20,8 @@ type IsRelevance r = (PrettyR r, Eq r)
 data Form = NF | WHNF deriving Show
 
 dbg :: Show a => a -> b -> b
-dbg = traceShow
---dbg _ x = x
+--dbg = traceShow
+dbg _ x = x
 
 dbgS :: (Show a, Show b) => a -> b -> b
 dbgS x y = (x, y) `dbg` y
@@ -91,12 +91,15 @@ red form ctx t@(App r f x)
 red form ctx t@(Case r s ty alts) = 
     case unApply sWHNF of
         (V cn, argvals)
-            | Just d <- M.lookup cn ctx  -- WHNF didn't fail so "cn" is a valid name
+            | Just cd <- M.lookup cn ctx  -- WHNF didn't fail so "cn" is a valid name
+            , ("SCRUT", cn, cd, defBody cd) `dbg` True
+            , Abstract Postulate <- defBody cd  -- it's a constructor
             -> case firstMatch $ map (evalAlt form ctx cn argvals) alts of
                 Just rhs -> red form ctx rhs
                 Nothing  -> stuck
-        _ -> stuck
+        _ | ("STUCK", s, stuck) `dbg` True -> stuck
   where
+    --stuck = t
     stuck = case form of
         NF -> Case r (red NF ctx s) (red NF ctx ty) (map (redAltNF ctx) alts)
         WHNF -> t
@@ -119,7 +122,6 @@ redAltLHS form ctx (Ctor cn args eqs)
 {-
 substArgs :: Termy f => [Def r] -> [(r, TT r)] -> f r -> f r
 substArgs []     []         rhs = rhs
-substArgs (d:ds) ((r,v):vs) rhs = subst
 substArgs (d:ds) ((r,v):vs) rhs = substArgs ds' vs rhs'
   where
     (ds', [], rhs') = substBinder (defName d) v ds [] rhs
@@ -131,16 +133,15 @@ argSubst = zipWith $ \d (r,v) -> (defName d, v)
 firstMatch :: Alternative f => [f a] -> f a
 firstMatch = foldr (<|>) empty
 
--- here, the scrutinee (tm) is in WHNF
+-- redCase will reduce the returned value
 evalAlt :: IsRelevance r => Form -> Ctx r -> Name -> [(r, TT r)] -> Alt r -> Maybe (TT r)
 evalAlt form ctx cn argvals (Alt Wildcard rhs)
-    = return $ red form ctx rhs
+    = return rhs
 
 evalAlt form ctx cn argvals (Alt (Ctor cn' argvars eqs) rhs)
     | cn' == cn
     , length argvars == length argvals
-    = Just . red form ctx
-        $ substs (argSubst argvars argvals) rhs
+    = Just $ substs (argSubst argvars argvals) rhs
 
 evalAlt form ctx cn argvals (Alt (Ctor cn' argvars eqs) rhs)
     | cn' == cn
