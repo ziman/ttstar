@@ -1,3 +1,88 @@
-"examples/rev.tt" (line 11, column 10):
-unexpected "e"
-expecting line comment, block comment or (
+-- vim: ft=agda
+
+### Desugared ###
+
+postulate Id : (a : Type) -> (x : a) -> (y : a) -> Type
+
+postulate Refl : (a : Type) -> (x : a) -> Id a x x
+
+cong : (a : Type) -> (b : Type) -> (f : (_ : a) -> b) -> (x : a) -> (y : a) -> (eq : Id a x y) -> Id b (f x) (f y) = (\a : Type. (\b : Type. (\f : (_ : a) -> b. (\x : a. (\y : a. (\eq : Id a x y. 
+  case  eq returns Id b (f x) (f y).
+    Refl (a' : Type) (x' : a)
+      | a' = a
+      | x' = x
+      | y = x
+      => Refl b (f y)))))))
+
+postulate Bool : Type
+
+postulate T : Bool
+
+postulate F : Bool
+
+postulate List : Type
+
+postulate Nil : List
+
+postulate Cons : (x :R: Bool) -> (xs :R: List) -> List
+
+app : (xs : List) -> (ys : List) -> List = (\xs : List. (\ys : List. 
+  case  xs returns List.
+    Nil
+      => ys
+    Cons (x : Bool) (xs' : List)
+      => Cons x (app xs' ys)))
+
+appRightNeutral : (ys : List) -> Id List ys (app ys Nil) = (\ys : List. 
+  case  ys returns Id List ys (app ys Nil).
+    Nil
+      => Refl List Nil
+    Cons (x : Bool) (xs : List)
+      => cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs))
+
+main :R: Type = Type
+
+### Metaified ###
+
+postulate Id :1: (a :2: Type) -> (x :3: a) -> (y :4: a) -> Type
+
+postulate Refl :5: (a :6: Type) -> (x :7: a) -> Id -10- a -9- x -8- x
+
+cong :11: (a :12: Type) -> (b :13: Type) -> (f :14: (_ :15: a) -> b) -> (x :16: a) -> (y :17: a) -> (eq :18: Id -21- a -20- x -19- y) -> Id -24- b -23- (f -25- x) -22- (f -26- y) = (\a :27: Type. (\b :28: Type. (\f :29: (_ :30: a) -> b. (\x :31: a. (\y :32: a. (\eq :33: Id -36- a -35- x -34- y. 
+  case -37-  eq returns Id -40- b -39- (f -41- x) -38- (f -42- y).
+    Refl (a' :43: Type) (x' :44: a)
+      | a' = a
+      | x' = x
+      | y = x
+      => Refl -46- b -45- (f -47- y)))))))
+
+postulate Bool :48: Type
+
+postulate T :49: Bool
+
+postulate F :50: Bool
+
+postulate List :51: Type
+
+postulate Nil :52: List
+
+postulate Cons :53: (x :R: Bool) -> (xs :R: List) -> List
+
+app :54: (xs :55: List) -> (ys :56: List) -> List = (\xs :57: List. (\ys :58: List. 
+  case -59-  xs returns List.
+    Nil
+      => ys
+    Cons (x :60: Bool) (xs' :61: List)
+      => Cons -63- x -62- (app -65- xs' -64- ys)))
+
+appRightNeutral :66: (ys :67: List) -> Id -70- List -69- ys -68- (app -72- ys -71- Nil) = (\ys :73: List. 
+  case -74-  ys returns Id -77- List -76- ys -75- (app -79- ys -78- Nil).
+    Nil
+      => Refl -81- List -80- Nil
+    Cons (x :82: Bool) (xs :83: List)
+      => cong -89- List -88- List -87- (Cons -90- x) -86- xs -85- (app -92- xs -91- Nil) -84- (appRightNeutral -93- xs))
+
+main :R: Type = Type
+
+### Inferred definitions ###
+

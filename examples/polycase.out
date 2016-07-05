@@ -1,3 +1,419 @@
-"examples/polycase.tt" (line 15, column 10):
-unexpected "x"
-expecting line comment, block comment or (
+-- vim: ft=agda
+
+### Desugared ###
+
+postulate Mool : Type
+
+postulate Q : Mool
+
+postulate W : Mool
+
+postulate Bool : Type
+
+postulate T : Bool
+
+postulate F : Bool
+
+postulate Id : (a : Type) -> (x : a) -> (y : a) -> Type
+
+postulate Refl : (a : Type) -> (x : a) -> Id a x x
+
+not : (x : Bool) -> Bool = (\x : Bool. 
+  case  x returns Bool.
+    T
+      => F
+    F
+      => T)
+
+notnot : (x : Bool) -> Id Bool x (not (not x)) = (\x : Bool. 
+  case  x returns Id Bool x (not (not x)).
+    T
+      => Refl Bool T
+    F
+      => Refl Bool F)
+
+retTy : (x : Bool) -> Type = (\x : Bool. 
+  case  x returns Type.
+    T
+      => Bool
+    F
+      => Mool)
+
+mot : (m : Mool) -> Mool = (\m : Mool. 
+  case  m returns Mool.
+    Q
+      => W
+    W
+      => Q)
+
+invert : (t : Bool) -> (x : retTy t) -> retTy t = (\t : Bool. (\x : retTy t. 
+  case  t returns retTy t.
+    T
+      => not x
+    F
+      => mot x))
+
+main :R: Mool = invert F Q
+
+### Metaified ###
+
+postulate Mool :1: Type
+
+postulate Q :2: Mool
+
+postulate W :3: Mool
+
+postulate Bool :4: Type
+
+postulate T :5: Bool
+
+postulate F :6: Bool
+
+postulate Id :7: (a :8: Type) -> (x :9: a) -> (y :10: a) -> Type
+
+postulate Refl :11: (a :12: Type) -> (x :13: a) -> Id -16- a -15- x -14- x
+
+not :17: (x :18: Bool) -> Bool = (\x :19: Bool. 
+  case -20-  x returns Bool.
+    T
+      => F
+    F
+      => T)
+
+notnot :21: (x :22: Bool) -> Id -25- Bool -24- x -23- (not -26- (not -27- x)) = (\x :28: Bool. 
+  case -29-  x returns Id -32- Bool -31- x -30- (not -33- (not -34- x)).
+    T
+      => Refl -36- Bool -35- T
+    F
+      => Refl -38- Bool -37- F)
+
+retTy :39: (x :40: Bool) -> Type = (\x :41: Bool. 
+  case -42-  x returns Type.
+    T
+      => Bool
+    F
+      => Mool)
+
+mot :43: (m :44: Mool) -> Mool = (\m :45: Mool. 
+  case -46-  m returns Mool.
+    Q
+      => W
+    W
+      => Q)
+
+invert :47: (t :48: Bool) -> (x :49: retTy -50- t) -> retTy -51- t = (\t :52: Bool. (\x :53: retTy -54- t. 
+  case -55-  t returns retTy -56- t.
+    T
+      => not -57- x
+    F
+      => mot -58- x))
+
+main :R: Mool = invert -60- F -59- Q
+
+### Inferred definitions ###
+
+postulate Bool :4: Type {- constraints apply -}
+  [] -> [4,R]
+
+postulate F :6: Bool {- constraints apply -}
+  [] -> [6,R]
+
+postulate Id :7: (a :8: Type) -> (x :9: a) -> (y :10: a) -> Type {- constraints apply -}
+  [] -> [7,R]
+
+postulate Mool :1: Type {- constraints apply -}
+  [] -> [1,R]
+
+postulate Q :2: Mool {- constraints apply -}
+  [] -> [2,R]
+
+postulate Refl :11: (a :12: Type) -> (x :13: a) -> Id -16- a -15- x -14- x {- constraints apply -}
+  [] -> [11,R]
+
+postulate T :5: Bool {- constraints apply -}
+  [] -> [5,R]
+
+postulate Type :R: Type
+
+postulate W :3: Mool {- constraints apply -}
+  [] -> [3,R]
+
+invert :47: (t :48: Bool) -> (x :49: retTy -50- t) -> retTy -51- t = (\t :52: Bool. (\x :53: retTy -54- t. 
+  case -55-  t returns retTy -56- t.
+    T
+      => not -57- x
+    F
+      => mot -58- x)) {- constraints apply -}
+  [] -> [2,3,5,6,17,18,19,20,43,44,45,46,47,48,49,52,53,55,57,58,R]
+  [42] -> [42]
+
+main :R: Mool = invert -60- F -59- Q {- constraints apply -}
+  [] -> [2,3,5,6,17,18,19,20,43,44,45,46,47,48,49,52,53,55,57,58,59,60,R]
+  [42] -> [42]
+
+mot :43: (m :44: Mool) -> Mool = (\m :45: Mool. 
+  case -46-  m returns Mool.
+    Q
+      => W
+    W
+      => Q) {- constraints apply -}
+  [] -> [2,3,43,44,45,46,R]
+
+not :17: (x :18: Bool) -> Bool = (\x :19: Bool. 
+  case -20-  x returns Bool.
+    T
+      => F
+    F
+      => T) {- constraints apply -}
+  [] -> [5,6,17,18,19,20,R]
+
+notnot :21: (x :22: Bool) -> Id -25- Bool -24- x -23- (not -26- (not -27- x)) = (\x :28: Bool. 
+  case -29-  x returns Id -32- Bool -31- x -30- (not -33- (not -34- x)).
+    T
+      => Refl -36- Bool -35- T
+    F
+      => Refl -38- Bool -37- F) {- constraints apply -}
+  [] -> [5,6,11,21,22,28,29,R]
+  [12] -> [4,36,38]
+  [13] -> [35,37]
+  [14] -> [30]
+  [15] -> [31]
+  [16] -> [32]
+  [20] -> [20]
+  [23] -> [30]
+  [24] -> [31]
+  [25] -> [32]
+  [30] -> [14,23]
+  [31] -> [15,24]
+  [32] -> [16,25]
+  [35] -> [13]
+  [36] -> [12]
+  [37] -> [13]
+  [38] -> [12]
+
+retTy :39: (x :40: Bool) -> Type = (\x :41: Bool. 
+  case -42-  x returns Type.
+    T
+      => Bool
+    F
+      => Mool) {- constraints apply -}
+  [] -> [1,4,5,6,39,40,41,42,R]
+
+
+### Constraints ###
+
+[] -> [2,3,5,6,17,18,19,20,43,44,45,46,47,48,49,52,53,55,57,58,59,60,R]
+[42] -> [42]
+
+### Solution ###
+
+[2,3,5,6,17,18,19,20,43,44,45,46,47,48,49,52,53,55,57,58,59,60,R]
+
+### Annotated ###
+
+postulate Mool :E: Type
+
+postulate Q :R: Mool
+
+postulate W :R: Mool
+
+postulate Bool :E: Type
+
+postulate T :R: Bool
+
+postulate F :R: Bool
+
+postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
+
+postulate Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+
+not :R: (x :R: Bool) -> Bool = (\x :R: Bool. 
+  case -R-  x returns Bool.
+    T
+      => F
+    F
+      => T)
+
+notnot :E: (x :E: Bool) -> Id -E- Bool -E- x -E- (not -E- (not -E- x)) = (\x :E: Bool. 
+  case -E-  x returns Id -E- Bool -E- x -E- (not -E- (not -E- x)).
+    T
+      => Refl -E- Bool -E- T
+    F
+      => Refl -E- Bool -E- F)
+
+retTy :E: (x :E: Bool) -> Type = (\x :E: Bool. 
+  case -E-  x returns Type.
+    T
+      => Bool
+    F
+      => Mool)
+
+mot :R: (m :R: Mool) -> Mool = (\m :R: Mool. 
+  case -R-  m returns Mool.
+    Q
+      => W
+    W
+      => Q)
+
+invert :R: (t :R: Bool) -> (x :R: retTy -E- t) -> retTy -E- t = (\t :R: Bool. (\x :R: retTy -E- t. 
+  case -R-  t returns retTy -E- t.
+    T
+      => not -R- x
+    F
+      => mot -R- x))
+
+main :R: Mool = invert -R- F -R- Q
+
+### Specialised ###
+
+postulate Mool :E: Type
+
+postulate Q :R: Mool
+
+postulate W :R: Mool
+
+postulate Bool :E: Type
+
+postulate T :R: Bool
+
+postulate F :R: Bool
+
+postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
+
+postulate Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+
+not :R: (x :R: Bool) -> Bool = (\x :R: Bool. 
+  case -R-  x returns Bool.
+    T
+      => F
+    F
+      => T)
+
+notnot :E: (x :E: Bool) -> Id -E- Bool -E- x -E- (not -E- (not -E- x)) = (\x :E: Bool. 
+  case -E-  x returns Id -E- Bool -E- x -E- (not -E- (not -E- x)).
+    T
+      => Refl -E- Bool -E- T
+    F
+      => Refl -E- Bool -E- F)
+
+retTy :E: (x :E: Bool) -> Type = (\x :E: Bool. 
+  case -E-  x returns Type.
+    T
+      => Bool
+    F
+      => Mool)
+
+mot :R: (m :R: Mool) -> Mool = (\m :R: Mool. 
+  case -R-  m returns Mool.
+    Q
+      => W
+    W
+      => Q)
+
+invert :R: (t :R: Bool) -> (x :R: retTy -E- t) -> retTy -E- t = (\t :R: Bool. (\x :R: retTy -E- t. 
+  case -R-  t returns retTy -E- t.
+    T
+      => not -R- x
+    F
+      => mot -R- x))
+
+main :R: Mool = invert -R- F -R- Q
+
+### Final annotation ###
+
+postulate Mool :E: Type
+
+postulate Q :R: Mool
+
+postulate W :R: Mool
+
+postulate Bool :E: Type
+
+postulate T :R: Bool
+
+postulate F :R: Bool
+
+postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
+
+postulate Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+
+not :R: (x :R: Bool) -> Bool = (\x :R: Bool. 
+  case -R-  x returns Bool.
+    T
+      => F
+    F
+      => T)
+
+notnot :E: (x :E: Bool) -> Id -E- Bool -E- x -E- (not -E- (not -E- x)) = (\x :E: Bool. 
+  case -E-  x returns Id -E- Bool -E- x -E- (not -E- (not -E- x)).
+    T
+      => Refl -E- Bool -E- T
+    F
+      => Refl -E- Bool -E- F)
+
+retTy :E: (x :E: Bool) -> Type = (\x :E: Bool. 
+  case -E-  x returns Type.
+    T
+      => Bool
+    F
+      => Mool)
+
+mot :R: (m :R: Mool) -> Mool = (\m :R: Mool. 
+  case -R-  m returns Mool.
+    Q
+      => W
+    W
+      => Q)
+
+invert :R: (t :R: Bool) -> (x :R: retTy -E- t) -> retTy -E- t = (\t :R: Bool. (\x :R: retTy -E- t. 
+  case -R-  t returns retTy -E- t.
+    T
+      => not -R- x
+    F
+      => mot -R- x))
+
+main :R: Mool = invert -R- F -R- Q
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+postulate Q
+
+postulate W
+
+postulate T
+
+postulate F
+
+not = (\x. 
+  case x of
+    T
+      => F
+    F
+      => T)
+
+mot = (\m. 
+  case m of
+    Q
+      => W
+    W
+      => Q)
+
+invert = (\t. (\x. 
+  case t of
+    T
+      => not x
+    F
+      => mot x))
+
+main = invert F Q
+
+### Normal forms ###
+
+unerased:
+  W
+erased:
+  W

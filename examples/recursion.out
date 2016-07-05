@@ -1,3 +1,410 @@
-"examples/recursion.tt" (line 16, column 10):
-unexpected "x"
-expecting line comment, block comment or (
+-- vim: ft=agda
+
+### Desugared ###
+
+postulate Bool : Type
+
+postulate True : Bool
+
+postulate False : Bool
+
+postulate Nat : Type
+
+postulate Z : Nat
+
+postulate S : (n :R: Nat) -> Nat
+
+postulate Vec : (_ : Nat) -> (_ : Type) -> Type
+
+postulate VNil : (a : Type) -> Vec Z a
+
+postulate VCons : (a : Type) -> (n : Nat) -> (x : a) -> (xs : Vec n a) -> Vec (S n) a
+
+vlen : (a : Type) -> (n : Nat) -> (xs : Vec n a) -> Nat = (\a : Type. (\n : Nat. (\xs : Vec n a. 
+  case  xs returns Nat.
+    VNil (a' : Type)
+      | a = a'
+      | n = Z
+      => Z
+    VCons (a' : Type) (n' : Nat) (x' : a') (xs' : Vec n' a)
+      | a = a'
+      | n = S n'
+      => S (vlen a n' xs'))))
+
+testVec : Vec 2 Bool = VCons Bool 1 True (VCons Bool Z False (VNil Bool))
+
+main :R: Nat = vlen Bool 2 testVec
+
+### Metaified ###
+
+postulate Bool :1: Type
+
+postulate True :2: Bool
+
+postulate False :3: Bool
+
+postulate Nat :4: Type
+
+postulate Z :5: Nat
+
+postulate S :6: (n :R: Nat) -> Nat
+
+postulate Vec :7: (_ :8: Nat) -> (_ :9: Type) -> Type
+
+postulate VNil :10: (a :11: Type) -> Vec -13- Z -12- a
+
+postulate VCons :14: (a :15: Type) -> (n :16: Nat) -> (x :17: a) -> (xs :18: Vec -20- n -19- a) -> Vec -22- (S -23- n) -21- a
+
+vlen :24: (a :25: Type) -> (n :26: Nat) -> (xs :27: Vec -29- n -28- a) -> Nat = (\a :30: Type. (\n :31: Nat. (\xs :32: Vec -34- n -33- a. 
+  case -35-  xs returns Nat.
+    VNil (a' :36: Type)
+      | a = a'
+      | n = Z
+      => Z
+    VCons (a' :37: Type) (n' :38: Nat) (x' :39: a') (xs' :40: Vec -42- n' -41- a)
+      | a = a'
+      | n = S -43- n'
+      => S -44- (vlen -47- a -46- n' -45- xs'))))
+
+testVec :48: Vec -50- 2 -49- Bool = VCons -56- Bool -55- 1 -54- True -53- (VCons -61- Bool -60- Z -59- False -58- (VNil -62- Bool))
+
+main :R: Nat = vlen -65- Bool -64- 2 -63- testVec
+
+### Inferred definitions ###
+
+postulate Bool :1: Type {- constraints apply -}
+  [] -> [1,R]
+
+postulate False :3: Bool {- constraints apply -}
+  [] -> [3,R]
+
+postulate Nat :4: Type {- constraints apply -}
+  [] -> [4,R]
+
+postulate S :6: (n :R: Nat) -> Nat {- constraints apply -}
+  [] -> [6,R]
+
+postulate True :2: Bool {- constraints apply -}
+  [] -> [2,R]
+
+postulate Type :R: Type
+
+postulate VCons :14: (a :15: Type) -> (n :16: Nat) -> (x :17: a) -> (xs :18: Vec -20- n -19- a) -> Vec -22- (S -23- n) -21- a {- constraints apply -}
+  [] -> [14,R]
+
+postulate VNil :10: (a :11: Type) -> Vec -13- Z -12- a {- constraints apply -}
+  [] -> [10,R]
+
+postulate Vec :7: (_ :8: Nat) -> (_ :9: Type) -> Type {- constraints apply -}
+  [] -> [7,R]
+
+postulate Z :5: Nat {- constraints apply -}
+  [] -> [5,R]
+
+main :R: Nat = vlen -65- Bool -64- 2 -63- testVec {- constraints apply -}
+  [] -> [5,6,10,14,18,24,27,32,35,40,44,45,48,53,58,63,R]
+  [11] -> [1,36,62]
+  [12] -> [19,33]
+  [13] -> [20,34]
+  [15] -> [1,37,56,61]
+  [16] -> [38,55,57,60]
+  [17] -> [2,3,39,54,59]
+  [19] -> [12,21,41]
+  [20] -> [13,22,42]
+  [21] -> [19,33,49]
+  [22] -> [20,34,50]
+  [23] -> [43,51,57]
+  [25] -> [1,30,37,47,65]
+  [26] -> [31,38,46,64,66,67]
+  [28] -> [33,41,49]
+  [29] -> [34,42,50]
+  [30] -> [25]
+  [31] -> [26]
+  [33] -> [12,21,28]
+  [34] -> [13,22,29]
+  [36] -> [11]
+  [37] -> [15]
+  [38] -> [16]
+  [39] -> [17]
+  [41] -> [19,28]
+  [42] -> [20,29]
+  [43] -> [23]
+  [46] -> [26]
+  [47] -> [25]
+  [49] -> [21,28]
+  [50] -> [22,29]
+  [51] -> [23,66]
+  [52] -> [57,67]
+  [54] -> [17]
+  [55] -> [16]
+  [56] -> [15]
+  [57] -> [23,52]
+  [59] -> [17]
+  [60] -> [16]
+  [61] -> [15]
+  [62] -> [11]
+  [64] -> [26]
+  [65] -> [25]
+  [66] -> [51]
+  [67] -> [52]
+
+testVec :48: Vec -50- 2 -49- Bool = VCons -56- Bool -55- 1 -54- True -53- (VCons -61- Bool -60- Z -59- False -58- (VNil -62- Bool)) {- constraints apply -}
+  [] -> [14,48,R]
+  [11,18] -> [1,62]
+  [12,18] -> [19]
+  [13,18] -> [20]
+  [15] -> [1,56]
+  [15,18] -> [1,61]
+  [16] -> [5,6,55,57]
+  [16,18] -> [5,60]
+  [17] -> [2,54]
+  [17,18] -> [3,59]
+  [18] -> [10,53,58]
+  [18,19] -> [12]
+  [18,20] -> [13]
+  [18,58] -> [18]
+  [18,59] -> [17]
+  [18,60] -> [16]
+  [18,61] -> [15]
+  [18,62] -> [11]
+  [19] -> [21]
+  [20] -> [22]
+  [21] -> [19,49]
+  [22] -> [20,50]
+  [23] -> [51,57]
+  [49] -> [21]
+  [50] -> [22]
+  [51] -> [23]
+  [52] -> [57]
+  [53] -> [18]
+  [54] -> [17]
+  [55] -> [16]
+  [56] -> [15]
+  [57] -> [23,52]
+
+vlen :24: (a :25: Type) -> (n :26: Nat) -> (xs :27: Vec -29- n -28- a) -> Nat = (\a :30: Type. (\n :31: Nat. (\xs :32: Vec -34- n -33- a. 
+  case -35-  xs returns Nat.
+    VNil (a' :36: Type)
+      | a = a'
+      | n = Z
+      => Z
+    VCons (a' :37: Type) (n' :38: Nat) (x' :39: a') (xs' :40: Vec -42- n' -41- a)
+      | a = a'
+      | n = S -43- n'
+      => S -44- (vlen -47- a -46- n' -45- xs')))) {- constraints apply -}
+  [] -> [5,6,10,14,18,24,27,32,35,40,44,45,R]
+  [11] -> [36]
+  [12] -> [33]
+  [13] -> [34]
+  [15] -> [37]
+  [16] -> [38]
+  [17] -> [39]
+  [19] -> [41]
+  [20] -> [42]
+  [21] -> [33]
+  [22] -> [34]
+  [23] -> [43]
+  [25] -> [30,37,47]
+  [26] -> [31,38,46]
+  [28] -> [33,41]
+  [29] -> [34,42]
+  [30] -> [25]
+  [31] -> [26]
+  [33] -> [12,21,28]
+  [34] -> [13,22,29]
+  [36] -> [11]
+  [37] -> [15]
+  [38] -> [16]
+  [39] -> [17]
+  [41] -> [19,28]
+  [42] -> [20,29]
+  [43] -> [23]
+  [46] -> [26]
+  [47] -> [25]
+
+
+### Constraints ###
+
+[] -> [5,6,10,14,18,24,27,32,35,40,44,45,48,53,58,63,R]
+[11] -> [1,36,62]
+[12] -> [19,33]
+[13] -> [20,34]
+[15] -> [1,37,56,61]
+[16] -> [38,55,57,60]
+[17] -> [2,3,39,54,59]
+[19] -> [12,21,41]
+[20] -> [13,22,42]
+[21] -> [19,33,49]
+[22] -> [20,34,50]
+[23] -> [43,51,57]
+[25] -> [1,30,37,47,65]
+[26] -> [31,38,46,64,66,67]
+[28] -> [33,41,49]
+[29] -> [34,42,50]
+[30] -> [25]
+[31] -> [26]
+[33] -> [12,21,28]
+[34] -> [13,22,29]
+[36] -> [11]
+[37] -> [15]
+[38] -> [16]
+[39] -> [17]
+[41] -> [19,28]
+[42] -> [20,29]
+[43] -> [23]
+[46] -> [26]
+[47] -> [25]
+[49] -> [21,28]
+[50] -> [22,29]
+[51] -> [23,66]
+[52] -> [57,67]
+[54] -> [17]
+[55] -> [16]
+[56] -> [15]
+[57] -> [23,52]
+[59] -> [17]
+[60] -> [16]
+[61] -> [15]
+[62] -> [11]
+[64] -> [26]
+[65] -> [25]
+[66] -> [51]
+[67] -> [52]
+
+### Solution ###
+
+[5,6,10,14,18,24,27,32,35,40,44,45,48,53,58,63,R]
+
+### Annotated ###
+
+postulate Bool :E: Type
+
+postulate True :E: Bool
+
+postulate False :E: Bool
+
+postulate Nat :E: Type
+
+postulate Z :R: Nat
+
+postulate S :R: (n :R: Nat) -> Nat
+
+postulate Vec :E: (_ :E: Nat) -> (_ :E: Type) -> Type
+
+postulate VNil :R: (a :E: Type) -> Vec -E- Z -E- a
+
+postulate VCons :R: (a :E: Type) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+
+vlen :R: (a :E: Type) -> (n :E: Nat) -> (xs :R: Vec -E- n -E- a) -> Nat = (\a :E: Type. (\n :E: Nat. (\xs :R: Vec -E- n -E- a. 
+  case -R-  xs returns Nat.
+    VNil (a' :E: Type)
+      | a = a'
+      | n = Z
+      => Z
+    VCons (a' :E: Type) (n' :E: Nat) (x' :E: a') (xs' :R: Vec -E- n' -E- a)
+      | a = a'
+      | n = S -E- n'
+      => S -R- (vlen -E- a -E- n' -R- xs'))))
+
+testVec :R: Vec -E- 2 -E- Bool = VCons -E- Bool -E- 1 -E- True -R- (VCons -E- Bool -E- Z -E- False -R- (VNil -E- Bool))
+
+main :R: Nat = vlen -E- Bool -E- 2 -R- testVec
+
+### Specialised ###
+
+postulate Bool :E: Type
+
+postulate True :E: Bool
+
+postulate False :E: Bool
+
+postulate Nat :E: Type
+
+postulate Z :R: Nat
+
+postulate S :R: (n :R: Nat) -> Nat
+
+postulate Vec :E: (_ :E: Nat) -> (_ :E: Type) -> Type
+
+postulate VNil :R: (a :E: Type) -> Vec -E- Z -E- a
+
+postulate VCons :R: (a :E: Type) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+
+vlen :R: (a :E: Type) -> (n :E: Nat) -> (xs :R: Vec -E- n -E- a) -> Nat = (\a :E: Type. (\n :E: Nat. (\xs :R: Vec -E- n -E- a. 
+  case -R-  xs returns Nat.
+    VNil (a' :E: Type)
+      | a = a'
+      | n = Z
+      => Z
+    VCons (a' :E: Type) (n' :E: Nat) (x' :E: a') (xs' :R: Vec -E- n' -E- a)
+      | a = a'
+      | n = S -E- n'
+      => S -R- (vlen -E- a -E- n' -R- xs'))))
+
+testVec :R: Vec -E- 2 -E- Bool = VCons -E- Bool -E- 1 -E- True -R- (VCons -E- Bool -E- Z -E- False -R- (VNil -E- Bool))
+
+main :R: Nat = vlen -E- Bool -E- 2 -R- testVec
+
+### Final annotation ###
+
+postulate Bool :E: Type
+
+postulate True :E: Bool
+
+postulate False :E: Bool
+
+postulate Nat :E: Type
+
+postulate Z :R: Nat
+
+postulate S :R: (n :R: Nat) -> Nat
+
+postulate Vec :E: (_ :E: Nat) -> (_ :E: Type) -> Type
+
+postulate VNil :R: (a :E: Type) -> Vec -E- Z -E- a
+
+postulate VCons :R: (a :E: Type) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+
+vlen :R: (a :E: Type) -> (n :E: Nat) -> (xs :R: Vec -E- n -E- a) -> Nat = (\a :E: Type. (\n :E: Nat. (\xs :R: Vec -E- n -E- a. 
+  case -R-  xs returns Nat.
+    VNil (a' :E: Type)
+      | a = a'
+      | n = Z
+      => Z
+    VCons (a' :E: Type) (n' :E: Nat) (x' :E: a') (xs' :R: Vec -E- n' -E- a)
+      | a = a'
+      | n = S -E- n'
+      => S -R- (vlen -E- a -E- n' -R- xs'))))
+
+testVec :R: Vec -E- 2 -E- Bool = VCons -E- Bool -E- 1 -E- True -R- (VCons -E- Bool -E- Z -E- False -R- (VNil -E- Bool))
+
+main :R: Nat = vlen -E- Bool -E- 2 -R- testVec
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+postulate Z
+
+postulate S
+
+postulate VNil
+
+postulate VCons
+
+vlen = (\xs. 
+  case xs of
+    VNil
+      => Z
+    VCons xs'
+      => S (vlen xs'))
+
+testVec = VCons (VCons VNil)
+
+main = vlen testVec
+
+### Normal forms ###
+
+unerased:

@@ -1,3 +1,3 @@
-"examples/verydep.tt" (line 14, column 12):
-unexpected "x"
-expecting line comment, block comment or (
+"examples/verydep.tt" (line 14, column 14):
+unexpected "o"
+expecting line comment, block comment or return

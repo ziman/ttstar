@@ -400,7 +400,7 @@ instantiate freshTag metaMap def = evalStateT refresh metaMap
 -- left: from context (from outside), right: from expression (from inside)
 conv :: Type -> Type -> TC (Constrs Meta)
 conv p q
-    | p == q = return noConstrs
+    | p == q = return noConstrs  -- prevents unnecessary normalisation
     | otherwise = do
         ctx <- getCtx
         conv' (whnf ctx p) (whnf ctx q)

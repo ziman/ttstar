@@ -1,3 +1,254 @@
-"examples/let.tt" (line 8, column 10):
-unexpected "n"
-expecting line comment, block comment or (
+-- vim: ft=agda
+
+### Desugared ###
+
+postulate Nat : Type
+
+postulate Z : Nat
+
+postulate S : (_ :R: Nat) -> Nat
+
+plus : (n : Nat) -> (m : Nat) -> Nat = (\n : Nat. (\m : Nat. 
+  case  n returns Nat.
+    Z
+      => m
+    S (n' : Nat)
+      => S (plus n' m)))
+
+id : (x : Nat) -> Nat = (\x : Nat. x)
+
+const : (x : Nat) -> (y : Nat) -> Nat = (\x : Nat. (\y : Nat. x))
+
+main :R: Nat = 
+  let apply : (f : (_ : Nat) -> Nat) -> (x : Nat) -> Nat = (\f : (_ : Nat) -> Nat. (\x : Nat. 
+    case  x returns Nat.
+      Z
+        => f Z
+      S (x' : Nat)
+        => f (S x')))
+  in 
+    let postulate Q : Nat
+    in 
+      let three : Nat = 3
+      in plus (apply id 2) (apply (const Q) three)
+
+### Metaified ###
+
+postulate Nat :1: Type
+
+postulate Z :2: Nat
+
+postulate S :3: (_ :R: Nat) -> Nat
+
+plus :4: (n :5: Nat) -> (m :6: Nat) -> Nat = (\n :7: Nat. (\m :8: Nat. 
+  case -9-  n returns Nat.
+    Z
+      => m
+    S (n' :10: Nat)
+      => S -11- (plus -13- n' -12- m)))
+
+id :14: (x :15: Nat) -> Nat = (\x :16: Nat. x)
+
+const :17: (x :18: Nat) -> (y :19: Nat) -> Nat = (\x :20: Nat. (\y :21: Nat. x))
+
+main :R: Nat = 
+  let apply :22: (f :23: (_ :24: Nat) -> Nat) -> (x :25: Nat) -> Nat = (\f :26: (_ :27: Nat) -> Nat. (\x :28: Nat. 
+    case -29-  x returns Nat.
+      Z
+        => f -30- Z
+      S (x' :31: Nat)
+        => f -32- (S -33- x')))
+  in 
+    let postulate Q :34: Nat
+    in 
+      let three :35: Nat = 3
+      in plus -40- (apply -42- id -41- 2) -39- (apply -46- (const -47- Q) -45- three)
+
+### Inferred definitions ###
+
+postulate Nat :1: Type {- constraints apply -}
+  [] -> [1,R]
+
+postulate S :3: (_ :R: Nat) -> Nat {- constraints apply -}
+  [] -> [3,R]
+
+postulate Type :R: Type
+
+postulate Z :2: Nat {- constraints apply -}
+  [] -> [2,R]
+
+const :17: (x :18: Nat) -> (y :19: Nat) -> Nat = (\x :20: Nat. (\y :21: Nat. x)) {- constraints apply -}
+  [] -> [17,18,20,R]
+  [19] -> [21]
+  [21] -> [19]
+
+id :14: (x :15: Nat) -> Nat = (\x :16: Nat. x) {- constraints apply -}
+  [] -> [14,15,16,R]
+
+main :R: Nat = 
+  let apply :22: (f :23: (_ :24: Nat) -> Nat) -> (x :25: Nat) -> Nat = (\f :26: (_ :27: Nat) -> Nat. (\x :28: Nat. 
+    case -29-  x returns Nat.
+      Z
+        => f -30- Z
+      S (x' :31: Nat)
+        => f -32- (S -33- x')))
+  in 
+    let postulate Q :34: Nat
+    in 
+      let three :35: Nat = 3
+      in plus -40- (apply -42- id -41- 2) -39- (apply -46- (const -47- Q) -45- three) {- constraints apply -}
+  [] -> [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,R]
+
+plus :4: (n :5: Nat) -> (m :6: Nat) -> Nat = (\n :7: Nat. (\m :8: Nat. 
+  case -9-  n returns Nat.
+    Z
+      => m
+    S (n' :10: Nat)
+      => S -11- (plus -13- n' -12- m))) {- constraints apply -}
+  [] -> [2,3,4,5,6,7,8,9,10,11,12,13,R]
+
+
+### Constraints ###
+
+[] -> [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,R]
+
+### Solution ###
+
+[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,R]
+
+### Annotated ###
+
+postulate Nat :E: Type
+
+postulate Z :R: Nat
+
+postulate S :R: (_ :R: Nat) -> Nat
+
+plus :R: (n :R: Nat) -> (m :R: Nat) -> Nat = (\n :R: Nat. (\m :R: Nat. 
+  case -R-  n returns Nat.
+    Z
+      => m
+    S (n' :R: Nat)
+      => S -R- (plus -R- n' -R- m)))
+
+id :R: (x :R: Nat) -> Nat = (\x :R: Nat. x)
+
+const :R: (x :R: Nat) -> (y :R: Nat) -> Nat = (\x :R: Nat. (\y :R: Nat. x))
+
+main :R: Nat = 
+  let apply :R: (f :R: (_ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = (\f :R: (_ :R: Nat) -> Nat. (\x :R: Nat. 
+    case -R-  x returns Nat.
+      Z
+        => f -R- Z
+      S (x' :R: Nat)
+        => f -R- (S -R- x')))
+  in 
+    let postulate Q :R: Nat
+    in 
+      let three :R: Nat = 3
+      in plus -R- (apply -R- id -R- 2) -R- (apply -R- (const -R- Q) -R- three)
+
+### Specialised ###
+
+postulate Nat :E: Type
+
+postulate Z :R: Nat
+
+postulate S :R: (_ :R: Nat) -> Nat
+
+plus :R: (n :R: Nat) -> (m :R: Nat) -> Nat = (\n :R: Nat. (\m :R: Nat. 
+  case -R-  n returns Nat.
+    Z
+      => m
+    S (n' :R: Nat)
+      => S -R- (plus -R- n' -R- m)))
+
+id :R: (x :R: Nat) -> Nat = (\x :R: Nat. x)
+
+const :R: (x :R: Nat) -> (y :R: Nat) -> Nat = (\x :R: Nat. (\y :R: Nat. x))
+
+main :R: Nat = 
+  let apply :R: (f :R: (_ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = (\f :R: (_ :R: Nat) -> Nat. (\x :R: Nat. 
+    case -R-  x returns Nat.
+      Z
+        => f -R- Z
+      S (x' :R: Nat)
+        => f -R- (S -R- x')))
+  in 
+    let postulate Q :R: Nat
+    in 
+      let three :R: Nat = 3
+      in plus -R- (apply -R- id -R- 2) -R- (apply -R- (const -R- Q) -R- three)
+
+### Final annotation ###
+
+postulate Nat :E: Type
+
+postulate Z :R: Nat
+
+postulate S :R: (_ :R: Nat) -> Nat
+
+plus :R: (n :R: Nat) -> (m :R: Nat) -> Nat = (\n :R: Nat. (\m :R: Nat. 
+  case -R-  n returns Nat.
+    Z
+      => m
+    S (n' :R: Nat)
+      => S -R- (plus -R- n' -R- m)))
+
+id :R: (x :R: Nat) -> Nat = (\x :R: Nat. x)
+
+const :R: (x :R: Nat) -> (y :R: Nat) -> Nat = (\x :R: Nat. (\y :R: Nat. x))
+
+main :R: Nat = 
+  let apply :R: (f :R: (_ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = (\f :R: (_ :R: Nat) -> Nat. (\x :R: Nat. 
+    case -R-  x returns Nat.
+      Z
+        => f -R- Z
+      S (x' :R: Nat)
+        => f -R- (S -R- x')))
+  in 
+    let postulate Q :R: Nat
+    in 
+      let three :R: Nat = 3
+      in plus -R- (apply -R- id -R- 2) -R- (apply -R- (const -R- Q) -R- three)
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+postulate Z
+
+postulate S
+
+plus = (\n. (\m. 
+  case n of
+    Z
+      => m
+    S n'
+      => S (plus n' m)))
+
+id = (\x. x)
+
+const = (\x. (\y. x))
+
+main = 
+  let apply = (\f. (\x. 
+    case x of
+      Z
+        => f Z
+      S x'
+        => f (S x')))
+  in 
+    let postulate Q
+    in 
+      let three = 3
+      in plus (apply id 2) (apply (const Q) three)
+
+### Normal forms ###
+
+unerased:
+  S (S Q)
+erased:
+  S (S Q)
