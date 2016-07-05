@@ -48,7 +48,7 @@ red form ctx t@(V n)
         Abstract _  -> t
         Term     tm -> red form ctx tm
 
-    | otherwise = error $ "unknown variable: " ++ show n  -- unknown variable
+    | otherwise = error $ "in normalisation: unknown variable: " ++ show n  -- unknown variable
 
 red form ctx t
     | ("REDUCING", form, t, M.keys ctx) `dbg` False

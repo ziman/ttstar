@@ -8,21 +8,23 @@ id (a : Type) : a -> a
 
 subst (a : Type) (P : a -> Type) (x : a) (y : a) (eq : Id a x y)
   : (P x) -> P y
-  = case eq of
+  = case eq return ((P x) -> P y) of {
       Refl (a' : Type) (x' : a)
         | a' = a
         | x' = x
         | y  = x
-        => \w : P x'. w.  -- `x'` instead of `x` just to be mean to the typechecker
+        => \w : P x'. w  -- `x'` instead of `x` just to be mean to the typechecker
+    }.
 
 cong (a : Type) (b : Type) (f : a -> b) (x : a) (y : a) (eq : Id a x y)
   : Id b (f x) (f y)
-  = case eq of
+  = case eq return (Id b (f x) (f y)) of {
       Refl (a' : Type) (x' : a)
         | a' = a
         | x' = x
         | y  = x
-        => Refl b (f y).  -- again, `y` instead of `x`
+        => Refl b (f y)  -- again, `y` instead of `x`
+    }.
 
 data Bool : Type.
   T : Bool,
@@ -37,25 +39,30 @@ one (x : Bool) : List
   = Cons x Nil.
 
 app (xs : List) (ys : List) : List
-  = case xs of
-      Nil => ys,
-      Cons (x : Bool) (xs' : List) => Cons x (app xs' ys).
+  = case xs return List of {
+      Nil
+        => ys,
+      Cons (x : Bool) (xs' : List)
+        => Cons x (app xs' ys)
+    }.
 
 appRightNeutral (ys : List) : Id List ys (app ys Nil)
-  = case ys of
+  = case ys return (Id List ys (app ys Nil)) of {
       Nil
         => Refl List Nil,
       Cons (x : Bool) (xs : List)
-        => cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs).
+        => cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs)
+    }.
 
 appAssoc (xs : List) (ys : List) (zs : List)
   : Id List (app (app xs ys) zs) (app xs (app ys zs))
-  = case xs of
+  = case xs return (Id List (app (app xs ys) zs) (app xs (app ys zs))) of {
       Nil
         => Refl List (app ys zs),
 
       Cons (x : Bool) (xs' : List)
-        => cong List List (Cons x) (app (app xs' ys) zs) (app xs' (app ys zs)) (appAssoc xs' ys zs).
+        => cong List List (Cons x) (app (app xs' ys) zs) (app xs' (app ys zs)) (appAssoc xs' ys zs)
+    }.
 
 data Rev : List -> Type.
   RNil : Rev Nil,
@@ -63,7 +70,7 @@ data Rev : List -> Type.
     -> Rev (app xs (one x)).
 
 rev' (xs : List) (rxs : Rev xs) (ys : List) : Rev (app xs ys)
-  = case ys of
+  = case ys return (Rev (app xs ys)) of {
       Nil
         => subst List Rev xs (app xs Nil) (appRightNeutral xs) rxs,
       Cons (y : Bool) (ys' : List)
@@ -71,20 +78,22 @@ rev' (xs : List) (rxs : Rev xs) (ys : List) : Rev (app xs ys)
             (app (app xs (one y)) ys')
             (app xs (Cons y ys'))
             (appAssoc xs (one y) ys')
-            (rev' (app xs (one y)) (RSnoc xs y rxs) ys').
+            (rev' (app xs (one y)) (RSnoc xs y rxs) ys')
+    }.
 
 rev (xs : List) : Rev xs
   = rev' Nil RNil xs.
 
 reverse' (xs : List) (rxs : Rev xs) : List
-  = case rxs of
+  = case rxs return List of {
       RNil
         | xs = Nil
         => Nil,
 
       RSnoc (xs' : List) (x : Bool) (rxs' : Rev xs')
         | xs = app xs' (one x)
-        => Cons x (reverse' xs' rxs').
+        => Cons x (reverse' xs' rxs')
+    }.
 
 reverse (xs : List) : List
   = reverse' xs (rev xs).

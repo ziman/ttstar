@@ -340,7 +340,7 @@ checkTm t@(Case r s ty alts) = bt ("CASE", s, ty) $ do
     return (ty, cs)
 
 checkPatvar :: Name -> TC ()
-checkPatvar n = do
+checkPatvar n = bt ("EQ-VAR", n) $ do
     d <- lookup n
     case d of
         Def n r ty (Abstract Var) cs
@@ -356,16 +356,20 @@ checkAlt sr sty goalTy s (Alt Wildcard rhs) = bt ("ALT-WILD") $ do
 
 checkAlt sr sty goalTy s (Alt (Ctor cn args eqs) rhs) = bt ("ALT-CTOR", cn) $ do
     argCtx <- checkDefs args
-    traverse checkPatvar $ map fst eqs
-    with' (M.union argCtx) . with' (substsInCtx eqs') . bt ("ALT-CTOR-INT", cn) $ do
-        (patTy, patcs) <- checkTm pat'
-        tccs <- conv (substs eqs' patTy) (substs eqs' sty)
+    with' (M.union argCtx) $ do
+        -- we need to check patvars after merging argCtx
+        -- but BEFORE substsInCtx
+        traverse checkPatvar $ map fst eqs
+        with' (substsInCtx eqs') . bt ("ALT-CTOR-SUBST", cn) $ do
+            (patTy, patcs) <- bt ("ALT-PAT", pat') $ checkTm pat'
+            tccs <- conv (substs eqs' patTy) (substs eqs' sty)
 
-        (rty, rcs) <- checkTm $ substs eqs' rhs
-        rccs <- conv rty (substs eqs' goalTy)
+            (rty, rcs) <- checkTm $ substs eqs' rhs
+            rccs <- conv rty (substs eqs' goalTy)
 
-        -- if we need flipConstrs, we will probably need [Forced] anyway :(
-        return $ cond sr (tccs /\ {-flipConstrs-} patcs) /\ rcs /\ rccs /\ unions [defR d --> sr | d <- args]
+            -- if we need flipConstrs, we will probably need [Forced] anyway :(
+            -- LOOKS LIKE WE DON'T
+            return $ cond sr (tccs /\ {-flipConstrs-} patcs) /\ rcs /\ rccs /\ unions [defR d --> sr | d <- args]
   where
     pat = mkApp (V cn) [(defR d, V $ defName d) | d <- args]
     pat' = substs eqs pat
@@ -422,12 +426,18 @@ conv' p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do
     return $ xs /\ ys /\ r <--> r'
 
 conv' p@(Case r s ty alts) q@(Case r' s' ty' alts') = bt ("C-CASE", p, q) $ do
+    require (length alts == length alts') $ Mismatch (show alts) (show alts')
     xs <- conv s s'
     ys <- conv ty ty'
-    require (alts == alts') $ Mismatch (show p) (show q)
-    return $ xs /\ ys /\ r <--> r'
+    zs <- fmap unions . sequence $ zipWith convAlt alts alts'
+    return $ xs /\ ys /\ zs /\ r <--> r'
 
 -- we don't include a case for Forced because those constructors
 -- get normalised away to bare terms
 
 conv' p q = tcfail $ CantConvert p q
+
+convAlt :: Alt Meta -> Alt Meta -> TC (Constrs Meta)
+convAlt alt@(Alt lhs rhs) alt'@(Alt lhs' rhs') = bt ("CONV-ALT", alt, alt') $ do
+    require (lhs == lhs') $ Mismatch (show lhs) (show lhs')
+    conv rhs rhs'

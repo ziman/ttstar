@@ -148,4 +148,7 @@ prettyParens d
 instance PrettyR r => Show (Alt r) where
     show = prettyShow
 
+instance PrettyR r => Show (AltLHS r) where
+    show = prettyShow
+
 indent = nest 2
