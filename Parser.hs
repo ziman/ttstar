@@ -132,9 +132,9 @@ mkPostulate (Def n r ty (Abstract Var) cs)
 case_ :: Parser (TT MRel)
 case_ = (<?> "case split") $ do
     try $ kwd "case"
-    s <- parens expr
+    s <- atomic
     kwd "return"
-    ty <- parens expr
+    ty <- atomic
     kwd "of"
     kwd "{"
     alts <- caseAlt `sepBy` kwd ","
