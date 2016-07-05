@@ -91,6 +91,9 @@ red NF ctx t@(Case r s ty alts) =
     case firstMatch $ map (evalAlt NF ctx sWHNF) alts of
         Just nf -> nf
         Nothing ->
+            -- FIXME: this is not very satisfactory
+            -- we should be able to normalise under unreduced case splits.
+            -- Furthermore, this may still not give us strong normalisation.
             t -- Case r (red NF ctx s) (red NF ctx ty) (map (redAltNF ctx) alts)
   where
     sWHNF = red WHNF ctx s
