@@ -8,13 +8,15 @@ data Id : (a : Type) -> (x : a) -> (y : a) -> Type.
   Refl : (a : Type) -> (x : a) -> Id a x x.
 
 not (x : Bool) : Bool
-  = case x of
+  = case (x) return (Bool) of {
       T => F,
-      F => T.
+      F => T
+    }.
 
 notnot (x : Bool) : Id Bool x (not (not x))
-  = case x of
+  = case (x) return (Id Bool x (not (not x))) of {
       T => Refl Bool T,
-      F => Refl Bool F.
+      F => Refl Bool F
+    }.
 
 main :R: Id Bool F (not (not F)) = notnot F.

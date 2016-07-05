@@ -423,8 +423,10 @@ conv' p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do
     return $ xs /\ ys /\ r <--> r'
 
 conv' p@(Case r s ty alts) q@(Case r' s' ty' alts') = bt ("C-CASE", p, q) $ do
-    require (p == q) $ Mismatch (show p) (show q)
-    return noConstrs
+    xs <- conv s s'
+    ys <- conv ty ty'
+    require (alts == alts') $ Mismatch (show p) (show q)
+    return $ xs /\ ys /\ r <--> r'
 
 -- we don't include a case for Forced because those constructors
 -- get normalised away to bare terms
