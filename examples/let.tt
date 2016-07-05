@@ -5,9 +5,10 @@ data Nat : Type.
   S : (_ :R: Nat) -> Nat.
 
 plus (n : Nat) (m : Nat) : Nat
-  = case n of
+  = case (n) return (Nat) of {
       Z => m,
-      S (n' : Nat) => S (plus n' m).
+      S (n' : Nat) => S (plus n' m)
+    }.
 
 id (x : Nat) : Nat = x.
 
@@ -16,9 +17,10 @@ const (x : Nat) (y : Nat) : Nat = x.
 main :R: Nat
     = let
         apply (f : Nat -> Nat) (x : Nat) : Nat
-          = case x of
+          = case (x) return (Nat) of {
               Z => f Z,
-              S (x' : Nat) => f (S x').
+              S (x' : Nat) => f (S x')
+            }.
       in let postulate Q : Nat.
       in let three : Nat = 3.
       in plus (apply id 2) (apply (const Q) three).
