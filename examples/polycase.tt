@@ -12,28 +12,33 @@ data Id : (a : Type) -> (x : a) -> (y : a) -> Type.
   Refl : (a : Type) -> (x : a) -> Id a x x.
 
 not (x : Bool) : Bool
-  = case x of
+  = case (x) return (Bool) of {
       T => F,
-      F => T.
+      F => T
+    }.
 
 notnot (x : Bool) : Id Bool x (not (not x))
-  = case x of
+  = case (x) return (Id Bool x (not (not x))) of {
       T => Refl Bool T,
-      F => Refl Bool F.
+      F => Refl Bool F
+    }.
 
 retTy (x : Bool) : Type
-  = case x of
+  = case (x) return (Type) of {
       T => Bool,
-      F => Mool.
+      F => Mool
+    }.
 
 mot (m : Mool) : Mool
-  = case m of
+  = case (m) return (Mool) of {
       Q => W,
-      W => Q.
+      W => Q
+    }.
 
 invert (t : Bool) (x : retTy t) : retTy t
-  = case t of
+  = case (t) return (retTy t) of {
       T => not x,
-      F => mot x.
+      F => mot x
+    }.
 
 main :R: Mool = invert F Q.
