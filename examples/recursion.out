@@ -21,7 +21,7 @@ postulate VNil : (a : Type) -> Vec Z a
 postulate VCons : (a : Type) -> (n : Nat) -> (x : a) -> (xs : Vec n a) -> Vec (S n) a
 
 vlen : (a : Type) -> (n : Nat) -> (xs : Vec n a) -> Nat = (\a : Type. (\n : Nat. (\xs : Vec n a. 
-  case  xs returns Nat.
+  case  xs return Nat of
     VNil (a' : Type)
       | a = a'
       | n = Z
@@ -56,7 +56,7 @@ postulate VNil :10: (a :11: Type) -> Vec -13- Z -12- a
 postulate VCons :14: (a :15: Type) -> (n :16: Nat) -> (x :17: a) -> (xs :18: Vec -20- n -19- a) -> Vec -22- (S -23- n) -21- a
 
 vlen :24: (a :25: Type) -> (n :26: Nat) -> (xs :27: Vec -29- n -28- a) -> Nat = (\a :30: Type. (\n :31: Nat. (\xs :32: Vec -34- n -33- a. 
-  case -35-  xs returns Nat.
+  case -35-  xs return Nat of
     VNil (a' :36: Type)
       | a = a'
       | n = Z
@@ -183,7 +183,7 @@ testVec :48: Vec -50- 2 -49- Bool = VCons -56- Bool -55- 1 -54- True -53- (VCons
   [57] -> [23,52]
 
 vlen :24: (a :25: Type) -> (n :26: Nat) -> (xs :27: Vec -29- n -28- a) -> Nat = (\a :30: Type. (\n :31: Nat. (\xs :32: Vec -34- n -33- a. 
-  case -35-  xs returns Nat.
+  case -35-  xs return Nat of
     VNil (a' :36: Type)
       | a = a'
       | n = Z
@@ -296,7 +296,7 @@ postulate VNil :R: (a :E: Type) -> Vec -E- Z -E- a
 postulate VCons :R: (a :E: Type) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
 
 vlen :R: (a :E: Type) -> (n :E: Nat) -> (xs :R: Vec -E- n -E- a) -> Nat = (\a :E: Type. (\n :E: Nat. (\xs :R: Vec -E- n -E- a. 
-  case -R-  xs returns Nat.
+  case -R-  xs return Nat of
     VNil (a' :E: Type)
       | a = a'
       | n = Z
@@ -331,7 +331,7 @@ postulate VNil :R: (a :E: Type) -> Vec -E- Z -E- a
 postulate VCons :R: (a :E: Type) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
 
 vlen :R: (a :E: Type) -> (n :E: Nat) -> (xs :R: Vec -E- n -E- a) -> Nat = (\a :E: Type. (\n :E: Nat. (\xs :R: Vec -E- n -E- a. 
-  case -R-  xs returns Nat.
+  case -R-  xs return Nat of
     VNil (a' :E: Type)
       | a = a'
       | n = Z
@@ -366,7 +366,7 @@ postulate VNil :R: (a :E: Type) -> Vec -E- Z -E- a
 postulate VCons :R: (a :E: Type) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
 
 vlen :R: (a :E: Type) -> (n :E: Nat) -> (xs :R: Vec -E- n -E- a) -> Nat = (\a :E: Type. (\n :E: Nat. (\xs :R: Vec -E- n -E- a. 
-  case -R-  xs returns Nat.
+  case -R-  xs return Nat of
     VNil (a' :E: Type)
       | a = a'
       | n = Z

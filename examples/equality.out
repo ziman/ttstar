@@ -13,14 +13,14 @@ postulate Id : (a : Type) -> (x : a) -> (y : a) -> Type
 postulate Refl : (a : Type) -> (x : a) -> Id a x x
 
 not : (x : Bool) -> Bool = (\x : Bool. 
-  case  x returns Bool.
+  case  x return Bool of
     T
       => F
     F
       => T)
 
 notnot : (x : Bool) -> Id Bool x (not (not x)) = (\x : Bool. 
-  case  x returns Id Bool x (not (not x)).
+  case  x return Id Bool x (not (not x)) of
     T
       => Refl Bool T
     F
@@ -41,14 +41,14 @@ postulate Id :4: (a :5: Type) -> (x :6: a) -> (y :7: a) -> Type
 postulate Refl :8: (a :9: Type) -> (x :10: a) -> Id -13- a -12- x -11- x
 
 not :14: (x :15: Bool) -> Bool = (\x :16: Bool. 
-  case -17-  x returns Bool.
+  case -17-  x return Bool of
     T
       => F
     F
       => T)
 
 notnot :18: (x :19: Bool) -> Id -22- Bool -21- x -20- (not -23- (not -24- x)) = (\x :25: Bool. 
-  case -26-  x returns Id -29- Bool -28- x -27- (not -30- (not -31- x)).
+  case -26-  x return Id -29- Bool -28- x -27- (not -30- (not -31- x)) of
     T
       => Refl -33- Bool -32- T
     F
@@ -98,7 +98,7 @@ main :R: Id -38- Bool -37- F -36- (not -39- (not -40- F)) = notnot -41- F {- con
   [38] -> [22]
 
 not :14: (x :15: Bool) -> Bool = (\x :16: Bool. 
-  case -17-  x returns Bool.
+  case -17-  x return Bool of
     T
       => F
     F
@@ -106,7 +106,7 @@ not :14: (x :15: Bool) -> Bool = (\x :16: Bool.
   [] -> [2,3,14,15,16,17,R]
 
 notnot :18: (x :19: Bool) -> Id -22- Bool -21- x -20- (not -23- (not -24- x)) = (\x :25: Bool. 
-  case -26-  x returns Id -29- Bool -28- x -27- (not -30- (not -31- x)).
+  case -26-  x return Id -29- Bool -28- x -27- (not -30- (not -31- x)) of
     T
       => Refl -33- Bool -32- T
     F
@@ -170,14 +170,14 @@ postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
 postulate Refl :R: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
 
 not :E: (x :E: Bool) -> Bool = (\x :E: Bool. 
-  case -E-  x returns Bool.
+  case -E-  x return Bool of
     T
       => F
     F
       => T)
 
 notnot :R: (x :R: Bool) -> Id -E- Bool -E- x -E- (not -E- (not -E- x)) = (\x :R: Bool. 
-  case -R-  x returns Id -E- Bool -E- x -E- (not -E- (not -E- x)).
+  case -R-  x return Id -E- Bool -E- x -E- (not -E- (not -E- x)) of
     T
       => Refl -E- Bool -E- T
     F
@@ -198,14 +198,14 @@ postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
 postulate Refl :R: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
 
 not :E: (x :E: Bool) -> Bool = (\x :E: Bool. 
-  case -E-  x returns Bool.
+  case -E-  x return Bool of
     T
       => F
     F
       => T)
 
 notnot :R: (x :R: Bool) -> Id -E- Bool -E- x -E- (not -E- (not -E- x)) = (\x :R: Bool. 
-  case -R-  x returns Id -E- Bool -E- x -E- (not -E- (not -E- x)).
+  case -R-  x return Id -E- Bool -E- x -E- (not -E- (not -E- x)) of
     T
       => Refl -E- Bool -E- T
     F
@@ -226,14 +226,14 @@ postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
 postulate Refl :R: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
 
 not :E: (x :E: Bool) -> Bool = (\x :E: Bool. 
-  case -E-  x returns Bool.
+  case -E-  x return Bool of
     T
       => F
     F
       => T)
 
 notnot :R: (x :R: Bool) -> Id -E- Bool -E- x -E- (not -E- (not -E- x)) = (\x :R: Bool. 
-  case -R-  x returns Id -E- Bool -E- x -E- (not -E- (not -E- x)).
+  case -R-  x return Id -E- Bool -E- x -E- (not -E- (not -E- x)) of
     T
       => Refl -E- Bool -E- T
     F

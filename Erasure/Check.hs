@@ -97,6 +97,14 @@ flipConstrs cs
         , p <- S.toList ps
         ]
 
+catch :: TC a -> (TCFailure -> TC a) -> TC a
+catch tc h = do
+    env <- ask
+    lift $
+        runReaderT tc env
+        `catchE`
+            (\e -> runReaderT (h e) env)
+
 cond :: Meta -> Constrs Meta -> Constrs Meta
 cond r = M.mapKeysWith S.union (S.insert r)
 
@@ -399,14 +407,17 @@ instantiate freshTag metaMap def = evalStateT refresh metaMap
 
 -- left: from context (from outside), right: from expression (from inside)
 conv :: Type -> Type -> TC (Constrs Meta)
-conv p q
-    | p == q = return noConstrs  -- prevents unnecessary normalisation
-    | otherwise = do
-        ctx <- getCtx
-        conv' (whnf ctx p) (whnf ctx q)
+conv p q = do
+    ctx <- getCtx
+    conv' p q  -- first, try to compare without normalisation
+        `catch`
+            (\err ->  -- if that fails, normalise
+                conv' (whnf ctx p) (whnf ctx q))
 
 -- note that this function gets arguments in WHNF
 conv' :: Type -> Type -> TC (Constrs Meta)
+
+--conv' p q | ("CONV'", p, q) `traceShow` False = undefined
 
 -- whnf is variable (something irreducible, constructor or axiom)
 conv' (V n) (V n') = bt ("C-VAR", n, n') $ do
@@ -443,8 +454,9 @@ convAlt :: Alt Meta -> Alt Meta -> TC (Constrs Meta)
 convAlt (Alt Wildcard rhs) (Alt Wildcard rhs') = bt ("CONV-ALT-WILD", rhs, rhs') $ do
     conv rhs rhs'
 
-convAlt alt@(Alt lhs@(Ctor cn args eqs) rhs) alt'@(Alt lhs'@(Ctor cn' args' eqs') rhs') = bt ("CONV-ALT", alt, alt') $ do
-    require (lhs == lhs') $ Mismatch (show lhs) (show lhs')
-    withDefs args $ conv rhs rhs'
+convAlt alt@(Alt lhs@(Ctor cn args eqs) rhs) alt'@(Alt lhs'@(Ctor cn' args' eqs') rhs')
+    = bt ("CONV-ALT", alt, alt') $ do
+        require (lhs == lhs') $ Mismatch (show lhs) (show lhs')
+        withDefs args $ conv rhs rhs'
 
 convAlt p q = tcfail $ Mismatch (show p) (show q)

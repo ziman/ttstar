@@ -20,8 +20,8 @@ type IsRelevance r = (PrettyR r, Eq r)
 data Form = NF | WHNF deriving Show
 
 dbg :: Show a => a -> b -> b
---dbg = traceShow
-dbg _ x = x
+dbg = traceShow
+--dbg _ x = x
 
 dbgS :: (Show a, Show b) => a -> b -> b
 dbgS x y = (x, y) `dbg` y
@@ -99,9 +99,8 @@ red form ctx t@(Case r s ty alts) =
                 Nothing  -> stuck
         _ | ("STUCK", s, stuck) `dbg` True -> stuck
   where
-    --stuck = t
     stuck = case form of
-        NF -> Case r (red NF ctx s) (red NF ctx ty) (map (redAltNF ctx) alts)
+        NF -> t -- Case r (red NF ctx s) (red NF ctx ty) (map (redAltNF ctx) alts)
         WHNF -> t
     sWHNF = red form ctx s
 

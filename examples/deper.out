@@ -17,14 +17,14 @@ id : (x : Bool) -> Bool = (\x : Bool. x)
 constT : (_ : Bool) -> Bool = (\_ : Bool. T)
 
 fty : (x : Bool) -> Type = (\x : Bool. 
-  case  x returns Type.
+  case  x return Type of
     T
       => (_ : Bool) -> Bool
     F
       => (_ : Bool) -> Bool)
 
 f : (x : Bool) -> fty x = (\x : Bool. 
-  case  x returns fty x.
+  case  x return fty x of
     T
       => id
     F
@@ -49,14 +49,14 @@ id :6: (x :7: Bool) -> Bool = (\x :8: Bool. x)
 constT :9: (_ :10: Bool) -> Bool = (\_ :11: Bool. T)
 
 fty :12: (x :13: Bool) -> Type = (\x :14: Bool. 
-  case -15-  x returns Type.
+  case -15-  x return Type of
     T
       => (_ :16: Bool) -> Bool
     F
       => (_ :17: Bool) -> Bool)
 
 f :18: (x :19: Bool) -> fty -20- x = (\x :21: Bool. 
-  case -22-  x returns fty -23- x.
+  case -22-  x return fty -23- x of
     T
       => id
     F
@@ -89,7 +89,7 @@ constT :9: (_ :10: Bool) -> Bool = (\_ :11: Bool. T) {- constraints apply -}
   [11] -> [10]
 
 f :18: (x :19: Bool) -> fty -20- x = (\x :21: Bool. 
-  case -22-  x returns fty -23- x.
+  case -22-  x return fty -23- x of
     T
       => id
     F
@@ -98,10 +98,10 @@ f :18: (x :19: Bool) -> fty -20- x = (\x :21: Bool.
   [10] -> [11,17]
   [11] -> [10]
   [15] -> [15]
-  [17] -> [10,17]
+  [17] -> [10]
 
 fty :12: (x :13: Bool) -> Type = (\x :14: Bool. 
-  case -15-  x returns Type.
+  case -15-  x return Type of
     T
       => (_ :16: Bool) -> Bool
     F
@@ -116,7 +116,7 @@ main :R: TwoBools = TB -25- (f -27- T -26- F) -24- (f -29- F -28- F) {- constrai
   [10] -> [11,17]
   [11] -> [10]
   [15] -> [15]
-  [17] -> [10,17,28]
+  [17] -> [10,28]
   [28] -> [17]
 
 
@@ -126,7 +126,7 @@ main :R: TwoBools = TB -25- (f -27- T -26- F) -24- (f -29- F -28- F) {- constrai
 [10] -> [11,17]
 [11] -> [10]
 [15] -> [15]
-[17] -> [10,17,28]
+[17] -> [10,28]
 [28] -> [17]
 
 ### Solution ###
@@ -150,14 +150,14 @@ id :R: (x :R: Bool) -> Bool = (\x :R: Bool. x)
 constT :R: (_ :E: Bool) -> Bool = (\_ :E: Bool. T)
 
 fty :E: (x :E: Bool) -> Type = (\x :E: Bool. 
-  case -E-  x returns Type.
+  case -E-  x return Type of
     T
       => (_ :R: Bool) -> Bool
     F
       => (_ :E: Bool) -> Bool)
 
 f :R: (x :R: Bool) -> fty -E- x = (\x :R: Bool. 
-  case -R-  x returns fty -E- x.
+  case -R-  x return fty -E- x of
     T
       => id
     F
@@ -182,14 +182,14 @@ id :R: (x :R: Bool) -> Bool = (\x :R: Bool. x)
 constT :R: (_ :E: Bool) -> Bool = (\_ :E: Bool. T)
 
 fty :E: (x :E: Bool) -> Type = (\x :E: Bool. 
-  case -E-  x returns Type.
+  case -E-  x return Type of
     T
       => (_ :R: Bool) -> Bool
     F
       => (_ :E: Bool) -> Bool)
 
 f :R: (x :R: Bool) -> fty -E- x = (\x :R: Bool. 
-  case -R-  x returns fty -E- x.
+  case -R-  x return fty -E- x of
     T
       => id
     F
@@ -214,14 +214,14 @@ id :R: (x :R: Bool) -> Bool = (\x :R: Bool. x)
 constT :R: (_ :E: Bool) -> Bool = (\_ :E: Bool. T)
 
 fty :E: (x :E: Bool) -> Type = (\x :E: Bool. 
-  case -E-  x returns Type.
+  case -E-  x return Type of
     T
       => (_ :R: Bool) -> Bool
     F
       => (_ :E: Bool) -> Bool)
 
 f :R: (x :R: Bool) -> fty -E- x = (\x :R: Bool. 
-  case -R-  x returns fty -E- x.
+  case -R-  x return fty -E- x of
     T
       => id
     F

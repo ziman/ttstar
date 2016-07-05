@@ -23,7 +23,7 @@ postulate S : (n :R: Nat) -> Nat
 postulate Plus : (x :R: Nat) -> (y :R: Nat) -> Nat
 
 id : (x : Nat) -> Nat = (\x : Nat. 
-  case  x returns Nat.
+  case  x return Nat of
     Z
       => Z
     S (y : Nat)
@@ -68,7 +68,7 @@ postulate S :13: (n :R: Nat) -> Nat
 postulate Plus :14: (x :R: Nat) -> (y :R: Nat) -> Nat
 
 id :15: (x :16: Nat) -> Nat = (\x :17: Nat. 
-  case -18-  x returns Nat.
+  case -18-  x return Nat of
     Z
       => Z
     S (y :19: Nat)
@@ -151,7 +151,7 @@ f :31: (g :32: (_ :33: Nat) -> Nat) -> (z :34: Nat) -> (h :35: (_ :36: Nat) -> N
   [47] -> [42]
 
 id :15: (x :16: Nat) -> Nat = (\x :17: Nat. 
-  case -18-  x returns Nat.
+  case -18-  x return Nat of
     Z
       => Z
     S (y :19: Nat)
@@ -212,7 +212,7 @@ postulate S :R: (n :R: Nat) -> Nat
 postulate Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
 
 id :R: (x :R: Nat) -> Nat = (\x :R: Nat. 
-  case -R-  x returns Nat.
+  case -R-  x return Nat of
     Z
       => Z
     S (y :R: Nat)
@@ -257,7 +257,7 @@ postulate S :R: (n :R: Nat) -> Nat
 postulate Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
 
 id :R: (x :R: Nat) -> Nat = (\x :R: Nat. 
-  case -R-  x returns Nat.
+  case -R-  x return Nat of
     Z
       => Z
     S (y :R: Nat)
@@ -302,7 +302,7 @@ postulate S :R: (n :R: Nat) -> Nat
 postulate Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
 
 id :R: (x :R: Nat) -> Nat = (\x :R: Nat. 
-  case -R-  x returns Nat.
+  case -R-  x return Nat of
     Z
       => Z
     S (y :R: Nat)

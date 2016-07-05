@@ -112,7 +112,7 @@ instance PrettyR r => Pretty (TT r) where
 
         pretty' pp (Case r s ty alts) =
             blankLine $$ indent (
-                text "case" <> prettyApp r <+> pretty s <+> text "returns" <+> pretty ty <> text "."
+                text "case" <> prettyApp r <+> pretty s <+> text "return" <+> pretty ty <+> text "of"
                 $$ indent (vcat $ map pretty alts)
             )
 

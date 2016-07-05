@@ -68,7 +68,7 @@ substEq n tm@(V n') (en, etm)
     = (n', subst n tm etm)
 
     | otherwise
-    =(en, subst n tm etm)
+    = (en, subst n tm etm)
 
 substEq n tm (en, etm)
     | n == en
