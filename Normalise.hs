@@ -7,6 +7,7 @@ import Pretty
 
 import Data.List
 import Data.Maybe
+import Control.Arrow
 import Control.Applicative
 import Control.Monad
 import qualified Data.Map as M
@@ -19,8 +20,8 @@ type IsRelevance r = (PrettyR r, Eq r)
 data Form = NF | WHNF deriving Show
 
 dbg :: Show a => a -> b -> b
--- dbg = traceShow
-dbg _ x = x
+dbg = traceShow
+--dbg _ x = x
 
 dbgS :: (Show a, Show b) => a -> b -> b
 dbgS x y = (x, y) `dbg` y
@@ -82,35 +83,38 @@ red form ctx t@(App r f x)
     -- everything else
     | otherwise = App r redF redX  -- not a redex
   where
-    redF = red NF ctx f
+    redF = red form ctx f
     redX = case form of
         NF   -> red NF ctx x
         WHNF -> x
 
-red NF ctx t@(Case r s ty alts) = 
-    case firstMatch $ map (evalAlt NF ctx sWHNF) alts of
-        Just nf -> nf
-        Nothing ->
-            -- FIXME: this is not very satisfactory
-            -- we should be able to normalise under unreduced case splits.
-            -- Furthermore, this may still not give us strong normalisation.
-            t -- Case r (red NF ctx s) (red NF ctx ty) (map (redAltNF ctx) alts)
+red form ctx t@(Case r s ty alts) = 
+    case unApply sWHNF of
+        (V cn, argvals)
+            | Just d <- M.lookup cn ctx  -- WHNF didn't fail so "cn" is a valid name
+            -> case firstMatch $ map (evalAlt form ctx cn argvals) alts of
+                Just rhs -> red form ctx rhs
+                Nothing  -> stuck
+        _ -> stuck
   where
-    sWHNF = red WHNF ctx s
-
-red WHNF ctx t@(Case r s ty alts) = 
-    case firstMatch $ map (evalAlt WHNF ctx sWHNF) alts of
-        Just nf -> nf
-        Nothing -> t
-  where
-    sWHNF = red WHNF ctx s
+    stuck = case form of
+        NF -> Case r (red NF ctx s) (red NF ctx ty) (map (redAltNF ctx) alts)
+        WHNF -> t
+    sWHNF = red form ctx s
 
 redAltNF :: IsRelevance r => Ctx r -> Alt r -> Alt r
 redAltNF ctx (Alt Wildcard rhs) = Alt Wildcard $ red NF ctx rhs
 redAltNF ctx (Alt lhs@(Ctor cn args eqs) rhs)
-    = Alt lhs $ red NF ctx' rhs
+    = Alt (redAltLHS NF ctx' lhs) (red NF ctx' rhs)
   where
     ctx' = foldr (\d -> M.insert (defName d) d) ctx args
+
+redAltLHS :: IsRelevance r => Form -> Ctx r -> AltLHS r -> AltLHS r
+redAltLHS form ctx Wildcard = Wildcard
+redAltLHS form ctx (Ctor cn args eqs)
+    = Ctor cn
+        (map (redDef form ctx) args)
+        (map (second $ red form ctx) eqs)
 
 {-
 substArgs :: Termy f => [Def r] -> [(r, TT r)] -> f r -> f r
@@ -128,21 +132,19 @@ firstMatch :: Alternative f => [f a] -> f a
 firstMatch = foldr (<|>) empty
 
 -- here, the scrutinee (tm) is in WHNF
-evalAlt :: IsRelevance r => Form -> Ctx r -> TT r -> Alt r -> Maybe (TT r)
-evalAlt form ctx tm (Alt Wildcard rhs)
+evalAlt :: IsRelevance r => Form -> Ctx r -> Name -> [(r, TT r)] -> Alt r -> Maybe (TT r)
+evalAlt form ctx cn argvals (Alt Wildcard rhs)
     = return $ red form ctx rhs
 
-evalAlt form ctx tm (Alt (Ctor cn argvars eqs) rhs)
-    | (V cn', argvals) <- unApply tm
-    , cn' == cn
+evalAlt form ctx cn argvals (Alt (Ctor cn' argvars eqs) rhs)
+    | cn' == cn
     , length argvars == length argvals
     = Just . red form ctx
         $ substs (argSubst argvars argvals) rhs
 
-evalAlt form ctx tm (Alt (Ctor cn argvars eqs) rhs)
-    | (V cn', argvals) <- unApply tm
-    , cn' == cn
+evalAlt form ctx cn argvals (Alt (Ctor cn' argvars eqs) rhs)
+    | cn' == cn
     , length argvars /= length argvals
     = error "constructor arity mismatch in pattern"
 
-evalAlt form ctx tm alt = Nothing
+evalAlt form ctx cn argvals alt = Nothing
