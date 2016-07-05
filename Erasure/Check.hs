@@ -52,11 +52,12 @@ data TCFailure = TCFailure TCError [String]
 instance Show TCFailure where
     show (TCFailure e []) = show e
     show (TCFailure e tb) = unlines $
-        show e : "Traceback:"
+        ("Traceback:"
             : zipWith
                 (\i n -> show i ++ ". " ++ n)
                 [1..]
                 (reverse tb)
+        ) ++ [show e]
 
 type TCTraceback = [String]
 type TCState = Int
@@ -355,18 +356,16 @@ checkAlt sr sty goalTy s (Alt Wildcard rhs) = bt ("ALT-WILD") $ do
 
 checkAlt sr sty goalTy s (Alt (Ctor cn args eqs) rhs) = bt ("ALT-CTOR", cn) $ do
     argCtx <- checkDefs args
-    with' (M.union argCtx) $ do
-        traverse checkPatvar $ map fst eqs
-
+    traverse checkPatvar $ map fst eqs
+    with' (M.union argCtx) . with' (substsInCtx eqs') . bt ("ALT-CTOR-INT", cn) $ do
         (patTy, patcs) <- checkTm pat'
         tccs <- conv (substs eqs' patTy) (substs eqs' sty)
 
-        with' (substsInCtx eqs') $ do
-            (rty, rcs) <- checkTm $ substs eqs' rhs
-            rccs <- conv rty (substs eqs' goalTy)
+        (rty, rcs) <- checkTm $ substs eqs' rhs
+        rccs <- conv rty (substs eqs' goalTy)
 
-            -- if we need flipConstrs, we will probably need [Forced] anyway :(
-            return $ cond sr (tccs /\ flipConstrs patcs) /\ rcs /\ rccs /\ unions [defR d --> sr | d <- args]
+        -- if we need flipConstrs, we will probably need [Forced] anyway :(
+        return $ cond sr (tccs /\ flipConstrs patcs) /\ rcs /\ rccs /\ unions [defR d --> sr | d <- args]
   where
     pat = mkApp (V cn) [(defR d, V $ defName d) | d <- args]
     pat' = substs eqs pat
