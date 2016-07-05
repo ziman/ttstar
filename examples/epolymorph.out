@@ -22,13 +22,14 @@ postulate S : (n :R: Nat) -> Nat
 
 postulate Plus : (x :R: Nat) -> (y :R: Nat) -> Nat
 
-id : (x : Nat) -> Nat = (\x : Nat. case  x returns Nat.
-  Z
-    => Z
-  S (y : Nat)
-    => 
-      let result : Nat = S y
-      in result)
+id : (x : Nat) -> Nat = (\x : Nat. 
+  case  x returns Nat.
+    Z
+      => Z
+    S (y : Nat)
+      => 
+        let result : Nat = S y
+        in result)
 
 const_3 : (_ : Nat) -> Nat = (\_ : Nat. 3)
 
@@ -66,13 +67,14 @@ postulate S :13: (n :R: Nat) -> Nat
 
 postulate Plus :14: (x :R: Nat) -> (y :R: Nat) -> Nat
 
-id :15: (x :16: Nat) -> Nat = (\x :17: Nat. case -18-  x returns Nat.
-  Z
-    => Z
-  S (y :19: Nat)
-    => 
-      let result :20: Nat = S -21- y
-      in result)
+id :15: (x :16: Nat) -> Nat = (\x :17: Nat. 
+  case -18-  x returns Nat.
+    Z
+      => Z
+    S (y :19: Nat)
+      => 
+        let result :20: Nat = S -21- y
+        in result)
 
 const_3 :22: (_ :23: Nat) -> Nat = (\_ :24: Nat. 3)
 
@@ -148,13 +150,14 @@ f :31: (g :32: (_ :33: Nat) -> Nat) -> (z :34: Nat) -> (h :35: (_ :36: Nat) -> N
   [46] -> [39]
   [47] -> [42]
 
-id :15: (x :16: Nat) -> Nat = (\x :17: Nat. case -18-  x returns Nat.
-  Z
-    => Z
-  S (y :19: Nat)
-    => 
-      let result :20: Nat = S -21- y
-      in result) {- constraints apply -}
+id :15: (x :16: Nat) -> Nat = (\x :17: Nat. 
+  case -18-  x returns Nat.
+    Z
+      => Z
+    S (y :19: Nat)
+      => 
+        let result :20: Nat = S -21- y
+        in result) {- constraints apply -}
   [] -> [12,13,15,16,17,18,19,20,21,R]
 
 main :R: Nat = Plus -74- test_1 -73- test_2 {- constraints apply -}
@@ -208,13 +211,14 @@ postulate S :R: (n :R: Nat) -> Nat
 
 postulate Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
 
-id :R: (x :R: Nat) -> Nat = (\x :R: Nat. case -R-  x returns Nat.
-  Z
-    => Z
-  S (y :R: Nat)
-    => 
-      let result :R: Nat = S -R- y
-      in result)
+id :R: (x :R: Nat) -> Nat = (\x :R: Nat. 
+  case -R-  x returns Nat.
+    Z
+      => Z
+    S (y :R: Nat)
+      => 
+        let result :R: Nat = S -R- y
+        in result)
 
 const_3 :R: (_ :R: Nat) -> Nat = (\_ :R: Nat. 3)
 
@@ -252,13 +256,14 @@ postulate S :R: (n :R: Nat) -> Nat
 
 postulate Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
 
-id :R: (x :R: Nat) -> Nat = (\x :R: Nat. case -R-  x returns Nat.
-  Z
-    => Z
-  S (y :R: Nat)
-    => 
-      let result :R: Nat = S -R- y
-      in result)
+id :R: (x :R: Nat) -> Nat = (\x :R: Nat. 
+  case -R-  x returns Nat.
+    Z
+      => Z
+    S (y :R: Nat)
+      => 
+        let result :R: Nat = S -R- y
+        in result)
 
 const_3 :R: (_ :R: Nat) -> Nat = (\_ :R: Nat. 3)
 
@@ -296,13 +301,14 @@ postulate S :R: (n :R: Nat) -> Nat
 
 postulate Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
 
-id :R: (x :R: Nat) -> Nat = (\x :R: Nat. case -R-  x returns Nat.
-  Z
-    => Z
-  S (y :R: Nat)
-    => 
-      let result :R: Nat = S -R- y
-      in result)
+id :R: (x :R: Nat) -> Nat = (\x :R: Nat. 
+  case -R-  x returns Nat.
+    Z
+      => Z
+    S (y :R: Nat)
+      => 
+        let result :R: Nat = S -R- y
+        in result)
 
 const_3 :R: (_ :R: Nat) -> Nat = (\_ :R: Nat. 3)
 
@@ -330,13 +336,14 @@ postulate S
 
 postulate Plus
 
-id = (\x. case  x returns _.
-  Z
-    => Z
-  S y
-    => 
-      let result = S y
-      in result)
+id = (\x. 
+  case x of
+    Z
+      => Z
+    S y
+      => 
+        let result = S y
+        in result)
 
 const_3 = (\_. 3)
 
@@ -355,3 +362,6 @@ main = Plus test_1 test_2
 ### Normal forms ###
 
 unerased:
+  Plus (Plus 2 3) (Plus 2 3)
+erased:
+  Plus (Plus 2 3) (Plus 2 3)
