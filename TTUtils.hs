@@ -21,6 +21,15 @@ class Termy f where
     subst :: Name -> TT r -> f r -> f r
     freeVars :: f r -> S.Set Name
 
+{-
+instance Termy Ctx where
+    subst n tm ctx
+        = M.fromList [(n', subst n tm d) | (n', d) <- M.toList ctx, n' /= n]
+
+    freeVars ctx
+        = S.unions (map freeVars $ M.elems ctx) `S.difference` M.keysSet ctx
+-}
+
 instance Termy TT where
     subst n tm (V n')
         | n' == n   = tm

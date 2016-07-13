@@ -24,3 +24,4 @@ executable ttstar
                        lens-family >=1.2, lens-family-core >=1.2
   -- hs-source-dirs:      
   default-language:    Haskell2010
+  ghc-options:         -Wall

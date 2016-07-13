@@ -5,6 +5,7 @@ module Erasure.Verify
 
 import TT
 import TTLens
+import TTUtils
 import Erasure.Check
 import Erasure.Meta
 import Erasure.Solve
@@ -71,8 +72,8 @@ getCtx = do
     (tb, ctx) <- ask
     return ctx
 
-lookup :: Name -> ver (Def Meta)
-lookup n = do
+lookupName :: Name -> Ver (Def Relevance)
+lookupName n = do
     ctx <- getCtx
     case M.lookup n ctx of
         Just x  -> return x
@@ -85,7 +86,7 @@ eqR r s
 
 hasRelevance :: Name -> Relevance -> Ver ()
 hasRelevance n r = do
-    d <- lookup n
+    d <- lookupName n
     if (r == R) && (defR d == E)
         then verFail $ RelevanceMismatch r (defR d)
         else return ()
@@ -117,7 +118,7 @@ verDef d@(Def n r ty (Patterns cf) cs) = do
     with d $
         verCaseFun n r cf
 
-verCaseFun :: Name -> Relevance -> Case Relevance -> CaseFun Relevance -> Ver ()
+verCaseFun :: Name -> Relevance -> CaseFun Relevance -> Ver ()
 verCaseFun fn r (CaseFun ds ct) = do
     verDefs ds
     let lhs = mkApp (V fn) [(defR d, V $ defName d) | d <- ds]
@@ -131,12 +132,12 @@ verCase r lhs (Leaf rhs) = do
     conv r lhsTy rhsTy
 
 verCase R lhs (Case s (V n) [alt]) = do
-    d <- lookup n    
+    d <- lookupName n    
     eqR s (defR d)
     verBranch Single R lhs n s alt
 
 verCase E lhs (Case E (V n) [alt]) = do
-    lookup n
+    lookupName n
     verBranch Single E lhs n E alt
 
 verCase r lhs (Case s (V n) alts) = do
@@ -155,8 +156,9 @@ verBranch q r lhs n s (Alt (Ctor cn ds eqs) rhs) = do
     let eqs'' = (n, substs eqs' pat) : eqs'
     let lhs'' = substs eqs'' lhs
     let rhs'' = substs eqs'' rhs
-    withs ds . with' (substs eqs'') $
-        verCase r lhs'' rhs''
+    withs ds $
+        with' (substsInCtx eqs'') $
+            verCase r lhs'' rhs''
   where
     c' :: Pat
     c' = case q of
@@ -166,7 +168,7 @@ verBranch q r lhs n s (Alt (Ctor cn ds eqs) rhs) = do
     localVars :: [(Name, Term)] -> Ver ()
     localVars [] = return ()
     localVars ((n,tm):eqs) = do
-        d <- lookup n
+        d <- lookupName n
         case defBody d of
             Abstract Var -> localVars eqs
             _ -> verFail $ NotPatvar n
