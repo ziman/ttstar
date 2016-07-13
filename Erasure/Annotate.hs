@@ -3,10 +3,8 @@ module Erasure.Annotate where
 import TT
 import TTLens
 import Erasure.Meta
-import Erasure.Solve
 
 import Lens.Family
-import Control.Applicative
 import qualified Data.Set as S
 
 annotate :: Uses Meta -> Program Meta -> Program Relevance

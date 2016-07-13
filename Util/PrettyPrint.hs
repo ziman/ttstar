@@ -51,7 +51,7 @@ int i = text $ show i
 text :: String -> Doc
 text s = Doc [(s, "")]
 
-comma, colon :: Doc
+comma, colon, semicolon, dot, equals :: Doc
 comma     = text ","
 colon     = text ":"
 semicolon = text ";"

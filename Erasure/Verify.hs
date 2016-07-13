@@ -4,18 +4,10 @@ module Erasure.Verify
     ) where
 
 import TT
-import TTLens
 import TTUtils
-import Erasure.Check
-import Erasure.Meta
-import Erasure.Solve
+import Pretty ()
 
-import Data.Traversable
 import qualified Data.Map as M
-import qualified Data.Set as S
-import Lens.Family2
-import Control.Monad
-import Control.Applicative
 import Control.Monad.Trans.Except
 import Control.Monad.Trans.Class
 import Control.Monad.Trans.Reader
@@ -25,6 +17,7 @@ data VerError
     | RelevanceMismatch Relevance Relevance
     | NotPatvar Name
     | NotImplemented
+    | ComplexScrutinee (CaseTree Relevance)
     deriving Show
 
 data Cardinality = Single | Many deriving (Eq, Ord, Show)
@@ -137,13 +130,16 @@ verCase R lhs (Case s (V n) [alt]) = do
     verBranch Single R lhs n s alt
 
 verCase E lhs (Case E (V n) [alt]) = do
-    lookupName n
+    _ <- lookupName n  -- make sure the name exists
     verBranch Single E lhs n E alt
 
 verCase r lhs (Case s (V n) alts) = do
     eqR r s
     n `hasRelevance` r
     mapM_ (verBranch Many r lhs n r) alts        
+
+verCase r lhs ct@(Case s tm alts) = do
+    verFail $ ComplexScrutinee ct
 
 verBranch :: Cardinality -> Relevance -> Pat -> Name -> Relevance -> Alt Relevance -> Ver ()
 verBranch q r lhs n s (Alt Wildcard rhs) = do
@@ -175,7 +171,7 @@ verBranch q r lhs n s (Alt (Ctor cn ds eqs) rhs) = do
 
 
 verTm :: Relevance -> Term -> Ver Type
-verTm r tm = verFail NotImplemented
+verTm r tm = bt ("TERM", tm) $ verFail NotImplemented
 
 verPat :: Relevance -> Pat -> Ver Type
 verPat r pat = verFail NotImplemented

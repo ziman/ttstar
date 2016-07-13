@@ -4,16 +4,10 @@ module Erasure.Solve where
 import TT
 import Erasure.Meta
 
-import Data.Traversable (traverse)
-import Control.Applicative
-import Control.Arrow (second)
 import qualified Data.Map as M
 import qualified Data.Set as S
 
-import TTLens
-import Lens.Family2
-
-import Debug.Trace
+--import Debug.Trace
 
 -- reduce the constraint set, keeping the empty-guard constraint
 reduce :: Constrs Meta -> Constrs Meta

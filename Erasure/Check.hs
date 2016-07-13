@@ -11,15 +11,9 @@ import Erasure.Solve
 
 import Prelude hiding (lookup)
 
-import Data.Maybe
-import Data.Foldable
-import Control.Monad
-import Control.Applicative
-import Control.Arrow
 import Control.Monad.Trans.Class
 import Control.Monad.Trans.State
 import Control.Monad.Trans.Except
-import Control.Monad.Trans.Writer
 import Control.Monad.Trans.Reader
 
 import Lens.Family2
@@ -29,7 +23,7 @@ import qualified Data.Map as M
 import qualified Data.Set as S
 import qualified Data.IntMap as IM
 
-import Debug.Trace
+--import Debug.Trace
 
 data TCError
     = CantConvert TTmeta TTmeta
@@ -44,6 +38,7 @@ data TCError
     | InconsistentErasure Name
     | NotImplemented String
     | NonPatvarInEq Name
+    | UncheckableTerm TTmeta
     | Other String
     deriving (Eq, Ord, Show)
 
@@ -55,7 +50,7 @@ instance Show TCFailure where
         show e : "Traceback:"
             : zipWith
                 (\i n -> show i ++ ". " ++ n)
-                [1..]
+                [1::Integer ..]
                 (reverse tb)
 
 type TCTraceback = [String]
@@ -76,9 +71,6 @@ g --> u = M.singleton (S.singleton g) (S.singleton u)
 infix 3 <-->
 (<-->) :: Meta -> Meta -> Constrs Meta
 p <--> q = p --> q /\ q --> p
-
-eq :: Meta -> Meta -> Constrs Meta
-eq p q = p <--> q
 
 union :: Constrs Meta -> Constrs Meta -> Constrs Meta
 union = M.unionWith S.union
@@ -245,7 +237,7 @@ checkAlt isSingleBranch lhs n sr (Alt (Ctor cn args eqs_NF) rhs) = bt ("ALT-CTOR
     argCtx <- checkDefs args
     -- Typechecking will be done eventually in the case for Leaf.
     cs <- with' (M.union argCtx) $ do
-            traverse checkPatvar $ map fst eqs
+            _ <- traverse checkPatvar $ map fst eqs
             with' (substsInCtx eqs') $  -- substitutes in args, too; must use eqs', which includes (n, pat')
                 checkCaseTree lhs' rhs'
     return $ cs /\ scrutCs
@@ -266,11 +258,6 @@ checkAlt isSingleBranch lhs n sr (Alt (Ctor cn args eqs_NF) rhs) = bt ("ALT-CTOR
 
     -- bindings from the individual vars to the scrutinee
     scrutCs = unions [defR d --> sr | d <- args]
-
-
-withDefs :: [Def Meta] -> TC a -> TC a
-withDefs (Def n r ty body cs : ds) = with (Def n r ty body cs) . withDefs ds
-withDefs [] = id
 
 checkTm :: Term -> TC (Type, Constrs Meta)
 
@@ -346,8 +333,8 @@ checkTm (Forced tm) = bt ("FORCED", tm) $ do
     (ty, _cs) <- checkTm tm
     return (ty, noConstrs)
 
-newtype TC' a = LiftTC' { runTC' :: TC a } deriving (Functor, Applicative, Monad)
-type ITC = StateT (IM.IntMap Int) TC'
+checkTm tm = bt ("UNCHECKABLE-TERM", tm) $ do
+    tcfail $ UncheckableTerm tm
 
 freshen :: Monad m => m Int -> Meta -> StateT (IM.IntMap Meta) m Meta
 freshen freshTag m@(Fixed r) = return m

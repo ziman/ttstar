@@ -1,12 +1,7 @@
 module Parser (ttProgram) where
 
 import TT
-
 import Data.Char
-
-import Control.Applicative hiding (many, (<|>))
-import Control.Monad
-
 import Text.Parsec
 
 type Parser = Parsec String ()
@@ -132,10 +127,6 @@ postulate = (<?> "postulate") $ do
     d <- typing Postulate
     kwd "."
     return d
-
-mkPostulate :: Def MRel -> Def MRel
-mkPostulate (Def n r ty (Abstract Var) cs)
-    = Def n r ty (Abstract Postulate) cs
 
 caseTree :: Parser (CaseTree MRel)
 caseTree = realCaseTree <|> leaf <?> "case tree or term"

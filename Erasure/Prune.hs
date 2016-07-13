@@ -1,9 +1,7 @@
 module Erasure.Prune where
 
 import TT
-import Pretty
-import Control.Applicative
-import qualified Data.Set as S
+import Pretty ()
 
 prune :: Program Relevance -> Program ()
 prune (Prog defs) = Prog $ pruneDefs defs
@@ -45,5 +43,7 @@ pruneTm (Bind b d tm)
     = case pruneDef d of
         []   -> pruneTm tm
         [d'] -> Bind b d' (pruneTm tm)
+        _    -> error "pruneTm: impossible def prune"
 pruneTm (App E f x) = pruneTm f
 pruneTm (App R f x) = App () (pruneTm f) (pruneTm x)
+pruneTm (Forced tm) = error $ "pruneTm: forced term: " ++ show tm

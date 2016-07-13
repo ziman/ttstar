@@ -1,8 +1,6 @@
 {-# LANGUAGE Rank2Types #-}
 module TTLens where
 
-import Data.Traversable
-import Control.Applicative
 import qualified Data.Map as M
 import qualified Data.Set as S
 
@@ -15,11 +13,13 @@ ttRelevance f = g
   where
     g tm = case tm of
         V n    -> pure $ V n
-        I n ty -> I n <$> (g ty)
+        I n ty -> I n <$> g ty
         Bind b d tm
             -> Bind b <$> defRelevance f d <*> g tm
         App r fun arg
             -> App <$> f r <*> g fun <*> g arg
+        Forced tm
+            -> Forced <$> g tm
 
 defRelevance :: Ord r' => Traversal (Def r) (Def r') r r'
 defRelevance f (Def n r ty body mcs)

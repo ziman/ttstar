@@ -1,8 +1,6 @@
 {-# LANGUAGE FlexibleContexts, FlexibleInstances, StandaloneDeriving, ConstraintKinds #-}
 module Pretty (useUnicode, PrettyR(..), ShowUnicode (..), sup) where
 
-import Data.Char
-
 import TT
 import Util.PrettyPrint
 import qualified Data.Map as M
@@ -157,4 +155,5 @@ instance PrettyR r => Show (CaseTree r) where
 instance PrettyR r => Show (Alt r) where
     show = prettyShow
 
+indent :: Doc -> Doc
 indent = nest 2

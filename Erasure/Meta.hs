@@ -5,7 +5,6 @@ import TTLens
 import Pretty
 import Util.PrettyPrint
 
-import Control.Applicative
 import Control.Monad.Trans.State.Strict
 
 data Meta = MVar Int | Fixed Relevance deriving (Eq, Ord)
