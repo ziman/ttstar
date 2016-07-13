@@ -2,9 +2,7 @@
 module Eval (eval) where
 
 import TT
-import Pretty
 import Normalise
-import qualified Data.Map as M
 
 prog2tt :: Program r -> TT r
 prog2tt (Prog defs) = defs2tt defs
