@@ -3,11 +3,7 @@ module Main where
 
 import TT
 import Parser
-import Pretty
-import TTLens
-{-
-import Explorer
--}
+-- import Explorer
 import Normalise
 import Eval
 
@@ -21,9 +17,6 @@ import Erasure.Specialise
 import Erasure.Prune
 import Erasure.Verify
 
-import Lens.Family2
-
-import Control.Applicative
 import Text.Parsec
 import System.Environment
 import qualified Data.Set as S
@@ -126,8 +119,8 @@ main = do
             printP prog
 
             putStrLn "### Metaified ###\n"
-            let metaified = meta prog
-            printP metaified
+            let metaified_1st = meta prog
+            printP metaified_1st
 
             let iterSpecialisation metaified = do
                     putStrLn "### Inferred definitions ###\n"
@@ -144,7 +137,7 @@ main = do
                     putStrLn ""
 
                     putStrLn "### Solution ###\n"
-                    let (uses, residue) = solve cs
+                    let (uses, _residue) = solve cs
                     print $ S.toList uses
                     -- genHtml (fname ++ ".html") metaified cs uses
                     putStrLn ""
@@ -157,8 +150,6 @@ main = do
                     putStrLn "### Annotated ###\n"
                     let annotated = annotate uses $ metaified
                     printP $ annotated
-
-                    return annotated
 
                     putStrLn "### Specialised ###\n"
                     let specialised = specialise metaified annotated
@@ -176,7 +167,7 @@ main = do
                         then return annotated  -- fixed point reached
                         else iterSpecialisation specialised
 
-            annotated <- iterSpecialisation metaified
+            annotated <- iterSpecialisation metaified_1st
 
             putStrLn "### Final annotation ###\n"
             -- let annotated = annotate S.empty specialised  -- no usage set needed, everything is Fixed
