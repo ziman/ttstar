@@ -5,13 +5,9 @@ import TTLens
 
 import Erasure.Meta
 import Erasure.Check
-import Erasure.Solve
 
-import Control.Arrow
-import Control.Applicative
 import Control.Monad.Trans.Writer
 import Control.Monad.Trans.State
-import Data.Traversable
 import qualified Data.Map as M
 import qualified Data.Set as S
 import qualified Data.IntMap as IM
@@ -117,6 +113,8 @@ specNTm (I n@(UN ns) ty) = do
 
 specNTm (Bind b d tm) = Bind b <$> specNDef d <*> specNTm tm
 specNTm (App r f x) = App r <$> specNTm f <*> specNTm x
+
+specNTm tm = error $ "unexpected term to specialise: " ++ show tm
 
 specName :: Name -> ErPattern -> Name
 specName (UN n) epat = IN n epat

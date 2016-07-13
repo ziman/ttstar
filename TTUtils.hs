@@ -2,7 +2,6 @@
 module TTUtils where
 
 import TT
-import TTLens
 
 import qualified Data.Map as M
 import qualified Data.Set as S
@@ -142,7 +141,7 @@ substBinder n tm (d:ds) eqs rhs
     boundName  = defName d
     freshName  = head [n | n <- nameSource, n `S.notMember` takenNames]
     takenNames = S.unions (freeVars rhs : (freeVars . defBody $ d) : map freeVarsEq eqs)
-    nameSource = [UN (show boundName ++ show i) | i <- [0..]]
+    nameSource = [UN (show boundName ++ show i) | i <- [0 :: Integer ..]]
 
     freshen :: Termy a => a r -> a r
     freshen = rename boundName freshName

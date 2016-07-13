@@ -5,15 +5,11 @@ import TT
 import TTUtils
 import Pretty
 
-import Data.List
 import Data.Maybe
 import Control.Applicative
-import Control.Monad
-import Control.Arrow
 import qualified Data.Map as M
-import qualified Data.Set as S
 
-import Debug.Trace
+--import Debug.Trace
 
 type IsRelevance r = (PrettyR r, Eq r)
 
@@ -23,8 +19,8 @@ dbg :: Show a => a -> b -> b
 -- dbg = traceShow
 dbg _ x = x
 
-dbgS :: (Show a, Show b) => a -> b -> b
-dbgS x y = (x, y) `dbg` y
+--dbgS :: (Show a, Show b) => a -> b -> b
+--dbgS x y = (x, y) `dbg` y
 
 whnf :: IsRelevance r => Ctx r -> TT r -> TT r
 whnf = red WHNF
@@ -49,16 +45,21 @@ redCaseFun NF ctx (CaseFun args ct) = go ctx [] args
         let d' = redDef NF ctx d
           in go (M.insert (defName d) d' ctx) (d':rargs) ds
 
+redCaseFun WHNF ctx cf = error "impossible: redCaseFun WHNF"
+
 redCaseTree :: IsRelevance r => Form -> Ctx r -> CaseTree r -> CaseTree r
 redCaseTree NF ctx (Leaf tm) = Leaf $ red NF ctx tm
 redCaseTree NF ctx (Case r v alts) = Case r v $ map (redAlt NF ctx) alts
+redCaseTree WHNF ctx ct = error "impossible: redCaseTree WHNF"
 
 redAlt :: IsRelevance r => Form -> Ctx r -> Alt r -> Alt r
 redAlt NF ctx (Alt lhs rhs) = Alt (redAltLHS NF ctx lhs) (redCaseTree NF ctx rhs)
+redAlt WHNF ctx alt = error "impossible: redAlt WHNF"
 
 redAltLHS :: IsRelevance r => Form -> Ctx r -> AltLHS r -> AltLHS r
 redAltLHS NF ctx Wildcard = Wildcard
 redAltLHS NF ctx (Ctor cn args eqs) = Ctor cn (map (redDef NF ctx) args) [(n, red NF ctx tm) | (n, tm) <- eqs]
+redAltLHS WHNF ctx lhs = error "impossible: redAltLHS WHNF"
 
 red :: IsRelevance r => Form -> Ctx r -> TT r -> TT r
 
