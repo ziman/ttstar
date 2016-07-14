@@ -109,45 +109,45 @@ verDefs [] = return ()
 verDefs (d:ds) = verDef d *> with d (verDefs ds)
 
 verDef :: Def Relevance -> Ver ()
-verDef (Def n r ty (Abstract _) cs) = do
+verDef (Def n r ty (Abstract _) cs) = bt ("DEF-ABSTR", n) $ do
     tyty <- verTm E ty
     mustBeType tyty
 
-verDef d@(Def n r ty (Term tm) cs) = do
+verDef d@(Def n r ty (Term tm) cs) = bt ("DEF-TERM", n) $ do
     tyty <- verTm E ty
     mustBeType tyty
     tmty <- with d $ verTm r tm
     conv r tmty ty
 
-verDef d@(Def n r ty (Patterns cf) cs) = do
+verDef d@(Def n r ty (Patterns cf) cs) = bt ("DEF-TERM", n) $ do
     tyty <- verTm E ty
     mustBeType tyty
     with d $
         verCaseFun n r cf
 
 verCaseFun :: Name -> Relevance -> CaseFun Relevance -> Ver ()
-verCaseFun fn r (CaseFun ds ct) = do
+verCaseFun fn r (CaseFun ds ct) = bt ("CASEFUN", fn) $ do
     verDefs ds
     let lhs = mkApp (V fn) [(defR d, V $ defName d) | d <- ds]
     withs ds $
         verCase r lhs ct
 
 verCase :: Relevance -> Pat -> CaseTree Relevance -> Ver ()
-verCase r lhs (Leaf rhs) = do
+verCase r lhs (Leaf rhs) = bt ("CASE-LEAF", lhs, rhs) $ do
     lhsTy <- verPat r lhs
     rhsTy <- verTm  r rhs
     conv r lhsTy rhsTy
 
-verCase R lhs (Case s (V n) [alt]) = do
+verCase R lhs (Case s (V n) [alt]) = bt ("CASE-SING-R", lhs) $ do
     d <- lookupName n    
     defR d <-> s
     verBranch Single R lhs n s alt
 
-verCase E lhs (Case E (V n) [alt]) = do
+verCase E lhs (Case E (V n) [alt]) = bt ("CASE-SING-E", lhs) $ do
     _ <- lookupName n  -- make sure the name exists
     verBranch Single E lhs n E alt
 
-verCase r lhs (Case s (V n) alts) = do
+verCase r lhs (Case s (V n) alts) = bt ("CASE-MULTI", r, lhs) $ do
     r <-> s
     n `hasRelevance` r
     mapM_ (verBranch Many r lhs n r) alts        
@@ -156,9 +156,9 @@ verCase r lhs ct@(Case s tm alts) = do
     verFail $ ComplexScrutinee ct
 
 verBranch :: Cardinality -> Relevance -> Pat -> Name -> Relevance -> Alt Relevance -> Ver ()
-verBranch q r lhs n s (Alt Wildcard rhs) = do
+verBranch q r lhs n s (Alt Wildcard rhs) = bt ("ALT-WILD", rhs) $ do
     verCase r lhs rhs
-verBranch q r lhs n s (Alt (Ctor cn ds eqs) rhs) = do
+verBranch q r lhs n s (Alt (Ctor cn ds eqs) rhs) = bt ("ALT-MATCH", cn, rhs) $ do
     verDefs ds
     localVars eqs
     let pat = mkApp c' [(defR d, V $ defName d) | d <- ds]
