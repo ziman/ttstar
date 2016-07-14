@@ -20,6 +20,7 @@ data VerError
     | NotPatvar Name
     | NotImplemented
     | ComplexScrutinee (CaseTree Relevance)
+    | CantConvert Term Term
     deriving Show
 
 data Cardinality = Single | Many deriving (Eq, Ord, Show)
@@ -270,4 +271,38 @@ verPat r (Forced tm) = bt ("PAT-FORCED", tm) $ do
 verPat r pat = verFail NotImplemented
 
 conv :: Relevance -> Type -> Type -> Ver ()
-conv r p q = verFail NotImplemented
+conv r p q = do
+    ctx <- getCtx
+    conv' r (whnf ctx p) (whnf ctx q)
+    
+conv' :: Relevance -> Type -> Type -> Ver ()
+conv' r (V n) (V n')
+    | n == n' = return ()
+
+conv' R (App r f x) (App r' f' x') = bt ("CONV-APP-R", f, x, f', x') $ do
+    r <-> r'
+    conv R f f'
+    conv R x x'
+
+conv' E (App r f x) (App r' f' x') = bt ("CONV-APP-E", f, x, f', x') $ do
+    conv E f f'
+    conv E x x'
+
+conv' R
+    (Bind b  d@(Def  n  r  ty  (Abstract Var) _) tm)
+    (Bind b' d'@(Def n' r' ty' (Abstract Var) _) tm')
+    | b == b' = bt ("CONV-BIND", b, d, tm, d', tm') $ do
+        r <-> r'
+        conv R tm tm'
+        with d $ 
+            conv R tm (subst n' (V n) tm')
+
+conv' E
+    (Bind b  d@(Def  n  r  ty  (Abstract Var) _) tm)
+    (Bind b' d'@(Def n' r' ty' (Abstract Var) _) tm')
+    | b == b' = bt ("CONV-BIND", b, d, tm, d', tm') $ do
+        conv E tm tm'
+        with d $ 
+            conv E tm (subst n' (V n) tm')
+
+conv' r p q = verFail $ CantConvert p q
