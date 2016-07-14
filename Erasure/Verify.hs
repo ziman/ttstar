@@ -83,6 +83,12 @@ infix 3 <->
 (<->) :: Relevance -> Relevance -> Ver ()
 (<->) = eqR
 
+infix 3 -->
+(-->) :: Relevance -> Relevance -> Ver ()
+R --> E = verFail $ RelevanceMismatch R E
+_ --> _ = return ()
+
+
 infixr 3 /\
 (/\) :: Relevance -> Relevance -> Relevance
 R /\ R = R
@@ -166,6 +172,7 @@ verBranch q r lhs n s (Alt (Ctor cn ds eqs) rhs) = bt ("ALT-MATCH", cn, rhs) $ d
     let eqs'' = (n, substs eqs' pat) : eqs'
     let lhs'' = substs eqs'' lhs
     let rhs'' = substs eqs'' rhs
+    mapM_ (--> s) [defR d | d <- ds]
     withs ds $
         with' (substsInCtx eqs'') $
             verCase r lhs'' rhs''
@@ -186,11 +193,11 @@ verBranch q r lhs n s (Alt (Ctor cn ds eqs) rhs) = bt ("ALT-MATCH", cn, rhs) $ d
 
 verTm :: Relevance -> Term -> Ver Type
 verTm E (V n) = bt ("VAR-E", n) $ do
-    d <- lookup n
+    d <- lookupName n
     return $ defType d
 
 verTm R (V n) = bt ("VAR-R", n) $ do
-    d <- lookup n
+    d <- lookupName n
     defR d <-> R
     return $ defType d
 
@@ -212,8 +219,9 @@ verTm r (Bind Let d tm) = bt ("LET", r, d) $ do
     with d $ verTm r tm
 
 verTm r (App s f x) = bt ("APP", r, f, s, x) $ do
-    fty <- (whnf <$> getCtx) =<< verDef r f
-    case fty of
+    ctx <- getCtx
+    fty <- verTm r f
+    case whnf ctx fty of
         Bind Pi (Def n s piTy (Abstract Var) _) piRhs -> do
             xty <- verTm (r /\ s) x
             conv (r /\ s) xty piTy            
@@ -225,6 +233,40 @@ verTm r tm = bt ("UNKNOWN-TERM", tm) $ do
     verFail NotImplemented
 
 verPat :: Relevance -> Pat -> Ver Type
+verPat R (V n) = bt ("PAT-REF-R", n) $ do
+    defType <$> lookupName n    
+
+verPat E (V n) = bt ("PAT-REF-E", n) $ do
+    d <- lookupName n
+    defR d <-> E
+    return $ defType d
+
+verPat R (App r f x) = bt ("PAT-APP-R", f, x) $ do
+    ctx <- getCtx
+    fty <- verTm R f
+    case whnf ctx fty of
+        Bind Pi (Def n s piTy (Abstract Var) _) piRhs -> do
+            xty <- verTm r x
+            conv r xty piTy  -- here, conversion check may be R
+            r <-> s          -- but r and s must match
+            return $ subst n x piRhs
+
+        _ -> verFail $ NotPi fty
+
+verPat E (App r f x) = bt ("PAT-APP-E", f, x) $ do
+    ctx <- getCtx
+    fty <- verTm E f
+    case whnf ctx fty of
+        Bind Pi (Def n s piTy (Abstract Var) _) piRhs -> do
+            xty <- verTm E x
+            conv E xty piTy   -- here, conversion check must be E, but r and s needn't match
+            return $ subst n x piRhs
+
+        _ -> verFail $ NotPi fty
+
+verPat r (Forced tm) = bt ("PAT-FORCED", tm) $ do
+    verTm E tm
+
 verPat r pat = verFail NotImplemented
 
 conv :: Relevance -> Type -> Type -> Ver ()
