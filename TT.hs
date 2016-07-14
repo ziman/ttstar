@@ -70,7 +70,10 @@ newtype Program r = Prog { getDefs :: [Def r] } deriving (Eq, Ord)
 noConstrs :: Constrs r
 noConstrs = M.empty
 
+typeOfTypes :: Name
+typeOfTypes = UN "Type"
+
 builtins :: r -> Ctx r
 builtins r = M.fromList
-    [ (UN "Type", Def (UN "Type") r (V $ UN "Type") (Abstract Postulate) noConstrs)
+    [ (typeOfTypes, Def typeOfTypes r (V typeOfTypes) (Abstract Postulate) noConstrs)
     ]

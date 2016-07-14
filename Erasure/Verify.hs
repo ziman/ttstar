@@ -5,6 +5,7 @@ module Erasure.Verify
 
 import TT
 import TTUtils
+import Normalise (whnf)
 import Pretty ()
 
 import qualified Data.Map as M
@@ -15,6 +16,7 @@ import Control.Monad.Trans.Reader
 data VerError
     = UnknownName Name
     | RelevanceMismatch Relevance Relevance
+    | NotPi Term
     | NotPatvar Name
     | NotImplemented
     | ComplexScrutinee (CaseTree Relevance)
@@ -77,12 +79,24 @@ eqR r s
     | r == s = return ()
     | otherwise = verFail $ RelevanceMismatch r s
 
+infix 3 <->
+(<->) :: Relevance -> Relevance -> Ver ()
+(<->) = eqR
+
+infixr 3 /\
+(/\) :: Relevance -> Relevance -> Relevance
+R /\ R = R
+_ /\ _ = E
+
 hasRelevance :: Name -> Relevance -> Ver ()
 hasRelevance n r = do
     d <- lookupName n
     if (r == R) && (defR d == E)
         then verFail $ RelevanceMismatch r (defR d)
         else return ()
+
+mustBeType :: TT Relevance -> Ver ()
+mustBeType ty = conv E ty (V typeOfTypes)
 
 verify :: Program Relevance -> Either VerFailure ()
 verify prog = runVer (builtins E) $ verProg prog
@@ -97,17 +111,17 @@ verDefs (d:ds) = verDef d *> with d (verDefs ds)
 verDef :: Def Relevance -> Ver ()
 verDef (Def n r ty (Abstract _) cs) = do
     tyty <- verTm E ty
-    conv E tyty (V $ UN "Type")
+    mustBeType tyty
 
 verDef d@(Def n r ty (Term tm) cs) = do
     tyty <- verTm E ty
-    conv E tyty (V $ UN "Type")
+    mustBeType tyty
     tmty <- with d $ verTm r tm
     conv r tmty ty
 
 verDef d@(Def n r ty (Patterns cf) cs) = do
     tyty <- verTm E ty
-    conv E tyty (V $ UN "Type")
+    mustBeType tyty
     with d $
         verCaseFun n r cf
 
@@ -126,7 +140,7 @@ verCase r lhs (Leaf rhs) = do
 
 verCase R lhs (Case s (V n) [alt]) = do
     d <- lookupName n    
-    eqR s (defR d)
+    defR d <-> s
     verBranch Single R lhs n s alt
 
 verCase E lhs (Case E (V n) [alt]) = do
@@ -134,7 +148,7 @@ verCase E lhs (Case E (V n) [alt]) = do
     verBranch Single E lhs n E alt
 
 verCase r lhs (Case s (V n) alts) = do
-    eqR r s
+    r <-> s
     n `hasRelevance` r
     mapM_ (verBranch Many r lhs n r) alts        
 
@@ -171,7 +185,44 @@ verBranch q r lhs n s (Alt (Ctor cn ds eqs) rhs) = do
 
 
 verTm :: Relevance -> Term -> Ver Type
-verTm r tm = bt ("TERM", tm) $ verFail NotImplemented
+verTm E (V n) = bt ("VAR-E", n) $ do
+    d <- lookup n
+    return $ defType d
+
+verTm R (V n) = bt ("VAR-R", n) $ do
+    d <- lookup n
+    defR d <-> R
+    return $ defType d
+
+verTm r (Bind Lam d@(Def n s ty (Abstract Var) _) tm) = bt ("LAM", r, n) $ do
+    tyty <- verTm E ty    
+    mustBeType tyty
+    tmty <- with d $ verTm r tm
+    return $ Bind Pi d tyty
+
+verTm r (Bind Pi d@(Def n s ty (Abstract Var) _) tm) = bt ("PI", r, n) $ do
+    tyty <- verTm E ty
+    mustBeType tyty
+    tmty <- with d $ verTm r tm
+    mustBeType tmty
+    return (V typeOfTypes)
+
+verTm r (Bind Let d tm) = bt ("LET", r, d) $ do
+    verDef d
+    with d $ verTm r tm
+
+verTm r (App s f x) = bt ("APP", r, f, s, x) $ do
+    fty <- (whnf <$> getCtx) =<< verDef r f
+    case fty of
+        Bind Pi (Def n s piTy (Abstract Var) _) piRhs -> do
+            xty <- verTm (r /\ s) x
+            conv (r /\ s) xty piTy            
+            return $ subst n x piRhs
+
+        _ -> verFail $ NotPi fty
+
+verTm r tm = bt ("UNKNOWN-TERM", tm) $ do
+    verFail NotImplemented
 
 verPat :: Relevance -> Pat -> Ver Type
 verPat r pat = verFail NotImplemented
