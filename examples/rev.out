@@ -2261,4 +2261,4 @@ main = reverse (Cons T (Cons F (Cons T (Cons F Nil))))
 unerased:
   Cons F (Cons T (Cons F (Cons T Nil)))
 erased:
-  reverse' ((\xs. rev' RNil xs) (Cons T (Cons F (Cons T (Cons F Nil)))))
+  Cons F (Cons T (Cons F (Cons T Nil)))

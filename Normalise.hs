@@ -101,21 +101,21 @@ red form ctx t@(App r f x)
     | Bind Lam (Def n' r' ty' (Abstract Var) cs) tm' <- redF
     = red form ctx $ subst n' redX tm'
 
-    -- pattern matching instance
+    -- pattern matching instance reduces as variable
     | (I fn _, args) <- unApply t
-    , Just (Def _ _ _ (Patterns cf) _) <- M.lookup fn ctx
-    , length args == length (cfArgs cf)
-    = fromMaybe t $ evalPatterns form ctx cf t
+    = red form ctx $ mkApp (V fn) args
 
     -- pattern-matching definitions
     | (V fn, args) <- unApply t
     , Just (Def _ _ _ (Patterns cf) _) <- M.lookup fn ctx
     , length args == length (cfArgs cf)
-    = fromMaybe t $ evalPatterns form ctx cf t
+    = fromMaybe redT $ (red form ctx <$> evalPatterns form ctx cf redT)
 
     -- everything else
-    | otherwise = App r redF redX  -- not a redex
+    | otherwise
+    = redT  -- not a redex
   where
+    redT = App r redF redX
     redF = red form ctx f
     redX = case form of
         NF   -> red NF ctx x
@@ -143,9 +143,9 @@ evalPatterns form ctx (CaseFun argvars ct) tm = do
 evalCaseTree :: IsRelevance r => Form -> Ctx r -> CaseTree r -> Maybe (TT r)
 evalCaseTree form ctx (Leaf tm) = Just $ red form ctx tm
 evalCaseTree form ctx (Case r tm alts)
-    = firstMatch $ map (evalAlt form ctx tmWHNF) alts
+    = firstMatch $ map (evalAlt form ctx tm') alts
   where
-    tmWHNF = red WHNF ctx tm
+    tm' = red form ctx tm
 
 firstMatch :: Alternative f => [f a] -> f a
 firstMatch = foldr (<|>) empty

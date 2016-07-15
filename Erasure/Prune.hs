@@ -13,7 +13,14 @@ pruneDef (Def n R ty body mcs) = [Def n () (V Blank) (pruneBody body) noConstrs]
 pruneBody :: Body Relevance -> Body ()
 pruneBody (Abstract a)  = Abstract a
 pruneBody (Term tm)     = Term $ pruneTm tm
-pruneBody (Patterns cf) = Patterns $ pruneCaseFun cf
+pruneBody (Patterns cf) = 
+    case pruneCaseFun cf of
+        CaseFun [] (Leaf tm) -> Term tm
+            -- ^^ makes stuff neater
+            -- there's a bug in normalisation somewhere that doesn't reduce
+            -- zero-arg CaseFuns. Let's just clean it here.
+
+        cf' -> Patterns cf'
 
 pruneCaseFun :: CaseFun Relevance -> CaseFun ()
 pruneCaseFun (CaseFun args ct)
