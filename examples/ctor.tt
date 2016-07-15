@@ -1,0 +1,15 @@
+-- vim: ft=idris
+
+data Bool : Type.
+  T : Bool,
+  F : Bool.
+
+data Unit : Type.
+  MkUnit : Unit.
+
+not (x : Bool) : Unit
+  = case x of
+      T => MkUnit,
+      F => MkUnit.
+
+main :R: Unit = not T.
