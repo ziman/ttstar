@@ -32,6 +32,10 @@ apply (f : Nat -> Nat) (x : Nat) : Nat = f x.
 
 -- WARNING: this is not meant to be erasure-polymorphic
 -- because instances of apply have not been requested!
+{-
+-- This will in turn cause the argument of const-3 to be R,
+-- disabling erasure in test-2
+-}
 test_1 : Nat
   = Plus (apply id 2) (apply const_3 two).
 
