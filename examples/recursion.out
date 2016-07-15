@@ -326,3 +326,38 @@ main :R: Nat = vlen -E- Bool -E- 2 -R- testVec
 
 ### Verification ###
 
+Verification successful.
+
+### Pruned ###
+
+postulate Bool
+
+postulate True
+
+postulate False
+
+postulate Z
+
+postulate S
+
+postulate VNil
+
+postulate VCons
+
+vlen = \xs.
+  case xs of
+    VNil a'
+      => Z
+    VCons a' n' x' xs'
+      => S (vlen xs')
+
+testVec = VCons Bool 1 True (VCons Bool Z False (VNil Bool))
+
+main = vlen testVec
+
+### Normal forms ###
+
+unerased:
+  2
+erased:
+  2

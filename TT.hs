@@ -77,3 +77,6 @@ builtins :: r -> Ctx r
 builtins r = M.fromList
     [ (typeOfTypes, Def typeOfTypes r (V typeOfTypes) (Abstract Postulate) noConstrs)
     ]
+
+relOfType :: Relevance
+relOfType = E

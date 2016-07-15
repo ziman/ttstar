@@ -149,7 +149,7 @@ check prog@(Prog defs) = runTC maxTag ctx $ checkDefs defs
 
     maxTag = L.maximum allTags
 
-    ctx = builtins (Fixed R)
+    ctx = builtins (Fixed relOfType)
 
 checkDefs :: [Def Meta] -> TC (Ctx Meta)
 checkDefs [] = getCtx
@@ -269,7 +269,7 @@ checkTm t@(V n) = bt ("VAR", n) $ do
     -- at the point of usage of a bound name,
     -- the constraints associated with that name come in
     d <- lookup n
-    return (defType d, defConstraints d)
+    return (defType d, defConstraints d /\ Fixed R --> defR d)
 
 checkTm t@(I n ty) = bt ("INST", n, ty) $ do
     -- here, we need to freshen the constraints before bringing them up
@@ -288,7 +288,7 @@ checkTm t@(I n ty) = bt ("INST", n, ty) $ do
     -- the original function will be recognised as erased again, if necessary.
     --
     -- Also, all unused instances should be recognised as erased (I didn't check that).
-    return (ty, defConstraints d /\ convCs)
+    return (ty, defConstraints d /\ Fixed R --> defR d /\ convCs)
 
 checkTm t@(Bind Lam d@(Def n r ty (Abstract Var) _noCs) tm) = bt ("LAM", t) $ do
     d' <- checkDef d

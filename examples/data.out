@@ -305,3 +305,33 @@ main :R: N =
 
 ### Verification ###
 
+Verification successful.
+
+### Pruned ###
+
+postulate Z
+
+postulate S
+
+plus = \m n.
+  case m of
+    Z
+      => n
+    S m'
+      => S (plus m' n)
+
+main = 
+  let pred = \x.
+    case x of
+      Z
+        => Z
+      S x'
+        => x'
+  in plus (pred 4) (pred 5)
+
+### Normal forms ###
+
+unerased:
+  7
+erased:
+  7

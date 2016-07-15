@@ -184,7 +184,7 @@ main = do
 
             putStrLn "### Normal forms ###\n"
             putStrLn "unerased:"
-            putStrLn $ "  " ++ show (eval NF (builtins $ Just R) prog)
+            putStrLn $ "  " ++ show (eval NF (builtins $ Just relOfType) prog)
             putStrLn "erased:"
             putStrLn $ "  " ++ show (eval NF (builtins ()) pruned)
   where

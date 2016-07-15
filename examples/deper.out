@@ -228,3 +228,32 @@ main :R: TwoBools = TB -R- (f -R- T -R- F) -R- (f -R- F -E- F)
 
 ### Verification ###
 
+Verification successful.
+
+### Pruned ###
+
+postulate T
+
+postulate F
+
+postulate TB
+
+id = (\x. x)
+
+constT = T
+
+f = \x.
+  case x of
+    T
+      => id
+    F
+      => constT
+
+main = TB (f T F) (f F)
+
+### Normal forms ###
+
+unerased:
+  TB F T
+erased:
+  TB F T

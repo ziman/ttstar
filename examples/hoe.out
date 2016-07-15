@@ -157,3 +157,27 @@ main :R: T = f -R- id -R- B -R- const_A -E- B
 
 ### Verification ###
 
+Verification successful.
+
+### Pruned ###
+
+postulate A
+
+postulate B
+
+postulate Op
+
+id = (\x. x)
+
+const_A = A
+
+f = (\g. (\z. (\h. Op (g z) h)))
+
+main = f id B const_A
+
+### Normal forms ###
+
+unerased:
+  Op B A
+erased:
+  Op B A

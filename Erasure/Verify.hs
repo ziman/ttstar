@@ -116,7 +116,7 @@ mustBeType :: TT Relevance -> Ver ()
 mustBeType ty = conv E ty (V typeOfTypes)
 
 verify :: Program Relevance -> Either VerFailure ()
-verify prog = runVer (builtins E) $ verProg prog
+verify prog = runVer (builtins relOfType) $ verProg prog
 
 verProg :: Program Relevance -> Ver ()
 verProg (Prog defs) = verDefs defs
