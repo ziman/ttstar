@@ -47,11 +47,12 @@ data TCFailure = TCFailure TCError [String]
 instance Show TCFailure where
     show (TCFailure e []) = show e
     show (TCFailure e tb) = unlines $
-        show e : "Traceback:"
+            "Traceback:"
             : zipWith
                 (\i n -> show i ++ ". " ++ n)
                 [1::Integer ..]
                 (reverse tb)
+            ++ ["Error: " ++ show e]
 
 type TCTraceback = [String]
 type TCState = Int
