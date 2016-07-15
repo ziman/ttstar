@@ -314,7 +314,7 @@ conv' R
     (Bind b' d'@(Def n' r' ty' (Abstract Var) _) tm')
     | b == b' = bt ("CONV-BIND", b, d, tm, d', tm') $ do
         r <-> r'
-        conv R tm tm'
+        conv R ty ty'
         with d $ 
             conv R tm (subst n' (V n) tm')
 
@@ -322,7 +322,7 @@ conv' E
     (Bind b  d@(Def  n  r  ty  (Abstract Var) _) tm)
     (Bind b' d'@(Def n' r' ty' (Abstract Var) _) tm')
     | b == b' = bt ("CONV-BIND", b, d, tm, d', tm') $ do
-        conv E tm tm'
+        conv E ty ty'
         with d $ 
             conv E tm (subst n' (V n) tm')
 

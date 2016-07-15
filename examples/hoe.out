@@ -50,7 +50,7 @@ postulate Op :4: (x :R: T) -> (y :R: T) -> T {- constraints apply -}
 postulate T :1: Type {- constraints apply -}
   [] -> [1,R]
 
-postulate Type :R: Type
+postulate Type :E: Type
 
 const_A :8: (x :9: T) -> T = (\x :10: T. A) {- constraints apply -}
   [] -> [2,8,R]

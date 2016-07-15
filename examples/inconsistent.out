@@ -10,7 +10,7 @@ main :R: (x :E: Type) -> Type = (\x :E: Type. x)
 
 ### Inferred definitions ###
 
-postulate Type :R: Type
+postulate Type :E: Type
 
 main :R: (x :E: Type) -> Type = (\x :E: Type. x) {- constraints apply -}
   [] -> [E,R]

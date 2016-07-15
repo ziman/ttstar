@@ -10,29 +10,17 @@ main :R: Type = Type
 
 ### Inferred definitions ###
 
-postulate Type :R: Type
+postulate Type :E: Type
 
-main :R: Type = Type
+main :R: Type = Type {- constraints apply -}
+  [] -> [E,R]
 
 
 ### Constraints ###
 
+[] -> [E,R]
 
 ### Solution ###
 
-[R]
-
-### Annotated ###
-
-main :R: Type = Type
-
-### Specialised ###
-
-main :R: Type = Type
-
-### Final annotation ###
-
-main :R: Type = Type
-
-### Verification ###
+[E,R]
 

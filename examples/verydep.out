@@ -54,23 +54,23 @@ postulate False :13: Bool
 
 retTy :14: (x :15: Maybe -16- Bool) -> Type = \(x :17: Maybe -18- Bool).
   case -19- x of
-    Just (a :20: Type) (t :21: a)
+    Just (a :21: Type) (t :22: a)
       | a = Bool
       => Bool
-    Nothing (a :22: Type)
+    Nothing (a :24: Type)
       | a = Bool
       => Type
 
-f :23: (x :24: Maybe -25- Bool) -> retTy -26- x = \(x :27: Maybe -28- Bool).
-  case -29- x of
-    Just (a :30: Type) (b :31: a)
+f :25: (x :26: Maybe -27- Bool) -> retTy -28- x = \(x :29: Maybe -30- Bool).
+  case -31- x of
+    Just (a :33: Type) (b :34: a)
       | a = Bool
       => b
-    Nothing (a :32: Type)
+    Nothing (a :36: Type)
       | a = Bool
       => Bool
 
-main :R: Bool = f -33- (Just -35- Bool -34- False)
+main :R: Bool = f -37- (Just -39- Bool -38- False)
 
 ### Inferred definitions ###
 
@@ -92,72 +92,84 @@ postulate Nothing :8: (a :9: Type) -> Maybe -10- a {- constraints apply -}
 postulate True :12: Bool {- constraints apply -}
   [] -> [12,R]
 
-postulate Type :R: Type
+postulate Type :E: Type
 
 postulate Void :1: Type {- constraints apply -}
   [] -> [1,R]
 
-f :23: (x :24: Maybe -25- Bool) -> retTy -26- x = \(x :27: Maybe -28- Bool).
-  case -29- x of
-    Just (a :30: Type) (b :31: a)
+f :25: (x :26: Maybe -27- Bool) -> retTy -28- x = \(x :29: Maybe -30- Bool).
+  case -31- x of
+    Just (a :33: Type) (b :34: a)
       | a = Bool
       => b
-    Nothing (a :32: Type)
+    Nothing (a :36: Type)
       | a = Bool
       => Bool {- constraints apply -}
-  [] -> [6,11,23,24,27,29,31,R]
-  [5] -> [30]
-  [7] -> [25]
-  [9] -> [32]
-  [10] -> [25]
-  [25] -> [7,10]
-  [30] -> [5]
-  [32] -> [9]
+  [] -> [6,11,25,26,29,31,34,R]
+  [4] -> [32]
+  [5] -> [33]
+  [7] -> [27]
+  [8] -> [35]
+  [9] -> [36]
+  [10] -> [27]
+  [27] -> [7,10]
+  [32] -> [4]
+  [33] -> [5]
+  [35] -> [8]
+  [36] -> [9]
 
-main :R: Bool = f -33- (Just -35- Bool -34- False) {- constraints apply -}
-  [] -> [4,6,11,13,23,24,27,29,31,33,34,R]
-  [5] -> [30,35]
-  [7] -> [25]
-  [9] -> [32]
-  [10] -> [25]
-  [25] -> [7,10]
-  [30] -> [5]
-  [32] -> [9]
-  [35] -> [5]
+main :R: Bool = f -37- (Just -39- Bool -38- False) {- constraints apply -}
+  [] -> [4,6,11,13,25,26,29,31,32,34,37,38,R]
+  [5] -> [33,39]
+  [7] -> [27]
+  [8] -> [35]
+  [9] -> [36]
+  [10] -> [27]
+  [27] -> [7,10]
+  [33] -> [5]
+  [35] -> [8]
+  [36] -> [9]
+  [39] -> [5]
 
 retTy :14: (x :15: Maybe -16- Bool) -> Type = \(x :17: Maybe -18- Bool).
   case -19- x of
-    Just (a :20: Type) (t :21: a)
+    Just (a :21: Type) (t :22: a)
       | a = Bool
       => Bool
-    Nothing (a :22: Type)
+    Nothing (a :24: Type)
       | a = Bool
       => Type {- constraints apply -}
-  [] -> [6,11,14,15,17,19,21,R]
-  [5] -> [20]
+  [] -> [6,11,14,15,17,19,22,E,R]
+  [4] -> [20]
+  [5] -> [21]
   [7] -> [16]
-  [9] -> [22]
+  [8] -> [23]
+  [9] -> [24]
   [10] -> [16]
   [16] -> [7,10]
-  [20] -> [5]
-  [22] -> [9]
+  [20] -> [4]
+  [21] -> [5]
+  [23] -> [8]
+  [24] -> [9]
 
 
 ### Constraints ###
 
-[] -> [4,6,11,13,23,24,27,29,31,33,34,R]
-[5] -> [30,35]
-[7] -> [25]
-[9] -> [32]
-[10] -> [25]
-[25] -> [7,10]
-[30] -> [5]
-[32] -> [9]
-[35] -> [5]
+[] -> [4,6,11,13,25,26,29,31,32,34,37,38,R]
+[5] -> [33,39]
+[7] -> [27]
+[8] -> [35]
+[9] -> [36]
+[10] -> [27]
+[27] -> [7,10]
+[33] -> [5]
+[35] -> [8]
+[36] -> [9]
+[39] -> [5]
 
 ### Solution ###
 
-[4,6,11,13,23,24,27,29,31,33,34,R]
+[4,6,11,13,25,26,29,31,32,34,37,38,R]
 
 ### Annotated ###
 
@@ -177,10 +189,10 @@ postulate False :R: Bool
 
 retTy :E: (x :E: Maybe -E- Bool) -> Type = \(x :E: Maybe -E- Bool).
   case -E- x of
-    Just (a :E: Type) (t :E: a)
+    {ERASED} Just (a :E: Type) (t :E: a)
       | a = Bool
       => Bool
-    Nothing (a :E: Type)
+    {ERASED} Nothing (a :E: Type)
       | a = Bool
       => Type
 
@@ -189,7 +201,7 @@ f :R: (x :R: Maybe -E- Bool) -> retTy -E- x = \(x :R: Maybe -E- Bool).
     Just (a :E: Type) (b :R: a)
       | a = Bool
       => b
-    Nothing (a :E: Type)
+    {ERASED} Nothing (a :E: Type)
       | a = Bool
       => Bool
 
@@ -213,10 +225,10 @@ postulate False :R: Bool
 
 retTy :E: (x :E: Maybe -E- Bool) -> Type = \(x :E: Maybe -E- Bool).
   case -E- x of
-    Just (a :E: Type) (t :E: a)
+    {ERASED} Just (a :E: Type) (t :E: a)
       | a = Bool
       => Bool
-    Nothing (a :E: Type)
+    {ERASED} Nothing (a :E: Type)
       | a = Bool
       => Type
 
@@ -225,7 +237,7 @@ f :R: (x :R: Maybe -E- Bool) -> retTy -E- x = \(x :R: Maybe -E- Bool).
     Just (a :E: Type) (b :R: a)
       | a = Bool
       => b
-    Nothing (a :E: Type)
+    {ERASED} Nothing (a :E: Type)
       | a = Bool
       => Bool
 
@@ -249,10 +261,10 @@ postulate False :R: Bool
 
 retTy :E: (x :E: Maybe -E- Bool) -> Type = \(x :E: Maybe -E- Bool).
   case -E- x of
-    Just (a :E: Type) (t :E: a)
+    {ERASED} Just (a :E: Type) (t :E: a)
       | a = Bool
       => Bool
-    Nothing (a :E: Type)
+    {ERASED} Nothing (a :E: Type)
       | a = Bool
       => Type
 
@@ -261,7 +273,7 @@ f :R: (x :R: Maybe -E- Bool) -> retTy -E- x = \(x :R: Maybe -E- Bool).
     Just (a :E: Type) (b :R: a)
       | a = Bool
       => b
-    Nothing (a :E: Type)
+    {ERASED} Nothing (a :E: Type)
       | a = Bool
       => Bool
 
@@ -269,3 +281,26 @@ main :R: Bool = f -R- (Just -E- Bool -R- False)
 
 ### Verification ###
 
+Verification successful.
+
+### Pruned ###
+
+postulate Just
+
+postulate Bool
+
+postulate False
+
+f = \x.
+  case x of
+    Just b
+      => b
+
+main = f (Just False)
+
+### Normal forms ###
+
+unerased:
+  False
+erased:
+  False

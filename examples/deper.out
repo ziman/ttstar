@@ -51,18 +51,18 @@ constT :9: (_ :10: Bool) -> Bool = (\_ :11: Bool. T)
 fty :12: (x :13: Bool) -> Type = \(x :14: Bool).
   case -15- x of
     T
-      => (_ :16: Bool) -> Bool
-    F
       => (_ :17: Bool) -> Bool
+    F
+      => (_ :19: Bool) -> Bool
 
-f :18: (x :19: Bool) -> fty -20- x = \(x :21: Bool).
-  case -22- x of
+f :20: (x :21: Bool) -> fty -22- x = \(x :23: Bool).
+  case -24- x of
     T
       => id
     F
       => constT
 
-main :R: TwoBools = TB -24- (f -26- T -25- F) -23- (f -28- F -27- F)
+main :R: TwoBools = TB -28- (f -30- T -29- F) -27- (f -32- F -31- F)
 
 ### Inferred definitions ###
 
@@ -81,54 +81,60 @@ postulate TB :5: (x :R: Bool) -> (y :R: Bool) -> TwoBools {- constraints apply -
 postulate TwoBools :4: Type {- constraints apply -}
   [] -> [4,R]
 
-postulate Type :R: Type
+postulate Type :E: Type
 
 constT :9: (_ :10: Bool) -> Bool = (\_ :11: Bool. T) {- constraints apply -}
   [] -> [2,9,R]
   [10] -> [11]
   [11] -> [10]
 
-f :18: (x :19: Bool) -> fty -20- x = \(x :21: Bool).
-  case -22- x of
+f :20: (x :21: Bool) -> fty -22- x = \(x :23: Bool).
+  case -24- x of
     T
       => id
     F
       => constT {- constraints apply -}
-  [] -> [2,6,7,8,9,16,18,19,21,22,R]
-  [10] -> [11,17]
+  [] -> [2,6,7,8,9,17,20,21,23,24,25,R]
+  [3] -> [26]
+  [10] -> [11,19]
   [11] -> [10]
-  [17] -> [10]
+  [19] -> [10]
+  [26] -> [3]
 
 fty :12: (x :13: Bool) -> Type = \(x :14: Bool).
   case -15- x of
     T
-      => (_ :16: Bool) -> Bool
+      => (_ :17: Bool) -> Bool
     F
-      => (_ :17: Bool) -> Bool {- constraints apply -}
+      => (_ :19: Bool) -> Bool {- constraints apply -}
   [] -> [1,12,13,14,15,R]
+  [2] -> [16]
+  [3] -> [18]
+  [16] -> [2]
+  [18] -> [3]
 
 id :6: (x :7: Bool) -> Bool = (\x :8: Bool. x) {- constraints apply -}
   [] -> [6,7,8,R]
 
-main :R: TwoBools = TB -24- (f -26- T -25- F) -23- (f -28- F -27- F) {- constraints apply -}
-  [] -> [2,3,5,6,7,8,9,16,18,19,21,22,23,24,25,26,28,R]
-  [10] -> [11,17]
+main :R: TwoBools = TB -28- (f -30- T -29- F) -27- (f -32- F -31- F) {- constraints apply -}
+  [] -> [2,3,5,6,7,8,9,17,20,21,23,24,25,26,27,28,29,30,32,R]
+  [10] -> [11,19]
   [11] -> [10]
-  [17] -> [10,27]
-  [27] -> [17]
+  [19] -> [10,31]
+  [31] -> [19]
 
 
 ### Constraints ###
 
-[] -> [2,3,5,6,7,8,9,16,18,19,21,22,23,24,25,26,28,R]
-[10] -> [11,17]
+[] -> [2,3,5,6,7,8,9,17,20,21,23,24,25,26,27,28,29,30,32,R]
+[10] -> [11,19]
 [11] -> [10]
-[17] -> [10,27]
-[27] -> [17]
+[19] -> [10,31]
+[31] -> [19]
 
 ### Solution ###
 
-[2,3,5,6,7,8,9,16,18,19,21,22,23,24,25,26,28,R]
+[2,3,5,6,7,8,9,17,20,21,23,24,25,26,27,28,29,30,32,R]
 
 ### Annotated ###
 
@@ -148,9 +154,9 @@ constT :R: (_ :E: Bool) -> Bool = (\_ :E: Bool. T)
 
 fty :E: (x :E: Bool) -> Type = \(x :E: Bool).
   case -E- x of
-    T
+    {ERASED} T
       => (_ :R: Bool) -> Bool
-    F
+    {ERASED} F
       => (_ :E: Bool) -> Bool
 
 f :R: (x :R: Bool) -> fty -E- x = \(x :R: Bool).
@@ -180,9 +186,9 @@ constT :R: (_ :E: Bool) -> Bool = (\_ :E: Bool. T)
 
 fty :E: (x :E: Bool) -> Type = \(x :E: Bool).
   case -E- x of
-    T
+    {ERASED} T
       => (_ :R: Bool) -> Bool
-    F
+    {ERASED} F
       => (_ :E: Bool) -> Bool
 
 f :R: (x :R: Bool) -> fty -E- x = \(x :R: Bool).
@@ -212,9 +218,9 @@ constT :R: (_ :E: Bool) -> Bool = (\_ :E: Bool. T)
 
 fty :E: (x :E: Bool) -> Type = \(x :E: Bool).
   case -E- x of
-    T
+    {ERASED} T
       => (_ :R: Bool) -> Bool
-    F
+    {ERASED} F
       => (_ :E: Bool) -> Bool
 
 f :R: (x :R: Bool) -> fty -E- x = \(x :R: Bool).

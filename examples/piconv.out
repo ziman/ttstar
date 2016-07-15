@@ -39,7 +39,7 @@ postulate B :3: T {- constraints apply -}
 postulate T :1: Type {- constraints apply -}
   [] -> [1,R]
 
-postulate Type :R: Type
+postulate Type :E: Type
 
 apply :7: (f :8: (x :9: T) -> T) -> (x :10: T) -> T = (\f :11: (_ :12: T) -> T. (\x :13: T. f -14- x)) {- constraints apply -}
   [] -> [7,8,11,R]

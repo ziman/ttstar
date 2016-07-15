@@ -44,25 +44,25 @@ plus :4: (n :5: Nat) -> (m :6: Nat) -> Nat = \(n :7: Nat) (m :8: Nat).
   case -9- n of
     Z
       => m
-    S (n' :10: Nat)
-      => S -11- (plus -13- n' -12- m)
+    S (n' :12: Nat)
+      => S -13- (plus -15- n' -14- m)
 
-id :14: (x :15: Nat) -> Nat = (\x :16: Nat. x)
+id :16: (x :17: Nat) -> Nat = (\x :18: Nat. x)
 
-const :17: (x :18: Nat) -> (y :19: Nat) -> Nat = (\x :20: Nat. (\y :21: Nat. x))
+const :19: (x :20: Nat) -> (y :21: Nat) -> Nat = (\x :22: Nat. (\y :23: Nat. x))
 
 main :R: Nat = 
-  let apply :22: (f :23: (_ :24: Nat) -> Nat) -> (x :25: Nat) -> Nat = \(f :26: (_ :27: Nat) -> Nat) (x :28: Nat).
-    case -29- x of
+  let apply :24: (f :25: (_ :26: Nat) -> Nat) -> (x :27: Nat) -> Nat = \(f :28: (_ :29: Nat) -> Nat) (x :30: Nat).
+    case -31- x of
       Z
-        => f -30- Z
-      S (x' :31: Nat)
-        => f -32- (S -33- x')
+        => f -33- Z
+      S (x' :35: Nat)
+        => f -36- (S -37- x')
   in 
-    let postulate Q :34: Nat
+    let postulate Q :38: Nat
     in 
-      let three :35: Nat = 3
-      in plus -40- (apply -42- id -41- 2) -39- (apply -46- (const -47- Q) -45- three)
+      let three :39: Nat = 3
+      in plus -44- (apply -46- id -45- 2) -43- (apply -50- (const -51- Q) -49- three)
 
 ### Inferred definitions ###
 
@@ -72,49 +72,51 @@ postulate Nat :1: Type {- constraints apply -}
 postulate S :3: (_ :R: Nat) -> Nat {- constraints apply -}
   [] -> [3,R]
 
-postulate Type :R: Type
+postulate Type :E: Type
 
 postulate Z :2: Nat {- constraints apply -}
   [] -> [2,R]
 
-const :17: (x :18: Nat) -> (y :19: Nat) -> Nat = (\x :20: Nat. (\y :21: Nat. x)) {- constraints apply -}
-  [] -> [17,18,20,R]
-  [19] -> [21]
-  [21] -> [19]
+const :19: (x :20: Nat) -> (y :21: Nat) -> Nat = (\x :22: Nat. (\y :23: Nat. x)) {- constraints apply -}
+  [] -> [19,20,22,R]
+  [21] -> [23]
+  [23] -> [21]
 
-id :14: (x :15: Nat) -> Nat = (\x :16: Nat. x) {- constraints apply -}
-  [] -> [14,15,16,R]
+id :16: (x :17: Nat) -> Nat = (\x :18: Nat. x) {- constraints apply -}
+  [] -> [16,17,18,R]
 
 main :R: Nat = 
-  let apply :22: (f :23: (_ :24: Nat) -> Nat) -> (x :25: Nat) -> Nat = \(f :26: (_ :27: Nat) -> Nat) (x :28: Nat).
-    case -29- x of
+  let apply :24: (f :25: (_ :26: Nat) -> Nat) -> (x :27: Nat) -> Nat = \(f :28: (_ :29: Nat) -> Nat) (x :30: Nat).
+    case -31- x of
       Z
-        => f -30- Z
-      S (x' :31: Nat)
-        => f -32- (S -33- x')
+        => f -33- Z
+      S (x' :35: Nat)
+        => f -36- (S -37- x')
   in 
-    let postulate Q :34: Nat
+    let postulate Q :38: Nat
     in 
-      let three :35: Nat = 3
-      in plus -40- (apply -42- id -41- 2) -39- (apply -46- (const -47- Q) -45- three) {- constraints apply -}
-  [] -> [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,R]
+      let three :39: Nat = 3
+      in plus -44- (apply -46- id -45- 2) -43- (apply -50- (const -51- Q) -49- three) {- constraints apply -}
+  [] -> [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,R]
 
 plus :4: (n :5: Nat) -> (m :6: Nat) -> Nat = \(n :7: Nat) (m :8: Nat).
   case -9- n of
     Z
       => m
-    S (n' :10: Nat)
-      => S -11- (plus -13- n' -12- m) {- constraints apply -}
-  [] -> [3,4,5,6,7,8,9,10,11,12,13,R]
+    S (n' :12: Nat)
+      => S -13- (plus -15- n' -14- m) {- constraints apply -}
+  [] -> [3,4,5,6,7,8,9,11,12,13,14,15,R]
+  [2] -> [10]
+  [10] -> [2]
 
 
 ### Constraints ###
 
-[] -> [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,R]
+[] -> [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,R]
 
 ### Solution ###
 
-[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,R]
+[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,R]
 
 ### Annotated ###
 
