@@ -8,6 +8,7 @@ import TTUtils
 import Normalise (whnf)
 import Pretty ()
 
+import Control.Monad (when)
 import qualified Data.Map as M
 import Control.Monad.Trans.Except
 import Control.Monad.Trans.Class
@@ -19,6 +20,7 @@ data VerError
     | NotPi Term
     | NotPatvar Name
     | NotImplemented
+    | NotConstructor Name
     | ComplexScrutinee (CaseTree Relevance)
     | CantConvert Term Term
     deriving Show
@@ -184,6 +186,9 @@ verBranch' :: Cardinality -> Relevance -> Pat -> Name -> Relevance
     -> (Name, [Def Relevance], [(Name, TT Relevance)], CaseTree Relevance)
     -> Ver ()
 verBranch' q r lhs n s (cn, ds, eqs, rhs) = bt ("ALT-MATCH-INT", cn, rhs) $ do
+    cd <- lookupName cn
+    when (defBody cd /= Abstract Postulate) $
+        verFail (NotConstructor cn)
     verDefs ds
     let pat = mkApp c' [(defR d, V $ defName d) | d <- ds]
     let eqs' = [(n, Forced tm) | (n, tm) <- eqs]

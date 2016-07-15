@@ -10,6 +10,7 @@ import Erasure.Meta
 import Erasure.Solve
 
 import Prelude hiding (lookup)
+import Control.Monad (when)
 
 import Control.Monad.Trans.Class
 import Control.Monad.Trans.State
@@ -35,6 +36,7 @@ data TCError
     | EmptyCaseTree TTmeta
     | CantMatch TTmeta TTmeta
     | NonVariableScrutinee TTmeta
+    | NotConstructor Name
     | InconsistentErasure Name
     | NotImplemented String
     | NonPatvarInEq Name
@@ -237,6 +239,8 @@ checkAlt isSingleBranch lhs n sr (Alt Wildcard rhs) = bt ("ALT-WILDCARD") $ do
 checkAlt isSingleBranch lhs n sr (Alt (Ctor cr cn args eqs_NF) rhs) = bt ("ALT-CTOR", pat) $ do
     argCtx <- checkDefs args
     cd <- lookup cn
+    when (defBody cd /= Abstract Postulate) $
+        tcfail (NotConstructor cn)
     -- Typechecking will be done eventually in the case for Leaf.
     cs <- with' (M.union argCtx) $ do
             _ <- traverse checkPatvar $ map fst eqs
