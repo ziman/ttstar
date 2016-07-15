@@ -175,7 +175,15 @@ verCase r lhs ct@(Case s tm alts) = do
 verBranch :: Cardinality -> Relevance -> Pat -> Name -> Relevance -> Alt Relevance -> Ver ()
 verBranch q r lhs n s (Alt Wildcard rhs) = bt ("ALT-WILD", rhs) $ do
     verCase r lhs rhs
+
 verBranch q r lhs n s (Alt (Ctor cn ds eqs) rhs) = bt ("ALT-MATCH", cn, rhs) $ do
+    cd <- lookupName cn
+    verBranch' q (r /\ defR cd) lhs n s (cn, ds, eqs, rhs)
+
+verBranch' :: Cardinality -> Relevance -> Pat -> Name -> Relevance
+    -> (Name, [Def Relevance], [(Name, TT Relevance)], CaseTree Relevance)
+    -> Ver ()
+verBranch' q r lhs n s (cn, ds, eqs, rhs) = bt ("ALT-MATCH-INT", cn, rhs) $ do
     verDefs ds
     let pat = mkApp c' [(defR d, V $ defName d) | d <- ds]
     let eqs' = [(n, Forced tm) | (n, tm) <- eqs]
