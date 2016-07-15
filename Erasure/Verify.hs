@@ -215,7 +215,7 @@ verTm r (Bind Lam d@(Def n s ty (Abstract Var) _) tm) = bt ("LAM", r, n) $ do
     tyty <- verTm E ty    
     mustBeType tyty
     tmty <- with d $ verTm r tm
-    return $ Bind Pi d tyty
+    return $ Bind Pi d tmty
 
 verTm r (Bind Pi d@(Def n s ty (Abstract Var) _) tm) = bt ("PI", r, n) $ do
     tyty <- verTm E ty
