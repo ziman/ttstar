@@ -42,9 +42,9 @@ postulate S :3: (_ :R: Nat) -> Nat
 
 plus :4: (n :5: Nat) -> (m :6: Nat) -> Nat = \(n :7: Nat) (m :8: Nat).
   case -9- n of
-    Z
+    Z/10
       => m
-    S (n' :12: Nat)
+    S/11 (n' :12: Nat)
       => S -13- (plus -15- n' -14- m)
 
 id :16: (x :17: Nat) -> Nat = (\x :18: Nat. x)
@@ -54,9 +54,9 @@ const :19: (x :20: Nat) -> (y :21: Nat) -> Nat = (\x :22: Nat. (\y :23: Nat. x))
 main :R: Nat = 
   let apply :24: (f :25: (_ :26: Nat) -> Nat) -> (x :27: Nat) -> Nat = \(f :28: (_ :29: Nat) -> Nat) (x :30: Nat).
     case -31- x of
-      Z
+      Z/32
         => f -33- Z
-      S (x' :35: Nat)
+      S/34 (x' :35: Nat)
         => f -36- (S -37- x')
   in 
     let postulate Q :38: Nat
@@ -88,9 +88,9 @@ id :16: (x :17: Nat) -> Nat = (\x :18: Nat. x) {- constraints apply -}
 main :R: Nat = 
   let apply :24: (f :25: (_ :26: Nat) -> Nat) -> (x :27: Nat) -> Nat = \(f :28: (_ :29: Nat) -> Nat) (x :30: Nat).
     case -31- x of
-      Z
+      Z/32
         => f -33- Z
-      S (x' :35: Nat)
+      S/34 (x' :35: Nat)
         => f -36- (S -37- x')
   in 
     let postulate Q :38: Nat
@@ -101,9 +101,9 @@ main :R: Nat =
 
 plus :4: (n :5: Nat) -> (m :6: Nat) -> Nat = \(n :7: Nat) (m :8: Nat).
   case -9- n of
-    Z
+    Z/10
       => m
-    S (n' :12: Nat)
+    S/11 (n' :12: Nat)
       => S -13- (plus -15- n' -14- m) {- constraints apply -}
   [] -> [3,4,5,6,7,8,9,11,12,13,14,15,R]
   [2] -> [10]
@@ -128,9 +128,9 @@ postulate S :R: (_ :R: Nat) -> Nat
 
 plus :R: (n :R: Nat) -> (m :R: Nat) -> Nat = \(n :R: Nat) (m :R: Nat).
   case -R- n of
-    Z
+    Z/R
       => m
-    S (n' :R: Nat)
+    S/R (n' :R: Nat)
       => S -R- (plus -R- n' -R- m)
 
 id :R: (x :R: Nat) -> Nat = (\x :R: Nat. x)
@@ -140,9 +140,9 @@ const :R: (x :R: Nat) -> (y :R: Nat) -> Nat = (\x :R: Nat. (\y :R: Nat. x))
 main :R: Nat = 
   let apply :R: (f :R: (_ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = \(f :R: (_ :R: Nat) -> Nat) (x :R: Nat).
     case -R- x of
-      Z
+      Z/R
         => f -R- Z
-      S (x' :R: Nat)
+      S/R (x' :R: Nat)
         => f -R- (S -R- x')
   in 
     let postulate Q :R: Nat
@@ -160,9 +160,9 @@ postulate S :R: (_ :R: Nat) -> Nat
 
 plus :R: (n :R: Nat) -> (m :R: Nat) -> Nat = \(n :R: Nat) (m :R: Nat).
   case -R- n of
-    Z
+    Z/R
       => m
-    S (n' :R: Nat)
+    S/R (n' :R: Nat)
       => S -R- (plus -R- n' -R- m)
 
 id :R: (x :R: Nat) -> Nat = (\x :R: Nat. x)
@@ -172,9 +172,9 @@ const :R: (x :R: Nat) -> (y :R: Nat) -> Nat = (\x :R: Nat. (\y :R: Nat. x))
 main :R: Nat = 
   let apply :R: (f :R: (_ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = \(f :R: (_ :R: Nat) -> Nat) (x :R: Nat).
     case -R- x of
-      Z
+      Z/R
         => f -R- Z
-      S (x' :R: Nat)
+      S/R (x' :R: Nat)
         => f -R- (S -R- x')
   in 
     let postulate Q :R: Nat
@@ -192,9 +192,9 @@ postulate S :R: (_ :R: Nat) -> Nat
 
 plus :R: (n :R: Nat) -> (m :R: Nat) -> Nat = \(n :R: Nat) (m :R: Nat).
   case -R- n of
-    Z
+    Z/R
       => m
-    S (n' :R: Nat)
+    S/R (n' :R: Nat)
       => S -R- (plus -R- n' -R- m)
 
 id :R: (x :R: Nat) -> Nat = (\x :R: Nat. x)
@@ -204,9 +204,9 @@ const :R: (x :R: Nat) -> (y :R: Nat) -> Nat = (\x :R: Nat. (\y :R: Nat. x))
 main :R: Nat = 
   let apply :R: (f :R: (_ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = \(f :R: (_ :R: Nat) -> Nat) (x :R: Nat).
     case -R- x of
-      Z
+      Z/R
         => f -R- Z
-      S (x' :R: Nat)
+      S/R (x' :R: Nat)
         => f -R- (S -R- x')
   in 
     let postulate Q :R: Nat

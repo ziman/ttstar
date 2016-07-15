@@ -35,9 +35,9 @@ postulate MkUnit :5: Unit
 
 not :6: (x :7: Bool) -> Unit = \(x :8: Bool).
   case -9- x of
-    T
+    T/10
       => MkUnit
-    F
+    F/11
       => MkUnit
 
 main :R: Unit = not -12- T
@@ -68,9 +68,9 @@ main :R: Unit = not -12- T {- constraints apply -}
 
 not :6: (x :7: Bool) -> Unit = \(x :8: Bool).
   case -9- x of
-    T
+    T/10
       => MkUnit
-    F
+    F/11
       => MkUnit {- constraints apply -}
   [] -> [5,6,7,8,9,R]
   [2] -> [10]
@@ -103,9 +103,9 @@ postulate MkUnit :R: Unit
 
 not :R: (x :R: Bool) -> Unit = \(x :R: Bool).
   case -R- x of
-    T
+    T/R
       => MkUnit
-    {ERASED} F
+    F/E
       => MkUnit
 
 main :R: Unit = not -R- T
@@ -124,9 +124,9 @@ postulate MkUnit :R: Unit
 
 not :R: (x :R: Bool) -> Unit = \(x :R: Bool).
   case -R- x of
-    T
+    T/R
       => MkUnit
-    {ERASED} F
+    F/E
       => MkUnit
 
 main :R: Unit = not -R- T
@@ -145,9 +145,9 @@ postulate MkUnit :R: Unit
 
 not :R: (x :R: Bool) -> Unit = \(x :R: Bool).
   case -R- x of
-    T
+    T/R
       => MkUnit
-    {ERASED} F
+    F/E
       => MkUnit
 
 main :R: Unit = not -R- T

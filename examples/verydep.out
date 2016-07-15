@@ -54,19 +54,19 @@ postulate False :13: Bool
 
 retTy :14: (x :15: Maybe -16- Bool) -> Type = \(x :17: Maybe -18- Bool).
   case -19- x of
-    Just (a :21: Type) (t :22: a)
+    Just/20 (a :21: Type) (t :22: a)
       | a = Bool
       => Bool
-    Nothing (a :24: Type)
+    Nothing/23 (a :24: Type)
       | a = Bool
       => Type
 
 f :25: (x :26: Maybe -27- Bool) -> retTy -28- x = \(x :29: Maybe -30- Bool).
   case -31- x of
-    Just (a :33: Type) (b :34: a)
+    Just/32 (a :33: Type) (b :34: a)
       | a = Bool
       => b
-    Nothing (a :36: Type)
+    Nothing/35 (a :36: Type)
       | a = Bool
       => Bool
 
@@ -99,10 +99,10 @@ postulate Void :1: Type {- constraints apply -}
 
 f :25: (x :26: Maybe -27- Bool) -> retTy -28- x = \(x :29: Maybe -30- Bool).
   case -31- x of
-    Just (a :33: Type) (b :34: a)
+    Just/32 (a :33: Type) (b :34: a)
       | a = Bool
       => b
-    Nothing (a :36: Type)
+    Nothing/35 (a :36: Type)
       | a = Bool
       => Bool {- constraints apply -}
   [] -> [6,11,25,26,29,31,34,R]
@@ -133,10 +133,10 @@ main :R: Bool = f -37- (Just -39- Bool -38- False) {- constraints apply -}
 
 retTy :14: (x :15: Maybe -16- Bool) -> Type = \(x :17: Maybe -18- Bool).
   case -19- x of
-    Just (a :21: Type) (t :22: a)
+    Just/20 (a :21: Type) (t :22: a)
       | a = Bool
       => Bool
-    Nothing (a :24: Type)
+    Nothing/23 (a :24: Type)
       | a = Bool
       => Type {- constraints apply -}
   [] -> [6,11,14,15,17,19,22,E,R]
@@ -189,19 +189,19 @@ postulate False :R: Bool
 
 retTy :E: (x :E: Maybe -E- Bool) -> Type = \(x :E: Maybe -E- Bool).
   case -E- x of
-    {ERASED} Just (a :E: Type) (t :E: a)
+    Just/E (a :E: Type) (t :E: a)
       | a = Bool
       => Bool
-    {ERASED} Nothing (a :E: Type)
+    Nothing/E (a :E: Type)
       | a = Bool
       => Type
 
 f :R: (x :R: Maybe -E- Bool) -> retTy -E- x = \(x :R: Maybe -E- Bool).
   case -R- x of
-    Just (a :E: Type) (b :R: a)
+    Just/R (a :E: Type) (b :R: a)
       | a = Bool
       => b
-    {ERASED} Nothing (a :E: Type)
+    Nothing/E (a :E: Type)
       | a = Bool
       => Bool
 
@@ -225,19 +225,19 @@ postulate False :R: Bool
 
 retTy :E: (x :E: Maybe -E- Bool) -> Type = \(x :E: Maybe -E- Bool).
   case -E- x of
-    {ERASED} Just (a :E: Type) (t :E: a)
+    Just/E (a :E: Type) (t :E: a)
       | a = Bool
       => Bool
-    {ERASED} Nothing (a :E: Type)
+    Nothing/E (a :E: Type)
       | a = Bool
       => Type
 
 f :R: (x :R: Maybe -E- Bool) -> retTy -E- x = \(x :R: Maybe -E- Bool).
   case -R- x of
-    Just (a :E: Type) (b :R: a)
+    Just/R (a :E: Type) (b :R: a)
       | a = Bool
       => b
-    {ERASED} Nothing (a :E: Type)
+    Nothing/E (a :E: Type)
       | a = Bool
       => Bool
 
@@ -261,19 +261,19 @@ postulate False :R: Bool
 
 retTy :E: (x :E: Maybe -E- Bool) -> Type = \(x :E: Maybe -E- Bool).
   case -E- x of
-    {ERASED} Just (a :E: Type) (t :E: a)
+    Just/E (a :E: Type) (t :E: a)
       | a = Bool
       => Bool
-    {ERASED} Nothing (a :E: Type)
+    Nothing/E (a :E: Type)
       | a = Bool
       => Type
 
 f :R: (x :R: Maybe -E- Bool) -> retTy -E- x = \(x :R: Maybe -E- Bool).
   case -R- x of
-    Just (a :E: Type) (b :R: a)
+    Just/R (a :E: Type) (b :R: a)
       | a = Bool
       => b
-    {ERASED} Nothing (a :E: Type)
+    Nothing/E (a :E: Type)
       | a = Bool
       => Bool
 

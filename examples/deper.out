@@ -50,16 +50,16 @@ constT :9: (_ :10: Bool) -> Bool = (\_ :11: Bool. T)
 
 fty :12: (x :13: Bool) -> Type = \(x :14: Bool).
   case -15- x of
-    T
+    T/16
       => (_ :17: Bool) -> Bool
-    F
+    F/18
       => (_ :19: Bool) -> Bool
 
 f :20: (x :21: Bool) -> fty -22- x = \(x :23: Bool).
   case -24- x of
-    T
+    T/25
       => id
-    F
+    F/26
       => constT
 
 main :R: TwoBools = TB -28- (f -30- T -29- F) -27- (f -32- F -31- F)
@@ -90,9 +90,9 @@ constT :9: (_ :10: Bool) -> Bool = (\_ :11: Bool. T) {- constraints apply -}
 
 f :20: (x :21: Bool) -> fty -22- x = \(x :23: Bool).
   case -24- x of
-    T
+    T/25
       => id
-    F
+    F/26
       => constT {- constraints apply -}
   [] -> [2,6,7,8,9,17,20,21,23,24,25,R]
   [3] -> [26]
@@ -103,9 +103,9 @@ f :20: (x :21: Bool) -> fty -22- x = \(x :23: Bool).
 
 fty :12: (x :13: Bool) -> Type = \(x :14: Bool).
   case -15- x of
-    T
+    T/16
       => (_ :17: Bool) -> Bool
-    F
+    F/18
       => (_ :19: Bool) -> Bool {- constraints apply -}
   [] -> [1,12,13,14,15,R]
   [2] -> [16]
@@ -154,16 +154,16 @@ constT :R: (_ :E: Bool) -> Bool = (\_ :E: Bool. T)
 
 fty :E: (x :E: Bool) -> Type = \(x :E: Bool).
   case -E- x of
-    {ERASED} T
+    T/E
       => (_ :R: Bool) -> Bool
-    {ERASED} F
+    F/E
       => (_ :E: Bool) -> Bool
 
 f :R: (x :R: Bool) -> fty -E- x = \(x :R: Bool).
   case -R- x of
-    T
+    T/R
       => id
-    F
+    F/R
       => constT
 
 main :R: TwoBools = TB -R- (f -R- T -R- F) -R- (f -R- F -E- F)
@@ -186,16 +186,16 @@ constT :R: (_ :E: Bool) -> Bool = (\_ :E: Bool. T)
 
 fty :E: (x :E: Bool) -> Type = \(x :E: Bool).
   case -E- x of
-    {ERASED} T
+    T/E
       => (_ :R: Bool) -> Bool
-    {ERASED} F
+    F/E
       => (_ :E: Bool) -> Bool
 
 f :R: (x :R: Bool) -> fty -E- x = \(x :R: Bool).
   case -R- x of
-    T
+    T/R
       => id
-    F
+    F/R
       => constT
 
 main :R: TwoBools = TB -R- (f -R- T -R- F) -R- (f -R- F -E- F)
@@ -218,16 +218,16 @@ constT :R: (_ :E: Bool) -> Bool = (\_ :E: Bool. T)
 
 fty :E: (x :E: Bool) -> Type = \(x :E: Bool).
   case -E- x of
-    {ERASED} T
+    T/E
       => (_ :R: Bool) -> Bool
-    {ERASED} F
+    F/E
       => (_ :E: Bool) -> Bool
 
 f :R: (x :R: Bool) -> fty -E- x = \(x :R: Bool).
   case -R- x of
-    T
+    T/R
       => id
-    F
+    F/R
       => constT
 
 main :R: TwoBools = TB -R- (f -R- T -R- F) -R- (f -R- F -E- F)

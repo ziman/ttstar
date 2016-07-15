@@ -69,9 +69,9 @@ postulate Plus :14: (x :R: Nat) -> (y :R: Nat) -> Nat
 
 id :15: (x :16: Nat) -> Nat = \(x :17: Nat).
   case -18- x of
-    Z
+    Z/19
       => Z
-    S (y :21: Nat)
+    S/20 (y :21: Nat)
       => 
         let result :22: Nat = S -23- y
         in result
@@ -152,9 +152,9 @@ f :33: (g :34: (_ :35: Nat) -> Nat) -> (z :36: Nat) -> (h :37: (_ :38: Nat) -> N
 
 id :15: (x :16: Nat) -> Nat = \(x :17: Nat).
   case -18- x of
-    Z
+    Z/19
       => Z
-    S (y :21: Nat)
+    S/20 (y :21: Nat)
       => 
         let result :22: Nat = S -23- y
         in result {- constraints apply -}
@@ -213,9 +213,9 @@ postulate Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
 
 id :R: (x :R: Nat) -> Nat = \(x :R: Nat).
   case -R- x of
-    Z
+    Z/R
       => Z
-    S (y :R: Nat)
+    S/R (y :R: Nat)
       => 
         let result :R: Nat = S -R- y
         in result
@@ -258,9 +258,9 @@ postulate Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
 
 id :R: (x :R: Nat) -> Nat = \(x :R: Nat).
   case -R- x of
-    Z
+    Z/R
       => Z
-    S (y :R: Nat)
+    S/R (y :R: Nat)
       => 
         let result :R: Nat = S -R- y
         in result
@@ -303,9 +303,9 @@ postulate Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
 
 id :R: (x :R: Nat) -> Nat = \(x :R: Nat).
   case -R- x of
-    Z
+    Z/R
       => Z
-    S (y :R: Nat)
+    S/R (y :R: Nat)
       => 
         let result :R: Nat = S -R- y
         in result

@@ -42,16 +42,16 @@ postulate Refl :8: (a :9: Type) -> (x :10: a) -> Id -13- a -12- x -11- x
 
 not :14: (x :15: Bool) -> Bool = \(x :16: Bool).
   case -17- x of
-    T
+    T/18
       => F
-    F
+    F/19
       => T
 
 notnot :20: (x :21: Bool) -> Id -24- Bool -23- x -22- (not -25- (not -26- x)) = \(x :27: Bool).
   case -28- x of
-    T
+    T/29
       => Refl -31- Bool -30- T
-    F
+    F/32
       => Refl -34- Bool -33- F
 
 main :R: Id -37- Bool -36- F -35- (not -38- (not -39- F)) = notnot -40- F
@@ -97,17 +97,17 @@ main :R: Id -37- Bool -36- F -35- (not -38- (not -39- F)) = notnot -40- F {- con
 
 not :14: (x :15: Bool) -> Bool = \(x :16: Bool).
   case -17- x of
-    T
+    T/18
       => F
-    F
+    F/19
       => T {- constraints apply -}
   [] -> [2,3,14,15,16,17,18,19,R]
 
 notnot :20: (x :21: Bool) -> Id -24- Bool -23- x -22- (not -25- (not -26- x)) = \(x :27: Bool).
   case -28- x of
-    T
+    T/29
       => Refl -31- Bool -30- T
-    F
+    F/32
       => Refl -34- Bool -33- F {- constraints apply -}
   [] -> [8,20,21,27,28,R]
   [2] -> [29]
@@ -167,16 +167,16 @@ postulate Refl :R: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
 
 not :E: (x :E: Bool) -> Bool = \(x :E: Bool).
   case -E- x of
-    {ERASED} T
+    T/E
       => F
-    {ERASED} F
+    F/E
       => T
 
 notnot :R: (x :R: Bool) -> Id -E- Bool -E- x -E- (not -E- (not -E- x)) = \(x :R: Bool).
   case -R- x of
-    {ERASED} T
+    T/E
       => Refl -E- Bool -E- T
-    F
+    F/R
       => Refl -E- Bool -E- F
 
 main :R: Id -E- Bool -E- F -E- (not -E- (not -E- F)) = notnot -R- F
@@ -195,16 +195,16 @@ postulate Refl :R: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
 
 not :E: (x :E: Bool) -> Bool = \(x :E: Bool).
   case -E- x of
-    {ERASED} T
+    T/E
       => F
-    {ERASED} F
+    F/E
       => T
 
 notnot :R: (x :R: Bool) -> Id -E- Bool -E- x -E- (not -E- (not -E- x)) = \(x :R: Bool).
   case -R- x of
-    {ERASED} T
+    T/E
       => Refl -E- Bool -E- T
-    F
+    F/R
       => Refl -E- Bool -E- F
 
 main :R: Id -E- Bool -E- F -E- (not -E- (not -E- F)) = notnot -R- F
@@ -223,16 +223,16 @@ postulate Refl :R: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
 
 not :E: (x :E: Bool) -> Bool = \(x :E: Bool).
   case -E- x of
-    {ERASED} T
+    T/E
       => F
-    {ERASED} F
+    F/E
       => T
 
 notnot :R: (x :R: Bool) -> Id -E- Bool -E- x -E- (not -E- (not -E- x)) = \(x :R: Bool).
   case -R- x of
-    {ERASED} T
+    T/E
       => Refl -E- Bool -E- T
-    F
+    F/R
       => Refl -E- Bool -E- F
 
 main :R: Id -E- Bool -E- F -E- (not -E- (not -E- F)) = notnot -R- F

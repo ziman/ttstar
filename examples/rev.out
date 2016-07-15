@@ -97,7 +97,7 @@ id :11: (a :12: Type) -> (_ :13: a) -> a = (\a :14: Type. (\x :15: a. x))
 
 subst :16: (a :17: Type) -> (P :18: (_ :19: a) -> Type) -> (x :20: a) -> (y :21: a) -> (eq :22: Id -25- a -24- x -23- y) -> (_ :26: P -27- x) -> P -28- y = \(a :29: Type) (P :30: (_ :31: a) -> Type) (x :32: a) (y :33: a) (eq :34: Id -37- a -36- x -35- y).
   case -38- eq of
-    Refl (a' :40: Type) (x' :41: a)
+    Refl/39 (a' :40: Type) (x' :41: a)
       | a' = a
       | x' = x
       | y = x
@@ -105,7 +105,7 @@ subst :16: (a :17: Type) -> (P :18: (_ :19: a) -> Type) -> (x :20: a) -> (y :21:
 
 cong :44: (a :45: Type) -> (b :46: Type) -> (f :47: (_ :48: a) -> b) -> (x :49: a) -> (y :50: a) -> (eq :51: Id -54- a -53- x -52- y) -> Id -57- b -56- (f -58- x) -55- (f -59- y) = \(a :60: Type) (b :61: Type) (f :62: (_ :63: a) -> b) (x :64: a) (y :65: a) (eq :66: Id -69- a -68- x -67- y).
   case -70- eq of
-    Refl (a' :72: Type) (x' :73: a)
+    Refl/71 (a' :72: Type) (x' :73: a)
       | a' = a
       | x' = x
       | y = x
@@ -127,23 +127,23 @@ one :83: (x :84: Bool) -> List = (\x :85: Bool. Cons -87- x -86- Nil)
 
 app :88: (xs :89: List) -> (ys :90: List) -> List = \(xs :91: List) (ys :92: List).
   case -93- xs of
-    Nil
+    Nil/94
       => ys
-    Cons (x :96: Bool) (xs' :97: List)
+    Cons/95 (x :96: Bool) (xs' :97: List)
       => Cons -99- x -98- (app -101- xs' -100- ys)
 
 appRightNeutral :102: (ys :103: List) -> Id -106- List -105- ys -104- (app -108- ys -107- Nil) = \(ys :109: List).
   case -110- ys of
-    Nil
+    Nil/111
       => Refl -113- List -112- Nil
-    Cons (x :115: Bool) (xs :116: List)
+    Cons/114 (x :115: Bool) (xs :116: List)
       => cong -122- List -121- List -120- (Cons -123- x) -119- xs -118- (app -125- xs -124- Nil) -117- (appRightNeutral -126- xs)
 
 appAssoc :127: (xs :128: List) -> (ys :129: List) -> (zs :130: List) -> Id -133- List -132- (app -135- (app -137- xs -136- ys) -134- zs) -131- (app -139- xs -138- (app -141- ys -140- zs)) = \(xs :142: List) (ys :143: List) (zs :144: List).
   case -145- xs of
-    Nil
+    Nil/146
       => Refl -148- List -147- (app -150- ys -149- zs)
-    Cons (x :152: Bool) (xs' :153: List)
+    Cons/151 (x :152: Bool) (xs' :153: List)
       => cong -159- List -158- List -157- (Cons -160- x) -156- (app -162- (app -164- xs' -163- ys) -161- zs) -155- (app -166- xs' -165- (app -168- ys -167- zs)) -154- (appAssoc -171- xs' -170- ys -169- zs)
 
 postulate Rev :172: (_ :173: List) -> Type
@@ -154,19 +154,19 @@ postulate RSnoc :176: (xs :177: List) -> (x :178: Bool) -> (rxs :179: Rev -180- 
 
 rev' :185: (xs :186: List) -> (rxs :187: Rev -188- xs) -> (ys :189: List) -> Rev -190- (app -192- xs -191- ys) = \(xs :193: List) (rxs :194: Rev -195- xs) (ys :196: List).
   case -197- ys of
-    Nil
+    Nil/198
       => subst -204- List -203- Rev -202- xs -201- (app -206- xs -205- Nil) -200- (appRightNeutral -207- xs) -199- rxs
-    Cons (y :209: Bool) (ys' :210: List)
+    Cons/208 (y :209: Bool) (ys' :210: List)
       => subst -216- List -215- Rev -214- (app -218- (app -220- xs -219- (one -221- y)) -217- ys') -213- (app -223- xs -222- (Cons -225- y -224- ys')) -212- (appAssoc -228- xs -227- (one -229- y) -226- ys') -211- (rev' -232- (app -234- xs -233- (one -235- y)) -231- (RSnoc -238- xs -237- y -236- rxs) -230- ys')
 
 rev :239: (xs :240: List) -> Rev -241- xs = (\xs :242: List. rev' -245- Nil -244- RNil -243- xs)
 
 reverse' :246: (xs :247: List) -> (rxs :248: Rev -249- xs) -> List = \(xs :250: List) (rxs :251: Rev -252- xs).
   case -253- rxs of
-    RNil
+    RNil/254
       | xs = Nil
       => Nil
-    RSnoc (xs' :256: List) (x :257: Bool) (rxs' :258: Rev -259- xs')
+    RSnoc/255 (xs' :256: List) (x :257: Bool) (rxs' :258: Rev -259- xs')
       | xs = app -261- xs' -260- (one -262- x)
       => Cons -264- x -263- (reverse' -266- xs' -265- rxs')
 
@@ -213,9 +213,9 @@ postulate Type :E: Type
 
 app :88: (xs :89: List) -> (ys :90: List) -> List = \(xs :91: List) (ys :92: List).
   case -93- xs of
-    Nil
+    Nil/94
       => ys
-    Cons (x :96: Bool) (xs' :97: List)
+    Cons/95 (x :96: Bool) (xs' :97: List)
       => Cons -99- x -98- (app -101- xs' -100- ys) {- constraints apply -}
   [] -> [82,88,89,90,91,92,93,95,96,97,98,99,100,101,R]
   [81] -> [94]
@@ -223,9 +223,9 @@ app :88: (xs :89: List) -> (ys :90: List) -> List = \(xs :91: List) (ys :92: Lis
 
 appAssoc :127: (xs :128: List) -> (ys :129: List) -> (zs :130: List) -> Id -133- List -132- (app -135- (app -137- xs -136- ys) -134- zs) -131- (app -139- xs -138- (app -141- ys -140- zs)) = \(xs :142: List) (ys :143: List) (zs :144: List).
   case -145- xs of
-    Nil
+    Nil/146
       => Refl -148- List -147- (app -150- ys -149- zs)
-    Cons (x :152: Bool) (xs' :153: List)
+    Cons/151 (x :152: Bool) (xs' :153: List)
       => cong -159- List -158- List -157- (Cons -160- x) -156- (app -162- (app -164- xs' -163- ys) -161- zs) -155- (app -166- xs' -165- (app -168- ys -167- zs)) -154- (appAssoc -171- xs' -170- ys -169- zs) {- constraints apply -}
   [] -> [5,44,45,46,47,48,49,58,59,60,61,62,63,64,71,76,80,82,88,89,90,91,92,93,95,96,97,98,99,100,101,127,128,129,130,142,143,144,145,151,152,153,156,157,158,159,160,161,162,163,164,165,166,R]
   [6] -> [51,72,75,148]
@@ -283,9 +283,9 @@ appAssoc :127: (xs :128: List) -> (ys :129: List) -> (zs :130: List) -> Id -133-
 
 appRightNeutral :102: (ys :103: List) -> Id -106- List -105- ys -104- (app -108- ys -107- Nil) = \(ys :109: List).
   case -110- ys of
-    Nil
+    Nil/111
       => Refl -113- List -112- Nil
-    Cons (x :115: Bool) (xs :116: List)
+    Cons/114 (x :115: Bool) (xs :116: List)
       => cong -122- List -121- List -120- (Cons -123- x) -119- xs -118- (app -125- xs -124- Nil) -117- (appRightNeutral -126- xs) {- constraints apply -}
   [] -> [5,44,45,46,47,48,49,58,59,60,61,62,63,64,71,76,80,82,98,99,102,103,109,110,114,115,116,119,120,121,122,123,R]
   [6] -> [51,72,75,113]
@@ -340,7 +340,7 @@ appRightNeutral :102: (ys :103: List) -> Id -106- List -105- ys -104- (app -108-
 
 cong :44: (a :45: Type) -> (b :46: Type) -> (f :47: (_ :48: a) -> b) -> (x :49: a) -> (y :50: a) -> (eq :51: Id -54- a -53- x -52- y) -> Id -57- b -56- (f -58- x) -55- (f -59- y) = \(a :60: Type) (b :61: Type) (f :62: (_ :63: a) -> b) (x :64: a) (y :65: a) (eq :66: Id -69- a -68- x -67- y).
   case -70- eq of
-    Refl (a' :72: Type) (x' :73: a)
+    Refl/71 (a' :72: Type) (x' :73: a)
       | a' = a
       | x' = x
       | y = x
@@ -611,9 +611,9 @@ rev :239: (xs :240: List) -> Rev -241- xs = (\xs :242: List. rev' -245- Nil -244
 
 rev' :185: (xs :186: List) -> (rxs :187: Rev -188- xs) -> (ys :189: List) -> Rev -190- (app -192- xs -191- ys) = \(xs :193: List) (rxs :194: Rev -195- xs) (ys :196: List).
   case -197- ys of
-    Nil
+    Nil/198
       => subst -204- List -203- Rev -202- xs -201- (app -206- xs -205- Nil) -200- (appRightNeutral -207- xs) -199- rxs
-    Cons (y :209: Bool) (ys' :210: List)
+    Cons/208 (y :209: Bool) (ys' :210: List)
       => subst -216- List -215- Rev -214- (app -218- (app -220- xs -219- (one -221- y)) -217- ys') -213- (app -223- xs -222- (Cons -225- y -224- ys')) -212- (appAssoc -228- xs -227- (one -229- y) -226- ys') -211- (rev' -232- (app -234- xs -233- (one -235- y)) -231- (RSnoc -238- xs -237- y -236- rxs) -230- ys') {- constraints apply -}
   [] -> [16,17,18,20,26,29,30,32,42,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,172,176,182,183,185,186,187,189,191,192,193,194,196,197,198,199,202,203,204,205,206,208,209,210,211,214,215,216,217,218,219,220,221,222,223,224,225,230,231,232,233,234,235,R]
   [5] -> [39]
@@ -841,10 +841,10 @@ reverse :267: (xs :268: List) -> List = (\xs :269: List. reverse' -271- xs -270-
 
 reverse' :246: (xs :247: List) -> (rxs :248: Rev -249- xs) -> List = \(xs :250: List) (rxs :251: Rev -252- xs).
   case -253- rxs of
-    RNil
+    RNil/254
       | xs = Nil
       => Nil
-    RSnoc (xs' :256: List) (x :257: Bool) (rxs' :258: Rev -259- xs')
+    RSnoc/255 (xs' :256: List) (x :257: Bool) (rxs' :258: Rev -259- xs')
       | xs = app -261- xs' -260- (one -262- x)
       => Cons -264- x -263- (reverse' -266- xs' -265- rxs') {- constraints apply -}
   [] -> [81,82,177,178,179,246,248,251,253,256,257,258,263,264,265,R]
@@ -869,7 +869,7 @@ reverse' :246: (xs :247: List) -> (rxs :248: Rev -249- xs) -> List = \(xs :250: 
 
 subst :16: (a :17: Type) -> (P :18: (_ :19: a) -> Type) -> (x :20: a) -> (y :21: a) -> (eq :22: Id -25- a -24- x -23- y) -> (_ :26: P -27- x) -> P -28- y = \(a :29: Type) (P :30: (_ :31: a) -> Type) (x :32: a) (y :33: a) (eq :34: Id -37- a -36- x -35- y).
   case -38- eq of
-    Refl (a' :40: Type) (x' :41: a)
+    Refl/39 (a' :40: Type) (x' :41: a)
       | a' = a
       | x' = x
       | y = x
@@ -1027,7 +1027,7 @@ id :E: (a :E: Type) -> (_ :E: a) -> a = (\a :E: Type. (\x :E: a. x))
 
 subst :R: (a :R: Type) -> (P :R: (_ :E: a) -> Type) -> (x :R: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (_ :R: P -E- x) -> P -E- y = \(a :R: Type) (P :R: (_ :E: a) -> Type) (x :R: a) (y :E: a) (eq :E: Id -E- a -E- x -E- y).
   case -E- eq of
-    {ERASED} Refl (a' :E: Type) (x' :E: a)
+    Refl/E (a' :E: Type) (x' :E: a)
       | a' = a
       | x' = x
       | y = x
@@ -1035,7 +1035,7 @@ subst :R: (a :R: Type) -> (P :R: (_ :E: a) -> Type) -> (x :R: a) -> (y :E: a) ->
 
 cong :E: (a :E: Type) -> (b :E: Type) -> (f :E: (_ :E: a) -> b) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> Id -E- b -E- (f -E- x) -E- (f -E- y) = \(a :E: Type) (b :E: Type) (f :E: (_ :E: a) -> b) (x :E: a) (y :E: a) (eq :E: Id -E- a -E- x -E- y).
   case -E- eq of
-    {ERASED} Refl (a' :E: Type) (x' :E: a)
+    Refl/E (a' :E: Type) (x' :E: a)
       | a' = a
       | x' = x
       | y = x
@@ -1057,23 +1057,23 @@ one :R: (x :R: Bool) -> List = (\x :R: Bool. Cons -R- x -R- Nil)
 
 app :R: (xs :R: List) -> (ys :R: List) -> List = \(xs :R: List) (ys :R: List).
   case -R- xs of
-    Nil
+    Nil/R
       => ys
-    Cons (x :R: Bool) (xs' :R: List)
+    Cons/R (x :R: Bool) (xs' :R: List)
       => Cons -R- x -R- (app -R- xs' -R- ys)
 
 appRightNeutral :E: (ys :E: List) -> Id -E- List -E- ys -E- (app -E- ys -E- Nil) = \(ys :E: List).
   case -E- ys of
-    {ERASED} Nil
+    Nil/E
       => Refl -E- List -E- Nil
-    {ERASED} Cons (x :E: Bool) (xs :E: List)
+    Cons/E (x :E: Bool) (xs :E: List)
       => cong -E- List -E- List -E- (Cons -E- x) -E- xs -E- (app -E- xs -E- Nil) -E- (appRightNeutral -E- xs)
 
 appAssoc :E: (xs :E: List) -> (ys :E: List) -> (zs :E: List) -> Id -E- List -E- (app -E- (app -E- xs -E- ys) -E- zs) -E- (app -E- xs -E- (app -E- ys -E- zs)) = \(xs :E: List) (ys :E: List) (zs :E: List).
   case -E- xs of
-    {ERASED} Nil
+    Nil/E
       => Refl -E- List -E- (app -E- ys -E- zs)
-    {ERASED} Cons (x :E: Bool) (xs' :E: List)
+    Cons/E (x :E: Bool) (xs' :E: List)
       => cong -E- List -E- List -E- (Cons -E- x) -E- (app -E- (app -E- xs' -E- ys) -E- zs) -E- (app -E- xs' -E- (app -E- ys -E- zs)) -E- (appAssoc -E- xs' -E- ys -E- zs)
 
 postulate Rev :R: (_ :E: List) -> Type
@@ -1084,19 +1084,19 @@ postulate RSnoc :R: (xs :R: List) -> (x :R: Bool) -> (rxs :R: Rev -E- xs) -> Rev
 
 rev' :R: (xs :R: List) -> (rxs :R: Rev -E- xs) -> (ys :R: List) -> Rev -E- (app -R- xs -R- ys) = \(xs :R: List) (rxs :R: Rev -E- xs) (ys :R: List).
   case -R- ys of
-    Nil
+    Nil/R
       => subst -R- List -R- Rev -R- xs -E- (app -R- xs -R- Nil) -E- (appRightNeutral -E- xs) -R- rxs
-    Cons (y :R: Bool) (ys' :R: List)
+    Cons/R (y :R: Bool) (ys' :R: List)
       => subst -R- List -R- Rev -R- (app -R- (app -R- xs -R- (one -R- y)) -R- ys') -E- (app -R- xs -R- (Cons -R- y -R- ys')) -E- (appAssoc -E- xs -E- (one -E- y) -E- ys') -R- (rev' -R- (app -R- xs -R- (one -R- y)) -R- (RSnoc -R- xs -R- y -R- rxs) -R- ys')
 
 rev :R: (xs :R: List) -> Rev -E- xs = (\xs :R: List. rev' -R- Nil -R- RNil -R- xs)
 
 reverse' :R: (xs :E: List) -> (rxs :R: Rev -E- xs) -> List = \(xs :E: List) (rxs :R: Rev -E- xs).
   case -R- rxs of
-    RNil
+    RNil/R
       | xs = Nil
       => Nil
-    RSnoc (xs' :R: List) (x :R: Bool) (rxs' :R: Rev -E- xs')
+    RSnoc/R (xs' :R: List) (x :R: Bool) (rxs' :R: Rev -E- xs')
       | xs = app -R- xs' -R- (one -E- x)
       => Cons -R- x -R- (reverse' -E- xs' -R- rxs')
 
@@ -1114,7 +1114,7 @@ id :E: (a :E: Type) -> (_ :E: a) -> a = (\a :E: Type. (\x :E: a. x))
 
 subst :R: (a :R: Type) -> (P :R: (_ :E: a) -> Type) -> (x :R: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (_ :R: P -E- x) -> P -E- y = \(a :R: Type) (P :R: (_ :E: a) -> Type) (x :R: a) (y :E: a) (eq :E: Id -E- a -E- x -E- y).
   case -E- eq of
-    {ERASED} Refl (a' :E: Type) (x' :E: a)
+    Refl/E (a' :E: Type) (x' :E: a)
       | a' = a
       | x' = x
       | y = x
@@ -1122,7 +1122,7 @@ subst :R: (a :R: Type) -> (P :R: (_ :E: a) -> Type) -> (x :R: a) -> (y :E: a) ->
 
 cong :E: (a :E: Type) -> (b :E: Type) -> (f :E: (_ :E: a) -> b) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> Id -E- b -E- (f -E- x) -E- (f -E- y) = \(a :E: Type) (b :E: Type) (f :E: (_ :E: a) -> b) (x :E: a) (y :E: a) (eq :E: Id -E- a -E- x -E- y).
   case -E- eq of
-    {ERASED} Refl (a' :E: Type) (x' :E: a)
+    Refl/E (a' :E: Type) (x' :E: a)
       | a' = a
       | x' = x
       | y = x
@@ -1144,23 +1144,23 @@ one :R: (x :R: Bool) -> List = (\x :R: Bool. Cons -R- x -R- Nil)
 
 app :R: (xs :R: List) -> (ys :R: List) -> List = \(xs :R: List) (ys :R: List).
   case -R- xs of
-    Nil
+    Nil/R
       => ys
-    Cons (x :R: Bool) (xs' :R: List)
+    Cons/R (x :R: Bool) (xs' :R: List)
       => Cons -R- x -R- (app -R- xs' -R- ys)
 
 appRightNeutral :E: (ys :E: List) -> Id -E- List -E- ys -E- (app -E- ys -E- Nil) = \(ys :E: List).
   case -E- ys of
-    {ERASED} Nil
+    Nil/E
       => Refl -E- List -E- Nil
-    {ERASED} Cons (x :E: Bool) (xs :E: List)
+    Cons/E (x :E: Bool) (xs :E: List)
       => cong -E- List -E- List -E- (Cons -E- x) -E- xs -E- (app -E- xs -E- Nil) -E- (appRightNeutral -E- xs)
 
 appAssoc :E: (xs :E: List) -> (ys :E: List) -> (zs :E: List) -> Id -E- List -E- (app -E- (app -E- xs -E- ys) -E- zs) -E- (app -E- xs -E- (app -E- ys -E- zs)) = \(xs :E: List) (ys :E: List) (zs :E: List).
   case -E- xs of
-    {ERASED} Nil
+    Nil/E
       => Refl -E- List -E- (app -E- ys -E- zs)
-    {ERASED} Cons (x :E: Bool) (xs' :E: List)
+    Cons/E (x :E: Bool) (xs' :E: List)
       => cong -E- List -E- List -E- (Cons -E- x) -E- (app -E- (app -E- xs' -E- ys) -E- zs) -E- (app -E- xs' -E- (app -E- ys -E- zs)) -E- (appAssoc -E- xs' -E- ys -E- zs)
 
 postulate Rev :R: (_ :E: List) -> Type
@@ -1171,19 +1171,19 @@ postulate RSnoc :R: (xs :R: List) -> (x :R: Bool) -> (rxs :R: Rev -E- xs) -> Rev
 
 rev' :R: (xs :R: List) -> (rxs :R: Rev -E- xs) -> (ys :R: List) -> Rev -E- (app -R- xs -R- ys) = \(xs :R: List) (rxs :R: Rev -E- xs) (ys :R: List).
   case -R- ys of
-    Nil
+    Nil/R
       => subst -R- List -R- Rev -R- xs -E- (app -R- xs -R- Nil) -E- (appRightNeutral -E- xs) -R- rxs
-    Cons (y :R: Bool) (ys' :R: List)
+    Cons/R (y :R: Bool) (ys' :R: List)
       => subst -R- List -R- Rev -R- (app -R- (app -R- xs -R- (one -R- y)) -R- ys') -E- (app -R- xs -R- (Cons -R- y -R- ys')) -E- (appAssoc -E- xs -E- (one -E- y) -E- ys') -R- (rev' -R- (app -R- xs -R- (one -R- y)) -R- (RSnoc -R- xs -R- y -R- rxs) -R- ys')
 
 rev :R: (xs :R: List) -> Rev -E- xs = (\xs :R: List. rev' -R- Nil -R- RNil -R- xs)
 
 reverse' :R: (xs :E: List) -> (rxs :R: Rev -E- xs) -> List = \(xs :E: List) (rxs :R: Rev -E- xs).
   case -R- rxs of
-    RNil
+    RNil/R
       | xs = Nil
       => Nil
-    RSnoc (xs' :R: List) (x :R: Bool) (rxs' :R: Rev -E- xs')
+    RSnoc/R (xs' :R: List) (x :R: Bool) (rxs' :R: Rev -E- xs')
       | xs = app -R- xs' -R- (one -E- x)
       => Cons -R- x -R- (reverse' -E- xs' -R- rxs')
 
@@ -1201,7 +1201,7 @@ id :E: (a :E: Type) -> (_ :E: a) -> a = (\a :E: Type. (\x :E: a. x))
 
 subst :R: (a :R: Type) -> (P :R: (_ :E: a) -> Type) -> (x :R: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (_ :R: P -E- x) -> P -E- y = \(a :R: Type) (P :R: (_ :E: a) -> Type) (x :R: a) (y :E: a) (eq :E: Id -E- a -E- x -E- y).
   case -E- eq of
-    {ERASED} Refl (a' :E: Type) (x' :E: a)
+    Refl/E (a' :E: Type) (x' :E: a)
       | a' = a
       | x' = x
       | y = x
@@ -1209,7 +1209,7 @@ subst :R: (a :R: Type) -> (P :R: (_ :E: a) -> Type) -> (x :R: a) -> (y :E: a) ->
 
 cong :E: (a :E: Type) -> (b :E: Type) -> (f :E: (_ :E: a) -> b) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> Id -E- b -E- (f -E- x) -E- (f -E- y) = \(a :E: Type) (b :E: Type) (f :E: (_ :E: a) -> b) (x :E: a) (y :E: a) (eq :E: Id -E- a -E- x -E- y).
   case -E- eq of
-    {ERASED} Refl (a' :E: Type) (x' :E: a)
+    Refl/E (a' :E: Type) (x' :E: a)
       | a' = a
       | x' = x
       | y = x
@@ -1231,23 +1231,23 @@ one :R: (x :R: Bool) -> List = (\x :R: Bool. Cons -R- x -R- Nil)
 
 app :R: (xs :R: List) -> (ys :R: List) -> List = \(xs :R: List) (ys :R: List).
   case -R- xs of
-    Nil
+    Nil/R
       => ys
-    Cons (x :R: Bool) (xs' :R: List)
+    Cons/R (x :R: Bool) (xs' :R: List)
       => Cons -R- x -R- (app -R- xs' -R- ys)
 
 appRightNeutral :E: (ys :E: List) -> Id -E- List -E- ys -E- (app -E- ys -E- Nil) = \(ys :E: List).
   case -E- ys of
-    {ERASED} Nil
+    Nil/E
       => Refl -E- List -E- Nil
-    {ERASED} Cons (x :E: Bool) (xs :E: List)
+    Cons/E (x :E: Bool) (xs :E: List)
       => cong -E- List -E- List -E- (Cons -E- x) -E- xs -E- (app -E- xs -E- Nil) -E- (appRightNeutral -E- xs)
 
 appAssoc :E: (xs :E: List) -> (ys :E: List) -> (zs :E: List) -> Id -E- List -E- (app -E- (app -E- xs -E- ys) -E- zs) -E- (app -E- xs -E- (app -E- ys -E- zs)) = \(xs :E: List) (ys :E: List) (zs :E: List).
   case -E- xs of
-    {ERASED} Nil
+    Nil/E
       => Refl -E- List -E- (app -E- ys -E- zs)
-    {ERASED} Cons (x :E: Bool) (xs' :E: List)
+    Cons/E (x :E: Bool) (xs' :E: List)
       => cong -E- List -E- List -E- (Cons -E- x) -E- (app -E- (app -E- xs' -E- ys) -E- zs) -E- (app -E- xs' -E- (app -E- ys -E- zs)) -E- (appAssoc -E- xs' -E- ys -E- zs)
 
 postulate Rev :R: (_ :E: List) -> Type
@@ -1258,19 +1258,19 @@ postulate RSnoc :R: (xs :R: List) -> (x :R: Bool) -> (rxs :R: Rev -E- xs) -> Rev
 
 rev' :R: (xs :R: List) -> (rxs :R: Rev -E- xs) -> (ys :R: List) -> Rev -E- (app -R- xs -R- ys) = \(xs :R: List) (rxs :R: Rev -E- xs) (ys :R: List).
   case -R- ys of
-    Nil
+    Nil/R
       => subst -R- List -R- Rev -R- xs -E- (app -R- xs -R- Nil) -E- (appRightNeutral -E- xs) -R- rxs
-    Cons (y :R: Bool) (ys' :R: List)
+    Cons/R (y :R: Bool) (ys' :R: List)
       => subst -R- List -R- Rev -R- (app -R- (app -R- xs -R- (one -R- y)) -R- ys') -E- (app -R- xs -R- (Cons -R- y -R- ys')) -E- (appAssoc -E- xs -E- (one -E- y) -E- ys') -R- (rev' -R- (app -R- xs -R- (one -R- y)) -R- (RSnoc -R- xs -R- y -R- rxs) -R- ys')
 
 rev :R: (xs :R: List) -> Rev -E- xs = (\xs :R: List. rev' -R- Nil -R- RNil -R- xs)
 
 reverse' :R: (xs :E: List) -> (rxs :R: Rev -E- xs) -> List = \(xs :E: List) (rxs :R: Rev -E- xs).
   case -R- rxs of
-    RNil
+    RNil/R
       | xs = Nil
       => Nil
-    RSnoc (xs' :R: List) (x :R: Bool) (rxs' :R: Rev -E- xs')
+    RSnoc/R (xs' :R: List) (x :R: Bool) (rxs' :R: Rev -E- xs')
       | xs = app -R- xs' -R- (one -E- x)
       => Cons -R- x -R- (reverse' -E- xs' -R- rxs')
 
