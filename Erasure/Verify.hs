@@ -177,14 +177,14 @@ verBranch q r lhs n s (Alt Wildcard rhs) = bt ("ALT-WILD", rhs) $ do
     verCase r lhs rhs
 verBranch q r lhs n s (Alt (Ctor cn ds eqs) rhs) = bt ("ALT-MATCH", cn, rhs) $ do
     verDefs ds
-    localVars eqs
     let pat = mkApp c' [(defR d, V $ defName d) | d <- ds]
     let eqs' = [(n, Forced tm) | (n, tm) <- eqs]
     let eqs'' = (n, substs eqs' pat) : eqs'
     let lhs'' = substs eqs'' lhs
     let rhs'' = substs eqs'' rhs
     mapM_ (--> s) [defR d | d <- ds]
-    withs ds $
+    withs ds $ do
+        localVars eqs
         with' (substsInCtx eqs'') $
             verCase r lhs'' rhs''
   where
@@ -239,6 +239,9 @@ verTm r (App s f x) = bt ("APP", r, f, s, x) $ do
             return $ subst n x piRhs
 
         _ -> verFail $ NotPi fty
+
+verTm r (Forced tm) = bt ("FORCED", tm) $ do
+    verTm r tm
 
 verTm r tm = bt ("UNKNOWN-TERM", tm) $ do
     verFail NotImplemented
