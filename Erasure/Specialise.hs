@@ -96,7 +96,7 @@ specNAlt (Alt lhs rhs) = Alt <$> specNLHS lhs <*> specNCaseTree rhs
 
 specNLHS :: AltLHS Relevance -> Spec (AltLHS Relevance)
 specNLHS Wildcard = pure Wildcard
-specNLHS (Ctor cn args eqs) = Ctor cn <$> traverse specNDef args <*> traverse specEq eqs
+specNLHS (Ctor r cn args eqs) = Ctor r cn <$> traverse specNDef args <*> traverse specEq eqs
   where
     specEq (n, tm) = (,) n <$> specNTm tm
 

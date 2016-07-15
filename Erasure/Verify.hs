@@ -176,9 +176,9 @@ verBranch :: Cardinality -> Relevance -> Pat -> Name -> Relevance -> Alt Relevan
 verBranch q r lhs n s (Alt Wildcard rhs) = bt ("ALT-WILD", rhs) $ do
     verCase r lhs rhs
 
-verBranch q r lhs n s (Alt (Ctor cn ds eqs) rhs) = bt ("ALT-MATCH", cn, rhs) $ do
-    cd <- lookupName cn
-    verBranch' q (r /\ defR cd) lhs n s (cn, ds, eqs, rhs)
+verBranch q r lhs n s (Alt (Ctor u cn ds eqs) rhs) = bt ("ALT-MATCH", cn, rhs) $ do
+    u --> r
+    verBranch' q u lhs n s (cn, ds, eqs, rhs)
 
 verBranch' :: Cardinality -> Relevance -> Pat -> Name -> Relevance
     -> (Name, [Def Relevance], [(Name, TT Relevance)], CaseTree Relevance)

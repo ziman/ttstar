@@ -22,16 +22,14 @@ pruneCaseFun (CaseFun args ct)
 pruneCaseTree :: CaseTree Relevance -> CaseTree ()
 pruneCaseTree (Leaf tm) = Leaf $ pruneTm tm
 pruneCaseTree (Case E s [Alt lhs rhs]) = pruneCaseTree rhs
-pruneCaseTree (Case R s alts) = Case () (pruneTm s) $ map pruneAlt alts
+pruneCaseTree (Case R s alts) = Case () (pruneTm s) $ concatMap pruneAlt alts
 pruneCaseTree t@(Case E s alts) = error $ "trying to prune non-singleton tree: " ++ show t
 
-pruneAlt :: Alt Relevance -> Alt ()
-pruneAlt (Alt lhs rhs) = Alt (pruneAltLHS lhs) (pruneCaseTree rhs)
-
-pruneAltLHS :: AltLHS Relevance -> AltLHS ()
-pruneAltLHS Wildcard = Wildcard
-pruneAltLHS (Ctor cn args eqs)
-    = Ctor cn (pruneDefs args) []  -- just remove all eqs
+pruneAlt :: Alt Relevance -> [Alt ()]
+pruneAlt (Alt Wildcard rhs) = [Alt Wildcard $ pruneCaseTree rhs]
+pruneAlt (Alt (Ctor E cn args eqs) rhs) = []
+pruneAlt (Alt (Ctor R cn args eqs) rhs)
+    = [Alt (Ctor () cn (pruneDefs args) []) (pruneCaseTree rhs)]
 
 pruneDefs :: [Def Relevance] -> [Def ()]
 pruneDefs = concatMap pruneDef

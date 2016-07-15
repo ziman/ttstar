@@ -58,7 +58,8 @@ redAlt WHNF ctx alt = error "impossible: redAlt WHNF"
 
 redAltLHS :: IsRelevance r => Form -> Ctx r -> AltLHS r -> AltLHS r
 redAltLHS NF ctx Wildcard = Wildcard
-redAltLHS NF ctx (Ctor cn args eqs) = Ctor cn (map (redDef NF ctx) args) [(n, red NF ctx tm) | (n, tm) <- eqs]
+redAltLHS NF ctx (Ctor r cn args eqs)
+    = Ctor r cn (map (redDef NF ctx) args) [(n, red NF ctx tm) | (n, tm) <- eqs]
 redAltLHS WHNF ctx lhs = error "impossible: redAltLHS WHNF"
 
 red :: IsRelevance r => Form -> Ctx r -> TT r -> TT r
@@ -154,7 +155,7 @@ evalAlt :: IsRelevance r => Form -> Ctx r -> TT r -> Alt r -> Maybe (TT r)
 evalAlt form ctx tm (Alt Wildcard rhs)
     = evalCaseTree form ctx rhs
 
-evalAlt form ctx tm (Alt (Ctor cn argvars eqs) rhs)
+evalAlt form ctx tm (Alt (Ctor r cn argvars eqs) rhs)
     | (V cn', argvals) <- unApply tm
     , cn' == cn
     = do

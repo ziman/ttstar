@@ -41,7 +41,7 @@ data CaseTree r
     deriving (Eq, Ord)
 
 data AltLHS r
-    = Ctor Name [Def r] [(Name, TT r)]
+    = Ctor r Name [Def r] [(Name, TT r)]
     | Wildcard
     deriving (Eq, Ord)
 

@@ -161,13 +161,13 @@ instance Termy Alt where
     -- equations are pattern-only so they are not touched by substitution
     -- (but they must be rewritten if we rename the binders!)
     subst n tm (Alt Wildcard rhs) = Alt Wildcard $ subst n tm rhs
-    subst n tm (Alt (Ctor cn args eqs) rhs)
-        = Alt (Ctor cn args' eqs') rhs'
+    subst n tm (Alt (Ctor r cn args eqs) rhs)
+        = Alt (Ctor r cn args' eqs') rhs'
       where
         (args', eqs', rhs') = substBinder n tm args eqs rhs
 
     freeVars (Alt Wildcard rhs) = freeVars rhs
-    freeVars (Alt (Ctor cn args eqs) rhs)
+    freeVars (Alt (Ctor r cn args eqs) rhs)
         = freeVarsBinder args eqs rhs
 
 occursIn :: Termy a => Name -> a r -> Bool

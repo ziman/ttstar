@@ -32,6 +32,7 @@ instance ShowUnicode Relevance where
 class Show r => PrettyR r where
     prettyCol :: r -> Doc
     prettyApp :: r -> Doc
+    isErased :: r -> Bool
 
 instance PrettyR Relevance where
     prettyCol x
@@ -42,9 +43,13 @@ instance PrettyR Relevance where
         | useUnicode = text " " <> showUnicode x <> text " "
         | otherwise  = text " -" <> showd x <> text "- "
 
+    isErased E = True
+    isErased _ = False
+
 instance PrettyR () where
     prettyCol _ = colon
     prettyApp _ = text " "
+    isErased () = False
 
 instance PrettyR (Maybe Relevance) where
     prettyCol Nothing = colon
@@ -52,6 +57,9 @@ instance PrettyR (Maybe Relevance) where
 
     prettyApp Nothing = text " "
     prettyApp (Just r) = prettyApp r
+
+    isErased (Just E) = True
+    isErased _ = False
 
 instance Pretty Name where
     pretty = text . show
@@ -131,7 +139,16 @@ instance PrettyR r => Pretty (Alt r) where
 
 instance PrettyR r => Pretty (AltLHS r) where
     pretty Wildcard = text "_"
-    pretty (Ctor cn args eqs)
+    pretty (Ctor r cn args eqs)
+        | isErased r
+        = text "{ERASED}"
+            <+> pretty cn
+            <+> hsep (map prettyParens args)
+            $+$ indent (
+                    foldr ($$) empty [text "|" <+> pretty n <+> text "=" <+> pretty tm | (n, tm) <- eqs]
+                )
+
+        | otherwise
         = pretty cn
             <+> hsep (map prettyParens args)
             $+$ indent (

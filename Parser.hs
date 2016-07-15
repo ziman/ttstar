@@ -156,7 +156,7 @@ caseLHS = caseLHSCtor <|> (kwd "_" *> pure Wildcard) <?> "case LHS"
 
 caseLHSCtor :: Parser (AltLHS MRel)
 caseLHSCtor
-    = Ctor
+    = Ctor Nothing
         <$> name
         <*> many (parens $ typing Var)
         <*> many caseEq

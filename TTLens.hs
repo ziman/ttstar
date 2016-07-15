@@ -49,9 +49,11 @@ altRelevance f (Alt lhs rhs) = Alt <$> altLHSRelevance f lhs <*> caseTreeRelevan
 
 altLHSRelevance :: Ord r' => Traversal (AltLHS r) (AltLHS r') r r'
 altLHSRelevance f Wildcard = pure $ Wildcard
-altLHSRelevance f (Ctor cn args eqs)
-    = Ctor cn
-        <$> traverse (defRelevance f) args
+altLHSRelevance f (Ctor r cn args eqs)
+    = Ctor
+        <$> f r
+        <*> pure cn
+        <*> traverse (defRelevance f) args
         <*> traverse (caseEqRelevance f) eqs
 
 caseEqRelevance :: Ord r' => Traversal (Name, TT r) (Name, TT r') r r'

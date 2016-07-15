@@ -26,6 +26,9 @@ instance PrettyR Meta where
         | useUnicode = text " " <> showUnicode x <> text " "
         | otherwise  = text " -" <> showd x <> text "- "
 
+    isErased (Fixed E) = True
+    isErased _ = False
+
 meta :: Program (Maybe Relevance) -> Program Meta
 meta prog = evalState (progRelevance freshM prog) 0
 

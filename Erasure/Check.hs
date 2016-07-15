@@ -234,14 +234,15 @@ checkAlt :: Bool -> TT Meta -> Name -> Meta -> Alt Meta -> TC (Constrs Meta)
 checkAlt isSingleBranch lhs n sr (Alt Wildcard rhs) = bt ("ALT-WILDCARD") $ do
     checkCaseTree lhs rhs
 
-checkAlt isSingleBranch lhs n sr (Alt (Ctor cn args eqs_NF) rhs) = bt ("ALT-CTOR", pat) $ do
+checkAlt isSingleBranch lhs n sr (Alt (Ctor cr cn args eqs_NF) rhs) = bt ("ALT-CTOR", pat) $ do
     argCtx <- checkDefs args
+    cd <- lookup cn
     -- Typechecking will be done eventually in the case for Leaf.
     cs <- with' (M.union argCtx) $ do
             _ <- traverse checkPatvar $ map fst eqs
             with' (substsInCtx eqs') $  -- substitutes in args, too; must use eqs', which includes (n, pat')
                 checkCaseTree lhs' rhs'
-    return $ cs /\ scrutCs
+    return $ cs /\ scrutCs /\ cr <--> defR cd
   where
     ctor
         | isSingleBranch = Forced (V cn)
