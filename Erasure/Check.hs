@@ -86,7 +86,7 @@ flipConstrs cs
         [ p --> q
         | (qs, ps) <- M.toList cs
         , q <- S.toList qs
-        , p <- S.toList ps
+        , p <- S.toList (ps `S.difference` S.singleton (Fixed R))
         ]
 
 cond :: Meta -> Constrs Meta -> Constrs Meta
