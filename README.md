@@ -17,6 +17,7 @@ Besides what the original paper had, we have:
 * local pattern-matching clauses in let
     * actually, let is fully equivalent to top-level
     * only one definition per let at the moment; absolutely not necessary, I just can't be bothered to invent good syntax for it
+* separate typechecker that checks the result of inference
 
 [P] = improvement over previous paper, [M] = improvement over Mishra-Linger
 
