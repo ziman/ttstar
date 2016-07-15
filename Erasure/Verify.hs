@@ -25,13 +25,22 @@ data VerError
 
 data Cardinality = Single | Many deriving (Eq, Ord, Show)
 
-data VerFailure = VerFailure VerError [String] deriving Show
+data VerFailure = VerFailure VerError [String]
 type Ver a = ReaderT (VerTraceback, Ctx Relevance) (Except VerFailure) a
 type VerTraceback = [String]
 
 type Term = TT Relevance
 type Type = TT Relevance
 type Pat  = TT Relevance
+
+instance Show VerFailure where
+    show (VerFailure e []) = show e
+    show (VerFailure e tb) = unlines $
+        show e : "Traceback:"
+            : zipWith
+                (\i n -> show i ++ ". " ++ n)
+                [1::Integer ..]
+                (reverse tb)
 
 runVer :: Ctx Relevance -> Ver a -> Either VerFailure a
 runVer ctx ver = runExcept $ runReaderT ver ([], ctx)
