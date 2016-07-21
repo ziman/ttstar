@@ -160,32 +160,33 @@ verCase r lhs (Leaf rhs) = bt ("CASE-LEAF", lhs, rhs) $ do
 verCase R lhs (Case s (V n) [alt]) = bt ("CASE-SING-R", lhs) $ do
     d <- lookupName n    
     defR d <-> s
-    verBranch Single R lhs n s alt
+    verBranch Single R lhs n (defType d) s alt
 
 verCase E lhs (Case E (V n) [alt]) = bt ("CASE-SING-E", lhs) $ do
-    _ <- lookupName n  -- make sure the name exists
-    verBranch Single E lhs n E alt
+    d <- lookupName n
+    verBranch Single E lhs n (defType d) E alt
 
 verCase r lhs (Case s (V n) alts) = bt ("CASE-MULTI", r, lhs) $ do
+    d <- lookupName n
     r <-> s
     n `hasRelevance` r
-    mapM_ (verBranch Many r lhs n r) alts        
+    mapM_ (verBranch Many r lhs n (defType d) r) alts        
 
 verCase r lhs ct@(Case s tm alts) = do
     verFail $ ComplexScrutinee ct
 
-verBranch :: Cardinality -> Relevance -> Pat -> Name -> Relevance -> Alt Relevance -> Ver ()
-verBranch q r lhs n s (Alt Wildcard rhs) = bt ("ALT-WILD", rhs) $ do
+verBranch :: Cardinality -> Relevance -> Pat -> Name -> Type -> Relevance -> Alt Relevance -> Ver ()
+verBranch q r lhs n scrutTy s (Alt Wildcard rhs) = bt ("ALT-WILD", rhs) $ do
     verCase r lhs rhs
 
-verBranch q r lhs n s (Alt (Ctor u cn ds eqs) rhs) = bt ("ALT-MATCH", cn, rhs) $ do
+verBranch q r lhs n scrutTy s (Alt (Ctor u cn ds eqs) rhs) = bt ("ALT-MATCH", cn, rhs) $ do
     u --> r
-    verBranch' q u lhs n s (cn, ds, eqs, rhs)
+    verBranch' q u lhs n scrutTy s (cn, ds, eqs, rhs)
 
-verBranch' :: Cardinality -> Relevance -> Pat -> Name -> Relevance
+verBranch' :: Cardinality -> Relevance -> Pat -> Name -> Type -> Relevance
     -> (Name, [Def Relevance], [(Name, TT Relevance)], CaseTree Relevance)
     -> Ver ()
-verBranch' q r lhs n s (cn, ds, eqs, rhs) = bt ("ALT-MATCH-INT", cn, rhs) $ do
+verBranch' q r lhs n scrutTy s (cn, ds, eqs, rhs) = bt ("ALT-MATCH-INT", cn, rhs) $ do
     cd <- lookupName cn
     when (defBody cd /= Abstract Postulate) $
         verFail (NotConstructor cn)
@@ -198,7 +199,18 @@ verBranch' q r lhs n s (cn, ds, eqs, rhs) = bt ("ALT-MATCH-INT", cn, rhs) $ do
     mapM_ (--> s) [defR d | d <- ds]
     withs ds $ do
         localVars eqs
-        with' (substsInCtx eqs'') $
+        with' (substsInCtx eqs'') $ bt("ALT-MATCH-INT2", r, s, substs eqs'' pat, substs eqs'' scrutTy) $ do
+            -- check that the pattern matches the scrutinee
+            --
+            -- TODO/FIXME:
+            -- Why the pattern has to be checked using verTm
+            -- rather than verPat is a mystery to me. What's going on?
+            --
+            let pat'' = substs eqs'' pat
+            let scrutTy'' = substs eqs'' scrutTy
+            pat''Ty <- verTm (r /\ s) pat'' --  verPat (op r s) pat''  -- TODO: figure this out
+            conv (r /\ s) pat''Ty scrutTy''
+
             verCase r lhs'' rhs''
   where
     c' :: Pat
