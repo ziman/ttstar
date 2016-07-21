@@ -1,0 +1,30 @@
+-- vim: ft=idris
+
+postulate Tuple : (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type.
+
+data Bool : Type.
+  T : Bool,
+  F : Bool.
+
+data Mool : Type.
+  Q : Mool,
+  W : Mool.
+
+data U : Type.
+  B : U,
+  M : U.
+
+ty (u : U) : Type =
+  case u of
+    B => Bool,
+    M => Mool.
+
+f (u : U) (x : ty u) : Type =
+  case x of
+    T | u = B => Bool,
+    F | u = B => Bool,
+    Q | u = M => Mool,
+    W | u = M => Mool.
+
+main :R: Type =
+  Tuple (f B T) (f B F) (f M Q) (f M W).

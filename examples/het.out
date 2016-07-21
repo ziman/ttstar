@@ -1,0 +1,367 @@
+-- vim: ft=agda
+
+### Desugared ###
+
+postulate Tuple : (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type
+
+postulate Bool : Type
+
+postulate T : Bool
+
+postulate F : Bool
+
+postulate Mool : Type
+
+postulate Q : Mool
+
+postulate W : Mool
+
+postulate U : Type
+
+postulate B : U
+
+postulate M : U
+
+ty : (u : U) -> Type = \(u : U).
+  case u of
+    B
+      => Bool
+    M
+      => Mool
+
+f : (u : U) -> (x : ty u) -> Type = \(u : U) (x : ty u).
+  case x of
+    T
+      | u = B
+      => Bool
+    F
+      | u = B
+      => Bool
+    Q
+      | u = M
+      => Mool
+    W
+      | u = M
+      => Mool
+
+main :R: Type = Tuple (f B T) (f B F) (f M Q) (f M W)
+
+### Metaified ###
+
+postulate Tuple :1: (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type
+
+postulate Bool :2: Type
+
+postulate T :3: Bool
+
+postulate F :4: Bool
+
+postulate Mool :5: Type
+
+postulate Q :6: Mool
+
+postulate W :7: Mool
+
+postulate U :8: Type
+
+postulate B :9: U
+
+postulate M :10: U
+
+ty :11: (u :12: U) -> Type = \(u :13: U).
+  case -14- u of
+    B/15
+      => Bool
+    M/16
+      => Mool
+
+f :17: (u :18: U) -> (x :19: ty -20- u) -> Type = \(u :21: U) (x :22: ty -23- u).
+  case -24- x of
+    T/25
+      | u = B
+      => Bool
+    F/26
+      | u = B
+      => Bool
+    Q/27
+      | u = M
+      => Mool
+    W/28
+      | u = M
+      => Mool
+
+main :R: Type = Tuple -32- (f -34- B -33- T) -31- (f -36- B -35- F) -30- (f -38- M -37- Q) -29- (f -40- M -39- W)
+
+### Inferred definitions ###
+
+postulate B :9: U {- constraints apply -}
+  [] -> [9,R]
+
+postulate Bool :2: Type {- constraints apply -}
+  [] -> [2,R]
+
+postulate F :4: Bool {- constraints apply -}
+  [] -> [4,R]
+
+postulate M :10: U {- constraints apply -}
+  [] -> [10,R]
+
+postulate Mool :5: Type {- constraints apply -}
+  [] -> [5,R]
+
+postulate Q :6: Mool {- constraints apply -}
+  [] -> [6,R]
+
+postulate T :3: Bool {- constraints apply -}
+  [] -> [3,R]
+
+postulate Tuple :1: (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type {- constraints apply -}
+  [] -> [1,R]
+
+postulate Type :E: Type
+
+postulate U :8: Type {- constraints apply -}
+  [] -> [8,R]
+
+postulate W :7: Mool {- constraints apply -}
+  [] -> [7,R]
+
+f :17: (u :18: U) -> (x :19: ty -20- u) -> Type = \(u :21: U) (x :22: ty -23- u).
+  case -24- x of
+    T/25
+      | u = B
+      => Bool
+    F/26
+      | u = B
+      => Bool
+    Q/27
+      | u = M
+      => Mool
+    W/28
+      | u = M
+      => Mool {- constraints apply -}
+  [] -> [2,5,17,19,22,24,R]
+  [3] -> [25]
+  [4] -> [26]
+  [6] -> [27]
+  [7] -> [28]
+  [18] -> [21]
+  [21] -> [18]
+  [25] -> [3]
+  [26] -> [4]
+  [27] -> [6]
+  [28] -> [7]
+
+main :R: Type = Tuple -32- (f -34- B -33- T) -31- (f -36- B -35- F) -30- (f -38- M -37- Q) -29- (f -40- M -39- W) {- constraints apply -}
+  [] -> [1,2,3,4,5,6,7,17,19,22,24,25,26,27,28,29,30,31,32,33,35,37,39,R]
+  [18] -> [9,10,21,34,36,38,40]
+  [21] -> [18]
+  [34] -> [18]
+  [36] -> [18]
+  [38] -> [18]
+  [40] -> [18]
+
+ty :11: (u :12: U) -> Type = \(u :13: U).
+  case -14- u of
+    B/15
+      => Bool
+    M/16
+      => Mool {- constraints apply -}
+  [] -> [2,5,11,12,13,14,R]
+  [9] -> [15]
+  [10] -> [16]
+  [15] -> [9]
+  [16] -> [10]
+
+
+### Constraints ###
+
+[] -> [1,2,3,4,5,6,7,17,19,22,24,25,26,27,28,29,30,31,32,33,35,37,39,R]
+[18] -> [9,10,21,34,36,38,40]
+[21] -> [18]
+[34] -> [18]
+[36] -> [18]
+[38] -> [18]
+[40] -> [18]
+
+### Solution ###
+
+[1,2,3,4,5,6,7,17,19,22,24,25,26,27,28,29,30,31,32,33,35,37,39,R]
+
+### Annotated ###
+
+postulate Tuple :R: (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type
+
+postulate Bool :R: Type
+
+postulate T :R: Bool
+
+postulate F :R: Bool
+
+postulate Mool :R: Type
+
+postulate Q :R: Mool
+
+postulate W :R: Mool
+
+postulate U :E: Type
+
+postulate B :E: U
+
+postulate M :E: U
+
+ty :E: (u :E: U) -> Type = \(u :E: U).
+  case -E- u of
+    B/E
+      => Bool
+    M/E
+      => Mool
+
+f :R: (u :E: U) -> (x :R: ty -E- u) -> Type = \(u :E: U) (x :R: ty -E- u).
+  case -R- x of
+    T/R
+      | u = B
+      => Bool
+    F/R
+      | u = B
+      => Bool
+    Q/R
+      | u = M
+      => Mool
+    W/R
+      | u = M
+      => Mool
+
+main :R: Type = Tuple -R- (f -E- B -R- T) -R- (f -E- B -R- F) -R- (f -E- M -R- Q) -R- (f -E- M -R- W)
+
+### Specialised ###
+
+postulate Tuple :R: (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type
+
+postulate Bool :R: Type
+
+postulate T :R: Bool
+
+postulate F :R: Bool
+
+postulate Mool :R: Type
+
+postulate Q :R: Mool
+
+postulate W :R: Mool
+
+postulate U :E: Type
+
+postulate B :E: U
+
+postulate M :E: U
+
+ty :E: (u :E: U) -> Type = \(u :E: U).
+  case -E- u of
+    B/E
+      => Bool
+    M/E
+      => Mool
+
+f :R: (u :E: U) -> (x :R: ty -E- u) -> Type = \(u :E: U) (x :R: ty -E- u).
+  case -R- x of
+    T/R
+      | u = B
+      => Bool
+    F/R
+      | u = B
+      => Bool
+    Q/R
+      | u = M
+      => Mool
+    W/R
+      | u = M
+      => Mool
+
+main :R: Type = Tuple -R- (f -E- B -R- T) -R- (f -E- B -R- F) -R- (f -E- M -R- Q) -R- (f -E- M -R- W)
+
+### Final annotation ###
+
+postulate Tuple :R: (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type
+
+postulate Bool :R: Type
+
+postulate T :R: Bool
+
+postulate F :R: Bool
+
+postulate Mool :R: Type
+
+postulate Q :R: Mool
+
+postulate W :R: Mool
+
+postulate U :E: Type
+
+postulate B :E: U
+
+postulate M :E: U
+
+ty :E: (u :E: U) -> Type = \(u :E: U).
+  case -E- u of
+    B/E
+      => Bool
+    M/E
+      => Mool
+
+f :R: (u :E: U) -> (x :R: ty -E- u) -> Type = \(u :E: U) (x :R: ty -E- u).
+  case -R- x of
+    T/R
+      | u = B
+      => Bool
+    F/R
+      | u = B
+      => Bool
+    Q/R
+      | u = M
+      => Mool
+    W/R
+      | u = M
+      => Mool
+
+main :R: Type = Tuple -R- (f -E- B -R- T) -R- (f -E- B -R- F) -R- (f -E- M -R- Q) -R- (f -E- M -R- W)
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+postulate Tuple
+
+postulate Bool
+
+postulate T
+
+postulate F
+
+postulate Mool
+
+postulate Q
+
+postulate W
+
+f = \x.
+  case x of
+    T
+      => Bool
+    F
+      => Bool
+    Q
+      => Mool
+    W
+      => Mool
+
+main = Tuple (f T) (f F) (f Q) (f W)
+
+### Normal forms ###
+
+unerased:
+  Tuple Bool Bool Mool Mool
+erased:
+  Tuple Bool Bool Mool Mool
