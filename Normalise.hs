@@ -15,8 +15,9 @@ type IsRelevance r = (PrettyR r, Eq r)
 
 data Form = NF | WHNF deriving Show
 
-dbg :: Show a => a -> b -> b
+--dbg :: Show a => a -> b -> b
 --dbg = traceShow
+dbg :: a -> b -> b
 dbg _ x = x
 
 --dbgS :: (Show a, Show b) => a -> b -> b
