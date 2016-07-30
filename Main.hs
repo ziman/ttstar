@@ -6,6 +6,7 @@ import Parser
 -- import Explorer
 import Normalise
 import Eval
+import Codegen
 
 import Util.PrettyPrint
 
@@ -187,6 +188,9 @@ main = do
             putStrLn $ "  " ++ show (eval NF (builtins $ Just relOfType) prog)
             putStrLn "erased:"
             putStrLn $ "  " ++ show (eval NF (builtins ()) pruned)
+
+            let code = render "#" $ codeGen pruned
+
   where
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
 
