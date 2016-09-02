@@ -1,0 +1,15 @@
+-- vim: ft=idris
+
+data Bool : Type.
+  T : Bool,
+  F : Bool.
+
+data Pair : Type.
+  P : Bool -> Bool -> Pair.
+
+fst (x : (_ : Bool) -> Pair) : Bool
+  = case x of
+      P (y : Bool) => y.
+
+main :R: Bool
+  = fst (P T).
