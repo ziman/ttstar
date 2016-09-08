@@ -1,0 +1,26 @@
+-- vim: ft=idris
+--
+-- Here, inference succeeds but verification fails.
+
+data N : Type.
+  Z : N,
+  S : (x :R: N) -> N.
+
+data Vec : N -> Type -> Type.
+  Nil : (a : Type) -> Vec Z a,
+  Cons : (a : Type) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a.
+
+vlen (n : N) (xs : Vec n N) : N
+  = case xs of
+      Nil (a : Type)
+        | a = N
+        | n = Z
+        => n,
+
+      Cons (a : Type) (m : N) (y : N) (ys : Vec m N)
+        | a = N
+        | n = S m
+        => S (vlen m ys).
+
+main :R: N
+  = vlen 1 (Cons N Z 3 (Nil N)).
