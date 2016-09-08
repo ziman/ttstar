@@ -1,0 +1,45 @@
+-- vim: ft=idris
+
+data N : Type.
+  Z : N,
+  S : (x :R: N) -> N.
+
+data Vec : N -> Type -> Type.
+  Nil : (a : Type) -> Vec Z a,
+  Cons : (a : Type) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a.
+
+vlen (n : N) (xs : Vec n N) : N
+  = case xs of
+      Nil (a : Type)
+        | a = N
+        | n = Z
+        => Z,
+
+      Cons (a : Type) (m : N) (y : N) (ys : Vec m N)
+        | a = N
+        | n = S m
+        => S (vlen m ys).
+
+main :R: N
+  = vlen 1 (Cons N Z 3 (Nil N)).
+
+{-
+
+Bug 1:
+  - (y :E: N) but the corresponding argument of Cons is relevant
+  - caught by the verification typechecker
+
+Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+
+vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N = \(n :E: N) (xs :R: Vec -E- n -E- N).
+  case -R- xs of
+    Nil/R (a :E: Type)
+      | a = N
+      | n = Z
+      => n
+    Cons/R (a :E: Type) (m :E: N) (y :E: N) (ys :R: Vec -E- m -E- N)
+      | a = N
+      | n = S -E- m
+      => S -R- (vlen -E- m -R- ys)
+
+-}

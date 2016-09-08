@@ -6,7 +6,7 @@ data N : Type.
 
 data Vec : N -> Type -> Type.
   Nil : (a : Type) -> Vec Z a,
-  Cons : (a : Type) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a.
+  Cons : (a : Type) -> (n : N) -> (x : a) -> (xs : Vec n a) -> Vec (S n) a.
 
 vlen (n : N) (xs : Vec n N) : N
   = case xs of
@@ -25,10 +25,9 @@ main :R: N
 
 {-
 
-The annotated form is quite wrong and there are two separate bugs.
-(Both are caught by verification typechecker, however!)
-
-Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+Bug 2:
+  - (n :E: N) but `n` is used in the Nil branch
+  - caught by the verification typechecker
 
 vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N = \(n :E: N) (xs :R: Vec -E- n -E- N).
   case -R- xs of
@@ -40,9 +39,5 @@ vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N = \(n :E: N) (xs :R: Vec -E-
       | a = N
       | n = S -E- m
       => S -R- (vlen -E- m -R- ys)
-
-1. (n :E: N) but `n` is used in the Nil branch
-
-2. (y :E: N) but the corresponding argument of Cons is relevant
 
 -}

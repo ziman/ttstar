@@ -1,0 +1,262 @@
+-- vim: ft=agda
+
+### Desugared ###
+
+postulate N : Type
+
+postulate Z : N
+
+postulate S : (x :R: N) -> N
+
+postulate Vec : (_ : N) -> (_ : Type) -> Type
+
+postulate Nil : (a : Type) -> Vec Z a
+
+postulate Cons : (a : Type) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a
+
+vlen : (n : N) -> (xs : Vec n N) -> N = \(n : N) (xs : Vec n N).
+  case xs of
+    Nil (a : Type)
+      | a = N
+      | n = Z
+      => Z
+    Cons (a : Type) (m : N) (y : N) (ys : Vec m N)
+      | a = N
+      | n = S m
+      => S (vlen m ys)
+
+main :R: N = vlen 1 (Cons N Z 3 (Nil N))
+
+### Metaified ###
+
+postulate N :1: Type
+
+postulate Z :2: N
+
+postulate S :3: (x :R: N) -> N
+
+postulate Vec :4: (_ :5: N) -> (_ :6: Type) -> Type
+
+postulate Nil :7: (a :8: Type) -> Vec -10- Z -9- a
+
+postulate Cons :11: (a :12: Type) -> (n :13: N) -> (x :R: a) -> (xs :R: Vec -15- n -14- a) -> Vec -17- (S -18- n) -16- a
+
+vlen :19: (n :20: N) -> (xs :21: Vec -23- n -22- N) -> N = \(n :24: N) (xs :25: Vec -27- n -26- N).
+  case -28- xs of
+    Nil/29 (a :30: Type)
+      | a = N
+      | n = Z
+      => Z
+    Cons/31 (a :32: Type) (m :33: N) (y :34: N) (ys :35: Vec -37- m -36- N)
+      | a = N
+      | n = S -38- m
+      => S -39- (vlen -41- m -40- ys)
+
+main :R: N = vlen -43- 1 -42- (Cons -48- N -47- Z -46- 3 -45- (Nil -52- N))
+
+### Inferred definitions ###
+
+postulate Cons :11: (a :12: Type) -> (n :13: N) -> (x :R: a) -> (xs :R: Vec -15- n -14- a) -> Vec -17- (S -18- n) -16- a {- constraints apply -}
+  [] -> [11,R]
+
+postulate N :1: Type {- constraints apply -}
+  [] -> [1,R]
+
+postulate Nil :7: (a :8: Type) -> Vec -10- Z -9- a {- constraints apply -}
+  [] -> [7,R]
+
+postulate S :3: (x :R: N) -> N {- constraints apply -}
+  [] -> [3,R]
+
+postulate Type :E: Type
+
+postulate Vec :4: (_ :5: N) -> (_ :6: Type) -> Type {- constraints apply -}
+  [] -> [4,R]
+
+postulate Z :2: N {- constraints apply -}
+  [] -> [2,R]
+
+main :R: N = vlen -43- 1 -42- (Cons -48- N -47- Z -46- 3 -45- (Nil -52- N)) {- constraints apply -}
+  [] -> [2,3,7,11,19,21,25,28,29,31,35,39,40,42,45,46,49,50,51,R]
+  [8] -> [1,30,52]
+  [9] -> [14,22]
+  [10] -> [15,23]
+  [12] -> [1,32,48]
+  [13] -> [33,47]
+  [14] -> [9,36]
+  [15] -> [10,37]
+  [16] -> [22]
+  [17] -> [23]
+  [18] -> [38,44]
+  [20] -> [24,33,41,43,44]
+  [22] -> [9,16,36]
+  [23] -> [10,17,37]
+  [24] -> [20]
+  [30] -> [8]
+  [32] -> [12]
+  [33] -> [13]
+  [36] -> [14,22]
+  [37] -> [15,23]
+  [38] -> [18]
+  [41] -> [20]
+  [43] -> [20]
+  [44] -> [18]
+  [47] -> [13]
+  [48] -> [12]
+  [52] -> [8]
+
+vlen :19: (n :20: N) -> (xs :21: Vec -23- n -22- N) -> N = \(n :24: N) (xs :25: Vec -27- n -26- N).
+  case -28- xs of
+    Nil/29 (a :30: Type)
+      | a = N
+      | n = Z
+      => Z
+    Cons/31 (a :32: Type) (m :33: N) (y :34: N) (ys :35: Vec -37- m -36- N)
+      | a = N
+      | n = S -38- m
+      => S -39- (vlen -41- m -40- ys) {- constraints apply -}
+  [] -> [2,3,19,21,25,28,35,39,40,R]
+  [7] -> [29]
+  [8] -> [30]
+  [9] -> [22]
+  [10] -> [23]
+  [11] -> [31]
+  [12] -> [32]
+  [13] -> [33]
+  [14] -> [36]
+  [15] -> [37]
+  [16] -> [22]
+  [17] -> [23]
+  [18] -> [38]
+  [20] -> [24,33,41]
+  [22] -> [9,16,36]
+  [23] -> [10,17,37]
+  [24] -> [20]
+  [29] -> [7]
+  [30] -> [8]
+  [31] -> [11]
+  [32] -> [12]
+  [33] -> [13]
+  [36] -> [14,22]
+  [37] -> [15,23]
+  [38] -> [18]
+  [41] -> [20]
+
+
+### Constraints ###
+
+[] -> [2,3,7,11,19,21,25,28,29,31,35,39,40,42,45,46,49,50,51,R]
+[8] -> [1,30,52]
+[9] -> [14,22]
+[10] -> [15,23]
+[12] -> [1,32,48]
+[13] -> [33,47]
+[14] -> [9,36]
+[15] -> [10,37]
+[16] -> [22]
+[17] -> [23]
+[18] -> [38,44]
+[20] -> [24,33,41,43,44]
+[22] -> [9,16,36]
+[23] -> [10,17,37]
+[24] -> [20]
+[30] -> [8]
+[32] -> [12]
+[33] -> [13]
+[36] -> [14,22]
+[37] -> [15,23]
+[38] -> [18]
+[41] -> [20]
+[43] -> [20]
+[44] -> [18]
+[47] -> [13]
+[48] -> [12]
+[52] -> [8]
+
+### Solution ###
+
+[2,3,7,11,19,21,25,28,29,31,35,39,40,42,45,46,49,50,51,R]
+
+### Annotated ###
+
+postulate N :E: Type
+
+postulate Z :R: N
+
+postulate S :R: (x :R: N) -> N
+
+postulate Vec :E: (_ :E: N) -> (_ :E: Type) -> Type
+
+postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a
+
+postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+
+vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N = \(n :E: N) (xs :R: Vec -E- n -E- N).
+  case -R- xs of
+    Nil/R (a :E: Type)
+      | a = N
+      | n = Z
+      => Z
+    Cons/R (a :E: Type) (m :E: N) (y :E: N) (ys :R: Vec -E- m -E- N)
+      | a = N
+      | n = S -E- m
+      => S -R- (vlen -E- m -R- ys)
+
+main :R: N = vlen -E- 1 -R- (Cons -E- N -E- Z -R- 3 -R- (Nil -E- N))
+
+### Specialised ###
+
+postulate N :E: Type
+
+postulate Z :R: N
+
+postulate S :R: (x :R: N) -> N
+
+postulate Vec :E: (_ :E: N) -> (_ :E: Type) -> Type
+
+postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a
+
+postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+
+vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N = \(n :E: N) (xs :R: Vec -E- n -E- N).
+  case -R- xs of
+    Nil/R (a :E: Type)
+      | a = N
+      | n = Z
+      => Z
+    Cons/R (a :E: Type) (m :E: N) (y :E: N) (ys :R: Vec -E- m -E- N)
+      | a = N
+      | n = S -E- m
+      => S -R- (vlen -E- m -R- ys)
+
+main :R: N = vlen -E- 1 -R- (Cons -E- N -E- Z -R- 3 -R- (Nil -E- N))
+
+### Final annotation ###
+
+postulate N :E: Type
+
+postulate Z :R: N
+
+postulate S :R: (x :R: N) -> N
+
+postulate Vec :E: (_ :E: N) -> (_ :E: Type) -> Type
+
+postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a
+
+postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+
+vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N = \(n :E: N) (xs :R: Vec -E- n -E- N).
+  case -R- xs of
+    Nil/R (a :E: Type)
+      | a = N
+      | n = Z
+      => Z
+    Cons/R (a :E: Type) (m :E: N) (y :E: N) (ys :R: Vec -E- m -E- N)
+      | a = N
+      | n = S -E- m
+      => S -R- (vlen -E- m -R- ys)
+
+main :R: N = vlen -E- 1 -R- (Cons -E- N -E- Z -R- 3 -R- (Nil -E- N))
+
+### Verification ###
+
