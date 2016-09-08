@@ -25,7 +25,8 @@ main :R: N
 
 {-
 
-The annotated form is quite wrong:
+The annotated form is quite wrong and there are two separate bugs.
+(Both are caught by verification typechecker, however!)
 
 Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
 
