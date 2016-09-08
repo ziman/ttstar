@@ -1,6 +1,4 @@
 -- vim: ft=idris
---
--- Here, inference succeeds but verification fails.
 
 data N : Type.
   Z : N,
@@ -24,3 +22,26 @@ vlen (n : N) (xs : Vec n N) : N
 
 main :R: N
   = vlen 1 (Cons N Z 3 (Nil N)).
+
+{-
+
+The annotated form is quite wrong:
+
+Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+
+vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N = \(n :E: N) (xs :R: Vec -E- n -E- N).
+  case -R- xs of
+    Nil/R (a :E: Type)
+      | a = N
+      | n = Z
+      => n
+    Cons/R (a :E: Type) (m :E: N) (y :E: N) (ys :R: Vec -E- m -E- N)
+      | a = N
+      | n = S -E- m
+      => S -R- (vlen -E- m -R- ys)
+
+1. (n :E: N) but `n` is used in the Nil branch
+
+2. (y :E: N) but the corresponding argument of Cons is relevant
+
+-}
