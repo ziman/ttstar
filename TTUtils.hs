@@ -181,7 +181,7 @@ rename fromN toN = subst fromN (V toN)
 -- * foldl: (S (S x), S x)
 -- * foldr: (S y, S (S y))
 substs :: Termy a => [(Name, TT r)] -> a r -> a r
-substs ss x = foldr (uncurry subst) x ss
+substs ss x = foldl (\x (n, tm) -> subst n tm x) x ss
 
 substCtx :: (Termy a, Show (Body r)) => Ctx r -> a r -> a r
 substCtx ctx tm = foldl phi tm $ M.toList ctx

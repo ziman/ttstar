@@ -175,16 +175,3 @@ main :R: N = vlen -E- Z -E- Nil
 
 ### Verification ###
 
-Verification successful.
-
-### Pruned ###
-
-vlen = n
-
-main = vlen
-
-### Normal forms ###
-
-unerased:
-  Z
-erased:

@@ -195,7 +195,7 @@ verBranch' q r lhs n scrutTy s (cn, ds, eqs, rhs) = bt ("ALT-MATCH-INT", cn, rhs
     let eqs' = [(n, Forced tm) | (n, tm) <- eqs]
     let eqs'' = (n, substs eqs' pat) : eqs'
     let lhs'' = substs eqs'' lhs
-    let rhs'' = substs eqs'' rhs
+    --let rhs'' = substs eqs'' rhs
     mapM_ (--> s) [defR d | d <- ds]
     withs ds $ do
         localVars eqs
@@ -211,7 +211,7 @@ verBranch' q r lhs n scrutTy s (cn, ds, eqs, rhs) = bt ("ALT-MATCH-INT", cn, rhs
             pat''Ty <- verTm (r /\ s) pat'' --  verPat (op r s) pat''  -- TODO: figure this out
             conv (r /\ s) pat''Ty scrutTy''
 
-            verCase r lhs'' rhs''
+            verCase r lhs'' rhs  -- rhs''
   where
     c' :: Pat
     c' = case q of

@@ -267,30 +267,3 @@ main :R: N = vlen -E- 1 -R- (Cons -E- N -E- Z -E- 3 -R- (Nil -E- N))
 
 ### Verification ###
 
-Verification successful.
-
-### Pruned ###
-
-postulate Z
-
-postulate S
-
-postulate Nil
-
-postulate Cons
-
-vlen = \xs.
-  case xs of
-    Nil
-      => Z
-    Cons ys
-      => S (vlen ys)
-
-main = vlen (Cons Nil)
-
-### Normal forms ###
-
-unerased:
-  1
-erased:
-  1

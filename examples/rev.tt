@@ -13,7 +13,7 @@ subst (a : Type) (P : a -> Type) (x : a) (y : a) (eq : Id a x y)
         | a' = a
         | x' = x
         | y  = x
-        => \w : P x'. w.  -- `x'` instead of `x` just to be mean to the typechecker
+        => \w : P x. w.  -- we could use `x'` instead of `x` just to be mean to the typechecker
 
 cong (a : Type) (b : Type) (f : a -> b) (x : a) (y : a) (eq : Id a x y)
   : Id b (f x) (f y)
@@ -22,7 +22,7 @@ cong (a : Type) (b : Type) (f : a -> b) (x : a) (y : a) (eq : Id a x y)
         | a' = a
         | x' = x
         | y  = x
-        => Refl b (f y).  -- again, `y` instead of `x`
+        => Refl b (f x).  -- again, could be `y` instead of `x`
 
 data Bool : Type.
   T : Bool,
