@@ -1,0 +1,379 @@
+-- vim: ft=agda
+
+### Desugared ###
+
+postulate Bool : Type
+
+postulate True : Bool
+
+postulate False : Bool
+
+postulate Foo : (_ : Bool) -> Type
+
+postulate Yeah : Foo True
+
+postulate Nope : Foo False
+
+postulate Maybe : (_ : Type) -> Type
+
+postulate Nothing : (a : Type) -> Maybe a
+
+postulate Just : (a : Type) -> (x : a) -> Maybe a
+
+f : (x : Maybe Bool) -> Bool = \(x : Maybe Bool).
+  case x of
+    Just (a : Type) (b : Bool)
+      | a = Bool
+      => b
+    Nothing (a : Type)
+      | a = Bool
+      => False
+
+g : (x : Maybe Bool) -> Foo (f x) = \(x : Maybe Bool).
+  case x of
+    Just (a : Type) (b : Bool)
+      | a = Bool
+      => case b of
+        True
+          => Yeah
+        False
+          => Nope
+    Nothing (a : Type)
+      | a = Bool
+      => Nope
+
+main :R: Foo True = g (Just Bool True)
+
+### Metaified ###
+
+postulate Bool :1: Type
+
+postulate True :2: Bool
+
+postulate False :3: Bool
+
+postulate Foo :4: (_ :5: Bool) -> Type
+
+postulate Yeah :6: Foo -7- True
+
+postulate Nope :8: Foo -9- False
+
+postulate Maybe :10: (_ :11: Type) -> Type
+
+postulate Nothing :12: (a :13: Type) -> Maybe -14- a
+
+postulate Just :15: (a :16: Type) -> (x :17: a) -> Maybe -18- a
+
+f :19: (x :20: Maybe -21- Bool) -> Bool = \(x :22: Maybe -23- Bool).
+  case -24- x of
+    Just/25 (a :26: Type) (b :27: Bool)
+      | a = Bool
+      => b
+    Nothing/28 (a :29: Type)
+      | a = Bool
+      => False
+
+g :30: (x :31: Maybe -32- Bool) -> Foo -33- (f -34- x) = \(x :35: Maybe -36- Bool).
+  case -37- x of
+    Just/38 (a :39: Type) (b :40: Bool)
+      | a = Bool
+      => case -41- b of
+        True/42
+          => Yeah
+        False/43
+          => Nope
+    Nothing/44 (a :45: Type)
+      | a = Bool
+      => Nope
+
+main :R: Foo -46- True = g -47- (Just -49- Bool -48- True)
+
+### Inferred definitions ###
+
+postulate Bool :1: Type {- constraints apply -}
+  [] -> [1,R]
+
+postulate False :3: Bool {- constraints apply -}
+  [] -> [3,R]
+
+postulate Foo :4: (_ :5: Bool) -> Type {- constraints apply -}
+  [] -> [4,R]
+
+postulate Just :15: (a :16: Type) -> (x :17: a) -> Maybe -18- a {- constraints apply -}
+  [] -> [15,R]
+
+postulate Maybe :10: (_ :11: Type) -> Type {- constraints apply -}
+  [] -> [10,R]
+
+postulate Nope :8: Foo -9- False {- constraints apply -}
+  [] -> [8,R]
+
+postulate Nothing :12: (a :13: Type) -> Maybe -14- a {- constraints apply -}
+  [] -> [12,R]
+
+postulate True :2: Bool {- constraints apply -}
+  [] -> [2,R]
+
+postulate Type :E: Type
+
+postulate Yeah :6: Foo -7- True {- constraints apply -}
+  [] -> [6,R]
+
+f :19: (x :20: Maybe -21- Bool) -> Bool = \(x :22: Maybe -23- Bool).
+  case -24- x of
+    Just/25 (a :26: Type) (b :27: Bool)
+      | a = Bool
+      => b
+    Nothing/28 (a :29: Type)
+      | a = Bool
+      => False {- constraints apply -}
+  [] -> [3,17,19,20,22,24,27,R]
+  [12] -> [28]
+  [13] -> [29]
+  [14] -> [21]
+  [15] -> [25]
+  [16] -> [26]
+  [18] -> [21]
+  [21] -> [14,18]
+  [25] -> [15]
+  [26] -> [16]
+  [28] -> [12]
+  [29] -> [13]
+
+g :30: (x :31: Maybe -32- Bool) -> Foo -33- (f -34- x) = \(x :35: Maybe -36- Bool).
+  case -37- x of
+    Just/38 (a :39: Type) (b :40: Bool)
+      | a = Bool
+      => case -41- b of
+        True/42
+          => Yeah
+        False/43
+          => Nope
+    Nothing/44 (a :45: Type)
+      | a = Bool
+      => Nope {- constraints apply -}
+  [] -> [6,8,17,30,31,35,37,40,41,R]
+  [2] -> [42]
+  [3] -> [43]
+  [7] -> [33]
+  [9] -> [33]
+  [12] -> [44]
+  [13] -> [45]
+  [14] -> [32]
+  [15] -> [38]
+  [16] -> [39]
+  [18] -> [32]
+  [32] -> [14,18]
+  [33] -> [7,9]
+  [38] -> [15]
+  [39] -> [16]
+  [42] -> [2]
+  [43] -> [3]
+  [44] -> [12]
+  [45] -> [13]
+
+main :R: Foo -46- True = g -47- (Just -49- Bool -48- True) {- constraints apply -}
+  [] -> [2,6,8,15,17,30,31,35,37,38,40,41,42,47,48,R]
+  [3] -> [43]
+  [7] -> [33]
+  [9] -> [33]
+  [12] -> [44]
+  [13] -> [45]
+  [14] -> [32]
+  [16] -> [1,39,49]
+  [18] -> [32]
+  [32] -> [14,18]
+  [33] -> [7,9,46]
+  [39] -> [16]
+  [43] -> [3]
+  [44] -> [12]
+  [45] -> [13]
+  [46] -> [33]
+  [49] -> [16]
+
+
+### Constraints ###
+
+[] -> [2,6,8,15,17,30,31,35,37,38,40,41,42,47,48,R]
+[3] -> [43]
+[7] -> [33]
+[9] -> [33]
+[12] -> [44]
+[13] -> [45]
+[14] -> [32]
+[16] -> [1,39,49]
+[18] -> [32]
+[32] -> [14,18]
+[33] -> [7,9,46]
+[39] -> [16]
+[43] -> [3]
+[44] -> [12]
+[45] -> [13]
+[46] -> [33]
+[49] -> [16]
+
+### Solution ###
+
+[2,6,8,15,17,30,31,35,37,38,40,41,42,47,48,R]
+
+### Annotated ###
+
+postulate Bool :E: Type
+
+postulate True :R: Bool
+
+postulate False :E: Bool
+
+postulate Foo :E: (_ :E: Bool) -> Type
+
+postulate Yeah :R: Foo -E- True
+
+postulate Nope :R: Foo -E- False
+
+postulate Maybe :E: (_ :E: Type) -> Type
+
+postulate Nothing :E: (a :E: Type) -> Maybe -E- a
+
+postulate Just :R: (a :E: Type) -> (x :R: a) -> Maybe -E- a
+
+f :E: (x :E: Maybe -E- Bool) -> Bool = \(x :E: Maybe -E- Bool).
+  case -E- x of
+    Just/E (a :E: Type) (b :E: Bool)
+      | a = Bool
+      => b
+    Nothing/E (a :E: Type)
+      | a = Bool
+      => False
+
+g :R: (x :R: Maybe -E- Bool) -> Foo -E- (f -E- x) = \(x :R: Maybe -E- Bool).
+  case -R- x of
+    Just/R (a :E: Type) (b :R: Bool)
+      | a = Bool
+      => case -R- b of
+        True/R
+          => Yeah
+        False/E
+          => Nope
+    Nothing/E (a :E: Type)
+      | a = Bool
+      => Nope
+
+main :R: Foo -E- True = g -R- (Just -E- Bool -R- True)
+
+### Specialised ###
+
+postulate Bool :E: Type
+
+postulate True :R: Bool
+
+postulate False :E: Bool
+
+postulate Foo :E: (_ :E: Bool) -> Type
+
+postulate Yeah :R: Foo -E- True
+
+postulate Nope :R: Foo -E- False
+
+postulate Maybe :E: (_ :E: Type) -> Type
+
+postulate Nothing :E: (a :E: Type) -> Maybe -E- a
+
+postulate Just :R: (a :E: Type) -> (x :R: a) -> Maybe -E- a
+
+f :E: (x :E: Maybe -E- Bool) -> Bool = \(x :E: Maybe -E- Bool).
+  case -E- x of
+    Just/E (a :E: Type) (b :E: Bool)
+      | a = Bool
+      => b
+    Nothing/E (a :E: Type)
+      | a = Bool
+      => False
+
+g :R: (x :R: Maybe -E- Bool) -> Foo -E- (f -E- x) = \(x :R: Maybe -E- Bool).
+  case -R- x of
+    Just/R (a :E: Type) (b :R: Bool)
+      | a = Bool
+      => case -R- b of
+        True/R
+          => Yeah
+        False/E
+          => Nope
+    Nothing/E (a :E: Type)
+      | a = Bool
+      => Nope
+
+main :R: Foo -E- True = g -R- (Just -E- Bool -R- True)
+
+### Final annotation ###
+
+postulate Bool :E: Type
+
+postulate True :R: Bool
+
+postulate False :E: Bool
+
+postulate Foo :E: (_ :E: Bool) -> Type
+
+postulate Yeah :R: Foo -E- True
+
+postulate Nope :R: Foo -E- False
+
+postulate Maybe :E: (_ :E: Type) -> Type
+
+postulate Nothing :E: (a :E: Type) -> Maybe -E- a
+
+postulate Just :R: (a :E: Type) -> (x :R: a) -> Maybe -E- a
+
+f :E: (x :E: Maybe -E- Bool) -> Bool = \(x :E: Maybe -E- Bool).
+  case -E- x of
+    Just/E (a :E: Type) (b :E: Bool)
+      | a = Bool
+      => b
+    Nothing/E (a :E: Type)
+      | a = Bool
+      => False
+
+g :R: (x :R: Maybe -E- Bool) -> Foo -E- (f -E- x) = \(x :R: Maybe -E- Bool).
+  case -R- x of
+    Just/R (a :E: Type) (b :R: Bool)
+      | a = Bool
+      => case -R- b of
+        True/R
+          => Yeah
+        False/E
+          => Nope
+    Nothing/E (a :E: Type)
+      | a = Bool
+      => Nope
+
+main :R: Foo -E- True = g -R- (Just -E- Bool -R- True)
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+postulate True
+
+postulate Yeah
+
+postulate Nope
+
+postulate Just
+
+g = \x.
+  case x of
+    Just b
+      => case b of
+        True
+          => Yeah
+
+main = g (Just True)
+
+### Normal forms ###
+
+unerased:
+  Yeah
+erased:
+  Yeah
