@@ -282,7 +282,7 @@ postulate Cons
 vlen = \xs.
   case xs of
     Nil
-      => n
+      => Z
     Cons ys
       => S (vlen ys)
 
@@ -293,3 +293,4 @@ main = vlen (Cons Nil)
 unerased:
   1
 erased:
+  1

@@ -176,6 +176,10 @@ n `occursIn` tm = n `S.member` freeVars tm
 rename :: Termy a => Name -> Name -> a r -> a r
 rename fromN toN = subst fromN (V toN)
 
+-- TODO: order of subst? should it be foldl or foldr?
+-- subst [(x, S y), (y, S x)] (x, y) = ?
+-- * foldl: (S (S x), S x)
+-- * foldr: (S y, S (S y))
 substs :: Termy a => [(Name, TT r)] -> a r -> a r
 substs ss x = foldr (uncurry subst) x ss
 

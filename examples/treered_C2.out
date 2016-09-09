@@ -1,0 +1,190 @@
+-- vim: ft=agda
+
+### Desugared ###
+
+postulate N : Type
+
+postulate Z : N
+
+postulate S : (x : N) -> N
+
+postulate Vec : (_ : N) -> Type
+
+postulate Nil : Vec Z
+
+vlen : (n : N) -> (xs : Vec n) -> N = \(n : N) (xs : Vec n).
+  case xs of
+    Nil
+      | n = Z
+      => n
+
+main :R: N = vlen Z Nil
+
+### Metaified ###
+
+postulate N :1: Type
+
+postulate Z :2: N
+
+postulate S :3: (x :4: N) -> N
+
+postulate Vec :5: (_ :6: N) -> Type
+
+postulate Nil :7: Vec -8- Z
+
+vlen :9: (n :10: N) -> (xs :11: Vec -12- n) -> N = \(n :13: N) (xs :14: Vec -15- n).
+  case -16- xs of
+    Nil/17
+      | n = Z
+      => n
+
+main :R: N = vlen -19- Z -18- Nil
+
+### Inferred definitions ###
+
+postulate N :1: Type {- constraints apply -}
+  [] -> [1,R]
+
+postulate Nil :7: Vec -8- Z {- constraints apply -}
+  [] -> [7,R]
+
+postulate S :3: (x :4: N) -> N {- constraints apply -}
+  [] -> [3,R]
+
+postulate Type :E: Type
+
+postulate Vec :5: (_ :6: N) -> Type {- constraints apply -}
+  [] -> [5,R]
+
+postulate Z :2: N {- constraints apply -}
+  [] -> [2,R]
+
+main :R: N = vlen -19- Z -18- Nil {- constraints apply -}
+  [] -> [9,R]
+  [7] -> [17]
+  [8] -> [11,12]
+  [8,11] -> [12]
+  [10] -> [2,13,19]
+  [11] -> [7,14,18]
+  [11,12] -> [8]
+  [12] -> [8,11]
+  [13] -> [10]
+  [14] -> [11]
+  [16] -> [14]
+  [17] -> [7]
+  [18] -> [11]
+  [19] -> [10]
+
+vlen :9: (n :10: N) -> (xs :11: Vec -12- n) -> N = \(n :13: N) (xs :14: Vec -15- n).
+  case -16- xs of
+    Nil/17
+      | n = Z
+      => n {- constraints apply -}
+  [] -> [9,R]
+  [7] -> [17]
+  [8] -> [11,12]
+  [10] -> [13]
+  [11] -> [14]
+  [12] -> [8,11]
+  [13] -> [10]
+  [14] -> [11]
+  [16] -> [14]
+  [17] -> [7]
+
+
+### Constraints ###
+
+[] -> [9,R]
+[7] -> [17]
+[8] -> [11,12]
+[8,11] -> [12]
+[10] -> [2,13,19]
+[11] -> [7,14,18]
+[11,12] -> [8]
+[12] -> [8,11]
+[13] -> [10]
+[14] -> [11]
+[16] -> [14]
+[17] -> [7]
+[18] -> [11]
+[19] -> [10]
+
+### Solution ###
+
+[9,R]
+
+### Annotated ###
+
+postulate N :E: Type
+
+postulate Z :E: N
+
+postulate S :E: (x :E: N) -> N
+
+postulate Vec :E: (_ :E: N) -> Type
+
+postulate Nil :E: Vec -E- Z
+
+vlen :R: (n :E: N) -> (xs :E: Vec -E- n) -> N = \(n :E: N) (xs :E: Vec -E- n).
+  case -E- xs of
+    Nil/E
+      | n = Z
+      => n
+
+main :R: N = vlen -E- Z -E- Nil
+
+### Specialised ###
+
+postulate N :E: Type
+
+postulate Z :E: N
+
+postulate S :E: (x :E: N) -> N
+
+postulate Vec :E: (_ :E: N) -> Type
+
+postulate Nil :E: Vec -E- Z
+
+vlen :R: (n :E: N) -> (xs :E: Vec -E- n) -> N = \(n :E: N) (xs :E: Vec -E- n).
+  case -E- xs of
+    Nil/E
+      | n = Z
+      => n
+
+main :R: N = vlen -E- Z -E- Nil
+
+### Final annotation ###
+
+postulate N :E: Type
+
+postulate Z :E: N
+
+postulate S :E: (x :E: N) -> N
+
+postulate Vec :E: (_ :E: N) -> Type
+
+postulate Nil :E: Vec -E- Z
+
+vlen :R: (n :E: N) -> (xs :E: Vec -E- n) -> N = \(n :E: N) (xs :E: Vec -E- n).
+  case -E- xs of
+    Nil/E
+      | n = Z
+      => n
+
+main :R: N = vlen -E- Z -E- Nil
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+vlen = n
+
+main = vlen
+
+### Normal forms ###
+
+unerased:
+  Z
+erased:

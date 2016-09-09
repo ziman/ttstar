@@ -1,6 +1,7 @@
 module Erasure.Prune where
 
 import TT
+import TTUtils
 import Pretty ()
 
 prune :: Program Relevance -> Program ()
@@ -36,7 +37,12 @@ pruneAlt :: Alt Relevance -> [Alt ()]
 pruneAlt (Alt Wildcard rhs) = [Alt Wildcard $ pruneCaseTree rhs]
 pruneAlt (Alt (Ctor E cn args eqs) rhs) = []
 pruneAlt (Alt (Ctor R cn args eqs) rhs)
-    = [Alt (Ctor () cn (pruneDefs args) []) (pruneCaseTree rhs)]
+    = [Alt
+        (Ctor () cn (pruneDefs args) [])
+        (substs [(n, pruneTm tm) | (n, tm) <- eqs]
+            $ pruneCaseTree rhs
+        )
+    ]
 
 pruneDefs :: [Def Relevance] -> [Def ()]
 pruneDefs = concatMap pruneDef

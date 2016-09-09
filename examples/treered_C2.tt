@@ -1,0 +1,23 @@
+-- vim: ft=idris
+
+data N : Type.
+  Z : N,
+  S : (x : N) -> N.
+
+data Vec : N -> Type.
+  Nil : Vec Z.
+
+vlen (n : N) (xs : Vec n) : N
+  = case xs of
+      Nil | n = Z => n.
+
+main :R: N
+  = vlen Z Nil.
+
+{-
+
+Bug 3v2:
+  - `n` in the Nil branch causes unknown variable error at runtime
+  - NOT caught by the verification typechecker!!
+
+-}
