@@ -245,7 +245,7 @@ checkAlt isSingleBranch lhs n sr (Alt (Ctor cr cn args eqs_NF) rhs) = bt ("ALT-C
     cs <- with' (M.union argCtx) $ do
             _ <- traverse checkPatvar $ map fst eqs
             with' (substsInCtx eqs') $  -- substitutes in args, too; must use eqs', which includes (n, pat')
-                checkCaseTree lhs' rhs'
+                checkCaseTree lhs' rhs  -- rhs'
     return $ cs /\ scrutCs /\ cr <--> defR cd
   where
     ctor
@@ -260,7 +260,7 @@ checkAlt isSingleBranch lhs n sr (Alt (Ctor cr cn args eqs_NF) rhs) = bt ("ALT-C
 
     eqs' = (n, pat') : eqs
     lhs' = substs eqs' lhs
-    rhs' = substs eqs' rhs
+    --rhs' = substs eqs' rhs
 
     -- bindings from the individual vars to the scrutinee
     scrutCs = unions [defR d --> sr | d <- args]
