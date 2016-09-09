@@ -29,7 +29,9 @@ pruneCaseFun (CaseFun args ct)
 
 pruneCaseTree :: CaseTree Relevance -> CaseTree ()
 pruneCaseTree (Leaf tm) = Leaf $ pruneTm tm
-pruneCaseTree (Case E s [Alt lhs rhs]) = pruneCaseTree rhs
+pruneCaseTree (Case E s [Alt Wildcard rhs]) = pruneCaseTree rhs
+pruneCaseTree (Case E s [Alt (Ctor r cn args eqs) rhs])
+    = substs (pruneEqs eqs) (pruneCaseTree rhs)
 pruneCaseTree (Case R s alts) = Case () (pruneTm s) $ concatMap pruneAlt alts
 pruneCaseTree t@(Case E s alts) = error $ "trying to prune non-singleton tree: " ++ show t
 
@@ -39,13 +41,14 @@ pruneAlt (Alt (Ctor E cn args eqs) rhs) = []
 pruneAlt (Alt (Ctor R cn args eqs) rhs)
     = [Alt
         (Ctor () cn (pruneDefs args) [])
-        (substs [(n, pruneTm tm) | (n, tm) <- eqs]
-            $ pruneCaseTree rhs
-        )
+        (substs (pruneEqs eqs) (pruneCaseTree rhs))
     ]
 
 pruneDefs :: [Def Relevance] -> [Def ()]
 pruneDefs = concatMap pruneDef
+
+pruneEqs :: [(Name, TT Relevance)] -> [(Name, TT ())]
+pruneEqs eqs = [(n, pruneTm tm) | (n, tm) <- eqs]
 
 pruneTm :: TT Relevance -> TT ()
 pruneTm (V n) = V n
