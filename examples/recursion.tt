@@ -15,12 +15,12 @@ data Vec : Nat -> Type -> Type.
 vlen (a : Type) (n : Nat) (xs : Vec n a) : Nat
   = case xs of
       VNil (a' : Type)
-        | a = a'
+        | a' = a
         | n = Z
         => Z,
 
       VCons (a' : Type) (n' : Nat) (x' : a) (xs' : Vec n' a)
-        | a = a'
+        | a' = a
         | n = S n'
         => S (vlen a n' xs').
 
