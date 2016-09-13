@@ -174,7 +174,7 @@ Verification successful.
 postulate Z
 
 vlen = \n.
-  Z
+  n
 
 main = vlen Z
 

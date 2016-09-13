@@ -258,7 +258,7 @@ postulate Cons
 vlen = \n xs.
   case xs of
     Nil
-      => Z
+      => n
     Cons m ys
       => S (vlen m ys)
 
