@@ -56,3 +56,216 @@ main :R: N = vlen -44- 1 -43- (Cons -49- N -48- Z -47- 3 -46- (Nil -53- N))
 
 ### Inferred definitions ###
 
+postulate Cons :10: (a :11: Type) -> (n :12: N) -> (x :13: a) -> (xs :14: Vec -16- n -15- a) -> Vec -18- (S -19- n) -17- a {- constraints apply -}
+  [] -> [10,R]
+
+postulate N :1: Type {- constraints apply -}
+  [] -> [1,R]
+
+postulate Nil :6: (a :7: Type) -> Vec -9- Z -8- a {- constraints apply -}
+  [] -> [6,R]
+
+postulate S :2: (x :R: N) -> N {- constraints apply -}
+  [] -> [2,R]
+
+postulate Type :E: Type
+
+postulate Vec :3: (_ :4: N) -> (_ :5: Type) -> Type {- constraints apply -}
+  [] -> [3,R]
+
+postulate Z :R: N
+
+main :R: N = vlen -44- 1 -43- (Cons -49- N -48- Z -47- 3 -46- (Nil -53- N)) {- constraints apply -}
+  [] -> [2,6,10,12,14,19,20,21,22,25,26,29,30,32,34,36,39,40,41,42,43,44,45,46,48,R]
+  [7] -> [1,31,53]
+  [8] -> [15,23]
+  [9] -> [16,24]
+  [11] -> [1,33,49]
+  [13] -> [35,47,50,51,52]
+  [15] -> [8,37]
+  [16] -> [9,38]
+  [17] -> [23]
+  [18] -> [24]
+  [23] -> [8,17,37]
+  [24] -> [9,18,38]
+  [31] -> [7]
+  [33] -> [11]
+  [35] -> [13]
+  [37] -> [15,23]
+  [38] -> [16,24]
+  [47] -> [13]
+  [49] -> [11]
+  [53] -> [7]
+
+vlen :20: (n :21: N) -> (xs :22: Vec -24- n -23- N) -> N = \(n :25: N) (xs :26: Vec -28- n -27- N).
+  case -29- xs of
+    Nil/30 (a :31: Type)
+      | a = N
+      | n = Z
+      => n
+    Cons/32 (a :33: Type) (m :34: N) (y :35: N) (ys :36: Vec -38- m -37- N)
+      | a = N
+      | n = S -39- m
+      => S -40- (vlen -42- m -41- ys) {- constraints apply -}
+  [] -> [2,12,14,20,21,22,25,26,29,34,36,40,41,42,R]
+  [6] -> [30]
+  [7] -> [31]
+  [8] -> [23]
+  [9] -> [24]
+  [10] -> [32]
+  [11] -> [33]
+  [13] -> [35]
+  [15] -> [37]
+  [16] -> [38]
+  [17] -> [23]
+  [18] -> [24]
+  [19] -> [39]
+  [23] -> [8,17,37]
+  [24] -> [9,18,38]
+  [30] -> [6]
+  [31] -> [7]
+  [32] -> [10]
+  [33] -> [11]
+  [35] -> [13]
+  [37] -> [15,23]
+  [38] -> [16,24]
+  [39] -> [19]
+
+
+### Constraints ###
+
+[] -> [2,6,10,12,14,19,20,21,22,25,26,29,30,32,34,36,39,40,41,42,43,44,45,46,48,R]
+[7] -> [1,31,53]
+[8] -> [15,23]
+[9] -> [16,24]
+[11] -> [1,33,49]
+[13] -> [35,47,50,51,52]
+[15] -> [8,37]
+[16] -> [9,38]
+[17] -> [23]
+[18] -> [24]
+[23] -> [8,17,37]
+[24] -> [9,18,38]
+[31] -> [7]
+[33] -> [11]
+[35] -> [13]
+[37] -> [15,23]
+[38] -> [16,24]
+[47] -> [13]
+[49] -> [11]
+[53] -> [7]
+
+### Solution ###
+
+[2,6,10,12,14,19,20,21,22,25,26,29,30,32,34,36,39,40,41,42,43,44,45,46,48,R]
+
+### Annotated ###
+
+postulate N :E: Type
+
+postulate Z :R: N
+
+postulate S :R: (x :R: N) -> N
+
+postulate Vec :E: (_ :E: N) -> (_ :E: Type) -> Type
+
+postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a
+
+postulate Cons :R: (a :E: Type) -> (n :R: N) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -R- n) -E- a
+
+vlen :R: (n :R: N) -> (xs :R: Vec -E- n -E- N) -> N = \(n :R: N) (xs :R: Vec -E- n -E- N).
+  case -R- xs of
+    Nil/R (a :E: Type)
+      | a = N
+      | n = Z
+      => n
+    Cons/R (a :E: Type) (m :R: N) (y :E: N) (ys :R: Vec -E- m -E- N)
+      | a = N
+      | n = S -R- m
+      => S -R- (vlen -R- m -R- ys)
+
+main :R: N = vlen -R- 1 -R- (Cons -E- N -R- Z -E- 3 -R- (Nil -E- N))
+
+### Specialised ###
+
+postulate N :E: Type
+
+postulate Z :R: N
+
+postulate S :R: (x :R: N) -> N
+
+postulate Vec :E: (_ :E: N) -> (_ :E: Type) -> Type
+
+postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a
+
+postulate Cons :R: (a :E: Type) -> (n :R: N) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -R- n) -E- a
+
+vlen :R: (n :R: N) -> (xs :R: Vec -E- n -E- N) -> N = \(n :R: N) (xs :R: Vec -E- n -E- N).
+  case -R- xs of
+    Nil/R (a :E: Type)
+      | a = N
+      | n = Z
+      => n
+    Cons/R (a :E: Type) (m :R: N) (y :E: N) (ys :R: Vec -E- m -E- N)
+      | a = N
+      | n = S -R- m
+      => S -R- (vlen -R- m -R- ys)
+
+main :R: N = vlen -R- 1 -R- (Cons -E- N -R- Z -E- 3 -R- (Nil -E- N))
+
+### Final annotation ###
+
+postulate N :E: Type
+
+postulate Z :R: N
+
+postulate S :R: (x :R: N) -> N
+
+postulate Vec :E: (_ :E: N) -> (_ :E: Type) -> Type
+
+postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a
+
+postulate Cons :R: (a :E: Type) -> (n :R: N) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -R- n) -E- a
+
+vlen :R: (n :R: N) -> (xs :R: Vec -E- n -E- N) -> N = \(n :R: N) (xs :R: Vec -E- n -E- N).
+  case -R- xs of
+    Nil/R (a :E: Type)
+      | a = N
+      | n = Z
+      => n
+    Cons/R (a :E: Type) (m :R: N) (y :E: N) (ys :R: Vec -E- m -E- N)
+      | a = N
+      | n = S -R- m
+      => S -R- (vlen -R- m -R- ys)
+
+main :R: N = vlen -R- 1 -R- (Cons -E- N -R- Z -E- 3 -R- (Nil -E- N))
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+postulate Z
+
+postulate S
+
+postulate Nil
+
+postulate Cons
+
+vlen = \n xs.
+  case xs of
+    Nil
+      => Z
+    Cons m ys
+      => S (vlen m ys)
+
+main = vlen 1 (Cons Z Nil)
+
+### Normal forms ###
+
+unerased:
+  1
+erased:
+  1

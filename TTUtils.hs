@@ -193,7 +193,7 @@ substCtx ctx tm = foldl phi tm $ M.toList ctx
 substsInCtx :: [(Name, TT r)] -> Ctx r -> Ctx r
 substsInCtx eqs = foldr step M.empty . M.toList
   where
-    elidedNames = S.fromList $ map fst eqs
+    elidedNames = S.fromList $ map fst []  -- eqs
     step (n, d) ctx
         | n `S.member` elidedNames = ctx
         | otherwise = M.insert n (substs eqs d) ctx

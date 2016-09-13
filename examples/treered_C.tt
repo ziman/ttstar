@@ -40,6 +40,4 @@ vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N = \(n :E: N) (xs :R: Vec -E-
       | n = S -E- m
       => S -R- (vlen -E- m -R- ys)
 
-THIS PROGRAM IS NO LONGER LEGAL.
-
 -}

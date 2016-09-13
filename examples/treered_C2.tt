@@ -20,6 +20,4 @@ Bug 3v2:
   - `n` in the Nil branch causes unknown variable error at runtime
   - NOT caught by the verification typechecker!!
 
-THIS PROGRAM IS NO LONGER LEGAL.
-
 -}
