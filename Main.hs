@@ -191,7 +191,7 @@ main = do
             putStrLn "erased:"
             putStrLn $ "  " ++ show (eval NF (builtins ()) pruned)
 
-            let code = render ";" $ codeGen pruned
+            codegen Codegen.Scheme.codegen fname pruned
 
   where
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
@@ -204,7 +204,8 @@ main = do
     ndefs (Prog defs) = length defs
 
 codegen :: Codegen -> String -> Program () -> IO ()
-codegen cg fname prog = writeFile fname' (cgRun prog)
+codegen cg fname prog = writeFile fname' code
   where
     (baseFn, _oldext) = break (=='.') fname
     fname' = baseFn ++ "." ++ cgExt cg
+    code = render ";" (cgRun cg prog)
