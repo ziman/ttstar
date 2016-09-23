@@ -23,12 +23,30 @@ cgTm (App () f x) = parens (cgTm f <+> cgTm x)
 cgTm tm = error $ "can't cg tm: " ++ show tm
 
 cgDef :: Def () -> Doc
-cgDef (Def n r ty (Abstract Postulate) cs) = empty
+cgDef (Def n r ty (Abstract Postulate) cs)
+    = parens (
+        text "define" <+> cgName n
+        <+> parens (
+            text "lambda"
+            <+> parens argList
+            <+> text "`" <> parens (
+                cgName n <+> argList
+            )
+        )
+    )
+  where
+    argList = hsep $ map text args
+    args = ["e" ++ show i | i <- [0..nargs ty - 1]]
+
 cgDef (Def n r ty (Term tm) cs)
     = parens (
         text "define" <+> cgName n <+> cgTm tm
     )
 cgDef d@(Def n r ty b cs) = error $ "can't cg def: " ++ show d
+
+nargs :: TT () -> Int
+nargs (Bind Pi d rhs) = 1 + nargs rhs
+nargs _ = 0
 
 cgProgram :: Program () -> Doc
 cgProgram (Prog defs) = vcat [
