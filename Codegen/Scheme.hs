@@ -26,23 +26,24 @@ cgDef :: Def () -> Doc
 cgDef (Def n r ty (Abstract Postulate) cs)
     = parens (
         text "define" <+> cgName n
-        <+> parens (
-            text "lambda"
-            <+> parens argList
-            <+> text "`" <> parens (
-                cgName n <+> argList
+        <+> nestLambdas args (
+            text "`" <> parens (
+                cgName n <+> hsep args
             )
         )
     )
   where
-    argList = hsep $ map text args
-    args = ["e" ++ show i | i <- [0..nargs ty - 1]]
+    args = [text $ "e" ++ show i | i <- [0..nargs ty - 1]]
 
 cgDef (Def n r ty (Term tm) cs)
     = parens (
         text "define" <+> cgName n <+> cgTm tm
     )
 cgDef d@(Def n r ty b cs) = error $ "can't cg def: " ++ show d
+
+nestLambdas :: [Doc] -> Doc -> Doc
+nestLambdas [] body = body
+nestLambdas (n:ns) body = parens (text "lambda" <+> parens n <+> nestLambdas ns body)
 
 nargs :: TT () -> Int
 nargs (Bind Pi d rhs) = 1 + nargs rhs
