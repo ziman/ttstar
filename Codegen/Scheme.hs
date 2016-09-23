@@ -56,7 +56,7 @@ cgProgram :: Program () -> Doc
 cgProgram (Prog defs) = vcat [
     cgDef def $+$ blankLine
     | def <- defs
-    ]
+    ] $+$ text "(main)"
 
 codegen :: Codegen
 codegen = Codegen
