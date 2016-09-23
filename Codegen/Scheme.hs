@@ -28,7 +28,7 @@ cgApp f x = parens (f <+> x)
 cgDef :: Def () -> Doc
 cgDef (Def n r ty (Abstract Postulate) cs)
     = cgDefine n . nestLambdas args $
-        text "`" <> parens (
+        text "'" <> parens (
             cgName n <+> hsep [text "," <> cgName n | n <- args]
         )
   where
@@ -36,16 +36,44 @@ cgDef (Def n r ty (Abstract Postulate) cs)
 
 cgDef (Def n r ty (Patterns (CaseFun args ct)) cs) =
     cgDefine n . nestLambdas (map defName args)
-        $ cgCase ct
+        $ cgCaseTree ct
 
 cgDef (Def n r ty (Term tm) cs) = cgDefine n $ cgTm tm
 cgDef d@(Def n r ty b cs) = error $ "can't cg def: " ++ show d
 
-cgCase :: CaseTree () -> Doc
-cgCase (Leaf tm) = cgTm tm
-cgCase (Case () scrut alts) =
-    cgLet [(UN "match-head", cgApp (text "car") (cgTm scrut))]
-        (text "not-implemented")
+cgCaseTree :: CaseTree () -> Doc
+cgCaseTree (Leaf tm) = cgTm tm
+cgCaseTree (Case () (V scrutN) alts) =
+    cgLet [
+        (scrutArgsN, cgApp (text "cdr") (cgName scrutN))
+    ] $ cgCase (cgApp (text "car") (cgName scrutN))
+            (map (cgAlt scrutArgsN) alts)
+  where
+    scrutArgsN = UN "_args"
+
+cgCaseTree (Case () scrut alts) =
+    error $ "can't cg case scrutinee: " ++ show scrut
+
+cgAlt :: Name -> Alt () -> Doc
+cgAlt argsN (Alt Wildcard rhs) = parens (text "else" <+> cgCaseTree rhs)
+cgAlt argsN (Alt (Ctor () cn ds _eqs) rhs)
+    = parens (
+        parens (cgName cn)
+        <+> cgBinds (map defName ds) argsN (cgCaseTree rhs)
+    )
+
+cgBinds :: [Name] -> Name -> Doc -> Doc
+cgBinds [] args rhs = rhs
+cgBinds (n:ns) args rhs =
+    cgLet [
+        (n, cgApp (text "car") (cgName args)),
+        (subvalsN, cgApp (text "cdr") (cgName args))
+    ] $ cgBinds ns subvalsN rhs
+  where
+    subvalsN = let UN s = n in UN ("_args-" ++ s)
+
+cgCase :: Doc -> [Doc] -> Doc
+cgCase scrut alts = parens (text "case" <+> scrut $+$ indent (vcat alts))
 
 cgDefine :: Name -> Doc -> Doc
 cgDefine n body = parens (text "define" <+> cgName n $+$ indent body)
