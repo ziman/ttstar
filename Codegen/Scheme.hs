@@ -9,7 +9,10 @@ indent :: Doc -> Doc
 indent = nest 2
 
 cgName :: Name -> Doc
-cgName = text . show
+cgName = text . map mogrify . show
+  where
+    mogrify '\'' = '_'
+    mogrify c = c
 
 cgTm :: TT () -> Doc
 cgTm (V n) = cgName n
