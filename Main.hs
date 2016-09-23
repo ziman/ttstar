@@ -6,7 +6,9 @@ import Parser
 -- import Explorer
 import Normalise
 import Eval
-import Codegen
+
+import Codegen.Common
+import qualified Codegen.Scheme
 
 import Util.PrettyPrint
 
@@ -189,7 +191,7 @@ main = do
             putStrLn "erased:"
             putStrLn $ "  " ++ show (eval NF (builtins ()) pruned)
 
-            let code = render "#" $ codeGen pruned
+            let code = render ";" $ codeGen pruned
 
   where
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
@@ -200,3 +202,9 @@ main = do
                         ++ unlines (map (("  " ++) . fmtCtr) $ M.toList cs)
 
     ndefs (Prog defs) = length defs
+
+codegen :: Codegen -> String -> Program () -> IO ()
+codegen cg fname prog = writeFile fname' (cgRun prog)
+  where
+    (baseFn, _oldext) = break (=='.') fname
+    fname' = baseFn ++ "." ++ cgExt cg
