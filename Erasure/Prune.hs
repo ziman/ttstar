@@ -8,6 +8,8 @@ prune (Prog defs) = Prog $ pruneDefs defs
 
 pruneDef :: Def Relevance -> [Def ()]
 pruneDef (Def n E ty body mcs) = []
+-- special case for constructors to keep their arity:
+pruneDef (Def n R ty (Abstract Postulate) mcs) = [Def n () (pruneTm ty) (Abstract Postulate) noConstrs]
 pruneDef (Def n R ty body mcs) = [Def n () (V Blank) (pruneBody body) noConstrs]
 
 pruneBody :: Body Relevance -> Body ()
