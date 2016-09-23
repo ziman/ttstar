@@ -28,7 +28,7 @@ cgDef (Def n r ty (Abstract Postulate) cs)
     = cgDefine n (
         nestLambdas args (
             text "`" <> parens (
-                hsep . map cgName $ (n : args)
+                cgName n <+> hsep [text "," <> cgName n | n <- args]
             )
         )
     )
@@ -56,7 +56,7 @@ cgProgram :: Program () -> Doc
 cgProgram (Prog defs) = vcat [
     cgDef def $+$ blankLine
     | def <- defs
-    ] $+$ text "(main)"
+    ] $+$ text "main"
 
 codegen :: Codegen
 codegen = Codegen
