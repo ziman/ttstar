@@ -62,8 +62,8 @@ cgBinds :: [Name] -> Name -> Doc -> Doc
 cgBinds [] args rhs = rhs
 cgBinds (n:ns) args rhs =
     cgLetStar [
-        (subvalsN, cgApp (text "cdr") (cgName args))
-        (n, cgApp (text "car") (cgName subvalsN)),
+        (subvalsN, cgApp (text "cdr") (cgName args)),
+        (n, cgApp (text "car") (cgName subvalsN))
     ] $ cgBinds ns subvalsN rhs
   where
     subvalsN = let UN s = n in UN ("_args-" ++ s)
@@ -83,33 +83,6 @@ cgLet = cgLet' "let"
 cgLetStar :: [(Name, Doc)] -> Doc -> Doc
 cgLetStar = cgLet' "let*"
 
-cgLet' :: String -> [(Name, Doc)] -> Doc -> Doc
-cgLet' letN defs rhs = parens (
-        text letN <+> parens (
-            hsep [parens (cgName n <+> body) | (n, body) <- defs]
-        )
-        $+$ indent rhs
-    )
-
-nestLambdas :: [Name] -> Doc -> Doc
-nestLambdas [] = id
-nestLambdas (n:ns) = cgLambda n . nestLambdas ns
-
-nargs :: TT () -> Int
-nargs (Bind Pi d rhs) = 1 + nargs rhs
-nargs _ = 0
-
-cgProgram :: Program () -> Doc
-cgProgram (Prog defs) = vcat [
-    cgDef def $+$ blankLine
-    | def <- defs
-    ] $+$ text "main"
-
-codegen :: Codegen
-codegen = Codegen
-    { cgRun = cgProgram
-    , cgExt = "scm"
-    }
 cgLet' :: String -> [(Name, Doc)] -> Doc -> Doc
 cgLet' letN defs rhs = parens (
         text letN <+> parens (
