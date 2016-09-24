@@ -208,4 +208,4 @@ codegen cg fname prog = writeFile fname' code
   where
     (baseFn, _oldext) = break (=='.') fname
     fname' = baseFn ++ "." ++ cgExt cg
-    code = render ";" (cgRun cg prog)
+    code = render ";" (cgRun cg prog) ++ "\n"
