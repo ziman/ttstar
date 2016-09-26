@@ -11,4 +11,4 @@
 (define main
   (apply const_A))
 
-main
+(print main)(newline)

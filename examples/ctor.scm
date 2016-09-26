@@ -12,4 +12,4 @@
 (define main
   (not T))
 
-main
+(print main)(newline)

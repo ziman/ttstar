@@ -23,6 +23,6 @@
             ((Cons x) ((append xs_) ys)))))))))
 
 (define main
-  ((append Nil) ((Cons (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S Z))))))))))))))))))))))))))))))))))))))))))) Nil)))
+  ((append Nil) ((Cons (S (S (S (S Z))))) Nil)))
 
-main
+(print main)(newline)

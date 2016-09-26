@@ -17,4 +17,4 @@
 (define main
   (f (Just False)))
 
-main
+(print main)(newline)

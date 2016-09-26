@@ -25,4 +25,4 @@
 (define main
   ((vlen (S Z)) ((Cons Z) Nil)))
 
-main
+(print main)(newline)

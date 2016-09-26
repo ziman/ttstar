@@ -34,4 +34,4 @@
 (define main
   ((Op test1) test2))
 
-main
+(print main)(newline)

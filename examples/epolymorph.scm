@@ -46,4 +46,4 @@
 (define main
   ((Plus test_1) test_2))
 
-main
+(print main)(newline)

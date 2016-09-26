@@ -2,4 +2,4 @@
   (lambda (x)
     x))
 
-main
+(print main)(newline)

@@ -52,4 +52,4 @@
 (define main
   (reverse ((Cons T) ((Cons F) ((Cons T) ((Cons F) Nil))))))
 
-main
+(print main)(newline)

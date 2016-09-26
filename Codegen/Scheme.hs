@@ -18,6 +18,7 @@ cgTm :: TT () -> Doc
 cgTm (V n) = cgName n
 cgTm tm@(I n ty) = error $ "e-instance in codegen: " ++ show tm
 cgTm (Bind Lam (Def n () ty (Abstract Var) cs) rhs) = cgLambda n $ cgTm rhs
+cgTm (Bind Let (Def n () ty (Abstract Postulate) cs) rhs) = cgLet [(n, cgCtor n ty)] (cgTm rhs)
 cgTm (Bind Let (Def n () ty (Term tm) cs) rhs) = cgLet [(n, cgTm tm)] (cgTm rhs)
 cgTm (Bind Let (Def n () ty (Patterns cf) cs) rhs) = cgLet [(n, cgCaseFun cf)] (cgTm rhs)
 cgTm (App () f x) = cgApp (cgTm f) (cgTm x)
@@ -32,9 +33,9 @@ cgCaseFun (CaseFun args ct) =
   where
     argNs = uniqNames $ map defName args
 
-cgDef :: Def () -> Doc
-cgDef (Def n r ty (Abstract Postulate) cs)
-    = cgDefine n . nestLambdas argNs $
+cgCtor :: Name -> TT () -> Doc
+cgCtor n ty
+    = nestLambdas argNs $
         parens (
             text "list"
             <+> text "'" <> cgName n
@@ -43,6 +44,8 @@ cgDef (Def n r ty (Abstract Postulate) cs)
   where
     argNs = uniqNames $ argNames ty
 
+cgDef :: Def () -> Doc
+cgDef (Def n r ty (Abstract Postulate) cs) = cgDefine n $ cgCtor n ty
 cgDef (Def n r ty (Patterns cf) cs) = cgDefine n $ cgCaseFun cf
 cgDef (Def n r ty (Term tm) cs) = cgDefine n $ cgTm tm
 cgDef d@(Def n r ty b cs) = error $ "can't cg def: " ++ show d
@@ -119,7 +122,7 @@ cgProgram :: Program () -> Doc
 cgProgram (Prog defs) = vcat [
     cgDef def $+$ blankLine
     | def <- defs
-    ] $+$ text "main"
+    ] $+$ text "(print main)(newline)"
 
 codegen :: Codegen
 codegen = Codegen

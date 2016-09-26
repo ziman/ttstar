@@ -21,4 +21,4 @@
         x_))))))
     ((plus (pred (S (S (S (S Z)))))) (pred (S (S (S (S (S Z)))))))))
 
-main
+(print main)(newline)

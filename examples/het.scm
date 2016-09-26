@@ -34,4 +34,4 @@
 (define main
   ((((Tuple (f T)) (f F)) (f Q)) (f W)))
 
-main
+(print main)(newline)

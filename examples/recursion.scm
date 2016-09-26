@@ -25,4 +25,4 @@
 (define main
   (vlen testVec))
 
-main
+(print main)(newline)
