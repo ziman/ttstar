@@ -19,11 +19,18 @@ cgTm (V n) = cgName n
 cgTm tm@(I n ty) = error $ "e-instance in codegen: " ++ show tm
 cgTm (Bind Lam (Def n () ty (Abstract Var) cs) rhs) = cgLambda n $ cgTm rhs
 cgTm (Bind Let (Def n () ty (Term tm) cs) rhs) = cgLet [(n, cgTm tm)] (cgTm rhs)
+cgTm (Bind Let (Def n () ty (Patterns cf) cs) rhs) = cgLet [(n, cgCaseFun cf)] (cgTm rhs)
 cgTm (App () f x) = cgApp (cgTm f) (cgTm x)
 cgTm tm = error $ "can't cg tm: " ++ show tm
 
 cgApp :: Doc -> Doc -> Doc
 cgApp f x = parens (f <+> x)
+
+cgCaseFun :: CaseFun () -> Doc
+cgCaseFun (CaseFun args ct) = 
+    nestLambdas 
+        (map defName args)
+        (cgCaseTree ct)
 
 cgDef :: Def () -> Doc
 cgDef (Def n r ty (Abstract Postulate) cs)
@@ -34,9 +41,8 @@ cgDef (Def n r ty (Abstract Postulate) cs)
   where
     args = [UN $ "e" ++ show i | i <- [0..nargs ty - 1]]
 
-cgDef (Def n r ty (Patterns (CaseFun args ct)) cs) =
-    cgDefine n . nestLambdas (map defName args)
-        $ cgCaseTree ct
+cgDef (Def n r ty (Patterns cf) cs) =
+    cgDefine n $ cgCaseFun cf
 
 cgDef (Def n r ty (Term tm) cs) = cgDefine n $ cgTm tm
 cgDef d@(Def n r ty b cs) = error $ "can't cg def: " ++ show d
