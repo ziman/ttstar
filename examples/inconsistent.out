@@ -24,3 +24,4 @@ main :R: (x :E: Type) -> Type = (\x :E: Type. x) {- constraints apply -}
 
 [E,R]
 
+ttstar: !! inconsistent annotation

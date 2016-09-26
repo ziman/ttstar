@@ -260,3 +260,143 @@ main :R: N = vlen -E- 1 -R- (Cons -E- N -E- Z -R- 3 -R- (Nil -E- N))
 
 ### Verification ###
 
+ttstar: !! verification failed: Traceback:
+1. In context:
+  Cons : (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+  N : Type
+  Nil : (a :E: Type) -> Vec -E- Z -E- a
+  S : (x :R: N) -> N
+  Type : Type
+  Vec : (_ :E: N) -> (_ :E: Type) -> Type
+  Z : N
+
+("DEF-TERM",vlen)
+
+2. In context:
+  Cons : (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+  N : Type
+  Nil : (a :E: Type) -> Vec -E- Z -E- a
+  S : (x :R: N) -> N
+  Type : Type
+  Vec : (_ :E: N) -> (_ :E: Type) -> Type
+  Z : N
+  vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
+
+("CASEFUN",vlen)
+
+3. In context:
+  Cons : (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+  N : Type
+  Nil : (a :E: Type) -> Vec -E- Z -E- a
+  S : (x :R: N) -> N
+  Type : Type
+  Vec : (_ :E: N) -> (_ :E: Type) -> Type
+  Z : N
+  n : N
+  vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
+  xs : Vec -E- n -E- N
+
+("CASE-MULTI",R,vlen -E- n -R- xs)
+
+4. In context:
+  Cons : (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+  N : Type
+  Nil : (a :E: Type) -> Vec -E- Z -E- a
+  S : (x :R: N) -> N
+  Type : Type
+  Vec : (_ :E: N) -> (_ :E: Type) -> Type
+  Z : N
+  n : N
+  vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
+  xs : Vec -E- n -E- N
+
+("ALT-MATCH",Cons,S -R- (vlen -E- m -R- ys))
+
+5. In context:
+  Cons : (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+  N : Type
+  Nil : (a :E: Type) -> Vec -E- Z -E- a
+  S : (x :R: N) -> N
+  Type : Type
+  Vec : (_ :E: N) -> (_ :E: Type) -> Type
+  Z : N
+  n : N
+  vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
+  xs : Vec -E- n -E- N
+
+("ALT-MATCH-INT",Cons,S -R- (vlen -E- m -R- ys))
+
+6. In context:
+  Cons : (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+  N : Type
+  Nil : (a :E: Type) -> Vec -E- Z -E- a
+  S : (x :R: N) -> N
+  Type : Type
+  Vec : (_ :E: N) -> (_ :E: Type) -> Type
+  Z : N
+  a : Type
+  m : N
+  n : N
+  vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
+  xs : Vec -E- [S -E- m] -E- N
+  y : N
+  ys : Vec -E- m -E- N
+
+("ALT-MATCH-INT2",R,R,Cons -E- [N] -E- m -E- y -R- ys,Vec -E- [S -E- m] -E- N)
+
+7. In context:
+  Cons : (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+  N : Type
+  Nil : (a :E: Type) -> Vec -E- Z -E- a
+  S : (x :R: N) -> N
+  Type : Type
+  Vec : (_ :E: N) -> (_ :E: Type) -> Type
+  Z : N
+  a : Type
+  m : N
+  n : N
+  vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
+  xs : Vec -E- [S -E- m] -E- N
+  y : N
+  ys : Vec -E- m -E- N
+
+("APP",R,Cons -E- [N] -E- m -E- y,R,ys)
+
+8. In context:
+  Cons : (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+  N : Type
+  Nil : (a :E: Type) -> Vec -E- Z -E- a
+  S : (x :R: N) -> N
+  Type : Type
+  Vec : (_ :E: N) -> (_ :E: Type) -> Type
+  Z : N
+  a : Type
+  m : N
+  n : N
+  vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
+  xs : Vec -E- [S -E- m] -E- N
+  y : N
+  ys : Vec -E- m -E- N
+
+("APP",R,Cons -E- [N] -E- m,E,y)
+
+9. In context:
+  Cons : (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+  N : Type
+  Nil : (a :E: Type) -> Vec -E- Z -E- a
+  S : (x :R: N) -> N
+  Type : Type
+  Vec : (_ :E: N) -> (_ :E: Type) -> Type
+  Z : N
+  a : Type
+  m : N
+  n : N
+  vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
+  xs : Vec -E- [S -E- m] -E- N
+  y : N
+  ys : Vec -E- m -E- N
+
+("VAR-R",y)
+
+Error: RelevanceMismatch E R
+
