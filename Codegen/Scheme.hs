@@ -35,8 +35,10 @@ cgCaseFun (CaseFun args ct) =
 cgDef :: Def () -> Doc
 cgDef (Def n r ty (Abstract Postulate) cs)
     = cgDefine n . nestLambdas args $
-        text "'" <> parens (
-            cgName n <+> hsep [text "," <> cgName n | n <- args]
+        parens (
+            text "list"
+            <+> text "'" <> cgName n
+            <+> hsep (map cgName args)
         )
   where
     args = [UN $ "e" ++ show i | i <- [0..nargs ty - 1]]
