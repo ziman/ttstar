@@ -396,13 +396,13 @@ Verification successful.
 
 ### Pruned ###
 
-postulate Z
+postulate Z : N
 
-postulate S
+postulate S : (x) -> N
 
-postulate Nil
+postulate Nil : Vec
 
-postulate Cons
+postulate Cons : (x) -> (xs) -> Vec
 
 append = \xs ys.
   case xs of

@@ -2224,17 +2224,17 @@ Verification successful.
 
 subst = (\w. w)
 
-postulate T
+postulate T : Bool
 
-postulate F
+postulate F : Bool
 
-postulate Nil
+postulate Nil : List
 
-postulate Cons
+postulate Cons : (x) -> (xs) -> List
 
-postulate RNil
+postulate RNil : Rev
 
-postulate RSnoc
+postulate RSnoc : (x) -> (rxs) -> Rev
 
 rev' = \rxs ys.
   case ys of

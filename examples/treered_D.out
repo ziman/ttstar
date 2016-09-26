@@ -354,13 +354,13 @@ Verification successful.
 
 ### Pruned ###
 
-postulate True
+postulate True : Bool
 
-postulate Yeah
+postulate Yeah : Foo
 
-postulate Nope
+postulate Nope : Foo
 
-postulate Just
+postulate Just : (x) -> Maybe
 
 g = \x.
   case x of

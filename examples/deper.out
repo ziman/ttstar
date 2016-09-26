@@ -238,11 +238,11 @@ Verification successful.
 
 ### Pruned ###
 
-postulate T
+postulate T : Bool
 
-postulate F
+postulate F : Bool
 
-postulate TB
+postulate TB : (x) -> (y) -> TwoBools
 
 id = (\x. x)
 

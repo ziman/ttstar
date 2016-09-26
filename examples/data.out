@@ -349,9 +349,9 @@ Verification successful.
 
 ### Pruned ###
 
-postulate Z
+postulate Z : N
 
-postulate S
+postulate S : (_) -> N
 
 plus = \m n.
   case m of

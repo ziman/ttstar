@@ -386,13 +386,13 @@ Verification successful.
 
 ### Pruned ###
 
-postulate Z
+postulate Z : Nat
 
-postulate S
+postulate S : (n) -> Nat
 
-postulate VNil
+postulate VNil : Vec
 
-postulate VCons
+postulate VCons : (xs) -> Vec
 
 vlen = \xs.
   case xs of

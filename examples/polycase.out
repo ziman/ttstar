@@ -381,13 +381,13 @@ Verification successful.
 
 ### Pruned ###
 
-postulate Q
+postulate Q : Mool
 
-postulate W
+postulate W : Mool
 
-postulate T
+postulate T : Bool
 
-postulate F
+postulate F : Bool
 
 not = \x.
   case x of

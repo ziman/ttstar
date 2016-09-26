@@ -158,9 +158,9 @@ Verification successful.
 
 ### Pruned ###
 
-postulate T
+postulate T : Bool
 
-postulate MkUnit
+postulate MkUnit : Unit
 
 not = \x.
   case x of

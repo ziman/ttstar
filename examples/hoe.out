@@ -161,11 +161,11 @@ Verification successful.
 
 ### Pruned ###
 
-postulate A
+postulate A : T
 
-postulate B
+postulate B : T
 
-postulate Op
+postulate Op : (x) -> (y) -> T
 
 id = (\x. x)
 

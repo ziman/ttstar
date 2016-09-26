@@ -41,7 +41,7 @@ cgDef (Def n r ty (Abstract Postulate) cs)
             <+> hsep (map cgName args)
         )
   where
-    args = [UN $ "e" ++ show i | i <- [0..nargs ty - 1]]
+    args = [argName n (UN $ "e" ++ show i) | (i, n) <- zip [0::Integer ..] (argNames ty)]
 
 cgDef (Def n r ty (Patterns cf) cs) =
     cgDefine n $ cgCaseFun cf
@@ -103,9 +103,13 @@ nestLambdas :: [Name] -> Doc -> Doc
 nestLambdas [] = id
 nestLambdas (n:ns) = cgLambda n . nestLambdas ns
 
-nargs :: TT () -> Int
-nargs (Bind Pi d rhs) = 1 + nargs rhs
-nargs _ = 0
+argName :: Name -> Name -> Name
+argName Blank n = n
+argName m     n = m
+
+argNames :: TT () -> [Name]
+argNames (Bind Pi d rhs) = defName d : argNames rhs
+argNames _ = []
 
 cgProgram :: Program () -> Doc
 cgProgram (Prog defs) = vcat [
