@@ -28,24 +28,22 @@ cgApp f x = parens (f <+> x)
 
 cgCaseFun :: CaseFun () -> Doc
 cgCaseFun (CaseFun args ct) = 
-    nestLambdas 
-        (map defName args)
-        (cgCaseTree ct)
+    nestLambdas argNs $ cgCaseTree ct
+  where
+    argNs = uniqNames $ map defName args
 
 cgDef :: Def () -> Doc
 cgDef (Def n r ty (Abstract Postulate) cs)
-    = cgDefine n . nestLambdas args $
+    = cgDefine n . nestLambdas argNs $
         parens (
             text "list"
             <+> text "'" <> cgName n
-            <+> hsep (map cgName args)
+            <+> hsep (map cgName argNs)
         )
   where
-    args = [argName n (UN $ "e" ++ show i) | (i, n) <- zip [0::Integer ..] (argNames ty)]
+    argNs = uniqNames $ argNames ty
 
-cgDef (Def n r ty (Patterns cf) cs) =
-    cgDefine n $ cgCaseFun cf
-
+cgDef (Def n r ty (Patterns cf) cs) = cgDefine n $ cgCaseFun cf
 cgDef (Def n r ty (Term tm) cs) = cgDefine n $ cgTm tm
 cgDef d@(Def n r ty b cs) = error $ "can't cg def: " ++ show d
 
@@ -103,9 +101,15 @@ nestLambdas :: [Name] -> Doc -> Doc
 nestLambdas [] = id
 nestLambdas (n:ns) = cgLambda n . nestLambdas ns
 
-argName :: Name -> Name -> Name
-argName Blank n = n
-argName m     n = m
+uniqNames :: [Name] -> [Name]
+uniqNames ns =
+    [ n ||| (UN $ "e" ++ show i)
+    | (i, n) <- zip [0::Integer ..] ns
+    ]
+  where
+    (|||) :: Name -> Name -> Name
+    (|||) Blank n = n
+    (|||) m     n = m
 
 argNames :: TT () -> [Name]
 argNames (Bind Pi d rhs) = defName d : argNames rhs
