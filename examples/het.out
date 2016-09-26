@@ -332,19 +332,19 @@ Verification successful.
 
 ### Pruned ###
 
-postulate Tuple
+postulate Tuple : (x) -> (y) -> (z) -> (w) -> Type
 
-postulate Bool
+postulate Bool : Type
 
-postulate T
+postulate T : Bool
 
-postulate F
+postulate F : Bool
 
-postulate Mool
+postulate Mool : Type
 
-postulate Q
+postulate Q : Mool
 
-postulate W
+postulate W : Mool
 
 f = \x.
   case x of

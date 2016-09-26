@@ -171,7 +171,7 @@ Verification successful.
 
 ### Pruned ###
 
-postulate Z
+postulate Z : N
 
 vlen = \n.
   n

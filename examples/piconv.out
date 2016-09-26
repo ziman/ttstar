@@ -130,7 +130,7 @@ Verification successful.
 
 ### Pruned ###
 
-postulate A
+postulate A : T
 
 const_A = A
 

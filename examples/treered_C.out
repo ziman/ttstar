@@ -246,13 +246,13 @@ Verification successful.
 
 ### Pruned ###
 
-postulate Z
+postulate Z : N
 
-postulate S
+postulate S : (x) -> N
 
-postulate Nil
+postulate Nil : Vec
 
-postulate Cons
+postulate Cons : (n) -> (xs) -> Vec
 
 vlen = \n xs.
   case xs of

@@ -146,9 +146,9 @@ Verification successful.
 
 ### Pruned ###
 
-postulate T
+postulate T : Bool
 
-postulate P
+postulate P : (_) -> Pair
 
 fst = \x.
   case x of

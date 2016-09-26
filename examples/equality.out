@@ -243,9 +243,9 @@ Verification successful.
 
 ### Pruned ###
 
-postulate F
+postulate F : Bool
 
-postulate Refl
+postulate Refl : Id
 
 notnot = \x.
   case x of

@@ -32,7 +32,7 @@ append : (a : Type) -> (m : N) -> (n : N) -> (xs : Vec m a) -> (ys : Vec n a) ->
       | m = S m'
       => Cons a (plus m' n) x (append a m' n xs' ys)
 
-main :R: Vec 1 N = append N Z 1 (Nil N) (Cons N Z 42 (Nil N))
+main :R: Vec 1 N = append N Z 1 (Nil N) (Cons N Z 4 (Nil N))
 
 ### Metaified ###
 
@@ -66,7 +66,7 @@ append :31: (a :32: Type) -> (m :33: N) -> (n :34: N) -> (xs :35: Vec -37- m -36
       | m = S -64- m'
       => Cons -68- a -67- (plus -70- m' -69- n) -66- x -65- (append -75- a -74- m' -73- n -72- xs' -71- ys)
 
-main :R: Vec -77- 1 -76- N = append -83- N -82- Z -81- 1 -80- (Nil -85- N) -79- (Cons -89- N -88- Z -87- 42 -86- (Nil -132- N))
+main :R: Vec -77- 1 -76- N = append -83- N -82- Z -81- 1 -80- (Nil -85- N) -79- (Cons -89- N -88- Z -87- 4 -86- (Nil -94- N))
 
 ### Inferred definitions ###
 
@@ -152,9 +152,9 @@ append :31: (a :32: Type) -> (m :33: N) -> (n :34: N) -> (xs :35: Vec -37- m -36
   [74] -> [33]
   [75] -> [32]
 
-main :R: Vec -77- 1 -76- N = append -83- N -82- Z -81- 1 -80- (Nil -85- N) -79- (Cons -89- N -88- Z -87- 42 -86- (Nil -132- N)) {- constraints apply -}
-  [] -> [2,3,7,11,31,35,38,48,51,54,55,57,60,61,65,66,71,72,79,80,86,87,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,R]
-  [8] -> [1,56,85,132]
+main :R: Vec -77- 1 -76- N = append -83- N -82- Z -81- 1 -80- (Nil -85- N) -79- (Cons -89- N -88- Z -87- 4 -86- (Nil -94- N)) {- constraints apply -}
+  [] -> [2,3,7,11,31,35,38,48,51,54,55,57,60,61,65,66,71,72,79,80,86,87,90,91,92,93,R]
+  [8] -> [1,56,85,94]
   [9] -> [14,36]
   [10] -> [15,37]
   [12] -> [1,45,58,68,89]
@@ -210,7 +210,7 @@ main :R: Vec -77- 1 -76- N = append -83- N -82- Z -81- 1 -80- (Nil -85- N) -79- 
   [85] -> [8]
   [88] -> [13]
   [89] -> [12]
-  [132] -> [8]
+  [94] -> [8]
 
 plus :19: (m :20: N) -> (n :21: N) -> N = \(m :22: N) (n :23: N).
   case -24- m of
@@ -225,8 +225,8 @@ plus :19: (m :20: N) -> (n :21: N) -> N = \(m :22: N) (n :23: N).
 
 ### Constraints ###
 
-[] -> [2,3,7,11,31,35,38,48,51,54,55,57,60,61,65,66,71,72,79,80,86,87,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,R]
-[8] -> [1,56,85,132]
+[] -> [2,3,7,11,31,35,38,48,51,54,55,57,60,61,65,66,71,72,79,80,86,87,90,91,92,93,R]
+[8] -> [1,56,85,94]
 [9] -> [14,36]
 [10] -> [15,37]
 [12] -> [1,45,58,68,89]
@@ -282,11 +282,11 @@ plus :19: (m :20: N) -> (n :21: N) -> N = \(m :22: N) (n :23: N).
 [85] -> [8]
 [88] -> [13]
 [89] -> [12]
-[132] -> [8]
+[94] -> [8]
 
 ### Solution ###
 
-[2,3,7,11,31,35,38,48,51,54,55,57,60,61,65,66,71,72,79,80,86,87,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,R]
+[2,3,7,11,31,35,38,48,51,54,55,57,60,61,65,66,71,72,79,80,86,87,90,91,92,93,R]
 
 ### Annotated ###
 
@@ -320,7 +320,7 @@ append :R: (a :E: Type) -> (m :E: N) -> (n :E: N) -> (xs :R: Vec -E- m -E- a) ->
       | m = S -E- m'
       => Cons -E- a -E- (plus -E- m' -E- n) -R- x -R- (append -E- a -E- m' -E- n -R- xs' -R- ys)
 
-main :R: Vec -E- 1 -E- N = append -E- N -E- Z -E- 1 -R- (Nil -E- N) -R- (Cons -E- N -E- Z -R- 42 -R- (Nil -E- N))
+main :R: Vec -E- 1 -E- N = append -E- N -E- Z -E- 1 -R- (Nil -E- N) -R- (Cons -E- N -E- Z -R- 4 -R- (Nil -E- N))
 
 ### Specialised ###
 
@@ -354,7 +354,7 @@ append :R: (a :E: Type) -> (m :E: N) -> (n :E: N) -> (xs :R: Vec -E- m -E- a) ->
       | m = S -E- m'
       => Cons -E- a -E- (plus -E- m' -E- n) -R- x -R- (append -E- a -E- m' -E- n -R- xs' -R- ys)
 
-main :R: Vec -E- 1 -E- N = append -E- N -E- Z -E- 1 -R- (Nil -E- N) -R- (Cons -E- N -E- Z -R- 42 -R- (Nil -E- N))
+main :R: Vec -E- 1 -E- N = append -E- N -E- Z -E- 1 -R- (Nil -E- N) -R- (Cons -E- N -E- Z -R- 4 -R- (Nil -E- N))
 
 ### Final annotation ###
 
@@ -388,7 +388,7 @@ append :R: (a :E: Type) -> (m :E: N) -> (n :E: N) -> (xs :R: Vec -E- m -E- a) ->
       | m = S -E- m'
       => Cons -E- a -E- (plus -E- m' -E- n) -R- x -R- (append -E- a -E- m' -E- n -R- xs' -R- ys)
 
-main :R: Vec -E- 1 -E- N = append -E- N -E- Z -E- 1 -R- (Nil -E- N) -R- (Cons -E- N -E- Z -R- 42 -R- (Nil -E- N))
+main :R: Vec -E- 1 -E- N = append -E- N -E- Z -E- 1 -R- (Nil -E- N) -R- (Cons -E- N -E- Z -R- 4 -R- (Nil -E- N))
 
 ### Verification ###
 
@@ -396,13 +396,13 @@ Verification successful.
 
 ### Pruned ###
 
-postulate Z
+postulate Z : N
 
-postulate S
+postulate S : (x) -> N
 
-postulate Nil
+postulate Nil : Vec
 
-postulate Cons
+postulate Cons : (x) -> (xs) -> Vec
 
 append = \xs ys.
   case xs of
@@ -411,11 +411,11 @@ append = \xs ys.
     Cons x xs'
       => Cons x (append xs' ys)
 
-main = append Nil (Cons 42 Nil)
+main = append Nil (Cons 4 Nil)
 
 ### Normal forms ###
 
 unerased:
-  Cons N Z 42 (Nil N)
+  Cons N Z 4 (Nil N)
 erased:
-  Cons 42 Nil
+  Cons 4 Nil

@@ -220,9 +220,9 @@ Verification successful.
 
 ### Pruned ###
 
-postulate Z
+postulate Z : Nat
 
-postulate S
+postulate S : (_) -> Nat
 
 plus = \n m.
   case n of
@@ -243,7 +243,7 @@ main =
       S x'
         => f (S x')
   in 
-    let postulate Q
+    let postulate Q : Nat
     in 
       let three = 3
       in plus (apply id 2) (apply (const Q) three)

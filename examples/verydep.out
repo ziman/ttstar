@@ -287,11 +287,11 @@ Verification successful.
 
 ### Pruned ###
 
-postulate Just
+postulate Just : (x) -> Maybe
 
-postulate Bool
+postulate Bool : Type
 
-postulate False
+postulate False : Bool
 
 f = \x.
   case x of

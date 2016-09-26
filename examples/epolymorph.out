@@ -330,11 +330,11 @@ Verification successful.
 
 ### Pruned ###
 
-postulate Z
+postulate Z : Nat
 
-postulate S
+postulate S : (n) -> Nat
 
-postulate Plus
+postulate Plus : (x) -> (y) -> Nat
 
 id = \x.
   case x of
