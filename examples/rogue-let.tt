@@ -1,0 +1,12 @@
+-- vim: ft=idris
+
+data Bool : Type.
+  T : Bool,
+  F : Bool.
+
+not (x : Bool) : Bool
+  = case x of
+      T => F,
+      F => T.
+
+main :R: Bool -> Bool = not.
