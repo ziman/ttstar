@@ -94,37 +94,27 @@ main :R: Type = Tuple -32- (f -34- B -33- T) -31- (f -36- B -35- F) -30- (f -38-
 
 ### Inferred definitions ###
 
-postulate B :9: U {- constraints apply -}
-  [] -> [9,R]
+postulate B :9: U
 
-postulate Bool :2: Type {- constraints apply -}
-  [] -> [2,R]
+postulate Bool :2: Type
 
-postulate F :4: Bool {- constraints apply -}
-  [] -> [4,R]
+postulate F :4: Bool
 
-postulate M :10: U {- constraints apply -}
-  [] -> [10,R]
+postulate M :10: U
 
-postulate Mool :5: Type {- constraints apply -}
-  [] -> [5,R]
+postulate Mool :5: Type
 
-postulate Q :6: Mool {- constraints apply -}
-  [] -> [6,R]
+postulate Q :6: Mool
 
-postulate T :3: Bool {- constraints apply -}
-  [] -> [3,R]
+postulate T :3: Bool
 
-postulate Tuple :1: (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type {- constraints apply -}
-  [] -> [1,R]
+postulate Tuple :1: (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type
 
 postulate Type :E: Type
 
-postulate U :8: Type {- constraints apply -}
-  [] -> [8,R]
+postulate U :8: Type
 
-postulate W :7: Mool {- constraints apply -}
-  [] -> [7,R]
+postulate W :7: Mool
 
 f :17: (u :18: U) -> (x :19: ty -20- u) -> Type = \(u :21: U) (x :22: ty -23- u).
   case -24- x of
@@ -140,7 +130,7 @@ f :17: (u :18: U) -> (x :19: ty -20- u) -> Type = \(u :21: U) (x :22: ty -23- u)
     W/28
       | u = M
       => Mool {- constraints apply -}
-  [] -> [2,5,17,19,22,24,R]
+  [] -> [2,5,19,22,24,R]
   [3] -> [25]
   [4] -> [26]
   [6] -> [27]
@@ -167,7 +157,7 @@ ty :11: (u :12: U) -> Type = \(u :13: U).
       => Bool
     M/16
       => Mool {- constraints apply -}
-  [] -> [2,5,11,12,13,14,R]
+  [] -> [2,5,12,13,14,R]
   [9] -> [15]
   [10] -> [16]
   [15] -> [9]

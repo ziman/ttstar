@@ -72,34 +72,25 @@ main :R: Nat = vlen -67- Bool -66- 2 -65- testVec
 
 ### Inferred definitions ###
 
-postulate Bool :1: Type {- constraints apply -}
-  [] -> [1,R]
+postulate Bool :1: Type
 
-postulate False :3: Bool {- constraints apply -}
-  [] -> [3,R]
+postulate False :3: Bool
 
-postulate Nat :4: Type {- constraints apply -}
-  [] -> [4,R]
+postulate Nat :4: Type
 
-postulate S :6: (n :R: Nat) -> Nat {- constraints apply -}
-  [] -> [6,R]
+postulate S :6: (n :R: Nat) -> Nat
 
-postulate True :2: Bool {- constraints apply -}
-  [] -> [2,R]
+postulate True :2: Bool
 
 postulate Type :E: Type
 
-postulate VCons :14: (a :15: Type) -> (n :16: Nat) -> (x :17: a) -> (xs :18: Vec -20- n -19- a) -> Vec -22- (S -23- n) -21- a {- constraints apply -}
-  [] -> [14,R]
+postulate VCons :14: (a :15: Type) -> (n :16: Nat) -> (x :17: a) -> (xs :18: Vec -20- n -19- a) -> Vec -22- (S -23- n) -21- a
 
-postulate VNil :10: (a :11: Type) -> Vec -13- Z -12- a {- constraints apply -}
-  [] -> [10,R]
+postulate VNil :10: (a :11: Type) -> Vec -13- Z -12- a
 
-postulate Vec :7: (_ :8: Nat) -> (_ :9: Type) -> Type {- constraints apply -}
-  [] -> [7,R]
+postulate Vec :7: (_ :8: Nat) -> (_ :9: Type) -> Type
 
-postulate Z :5: Nat {- constraints apply -}
-  [] -> [5,R]
+postulate Z :5: Nat
 
 main :R: Nat = vlen -67- Bool -66- 2 -65- testVec {- constraints apply -}
   [] -> [5,6,10,14,18,24,27,32,35,36,38,42,46,47,50,55,60,65,R]
@@ -147,7 +138,7 @@ main :R: Nat = vlen -67- Bool -66- 2 -65- testVec {- constraints apply -}
   [69] -> [54]
 
 testVec :50: Vec -52- 2 -51- Bool = VCons -58- Bool -57- 1 -56- True -55- (VCons -63- Bool -62- Z -61- False -60- (VNil -64- Bool)) {- constraints apply -}
-  [] -> [14,50,R]
+  [] -> [14,R]
   [11,18] -> [1,64]
   [12,18] -> [19]
   [13,18] -> [20]

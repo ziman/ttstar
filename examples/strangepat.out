@@ -40,20 +40,15 @@ main :R: Bool = fst -16- (P -17- T)
 
 ### Inferred definitions ###
 
-postulate Bool :1: Type {- constraints apply -}
-  [] -> [1,R]
+postulate Bool :1: Type
 
-postulate F :3: Bool {- constraints apply -}
-  [] -> [3,R]
+postulate F :3: Bool
 
-postulate P :5: (_ :6: Bool) -> (_ :7: Bool) -> Pair {- constraints apply -}
-  [] -> [5,R]
+postulate P :5: (_ :6: Bool) -> (_ :7: Bool) -> Pair
 
-postulate Pair :4: Type {- constraints apply -}
-  [] -> [4,R]
+postulate Pair :4: Type
 
-postulate T :2: Bool {- constraints apply -}
-  [] -> [2,R]
+postulate T :2: Bool
 
 postulate Type :E: Type
 
@@ -61,7 +56,7 @@ fst :8: (x :9: (_ :10: Bool) -> Pair) -> Bool = \(x :11: (_ :12: Bool) -> Pair).
   case -13- x of
     P/14 (y :15: Bool)
       => y {- constraints apply -}
-  [] -> [6,8,9,11,13,15,R]
+  [] -> [6,9,11,13,15,R]
   [5] -> [14]
   [7] -> [10]
   [10] -> [7]

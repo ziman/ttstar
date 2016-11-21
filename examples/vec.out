@@ -70,25 +70,19 @@ main :R: Vec -77- 1 -76- N = append -83- N -82- Z -81- 1 -80- (Nil -85- N) -79- 
 
 ### Inferred definitions ###
 
-postulate Cons :11: (a :12: Type) -> (n :13: N) -> (x :R: a) -> (xs :R: Vec -15- n -14- a) -> Vec -17- (S -18- n) -16- a {- constraints apply -}
-  [] -> [11,R]
+postulate Cons :11: (a :12: Type) -> (n :13: N) -> (x :R: a) -> (xs :R: Vec -15- n -14- a) -> Vec -17- (S -18- n) -16- a
 
-postulate N :1: Type {- constraints apply -}
-  [] -> [1,R]
+postulate N :1: Type
 
-postulate Nil :7: (a :8: Type) -> Vec -10- Z -9- a {- constraints apply -}
-  [] -> [7,R]
+postulate Nil :7: (a :8: Type) -> Vec -10- Z -9- a
 
-postulate S :3: (x :R: N) -> N {- constraints apply -}
-  [] -> [3,R]
+postulate S :3: (x :R: N) -> N
 
 postulate Type :E: Type
 
-postulate Vec :4: (_ :5: N) -> (_ :6: Type) -> Type {- constraints apply -}
-  [] -> [4,R]
+postulate Vec :4: (_ :5: N) -> (_ :6: Type) -> Type
 
-postulate Z :2: N {- constraints apply -}
-  [] -> [2,R]
+postulate Z :2: N
 
 append :31: (a :32: Type) -> (m :33: N) -> (n :34: N) -> (xs :35: Vec -37- m -36- a) -> (ys :38: Vec -40- n -39- a) -> Vec -42- (plus -44- m -43- n) -41- a = \(a :45: Type) (m :46: N) (n :47: N) (xs :48: Vec -50- m -49- a) (ys :51: Vec -53- n -52- a).
   case -54- xs of

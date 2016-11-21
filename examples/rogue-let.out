@@ -36,14 +36,11 @@ main :R: (_ :10: Bool) -> Bool = not
 
 ### Inferred definitions ###
 
-postulate Bool :1: Type {- constraints apply -}
-  [] -> [1,R]
+postulate Bool :1: Type
 
-postulate F :3: Bool {- constraints apply -}
-  [] -> [3,R]
+postulate F :3: Bool
 
-postulate T :2: Bool {- constraints apply -}
-  [] -> [2,R]
+postulate T :2: Bool
 
 postulate Type :E: Type
 
@@ -56,7 +53,7 @@ not :4: (x :5: Bool) -> Bool = \(x :6: Bool).
       => F
     F/9
       => T {- constraints apply -}
-  [] -> [2,3,4,5,6,7,8,9,R]
+  [] -> [2,3,5,6,7,8,9,R]
 
 
 ### Constraints ###

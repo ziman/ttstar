@@ -66,24 +66,21 @@ main :R: Nat =
 
 ### Inferred definitions ###
 
-postulate Nat :1: Type {- constraints apply -}
-  [] -> [1,R]
+postulate Nat :1: Type
 
-postulate S :3: (_ :R: Nat) -> Nat {- constraints apply -}
-  [] -> [3,R]
+postulate S :3: (_ :R: Nat) -> Nat
 
 postulate Type :E: Type
 
-postulate Z :2: Nat {- constraints apply -}
-  [] -> [2,R]
+postulate Z :2: Nat
 
 const :19: (x :20: Nat) -> (y :21: Nat) -> Nat = (\x :22: Nat. (\y :23: Nat. x)) {- constraints apply -}
-  [] -> [19,20,22,R]
+  [] -> [20,22,R]
   [21] -> [23]
   [23] -> [21]
 
 id :16: (x :17: Nat) -> Nat = (\x :18: Nat. x) {- constraints apply -}
-  [] -> [16,17,18,R]
+  [] -> [17,18,R]
 
 main :R: Nat = 
   let apply :24: (f :25: (_ :26: Nat) -> Nat) -> (x :27: Nat) -> Nat = \(f :28: (_ :29: Nat) -> Nat) (x :30: Nat).

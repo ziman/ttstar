@@ -42,22 +42,17 @@ main :R: N = vlen -19- Z -18- Nil
 
 ### Inferred definitions ###
 
-postulate N :1: Type {- constraints apply -}
-  [] -> [1,R]
+postulate N :1: Type
 
-postulate Nil :7: Vec -8- Z {- constraints apply -}
-  [] -> [7,R]
+postulate Nil :7: Vec -8- Z
 
-postulate S :3: (x :4: N) -> N {- constraints apply -}
-  [] -> [3,R]
+postulate S :3: (x :4: N) -> N
 
 postulate Type :E: Type
 
-postulate Vec :5: (_ :6: N) -> Type {- constraints apply -}
-  [] -> [5,R]
+postulate Vec :5: (_ :6: N) -> Type
 
-postulate Z :2: N {- constraints apply -}
-  [] -> [2,R]
+postulate Z :2: N
 
 main :R: N = vlen -19- Z -18- Nil {- constraints apply -}
   [] -> [2,9,10,13,19,R]
@@ -77,7 +72,7 @@ vlen :9: (n :10: N) -> (xs :11: Vec -12- n) -> N = \(n :13: N) (xs :14: Vec -15-
     Nil/17
       | n = Z
       => n {- constraints apply -}
-  [] -> [9,10,13,R]
+  [] -> [10,13,R]
   [7] -> [17]
   [8] -> [11,12]
   [11] -> [14]

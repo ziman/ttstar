@@ -112,31 +112,23 @@ main :R: Mool = invert -64- F -63- Q
 
 ### Inferred definitions ###
 
-postulate Bool :4: Type {- constraints apply -}
-  [] -> [4,R]
+postulate Bool :4: Type
 
-postulate F :6: Bool {- constraints apply -}
-  [] -> [6,R]
+postulate F :6: Bool
 
-postulate Id :7: (a :8: Type) -> (x :9: a) -> (y :10: a) -> Type {- constraints apply -}
-  [] -> [7,R]
+postulate Id :7: (a :8: Type) -> (x :9: a) -> (y :10: a) -> Type
 
-postulate Mool :1: Type {- constraints apply -}
-  [] -> [1,R]
+postulate Mool :1: Type
 
-postulate Q :2: Mool {- constraints apply -}
-  [] -> [2,R]
+postulate Q :2: Mool
 
-postulate Refl :11: (a :12: Type) -> (x :13: a) -> Id -16- a -15- x -14- x {- constraints apply -}
-  [] -> [11,R]
+postulate Refl :11: (a :12: Type) -> (x :13: a) -> Id -16- a -15- x -14- x
 
-postulate T :5: Bool {- constraints apply -}
-  [] -> [5,R]
+postulate T :5: Bool
 
 postulate Type :E: Type
 
-postulate W :3: Mool {- constraints apply -}
-  [] -> [3,R]
+postulate W :3: Mool
 
 invert :50: (t :51: Bool) -> (x :52: retTy -53- t) -> retTy -54- t = \(t :55: Bool) (x :56: retTy -57- t).
   case -58- t of
@@ -144,7 +136,7 @@ invert :50: (t :51: Bool) -> (x :52: retTy -53- t) -> retTy -54- t = \(t :55: Bo
       => not -60- x
     F/61
       => mot -62- x {- constraints apply -}
-  [] -> [2,3,5,6,17,18,19,20,21,22,44,45,46,47,48,49,50,51,52,55,56,58,59,60,61,62,R]
+  [] -> [2,3,5,6,17,18,19,20,21,22,44,45,46,47,48,49,51,52,55,56,58,59,60,61,62,R]
 
 main :R: Mool = invert -64- F -63- Q {- constraints apply -}
   [] -> [2,3,5,6,17,18,19,20,21,22,44,45,46,47,48,49,50,51,52,55,56,58,59,60,61,62,63,64,R]
@@ -155,7 +147,7 @@ mot :44: (m :45: Mool) -> Mool = \(m :46: Mool).
       => W
     W/49
       => Q {- constraints apply -}
-  [] -> [2,3,44,45,46,47,48,49,R]
+  [] -> [2,3,45,46,47,48,49,R]
 
 not :17: (x :18: Bool) -> Bool = \(x :19: Bool).
   case -20- x of
@@ -163,7 +155,7 @@ not :17: (x :18: Bool) -> Bool = \(x :19: Bool).
       => F
     F/22
       => T {- constraints apply -}
-  [] -> [5,6,17,18,19,20,21,22,R]
+  [] -> [5,6,18,19,20,21,22,R]
 
 notnot :23: (x :24: Bool) -> Id -27- Bool -26- x -25- (not -28- (not -29- x)) = \(x :30: Bool).
   case -31- x of
@@ -171,7 +163,7 @@ notnot :23: (x :24: Bool) -> Id -27- Bool -26- x -25- (not -28- (not -29- x)) = 
       => Refl -34- Bool -33- T
     F/35
       => Refl -37- Bool -36- F {- constraints apply -}
-  [] -> [11,23,24,30,31,R]
+  [] -> [11,24,30,31,R]
   [5] -> [32]
   [6] -> [35]
   [12] -> [4,34,37]
@@ -195,7 +187,7 @@ retTy :38: (x :39: Bool) -> Type = \(x :40: Bool).
       => Bool
     F/43
       => Mool {- constraints apply -}
-  [] -> [1,4,38,39,40,41,R]
+  [] -> [1,4,39,40,41,R]
   [5] -> [42]
   [6] -> [43]
   [42] -> [5]

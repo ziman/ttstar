@@ -90,25 +90,19 @@ main :R: N =
 
 ### Inferred definitions ###
 
-postulate Cons :21: (n :22: N) -> (x :23: N) -> (xs :24: Vect -25- n) -> Vect -26- (S -27- n) {- constraints apply -}
-  [] -> [21,R]
+postulate Cons :21: (n :22: N) -> (x :23: N) -> (xs :24: Vect -25- n) -> Vect -26- (S -27- n)
 
-postulate N :1: Type {- constraints apply -}
-  [] -> [1,R]
+postulate N :1: Type
 
-postulate Nil :19: Vect -20- Z {- constraints apply -}
-  [] -> [19,R]
+postulate Nil :19: Vect -20- Z
 
-postulate S :3: (_ :4: N) -> N {- constraints apply -}
-  [] -> [3,R]
+postulate S :3: (_ :4: N) -> N
 
 postulate Type :E: Type
 
-postulate Vect :17: (_ :18: N) -> Type {- constraints apply -}
-  [] -> [17,R]
+postulate Vect :17: (_ :18: N) -> Type
 
-postulate Z :2: N {- constraints apply -}
-  [] -> [2,R]
+postulate Z :2: N
 
 main :R: N = 
   let pred :71: (x :72: N) -> N = \(x :73: N).
@@ -126,9 +120,9 @@ plus :5: (m :6: N) -> (n :7: N) -> N = \(m :8: N) (n :9: N).
       => n
     S/12 (m' :13: N)
       => S -14- (plus -16- m' -15- n) {- constraints apply -}
-  [] -> [3,5,6,7,8,9,10,12,R]
+  [] -> [3,6,7,8,9,10,12,R]
   [2] -> [11]
-  [4] -> [13,14,15,16]
+  [4] -> [5,13,14,15,16]
   [11] -> [2]
   [13] -> [4]
   [14] -> [4]
@@ -146,7 +140,7 @@ zipWith :28: (n :29: N) -> (f :30: (_ :31: N) -> (_ :32: N) -> N) -> (xs :33: Ve
       => case -69- ys of
         Nil/70
           => Nil {- constraints apply -}
-  [] -> [19,21,28,33,42,46,47,54,68,70,R]
+  [] -> [19,21,33,42,46,47,54,68,70,R]
   [20] -> [34,35,36,37]
   [22] -> [35,48,55,61]
   [23] -> [35,39,49,56,60]
@@ -154,7 +148,7 @@ zipWith :28: (n :29: N) -> (f :30: (_ :31: N) -> (_ :32: N) -> N) -> (xs :33: Ve
   [23,41] -> [56,62]
   [23,62] -> [41]
   [23,63] -> [40]
-  [24] -> [35,50,57,59,65]
+  [24] -> [28,35,50,57,59,65]
   [24,25] -> [37]
   [24,29] -> [48,67]
   [24,30] -> [39,66]

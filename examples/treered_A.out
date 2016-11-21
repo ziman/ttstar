@@ -56,25 +56,19 @@ main :R: N = vlen -43- 1 -42- (Cons -48- N -47- Z -46- 3 -45- (Nil -52- N))
 
 ### Inferred definitions ###
 
-postulate Cons :11: (a :12: Type) -> (n :13: N) -> (x :R: a) -> (xs :R: Vec -15- n -14- a) -> Vec -17- (S -18- n) -16- a {- constraints apply -}
-  [] -> [11,R]
+postulate Cons :11: (a :12: Type) -> (n :13: N) -> (x :R: a) -> (xs :R: Vec -15- n -14- a) -> Vec -17- (S -18- n) -16- a
 
-postulate N :1: Type {- constraints apply -}
-  [] -> [1,R]
+postulate N :1: Type
 
-postulate Nil :7: (a :8: Type) -> Vec -10- Z -9- a {- constraints apply -}
-  [] -> [7,R]
+postulate Nil :7: (a :8: Type) -> Vec -10- Z -9- a
 
-postulate S :3: (x :R: N) -> N {- constraints apply -}
-  [] -> [3,R]
+postulate S :3: (x :R: N) -> N
 
 postulate Type :E: Type
 
-postulate Vec :4: (_ :5: N) -> (_ :6: Type) -> Type {- constraints apply -}
-  [] -> [4,R]
+postulate Vec :4: (_ :5: N) -> (_ :6: Type) -> Type
 
-postulate Z :2: N {- constraints apply -}
-  [] -> [2,R]
+postulate Z :2: N
 
 main :R: N = vlen -43- 1 -42- (Cons -48- N -47- Z -46- 3 -45- (Nil -52- N)) {- constraints apply -}
   [] -> [2,3,7,11,19,21,25,28,29,31,35,39,40,42,45,46,49,50,51,R]

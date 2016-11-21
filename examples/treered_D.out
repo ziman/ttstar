@@ -90,34 +90,25 @@ main :R: Foo -46- True = g -47- (Just -49- Bool -48- True)
 
 ### Inferred definitions ###
 
-postulate Bool :1: Type {- constraints apply -}
-  [] -> [1,R]
+postulate Bool :1: Type
 
-postulate False :3: Bool {- constraints apply -}
-  [] -> [3,R]
+postulate False :3: Bool
 
-postulate Foo :4: (_ :5: Bool) -> Type {- constraints apply -}
-  [] -> [4,R]
+postulate Foo :4: (_ :5: Bool) -> Type
 
-postulate Just :15: (a :16: Type) -> (x :17: a) -> Maybe -18- a {- constraints apply -}
-  [] -> [15,R]
+postulate Just :15: (a :16: Type) -> (x :17: a) -> Maybe -18- a
 
-postulate Maybe :10: (_ :11: Type) -> Type {- constraints apply -}
-  [] -> [10,R]
+postulate Maybe :10: (_ :11: Type) -> Type
 
-postulate Nope :8: Foo -9- False {- constraints apply -}
-  [] -> [8,R]
+postulate Nope :8: Foo -9- False
 
-postulate Nothing :12: (a :13: Type) -> Maybe -14- a {- constraints apply -}
-  [] -> [12,R]
+postulate Nothing :12: (a :13: Type) -> Maybe -14- a
 
-postulate True :2: Bool {- constraints apply -}
-  [] -> [2,R]
+postulate True :2: Bool
 
 postulate Type :E: Type
 
-postulate Yeah :6: Foo -7- True {- constraints apply -}
-  [] -> [6,R]
+postulate Yeah :6: Foo -7- True
 
 f :19: (x :20: Maybe -21- Bool) -> Bool = \(x :22: Maybe -23- Bool).
   case -24- x of
@@ -127,7 +118,7 @@ f :19: (x :20: Maybe -21- Bool) -> Bool = \(x :22: Maybe -23- Bool).
     Nothing/28 (a :29: Type)
       | a = Bool
       => False {- constraints apply -}
-  [] -> [3,17,19,20,22,24,27,R]
+  [] -> [3,17,20,22,24,27,R]
   [12] -> [28]
   [13] -> [29]
   [14] -> [21]
@@ -152,7 +143,7 @@ g :30: (x :31: Maybe -32- Bool) -> Foo -33- (f -34- x) = \(x :35: Maybe -36- Boo
     Nothing/44 (a :45: Type)
       | a = Bool
       => Nope {- constraints apply -}
-  [] -> [6,8,17,30,31,35,37,40,41,R]
+  [] -> [6,8,17,31,35,37,40,41,R]
   [2] -> [42]
   [3] -> [43]
   [7] -> [33]

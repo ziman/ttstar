@@ -30,19 +30,16 @@ main :R: T = apply -16- const_A -15- B
 
 ### Inferred definitions ###
 
-postulate A :2: T {- constraints apply -}
-  [] -> [2,R]
+postulate A :2: T
 
-postulate B :3: T {- constraints apply -}
-  [] -> [3,R]
+postulate B :3: T
 
-postulate T :1: Type {- constraints apply -}
-  [] -> [1,R]
+postulate T :1: Type
 
 postulate Type :E: Type
 
 apply :7: (f :8: (x :9: T) -> T) -> (x :10: T) -> T = (\f :11: (_ :12: T) -> T. (\x :13: T. f -14- x)) {- constraints apply -}
-  [] -> [7,8,11,R]
+  [] -> [8,11,R]
   [9] -> [12]
   [10] -> [13]
   [12] -> [9,13,14]
@@ -50,7 +47,7 @@ apply :7: (f :8: (x :9: T) -> T) -> (x :10: T) -> T = (\f :11: (_ :12: T) -> T. 
   [14] -> [12]
 
 const_A :4: (_ :5: T) -> T = (\_ :6: T. A) {- constraints apply -}
-  [] -> [2,4,R]
+  [] -> [2,R]
   [5] -> [6]
   [6] -> [5]
 

@@ -74,28 +74,21 @@ main :R: Bool = f -37- (Just -39- Bool -38- False)
 
 ### Inferred definitions ###
 
-postulate Bool :11: Type {- constraints apply -}
-  [] -> [11,R]
+postulate Bool :11: Type
 
-postulate False :13: Bool {- constraints apply -}
-  [] -> [13,R]
+postulate False :13: Bool
 
-postulate Just :4: (a :5: Type) -> (x :6: a) -> Maybe -7- a {- constraints apply -}
-  [] -> [4,R]
+postulate Just :4: (a :5: Type) -> (x :6: a) -> Maybe -7- a
 
-postulate Maybe :2: (_ :3: Type) -> Type {- constraints apply -}
-  [] -> [2,R]
+postulate Maybe :2: (_ :3: Type) -> Type
 
-postulate Nothing :8: (a :9: Type) -> Maybe -10- a {- constraints apply -}
-  [] -> [8,R]
+postulate Nothing :8: (a :9: Type) -> Maybe -10- a
 
-postulate True :12: Bool {- constraints apply -}
-  [] -> [12,R]
+postulate True :12: Bool
 
 postulate Type :E: Type
 
-postulate Void :1: Type {- constraints apply -}
-  [] -> [1,R]
+postulate Void :1: Type
 
 f :25: (x :26: Maybe -27- Bool) -> retTy -28- x = \(x :29: Maybe -30- Bool).
   case -31- x of
@@ -105,7 +98,7 @@ f :25: (x :26: Maybe -27- Bool) -> retTy -28- x = \(x :29: Maybe -30- Bool).
     Nothing/35 (a :36: Type)
       | a = Bool
       => Bool {- constraints apply -}
-  [] -> [6,11,25,26,29,31,34,R]
+  [] -> [6,11,26,29,31,34,R]
   [4] -> [32]
   [5] -> [33]
   [7] -> [27]
@@ -139,7 +132,7 @@ retTy :14: (x :15: Maybe -16- Bool) -> Type = \(x :17: Maybe -18- Bool).
     Nothing/23 (a :24: Type)
       | a = Bool
       => Type {- constraints apply -}
-  [] -> [11,14,15,17,19,E,R]
+  [] -> [11,15,17,19,E,R]
   [4] -> [20]
   [5] -> [21]
   [6] -> [22]

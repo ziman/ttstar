@@ -58,20 +58,15 @@ main :R: Id -37- Bool -36- F -35- (not -38- (not -39- F)) = notnot -40- F
 
 ### Inferred definitions ###
 
-postulate Bool :1: Type {- constraints apply -}
-  [] -> [1,R]
+postulate Bool :1: Type
 
-postulate F :3: Bool {- constraints apply -}
-  [] -> [3,R]
+postulate F :3: Bool
 
-postulate Id :4: (a :5: Type) -> (x :6: a) -> (y :7: a) -> Type {- constraints apply -}
-  [] -> [4,R]
+postulate Id :4: (a :5: Type) -> (x :6: a) -> (y :7: a) -> Type
 
-postulate Refl :8: (a :9: Type) -> (x :10: a) -> Id -13- a -12- x -11- x {- constraints apply -}
-  [] -> [8,R]
+postulate Refl :8: (a :9: Type) -> (x :10: a) -> Id -13- a -12- x -11- x
 
-postulate T :2: Bool {- constraints apply -}
-  [] -> [2,R]
+postulate T :2: Bool
 
 postulate Type :E: Type
 
@@ -101,7 +96,7 @@ not :14: (x :15: Bool) -> Bool = \(x :16: Bool).
       => F
     F/19
       => T {- constraints apply -}
-  [] -> [2,3,14,15,16,17,18,19,R]
+  [] -> [2,3,15,16,17,18,19,R]
 
 notnot :20: (x :21: Bool) -> Id -24- Bool -23- x -22- (not -25- (not -26- x)) = \(x :27: Bool).
   case -28- x of
@@ -109,7 +104,7 @@ notnot :20: (x :21: Bool) -> Id -24- Bool -23- x -22- (not -25- (not -26- x)) = 
       => Refl -31- Bool -30- T
     F/32
       => Refl -34- Bool -33- F {- constraints apply -}
-  [] -> [8,20,21,27,28,R]
+  [] -> [8,21,27,28,R]
   [2] -> [29]
   [3] -> [32]
   [9] -> [1,31,34]
