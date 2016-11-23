@@ -23,7 +23,7 @@
       x)))
 
 (define main
-  (let ((apply (lambda (f)
+  (let ((apply_TT (lambda (f)
     (lambda (x)
       (case (car x)
         ((Z) (f Z))
@@ -31,6 +31,6 @@
           (f (S x_)))))))))
     (let ((Q (list 'Q)))
       (let ((three (S (S (S Z)))))
-        ((plus ((apply id) (S (S Z)))) ((apply (const Q)) three))))))
+        ((plus ((apply_TT id) (S (S Z)))) ((apply_TT (const Q)) three))))))
 
-(print main)(newline)
+(print main)

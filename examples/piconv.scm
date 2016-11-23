@@ -4,11 +4,11 @@
 (define const_A
   A)
 
-(define apply
+(define apply_TT
   (lambda (f)
     f))
 
 (define main
-  (apply const_A))
+  (apply_TT const_A))
 
-(print main)(newline)
+(print main)

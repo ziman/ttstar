@@ -13,4 +13,4 @@
 (define main
   not)
 
-(print main)(newline)
+(print main)

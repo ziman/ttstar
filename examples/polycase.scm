@@ -32,4 +32,4 @@
 (define main
   ((invert F) Q))
 
-(print main)(newline)
+(print main)

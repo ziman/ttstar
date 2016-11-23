@@ -14,4 +14,4 @@
 (define main
   (fst (P T)))
 
-(print main)(newline)
+(print main)

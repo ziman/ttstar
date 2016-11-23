@@ -8,4 +8,4 @@
 (define main
   (vlen Z))
 
-(print main)(newline)
+(print main)

@@ -25,4 +25,4 @@
 (define main
   (((f id) B) const_A))
 
-(print main)(newline)
+(print main)

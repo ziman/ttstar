@@ -21,4 +21,4 @@
 (define main
   (g (Just True)))
 
-(print main)(newline)
+(print main)

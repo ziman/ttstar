@@ -12,4 +12,4 @@
 (define main
   (notnot F))
 
-(print main)(newline)
+(print main)

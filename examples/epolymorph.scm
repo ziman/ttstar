@@ -32,13 +32,13 @@
         (lambda (w)
           ((Plus (g z)) (h w)))))))
 
-(define apply
+(define apply_TT
   (lambda (f)
     (lambda (x)
       (f x))))
 
 (define test_1
-  ((Plus ((apply id) (S (S Z)))) ((apply const_3) two)))
+  ((Plus ((apply_TT id) (S (S Z)))) ((apply_TT const_3) two)))
 
 (define test_2
   ((((f id) (S (S Z))) const_3) (S Z)))
@@ -46,4 +46,4 @@
 (define main
   ((Plus test_1) test_2))
 
-(print main)(newline)
+(print main)

@@ -2,4 +2,4 @@
   (lambda (x)
     x))
 
-(print main)(newline)
+(print main)

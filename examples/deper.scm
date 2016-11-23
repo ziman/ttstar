@@ -25,4 +25,4 @@
 (define main
   ((TB ((f T) F)) (f F)))
 
-(print main)(newline)
+(print main)

@@ -8,9 +8,18 @@ import Codegen.Common
 indent :: Doc -> Doc
 indent = nest 2
 
+specialNames :: [String]
+specialNames =
+    [ "apply"
+    , "append"
+    ]
+
 cgName :: Name -> Doc
-cgName = text . map mogrify . show
+cgName = text . specialName . map mogrify . show
   where
+    specialName n
+        | n `elem` specialNames = n ++ "_TT"
+        | otherwise = n
     mogrify '\'' = '_'
     mogrify c = c
 
@@ -122,7 +131,7 @@ cgProgram :: Program () -> Doc
 cgProgram (Prog defs) = vcat [
     cgDef def $+$ blankLine
     | def <- defs
-    ] $+$ text "(print main)(newline)"
+    ] $+$ text "(print main)"  -- add (newline) for racket
 
 codegen :: Codegen
 codegen = Codegen
