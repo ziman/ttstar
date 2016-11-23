@@ -10,7 +10,7 @@
 (define F
   (list 'F))
 
-(define not
+(define not_TT
   (lambda (x)
     (case (car x)
       ((T) F)
@@ -26,7 +26,7 @@
   (lambda (t)
     (lambda (x)
       (case (car t)
-        ((T) (not x))
+        ((T) (not_TT x))
         ((F) (mot x))))))
 
 (define main

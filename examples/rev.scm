@@ -45,11 +45,11 @@
         (let* ((_args-rxs_ (cdr _args-x)) (rxs_ (car _args-rxs_)))
           ((Cons x) (reverse_ rxs_))))))))
 
-(define reverse
+(define reverse_TT
   (lambda (xs)
     (reverse_ (rev xs))))
 
 (define main
-  (reverse ((Cons T) ((Cons F) ((Cons T) ((Cons F) Nil))))))
+  (reverse_TT ((Cons T) ((Cons F) ((Cons T) ((Cons F) Nil))))))
 
 (print main)

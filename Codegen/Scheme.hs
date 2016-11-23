@@ -12,6 +12,8 @@ specialNames :: [String]
 specialNames =
     [ "apply"
     , "append"
+    , "not"
+    , "reverse"
     ]
 
 cgName :: Name -> Doc
