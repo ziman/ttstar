@@ -252,7 +252,7 @@ verTm r (Bind Pi d@(Def n s ty (Abstract Var) _) tm) = bt ("PI", r, n) $ do
 
 verTm r (Bind Let d tm) = bt ("LET", r, d) $ do
     verDef d
-    with d $ verTm r tm
+    with d{defBody = Abstract Var} $ verTm r tm
 
 verTm r (App s f x) = bt ("APP", r, f, s, x) $ do
     ctx <- getCtx

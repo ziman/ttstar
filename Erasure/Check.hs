@@ -312,7 +312,7 @@ checkTm t@(Bind Pi d@(Def n r ty (Abstract Var) _noCs) tm) = bt ("PI", t) $ do
 
 checkTm t@(Bind Let d tm) = bt ("LET", t) $ do
     d' <- checkDef d
-    (tmty, tmcs) <- with d' $ checkTm tm
+    (tmty, tmcs) <- with d'{defBody = Abstract Var} $ checkTm tm
     return (tmty, tmcs)
 
 checkTm t@(App app_r f x) = bt ("APP", t) $ do
