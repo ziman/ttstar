@@ -296,6 +296,14 @@ main = f (Just False)
 ### Normal forms ###
 
 unerased:
-  False
+  
+  let postulate Bool : Type
+  in 
+    let postulate False : Bool
+    in False
 erased:
-  False
+  
+  let postulate Bool : Type
+  in 
+    let postulate False : Bool
+    in False

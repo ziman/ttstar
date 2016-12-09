@@ -84,18 +84,23 @@ red form ctx t
 
 red form ctx t@(I n i) = red form ctx (V n)
 
+-- abstract terms won't reduce so we just need to go underneath
+red form ctx t@(Bind Let d@(Def n r ty (Abstract _) cs) tm)
+    | n `occursIn` rbody = Bind Let d rbody
+    | otherwise = rbody
+  where
+    rbody = red form (M.insert n d ctx) tm
+
 -- bound terms
-red form ctx t@(Bind Let d@(Def n r ty (Term val) cs) tm)
-    -- made progress but there's still stuff to do -> reduce eagerly in body
+red form ctx t@(Bind Let d@(Def n r ty body cs) tm)
+    -- no progress
+    | rbody == tm = Bind Let d tm
+    -- made progress but there still stuff to do -> reduce eagerly in body again
     | n `occursIn` rbody = red form ctx (Bind Let d rbody)
     -- nothing left to reduce
     | otherwise = rbody
   where
-    rbody = red form (M.insert n d ctx) $ subst n val tm
-
--- postulates and stuff -- this is incorrect but we can't do better
-red form ctx t@(Bind Let d tm)
-    = red form (M.insert (defName d) d ctx) tm
+    rbody = red form (M.insert n d ctx) tm
 
 red WHNF ctx t@(Bind b d tm) = t
 red  NF  ctx t@(Bind b d tm) = Bind b (redDef NF ctx d) (red NF ctx' tm)

@@ -399,6 +399,16 @@ main = vlen testVec
 ### Normal forms ###
 
 unerased:
-  2
+  
+  let postulate Nat : Type
+  in 
+    let postulate Z : Nat
+    in 
+      let postulate S : (n :R: Nat) -> Nat
+      in 2
 erased:
-  2
+  
+  let postulate Z : Nat
+  in 
+    let postulate S : (n) -> Nat
+    in 2

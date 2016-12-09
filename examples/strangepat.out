@@ -155,6 +155,12 @@ main = fst (P T)
 ### Normal forms ###
 
 unerased:
-  T
+  
+  let postulate Bool : Type
+  in 
+    let postulate T : Bool
+    in T
 erased:
-  T
+  
+  let postulate T : Bool
+  in T

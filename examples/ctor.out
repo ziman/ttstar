@@ -167,6 +167,12 @@ main = not T
 ### Normal forms ###
 
 unerased:
-  MkUnit
+  
+  let postulate Unit : Type
+  in 
+    let postulate MkUnit : Unit
+    in MkUnit
 erased:
-  MkUnit
+  
+  let postulate MkUnit : Unit
+  in MkUnit

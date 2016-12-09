@@ -176,6 +176,12 @@ main = vlen Z
 ### Normal forms ###
 
 unerased:
-  Z
+  
+  let postulate N : Type
+  in 
+    let postulate Z : N
+    in Z
 erased:
-  Z
+  
+  let postulate Z : N
+  in Z

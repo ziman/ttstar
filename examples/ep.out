@@ -335,6 +335,20 @@ main = Op test1 test2
 ### Normal forms ###
 
 unerased:
-  Op B A
+  
+  let postulate T : Type
+  in 
+    let postulate A : T
+    in 
+      let postulate B : T
+      in 
+        let postulate Op : (x :R: T) -> (y :R: T) -> T
+        in Op B A
 erased:
-  Op B A
+  
+  let postulate A : T
+  in 
+    let postulate B : T
+    in 
+      let postulate Op : (x) -> (y) -> T
+      in Op B A

@@ -137,6 +137,30 @@ main = not
 ### Normal forms ###
 
 unerased:
-  not
+  
+  let postulate Bool : Type
+  in 
+    let postulate T : Bool
+    in 
+      let postulate F : Bool
+      in 
+        let not : (x : Bool) -> Bool = \(x : Bool).
+          case x of
+            T
+              => F
+            F
+              => T
+        in not
 erased:
-  not
+  
+  let postulate T : Bool
+  in 
+    let postulate F : Bool
+    in 
+      let not = \x.
+        case x of
+          T
+            => F
+          F
+            => T
+      in not

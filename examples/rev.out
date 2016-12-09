@@ -2248,6 +2248,26 @@ main = reverse (Cons T (Cons F (Cons T (Cons F Nil))))
 ### Normal forms ###
 
 unerased:
-  Cons F (Cons T (Cons F (Cons T Nil)))
+  
+  let postulate Bool : Type
+  in 
+    let postulate T : Bool
+    in 
+      let postulate F : Bool
+      in 
+        let postulate List : Type
+        in 
+          let postulate Nil : List
+          in 
+            let postulate Cons : (x :R: Bool) -> (xs :R: List) -> List
+            in Cons F (Cons T (Cons F (Cons T Nil)))
 erased:
-  Cons F (Cons T (Cons F (Cons T Nil)))
+  
+  let postulate T : Bool
+  in 
+    let postulate F : Bool
+    in 
+      let postulate Nil : List
+      in 
+        let postulate Cons : (x) -> (xs) -> List
+        in Cons F (Cons T (Cons F (Cons T Nil)))

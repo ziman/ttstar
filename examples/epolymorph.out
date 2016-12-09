@@ -352,6 +352,20 @@ main = Plus test_1 test_2
 ### Normal forms ###
 
 unerased:
-  Plus (Plus 2 3) (Plus 2 3)
+  
+  let postulate Nat : Type
+  in 
+    let postulate Z : Nat
+    in 
+      let postulate S : (n :R: Nat) -> Nat
+      in 
+        let postulate Plus : (x :R: Nat) -> (y :R: Nat) -> Nat
+        in Plus (Plus 2 3) (Plus 2 3)
 erased:
-  Plus (Plus 2 3) (Plus 2 3)
+  
+  let postulate Z : Nat
+  in 
+    let postulate S : (n) -> Nat
+    in 
+      let postulate Plus : (x) -> (y) -> Nat
+      in Plus (Plus 2 3) (Plus 2 3)

@@ -407,6 +407,12 @@ main = invert F Q
 ### Normal forms ###
 
 unerased:
-  W
+  
+  let postulate Mool : Type
+  in 
+    let postulate W : Mool
+    in W
 erased:
-  W
+  
+  let postulate W : Mool
+  in W

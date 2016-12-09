@@ -252,6 +252,16 @@ main = notnot F
 ### Normal forms ###
 
 unerased:
-  Refl Bool F
+  
+  let postulate Bool : Type
+  in 
+    let postulate F : Bool
+    in 
+      let postulate Id : (a : Type) -> (x : a) -> (y : a) -> Type
+      in 
+        let postulate Refl : (a : Type) -> (x : a) -> Id a x x
+        in Refl Bool F
 erased:
-  Refl
+  
+  let postulate Refl : Id
+  in Refl

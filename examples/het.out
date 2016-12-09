@@ -352,6 +352,18 @@ main = Tuple (f T) (f F) (f Q) (f W)
 ### Normal forms ###
 
 unerased:
-  Tuple Bool Bool Mool Mool
+  
+  let postulate Tuple : (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type
+  in 
+    let postulate Bool : Type
+    in 
+      let postulate Mool : Type
+      in Tuple Bool Bool Mool Mool
 erased:
-  Tuple Bool Bool Mool Mool
+  
+  let postulate Tuple : (x) -> (y) -> (z) -> (w) -> Type
+  in 
+    let postulate Bool : Type
+    in 
+      let postulate Mool : Type
+      in Tuple Bool Bool Mool Mool

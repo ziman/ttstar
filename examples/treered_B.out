@@ -261,6 +261,16 @@ main = vlen 1 (Cons Z Nil)
 ### Normal forms ###
 
 unerased:
-  1
+  
+  let postulate N : Type
+  in 
+    let postulate Z : N
+    in 
+      let postulate S : (x :R: N) -> N
+      in 1
 erased:
-  1
+  
+  let postulate Z : N
+  in 
+    let postulate S : (x) -> N
+    in 1

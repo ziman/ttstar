@@ -410,6 +410,26 @@ main = append Nil (Cons 4 Nil)
 ### Normal forms ###
 
 unerased:
-  Cons N Z 4 (Nil N)
+  
+  let postulate N : Type
+  in 
+    let postulate Z : N
+    in 
+      let postulate S : (x :R: N) -> N
+      in 
+        let postulate Vec : (_ : N) -> (_ : Type) -> Type
+        in 
+          let postulate Nil : (a : Type) -> Vec Z a
+          in 
+            let postulate Cons : (a : Type) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a
+            in Cons N Z 4 (Nil N)
 erased:
-  Cons 4 Nil
+  
+  let postulate Z : N
+  in 
+    let postulate S : (x) -> N
+    in 
+      let postulate Nil : Vec
+      in 
+        let postulate Cons : (x) -> (xs) -> Vec
+        in Cons 4 Nil

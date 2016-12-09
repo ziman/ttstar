@@ -255,6 +255,22 @@ main = TB (f T F) (f F)
 ### Normal forms ###
 
 unerased:
-  TB F T
+  
+  let postulate Bool : Type
+  in 
+    let postulate T : Bool
+    in 
+      let postulate F : Bool
+      in 
+        let postulate TwoBools : Type
+        in 
+          let postulate TB : (x :R: Bool) -> (y :R: Bool) -> TwoBools
+          in TB F T
 erased:
-  TB F T
+  
+  let postulate T : Bool
+  in 
+    let postulate F : Bool
+    in 
+      let postulate TB : (x) -> (y) -> TwoBools
+      in TB F T

@@ -138,6 +138,12 @@ main = apply const_A
 ### Normal forms ###
 
 unerased:
-  A
+  
+  let postulate T : Type
+  in 
+    let postulate A : T
+    in A
 erased:
-  A
+  
+  let postulate A : T
+  in A

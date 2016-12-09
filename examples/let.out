@@ -248,6 +248,16 @@ main =
 ### Normal forms ###
 
 unerased:
-  S (S Q)
+  
+  let postulate Nat : Type
+  in 
+    let postulate S : (_ :R: Nat) -> Nat
+    in 
+      let postulate Q : Nat
+      in S (S Q)
 erased:
-  S (S Q)
+  
+  let postulate S : (_) -> Nat
+  in 
+    let postulate Q : Nat
+    in S (S Q)

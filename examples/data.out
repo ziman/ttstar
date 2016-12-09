@@ -366,6 +366,16 @@ main =
 ### Normal forms ###
 
 unerased:
-  7
+  
+  let postulate N : Type
+  in 
+    let postulate Z : N
+    in 
+      let postulate S : (_ : N) -> N
+      in 7
 erased:
-  7
+  
+  let postulate Z : N
+  in 
+    let postulate S : (_) -> N
+    in 7

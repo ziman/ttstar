@@ -365,6 +365,16 @@ main = g (Just True)
 ### Normal forms ###
 
 unerased:
-  Yeah
+  
+  let postulate Bool : Type
+  in 
+    let postulate True : Bool
+    in 
+      let postulate Foo : (_ : Bool) -> Type
+      in 
+        let postulate Yeah : Foo True
+        in Yeah
 erased:
-  Yeah
+  
+  let postulate Yeah : Foo
+  in Yeah
