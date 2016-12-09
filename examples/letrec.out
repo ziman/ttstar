@@ -1,0 +1,52 @@
+-- vim: ft=agda
+
+### Desugared ###
+
+main :R: (_ : Type) -> Type = (\x : Type. x)
+
+### Metaified ###
+
+main :R: (_ :1: Type) -> Type = (\x :2: Type. x)
+
+### Inferred definitions ###
+
+postulate Type :E: Type
+
+main :R: (_ :1: Type) -> Type = (\x :2: Type. x) {- constraints apply -}
+  [] -> [1,2,R]
+
+
+### Constraints ###
+
+[] -> [1,2,R]
+
+### Solution ###
+
+[1,2,R]
+
+### Annotated ###
+
+main :R: (_ :R: Type) -> Type = (\x :R: Type. x)
+
+### Specialised ###
+
+main :R: (_ :R: Type) -> Type = (\x :R: Type. x)
+
+### Final annotation ###
+
+main :R: (_ :R: Type) -> Type = (\x :R: Type. x)
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+main = (\x. x)
+
+### Normal forms ###
+
+unerased:
+  (\x : Type. x)
+erased:
+  (\x. x)

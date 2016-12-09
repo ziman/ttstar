@@ -1,0 +1,3 @@
+-- vim: ft=idris
+
+main :R: Type -> Type = \x:Type. x.
