@@ -107,6 +107,9 @@ red  NF  ctx t@(Bind b d tm) = Bind b (redDef NF ctx d) (red NF ctx' tm)
   where
     ctx' = M.insert (defName d) d ctx
 
+red form ctx t@(App r (Bind Let d tm) x)
+    = red form ctx $ Bind Let d (App r tm x)
+
 red form ctx t@(App r f x)
     -- lambdas
     | Bind Lam (Def n' r' ty' (Abstract Var) cs) tm' <- redF
