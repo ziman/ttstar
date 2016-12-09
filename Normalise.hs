@@ -86,7 +86,12 @@ red form ctx t@(I n i) = red form ctx (V n)
 
 -- bound terms
 red form ctx t@(Bind Let d@(Def n r ty (Term val) cs) tm)
-    = red form (M.insert n d ctx) $ subst n val tm
+    -- made progress but there's still stuff to do -> reduce eagerly in body
+    | n `occursIn` rbody = red form ctx (Bind Let d rbody)
+    -- nothing left to reduce
+    | otherwise = rbody
+  where
+    rbody = red form (M.insert n d ctx) $ subst n val tm
 
 -- postulates and stuff -- this is incorrect but we can't do better
 red form ctx t@(Bind Let d tm)
