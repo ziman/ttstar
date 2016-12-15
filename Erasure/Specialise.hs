@@ -33,30 +33,6 @@ bindMetas (r : rs) (m : ms) = bind r m $ bindMetas rs ms
     bind r m = error $ "bindMetas.bind: inconsistency: " ++ show (r, m)
 bindMetas rs ms = error $ "bindMetas: length mismatch: " ++ show (rs, ms)
 
-{-
-extend ::
-    Defs Meta
-    -> Instances
-    -> Defs Meta
-    -> Defs Meta
-extend (Prog rawDefs) (Instances imap) prog@(Prog defs)
-    = Prog $ evalState (concat <$> traverse expandDef defs) initialState
-  where
-    initialState = 1 + maximum (0 : [i | MVar i <- prog ^.. (progRelevance :: Traversal' (Program Meta) Meta)])
-    rawDefMap = M.fromList [(n, d) | d@(Def n r ty _ _) <- rawDefs]
-
-    extendDefs oldName
-      = sequence
-          [ let Def _ r ty body noCs = rawDefMap M.! oldName
-                newName = specName oldName ep
-              in instantiate fresh (bindMetas ep (ty ^.. (ttRelevance :: Traversal' (TT Meta) Meta)))
-                   $ Def newName r ty body noCs
-          | ep <- S.toList $ M.findWithDefault S.empty oldName imap
-          ]
-
-    expandDef (Def n r ty body noCs) = (Def n r ty body noCs :) <$> extendDefs n
--}
-
 specName :: Name -> ErPattern -> Name
 specName (UN n) epat = IN n epat
 specName n _ = error $ "trying to specialise a strange name: " ++ show n
@@ -117,53 +93,3 @@ specTm (Forced tmm) (Forced tmr) = do
     return (is, Forced tmr')
 
 specTm tmm tmr = error $ "cannot specialise: " ++ show (tmm, tmr)
-
-{-
-specialise raw prog = extend raw insts $ remetaify prog'
-  where
-    (prog', insts) = runWriter $ specNProg prog
-
-specNProg :: Program Relevance -> Spec (Program Relevance)
-specNProg (Prog defs) = Prog <$> traverse specNDef defs
-
-specNDef :: Def Relevance -> Spec (Def Relevance)
-specNDef (Def n r ty body noCs)
-    = Def n r <$> specNTm ty <*> specNBody body <*> pure noCs
-
-specNBody :: Body Relevance -> Spec (Body Relevance)
-specNBody (Abstract a)  = pure $ Abstract a
-specNBody (Term tm)     = Term <$> specNTm tm
-specNBody (Patterns cf) = Patterns <$> specNCaseFun cf
-
-specNCaseFun :: CaseFun Relevance -> Spec (CaseFun Relevance)
-specNCaseFun (CaseFun args ct) = CaseFun <$> traverse specNDef args <*> specNCaseTree ct
-
-specNCaseTree :: CaseTree Relevance -> Spec (CaseTree Relevance)
-specNCaseTree (Leaf tm) = Leaf <$> specNTm tm
-specNCaseTree (Case r s alts) = Case r <$> specNTm s <*> traverse specNAlt alts
-
-specNAlt :: Alt Relevance -> Spec (Alt Relevance)
-specNAlt (Alt lhs rhs) = Alt <$> specNLHS lhs <*> specNCaseTree rhs
-
-specNLHS :: AltLHS Relevance -> Spec (AltLHS Relevance)
-specNLHS Wildcard = pure Wildcard
-specNLHS (Ctor r cn args eqs) = Ctor r cn <$> traverse specNDef args <*> traverse specEq eqs
-  where
-    specEq (n, tm) = (,) n <$> specNTm tm
-
-specNTm :: TT Relevance -> Spec (TT Relevance)
-specNTm (V n) = pure $ V n
-
-specNTm (I n@(UN ns) ty) = do
-    let rs = ty ^.. (ttRelevance :: Traversal' (TT Relevance) Relevance)
-    tell $ spec n rs
-    return $ V (IN ns rs)
-  where
-    spec :: Name -> [Relevance] -> Instances
-    spec n = Instances . M.singleton n . S.singleton
-
-specNTm (Bind b ds tm) = Bind b <$> traverse specNDef ds <*> specNTm tm
-specNTm (App r f x) = App r <$> specNTm f <*> specNTm x
-
-specNTm tm = error $ "unexpected term to specialise: " ++ show tm
--}
