@@ -25,3 +25,5 @@ main :R: Type = Type {- constraints apply -}
 [E,R]
 
 ttstar: !! inconsistent annotation
+CallStack (from HasCallStack):
+  error, called at Main.hs:149:26 in main:Main
