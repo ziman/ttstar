@@ -93,11 +93,20 @@ instance PrettyR r => Pretty (TT r) where
       where
         pretty' pp (V n) = pretty n
         pretty' pp (I n ty) = brackets (pretty n <+> colon <+> pretty ty)
-        pretty' pp (Bind Pi d tm) = parens (pretty d) <+> text "->" <+> pretty tm
-        pretty' pp (Bind Lam d tm) = parens (text "\\" <> pretty d <> dot <+> pretty tm)
-        pretty' pp (Bind Let d tm) =
+        pretty' pp (Bind Pi [d] tm) = parens (pretty d) <+> text "->" <+> pretty tm
+        pretty' pp (Bind Lam [d] tm) = parens (text "\\" <> pretty d <> dot <+> pretty tm)
+        pretty' pp (Bind Let [d] tm) =
             blankLine
             $$ indent (text "let" <+> pretty d
+                $$ text "in" <+> pretty tm
+            )
+        pretty' pp (Bind Let ds tm) =
+            blankLine
+            $$ indent (text "let"
+                $$ indent (vcat [
+                    pretty d
+                    | d <- ds
+                ])
                 $$ text "in" <+> pretty tm
             )
         pretty' pp (App r (V (UN "S")) x) | Just i <- fromNat x = int $ 1+i
@@ -111,6 +120,7 @@ instance PrettyR r => Pretty (TT r) where
             show' r (App r' f' x') x = show' r' f' x' <> prettyApp r <> pretty' True x
             show' r f x = pretty f <> prettyApp r <> pretty' True x
         pretty' pp (Forced tm) = brackets (pretty' False tm) 
+        pretty' pp tm = text "[???" <+> text (show tm) <+> text "???]"
 
 instance PrettyR r => Show (TT r) where
     show = prettyShow

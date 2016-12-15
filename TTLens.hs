@@ -14,8 +14,8 @@ ttRelevance f = g
     g tm = case tm of
         V n    -> pure $ V n
         I n ty -> I n <$> g ty
-        Bind b d tm
-            -> Bind b <$> defRelevance f d <*> g tm
+        Bind b ds tm
+            -> Bind b <$> traverse (defRelevance f) ds <*> g tm
         App r fun arg
             -> App <$> f r <*> g fun <*> g arg
         Forced tm

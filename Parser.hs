@@ -58,14 +58,14 @@ atomic = parens expr
 arrow :: Parser (TT MRel)
 arrow = (<?> "arrow type") $ do
     ty <- try (atomic <* kwd "->")
-    Bind Pi (Def Blank Nothing ty (Abstract Var) noConstrs) <$> expr
+    Bind Pi [Def Blank Nothing ty (Abstract Var) noConstrs] <$> expr
 
 lambda :: Parser (TT MRel)
 lambda = (<?> "lambda") $ do
     kwd "\\"
     d <- typing Var
     kwd "."
-    Bind Lam d <$> expr
+    Bind Lam [d] <$> expr
 
 bpi :: Parser (TT MRel)
 bpi = (<?> "pi") $ do

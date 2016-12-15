@@ -63,6 +63,10 @@ redAltLHS NF ctx (Ctor r cn args eqs)
     = Ctor r cn (map (redDef NF ctx) args) [(n, red NF ctx tm) | (n, tm) <- eqs]
 redAltLHS WHNF ctx lhs = error "impossible: redAltLHS WHNF"
 
+addBinder :: Binder -> Def r -> TT r -> TT r
+addBinder b d (Bind b' ds tm) | b == b' = Bind b (d:ds) tm
+addBinder b d tm = Bind Let [d] tm
+
 red :: IsRelevance r => Form -> Ctx r -> TT r -> TT r
 
 red form ctx t@(V Blank) = t
@@ -84,12 +88,26 @@ red form ctx t
 
 red form ctx t@(I n i) = red form ctx (V n)
 
+-- empty let binding
+red form ctx t@(Bind Let [] tm) = red form ctx tm
+red form ctx t@(Bind Let (d:ds) tm)
+    -- some progress: try again
+    | reducedTm /= tm  = red form ctx $ Bind Let (d:ds) reducedTm
+
+    -- no progress: stop trying and go back
+    | n `occursIn` reducedTm = addBinder Let d reducedTm
+    | otherwise = reducedTm
+  where
+    n = defName d
+    reducedTm = red form (M.insert n d ctx) tm
+
+{-
 -- abstract terms won't reduce so we just need to go underneath
 red form ctx t@(Bind Let d@(Def n r ty (Abstract _) cs) tm)
     | n `occursIn` rbody = Bind Let d rbody
     | otherwise = rbody
   where
-    rbody = red form (M.insert n d ctx) tm
+    rbody = red form (insertDefs d ctx) tm
 
 -- bound terms
 red form ctx t@(Bind Let d@(Def n r ty body cs) tm)
@@ -101,19 +119,26 @@ red form ctx t@(Bind Let d@(Def n r ty body cs) tm)
     | otherwise = rbody
   where
     rbody = red form (M.insert n d ctx) tm
+-}
 
-red WHNF ctx t@(Bind b d tm) = t
-red  NF  ctx t@(Bind b d tm) = Bind b (redDef NF ctx d) (red NF ctx' tm)
+-- The remaining binders are Pi and Lam.
+red WHNF ctx t@(Bind b ds tm) = t  -- this is in WHNF already
+red  NF  ctx t@(Bind b [] tm) = Bind b [] $ red NF ctx tm
+red  NF  ctx t@(Bind b (d:ds) tm)
+    = Bind b (redDef NF ctx d : ds') tm'
   where
-    ctx' = M.insert (defName d) d ctx
+    Bind _b ds' tm' = red NF (M.insert (defName d) d ctx) tm
 
-red form ctx t@(App r (Bind Let d tm) x)
-    = red form ctx $ Bind Let d (App r tm x)
+red form ctx t@(App r (Bind Let ds tm) x)
+    = red form ctx $ Bind Let ds (App r tm x)
 
 red form ctx t@(App r f x)
-    -- lambdas
-    | Bind Lam (Def n' r' ty' (Abstract Var) cs) tm' <- redF
-    = red form ctx $ subst n' redX tm'
+    -- simple lambda
+    | Bind Lam (Def n' r' ty' (Abstract Var) cs : ds) tm' <- redF
+    = let tm'' = red form ctx $ subst n' redX tm'
+        in case ds of
+            [] -> tm''
+            _  -> Bind Lam ds tm''
 
     -- pattern matching instance reduces as variable
     | (I fn _, args) <- unApply t

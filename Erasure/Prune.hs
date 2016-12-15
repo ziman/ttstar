@@ -49,11 +49,10 @@ pruneDefs = concatMap pruneDef
 pruneTm :: TT Relevance -> TT ()
 pruneTm (V n) = V n
 pruneTm (I n ty) = error $ "non-specialised instance found in pruneTm: " ++ show (n, ty)
-pruneTm (Bind b d tm)
-    = case pruneDef d of
-        []   -> pruneTm tm
-        [d'] -> Bind b d' (pruneTm tm)
-        _    -> error "pruneTm: impossible def prune"
+pruneTm (Bind b ds tm)
+    = case concatMap pruneDef ds of
+        []  -> pruneTm tm
+        ds' -> Bind b ds' (pruneTm tm)
 pruneTm (App E f x) = pruneTm f
 pruneTm (App R f x) = App () (pruneTm f) (pruneTm x)
 pruneTm (Forced tm) = error $ "pruneTm: forced term: " ++ show tm

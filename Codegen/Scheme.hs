@@ -25,13 +25,19 @@ cgName = text . specialName . map mogrify . show
     mogrify '\'' = '_'
     mogrify c = c
 
+cgLetDef :: Def () -> Doc -> Doc
+cgLetDef (Def n () ty (Abstract Postulate) cs)
+    = cgLet [(n, cgCtor n ty)]
+cgLetDef (Def n () ty (Term tm) cs)
+    = cgLet [(n, cgTm tm)]
+cgLetDef (Def n () ty (Patterns cf) cs)
+    = cgLet [(n, cgCaseFun cf)]
+
 cgTm :: TT () -> Doc
 cgTm (V n) = cgName n
 cgTm tm@(I n ty) = error $ "e-instance in codegen: " ++ show tm
-cgTm (Bind Lam (Def n () ty (Abstract Var) cs) rhs) = cgLambda n $ cgTm rhs
-cgTm (Bind Let (Def n () ty (Abstract Postulate) cs) rhs) = cgLet [(n, cgCtor n ty)] (cgTm rhs)
-cgTm (Bind Let (Def n () ty (Term tm) cs) rhs) = cgLet [(n, cgTm tm)] (cgTm rhs)
-cgTm (Bind Let (Def n () ty (Patterns cf) cs) rhs) = cgLet [(n, cgCaseFun cf)] (cgTm rhs)
+cgTm (Bind Lam [Def n () ty (Abstract Var) cs] rhs) = cgLambda n $ cgTm rhs
+cgTm (Bind Let ds rhs) = foldr cgLetDef (cgTm rhs) ds
 cgTm (App () f x) = cgApp (cgTm f) (cgTm x)
 cgTm tm = error $ "can't cg tm: " ++ show tm
 
