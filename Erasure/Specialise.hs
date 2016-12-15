@@ -111,7 +111,7 @@ specNTm (I n@(UN ns) ty) = do
     spec :: Name -> [Relevance] -> Instances
     spec n = Instances . M.singleton n . S.singleton
 
-specNTm (Bind b d tm) = Bind b <$> specNDef d <*> specNTm tm
+specNTm (Bind b ds tm) = Bind b <$> traverse specNDef ds <*> specNTm tm
 specNTm (App r f x) = App r <$> specNTm f <*> specNTm x
 
 specNTm tm = error $ "unexpected term to specialise: " ++ show tm

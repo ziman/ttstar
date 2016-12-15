@@ -32,6 +32,8 @@ cgLetDef (Def n () ty (Term tm) cs)
     = cgLet [(n, cgTm tm)]
 cgLetDef (Def n () ty (Patterns cf) cs)
     = cgLet [(n, cgCaseFun cf)]
+cgLetDef (Def n () ty (Abstract Var) cs)
+    = error $ "let-bound variable: " ++ show n
 
 cgTm :: TT () -> Doc
 cgTm (V n) = cgName n
@@ -132,7 +134,7 @@ uniqNames ns =
     (|||) m     n = m
 
 argNames :: TT () -> [Name]
-argNames (Bind Pi d rhs) = defName d : argNames rhs
+argNames (Bind Pi ds rhs) = map defName ds ++ argNames rhs
 argNames _ = []
 
 cgProgram :: Program () -> Doc

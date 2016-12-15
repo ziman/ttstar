@@ -71,7 +71,7 @@ bpi :: Parser (TT MRel)
 bpi = (<?> "pi") $ do
     d <- try $ parens (typing Var)
     kwd "->"
-    Bind Pi d <$> expr
+    Bind Pi [d] <$> expr
 
 bind :: Parser (TT MRel)
 bind = arrow
@@ -88,7 +88,7 @@ let_ = (<?> "let expression") $ do
     kwd "let"
     d <- simpleDef
     kwd "in"
-    Bind Let d <$> expr
+    Bind Let [d] <$> expr
 
 erasureInstance :: Parser (TT MRel)
 erasureInstance = (<?> "erasure instance") $ do
@@ -105,7 +105,7 @@ case_ = (<?> "case expression") $ do
     tm <- parens expr
     kwd "where"
     d <- simpleDef
-    return $ Bind Let d tm
+    return $ Bind Let [d] tm
 
 expr :: Parser (TT MRel)
 expr = 
@@ -193,7 +193,7 @@ fundef = (<?> "function definition") $ do
     matchingDef <|> lambdaDef
   where
     chain bnd [] tm = tm
-    chain bnd (d : args) tm = Bind bnd d $ chain bnd args tm
+    chain bnd (d : args) tm = Bind bnd [d] $ chain bnd args tm
 
 dataDef :: Parser [Def MRel]
 dataDef = (<?> "data definition") $ do

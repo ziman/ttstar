@@ -295,12 +295,12 @@ checkTm t@(I n ty) = bt ("INST", n, ty) $ do
     -- Also, all unused instances should be recognised as erased (I didn't check that).
     return (ty, defConstraints d /\ Fixed R --> defR d /\ convCs)
 
-checkTm t@(Bind Lam d@(Def n r ty (Abstract Var) _noCs) tm) = bt ("LAM", t) $ do
+checkTm t@(Bind Lam [d@(Def n r ty (Abstract Var) _noCs)] tm) = bt ("LAM", t) $ do
     d' <- checkDef d
     (tmty, tmcs) <- with d' $ checkTm tm
-    return (Bind Pi d' tmty, tmcs)
+    return (Bind Pi [d'] tmty, tmcs)
 
-checkTm t@(Bind Pi d@(Def n r ty (Abstract Var) _noCs) tm) = bt ("PI", t) $ do
+checkTm t@(Bind Pi [d@(Def n r ty (Abstract Var) _noCs)] tm) = bt ("PI", t) $ do
     d' <- checkDef d
     -- (tyty, _tycs) <- checkTm ty
     -- cs' <- conv (V $ UN "Type") tyty
@@ -310,9 +310,9 @@ checkTm t@(Bind Pi d@(Def n r ty (Abstract Var) _noCs) tm) = bt ("PI", t) $ do
         return $ tmcs /\ cs
     return (V $ UN "Type", tmcs)
 
-checkTm t@(Bind Let d tm) = bt ("LET", t) $ do
-    d' <- checkDef d
-    (tmty, tmcs) <- with d'{defBody = Abstract Var} $ checkTm tm
+checkTm t@(Bind Let ds tm) = bt ("LET", t) $ do
+    ds' <- checkDefs ds
+    (tmty, tmcs) <- with' (M.union ds') $ checkTm tm
     return (tmty, tmcs)
 
 checkTm t@(App app_r f x) = bt ("APP", t) $ do
@@ -320,7 +320,7 @@ checkTm t@(App app_r f x) = bt ("APP", t) $ do
     (xty, xcs) <- checkTm x
     ctx <- getCtx
     case whnf ctx fty of
-        Bind Pi (Def n' pi_r ty' (Abstract Var) _noCs) retTy -> do
+        Bind Pi [Def n' pi_r ty' (Abstract Var) _noCs] retTy -> do
             tycs <- conv xty ty'
             let cs =
                     -- we can't leave tycs out entirely because
@@ -373,13 +373,16 @@ conv' (V n) (V n') = bt ("C-VAR", n, n') $ do
     require (n == n') $ Mismatch (show n) (show n')
     return noConstrs
 
-conv' p@(Bind b (Def n r ty (Abstract Var) _noCs) tm) q@(Bind b' (Def n' r' ty' (Abstract Var) _noCs') tm')
+conv' p@(Bind b [Def n r ty (Abstract Var) _noCs] tm) q@(Bind b' [Def n' r' ty' (Abstract Var) _noCs'] tm')
     = bt ("C-BIND", p, q) $ do
         require (b == b') $ Mismatch (show b) (show b')
         xs <- conv ty ty' -- (rename n' n ty')
         ys <- with (Def n r ty (Abstract Var) noConstrs)
                 $ conv tm (rename n' n tm')
         return $ xs /\ ys /\ r <--> r'
+
+conv' (Bind b (d:ds) tm) (Bind b' (d':ds') tm') = bt ("C-SIMPL", b) $
+    conv' (Bind b [d] $ Bind b ds tm) (Bind b' [d'] $ Bind b' ds' tm')
 
 -- whnf is application (application of something irreducible)
 conv' p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do
