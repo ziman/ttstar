@@ -68,9 +68,6 @@ instance PrettyR r => Pretty (Body r) where
     pretty (Term tm) = text "=" <+> pretty tm
     pretty (Patterns cf) = pretty cf
 
-instance PrettyR r => Pretty (Program r) where
-    pretty (Prog defs) = vcat $ map (\d -> pretty d $$ blankLine) defs
-
 instance PrettyR r => Pretty (Def r) where
     pretty (Def n r ty body cs) =
         case body of
@@ -129,7 +126,6 @@ instance PrettyR r => Show (Def r) where
     show = prettyShow
 
 deriving instance PrettyR r => Show (Body r)
-deriving instance PrettyR r => Show (Program r)
 
 instance PrettyR r => Pretty (CaseFun r) where
     pretty (CaseFun [] t) = pretty t

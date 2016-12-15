@@ -5,7 +5,6 @@ import TT
 import Parser
 -- import Explorer
 import Normalise
-import Eval
 
 import Codegen.Common
 import qualified Codegen.Scheme
@@ -166,7 +165,7 @@ main = do
                     --
                     -- + perhaps separate verification checker?
 
-                    if ndefs specialised == ndefs annotated
+                    if specialised == metaified
                         then return annotated  -- fixed point reached
                         else iterSpecialisation specialised
 
@@ -187,9 +186,9 @@ main = do
 
             putStrLn "### Normal forms ###\n"
             putStrLn "unerased:"
-            putStrLn $ "  " ++ show (eval NF (builtins $ Just relOfType) prog)
+            putStrLn $ "  " ++ show (red NF (builtins $ Just relOfType) prog)
             putStrLn "erased:"
-            putStrLn $ "  " ++ show (eval NF (builtins ()) pruned)
+            putStrLn $ "  " ++ show (red NF (builtins ()) pruned)
 
             codegen Codegen.Scheme.codegen fname pruned
 
@@ -200,8 +199,6 @@ main = do
         | M.null cs = prettyShow (Def n r ty body cs) ++ "\n"
         | otherwise = prettyShow (Def n r ty body cs) ++ "\n"
                         ++ unlines (map (("  " ++) . fmtCtr) $ M.toList cs)
-
-    ndefs (Prog defs) = length defs
 
 codegen :: Codegen -> String -> Program () -> IO ()
 codegen cg fname prog = writeFile fname' code

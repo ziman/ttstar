@@ -41,17 +41,15 @@ specialise ::
     Program Meta          -- raw, just metaified definitions (material to specialise)   
     -> Program Relevance  -- program to extend
     -> Program Meta       -- extended program
-specialise (Prog dsm) (Prog dsr)
-    | M.null residue = Prog dsr'
+specialise pm pr
+    | M.null residue = pr'
     | otherwise = error $ "could not specialise: " ++ show residue
   where
-    (residue, Bind Let dsr' _main) = evalState core initialState
-    core = specTm (Bind Let dsm (V Blank)) (Bind Let dsr (V Blank))
+    (residue, pr') = evalState (specTm pm pr) initialState
 
     initialState :: Int
     initialState = 1 + maximum (0 : [
-        i | d <- dsm
-          , MVar i <- d ^.. (defRelevance :: Traversal' (Def Meta) Meta)
+        i | MVar i <- pm ^.. (ttRelevance :: Traversal' (TT Meta) Meta)
       ])
 
 specTm :: TT Meta -> TT Relevance -> Spec (TT Meta)

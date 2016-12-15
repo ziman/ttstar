@@ -65,7 +65,9 @@ data Def r = Def
 
 type Ctx r = M.Map Name (Def r)
 
-newtype Program r = Prog { getDefs :: [Def r] } deriving (Eq, Ord)
+-- a program is just a term
+-- (usually a big let-expression)
+type Program r = TT r
 
 noConstrs :: Constrs r
 noConstrs = M.empty

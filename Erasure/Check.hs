@@ -139,15 +139,17 @@ freshTag = lift $ lift (modify (+1) >> get)
 runTC :: Int -> Ctx Meta -> TC a -> Either TCFailure a
 runTC maxTag ctx tc = evalState (runExceptT $ runReaderT tc ([], ctx)) maxTag
 
-check :: Program Meta -> Either TCFailure (Ctx Meta)
-check prog@(Prog defs) = runTC maxTag ctx $ checkDefs defs
+check :: Program Meta -> Either TCFailure (Constrs Meta)
+check prog = runTC maxTag ctx $ do
+    (_ty, cs) <- checkTm prog
+    return cs
   where
     getTag :: Meta -> Int
     getTag (MVar i) = i
     getTag _        = 0  -- whatever, we're looking for maximum
 
     allTags :: [Int]
-    allTags = map getTag (prog ^.. (progRelevance :: Traversal' (Program Meta) Meta))
+    allTags = map getTag (prog ^.. (ttRelevance :: Traversal' (Program Meta) Meta))
 
     maxTag = L.maximum allTags
 

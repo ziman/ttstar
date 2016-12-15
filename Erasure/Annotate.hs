@@ -8,14 +8,7 @@ import Lens.Family
 import qualified Data.Set as S
 
 annotate :: Uses Meta -> Program Meta -> Program Relevance
-annotate uses (Prog defs) = Prog $ map (annDef uses) defs
-
-annDef :: Uses Meta -> Def Meta -> Def Relevance
-annDef uses (Def n r ty body cs)
-    = Def n (rel r)
-        (ty & ttRelevance %~ rel)
-        (body & bodyRelevance %~ rel)
-        noConstrs
+annotate uses prog = prog & ttRelevance %~ rel
   where
     rel (Fixed r) = r
     rel m

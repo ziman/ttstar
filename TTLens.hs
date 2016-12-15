@@ -59,9 +59,6 @@ altLHSRelevance f (Ctor r cn args eqs)
 caseEqRelevance :: Ord r' => Traversal (Name, TT r) (Name, TT r') r r'
 caseEqRelevance f (n, tm) = (,) n <$> ttRelevance f tm
 
-progRelevance :: Ord r' => Traversal (Program r) (Program r') r r'
-progRelevance f (Prog defs) = Prog <$> traverse (defRelevance f) defs
-
 csRelevance :: Ord r' => Traversal (Constrs r) (Constrs r') r r'
 csRelevance f = fmap M.fromList . traverse f' . M.toList
   where

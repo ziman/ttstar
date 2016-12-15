@@ -63,12 +63,6 @@ cgCtor n ty
   where
     argNs = uniqNames $ argNames ty
 
-cgDef :: Def () -> Doc
-cgDef (Def n r ty (Abstract Postulate) cs) = cgDefine n $ cgCtor n ty
-cgDef (Def n r ty (Patterns cf) cs) = cgDefine n $ cgCaseFun cf
-cgDef (Def n r ty (Term tm) cs) = cgDefine n $ cgTm tm
-cgDef d@(Def n r ty b cs) = error $ "can't cg def: " ++ show d
-
 cgCaseTree :: CaseTree () -> Doc
 cgCaseTree (Leaf tm) = cgTm tm
 cgCaseTree (Case () (V scrutN) alts) =
@@ -98,9 +92,6 @@ cgBinds (n:ns) args rhs =
 
 cgCase :: Doc -> [Doc] -> Doc
 cgCase scrut alts = parens (text "case" <+> scrut $+$ indent (vcat alts))
-
-cgDefine :: Name -> Doc -> Doc
-cgDefine n body = parens (text "define" <+> cgName n $+$ indent body)
 
 cgLambda :: Name -> Doc -> Doc
 cgLambda n body = parens (text "lambda" <+> parens (cgName n) $+$ indent body)
@@ -138,10 +129,14 @@ argNames (Bind Pi ds rhs) = map defName ds ++ argNames rhs
 argNames _ = []
 
 cgProgram :: Program () -> Doc
-cgProgram (Prog defs) = vcat [
+cgProgram prog = parens (text "print" <+> cgTm prog)
+{-
+cgProgram (Bind Let defs main) = vcat [
     cgDef def $+$ blankLine
     | def <- defs
-    ] $+$ text "(print main)"  -- add (newline) for racket
+    ] $+$ parens (text "print" <+> cgTm main)  -- add (newline) for racket
+cgProgram tm = error $ "scheme codegen: program not a let expression"
+-}
 
 codegen :: Codegen
 codegen = Codegen

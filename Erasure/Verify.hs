@@ -121,7 +121,9 @@ verify :: Program Relevance -> Either VerFailure ()
 verify prog = runVer (builtins relOfType) $ verProg prog
 
 verProg :: Program Relevance -> Ver ()
-verProg (Prog defs) = verDefs defs
+verProg prog = do
+    _ <- verTm R prog
+    return ()
 
 verDefs :: [Def Relevance] -> Ver ()
 verDefs [] = return ()

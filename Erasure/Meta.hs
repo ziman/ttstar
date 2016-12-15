@@ -30,7 +30,7 @@ instance PrettyR Meta where
     prettyAlt (MVar i) = Just (showd i)
 
 meta :: Program (Maybe Relevance) -> Program Meta
-meta prog = evalState (progRelevance freshM prog) 0
+meta prog = evalState (ttRelevance freshM prog) 0
 
 freshM :: Maybe Relevance -> State Int Meta
 freshM Nothing  = modify (+1) >> MVar <$> get

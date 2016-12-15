@@ -211,7 +211,9 @@ definition :: Parser [Def MRel]
 definition = dataDef <|> (pure <$> simpleDef) <?> "definition"
 
 parseProg :: Parser (Program MRel)
-parseProg = Prog . concat <$> many definition <?> "program"
+parseProg = do
+    ds <- concat <$> many definition <?> "program"
+    return $ Bind Let ds (V $ UN "main")
 
 ttProgram :: Parser (Program MRel)
 ttProgram = sp *> parseProg <* eof
