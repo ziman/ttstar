@@ -63,16 +63,14 @@ redAltLHS NF ctx (Ctor r cn args eqs)
     = Ctor r cn (map (redDef NF ctx) args) [(n, red NF ctx tm) | (n, tm) <- eqs]
 redAltLHS WHNF ctx lhs = error "impossible: redAltLHS WHNF"
 
-addBinder :: Binder -> Def r -> TT r -> TT r
-addBinder b d (Bind b' ds tm) | b == b' = Bind b (d:ds) tm
-addBinder b d tm = Bind Let [d] tm
+simplLet :: TT r -> TT r
+simplLet (Bind Let [] tm) = tm
+simplLet tm = tm
 
 red :: IsRelevance r => Form -> Ctx r -> TT r -> TT r
 
 red form ctx t@(V Blank) = t
 
--- we need this because the top-level let does not substitute stuff correctly somewhere
--- we'll probably implement the global let via the context
 red form ctx t@(V n)
     | Just (Def _n r ty body cs) <- M.lookup n ctx
     = case body of
@@ -90,16 +88,14 @@ red form ctx t@(I n i) = red form ctx (V n)
 
 -- empty let binding
 red form ctx t@(Bind Let [] tm) = red form ctx tm
-red form ctx t@(Bind Let (d:ds) tm)
+red form ctx t@(Bind Let ds tm)
     -- some progress: try again
-    | reducedTm /= tm  = red form ctx $ Bind Let (d:ds) reducedTm
+    | reducedTm /= tm  = red form ctx $ Bind Let ds reducedTm
 
     -- no progress: stop trying and go back
-    | n `occursIn` reducedTm = addBinder Let d reducedTm
-    | otherwise = reducedTm
+    | otherwise = simplLet $ Bind Let [d | d <- ds, defName d `occursIn` reducedTm] reducedTm
   where
-    n = defName d
-    reducedTm = red form (M.insert n d ctx) tm
+    reducedTm = red form (insertDefs ds ctx) tm
 
 {-
 -- abstract terms won't reduce so we just need to go underneath
@@ -127,7 +123,7 @@ red  NF  ctx t@(Bind b [] tm) = Bind b [] $ red NF ctx tm
 red  NF  ctx t@(Bind b (d:ds) tm)
     = Bind b (redDef NF ctx d : ds') tm'
   where
-    Bind _b ds' tm' = red NF (M.insert (defName d) d ctx) tm
+    Bind _b ds' tm' = red NF (M.insert (defName d) d ctx) $ Bind b ds tm
 
 red form ctx t@(App r (Bind Let ds tm) x)
     = red form ctx $ Bind Let ds (App r tm x)
