@@ -117,24 +117,32 @@ main = do
         Right prog -> do
             putStrLn "-- vim: ft=agda"
             putStrLn ""
-            putStrLn "### Desugared ###\n"
-            printP prog
+            putStrLn "### Desugared ###"
+            print prog
+            putStrLn ""
 
-            putStrLn "### Metaified ###\n"
+            putStrLn "### Metaified ###"
             let metaified_1st = meta prog
-            printP metaified_1st
+            print metaified_1st
+            putStrLn ""
 
             let iterSpecialisation metaified = do
+                    {-
                     putStrLn "### Inferred definitions ###\n"
                     let ctx = either (error . show) id . check $ metaified
                     mapM_ (putStrLn . fmtCtx) $ M.toList ctx
+                    print metaified
                     putStrLn ""
+                    -}
 
                     putStrLn "### Constraints ###\n"
+                    let cs = either (error . show) id . check $ metaified
+                    {-
                     let cs = unions [
                             defConstraints (ctx M.! n)
                             | Def n (Just R) _ _ _ <- getDefs prog
                           ]
+                    -}
                     mapM_ (putStrLn . fmtCtr) $ M.toList cs
                     putStrLn ""
 
@@ -149,13 +157,15 @@ main = do
                     else return ()
 
 
-                    putStrLn "### Annotated ###\n"
+                    putStrLn "### Annotated ###"
                     let annotated = annotate uses $ metaified
-                    printP $ annotated
+                    print annotated
+                    putStrLn ""
 
-                    putStrLn "### Specialised ###\n"
+                    putStrLn "### Specialised ###"
                     let specialised = specialise metaified annotated
-                    printP $ specialised
+                    print specialised
+                    putStrLn ""
 
                     -- TODO: check for useless pattern columns
                     -- no vars bound, same ctor (could be nested inside other ctors)
@@ -171,18 +181,20 @@ main = do
 
             annotated <- iterSpecialisation metaified_1st
 
-            putStrLn "### Final annotation ###\n"
+            putStrLn "### Final annotation ###"
             -- let annotated = annotate S.empty specialised  -- no usage set needed, everything is Fixed
-            printP $ annotated
+            print annotated
+            putStrLn ""
 
             putStrLn "### Verification ###\n"
             case verify annotated of
                 Left err -> error $ "!! verification failed: " ++ show err
                 Right () -> putStrLn "Verification successful.\n"
 
-            putStrLn "### Pruned ###\n"
-            let pruned = prune annotated -- specialised
-            printP $ pruned
+            putStrLn "### Pruned ###"
+            let pruned = pruneTm annotated -- specialised
+            print pruned
+            putStrLn ""
 
             putStrLn "### Normal forms ###\n"
             putStrLn "unerased:"
@@ -195,10 +207,12 @@ main = do
   where
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
 
+    {-
     fmtCtx (n, (Def _n r ty body cs))
         | M.null cs = prettyShow (Def n r ty body cs) ++ "\n"
         | otherwise = prettyShow (Def n r ty body cs) ++ "\n"
                         ++ unlines (map (("  " ++) . fmtCtr) $ M.toList cs)
+    -}
 
 codegen :: Codegen -> String -> Program () -> IO ()
 codegen cg fname prog = writeFile fname' code

@@ -17,6 +17,9 @@ type Instances = M.Map Name (S.Set ErPattern)
 type ErPattern = [Relevance]
 type Spec a = State Int (Instances, a)
 
+meltDef :: Def Relevance -> Def Meta
+meltDef def = def & defRelevance %~ Fixed
+
 fresh :: State Int Int
 fresh = do
     i <- get
@@ -76,7 +79,7 @@ specTm (Bind bm (dm:dsm) tmm) (Bind br (dr:dsr) tmr) = do
       ]
     return (
         M.delete n is,
-        Bind br (specs ++ dsr') tmr'
+        Bind br (meltDef dr : specs ++ dsr') tmr'
       )
   where
     n = defName dr
