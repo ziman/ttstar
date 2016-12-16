@@ -18,9 +18,10 @@ scheme_csc() {
 }
 
 scheme() {
-    scheme_csi "$@"
+    scheme_racket "$@"
 }
 
+cabal install -j1
 for i in examples/*.tt; do
     n=${i%.tt}
     echo $i

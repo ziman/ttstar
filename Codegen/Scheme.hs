@@ -25,21 +25,23 @@ cgName = text . specialName . map mogrify . show
     mogrify '\'' = '_'
     mogrify c = c
 
-cgLetDef :: Def () -> Doc -> Doc
-cgLetDef (Def n () ty (Abstract Postulate) cs)
-    = cgLet [(n, cgCtor n ty)]
-cgLetDef (Def n () ty (Term tm) cs)
-    = cgLet [(n, cgTm tm)]
-cgLetDef (Def n () ty (Patterns cf) cs)
-    = cgLet [(n, cgCaseFun cf)]
-cgLetDef (Def n () ty (Abstract Var) cs)
-    = error $ "let-bound variable: " ++ show n
+-- flavours of `let` in Scheme:
+-- http://www.cs.rpi.edu/academics/courses/fall00/ai/scheme/reference/schintro-v14/schintro_126.html
+
+cgBody :: Name -> TT () -> Body () -> Doc
+cgBody n ty (Abstract Postulate) = cgCtor n ty
+cgBody n ty (Abstract Var) = error $ "let-bound variable: " ++ show n
+cgBody n ty (Term tm) = cgTm tm
+cgBody n ty (Patterns cf) = cgCaseFun cf
+
+cgLetRec :: [Def ()] -> Doc -> Doc
+cgLetRec ds = cgLet' "letrec" [(n, cgBody n ty b) | Def n () ty b _cs <- ds]
 
 cgTm :: TT () -> Doc
 cgTm (V n) = cgName n
 cgTm tm@(I n ty) = error $ "e-instance in codegen: " ++ show tm
 cgTm (Bind Lam [Def n () ty (Abstract Var) cs] rhs) = cgLambda n $ cgTm rhs
-cgTm (Bind Let ds rhs) = foldr cgLetDef (cgTm rhs) ds
+cgTm (Bind Let ds rhs) = cgLetRec ds $ cgTm rhs
 cgTm (App () f x) = cgApp (cgTm f) (cgTm x)
 cgTm tm = error $ "can't cg tm: " ++ show tm
 
@@ -96,17 +98,22 @@ cgCase scrut alts = parens (text "case" <+> scrut $+$ indent (vcat alts))
 cgLambda :: Name -> Doc -> Doc
 cgLambda n body = parens (text "lambda" <+> parens (cgName n) $+$ indent body)
 
-cgLet :: [(Name, Doc)] -> Doc -> Doc
-cgLet = cgLet' "let"
-
 cgLetStar :: [(Name, Doc)] -> Doc -> Doc
 cgLetStar = cgLet' "let*"
 
 cgLet' :: String -> [(Name, Doc)] -> Doc -> Doc
-cgLet' letN defs rhs = parens (
+cgLet' letN [(n, body)] rhs = parens (
         text letN <+> parens (
-            hsep [parens (cgName n <+> body) | (n, body) <- defs]
+            parens (cgName n <+> body)
         )
+        $+$ indent rhs
+    )
+cgLet' letN defs rhs = parens (
+        text letN <+> text "("
+        $+$ indent (
+            vcat [parens (cgName n <+> body) | (n, body) <- defs]
+        )
+        $+$ text ")"
         $+$ indent rhs
     )
 
@@ -129,14 +136,9 @@ argNames (Bind Pi ds rhs) = map defName ds ++ argNames rhs
 argNames _ = []
 
 cgProgram :: Program () -> Doc
-cgProgram prog = parens (text "print" <+> cgTm prog)
-{-
-cgProgram (Bind Let defs main) = vcat [
-    cgDef def $+$ blankLine
-    | def <- defs
-    ] $+$ parens (text "print" <+> cgTm main)  -- add (newline) for racket
-cgProgram tm = error $ "scheme codegen: program not a let expression"
--}
+cgProgram prog = parens (
+    text "print" $+$ indent (cgTm prog)
+  ) $+$ parens (text "newline")
 
 codegen :: Codegen
 codegen = Codegen
