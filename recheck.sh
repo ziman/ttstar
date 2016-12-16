@@ -1,5 +1,10 @@
 #!/bin/bash
 
+die() {
+    echo "$@"
+    exit 1
+}
+
 # Racket
 scheme_racket() {
     racket -r $1.scm > $1.scm.out
@@ -17,11 +22,14 @@ scheme_csc() {
     rm -f "$1"
 }
 
+# Here, select which compiler you want to use.
 scheme() {
     scheme_racket "$@"
 }
 
-cabal install -j1
+cabal install -j1 \
+    || die "could not install"
+
 for i in examples/*.tt; do
     n=${i%.tt}
     echo $i

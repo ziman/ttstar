@@ -103,13 +103,16 @@ case_ :: Parser (TT MRel)
 case_ = (<?> "case expression") $ do
     kwd "case"
     tm <- parens expr
-    kwd "where"
+    kwd "with"
     Def n r ty _ _ <- typing undefined
     kwd "."
     alts <- caseAlt `sepBy` kwd ","
-    let [arg] = mkArgs ty
-    let cf = CaseFun [arg] (Case Nothing (V $ defName arg) alts)
-    return $ Bind Let [Def n r ty (Patterns cf) noConstrs] (App Nothing (V n) tm)
+    case mkArgs ty of
+        arg:_ -> do
+            let cf = CaseFun [arg] (Case Nothing (V $ defName arg) alts)
+            return $ Bind Let [Def n r ty (Patterns cf) noConstrs] (App Nothing (V n) tm)
+
+        args -> fail $ "case function " ++ show n ++ " must take at least one argument"
   where
     mkArgs (Bind Pi ds tm) = ds ++ mkArgs tm
     mkArgs _ = []
