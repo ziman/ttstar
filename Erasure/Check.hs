@@ -383,8 +383,10 @@ conv' p@(Bind b [Def n r ty (Abstract Var) _noCs] tm) q@(Bind b' [Def n' r' ty' 
                 $ conv tm (rename n' n tm')
         return $ xs /\ ys /\ r <--> r'
 
+{- This would be necessary for conversion-checking of multilets. Let's disable them for now.
 conv' (Bind b (d:ds) tm) (Bind b' (d':ds') tm') = bt ("C-SIMPL", b) $
     conv' (Bind b [d] $ Bind b ds tm) (Bind b' [d'] $ Bind b' ds' tm')
+-}
 
 -- whnf is application (application of something irreducible)
 conv' p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do

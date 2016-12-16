@@ -345,8 +345,10 @@ conv' E
         with d $ 
             conv E tm (subst n' (V n) tm')
 
+{- This would be necessary for conversion-checking let-bindings. Let's disable them for now.
 conv' r (Bind b (d:ds) tm) (Bind b' (d':ds') tm')
     = bt ("CONV-SIMPL", b) $
         conv' r (Bind b [d] $ Bind b ds tm) (Bind b' [d'] $ Bind b' ds' tm')
+-}
 
 conv' r p q = verFail $ CantConvert p q
