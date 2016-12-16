@@ -187,6 +187,7 @@ main = do
             putStrLn ""
             putStrLn "erased:"
             putStrLn $ "  " ++ show (red NF (builtins ()) pruned)
+            putStrLn ""
 
             codegen Codegen.Scheme.codegen fname pruned
 
