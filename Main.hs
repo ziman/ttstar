@@ -127,22 +127,8 @@ main = do
             putStrLn ""
 
             let iterSpecialisation metaified = do
-                    {-
-                    putStrLn "### Inferred definitions ###\n"
-                    let ctx = either (error . show) id . check $ metaified
-                    mapM_ (putStrLn . fmtCtx) $ M.toList ctx
-                    print metaified
-                    putStrLn ""
-                    -}
-
                     putStrLn "### Constraints ###\n"
                     let cs = either (error . show) id . check $ metaified
-                    {-
-                    let cs = unions [
-                            defConstraints (ctx M.! n)
-                            | Def n (Just R) _ _ _ <- getDefs prog
-                          ]
-                    -}
                     mapM_ (putStrLn . fmtCtr) $ M.toList cs
                     putStrLn ""
 
@@ -182,7 +168,6 @@ main = do
             annotated <- iterSpecialisation metaified_1st
 
             putStrLn "### Final annotation ###"
-            -- let annotated = annotate S.empty specialised  -- no usage set needed, everything is Fixed
             print annotated
             putStrLn ""
 
@@ -207,13 +192,6 @@ main = do
 
   where
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
-
-    {-
-    fmtCtx (n, (Def _n r ty body cs))
-        | M.null cs = prettyShow (Def n r ty body cs) ++ "\n"
-        | otherwise = prettyShow (Def n r ty body cs) ++ "\n"
-                        ++ unlines (map (("  " ++) . fmtCtr) $ M.toList cs)
-    -}
 
 codegen :: Codegen -> String -> Program () -> IO ()
 codegen cg fname prog = writeFile fname' code

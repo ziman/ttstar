@@ -97,26 +97,6 @@ red form ctx t@(Bind Let ds tm)
   where
     reducedTm = red form (insertDefs ds ctx) tm
 
-{-
--- abstract terms won't reduce so we just need to go underneath
-red form ctx t@(Bind Let d@(Def n r ty (Abstract _) cs) tm)
-    | n `occursIn` rbody = Bind Let d rbody
-    | otherwise = rbody
-  where
-    rbody = red form (insertDefs d ctx) tm
-
--- bound terms
-red form ctx t@(Bind Let d@(Def n r ty body cs) tm)
-    -- no progress
-    | rbody == tm = Bind Let d tm
-    -- made progress but there still stuff to do -> reduce eagerly in body again
-    | n `occursIn` rbody = red form ctx (Bind Let d rbody)
-    -- nothing left to reduce
-    | otherwise = rbody
-  where
-    rbody = red form (M.insert n d ctx) tm
--}
-
 -- The remaining binders are Pi and Lam.
 red WHNF ctx t@(Bind b ds tm) = t  -- this is in WHNF already
 red  NF  ctx t@(Bind b [] tm) = Bind b [] $ red NF ctx tm
