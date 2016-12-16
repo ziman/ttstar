@@ -58,20 +58,20 @@ atomic = parens expr
 arrow :: Parser (TT MRel)
 arrow = (<?> "arrow type") $ do
     ty <- try (atomic <* kwd "->")
-    Bind Pi (Def Blank Nothing ty (Abstract Var) noConstrs) <$> expr
+    Bind Pi [Def Blank Nothing ty (Abstract Var) noConstrs] <$> expr
 
 lambda :: Parser (TT MRel)
 lambda = (<?> "lambda") $ do
     kwd "\\"
     d <- typing Var
     kwd "."
-    Bind Lam d <$> expr
+    Bind Lam [d] <$> expr
 
 bpi :: Parser (TT MRel)
 bpi = (<?> "pi") $ do
     d <- try $ parens (typing Var)
     kwd "->"
-    Bind Pi d <$> expr
+    Bind Pi [d] <$> expr
 
 bind :: Parser (TT MRel)
 bind = arrow
@@ -88,7 +88,7 @@ let_ = (<?> "let expression") $ do
     kwd "let"
     d <- simpleDef
     kwd "in"
-    Bind Let d <$> expr
+    Bind Let [d] <$> expr
 
 erasureInstance :: Parser (TT MRel)
 erasureInstance = (<?> "erasure instance") $ do
@@ -105,7 +105,7 @@ case_ = (<?> "case expression") $ do
     tm <- parens expr
     kwd "where"
     d <- simpleDef
-    return $ Bind Let d tm
+    return $ Bind Let [d] tm
 
 expr :: Parser (TT MRel)
 expr = 
@@ -193,7 +193,7 @@ fundef = (<?> "function definition") $ do
     matchingDef <|> lambdaDef
   where
     chain bnd [] tm = tm
-    chain bnd (d : args) tm = Bind bnd d $ chain bnd args tm
+    chain bnd (d : args) tm = Bind bnd [d] $ chain bnd args tm
 
 dataDef :: Parser [Def MRel]
 dataDef = (<?> "data definition") $ do
@@ -211,7 +211,9 @@ definition :: Parser [Def MRel]
 definition = dataDef <|> (pure <$> simpleDef) <?> "definition"
 
 parseProg :: Parser (Program MRel)
-parseProg = Prog . concat <$> many definition <?> "program"
+parseProg = do
+    ds <- concat <$> many definition <?> "program"
+    return $ Bind Let ds (V $ UN "main")
 
 ttProgram :: Parser (Program MRel)
 ttProgram = sp *> parseProg <* eof

@@ -121,7 +121,9 @@ verify :: Program Relevance -> Either VerFailure ()
 verify prog = runVer (builtins relOfType) $ verProg prog
 
 verProg :: Program Relevance -> Ver ()
-verProg (Prog defs) = verDefs defs
+verProg prog = do
+    _ <- verTm R prog
+    return ()
 
 verDefs :: [Def Relevance] -> Ver ()
 verDefs [] = return ()
@@ -237,28 +239,28 @@ verTm R (V n) = bt ("VAR-R", n) $ do
     defR d <-> R
     return $ defType d
 
-verTm r (Bind Lam d@(Def n s ty (Abstract Var) _) tm) = bt ("LAM", r, n) $ do
+verTm r (Bind Lam [d@(Def n s ty (Abstract Var) _)] tm) = bt ("LAM", r, n) $ do
     tyty <- verTm E ty    
     mustBeType tyty
     tmty <- with d $ verTm r tm
-    return $ Bind Pi d tmty
+    return $ Bind Pi [d] tmty
 
-verTm r (Bind Pi d@(Def n s ty (Abstract Var) _) tm) = bt ("PI", r, n) $ do
+verTm r (Bind Pi [d@(Def n s ty (Abstract Var) _)] tm) = bt ("PI", r, n) $ do
     tyty <- verTm E ty
     mustBeType tyty
     tmty <- with d $ verTm r tm
     mustBeType tmty
     return (V typeOfTypes)
 
-verTm r (Bind Let d tm) = bt ("LET", r, d) $ do
-    verDef d
-    with d{defBody = Abstract Var} $ verTm r tm
+verTm r (Bind Let ds tm) = bt ("LET", r, ds) $ do
+    verDefs ds
+    withs ds $ verTm r tm
 
 verTm r (App s f x) = bt ("APP", r, f, s, x) $ do
     ctx <- getCtx
     fty <- verTm r f
     case whnf ctx fty of
-        Bind Pi (Def n s piTy (Abstract Var) _) piRhs -> do
+        Bind Pi [Def n s piTy (Abstract Var) _] piRhs -> do
             xty <- verTm (r /\ s) x
             conv (r /\ s) xty piTy            
             return $ subst n x piRhs
@@ -284,7 +286,7 @@ verPat R (App r f x) = bt ("PAT-APP-R", f, x) $ do
     ctx <- getCtx
     fty <- verTm R f
     case whnf ctx fty of
-        Bind Pi (Def n s piTy (Abstract Var) _) piRhs -> do
+        Bind Pi [Def n s piTy (Abstract Var) _] piRhs -> do
             xty <- verTm r x
             conv r xty piTy  -- here, conversion check may be R
             r <-> s          -- but r and s must match
@@ -296,7 +298,7 @@ verPat E (App r f x) = bt ("PAT-APP-E", f, x) $ do
     ctx <- getCtx
     fty <- verTm E f
     case whnf ctx fty of
-        Bind Pi (Def n s piTy (Abstract Var) _) piRhs -> do
+        Bind Pi [Def n s piTy (Abstract Var) _] piRhs -> do
             xty <- verTm E x
             conv E xty piTy   -- here, conversion check must be E, but r and s needn't match
             return $ subst n x piRhs
@@ -327,8 +329,8 @@ conv' E (App r f x) (App r' f' x') = bt ("CONV-APP-E", f, x, f', x') $ do
     conv E x x'
 
 conv' R
-    (Bind b  d@(Def  n  r  ty  (Abstract Var) _) tm)
-    (Bind b' d'@(Def n' r' ty' (Abstract Var) _) tm')
+    (Bind b  [d@(Def  n  r  ty  (Abstract Var) _)] tm)
+    (Bind b' [d'@(Def n' r' ty' (Abstract Var) _)] tm')
     | b == b' = bt ("CONV-BIND", b, d, tm, d', tm') $ do
         r <-> r'
         conv R ty ty'
@@ -336,11 +338,15 @@ conv' R
             conv R tm (subst n' (V n) tm')
 
 conv' E
-    (Bind b  d@(Def  n  r  ty  (Abstract Var) _) tm)
-    (Bind b' d'@(Def n' r' ty' (Abstract Var) _) tm')
+    (Bind b  [d@(Def  n  r  ty  (Abstract Var) _)] tm)
+    (Bind b' [d'@(Def n' r' ty' (Abstract Var) _)] tm')
     | b == b' = bt ("CONV-BIND", b, d, tm, d', tm') $ do
         conv E ty ty'
         with d $ 
             conv E tm (subst n' (V n) tm')
+
+conv' r (Bind b (d:ds) tm) (Bind b' (d':ds') tm')
+    = bt ("CONV-SIMPL", b) $
+        conv' r (Bind b [d] $ Bind b ds tm) (Bind b' [d'] $ Bind b' ds' tm')
 
 conv' r p q = verFail $ CantConvert p q

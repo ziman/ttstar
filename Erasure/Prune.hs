@@ -3,9 +3,6 @@ module Erasure.Prune where
 import TT
 import Pretty ()
 
-prune :: Program Relevance -> Program ()
-prune (Prog defs) = Prog $ pruneDefs defs
-
 pruneDef :: Def Relevance -> [Def ()]
 pruneDef (Def n E ty body mcs) = []
 -- special case for constructors to keep their arity:
@@ -49,11 +46,10 @@ pruneDefs = concatMap pruneDef
 pruneTm :: TT Relevance -> TT ()
 pruneTm (V n) = V n
 pruneTm (I n ty) = error $ "non-specialised instance found in pruneTm: " ++ show (n, ty)
-pruneTm (Bind b d tm)
-    = case pruneDef d of
-        []   -> pruneTm tm
-        [d'] -> Bind b d' (pruneTm tm)
-        _    -> error "pruneTm: impossible def prune"
+pruneTm (Bind b ds tm)
+    = case concatMap pruneDef ds of
+        []  -> pruneTm tm
+        ds' -> Bind b ds' (pruneTm tm)
 pruneTm (App E f x) = pruneTm f
 pruneTm (App R f x) = App () (pruneTm f) (pruneTm x)
 pruneTm (Forced tm) = error $ "pruneTm: forced term: " ++ show tm

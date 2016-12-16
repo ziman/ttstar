@@ -14,8 +14,8 @@ ttRelevance f = g
     g tm = case tm of
         V n    -> pure $ V n
         I n ty -> I n <$> g ty
-        Bind b d tm
-            -> Bind b <$> defRelevance f d <*> g tm
+        Bind b ds tm
+            -> Bind b <$> traverse (defRelevance f) ds <*> g tm
         App r fun arg
             -> App <$> f r <*> g fun <*> g arg
         Forced tm
@@ -58,9 +58,6 @@ altLHSRelevance f (Ctor r cn args eqs)
 
 caseEqRelevance :: Ord r' => Traversal (Name, TT r) (Name, TT r') r r'
 caseEqRelevance f (n, tm) = (,) n <$> ttRelevance f tm
-
-progRelevance :: Ord r' => Traversal (Program r) (Program r') r r'
-progRelevance f (Prog defs) = Prog <$> traverse (defRelevance f) defs
 
 csRelevance :: Ord r' => Traversal (Constrs r) (Constrs r') r r'
 csRelevance f = fmap M.fromList . traverse f' . M.toList

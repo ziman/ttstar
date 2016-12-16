@@ -68,9 +68,6 @@ instance PrettyR r => Pretty (Body r) where
     pretty (Term tm) = text "=" <+> pretty tm
     pretty (Patterns cf) = pretty cf
 
-instance PrettyR r => Pretty (Program r) where
-    pretty (Prog defs) = vcat $ map (\d -> pretty d $$ blankLine) defs
-
 instance PrettyR r => Pretty (Def r) where
     pretty (Def n r ty body cs) =
         case body of
@@ -93,11 +90,20 @@ instance PrettyR r => Pretty (TT r) where
       where
         pretty' pp (V n) = pretty n
         pretty' pp (I n ty) = brackets (pretty n <+> colon <+> pretty ty)
-        pretty' pp (Bind Pi d tm) = parens (pretty d) <+> text "->" <+> pretty tm
-        pretty' pp (Bind Lam d tm) = parens (text "\\" <> pretty d <> dot <+> pretty tm)
-        pretty' pp (Bind Let d tm) =
+        pretty' pp (Bind Pi [d] tm) = parens (pretty d) <+> text "->" <+> pretty tm
+        pretty' pp (Bind Lam [d] tm) = parens (text "\\" <> pretty d <> dot <+> pretty tm)
+        pretty' pp (Bind Let [d] tm) =
             blankLine
             $$ indent (text "let" <+> pretty d
+                $$ text "in" <+> pretty tm
+            )
+        pretty' pp (Bind Let ds tm) =
+            blankLine
+            $$ indent (text "let"
+                $$ indent (vcat [
+                    pretty d
+                    | d <- ds
+                ])
                 $$ text "in" <+> pretty tm
             )
         pretty' pp (App r (V (UN "S")) x) | Just i <- fromNat x = int $ 1+i
@@ -111,6 +117,7 @@ instance PrettyR r => Pretty (TT r) where
             show' r (App r' f' x') x = show' r' f' x' <> prettyApp r <> pretty' True x
             show' r f x = pretty f <> prettyApp r <> pretty' True x
         pretty' pp (Forced tm) = brackets (pretty' False tm) 
+        pretty' pp tm = text "[???" <+> text (show tm) <+> text "???]"
 
 instance PrettyR r => Show (TT r) where
     show = prettyShow
@@ -119,7 +126,6 @@ instance PrettyR r => Show (Def r) where
     show = prettyShow
 
 deriving instance PrettyR r => Show (Body r)
-deriving instance PrettyR r => Show (Program r)
 
 instance PrettyR r => Pretty (CaseFun r) where
     pretty (CaseFun [] t) = pretty t

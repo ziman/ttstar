@@ -38,9 +38,9 @@ instance Termy TT where
         | n' == n   = tm
         | otherwise = I n' $ subst n tm ty
 
-    subst n tm (Bind b d rhs) = Bind b d' rhs'
+    subst n tm (Bind b ds rhs) = Bind b ds' rhs'
       where
-        ([d'], [], rhs') = substBinder n tm [d] [] rhs
+        (ds', [], rhs') = substBinder n tm ds [] rhs
 
     subst n tm (App r f x) = App r (subst n tm f) (subst n tm x)
 
@@ -48,7 +48,7 @@ instance Termy TT where
 
     freeVars (V n) = S.singleton n
     freeVars (I n ty) = S.insert n $ freeVars ty
-    freeVars (Bind b d tm) = freeVarsBinder [d] [] tm
+    freeVars (Bind b ds tm) = freeVarsBinder ds [] tm
     freeVars (App r f x) = freeVars f `S.union` freeVars x
     freeVars (Forced tm) = freeVars tm
 
@@ -172,6 +172,10 @@ instance Termy Alt where
 
 occursIn :: Termy a => Name -> a r -> Bool
 n `occursIn` tm = n `S.member` freeVars tm
+
+insertDefs :: [Def r] -> Ctx r -> Ctx r
+insertDefs (d:ds) = insertDefs ds . M.insert (defName d) d
+insertDefs []     = id
 
 rename :: Termy a => Name -> Name -> a r -> a r
 rename fromN toN = subst fromN (V toN)

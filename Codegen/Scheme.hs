@@ -25,13 +25,23 @@ cgName = text . specialName . map mogrify . show
     mogrify '\'' = '_'
     mogrify c = c
 
+-- flavours of `let` in Scheme:
+-- http://www.cs.rpi.edu/academics/courses/fall00/ai/scheme/reference/schintro-v14/schintro_126.html
+
+cgBody :: Name -> TT () -> Body () -> Doc
+cgBody n ty (Abstract Postulate) = cgCtor n ty
+cgBody n ty (Abstract Var) = error $ "let-bound variable: " ++ show n
+cgBody n ty (Term tm) = cgTm tm
+cgBody n ty (Patterns cf) = cgCaseFun cf
+
+cgLetRec :: [Def ()] -> Doc -> Doc
+cgLetRec ds = cgLet' "letrec" [(n, cgBody n ty b) | Def n () ty b _cs <- ds]
+
 cgTm :: TT () -> Doc
 cgTm (V n) = cgName n
 cgTm tm@(I n ty) = error $ "e-instance in codegen: " ++ show tm
-cgTm (Bind Lam (Def n () ty (Abstract Var) cs) rhs) = cgLambda n $ cgTm rhs
-cgTm (Bind Let (Def n () ty (Abstract Postulate) cs) rhs) = cgLet [(n, cgCtor n ty)] (cgTm rhs)
-cgTm (Bind Let (Def n () ty (Term tm) cs) rhs) = cgLet [(n, cgTm tm)] (cgTm rhs)
-cgTm (Bind Let (Def n () ty (Patterns cf) cs) rhs) = cgLet [(n, cgCaseFun cf)] (cgTm rhs)
+cgTm (Bind Lam [Def n () ty (Abstract Var) cs] rhs) = cgLambda n $ cgTm rhs
+cgTm (Bind Let ds rhs) = cgLetRec ds $ cgTm rhs
 cgTm (App () f x) = cgApp (cgTm f) (cgTm x)
 cgTm tm = error $ "can't cg tm: " ++ show tm
 
@@ -54,12 +64,6 @@ cgCtor n ty
         )
   where
     argNs = uniqNames $ argNames ty
-
-cgDef :: Def () -> Doc
-cgDef (Def n r ty (Abstract Postulate) cs) = cgDefine n $ cgCtor n ty
-cgDef (Def n r ty (Patterns cf) cs) = cgDefine n $ cgCaseFun cf
-cgDef (Def n r ty (Term tm) cs) = cgDefine n $ cgTm tm
-cgDef d@(Def n r ty b cs) = error $ "can't cg def: " ++ show d
 
 cgCaseTree :: CaseTree () -> Doc
 cgCaseTree (Leaf tm) = cgTm tm
@@ -91,23 +95,25 @@ cgBinds (n:ns) args rhs =
 cgCase :: Doc -> [Doc] -> Doc
 cgCase scrut alts = parens (text "case" <+> scrut $+$ indent (vcat alts))
 
-cgDefine :: Name -> Doc -> Doc
-cgDefine n body = parens (text "define" <+> cgName n $+$ indent body)
-
 cgLambda :: Name -> Doc -> Doc
 cgLambda n body = parens (text "lambda" <+> parens (cgName n) $+$ indent body)
-
-cgLet :: [(Name, Doc)] -> Doc -> Doc
-cgLet = cgLet' "let"
 
 cgLetStar :: [(Name, Doc)] -> Doc -> Doc
 cgLetStar = cgLet' "let*"
 
 cgLet' :: String -> [(Name, Doc)] -> Doc -> Doc
-cgLet' letN defs rhs = parens (
+cgLet' letN [(n, body)] rhs = parens (
         text letN <+> parens (
-            hsep [parens (cgName n <+> body) | (n, body) <- defs]
+            parens (cgName n <+> body)
         )
+        $+$ indent rhs
+    )
+cgLet' letN defs rhs = parens (
+        text letN <+> text "("
+        $+$ indent (
+            vcat [parens (cgName n <+> body) | (n, body) <- defs]
+        )
+        $+$ text ")"
         $+$ indent rhs
     )
 
@@ -126,14 +132,13 @@ uniqNames ns =
     (|||) m     n = m
 
 argNames :: TT () -> [Name]
-argNames (Bind Pi d rhs) = defName d : argNames rhs
+argNames (Bind Pi ds rhs) = map defName ds ++ argNames rhs
 argNames _ = []
 
 cgProgram :: Program () -> Doc
-cgProgram (Prog defs) = vcat [
-    cgDef def $+$ blankLine
-    | def <- defs
-    ] $+$ text "(print main)"  -- add (newline) for racket
+cgProgram prog = parens (
+    text "print" $+$ indent (cgTm prog)
+  ) $+$ parens (text "newline")
 
 codegen :: Codegen
 codegen = Codegen

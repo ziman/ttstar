@@ -6,7 +6,6 @@ import TTLens
 import Erasure.Meta
 import Erasure.Check
 
-import Control.Monad.Trans.Writer
 import Control.Monad.Trans.State
 import qualified Data.Map as M
 import qualified Data.Set as S
@@ -14,14 +13,9 @@ import qualified Data.IntMap as IM
 
 import Lens.Family2
 
-newtype Instances = Instances (M.Map Name (S.Set ErPattern))
+type Instances = M.Map Name (S.Set ErPattern)
 type ErPattern = [Relevance]
-type Spec = Writer Instances
-
-instance Monoid Instances where
-    mempty = Instances M.empty
-    mappend (Instances p) (Instances q)
-        = Instances $ M.unionWith S.union p q
+type Spec a = State Int (Instances, a)
 
 fresh :: State Int Int
 fresh = do
@@ -39,83 +33,129 @@ bindMetas (r : rs) (m : ms) = bind r m $ bindMetas rs ms
     bind r m = error $ "bindMetas.bind: inconsistency: " ++ show (r, m)
 bindMetas rs ms = error $ "bindMetas: length mismatch: " ++ show (rs, ms)
 
-extend ::
-    Program Meta
-    -> Instances
-    -> Program Meta
-    -> Program Meta
-extend (Prog rawDefs) (Instances imap) prog@(Prog defs)
-    = Prog $ evalState (concat <$> traverse expandDef defs) initialState
-  where
-    initialState = 1 + maximum (0 : [i | MVar i <- prog ^.. (progRelevance :: Traversal' (Program Meta) Meta)])
-    rawDefMap = M.fromList [(n, d) | d@(Def n r ty _ _) <- rawDefs]
-
-    extendDefs oldName
-      = sequence
-          [ let Def _ r ty body noCs = rawDefMap M.! oldName
-                newName = specName oldName ep
-              in instantiate fresh (bindMetas ep (ty ^.. (ttRelevance :: Traversal' (TT Meta) Meta)))
-                   $ Def newName r ty body noCs
-          | ep <- S.toList $ M.findWithDefault S.empty oldName imap
-          ]
-
-    expandDef (Def n r ty body noCs) = (Def n r ty body noCs :) <$> extendDefs n
-
-remetaify :: Program Relevance -> Program Meta
-remetaify = progRelevance %~ Fixed
+specName :: Name -> ErPattern -> Name
+specName (UN n) epat = IN n epat
+specName n _ = error $ "trying to specialise a strange name: " ++ show n
 
 specialise ::
     Program Meta          -- raw, just metaified definitions (material to specialise)   
     -> Program Relevance  -- program to extend
     -> Program Meta       -- extended program
-specialise raw prog = extend raw insts $ remetaify prog'
+specialise pm pr
+    | M.null residue = pr'
+    | otherwise = error $ "could not specialise: " ++ show residue
   where
-    (prog', insts) = runWriter $ specNProg prog
+    (residue, pr') = evalState (specTm pm pr) initialState
 
-specNProg :: Program Relevance -> Spec (Program Relevance)
-specNProg (Prog defs) = Prog <$> traverse specNDef defs
+    initialState :: Int
+    initialState = 1 + maximum (0 : [
+        i | MVar i <- pm ^.. (ttRelevance :: Traversal' (TT Meta) Meta)
+      ])
 
-specNDef :: Def Relevance -> Spec (Def Relevance)
-specNDef (Def n r ty body noCs)
-    = Def n r <$> specNTm ty <*> specNBody body <*> pure noCs
+forMany :: (f Meta -> f Relevance -> Spec (f Meta)) -> [f Meta] -> [f Relevance] -> Spec [f Meta]
+forMany spec ms rs = do
+    xs <- sequence [spec m r | (m, r) <- zip ms rs]
+    return (
+        M.unionsWith S.union $ map fst xs,
+        map snd xs
+      )
 
-specNBody :: Body Relevance -> Spec (Body Relevance)
-specNBody (Abstract a)  = pure $ Abstract a
-specNBody (Term tm)     = Term <$> specNTm tm
-specNBody (Patterns cf) = Patterns <$> specNCaseFun cf
+-- wtf haskell, why do I have to have a separate function for this
+-- instead of "forManyEq = forMany"??
+forManyEq :: ((Name, TT Meta) -> (Name, TT Relevance) -> Spec (Name, TT Meta))
+    -> [(Name, TT Meta)] -> [(Name, TT Relevance)] -> Spec [(Name, TT Meta)]
+forManyEq spec ms rs = do
+    xs <- sequence [spec m r | (m, r) <- zip ms rs]
+    return (
+        M.unionsWith S.union $ map fst xs,
+        map snd xs
+      )
 
-specNCaseFun :: CaseFun Relevance -> Spec (CaseFun Relevance)
-specNCaseFun (CaseFun args ct) = CaseFun <$> traverse specNDef args <*> specNCaseTree ct
+specEq :: (Name, TT Meta) -> (Name, TT Relevance) -> Spec (Name, TT Meta)
+specEq (nm, tmm) (nr, tmr) = do
+    (is, tmr') <- specTm tmm tmr
+    return (is, (nr, tmr'))
 
-specNCaseTree :: CaseTree Relevance -> Spec (CaseTree Relevance)
-specNCaseTree (Leaf tm) = Leaf <$> specNTm tm
-specNCaseTree (Case r s alts) = Case r <$> specNTm s <*> traverse specNAlt alts
+specAlt :: Alt Meta -> Alt Relevance -> Spec (Alt Meta)
+specAlt (Alt Wildcard rhsm) (Alt Wildcard rhsr)
+    = fmap (Alt Wildcard) <$> specCaseTree rhsm rhsr
+specAlt (Alt (Ctor rm nm dsm eqsm) rhsm) (Alt (Ctor rr nr dsr eqsr) rhsr) = do
+    (isRhs, rhsr') <- specCaseTree rhsm rhsr
+    (isDefs, dsr') <- forMany specDef dsm dsr
+    (isEqs, eqsr') <- forManyEq specEq eqsm eqsr
+    return (
+        M.unionsWith S.union [isRhs, isDefs, isEqs],
+        Alt (Ctor (Fixed rr) nr dsr' eqsr') rhsr'
+      )
+specAlt altm altr = error $ "specAlt: mismatch: " ++ show (altm, altr)
 
-specNAlt :: Alt Relevance -> Spec (Alt Relevance)
-specNAlt (Alt lhs rhs) = Alt <$> specNLHS lhs <*> specNCaseTree rhs
+specCaseTree :: CaseTree Meta -> CaseTree Relevance -> Spec (CaseTree Meta)
+specCaseTree (Leaf tmm) (Leaf tmr) = fmap Leaf <$> specTm tmm tmr
+specCaseTree (Case rm sm altsm) (Case rr sr altsr) = do
+    (is, sr') <- specTm sm sr
+    (is', altsr') <- forMany specAlt altsm altsr
+    return (
+        M.unionWith S.union is is',
+        Case (Fixed rr) sr' altsr'
+      )
+specCaseTree ctm ctr = error $ "specCaseTree: mismatch: " ++ show (ctm, ctr)
 
-specNLHS :: AltLHS Relevance -> Spec (AltLHS Relevance)
-specNLHS Wildcard = pure Wildcard
-specNLHS (Ctor r cn args eqs) = Ctor r cn <$> traverse specNDef args <*> traverse specEq eqs
+specCaseFun :: CaseFun Meta -> CaseFun Relevance -> Spec (CaseFun Meta)
+specCaseFun (CaseFun dsm ctm) (CaseFun dsr ctr) = do
+    -- spec the definitions first
+    (is, dsr') <- forMany specDef dsm dsr
+    (is', ctr') <- specCaseTree ctm ctr
+    return (
+        M.unionWith S.union is is',
+        CaseFun dsr' ctr'
+      )
+
+specBody :: Body Meta -> Body Relevance -> Spec (Body Meta)
+specBody bm (Abstract a) = return $ (M.empty, Abstract a)
+specBody (Term tmm) (Term tmr) = fmap Term <$> specTm tmm tmr
+specBody (Patterns cfm) (Patterns cfr) = fmap Patterns <$> specCaseFun cfm cfr
+specBody bm br = error $ "specBody: non-matching bodies: " ++ show (bm, br)
+
+specDef :: Def Meta -> Def Relevance -> Spec (Def Meta)
+specDef (Def nm rm tym bodym _csm) (Def nr rr tyr bodyr csr) = do
+    (is, tyr') <- specTm tym tyr
+    (is', bodyr') <- specBody bodym bodyr
+    return $ (M.unionWith S.union is is', Def nr (Fixed rr) tyr' bodyr' noConstrs)
+
+specTm :: TT Meta -> TT Relevance -> Spec (TT Meta)
+specTm tmm (V n) = return (M.empty, V n)
+specTm tmm (I n@(UN ns) ty)
+    = return (spec n rs, V (IN ns rs))
   where
-    specEq (n, tm) = (,) n <$> specNTm tm
+    rs :: [Relevance]
+    rs = ty ^.. (ttRelevance ::Traversal' (TT Relevance) Relevance)
 
-specNTm :: TT Relevance -> Spec (TT Relevance)
-specNTm (V n) = pure $ V n
-
-specNTm (I n@(UN ns) ty) = do
-    let rs = ty ^.. (ttRelevance :: Traversal' (TT Relevance) Relevance)
-    tell $ spec n rs
-    return $ V (IN ns rs)
-  where
     spec :: Name -> [Relevance] -> Instances
-    spec n = Instances . M.singleton n . S.singleton
+    spec n = M.singleton n . S.singleton
 
-specNTm (Bind b d tm) = Bind b <$> specNDef d <*> specNTm tm
-specNTm (App r f x) = App r <$> specNTm f <*> specNTm x
+specTm (Bind bm [] tmm) (Bind br [] tmr) = fmap (Bind br []) <$> specTm tmm tmr
 
-specNTm tm = error $ "unexpected term to specialise: " ++ show tm
+specTm (Bind bm (dm:dsm) tmm) (Bind br (dr:dsr) tmr) = do
+    (isDef, dr') <- specDef dm dr
+    (isSub, Bind _br' dsr' tmr') <- specTm (Bind bm dsm tmm) (Bind br dsr tmr)
+    let is = M.unionWith S.union isDef isSub
+    specs <- sequence [
+        instantiate fresh (bindMetas ep (defType dm ^.. (ttRelevance :: Traversal' (TT Meta) Meta)))
+            $ dm{ defName = specName n ep }
+        | ep <- S.toList $ M.findWithDefault S.empty n is
+      ]
+    return (
+        M.delete n is,
+        Bind br (dr' : specs ++ dsr') tmr'
+      )
+  where
+    n = defName dr
 
-specName :: Name -> ErPattern -> Name
-specName (UN n) epat = IN n epat
-specName n _ = error $ "trying to specialise a strange name: " ++ show n
+specTm (App rm fm xm) (App rr fr xr) = do
+    (isf, fr') <- specTm fm fr
+    (isx, xr') <- specTm xm xr
+    return (M.unionWith S.union isf isx, App (Fixed rr) fr' xr')
+
+specTm (Forced tmm) (Forced tmr) = fmap Forced <$> specTm tmm tmr
+
+specTm tmm tmr = error $ "cannot specialise: " ++ show (tmm, tmr)

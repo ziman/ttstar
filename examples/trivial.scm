@@ -1,5 +1,5 @@
-(define main
-  (lambda (x)
-    x))
-
-(print main)
+(print
+  (letrec ((main (lambda (x)
+    x)))
+    main))
+(newline)

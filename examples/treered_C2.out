@@ -2,85 +2,35 @@
 
 ### Desugared ###
 
-postulate N : Type
-
-postulate Z : N
-
-postulate S : (x : N) -> N
-
-postulate Vec : (_ : N) -> Type
-
-postulate Nil : Vec Z
-
-vlen : (n : N) -> (xs : Vec n) -> N = \(n : N) (xs : Vec n).
-  case xs of
-    Nil
-      | n = Z
-      => n
-
-main :R: N = vlen Z Nil
+  let
+    postulate N : Type
+    postulate Z : N
+    postulate S : (x : N) -> N
+    postulate Vec : (_ : N) -> Type
+    postulate Nil : Vec Z
+    vlen : (n : N) -> (xs : Vec n) -> N = \(n : N) (xs : Vec n).
+      case xs of
+        Nil
+          | n = Z
+          => n
+    main :R: N = vlen Z Nil
+  in main
 
 ### Metaified ###
 
-postulate N :1: Type
-
-postulate Z :2: N
-
-postulate S :3: (x :4: N) -> N
-
-postulate Vec :5: (_ :6: N) -> Type
-
-postulate Nil :7: Vec -8- Z
-
-vlen :9: (n :10: N) -> (xs :11: Vec -12- n) -> N = \(n :13: N) (xs :14: Vec -15- n).
-  case -16- xs of
-    Nil/17
-      | n = Z
-      => n
-
-main :R: N = vlen -19- Z -18- Nil
-
-### Inferred definitions ###
-
-postulate N :1: Type
-
-postulate Nil :7: Vec -8- Z
-
-postulate S :3: (x :4: N) -> N
-
-postulate Type :E: Type
-
-postulate Vec :5: (_ :6: N) -> Type
-
-postulate Z :2: N
-
-main :R: N = vlen -19- Z -18- Nil {- constraints apply -}
-  [] -> [2,9,10,13,19,R]
-  [7] -> [17]
-  [8] -> [11,12]
-  [8,11] -> [12]
-  [11] -> [7,14,18]
-  [11,12] -> [8]
-  [12] -> [8,11]
-  [14] -> [11]
-  [16] -> [14]
-  [17] -> [7]
-  [18] -> [11]
-
-vlen :9: (n :10: N) -> (xs :11: Vec -12- n) -> N = \(n :13: N) (xs :14: Vec -15- n).
-  case -16- xs of
-    Nil/17
-      | n = Z
-      => n {- constraints apply -}
-  [] -> [10,13,R]
-  [7] -> [17]
-  [8] -> [11,12]
-  [11] -> [14]
-  [12] -> [8,11]
-  [14] -> [11]
-  [16] -> [14]
-  [17] -> [7]
-
+  let
+    postulate N :1: Type
+    postulate Z :2: N
+    postulate S :3: (x :4: N) -> N
+    postulate Vec :5: (_ :6: N) -> Type
+    postulate Nil :7: Vec -8- Z
+    vlen :9: (n :10: N) -> (xs :11: Vec -12- n) -> N = \(n :13: N) (xs :14: Vec -15- n).
+      case -16- xs of
+        Nil/17
+          | n = Z
+          => n
+    main :R: N = vlen -19- Z -18- Nil
+  in main
 
 ### Constraints ###
 
@@ -95,6 +45,7 @@ vlen :9: (n :10: N) -> (xs :11: Vec -12- n) -> N = \(n :13: N) (xs :14: Vec -15-
 [16] -> [14]
 [17] -> [7]
 [18] -> [11]
+[R] -> [R]
 
 ### Solution ###
 
@@ -102,63 +53,92 @@ vlen :9: (n :10: N) -> (xs :11: Vec -12- n) -> N = \(n :13: N) (xs :14: Vec -15-
 
 ### Annotated ###
 
-postulate N :E: Type
-
-postulate Z :R: N
-
-postulate S :E: (x :E: N) -> N
-
-postulate Vec :E: (_ :E: N) -> Type
-
-postulate Nil :E: Vec -E- Z
-
-vlen :R: (n :R: N) -> (xs :E: Vec -E- n) -> N = \(n :R: N) (xs :E: Vec -E- n).
-  case -E- xs of
-    Nil/E
-      | n = Z
-      => n
-
-main :R: N = vlen -R- Z -E- Nil
+  let
+    postulate N :E: Type
+    postulate Z :R: N
+    postulate S :E: (x :E: N) -> N
+    postulate Vec :E: (_ :E: N) -> Type
+    postulate Nil :E: Vec -E- Z
+    vlen :R: (n :R: N) -> (xs :E: Vec -E- n) -> N = \(n :R: N) (xs :E: Vec -E- n).
+      case -E- xs of
+        Nil/E
+          | n = Z
+          => n
+    main :R: N = vlen -R- Z -E- Nil
+  in main
 
 ### Specialised ###
 
-postulate N :E: Type
+  let
+    postulate N :E: Type
+    postulate Z :R: N
+    postulate S :E: (x :E: N) -> N
+    postulate Vec :E: (_ :E: N) -> Type
+    postulate Nil :E: Vec -E- Z
+    vlen :R: (n :R: N) -> (xs :E: Vec -E- n) -> N = \(n :R: N) (xs :E: Vec -E- n).
+      case -E- xs of
+        Nil/E
+          | n = Z
+          => n
+    main :R: N = vlen -R- Z -E- Nil
+  in main
 
-postulate Z :R: N
+### Constraints ###
 
-postulate S :E: (x :E: N) -> N
+[E] -> [E]
+[R] -> [R]
 
-postulate Vec :E: (_ :E: N) -> Type
+### Solution ###
 
-postulate Nil :E: Vec -E- Z
+[R]
 
-vlen :R: (n :R: N) -> (xs :E: Vec -E- n) -> N = \(n :R: N) (xs :E: Vec -E- n).
-  case -E- xs of
-    Nil/E
-      | n = Z
-      => n
+### Annotated ###
 
-main :R: N = vlen -R- Z -E- Nil
+  let
+    postulate N :E: Type
+    postulate Z :R: N
+    postulate S :E: (x :E: N) -> N
+    postulate Vec :E: (_ :E: N) -> Type
+    postulate Nil :E: Vec -E- Z
+    vlen :R: (n :R: N) -> (xs :E: Vec -E- n) -> N = \(n :R: N) (xs :E: Vec -E- n).
+      case -E- xs of
+        Nil/E
+          | n = Z
+          => n
+    main :R: N = vlen -R- Z -E- Nil
+  in main
+
+### Specialised ###
+
+  let
+    postulate N :E: Type
+    postulate Z :R: N
+    postulate S :E: (x :E: N) -> N
+    postulate Vec :E: (_ :E: N) -> Type
+    postulate Nil :E: Vec -E- Z
+    vlen :R: (n :R: N) -> (xs :E: Vec -E- n) -> N = \(n :R: N) (xs :E: Vec -E- n).
+      case -E- xs of
+        Nil/E
+          | n = Z
+          => n
+    main :R: N = vlen -R- Z -E- Nil
+  in main
 
 ### Final annotation ###
 
-postulate N :E: Type
-
-postulate Z :R: N
-
-postulate S :E: (x :E: N) -> N
-
-postulate Vec :E: (_ :E: N) -> Type
-
-postulate Nil :E: Vec -E- Z
-
-vlen :R: (n :R: N) -> (xs :E: Vec -E- n) -> N = \(n :R: N) (xs :E: Vec -E- n).
-  case -E- xs of
-    Nil/E
-      | n = Z
-      => n
-
-main :R: N = vlen -R- Z -E- Nil
+  let
+    postulate N :E: Type
+    postulate Z :R: N
+    postulate S :E: (x :E: N) -> N
+    postulate Vec :E: (_ :E: N) -> Type
+    postulate Nil :E: Vec -E- Z
+    vlen :R: (n :R: N) -> (xs :E: Vec -E- n) -> N = \(n :R: N) (xs :E: Vec -E- n).
+      case -E- xs of
+        Nil/E
+          | n = Z
+          => n
+    main :R: N = vlen -R- Z -E- Nil
+  in main
 
 ### Verification ###
 
@@ -166,22 +146,22 @@ Verification successful.
 
 ### Pruned ###
 
-postulate Z : N
-
-vlen = \n.
-  n
-
-main = vlen Z
+  let
+    postulate Z : N
+    vlen = \n.
+      n
+    main = vlen Z
+  in main
 
 ### Normal forms ###
 
 unerased:
   
-  let postulate N : Type
-  in 
-    let postulate Z : N
-    in Z
+  let postulate Z : N
+  in Z
+
 erased:
   
   let postulate Z : N
   in Z
+

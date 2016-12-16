@@ -1,15 +1,11 @@
-(define T
-  (list 'T))
-
-(define MkUnit
-  (list 'MkUnit))
-
-(define not_TT
-  (lambda (x)
-    (case (car x)
-      ((T) MkUnit))))
-
-(define main
-  (not_TT T))
-
-(print main)
+(print
+  (letrec (
+    (T (list 'T))
+    (MkUnit (list 'MkUnit))
+    (not_TT (lambda (x)
+      (case (car x)
+        ((T) MkUnit))))
+    (main (not_TT T))
+  )
+    main))
+(newline)

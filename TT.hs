@@ -25,7 +25,7 @@ type Constrs r = M.Map (Guards r) (Uses r)
 data TT r
     = V Name
     | I Name (TT r)  -- instance of a global definition with a specific erasure type
-    | Bind Binder (Def r) (TT r)
+    | Bind Binder [Def r] (TT r)
     | App r (TT r) (TT r)
     | Forced (TT r)  -- forced terms don't generate constraints
     deriving (Eq, Ord)
@@ -65,7 +65,9 @@ data Def r = Def
 
 type Ctx r = M.Map Name (Def r)
 
-newtype Program r = Prog { getDefs :: [Def r] } deriving (Eq, Ord)
+-- a program is just a term
+-- (usually a big let-expression)
+type Program r = TT r
 
 noConstrs :: Constrs r
 noConstrs = M.empty

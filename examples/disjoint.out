@@ -2,26 +2,23 @@
 
 ### Desugared ###
 
-main :R: Type = Type
+  let main :R: Type = Type
+  in main
 
 ### Metaified ###
 
-main :R: Type = Type
-
-### Inferred definitions ###
-
-postulate Type :E: Type
-
-main :R: Type = Type {- constraints apply -}
-  [] -> [E,R]
-
+  let main :R: Type = Type
+  in main
 
 ### Constraints ###
 
 [] -> [E,R]
+[R] -> [R]
 
 ### Solution ###
 
 [E,R]
 
 ttstar: !! inconsistent annotation
+CallStack (from HasCallStack):
+  error, called at Main.hs:142:26 in main:Main

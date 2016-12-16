@@ -2,204 +2,84 @@
 
 ### Desugared ###
 
-postulate N : Type
-
-postulate Z : N
-
-postulate S : (_ : N) -> N
-
-plus : (m : N) -> (n : N) -> N = \(m : N) (n : N).
-  case m of
-    Z
-      => n
-    S (m' : N)
-      => S (plus m' n)
-
-postulate Vect : (_ : N) -> Type
-
-postulate Nil : Vect Z
-
-postulate Cons : (n : N) -> (x : N) -> (xs : Vect n) -> Vect (S n)
-
-zipWith : (n : N) -> (f : (_ : N) -> (_ : N) -> N) -> (xs : Vect n) -> (ys : Vect n) -> Vect n = \(n : N) (f : (_ : N) -> (_ : N) -> N) (xs : Vect n) (ys : Vect n).
-  case xs of
-    Cons (n1 : N) (x1 : N) (xs1 : Vect n1)
-      | n = S n1
-      => case ys of
-        Cons (n2 : N) (x2 : N) (xs2 : Vect n1)
-          | n2 = n1
-          => Cons n1 (f x1 x2) (zipWith n1 f xs1 xs2)
-    Nil
-      | n = Z
-      => case ys of
+  let
+    postulate N : Type
+    postulate Z : N
+    postulate S : (_ : N) -> N
+    plus : (m : N) -> (n : N) -> N = \(m : N) (n : N).
+      case m of
+        Z
+          => n
+        S (m' : N)
+          => S (plus m' n)
+    postulate Vect : (_ : N) -> Type
+    postulate Nil : Vect Z
+    postulate Cons : (n : N) -> (x : N) -> (xs : Vect n) -> Vect (S n)
+    zipWith : (n : N) -> (f : (_ : N) -> (_ : N) -> N) -> (xs : Vect n) -> (ys : Vect n) -> Vect n = \(n : N) (f : (_ : N) -> (_ : N) -> N) (xs : Vect n) (ys : Vect n).
+      case xs of
+        Cons (n1 : N) (x1 : N) (xs1 : Vect n1)
+          | n = S n1
+          => case ys of
+            Cons (n2 : N) (x2 : N) (xs2 : Vect n1)
+              | n2 = n1
+              => Cons n1 (f x1 x2) (zipWith n1 f xs1 xs2)
         Nil
-          => Nil
-
-main :R: N = 
-  let pred : (x : N) -> N = \(x : N).
-    case x of
-      Z
-        => Z
-      S (x' : N)
-        => x'
-  in plus (pred 4) (pred 5)
+          | n = Z
+          => case ys of
+            Nil
+              => Nil
+    main :R: N = 
+      let pred : (x : N) -> N = \(x : N).
+        case x of
+          Z
+            => Z
+          S (x' : N)
+            => x'
+      in plus (pred 4) (pred 5)
+  in main
 
 ### Metaified ###
 
-postulate N :1: Type
-
-postulate Z :2: N
-
-postulate S :3: (_ :4: N) -> N
-
-plus :5: (m :6: N) -> (n :7: N) -> N = \(m :8: N) (n :9: N).
-  case -10- m of
-    Z/11
-      => n
-    S/12 (m' :13: N)
-      => S -14- (plus -16- m' -15- n)
-
-postulate Vect :17: (_ :18: N) -> Type
-
-postulate Nil :19: Vect -20- Z
-
-postulate Cons :21: (n :22: N) -> (x :23: N) -> (xs :24: Vect -25- n) -> Vect -26- (S -27- n)
-
-zipWith :28: (n :29: N) -> (f :30: (_ :31: N) -> (_ :32: N) -> N) -> (xs :33: Vect -34- n) -> (ys :35: Vect -36- n) -> Vect -37- n = \(n :38: N) (f :39: (_ :40: N) -> (_ :41: N) -> N) (xs :42: Vect -43- n) (ys :44: Vect -45- n).
-  case -46- xs of
-    Cons/47 (n1 :48: N) (x1 :49: N) (xs1 :50: Vect -51- n1)
-      | n = S -52- n1
-      => case -53- ys of
-        Cons/54 (n2 :55: N) (x2 :56: N) (xs2 :57: Vect -58- n1)
-          | n2 = n1
-          => Cons -61- n1 -60- (f -63- x1 -62- x2) -59- (zipWith -67- n1 -66- f -65- xs1 -64- xs2)
-    Nil/68
-      | n = Z
-      => case -69- ys of
-        Nil/70
-          => Nil
-
-main :R: N = 
-  let pred :71: (x :72: N) -> N = \(x :73: N).
-    case -74- x of
-      Z/75
-        => Z
-      S/76 (x' :77: N)
-        => x'
-  in plus -79- (pred -80- 4) -78- (pred -85- 5)
-
-### Inferred definitions ###
-
-postulate Cons :21: (n :22: N) -> (x :23: N) -> (xs :24: Vect -25- n) -> Vect -26- (S -27- n)
-
-postulate N :1: Type
-
-postulate Nil :19: Vect -20- Z
-
-postulate S :3: (_ :4: N) -> N
-
-postulate Type :E: Type
-
-postulate Vect :17: (_ :18: N) -> Type
-
-postulate Z :2: N
-
-main :R: N = 
-  let pred :71: (x :72: N) -> N = \(x :73: N).
-    case -74- x of
-      Z/75
-        => Z
-      S/76 (x' :77: N)
-        => x'
-  in plus -79- (pred -80- 4) -78- (pred -85- 5) {- constraints apply -}
-  [] -> [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,R]
-
-plus :5: (m :6: N) -> (n :7: N) -> N = \(m :8: N) (n :9: N).
-  case -10- m of
-    Z/11
-      => n
-    S/12 (m' :13: N)
-      => S -14- (plus -16- m' -15- n) {- constraints apply -}
-  [] -> [3,6,7,8,9,10,12,R]
-  [2] -> [11]
-  [4] -> [5,13,14,15,16]
-  [11] -> [2]
-  [13] -> [4]
-  [14] -> [4]
-
-zipWith :28: (n :29: N) -> (f :30: (_ :31: N) -> (_ :32: N) -> N) -> (xs :33: Vect -34- n) -> (ys :35: Vect -36- n) -> Vect -37- n = \(n :38: N) (f :39: (_ :40: N) -> (_ :41: N) -> N) (xs :42: Vect -43- n) (ys :44: Vect -45- n).
-  case -46- xs of
-    Cons/47 (n1 :48: N) (x1 :49: N) (xs1 :50: Vect -51- n1)
-      | n = S -52- n1
-      => case -53- ys of
-        Cons/54 (n2 :55: N) (x2 :56: N) (xs2 :57: Vect -58- n1)
-          | n2 = n1
-          => Cons -61- n1 -60- (f -63- x1 -62- x2) -59- (zipWith -67- n1 -66- f -65- xs1 -64- xs2)
-    Nil/68
-      | n = Z
-      => case -69- ys of
-        Nil/70
-          => Nil {- constraints apply -}
-  [] -> [19,21,33,42,46,47,54,68,70,R]
-  [20] -> [34,35,36,37]
-  [22] -> [35,48,55,61]
-  [23] -> [35,39,49,56,60]
-  [23,40] -> [49,63]
-  [23,41] -> [56,62]
-  [23,62] -> [41]
-  [23,63] -> [40]
-  [24] -> [28,35,50,57,59,65]
-  [24,25] -> [37]
-  [24,29] -> [48,67]
-  [24,30] -> [39,66]
-  [24,30,31] -> [40]
-  [24,30,32] -> [41]
-  [24,30,40] -> [31]
-  [24,30,41] -> [32]
-  [24,34] -> [51]
-  [24,35] -> [57,64]
-  [24,35,36] -> [58]
-  [24,35,58] -> [36]
-  [24,37] -> [25]
-  [24,51] -> [34]
-  [24,64] -> [35]
-  [24,66] -> [30]
-  [24,67] -> [29]
-  [25] -> [24,35,51,58]
-  [26] -> [34,35,36,37]
-  [27] -> [35,52]
-  [29] -> [38]
-  [30] -> [39]
-  [31] -> [30,40]
-  [32] -> [30,41]
-  [34] -> [20,26]
-  [35] -> [44]
-  [36] -> [20,26,35]
-  [37] -> [20,26]
-  [38] -> [29]
-  [39] -> [30]
-  [40] -> [30,31]
-  [41] -> [30,32]
-  [44] -> [35]
-  [48] -> [22]
-  [49] -> [23]
-  [50] -> [24]
-  [51] -> [24,25]
-  [52] -> [27,35]
-  [53] -> [44]
-  [55] -> [22,35,53]
-  [56] -> [23,35,53]
-  [57] -> [24,35,53]
-  [58] -> [24,25,35]
-  [59] -> [24]
-  [60] -> [23]
-  [61] -> [22]
-  [69] -> [44]
-
+  let
+    postulate N :1: Type
+    postulate Z :2: N
+    postulate S :3: (_ :4: N) -> N
+    plus :5: (m :6: N) -> (n :7: N) -> N = \(m :8: N) (n :9: N).
+      case -10- m of
+        Z/11
+          => n
+        S/12 (m' :13: N)
+          => S -14- (plus -16- m' -15- n)
+    postulate Vect :17: (_ :18: N) -> Type
+    postulate Nil :19: Vect -20- Z
+    postulate Cons :21: (n :22: N) -> (x :23: N) -> (xs :24: Vect -25- n) -> Vect -26- (S -27- n)
+    zipWith :28: (n :29: N) -> (f :30: (_ :31: N) -> (_ :32: N) -> N) -> (xs :33: Vect -34- n) -> (ys :35: Vect -36- n) -> Vect -37- n = \(n :38: N) (f :39: (_ :40: N) -> (_ :41: N) -> N) (xs :42: Vect -43- n) (ys :44: Vect -45- n).
+      case -46- xs of
+        Cons/47 (n1 :48: N) (x1 :49: N) (xs1 :50: Vect -51- n1)
+          | n = S -52- n1
+          => case -53- ys of
+            Cons/54 (n2 :55: N) (x2 :56: N) (xs2 :57: Vect -58- n1)
+              | n2 = n1
+              => Cons -61- n1 -60- (f -63- x1 -62- x2) -59- (zipWith -67- n1 -66- f -65- xs1 -64- xs2)
+        Nil/68
+          | n = Z
+          => case -69- ys of
+            Nil/70
+              => Nil
+    main :R: N = 
+      let pred :71: (x :72: N) -> N = \(x :73: N).
+        case -74- x of
+          Z/75
+            => Z
+          S/76 (x' :77: N)
+            => x'
+      in plus -79- (pred -80- 4) -78- (pred -85- 5)
+  in main
 
 ### Constraints ###
 
 [] -> [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,R]
+[R] -> [R]
 
 ### Solution ###
 
@@ -207,135 +87,201 @@ zipWith :28: (n :29: N) -> (f :30: (_ :31: N) -> (_ :32: N) -> N) -> (xs :33: Ve
 
 ### Annotated ###
 
-postulate N :E: Type
-
-postulate Z :R: N
-
-postulate S :R: (_ :R: N) -> N
-
-plus :R: (m :R: N) -> (n :R: N) -> N = \(m :R: N) (n :R: N).
-  case -R- m of
-    Z/R
-      => n
-    S/R (m' :R: N)
-      => S -R- (plus -R- m' -R- n)
-
-postulate Vect :E: (_ :E: N) -> Type
-
-postulate Nil :E: Vect -E- Z
-
-postulate Cons :E: (n :E: N) -> (x :E: N) -> (xs :E: Vect -E- n) -> Vect -E- (S -E- n)
-
-zipWith :E: (n :E: N) -> (f :E: (_ :E: N) -> (_ :E: N) -> N) -> (xs :E: Vect -E- n) -> (ys :E: Vect -E- n) -> Vect -E- n = \(n :E: N) (f :E: (_ :E: N) -> (_ :E: N) -> N) (xs :E: Vect -E- n) (ys :E: Vect -E- n).
-  case -E- xs of
-    Cons/E (n1 :E: N) (x1 :E: N) (xs1 :E: Vect -E- n1)
-      | n = S -E- n1
-      => case -E- ys of
-        Cons/E (n2 :E: N) (x2 :E: N) (xs2 :E: Vect -E- n1)
-          | n2 = n1
-          => Cons -E- n1 -E- (f -E- x1 -E- x2) -E- (zipWith -E- n1 -E- f -E- xs1 -E- xs2)
-    Nil/E
-      | n = Z
-      => case -E- ys of
+  let
+    postulate N :E: Type
+    postulate Z :R: N
+    postulate S :R: (_ :R: N) -> N
+    plus :R: (m :R: N) -> (n :R: N) -> N = \(m :R: N) (n :R: N).
+      case -R- m of
+        Z/R
+          => n
+        S/R (m' :R: N)
+          => S -R- (plus -R- m' -R- n)
+    postulate Vect :E: (_ :E: N) -> Type
+    postulate Nil :E: Vect -E- Z
+    postulate Cons :E: (n :E: N) -> (x :E: N) -> (xs :E: Vect -E- n) -> Vect -E- (S -E- n)
+    zipWith :E: (n :E: N) -> (f :E: (_ :E: N) -> (_ :E: N) -> N) -> (xs :E: Vect -E- n) -> (ys :E: Vect -E- n) -> Vect -E- n = \(n :E: N) (f :E: (_ :E: N) -> (_ :E: N) -> N) (xs :E: Vect -E- n) (ys :E: Vect -E- n).
+      case -E- xs of
+        Cons/E (n1 :E: N) (x1 :E: N) (xs1 :E: Vect -E- n1)
+          | n = S -E- n1
+          => case -E- ys of
+            Cons/E (n2 :E: N) (x2 :E: N) (xs2 :E: Vect -E- n1)
+              | n2 = n1
+              => Cons -E- n1 -E- (f -E- x1 -E- x2) -E- (zipWith -E- n1 -E- f -E- xs1 -E- xs2)
         Nil/E
-          => Nil
-
-main :R: N = 
-  let pred :R: (x :R: N) -> N = \(x :R: N).
-    case -R- x of
-      Z/R
-        => Z
-      S/R (x' :R: N)
-        => x'
-  in plus -R- (pred -R- 4) -R- (pred -R- 5)
+          | n = Z
+          => case -E- ys of
+            Nil/E
+              => Nil
+    main :R: N = 
+      let pred :R: (x :R: N) -> N = \(x :R: N).
+        case -R- x of
+          Z/R
+            => Z
+          S/R (x' :R: N)
+            => x'
+      in plus -R- (pred -R- 4) -R- (pred -R- 5)
+  in main
 
 ### Specialised ###
 
-postulate N :E: Type
-
-postulate Z :R: N
-
-postulate S :R: (_ :R: N) -> N
-
-plus :R: (m :R: N) -> (n :R: N) -> N = \(m :R: N) (n :R: N).
-  case -R- m of
-    Z/R
-      => n
-    S/R (m' :R: N)
-      => S -R- (plus -R- m' -R- n)
-
-postulate Vect :E: (_ :E: N) -> Type
-
-postulate Nil :E: Vect -E- Z
-
-postulate Cons :E: (n :E: N) -> (x :E: N) -> (xs :E: Vect -E- n) -> Vect -E- (S -E- n)
-
-zipWith :E: (n :E: N) -> (f :E: (_ :E: N) -> (_ :E: N) -> N) -> (xs :E: Vect -E- n) -> (ys :E: Vect -E- n) -> Vect -E- n = \(n :E: N) (f :E: (_ :E: N) -> (_ :E: N) -> N) (xs :E: Vect -E- n) (ys :E: Vect -E- n).
-  case -E- xs of
-    Cons/E (n1 :E: N) (x1 :E: N) (xs1 :E: Vect -E- n1)
-      | n = S -E- n1
-      => case -E- ys of
-        Cons/E (n2 :E: N) (x2 :E: N) (xs2 :E: Vect -E- n1)
-          | n2 = n1
-          => Cons -E- n1 -E- (f -E- x1 -E- x2) -E- (zipWith -E- n1 -E- f -E- xs1 -E- xs2)
-    Nil/E
-      | n = Z
-      => case -E- ys of
+  let
+    postulate N :E: Type
+    postulate Z :R: N
+    postulate S :R: (_ :R: N) -> N
+    plus :R: (m :R: N) -> (n :R: N) -> N = \(m :R: N) (n :R: N).
+      case -R- m of
+        Z/R
+          => n
+        S/R (m' :R: N)
+          => S -R- (plus -R- m' -R- n)
+    postulate Vect :E: (_ :E: N) -> Type
+    postulate Nil :E: Vect -E- Z
+    postulate Cons :E: (n :E: N) -> (x :E: N) -> (xs :E: Vect -E- n) -> Vect -E- (S -E- n)
+    zipWith :E: (n :E: N) -> (f :E: (_ :E: N) -> (_ :E: N) -> N) -> (xs :E: Vect -E- n) -> (ys :E: Vect -E- n) -> Vect -E- n = \(n :E: N) (f :E: (_ :E: N) -> (_ :E: N) -> N) (xs :E: Vect -E- n) (ys :E: Vect -E- n).
+      case -E- xs of
+        Cons/E (n1 :E: N) (x1 :E: N) (xs1 :E: Vect -E- n1)
+          | n = S -E- n1
+          => case -E- ys of
+            Cons/E (n2 :E: N) (x2 :E: N) (xs2 :E: Vect -E- n1)
+              | n2 = n1
+              => Cons -E- n1 -E- (f -E- x1 -E- x2) -E- (zipWith -E- n1 -E- f -E- xs1 -E- xs2)
         Nil/E
-          => Nil
+          | n = Z
+          => case -E- ys of
+            Nil/E
+              => Nil
+    main :R: N = 
+      let pred :R: (x :R: N) -> N = \(x :R: N).
+        case -R- x of
+          Z/R
+            => Z
+          S/R (x' :R: N)
+            => x'
+      in plus -R- (pred -R- 4) -R- (pred -R- 5)
+  in main
 
-main :R: N = 
-  let pred :R: (x :R: N) -> N = \(x :R: N).
-    case -R- x of
-      Z/R
-        => Z
-      S/R (x' :R: N)
-        => x'
-  in plus -R- (pred -R- 4) -R- (pred -R- 5)
+### Constraints ###
+
+[R] -> [R]
+
+### Solution ###
+
+[R]
+
+### Annotated ###
+
+  let
+    postulate N :E: Type
+    postulate Z :R: N
+    postulate S :R: (_ :R: N) -> N
+    plus :R: (m :R: N) -> (n :R: N) -> N = \(m :R: N) (n :R: N).
+      case -R- m of
+        Z/R
+          => n
+        S/R (m' :R: N)
+          => S -R- (plus -R- m' -R- n)
+    postulate Vect :E: (_ :E: N) -> Type
+    postulate Nil :E: Vect -E- Z
+    postulate Cons :E: (n :E: N) -> (x :E: N) -> (xs :E: Vect -E- n) -> Vect -E- (S -E- n)
+    zipWith :E: (n :E: N) -> (f :E: (_ :E: N) -> (_ :E: N) -> N) -> (xs :E: Vect -E- n) -> (ys :E: Vect -E- n) -> Vect -E- n = \(n :E: N) (f :E: (_ :E: N) -> (_ :E: N) -> N) (xs :E: Vect -E- n) (ys :E: Vect -E- n).
+      case -E- xs of
+        Cons/E (n1 :E: N) (x1 :E: N) (xs1 :E: Vect -E- n1)
+          | n = S -E- n1
+          => case -E- ys of
+            Cons/E (n2 :E: N) (x2 :E: N) (xs2 :E: Vect -E- n1)
+              | n2 = n1
+              => Cons -E- n1 -E- (f -E- x1 -E- x2) -E- (zipWith -E- n1 -E- f -E- xs1 -E- xs2)
+        Nil/E
+          | n = Z
+          => case -E- ys of
+            Nil/E
+              => Nil
+    main :R: N = 
+      let pred :R: (x :R: N) -> N = \(x :R: N).
+        case -R- x of
+          Z/R
+            => Z
+          S/R (x' :R: N)
+            => x'
+      in plus -R- (pred -R- 4) -R- (pred -R- 5)
+  in main
+
+### Specialised ###
+
+  let
+    postulate N :E: Type
+    postulate Z :R: N
+    postulate S :R: (_ :R: N) -> N
+    plus :R: (m :R: N) -> (n :R: N) -> N = \(m :R: N) (n :R: N).
+      case -R- m of
+        Z/R
+          => n
+        S/R (m' :R: N)
+          => S -R- (plus -R- m' -R- n)
+    postulate Vect :E: (_ :E: N) -> Type
+    postulate Nil :E: Vect -E- Z
+    postulate Cons :E: (n :E: N) -> (x :E: N) -> (xs :E: Vect -E- n) -> Vect -E- (S -E- n)
+    zipWith :E: (n :E: N) -> (f :E: (_ :E: N) -> (_ :E: N) -> N) -> (xs :E: Vect -E- n) -> (ys :E: Vect -E- n) -> Vect -E- n = \(n :E: N) (f :E: (_ :E: N) -> (_ :E: N) -> N) (xs :E: Vect -E- n) (ys :E: Vect -E- n).
+      case -E- xs of
+        Cons/E (n1 :E: N) (x1 :E: N) (xs1 :E: Vect -E- n1)
+          | n = S -E- n1
+          => case -E- ys of
+            Cons/E (n2 :E: N) (x2 :E: N) (xs2 :E: Vect -E- n1)
+              | n2 = n1
+              => Cons -E- n1 -E- (f -E- x1 -E- x2) -E- (zipWith -E- n1 -E- f -E- xs1 -E- xs2)
+        Nil/E
+          | n = Z
+          => case -E- ys of
+            Nil/E
+              => Nil
+    main :R: N = 
+      let pred :R: (x :R: N) -> N = \(x :R: N).
+        case -R- x of
+          Z/R
+            => Z
+          S/R (x' :R: N)
+            => x'
+      in plus -R- (pred -R- 4) -R- (pred -R- 5)
+  in main
 
 ### Final annotation ###
 
-postulate N :E: Type
-
-postulate Z :R: N
-
-postulate S :R: (_ :R: N) -> N
-
-plus :R: (m :R: N) -> (n :R: N) -> N = \(m :R: N) (n :R: N).
-  case -R- m of
-    Z/R
-      => n
-    S/R (m' :R: N)
-      => S -R- (plus -R- m' -R- n)
-
-postulate Vect :E: (_ :E: N) -> Type
-
-postulate Nil :E: Vect -E- Z
-
-postulate Cons :E: (n :E: N) -> (x :E: N) -> (xs :E: Vect -E- n) -> Vect -E- (S -E- n)
-
-zipWith :E: (n :E: N) -> (f :E: (_ :E: N) -> (_ :E: N) -> N) -> (xs :E: Vect -E- n) -> (ys :E: Vect -E- n) -> Vect -E- n = \(n :E: N) (f :E: (_ :E: N) -> (_ :E: N) -> N) (xs :E: Vect -E- n) (ys :E: Vect -E- n).
-  case -E- xs of
-    Cons/E (n1 :E: N) (x1 :E: N) (xs1 :E: Vect -E- n1)
-      | n = S -E- n1
-      => case -E- ys of
-        Cons/E (n2 :E: N) (x2 :E: N) (xs2 :E: Vect -E- n1)
-          | n2 = n1
-          => Cons -E- n1 -E- (f -E- x1 -E- x2) -E- (zipWith -E- n1 -E- f -E- xs1 -E- xs2)
-    Nil/E
-      | n = Z
-      => case -E- ys of
+  let
+    postulate N :E: Type
+    postulate Z :R: N
+    postulate S :R: (_ :R: N) -> N
+    plus :R: (m :R: N) -> (n :R: N) -> N = \(m :R: N) (n :R: N).
+      case -R- m of
+        Z/R
+          => n
+        S/R (m' :R: N)
+          => S -R- (plus -R- m' -R- n)
+    postulate Vect :E: (_ :E: N) -> Type
+    postulate Nil :E: Vect -E- Z
+    postulate Cons :E: (n :E: N) -> (x :E: N) -> (xs :E: Vect -E- n) -> Vect -E- (S -E- n)
+    zipWith :E: (n :E: N) -> (f :E: (_ :E: N) -> (_ :E: N) -> N) -> (xs :E: Vect -E- n) -> (ys :E: Vect -E- n) -> Vect -E- n = \(n :E: N) (f :E: (_ :E: N) -> (_ :E: N) -> N) (xs :E: Vect -E- n) (ys :E: Vect -E- n).
+      case -E- xs of
+        Cons/E (n1 :E: N) (x1 :E: N) (xs1 :E: Vect -E- n1)
+          | n = S -E- n1
+          => case -E- ys of
+            Cons/E (n2 :E: N) (x2 :E: N) (xs2 :E: Vect -E- n1)
+              | n2 = n1
+              => Cons -E- n1 -E- (f -E- x1 -E- x2) -E- (zipWith -E- n1 -E- f -E- xs1 -E- xs2)
         Nil/E
-          => Nil
-
-main :R: N = 
-  let pred :R: (x :R: N) -> N = \(x :R: N).
-    case -R- x of
-      Z/R
-        => Z
-      S/R (x' :R: N)
-        => x'
-  in plus -R- (pred -R- 4) -R- (pred -R- 5)
+          | n = Z
+          => case -E- ys of
+            Nil/E
+              => Nil
+    main :R: N = 
+      let pred :R: (x :R: N) -> N = \(x :R: N).
+        case -R- x of
+          Z/R
+            => Z
+          S/R (x' :R: N)
+            => x'
+      in plus -R- (pred -R- 4) -R- (pred -R- 5)
+  in main
 
 ### Verification ###
 
@@ -343,39 +289,38 @@ Verification successful.
 
 ### Pruned ###
 
-postulate Z : N
-
-postulate S : (_) -> N
-
-plus = \m n.
-  case m of
-    Z
-      => n
-    S m'
-      => S (plus m' n)
-
-main = 
-  let pred = \x.
-    case x of
-      Z
-        => Z
-      S x'
-        => x'
-  in plus (pred 4) (pred 5)
+  let
+    postulate Z : N
+    postulate S : (_) -> N
+    plus = \m n.
+      case m of
+        Z
+          => n
+        S m'
+          => S (plus m' n)
+    main = 
+      let pred = \x.
+        case x of
+          Z
+            => Z
+          S x'
+            => x'
+      in plus (pred 4) (pred 5)
+  in main
 
 ### Normal forms ###
 
 unerased:
   
-  let postulate N : Type
-  in 
-    let postulate Z : N
-    in 
-      let postulate S : (_ : N) -> N
-      in 7
+  let
+    postulate Z : N
+    postulate S : (_ : N) -> N
+  in 7
+
 erased:
   
-  let postulate Z : N
-  in 
-    let postulate S : (_) -> N
-    in 7
+  let
+    postulate Z : N
+    postulate S : (_) -> N
+  in 7
+
