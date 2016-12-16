@@ -104,8 +104,15 @@ case_ = (<?> "case expression") $ do
     kwd "case"
     tm <- parens expr
     kwd "where"
-    d <- simpleDef
-    return $ Bind Let [d] tm
+    Def n r ty _ _ <- typing undefined
+    kwd "."
+    alts <- caseAlt `sepBy` kwd ","
+    let [arg] = mkArgs ty
+    let cf = CaseFun [arg] (Case Nothing (V $ defName arg) alts)
+    return $ Bind Let [Def n r ty (Patterns cf) noConstrs] (App Nothing (V n) tm)
+  where
+    mkArgs (Bind Pi ds tm) = ds ++ mkArgs tm
+    mkArgs _ = []
 
 expr :: Parser (TT MRel)
 expr = 

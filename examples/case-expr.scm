@@ -1,0 +1,17 @@
+(print
+  (letrec (
+    (T (list 'T))
+    (F (list 'F))
+    (MkUnit (list 'MkUnit))
+    (not_TT (lambda (x)
+      (case (car x)
+        ((T) F)
+        ((F) T))))
+    (main (not_TT (letrec ((f (lambda (x)
+      (case (car x)
+        ((F) MkUnit)
+        ((T) F)))))
+      (f (not_TT F)))))
+  )
+    main))
+(newline)
