@@ -52,8 +52,63 @@ specialise pm pr
         i | MVar i <- pm ^.. (ttRelevance :: Traversal' (TT Meta) Meta)
       ])
 
+forMany :: (f Meta -> f Relevance -> Spec (f Meta)) -> [f Meta] -> [f Relevance] -> Spec [f Meta]
+forMany spec ms rs = do
+    xs <- sequence [spec m r | (m, r) <- zip ms rs]
+    return (
+        M.unionsWith S.union $ map fst xs,
+        map snd xs
+      )
+
+-- wtf haskell, why do I have to have a separate function for this
+-- instead of "forManyEq = forMany"??
+forManyEq :: ((Name, TT Meta) -> (Name, TT Relevance) -> Spec (Name, TT Meta))
+    -> [(Name, TT Meta)] -> [(Name, TT Relevance)] -> Spec [(Name, TT Meta)]
+forManyEq spec ms rs = do
+    xs <- sequence [spec m r | (m, r) <- zip ms rs]
+    return (
+        M.unionsWith S.union $ map fst xs,
+        map snd xs
+      )
+
+specEq :: (Name, TT Meta) -> (Name, TT Relevance) -> Spec (Name, TT Meta)
+specEq (nm, tmm) (nr, tmr) = do
+    (is, tmr') <- specTm tmm tmr
+    return (is, (nr, tmr'))
+
+specAlt :: Alt Meta -> Alt Relevance -> Spec (Alt Meta)
+specAlt (Alt Wildcard rhsm) (Alt Wildcard rhsr)
+    = fmap (Alt Wildcard) <$> specCaseTree rhsm rhsr
+specAlt (Alt (Ctor rm nm dsm eqsm) rhsm) (Alt (Ctor rr nr dsr eqsr) rhsr) = do
+    (isRhs, rhsr') <- specCaseTree rhsm rhsr
+    (isDefs, dsr') <- forMany specDef dsm dsr
+    (isEqs, eqsr') <- forManyEq specEq eqsm eqsr
+    return (
+        M.unionsWith S.union [isRhs, isDefs, isEqs],
+        Alt (Ctor (Fixed rr) nr dsr' eqsr') rhsr'
+      )
+specAlt altm altr = error $ "specAlt: mismatch: " ++ show (altm, altr)
+
+specCaseTree :: CaseTree Meta -> CaseTree Relevance -> Spec (CaseTree Meta)
+specCaseTree (Leaf tmm) (Leaf tmr) = fmap Leaf <$> specTm tmm tmr
+specCaseTree (Case rm sm altsm) (Case rr sr altsr) = do
+    (is, sr') <- specTm sm sr
+    (is', altsr') <- forMany specAlt altsm altsr
+    return (
+        M.unionWith S.union is is',
+        Case (Fixed rr) sr' altsr'
+      )
+specCaseTree ctm ctr = error $ "specCaseTree: mismatch: " ++ show (ctm, ctr)
+
 specCaseFun :: CaseFun Meta -> CaseFun Relevance -> Spec (CaseFun Meta)
-specCaseFun cfm cfr = undefined
+specCaseFun (CaseFun dsm ctm) (CaseFun dsr ctr) = do
+    -- spec the definitions first
+    (is, dsr') <- forMany specDef dsm dsr
+    (is', ctr') <- specCaseTree ctm ctr
+    return (
+        M.unionWith S.union is is',
+        CaseFun dsr' ctr'
+      )
 
 specBody :: Body Meta -> Body Relevance -> Spec (Body Meta)
 specBody bm (Abstract a) = return $ (M.empty, Abstract a)
