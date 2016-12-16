@@ -17,9 +17,6 @@ type Instances = M.Map Name (S.Set ErPattern)
 type ErPattern = [Relevance]
 type Spec a = State Int (Instances, a)
 
-meltDef :: Def Relevance -> Def Meta
-meltDef def = def & defRelevance %~ Fixed
-
 fresh :: State Int Int
 fresh = do
     i <- get
@@ -55,6 +52,21 @@ specialise pm pr
         i | MVar i <- pm ^.. (ttRelevance :: Traversal' (TT Meta) Meta)
       ])
 
+specCaseFun :: CaseFun Meta -> CaseFun Relevance -> Spec (CaseFun Meta)
+specCaseFun cfm cfr = undefined
+
+specBody :: Body Meta -> Body Relevance -> Spec (Body Meta)
+specBody bm (Abstract a) = return $ (M.empty, Abstract a)
+specBody (Term tmm) (Term tmr) = fmap Term <$> specTm tmm tmr
+specBody (Patterns cfm) (Patterns cfr) = fmap Patterns <$> specCaseFun cfm cfr
+specBody bm br = error $ "specBody: non-matching bodies: " ++ show (bm, br)
+
+specDef :: Def Meta -> Def Relevance -> Spec (Def Meta)
+specDef (Def nm rm tym bodym _csm) (Def nr rr tyr bodyr csr) = do
+    (is, tyr') <- specTm tym tyr
+    (is', bodyr') <- specBody bodym bodyr
+    return $ (M.unionWith S.union is is', Def nr (Fixed rr) tyr' bodyr' noConstrs)
+
 specTm :: TT Meta -> TT Relevance -> Spec (TT Meta)
 specTm tmm (V n) = return (M.empty, V n)
 specTm tmm (I n@(UN ns) ty)
@@ -66,12 +78,12 @@ specTm tmm (I n@(UN ns) ty)
     spec :: Name -> [Relevance] -> Instances
     spec n = M.singleton n . S.singleton
 
-specTm (Bind bm [] tmm) (Bind br [] tmr) = do
-    (is, tmr') <- specTm tmm tmr
-    return (is, Bind br [] tmr')
+specTm (Bind bm [] tmm) (Bind br [] tmr) = fmap (Bind br []) <$> specTm tmm tmr
 
 specTm (Bind bm (dm:dsm) tmm) (Bind br (dr:dsr) tmr) = do
-    (is, Bind _br' dsr' tmr') <- specTm (Bind bm dsm tmm) (Bind br dsr tmr)
+    (isDef, dr') <- specDef dm dr
+    (isSub, Bind _br' dsr' tmr') <- specTm (Bind bm dsm tmm) (Bind br dsr tmr)
+    let is = M.unionWith S.union isDef isSub
     specs <- sequence [
         instantiate fresh (bindMetas ep (defType dm ^.. (ttRelevance :: Traversal' (TT Meta) Meta)))
             $ dm{ defName = specName n ep }
@@ -79,7 +91,7 @@ specTm (Bind bm (dm:dsm) tmm) (Bind br (dr:dsr) tmr) = do
       ]
     return (
         M.delete n is,
-        Bind br (meltDef dr : specs ++ dsr') tmr'
+        Bind br (dr' : specs ++ dsr') tmr'
       )
   where
     n = defName dr
@@ -89,8 +101,6 @@ specTm (App rm fm xm) (App rr fr xr) = do
     (isx, xr') <- specTm xm xr
     return (M.unionWith S.union isf isx, App (Fixed rr) fr' xr')
 
-specTm (Forced tmm) (Forced tmr) = do
-    (is, tmr') <- specTm tmm tmr
-    return (is, Forced tmr')
+specTm (Forced tmm) (Forced tmr) = fmap Forced <$> specTm tmm tmr
 
 specTm tmm tmr = error $ "cannot specialise: " ++ show (tmm, tmr)
