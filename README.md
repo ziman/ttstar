@@ -19,17 +19,22 @@ Besides what the original paper had, we have:
     * only one definition per let at the moment; absolutely not necessary, I just can't be bothered to invent good syntax for it
 * separate typechecker that checks the result of inference
 
-[P] = improvement over previous paper, [M] = improvement over Mishra-Linger
+Symbols:
+* [P] = improvement over previous paper, [M] = improvement over Mishra-Linger
 
 
 ### TODO
 * good error reporting
 * first-order evars for unlimited-rank polymorphism
-* dead constructors (`Cuckoo`)
+
+#### Short-term TODO
+* fix mutual recursion in the implementation
+    * then fix typing rules in the paper
+* continue with the proofs in the paper
 
 ### Secondary features
 * backtrace in typechecker
-* erasure explorer
+* erasure explorer (defunct)
 * including very dependent functions
 * erasure of whole functions (dead function removal)
 * recursion
