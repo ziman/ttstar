@@ -199,6 +199,7 @@ main = do
             putStrLn "### Normal forms ###\n"
             putStrLn "unerased:"
             putStrLn $ "  " ++ show (red NF (builtins $ Just relOfType) prog)
+            putStrLn ""
             putStrLn "erased:"
             putStrLn $ "  " ++ show (red NF (builtins ()) pruned)
 

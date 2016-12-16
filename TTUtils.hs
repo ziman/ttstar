@@ -174,7 +174,7 @@ occursIn :: Termy a => Name -> a r -> Bool
 n `occursIn` tm = n `S.member` freeVars tm
 
 insertDefs :: [Def r] -> Ctx r -> Ctx r
-insertDefs (d:ds) = M.insert (defName d) d
+insertDefs (d:ds) = insertDefs ds . M.insert (defName d) d
 insertDefs []     = id
 
 rename :: Termy a => Name -> Name -> a r -> a r
