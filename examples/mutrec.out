@@ -1,0 +1,146 @@
+-- vim: ft=agda
+
+### Desugared ###
+
+  let
+    postulate Bool : Type
+    postulate T : Bool
+    postulate F : Bool
+    g : (x : Bool) -> Bool = \(x : Bool).
+      case x of
+        T
+          => h x
+        F
+          => T
+    h : (x : Bool) -> Bool = \(x : Bool).
+      case x of
+        F
+          => G x
+        T
+          => F
+    main : Bool = g T
+  in main
+
+### Metaified ###
+
+  let
+    postulate Bool :1: Type
+    postulate T :2: Bool
+    postulate F :3: Bool
+    g :4: (x :5: Bool) -> Bool = \(x :6: Bool).
+      case -7- x of
+        T/8
+          => h -9- x
+        F/10
+          => T
+    h :11: (x :12: Bool) -> Bool = \(x :13: Bool).
+      case -14- x of
+        F/15
+          => G -16- x
+        T/17
+          => F
+    main :18: Bool = g -19- T
+  in main
+
+### Constraints ###
+
+ttstar: Traceback:
+1. In context:
+  Type : Type
+
+("LET",
+  let
+    postulate Bool :1: Type
+    postulate T :2: Bool
+    postulate F :3: Bool
+    g :4: (x :5: Bool) -> Bool = \(x :6: Bool).
+      case -7- x of
+        T/8
+          => h -9- x
+        F/10
+          => T
+    h :11: (x :12: Bool) -> Bool = \(x :13: Bool).
+      case -14- x of
+        F/15
+          => G -16- x
+        T/17
+          => F
+    main :18: Bool = g -19- T
+  in main)
+
+2. In context:
+  Bool : Type
+  F : Bool
+  T : Bool
+  Type : Type
+  g : (x :5: Bool) -> Bool
+
+("DEF-PATTERNS",g)
+
+3. In context:
+  Bool : Type
+  F : Bool
+  T : Bool
+  Type : Type
+  g : (x :5: Bool) -> Bool
+
+("CASE-FUN",g)
+
+4. In context:
+  Bool : Type
+  F : Bool
+  T : Bool
+  Type : Type
+  g : (x :5: Bool) -> Bool
+  x : Bool
+
+("CASE",g -6- x,case -7- x of
+  T/8
+    => h -9- x
+  F/10
+    => T)
+
+5. In context:
+  Bool : Type
+  F : Bool
+  T : Bool
+  Type : Type
+  g : (x :5: Bool) -> Bool
+  x : Bool
+
+("ALT-CTOR",T)
+
+6. In context:
+  Bool : Type
+  F : Bool
+  T : Bool
+  Type : Type
+  g : (x :5: Bool) -> Bool
+  x : Bool
+
+("PLAIN-TERM",g -6- T,h -9- x)
+
+7. In context:
+  Bool : Type
+  F : Bool
+  T : Bool
+  Type : Type
+  g : (x :5: Bool) -> Bool
+  x : Bool
+
+("APP",h -9- x)
+
+8. In context:
+  Bool : Type
+  F : Bool
+  T : Bool
+  Type : Type
+  g : (x :5: Bool) -> Bool
+  x : Bool
+
+("VAR",h)
+
+Error: UnknownName h
+
+CallStack (from HasCallStack):
+  error, called at Main.hs:131:38 in main:Main

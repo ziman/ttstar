@@ -1,0 +1,17 @@
+-- vim: ft=idris
+
+data Bool : Type.
+  T : Bool,
+  F : Bool.
+
+g (x : Bool) : Bool
+  = case x of
+      T => h x,
+      F => T.
+
+h (x : Bool) : Bool
+  = case x of
+      F => G x,
+      T => F.
+
+main : Bool = g T.
