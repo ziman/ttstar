@@ -106,7 +106,7 @@ red  NF  ctx t@(Bind b (d:ds) tm)
     Bind _b ds' tm' = red NF (M.insert (defName d) d ctx) $ Bind b ds tm
 
 red form ctx t@(App r (Bind Let ds tm) x)
-    | or [defName d `occursIn` tm | d <- ds]
+    | or [defName d `occursIn` x | d <- ds]
         = error $ "app+let reduction: capture avoidance not implemented yet"
     | otherwise
         = red form ctx $ Bind Let ds (App r tm x)
