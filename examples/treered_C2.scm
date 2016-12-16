@@ -1,11 +1,9 @@
-(define Z
-  (list 'Z))
-
-(define vlen
-  (lambda (n)
-    n))
-
-(define main
-  (vlen Z))
-
-(print main)
+(print
+  (letrec (
+    (Z (list 'Z))
+    (vlen (lambda (n)
+      n))
+    (main (vlen Z))
+  )
+    main))
+(newline)

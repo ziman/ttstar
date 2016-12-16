@@ -2,66 +2,25 @@
 
 ### Desugared ###
 
-postulate T : Type
-
-postulate A : T
-
-postulate B : T
-
-const_A : (_ : T) -> T = (\_ : T. A)
-
-apply : (f : (x : T) -> T) -> (x : T) -> T = (\f : (_ : T) -> T. (\x : T. f x))
-
-main :R: T = apply const_A B
+  let
+    postulate T : Type
+    postulate A : T
+    postulate B : T
+    const_A : (_ : T) -> T = (\_ : T. A)
+    apply : (f : (x : T) -> T) -> (x : T) -> T = (\f : (_ : T) -> T. (\x : T. f x))
+    main :R: T = apply const_A B
+  in main
 
 ### Metaified ###
 
-postulate T :1: Type
-
-postulate A :2: T
-
-postulate B :3: T
-
-const_A :4: (_ :5: T) -> T = (\_ :6: T. A)
-
-apply :7: (f :8: (x :9: T) -> T) -> (x :10: T) -> T = (\f :11: (_ :12: T) -> T. (\x :13: T. f -14- x))
-
-main :R: T = apply -16- const_A -15- B
-
-### Inferred definitions ###
-
-postulate A :2: T
-
-postulate B :3: T
-
-postulate T :1: Type
-
-postulate Type :E: Type
-
-apply :7: (f :8: (x :9: T) -> T) -> (x :10: T) -> T = (\f :11: (_ :12: T) -> T. (\x :13: T. f -14- x)) {- constraints apply -}
-  [] -> [8,11,R]
-  [9] -> [12]
-  [10] -> [13]
-  [12] -> [9,13,14]
-  [13] -> [10]
-  [14] -> [12]
-
-const_A :4: (_ :5: T) -> T = (\_ :6: T. A) {- constraints apply -}
-  [] -> [2,R]
-  [5] -> [6]
-  [6] -> [5]
-
-main :R: T = apply -16- const_A -15- B {- constraints apply -}
-  [] -> [2,4,7,8,11,16,R]
-  [5] -> [6,9]
-  [6] -> [5]
-  [9] -> [5,12]
-  [10] -> [3,13,15]
-  [12] -> [9,13,14]
-  [13] -> [10]
-  [14] -> [12]
-  [15] -> [10]
-
+  let
+    postulate T :1: Type
+    postulate A :2: T
+    postulate B :3: T
+    const_A :4: (_ :5: T) -> T = (\_ :6: T. A)
+    apply :7: (f :8: (x :9: T) -> T) -> (x :10: T) -> T = (\f :11: (_ :12: T) -> T. (\x :13: T. f -14- x))
+    main :R: T = apply -16- const_A -15- B
+  in main
 
 ### Constraints ###
 
@@ -74,6 +33,7 @@ main :R: T = apply -16- const_A -15- B {- constraints apply -}
 [13] -> [10]
 [14] -> [12]
 [15] -> [10]
+[R] -> [R]
 
 ### Solution ###
 
@@ -81,45 +41,67 @@ main :R: T = apply -16- const_A -15- B {- constraints apply -}
 
 ### Annotated ###
 
-postulate T :E: Type
-
-postulate A :R: T
-
-postulate B :E: T
-
-const_A :R: (_ :E: T) -> T = (\_ :E: T. A)
-
-apply :R: (f :R: (x :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_ :E: T) -> T. (\x :E: T. f -E- x))
-
-main :R: T = apply -R- const_A -E- B
+  let
+    postulate T :E: Type
+    postulate A :R: T
+    postulate B :E: T
+    const_A :R: (_ :E: T) -> T = (\_ :E: T. A)
+    apply :R: (f :R: (x :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_ :E: T) -> T. (\x :E: T. f -E- x))
+    main :R: T = apply -R- const_A -E- B
+  in main
 
 ### Specialised ###
 
-postulate T :E: Type
+  let
+    postulate T :E: Type
+    postulate A :R: T
+    postulate B :E: T
+    const_A :R: (_ :E: T) -> T = (\_ :E: T. A)
+    apply :R: (f :R: (x :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_ :E: T) -> T. (\x :E: T. f -E- x))
+    main :R: T = apply -R- const_A -E- B
+  in main
 
-postulate A :R: T
+### Constraints ###
 
-postulate B :E: T
+[E] -> [E]
+[R] -> [R]
 
-const_A :R: (_ :E: T) -> T = (\_ :E: T. A)
+### Solution ###
 
-apply :R: (f :R: (x :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_ :E: T) -> T. (\x :E: T. f -E- x))
+[R]
 
-main :R: T = apply -R- const_A -E- B
+### Annotated ###
+
+  let
+    postulate T :E: Type
+    postulate A :R: T
+    postulate B :E: T
+    const_A :R: (_ :E: T) -> T = (\_ :E: T. A)
+    apply :R: (f :R: (x :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_ :E: T) -> T. (\x :E: T. f -E- x))
+    main :R: T = apply -R- const_A -E- B
+  in main
+
+### Specialised ###
+
+  let
+    postulate T :E: Type
+    postulate A :R: T
+    postulate B :E: T
+    const_A :R: (_ :E: T) -> T = (\_ :E: T. A)
+    apply :R: (f :R: (x :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_ :E: T) -> T. (\x :E: T. f -E- x))
+    main :R: T = apply -R- const_A -E- B
+  in main
 
 ### Final annotation ###
 
-postulate T :E: Type
-
-postulate A :R: T
-
-postulate B :E: T
-
-const_A :R: (_ :E: T) -> T = (\_ :E: T. A)
-
-apply :R: (f :R: (x :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_ :E: T) -> T. (\x :E: T. f -E- x))
-
-main :R: T = apply -R- const_A -E- B
+  let
+    postulate T :E: Type
+    postulate A :R: T
+    postulate B :E: T
+    const_A :R: (_ :E: T) -> T = (\_ :E: T. A)
+    apply :R: (f :R: (x :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_ :E: T) -> T. (\x :E: T. f -E- x))
+    main :R: T = apply -R- const_A -E- B
+  in main
 
 ### Verification ###
 
@@ -127,23 +109,22 @@ Verification successful.
 
 ### Pruned ###
 
-postulate A : T
-
-const_A = A
-
-apply = (\f. f)
-
-main = apply const_A
+  let
+    postulate A : T
+    const_A = A
+    apply = (\f. f)
+    main = apply const_A
+  in main
 
 ### Normal forms ###
 
 unerased:
   
-  let postulate T : Type
-  in 
-    let postulate A : T
-    in A
+  let postulate A : T
+  in A
+
 erased:
   
   let postulate A : T
   in A
+

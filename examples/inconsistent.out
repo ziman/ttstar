@@ -2,23 +2,18 @@
 
 ### Desugared ###
 
-main :R: (x :E: Type) -> Type = (\x :E: Type. x)
+  let main :R: (x :E: Type) -> Type = (\x :E: Type. x)
+  in main
 
 ### Metaified ###
 
-main :R: (x :E: Type) -> Type = (\x :E: Type. x)
-
-### Inferred definitions ###
-
-postulate Type :E: Type
-
-main :R: (x :E: Type) -> Type = (\x :E: Type. x) {- constraints apply -}
-  [] -> [E,R]
-
+  let main :R: (x :E: Type) -> Type = (\x :E: Type. x)
+  in main
 
 ### Constraints ###
 
 [] -> [E,R]
+[R] -> [R]
 
 ### Solution ###
 
@@ -26,4 +21,4 @@ main :R: (x :E: Type) -> Type = (\x :E: Type. x) {- constraints apply -}
 
 ttstar: !! inconsistent annotation
 CallStack (from HasCallStack):
-  error, called at Main.hs:149:26 in main:Main
+  error, called at Main.hs:142:26 in main:Main

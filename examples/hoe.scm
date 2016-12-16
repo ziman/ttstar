@@ -1,28 +1,18 @@
-(define A
-  (list 'A))
-
-(define B
-  (list 'B))
-
-(define Op
-  (lambda (x)
-    (lambda (y)
-      (list 'Op x y))))
-
-(define id
-  (lambda (x)
-    x))
-
-(define const_A
-  A)
-
-(define f
-  (lambda (g)
-    (lambda (z)
-      (lambda (h)
-        ((Op (g z)) h)))))
-
-(define main
-  (((f id) B) const_A))
-
-(print main)
+(print
+  (letrec (
+    (A (list 'A))
+    (B (list 'B))
+    (Op (lambda (x)
+      (lambda (y)
+        (list 'Op x y))))
+    (id (lambda (x)
+      x))
+    (const_A A)
+    (f (lambda (g)
+      (lambda (z)
+        (lambda (h)
+          ((Op (g z)) h)))))
+    (main (((f id) B) const_A))
+  )
+    main))
+(newline)

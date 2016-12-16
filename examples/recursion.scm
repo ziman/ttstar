@@ -1,28 +1,21 @@
-(define Z
-  (list 'Z))
-
-(define S
-  (lambda (n)
-    (list 'S n)))
-
-(define VNil
-  (list 'VNil))
-
-(define VCons
-  (lambda (xs)
-    (list 'VCons xs)))
-
-(define vlen
-  (lambda (xs)
-    (case (car xs)
-      ((VNil) Z)
-      ((VCons) (let* ((_args-xs_ (cdr xs)) (xs_ (car _args-xs_)))
-        (S (vlen xs_)))))))
-
-(define testVec
-  (VCons (VCons VNil)))
-
-(define main
-  (vlen testVec))
-
-(print main)
+(print
+  (letrec (
+    (Z (list 'Z))
+    (S (lambda (n)
+      (list 'S n)))
+    (VNil (list 'VNil))
+    (VCons (lambda (xs)
+      (list 'VCons xs)))
+    (vlen (lambda (xs)
+      (case (car xs)
+        ((VNil) Z)
+        ((VCons) (let* (
+          (_args-xs_ (cdr xs))
+          (xs_ (car _args-xs_))
+        )
+          (S (vlen xs_)))))))
+    (testVec (VCons (VCons VNil)))
+    (main (vlen testVec))
+  )
+    main))
+(newline)

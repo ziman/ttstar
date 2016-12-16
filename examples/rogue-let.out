@@ -2,63 +2,38 @@
 
 ### Desugared ###
 
-postulate Bool : Type
-
-postulate T : Bool
-
-postulate F : Bool
-
-not : (x : Bool) -> Bool = \(x : Bool).
-  case x of
-    T
-      => F
-    F
-      => T
-
-main :R: (_ : Bool) -> Bool = not
+  let
+    postulate Bool : Type
+    postulate T : Bool
+    postulate F : Bool
+    not : (x : Bool) -> Bool = \(x : Bool).
+      case x of
+        T
+          => F
+        F
+          => T
+    main :R: (_ : Bool) -> Bool = not
+  in main
 
 ### Metaified ###
 
-postulate Bool :1: Type
-
-postulate T :2: Bool
-
-postulate F :3: Bool
-
-not :4: (x :5: Bool) -> Bool = \(x :6: Bool).
-  case -7- x of
-    T/8
-      => F
-    F/9
-      => T
-
-main :R: (_ :10: Bool) -> Bool = not
-
-### Inferred definitions ###
-
-postulate Bool :1: Type
-
-postulate F :3: Bool
-
-postulate T :2: Bool
-
-postulate Type :E: Type
-
-main :R: (_ :10: Bool) -> Bool = not {- constraints apply -}
-  [] -> [2,3,4,5,6,7,8,9,10,R]
-
-not :4: (x :5: Bool) -> Bool = \(x :6: Bool).
-  case -7- x of
-    T/8
-      => F
-    F/9
-      => T {- constraints apply -}
-  [] -> [2,3,5,6,7,8,9,R]
-
+  let
+    postulate Bool :1: Type
+    postulate T :2: Bool
+    postulate F :3: Bool
+    not :4: (x :5: Bool) -> Bool = \(x :6: Bool).
+      case -7- x of
+        T/8
+          => F
+        F/9
+          => T
+    main :R: (_ :10: Bool) -> Bool = not
+  in main
 
 ### Constraints ###
 
 [] -> [2,3,4,5,6,7,8,9,10,R]
+[R] -> [R]
 
 ### Solution ###
 
@@ -66,54 +41,86 @@ not :4: (x :5: Bool) -> Bool = \(x :6: Bool).
 
 ### Annotated ###
 
-postulate Bool :E: Type
-
-postulate T :R: Bool
-
-postulate F :R: Bool
-
-not :R: (x :R: Bool) -> Bool = \(x :R: Bool).
-  case -R- x of
-    T/R
-      => F
-    F/R
-      => T
-
-main :R: (_ :R: Bool) -> Bool = not
+  let
+    postulate Bool :E: Type
+    postulate T :R: Bool
+    postulate F :R: Bool
+    not :R: (x :R: Bool) -> Bool = \(x :R: Bool).
+      case -R- x of
+        T/R
+          => F
+        F/R
+          => T
+    main :R: (_ :R: Bool) -> Bool = not
+  in main
 
 ### Specialised ###
 
-postulate Bool :E: Type
+  let
+    postulate Bool :E: Type
+    postulate T :R: Bool
+    postulate F :R: Bool
+    not :R: (x :R: Bool) -> Bool = \(x :R: Bool).
+      case -R- x of
+        T/R
+          => F
+        F/R
+          => T
+    main :R: (_ :R: Bool) -> Bool = not
+  in main
 
-postulate T :R: Bool
+### Constraints ###
 
-postulate F :R: Bool
+[R] -> [R]
 
-not :R: (x :R: Bool) -> Bool = \(x :R: Bool).
-  case -R- x of
-    T/R
-      => F
-    F/R
-      => T
+### Solution ###
 
-main :R: (_ :R: Bool) -> Bool = not
+[R]
+
+### Annotated ###
+
+  let
+    postulate Bool :E: Type
+    postulate T :R: Bool
+    postulate F :R: Bool
+    not :R: (x :R: Bool) -> Bool = \(x :R: Bool).
+      case -R- x of
+        T/R
+          => F
+        F/R
+          => T
+    main :R: (_ :R: Bool) -> Bool = not
+  in main
+
+### Specialised ###
+
+  let
+    postulate Bool :E: Type
+    postulate T :R: Bool
+    postulate F :R: Bool
+    not :R: (x :R: Bool) -> Bool = \(x :R: Bool).
+      case -R- x of
+        T/R
+          => F
+        F/R
+          => T
+    main :R: (_ :R: Bool) -> Bool = not
+  in main
 
 ### Final annotation ###
 
-postulate Bool :E: Type
-
-postulate T :R: Bool
-
-postulate F :R: Bool
-
-not :R: (x :R: Bool) -> Bool = \(x :R: Bool).
-  case -R- x of
-    T/R
-      => F
-    F/R
-      => T
-
-main :R: (_ :R: Bool) -> Bool = not
+  let
+    postulate Bool :E: Type
+    postulate T :R: Bool
+    postulate F :R: Bool
+    not :R: (x :R: Bool) -> Bool = \(x :R: Bool).
+      case -R- x of
+        T/R
+          => F
+        F/R
+          => T
+    main :R: (_ :R: Bool) -> Bool = not
+  in main
 
 ### Verification ###
 
@@ -121,46 +128,37 @@ Verification successful.
 
 ### Pruned ###
 
-postulate T : Bool
-
-postulate F : Bool
-
-not = \x.
-  case x of
-    T
-      => F
-    F
-      => T
-
-main = not
+  let
+    postulate T : Bool
+    postulate F : Bool
+    not = \x.
+      case x of
+        T
+          => F
+        F
+          => T
+    main = not
+  in main
 
 ### Normal forms ###
 
 unerased:
   
-  let postulate Bool : Type
-  in 
-    let postulate T : Bool
-    in 
-      let postulate F : Bool
-      in 
-        let not : (x : Bool) -> Bool = \(x : Bool).
-          case x of
-            T
-              => F
-            F
-              => T
-        in not
+  let not : (x : Bool) -> Bool = \(x : Bool).
+    case x of
+      T
+        => F
+      F
+        => T
+  in not
+
 erased:
   
-  let postulate T : Bool
-  in 
-    let postulate F : Bool
-    in 
-      let not = \x.
-        case x of
-          T
-            => F
-          F
-            => T
-      in not
+  let not = \x.
+    case x of
+      T
+        => F
+      F
+        => T
+  in not
+

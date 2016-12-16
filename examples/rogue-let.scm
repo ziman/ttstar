@@ -1,8 +1,12 @@
-(print (let ((T (list 'T)))
-  (let ((F (list 'F)))
-    (let ((not_TT (lambda (x)
+(print
+  (letrec (
+    (T (list 'T))
+    (F (list 'F))
+    (not_TT (lambda (x)
       (case (car x)
         ((T) F)
-        ((F) T)))))
-      (let ((main not_TT))
-        main)))))
+        ((F) T))))
+    (main not_TT)
+  )
+    main))
+(newline)
