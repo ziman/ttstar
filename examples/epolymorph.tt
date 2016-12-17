@@ -15,7 +15,7 @@ id (x : Nat) : Nat
   = case x of
       Z => Z,
       S (y : Nat)
-        => let result : Nat = S y. in result.
+        => let result : Nat = S y in result.
 
 const_3 (_ : Nat) : Nat = 3.
 

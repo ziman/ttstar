@@ -118,7 +118,7 @@ case_ = (<?> "case expression") $ do
     tm <- expr
     kwd "with"
     Def n r ty _ _ <- typing undefined
-    kwd "."
+    kwd "of"
     alts <- caseAlt `sepBy` kwd ","
     case mkArgs ty of
         arg:_ -> do
@@ -148,7 +148,6 @@ postulate :: Parser (Def MRel)
 postulate = (<?> "postulate") $ do
     kwd "postulate"
     d <- typing Postulate
-    kwd "."
     return d
 
 caseTree :: Parser (CaseTree MRel)
@@ -163,7 +162,7 @@ realCaseTree = (<?> "case tree") $ do
     v <- name
     kwd "of"
     alts <- caseAlt `sepBy` kwd ","
-    kwd "."
+    optional $ kwd "."
     return $ Case Nothing (V v) alts
 
 caseEq :: Parser (Name, TT MRel)
@@ -204,7 +203,6 @@ fundef = (<?> "function definition") $ do
 
     let lambdaDef = do
             tm <- expr
-            kwd "."
             return $ Def n r ty (Term $ chain Lam args tm) noConstrs
 
     let matchingDef = do
@@ -224,7 +222,6 @@ dataDef = (<?> "data definition") $ do
     tfd <- typing Postulate
     kwd "where"
     ctors <- typing Postulate `sepBy` kwd ","
-    kwd "."
     return (tfd : ctors)
 
 simpleDef :: Parser (Def MRel)
@@ -235,7 +232,7 @@ definition = dataDef <|> (pure <$> simpleDef) <?> "definition"
 
 parseProg :: Parser (Program MRel)
 parseProg = do
-    ds <- concat <$> many definition <?> "program"
+    ds <- concat <$> many (definition <* optional (kwd ".")) <?> "program"
     return $ Bind Let ds (V $ UN "main")
 
 ttProgram :: Parser (Program MRel)

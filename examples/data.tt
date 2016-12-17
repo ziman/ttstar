@@ -24,7 +24,7 @@ zipWith (n : N) (f : N -> N -> N) (xs : Vect n) (ys : Vect n) : Vect n
       Nil
         | n = Z
         => case ys of
-            Nil => Nil..
+            Nil => Nil.
 
 main : N
   = let
