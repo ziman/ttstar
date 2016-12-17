@@ -1,12 +1,34 @@
-module Parser (ttProgram) where
+module Parser (parseProgram) where
 
 import TT
 import Data.Char
 import Text.Parsec
 import qualified Data.Set as S
 
-type Parser = Parsec String ()
+data ParserState = PS
+    { psCounter :: Int
+    }
+    deriving (Eq, Ord, Show)
+
+type Parser = Parsec String ParserState
 type MRel = Maybe Relevance
+
+parseProgram :: String -> String -> Either ParseError (Program MRel)
+parseProgram fname body = runParser ttProgram initialParserState fname body
+
+initialParserState :: ParserState
+initialParserState = PS
+    { psCounter = 0
+    }
+
+fresh :: Parser Int
+fresh = do
+    st <- getState
+    putState st{ psCounter = psCounter st + 1 }
+    return $ psCounter st
+
+freshMN :: String -> Parser Name
+freshMN stem = MN stem <$> fresh
 
 keywords :: S.Set String
 keywords = S.fromList [
@@ -114,18 +136,23 @@ erasureInstance = (<?> "erasure instance") $ do
 
 caseExpr :: Parser (TT MRel)
 caseExpr = (<?> "case expression") $ do
+    n <- freshMN "casefun"
     kwd "case"
     tm <- expr
-    kwd "with"
-    Def n r ty _ _ <- typing undefined
+    kwd "where"
+    ty <- expr
     kwd "."
     alts <- caseAlt `sepBy` kwd ","
     case mkArgs ty of
         arg:_ -> do
             let cf = CaseFun [arg] (Case Nothing (V $ defName arg) alts)
-            return $ Bind Let [Def n r ty (Patterns cf) noConstrs] (App Nothing (V n) tm)
-
-        args -> fail $ "case function " ++ show n ++ " must take at least one argument"
+            return $
+                App Nothing
+                    (Bind Let
+                        [Def n Nothing ty (Patterns cf) noConstrs]
+                            (V n))
+                    tm
+        args -> fail "case function must take at least one argument"
   where
     mkArgs (Bind Pi ds tm) = ds ++ mkArgs tm
     mkArgs _ = []

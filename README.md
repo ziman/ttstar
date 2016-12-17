@@ -31,6 +31,11 @@ Symbols:
 * fix mutual recursion in the implementation
     * then fix typing rules in the paper
 * continue with the proofs in the paper
+* This rule is disgustingly complicated but it just says "take all
+known equalities and rewrite everything".
+* Resolve telescopicness of lets. Let is not telescopic because it's
+mutually recursive. Fix that.
+* Probably nothing is telescopic in the Greek.
 
 ### Secondary features
 * backtrace in typechecker

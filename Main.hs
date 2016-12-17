@@ -19,7 +19,6 @@ import Erasure.Specialise
 import Erasure.Prune
 import Erasure.Verify
 
-import Text.Parsec
 import System.Environment
 import qualified Data.Set as S
 import qualified Data.Map as M
@@ -112,7 +111,7 @@ main :: IO ()
 main = do
     [fname] <- getArgs
     code <- readFile fname
-    case parse ttProgram fname code of
+    case parseProgram fname code of
         Left e -> print e
         Right prog -> do
             putStrLn "-- vim: ft=agda"

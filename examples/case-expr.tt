@@ -19,7 +19,7 @@ retTy (x : Bool) : Type
 
 main : Bool
   = not (
-      case not F with f : (x : Bool) -> retTy x.
+      case not F where (x : Bool) -> retTy x.
         F => MkUnit,
         T => F
     ).

@@ -20,14 +20,14 @@
           => Bool
         F
           => Unit
-    main : Bool = not 
-      let f : (x : Bool) -> retTy x = \(x : Bool).
+    main : Bool = not (
+      let casefun#0 : (x : Bool) -> retTy x = \(x : Bool).
         case x of
           F
             => MkUnit
           T
             => F
-      in f (not F)
+      in casefun#0 (not F))
   in main
 
 ### Metaified ###
@@ -50,24 +50,24 @@
           => Bool
         F/17
           => Unit
-    main :18: Bool = not -19- 
-      let f :20: (x :21: Bool) -> retTy -22- x = \(x :23: Bool).
-        case -24- x of
-          F/25
+    main :18: Bool = not -19- (
+      let casefun#0 :21: (x :22: Bool) -> retTy -23- x = \(x :24: Bool).
+        case -25- x of
+          F/26
             => MkUnit
-          T/26
+          T/27
             => F
-      in f -27- (not -28- F)
+      in casefun#0 -20- (not -28- F))
   in main
 
 ### Constraints ###
 
-[] -> [2,3,5,6,7,8,9,10,11,19,20,21,23,24,25,26,27,28,R]
+[] -> [2,3,5,6,7,8,9,10,11,19,20,21,22,24,25,26,27,28,R]
 [R] -> [18]
 
 ### Solution ###
 
-[2,3,5,6,7,8,9,10,11,18,19,20,21,23,24,25,26,27,28,R]
+[2,3,5,6,7,8,9,10,11,18,19,20,21,22,24,25,26,27,28,R]
 
 ### Annotated ###
 
@@ -89,14 +89,14 @@
           => Bool
         F/E
           => Unit
-    main :R: Bool = not -R- 
-      let f :R: (x :R: Bool) -> retTy -E- x = \(x :R: Bool).
+    main :R: Bool = not -R- (
+      let casefun#0 :R: (x :R: Bool) -> retTy -E- x = \(x :R: Bool).
         case -R- x of
           F/R
             => MkUnit
           T/R
             => F
-      in f -R- (not -R- F)
+      in casefun#0 -R- (not -R- F))
   in main
 
 ### Specialised ###
@@ -119,14 +119,14 @@
           => Bool
         F/E
           => Unit
-    main :R: Bool = not -R- 
-      let f :R: (x :R: Bool) -> retTy -E- x = \(x :R: Bool).
+    main :R: Bool = not -R- (
+      let casefun#0 :R: (x :R: Bool) -> retTy -E- x = \(x :R: Bool).
         case -R- x of
           F/R
             => MkUnit
           T/R
             => F
-      in f -R- (not -R- F)
+      in casefun#0 -R- (not -R- F))
   in main
 
 ### Constraints ###
@@ -157,14 +157,14 @@
           => Bool
         F/E
           => Unit
-    main :R: Bool = not -R- 
-      let f :R: (x :R: Bool) -> retTy -E- x = \(x :R: Bool).
+    main :R: Bool = not -R- (
+      let casefun#0 :R: (x :R: Bool) -> retTy -E- x = \(x :R: Bool).
         case -R- x of
           F/R
             => MkUnit
           T/R
             => F
-      in f -R- (not -R- F)
+      in casefun#0 -R- (not -R- F))
   in main
 
 ### Specialised ###
@@ -187,14 +187,14 @@
           => Bool
         F/E
           => Unit
-    main :R: Bool = not -R- 
-      let f :R: (x :R: Bool) -> retTy -E- x = \(x :R: Bool).
+    main :R: Bool = not -R- (
+      let casefun#0 :R: (x :R: Bool) -> retTy -E- x = \(x :R: Bool).
         case -R- x of
           F/R
             => MkUnit
           T/R
             => F
-      in f -R- (not -R- F)
+      in casefun#0 -R- (not -R- F))
   in main
 
 ### Final annotation ###
@@ -217,14 +217,14 @@
           => Bool
         F/E
           => Unit
-    main :R: Bool = not -R- 
-      let f :R: (x :R: Bool) -> retTy -E- x = \(x :R: Bool).
+    main :R: Bool = not -R- (
+      let casefun#0 :R: (x :R: Bool) -> retTy -E- x = \(x :R: Bool).
         case -R- x of
           F/R
             => MkUnit
           T/R
             => F
-      in f -R- (not -R- F)
+      in casefun#0 -R- (not -R- F))
   in main
 
 ### Verification ###
@@ -243,14 +243,14 @@ Verification successful.
           => F
         F
           => T
-    main = not 
-      let f = \x.
+    main = not (
+      let casefun#0 = \x.
         case x of
           F
             => MkUnit
           T
             => F
-      in f (not F)
+      in casefun#0 (not F))
   in main
 
 ### Normal forms ###

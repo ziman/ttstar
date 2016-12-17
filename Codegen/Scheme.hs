@@ -17,13 +17,14 @@ specialNames =
     ]
 
 cgName :: Name -> Doc
-cgName = text . specialName . map mogrify . show
+cgName = text . specialName . concatMap mogrify . show
   where
     specialName n
         | n `elem` specialNames = n ++ "_TT"
         | otherwise = n
-    mogrify '\'' = '_'
-    mogrify c = c
+    mogrify '#'  = "__"
+    mogrify '\'' = "_"
+    mogrify c = [c]
 
 -- flavours of `let` in Scheme:
 -- http://www.cs.rpi.edu/academics/courses/fall00/ai/scheme/reference/schintro-v14/schintro_126.html
