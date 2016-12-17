@@ -122,8 +122,9 @@ let_ :: Parser (TT MRel)
 let_ = (<?> "let expression") $ do
     kwd "let"
     d <- simpleDef
+    ds <- many (kwd "," *> simpleDef)
     kwd "in"
-    Bind Let [d] <$> expr
+    Bind Let (d:ds) <$> expr
 
 erasureInstance :: Parser (TT MRel)
 erasureInstance = (<?> "erasure instance") $ do

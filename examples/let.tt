@@ -19,8 +19,9 @@ main : Nat
           = case x of
               Z => f Z,
               S (x' : Nat) => f (S x')
-      in let postulate Q : Nat
-      in let three : Nat = 3
-      in plus (apply id 2) (apply (const Q) three).
-      -- it's okay that this does not erasure-specialise!
-      -- we did not request specialisation using [square brackets]
+      in let
+           postulate Q : Nat,
+           three : Nat = 3
+         in plus (apply id 2) (apply (const Q) three).
+         -- it's okay that this does not erasure-specialise!
+         -- we did not request specialisation using [square brackets]

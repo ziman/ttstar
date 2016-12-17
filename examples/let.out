@@ -22,10 +22,10 @@
           S (x' : Nat)
             => f (S x')
       in 
-        let postulate Q : Nat
-        in 
-          let three : Nat = 3
-          in plus (apply id 2) (apply (const Q) three)
+        let
+          postulate Q : Nat
+          three : Nat = 3
+        in plus (apply id 2) (apply (const Q) three)
   in main
 
 ### Metaified ###
@@ -50,10 +50,10 @@
           S/35 (x' :36: Nat)
             => f -37- (S -38- x')
       in 
-        let postulate Q :39: Nat
-        in 
-          let three :40: Nat = 3
-          in plus -45- (apply -47- id -46- 2) -44- (apply -51- (const -52- Q) -50- three)
+        let
+          postulate Q :39: Nat
+          three :40: Nat = 3
+        in plus -45- (apply -47- id -46- 2) -44- (apply -51- (const -52- Q) -50- three)
   in main
 
 ### Constraints ###
@@ -87,10 +87,10 @@
           S/R (x' :R: Nat)
             => f -R- (S -R- x')
       in 
-        let postulate Q :R: Nat
-        in 
-          let three :R: Nat = 3
-          in plus -R- (apply -R- id -R- 2) -R- (apply -R- (const -R- Q) -R- three)
+        let
+          postulate Q :R: Nat
+          three :R: Nat = 3
+        in plus -R- (apply -R- id -R- 2) -R- (apply -R- (const -R- Q) -R- three)
   in main
 
 ### Specialised ###
@@ -115,10 +115,10 @@
           S/R (x' :R: Nat)
             => f -R- (S -R- x')
       in 
-        let postulate Q :R: Nat
-        in 
-          let three :R: Nat = 3
-          in plus -R- (apply -R- id -R- 2) -R- (apply -R- (const -R- Q) -R- three)
+        let
+          postulate Q :R: Nat
+          three :R: Nat = 3
+        in plus -R- (apply -R- id -R- 2) -R- (apply -R- (const -R- Q) -R- three)
   in main
 
 ### Final annotation ###
@@ -143,10 +143,10 @@
           S/R (x' :R: Nat)
             => f -R- (S -R- x')
       in 
-        let postulate Q :R: Nat
-        in 
-          let three :R: Nat = 3
-          in plus -R- (apply -R- id -R- 2) -R- (apply -R- (const -R- Q) -R- three)
+        let
+          postulate Q :R: Nat
+          three :R: Nat = 3
+        in plus -R- (apply -R- id -R- 2) -R- (apply -R- (const -R- Q) -R- three)
   in main
 
 ### Verification ###
@@ -174,10 +174,10 @@ Verification successful.
           S x'
             => f (S x')
       in 
-        let postulate Q : Nat
-        in 
-          let three = 3
-          in plus (apply id 2) (apply (const Q) three)
+        let
+          postulate Q : Nat
+          three = 3
+        in plus (apply id 2) (apply (const Q) three)
   in main
 
 ### Normal forms ###
