@@ -1,6 +1,6 @@
 -- vim: ft=idris
 
-data T : Type.
+data T : Type where
   A : T,
   B : T.
 
@@ -19,5 +19,5 @@ test1 : T
 test2 : T
   = [apply : (T -> T) -> T -> T] constA B.
 
-main :R: T
+main : T
   = Op test1 test2.

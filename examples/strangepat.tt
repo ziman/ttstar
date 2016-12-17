@@ -1,15 +1,14 @@
 -- vim: ft=idris
 
-data Bool : Type.
+data Bool : Type where
   T : Bool,
   F : Bool.
 
-data Pair : Type.
+data Pair : Type where
   P : Bool -> Bool -> Pair.
 
 fst (x : (_ : Bool) -> Pair) : Bool
   = case x of
       P (y : Bool) => y.
 
-main :R: Bool
-  = fst (P T).
+main : Bool = fst (P T).

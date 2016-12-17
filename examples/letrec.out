@@ -2,22 +2,22 @@
 
 ### Desugared ###
 
-  let main :R: (_ : Type) -> Type = (\x : Type. x)
+  let main : (_ : Type) -> Type = (\x : Type. x)
   in main
 
 ### Metaified ###
 
-  let main :R: (_ :1: Type) -> Type = (\x :2: Type. x)
+  let main :1: (_ :2: Type) -> Type = (\x :3: Type. x)
   in main
 
 ### Constraints ###
 
-[] -> [1,2,R]
-[R] -> [R]
+[] -> [2,3,R]
+[R] -> [1]
 
 ### Solution ###
 
-[1,2,R]
+[1,2,3,R]
 
 ### Annotated ###
 

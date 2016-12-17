@@ -1,6 +1,6 @@
 -- vim: ft=idris
 
-data Bool : Type.
+data Bool : Type where
   T : Bool,
   F : Bool.
 
@@ -9,4 +9,4 @@ not (x : Bool) : Bool
       T => F,
       F => T.
 
-main :R: Bool -> Bool = not.
+main : Bool -> Bool = not.

@@ -1,10 +1,10 @@
 -- vim: ft=idris
 
-data Bool : Type.
+data Bool : Type where
   T : Bool,
   F : Bool.
 
-data Id : (a : Type) -> (x : a) -> (y : a) -> Type.
+data Id : (a : Type) -> (x : a) -> (y : a) -> Type where
   Refl : (a : Type) -> (x : a) -> Id a x x.
 
 not (x : Bool) : Bool
@@ -17,4 +17,4 @@ notnot (x : Bool) : Id Bool x (not (not x))
       T => Refl Bool T,
       F => Refl Bool F.
 
-main :R: Id Bool F (not (not F)) = notnot F.
+main : Id Bool F (not (not F)) = notnot F.

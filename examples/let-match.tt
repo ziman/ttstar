@@ -1,10 +1,10 @@
 -- vim: ft=idris
 
-data Bool : Type.
+data Bool : Type where
   T : Bool,
   F : Bool.
 
-main :R: Bool = 
+main : Bool = 
   (let
     not (x : Bool) : Bool
       = case x of T => F, F => T.

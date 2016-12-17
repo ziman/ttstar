@@ -1,6 +1,6 @@
 -- vim: ft=idris
 
-data Nat : Type.
+data Nat : Type where
   Z : Nat,
   S : (_ :R: Nat) -> Nat.
 
@@ -13,7 +13,7 @@ id (x : Nat) : Nat = x.
 
 const (x : Nat) (y : Nat) : Nat = x.
 
-main :R: Nat
+main : Nat
     = let
         apply (f : Nat -> Nat) (x : Nat) : Nat
           = case x of

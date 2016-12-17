@@ -1,7 +1,7 @@
 -- vim: ft=idris
 
 -- declare a data type
-data T : Type.
+data T : Type where
   A : T,
   B : T.
 
@@ -19,5 +19,5 @@ f (g : T -> T) (z : T) (h : T -> T) (w : T) : T
   = Op (g z) (h w).
 
 -- main, manually marked as relevant
-main :R: T
+main : T
   = f id B const_A B.

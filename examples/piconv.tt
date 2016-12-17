@@ -1,10 +1,10 @@
 -- vim: ft=idris
 
-data T : Type.
+data T : Type where
   A : T,
   B : T.
 
 const_A : T -> T = \_ : T. A.
 apply : (f : (x : T) -> T) -> (x : T) -> T = \f : T -> T. \x : T. f x.
 
-main :R: T = apply const_A B.
+main : T = apply const_A B.

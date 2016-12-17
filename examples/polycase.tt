@@ -1,14 +1,14 @@
 -- vim: ft=idris
 
-data Mool : Type.
+data Mool : Type where
   Q : Mool,
   W : Mool.
 
-data Bool : Type.
+data Bool : Type where
   T : Bool,
   F : Bool.
 
-data Id : (a : Type) -> (x : a) -> (y : a) -> Type.
+data Id : (a : Type) -> (x : a) -> (y : a) -> Type where
   Refl : (a : Type) -> (x : a) -> Id a x x.
 
 not (x : Bool) : Bool
@@ -36,4 +36,4 @@ invert (t : Bool) (x : retTy t) : retTy t
       T => not x,
       F => mot x.
 
-main :R: Mool = invert F Q.
+main : Mool = invert F Q.

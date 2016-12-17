@@ -3,9 +3,17 @@ module Parser (ttProgram) where
 import TT
 import Data.Char
 import Text.Parsec
+import qualified Data.Set as S
 
 type Parser = Parsec String ()
 type MRel = Maybe Relevance
+
+keywords :: S.Set String
+keywords = S.fromList [
+    "case", "with", "where",
+    "data", "let", "in", "postulate",
+    "of"
+  ]
 
 lineComment :: Parser ()
 lineComment = kwd "--" *> many (satisfy (/= '\n')) *> return () <?> "line comment"
@@ -21,10 +29,15 @@ kwd s = (try (string s) >> sp) <?> s
 
 name :: Parser Name
 name = (<?> "name") $ do
-    x <- satisfy idChar
-    xs <- many $ satisfy (\x -> idChar x || isDigit x)
+    n <- try $ do
+        x <- satisfy idChar
+        xs <- many $ satisfy (\x -> idChar x || isDigit x)
+        let n = x:xs
+        if S.member n keywords
+            then unexpected n
+            else return n
     sp
-    return $ UN (x : xs)
+    return $ UN n
   where
     idChar x = isAlpha x || x `elem` "_'"
 
@@ -102,7 +115,7 @@ erasureInstance = (<?> "erasure instance") $ do
 case_ :: Parser (TT MRel)
 case_ = (<?> "case expression") $ do
     kwd "case"
-    tm <- parens expr
+    tm <- expr
     kwd "with"
     Def n r ty _ _ <- typing undefined
     kwd "."
@@ -209,7 +222,7 @@ dataDef :: Parser [Def MRel]
 dataDef = (<?> "data definition") $ do
     kwd "data"
     tfd <- typing Postulate
-    kwd "."
+    kwd "where"
     ctors <- typing Postulate `sepBy` kwd ","
     kwd "."
     return (tfd : ctors)

@@ -2,22 +2,22 @@
 
 ### Desugared ###
 
-  let main :R: Type = Type
+  let main : Type = Type
   in main
 
 ### Metaified ###
 
-  let main :R: Type = Type
+  let main :1: Type = Type
   in main
 
 ### Constraints ###
 
 [] -> [E,R]
-[R] -> [R]
+[R] -> [1]
 
 ### Solution ###
 
-[E,R]
+[1,E,R]
 
 ttstar: !! inconsistent annotation
 CallStack (from HasCallStack):

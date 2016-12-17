@@ -1,6 +1,6 @@
 -- vim: ft=idris
 
-data N : Type.
+data N : Type where
   Z : N,
   S : N -> N.
 
@@ -9,7 +9,7 @@ plus (m : N) (n : N) : N =
     Z          => n,
     S (m' : N) => S (plus m' n).
 
-data Vect : N -> Type.
+data Vect : N -> Type where
   Nil : Vect Z,
   Cons : (n : N) -> (x : N) -> (xs : Vect n) -> Vect (S n).
 
@@ -26,7 +26,7 @@ zipWith (n : N) (f : N -> N -> N) (xs : Vect n) (ys : Vect n) : Vect n
         => case ys of
             Nil => Nil..
 
-main :R: N
+main : N
   = let
       pred (x : N) : N =
         case x of

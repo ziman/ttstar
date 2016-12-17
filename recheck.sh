@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -o pipefail
+
 die() {
     echo "$@"
     exit 1
@@ -32,6 +34,7 @@ cabal install -j1 \
 
 for i in examples/*.tt; do
     n=${i%.tt}
+
     echo $i
     ./ttstar $i > $n.out 2>&1 \
         && scheme $n

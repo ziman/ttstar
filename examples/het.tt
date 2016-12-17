@@ -2,15 +2,15 @@
 
 postulate Tuple : (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type.
 
-data Bool : Type.
+data Bool : Type where
   T : Bool,
   F : Bool.
 
-data Mool : Type.
+data Mool : Type where
   Q : Mool,
   W : Mool.
 
-data U : Type.
+data U : Type where
   B : U,
   M : U.
 
@@ -26,5 +26,5 @@ f (u : U) (x : ty u) : Type =
     Q | u = M => Mool,
     W | u = M => Mool.
 
-main :R: Type =
+main : Type =
   Tuple (f B T) (f B F) (f M Q) (f M W).

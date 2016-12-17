@@ -1,14 +1,14 @@
 -- vim: ft=idris
 
-data Bool : Type.
+data Bool : Type where
   True : Bool,
   False : Bool.
 
-data Foo : Bool -> Type.
+data Foo : Bool -> Type where
   Yeah : Foo True,
   Nope : Foo False.
 
-data Maybe : Type -> Type.
+data Maybe : Type -> Type where
   Nothing : (a : Type) -> Maybe a,
   Just : (a : Type) -> (x : a) -> Maybe a.
 
@@ -33,7 +33,7 @@ g (x : Maybe Bool) : Foo (f x)
       | a = Bool
       => Nope.
 
-main :R: Foo True
+main : Foo True
   = g (Just Bool True).
 
 {-

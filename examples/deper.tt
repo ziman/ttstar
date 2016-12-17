@@ -1,10 +1,10 @@
 -- vim: ft=idris
 
-data Bool : Type.
+data Bool : Type where
   T : Bool,
   F : Bool.
 
-data TwoBools : Type.
+data TwoBools : Type where
   TB : (x :R: Bool) -> (y :R: Bool) -> TwoBools.
 
 id (x : Bool) : Bool = x.
@@ -21,5 +21,5 @@ f (x : Bool) : fty x
       T => id,
       F => constT.
 
-main :R: TwoBools
+main : TwoBools
   = TB (f T F) (f F F).

@@ -6,7 +6,7 @@
     postulate Bool : Type
     postulate T : Bool
     postulate F : Bool
-    main :R: Bool = 
+    main : Bool = 
       let not : (x : Bool) -> Bool = \(x : Bool).
         case x of
           T
@@ -22,24 +22,24 @@
     postulate Bool :1: Type
     postulate T :2: Bool
     postulate F :3: Bool
-    main :R: Bool = 
-      let not :5: (x :6: Bool) -> Bool = \(x :7: Bool).
-        case -8- x of
-          T/9
+    main :4: Bool = 
+      let not :6: (x :7: Bool) -> Bool = \(x :8: Bool).
+        case -9- x of
+          T/10
             => F
-          F/10
+          F/11
             => T
-      in not -4- F
+      in not -5- F
   in main
 
 ### Constraints ###
 
-[] -> [2,3,4,5,6,7,8,9,10,R]
-[R] -> [R]
+[] -> [2,3,5,6,7,8,9,10,11,R]
+[R] -> [4]
 
 ### Solution ###
 
-[2,3,4,5,6,7,8,9,10,R]
+[2,3,4,5,6,7,8,9,10,11,R]
 
 ### Annotated ###
 

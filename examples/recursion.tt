@@ -1,14 +1,14 @@
 -- vim: ft=idris
 
-data Bool : Type.
+data Bool : Type where
   True : Bool,
   False : Bool.
 
-data Nat : Type.
+data Nat : Type where
   Z : Nat,
   S : (n :R: Nat) -> Nat.
 
-data Vec : Nat -> Type -> Type.
+data Vec : Nat -> Type -> Type where
   VNil : (a : Type) -> Vec Z a,
   VCons : (a : Type) -> (n : Nat) -> (x : a) -> (xs : Vec n a) -> Vec (S n) a.
 
@@ -27,5 +27,5 @@ vlen (a : Type) (n : Nat) (xs : Vec n a) : Nat
 testVec : Vec (S (S Z)) Bool
     = VCons Bool (S Z) True (VCons Bool Z False (VNil Bool)).
 
-main :R: Nat
+main : Nat
     = vlen Bool (S (S Z)) testVec.

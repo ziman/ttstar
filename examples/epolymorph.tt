@@ -1,14 +1,10 @@
 -- vim: ft=idris
 
-data Bool : Type.
+data Bool : Type where
   True : Bool,
   False : Bool.
 
-data Maybe : Type -> Type.
-  Just : (a : Type) -> a -> Type,
-  Nothing : (a : Type) -> Type.
-
-data Nat : Type.
+data Nat : Type where
   Z : Nat,
   S : (n :R: Nat) -> Nat.
 
@@ -42,5 +38,5 @@ test_1 : Nat
 test_2 : Nat
   = f id 2 const_3 1.
 
-main :R: Nat
+main : Nat
   = Plus test_1 test_2.

@@ -1,17 +1,17 @@
 -- vim: ft=idris
 
-data N : Type.
+data N : Type where
   Z : N,
   S : (x : N) -> N.
 
-data Vec : N -> Type.
+data Vec : N -> Type where
   Nil : Vec Z.
 
 vlen (n : N) (xs : Vec n) : N
   = case xs of
       Nil | n = Z => n.
 
-main :R: N
+main : N
   = vlen Z Nil.
 
 {-

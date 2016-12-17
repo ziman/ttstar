@@ -26,7 +26,7 @@
         Nothing (a : Type)
           | a = Bool
           => Bool
-    main :R: Bool = f (Just Bool False)
+    main : Bool = f (Just Bool False)
   in main
 
 ### Metaified ###
@@ -55,13 +55,13 @@
         Nothing/35 (a :36: Type)
           | a = Bool
           => Bool
-    main :R: Bool = f -37- (Just -39- Bool -38- False)
+    main :37: Bool = f -38- (Just -40- Bool -39- False)
   in main
 
 ### Constraints ###
 
-[] -> [4,6,11,13,25,26,29,31,32,34,37,38,R]
-[5] -> [33,39]
+[] -> [4,6,11,13,25,26,29,31,32,34,38,39,R]
+[5] -> [33,40]
 [7] -> [27]
 [8] -> [35]
 [9] -> [36]
@@ -70,12 +70,12 @@
 [33] -> [5]
 [35] -> [8]
 [36] -> [9]
-[39] -> [5]
-[R] -> [R]
+[40] -> [5]
+[R] -> [37]
 
 ### Solution ###
 
-[4,6,11,13,25,26,29,31,32,34,37,38,R]
+[4,6,11,13,25,26,29,31,32,34,37,38,39,R]
 
 ### Annotated ###
 

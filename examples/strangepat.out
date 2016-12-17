@@ -12,7 +12,7 @@
       case x of
         P (y : Bool)
           => y
-    main :R: Bool = fst (P T)
+    main : Bool = fst (P T)
   in main
 
 ### Metaified ###
@@ -27,19 +27,19 @@
       case -13- x of
         P/14 (y :15: Bool)
           => y
-    main :R: Bool = fst -16- (P -17- T)
+    main :16: Bool = fst -17- (P -18- T)
   in main
 
 ### Constraints ###
 
-[] -> [2,5,6,8,9,11,13,14,15,16,17,R]
+[] -> [2,5,6,8,9,11,13,14,15,17,18,R]
 [7] -> [10]
 [10] -> [7]
-[R] -> [R]
+[R] -> [16]
 
 ### Solution ###
 
-[2,5,6,8,9,11,13,14,15,16,17,R]
+[2,5,6,8,9,11,13,14,15,16,17,18,R]
 
 ### Annotated ###
 

@@ -1,10 +1,10 @@
 -- vim: ft=idris
 
-data Bool : Type.
+data Bool : Type where
   T : Bool,
   F : Bool.
 
-data Unit : Type.
+data Unit : Type where
   MkUnit : Unit.
 
 not (x : Bool) : Bool
@@ -19,7 +19,7 @@ retTy (x : Bool) : Type
 
 main : Bool
   = not (
-      case (not F) with f : (x : Bool) -> retTy x.
+      case not F with f : (x : Bool) -> retTy x.
         F => MkUnit,
         T => F
     ).

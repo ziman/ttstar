@@ -1,6 +1,6 @@
 -- vim: ft=idris
 
-data Id : (a : Type) -> (x : a) -> (y : a) -> Type.
+data Id : (a : Type) -> (x : a) -> (y : a) -> Type where
   Refl : (a : Type) -> (x : a) -> Id a x x.
 
 id (a : Type) : a -> a
@@ -24,12 +24,12 @@ cong (a : Type) (b : Type) (f : a -> b) (x : a) (y : a) (eq : Id a x y)
         | y  = x
         => Refl b (f x).  -- again, could be `y` instead of `x`
 
-data Bool : Type.
+data Bool : Type where
   T : Bool,
   F : Bool.
 
 -- We annotate this type manually to emulate usage caused by I/O actions.
-data List : Type.
+data List : Type where
   Nil : List,
   Cons : (x :R: Bool) -> (xs :R: List) -> List.
 
@@ -57,7 +57,7 @@ appAssoc (xs : List) (ys : List) (zs : List)
       Cons (x : Bool) (xs' : List)
         => cong List List (Cons x) (app (app xs' ys) zs) (app xs' (app ys zs)) (appAssoc xs' ys zs).
 
-data Rev : List -> Type.
+data Rev : List -> Type where
   RNil : Rev Nil,
   RSnoc : (xs : List) -> (x : Bool) -> (rxs : Rev xs)
     -> Rev (app xs (one x)).
@@ -89,5 +89,5 @@ reverse' (xs : List) (rxs : Rev xs) : List
 reverse (xs : List) : List
   = reverse' xs (rev xs).
 
-main :R: List
+main : List
   = reverse (Cons T (Cons F (Cons T (Cons F Nil)))).

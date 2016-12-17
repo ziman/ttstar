@@ -1,2 +1,2 @@
 -- vim: ft=agda
-main :R: Type = Type.
+main : Type = Type.
