@@ -112,13 +112,13 @@ erasureInstance = (<?> "erasure instance") $ do
     kwd "]"
     return $ I n ty
 
-case_ :: Parser (TT MRel)
-case_ = (<?> "case expression") $ do
+caseExpr :: Parser (TT MRel)
+caseExpr = (<?> "case expression") $ do
     kwd "case"
     tm <- expr
     kwd "with"
     Def n r ty _ _ <- typing undefined
-    kwd "of"
+    kwd "."
     alts <- caseAlt `sepBy` kwd ","
     case mkArgs ty of
         arg:_ -> do
@@ -132,7 +132,7 @@ case_ = (<?> "case expression") $ do
 
 expr :: Parser (TT MRel)
 expr = 
-        case_
+        caseExpr
     <|> bind
     <|> app
     <?> "expression"  -- app includes nullary-applied atoms
