@@ -61,37 +61,6 @@
     main :R: T = apply -R- const_A -E- B
   in main
 
-### Constraints ###
-
-[E] -> [E]
-[R] -> [R]
-
-### Solution ###
-
-[R]
-
-### Annotated ###
-
-  let
-    postulate T :E: Type
-    postulate A :R: T
-    postulate B :E: T
-    const_A :R: (_ :E: T) -> T = (\_ :E: T. A)
-    apply :R: (f :R: (x :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_ :E: T) -> T. (\x :E: T. f -E- x))
-    main :R: T = apply -R- const_A -E- B
-  in main
-
-### Specialised ###
-
-  let
-    postulate T :E: Type
-    postulate A :R: T
-    postulate B :E: T
-    const_A :R: (_ :E: T) -> T = (\_ :E: T. A)
-    apply :R: (f :R: (x :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_ :E: T) -> T. (\x :E: T. f -E- x))
-    main :R: T = apply -R- const_A -E- B
-  in main
-
 ### Final annotation ###
 
   let

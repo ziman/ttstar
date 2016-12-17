@@ -117,68 +117,6 @@
     main :R: Nat = Plus -R- test_1 -R- test_2
   in main
 
-### Constraints ###
-
-[R] -> [R]
-
-### Solution ###
-
-[R]
-
-### Annotated ###
-
-  let
-    postulate Bool :E: Type
-    postulate True :E: Bool
-    postulate False :E: Bool
-    postulate Nat :E: Type
-    postulate Z :R: Nat
-    postulate S :R: (n :R: Nat) -> Nat
-    postulate Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
-    id :R: (x :R: Nat) -> Nat = \(x :R: Nat).
-      case -R- x of
-        Z/R
-          => Z
-        S/R (y :R: Nat)
-          => 
-            let result :R: Nat = S -R- y
-            in result
-    const_3 :R: (_ :R: Nat) -> Nat = (\_ :R: Nat. 3)
-    two :R: Nat = 2
-    f :R: (g :R: (_ :R: Nat) -> Nat) -> (z :R: Nat) -> (h :R: (_ :R: Nat) -> Nat) -> (w :R: Nat) -> Nat = (\g :R: (_ :R: Nat) -> Nat. (\z :R: Nat. (\h :R: (_ :R: Nat) -> Nat. (\w :R: Nat. Plus -R- (g -R- z) -R- (h -R- w)))))
-    apply :R: (f :R: (_ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = (\f :R: (_ :R: Nat) -> Nat. (\x :R: Nat. f -R- x))
-    test_1 :R: Nat = Plus -R- (apply -R- id -R- 2) -R- (apply -R- const_3 -R- two)
-    test_2 :R: Nat = f -R- id -R- 2 -R- const_3 -R- 1
-    main :R: Nat = Plus -R- test_1 -R- test_2
-  in main
-
-### Specialised ###
-
-  let
-    postulate Bool :E: Type
-    postulate True :E: Bool
-    postulate False :E: Bool
-    postulate Nat :E: Type
-    postulate Z :R: Nat
-    postulate S :R: (n :R: Nat) -> Nat
-    postulate Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
-    id :R: (x :R: Nat) -> Nat = \(x :R: Nat).
-      case -R- x of
-        Z/R
-          => Z
-        S/R (y :R: Nat)
-          => 
-            let result :R: Nat = S -R- y
-            in result
-    const_3 :R: (_ :R: Nat) -> Nat = (\_ :R: Nat. 3)
-    two :R: Nat = 2
-    f :R: (g :R: (_ :R: Nat) -> Nat) -> (z :R: Nat) -> (h :R: (_ :R: Nat) -> Nat) -> (w :R: Nat) -> Nat = (\g :R: (_ :R: Nat) -> Nat. (\z :R: Nat. (\h :R: (_ :R: Nat) -> Nat. (\w :R: Nat. Plus -R- (g -R- z) -R- (h -R- w)))))
-    apply :R: (f :R: (_ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = (\f :R: (_ :R: Nat) -> Nat. (\x :R: Nat. f -R- x))
-    test_1 :R: Nat = Plus -R- (apply -R- id -R- 2) -R- (apply -R- const_3 -R- two)
-    test_2 :R: Nat = f -R- id -R- 2 -R- const_3 -R- 1
-    main :R: Nat = Plus -R- test_1 -R- test_2
-  in main
-
 ### Final annotation ###
 
   let

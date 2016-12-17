@@ -123,59 +123,6 @@
     main :R: N = vlen -E- 1 -R- (Cons -E- N -E- Z -R- 3 -R- (Nil -E- N))
   in main
 
-### Constraints ###
-
-[E] -> [E]
-[R] -> [R]
-
-### Solution ###
-
-[R]
-
-### Annotated ###
-
-  let
-    postulate N :E: Type
-    postulate Z :R: N
-    postulate S :R: (x :R: N) -> N
-    postulate Vec :E: (_ :E: N) -> (_ :E: Type) -> Type
-    postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a
-    postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
-    vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N = \(n :E: N) (xs :R: Vec -E- n -E- N).
-      case -R- xs of
-        Nil/R (a :E: Type)
-          | a = N
-          | n = Z
-          => Z
-        Cons/R (a :E: Type) (m :E: N) (y :E: N) (ys :R: Vec -E- m -E- N)
-          | a = N
-          | n = S -E- m
-          => S -R- (vlen -E- m -R- ys)
-    main :R: N = vlen -E- 1 -R- (Cons -E- N -E- Z -R- 3 -R- (Nil -E- N))
-  in main
-
-### Specialised ###
-
-  let
-    postulate N :E: Type
-    postulate Z :R: N
-    postulate S :R: (x :R: N) -> N
-    postulate Vec :E: (_ :E: N) -> (_ :E: Type) -> Type
-    postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a
-    postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
-    vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N = \(n :E: N) (xs :R: Vec -E- n -E- N).
-      case -R- xs of
-        Nil/R (a :E: Type)
-          | a = N
-          | n = Z
-          => Z
-        Cons/R (a :E: Type) (m :E: N) (y :E: N) (ys :R: Vec -E- m -E- N)
-          | a = N
-          | n = S -E- m
-          => S -R- (vlen -E- m -R- ys)
-    main :R: N = vlen -E- 1 -R- (Cons -E- N -E- Z -R- 3 -R- (Nil -E- N))
-  in main
-
 ### Final annotation ###
 
   let
@@ -223,6 +170,7 @@ ttstar: !! verification failed: Traceback:
   Type : Type
   Vec : (_ :E: N) -> (_ :E: Type) -> Type
   Z : N
+  vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
 
 ("DEF-TERM",vlen)
 
@@ -250,7 +198,7 @@ ttstar: !! verification failed: Traceback:
   vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
   xs : Vec -E- n -E- N
 
-("CASE-MULTI",R,vlen -E- n -R- xs)
+("CASE-MULTI",xs,R,R,vlen -E- n -R- xs)
 
 5. In context:
   Cons : (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a

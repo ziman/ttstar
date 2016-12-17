@@ -118,61 +118,6 @@
     main :R: Id -E- Bool -E- F -E- (not -E- (not -E- F)) = notnot -R- F
   in main
 
-### Constraints ###
-
-[E] -> [E]
-[R] -> [R]
-
-### Solution ###
-
-[R]
-
-### Annotated ###
-
-  let
-    postulate Bool :E: Type
-    postulate T :E: Bool
-    postulate F :R: Bool
-    postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
-    postulate Refl :R: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
-    not :E: (x :E: Bool) -> Bool = \(x :E: Bool).
-      case -E- x of
-        T/E
-          => F
-        F/E
-          => T
-    notnot :R: (x :R: Bool) -> Id -E- Bool -E- x -E- (not -E- (not -E- x)) = \(x :R: Bool).
-      case -R- x of
-        T/E
-          => Refl -E- Bool -E- T
-        F/R
-          => Refl -E- Bool -E- F
-    main :R: Id -E- Bool -E- F -E- (not -E- (not -E- F)) = notnot -R- F
-  in main
-
-### Specialised ###
-
-  let
-    postulate Bool :E: Type
-    postulate T :E: Bool
-    postulate F :R: Bool
-    postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
-    postulate Refl :R: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
-    not :E: (x :E: Bool) -> Bool = \(x :E: Bool).
-      case -E- x of
-        T/E
-          => F
-        F/E
-          => T
-    notnot :R: (x :R: Bool) -> Id -E- Bool -E- x -E- (not -E- (not -E- x)) = \(x :R: Bool).
-      case -R- x of
-        T/E
-          => Refl -E- Bool -E- T
-        F/R
-          => Refl -E- Bool -E- F
-    main :R: Id -E- Bool -E- F -E- (not -E- (not -E- F)) = notnot -R- F
-  in main
-
 ### Final annotation ###
 
   let

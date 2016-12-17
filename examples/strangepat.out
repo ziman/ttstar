@@ -71,45 +71,6 @@
     main :R: Bool = fst -R- (P -R- T)
   in main
 
-### Constraints ###
-
-[E] -> [E]
-[R] -> [R]
-
-### Solution ###
-
-[R]
-
-### Annotated ###
-
-  let
-    postulate Bool :E: Type
-    postulate T :R: Bool
-    postulate F :E: Bool
-    postulate Pair :E: Type
-    postulate P :R: (_ :R: Bool) -> (_ :E: Bool) -> Pair
-    fst :R: (x :R: (_ :E: Bool) -> Pair) -> Bool = \(x :R: (_ :E: Bool) -> Pair).
-      case -R- x of
-        P/R (y :R: Bool)
-          => y
-    main :R: Bool = fst -R- (P -R- T)
-  in main
-
-### Specialised ###
-
-  let
-    postulate Bool :E: Type
-    postulate T :R: Bool
-    postulate F :E: Bool
-    postulate Pair :E: Type
-    postulate P :R: (_ :R: Bool) -> (_ :E: Bool) -> Pair
-    fst :R: (x :R: (_ :E: Bool) -> Pair) -> Bool = \(x :R: (_ :E: Bool) -> Pair).
-      case -R- x of
-        P/R (y :R: Bool)
-          => y
-    main :R: Bool = fst -R- (P -R- T)
-  in main
-
 ### Final annotation ###
 
   let

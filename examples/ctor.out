@@ -79,49 +79,6 @@
     main :R: Unit = not -R- T
   in main
 
-### Constraints ###
-
-[E] -> [E]
-[R] -> [R]
-
-### Solution ###
-
-[R]
-
-### Annotated ###
-
-  let
-    postulate Bool :E: Type
-    postulate T :R: Bool
-    postulate F :E: Bool
-    postulate Unit :E: Type
-    postulate MkUnit :R: Unit
-    not :R: (x :R: Bool) -> Unit = \(x :R: Bool).
-      case -R- x of
-        T/R
-          => MkUnit
-        F/E
-          => MkUnit
-    main :R: Unit = not -R- T
-  in main
-
-### Specialised ###
-
-  let
-    postulate Bool :E: Type
-    postulate T :R: Bool
-    postulate F :E: Bool
-    postulate Unit :E: Type
-    postulate MkUnit :R: Unit
-    not :R: (x :R: Bool) -> Unit = \(x :R: Bool).
-      case -R- x of
-        T/R
-          => MkUnit
-        F/E
-          => MkUnit
-    main :R: Unit = not -R- T
-  in main
-
 ### Final annotation ###
 
   let

@@ -15,7 +15,7 @@
     h : (x : Bool) -> Bool = \(x : Bool).
       case x of
         F
-          => G x
+          => g x
         T
           => F
     main : Bool = g T
@@ -36,7 +36,7 @@
     h :11: (x :12: Bool) -> Bool = \(x :13: Bool).
       case -14- x of
         F/15
-          => G -16- x
+          => g -16- x
         T/17
           => F
     main :18: Bool = g -19- T
@@ -62,7 +62,7 @@ ttstar: Traceback:
     h :11: (x :12: Bool) -> Bool = \(x :13: Bool).
       case -14- x of
         F/15
-          => G -16- x
+          => g -16- x
         T/17
           => F
     main :18: Bool = g -19- T

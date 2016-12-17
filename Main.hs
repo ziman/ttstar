@@ -160,9 +160,9 @@ main = do
                     --
                     -- + perhaps separate verification checker?
 
-                    if specialised == metaified
-                        then return annotated  -- fixed point reached
-                        else iterSpecialisation specialised
+                    if metasOccurIn specialised
+                        then iterSpecialisation specialised
+                        else return annotated  -- fixed point reached
 
             annotated <- iterSpecialisation metaified_1st
 

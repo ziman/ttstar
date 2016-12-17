@@ -116,59 +116,6 @@
     main :R: N = vlen -R- 1 -R- (Cons -E- N -R- Z -E- 3 -R- (Nil -E- N))
   in main
 
-### Constraints ###
-
-[E] -> [E]
-[R] -> [R]
-
-### Solution ###
-
-[R]
-
-### Annotated ###
-
-  let
-    postulate N :E: Type
-    postulate Z :R: N
-    postulate S :R: (x :R: N) -> N
-    postulate Vec :E: (_ :E: N) -> (_ :E: Type) -> Type
-    postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a
-    postulate Cons :R: (a :E: Type) -> (n :R: N) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -R- n) -E- a
-    vlen :R: (n :R: N) -> (xs :R: Vec -E- n -E- N) -> N = \(n :R: N) (xs :R: Vec -E- n -E- N).
-      case -R- xs of
-        Nil/R (a :E: Type)
-          | a = N
-          | n = Z
-          => n
-        Cons/R (a :E: Type) (m :R: N) (y :E: N) (ys :R: Vec -E- m -E- N)
-          | a = N
-          | n = S -R- m
-          => S -R- (vlen -R- m -R- ys)
-    main :R: N = vlen -R- 1 -R- (Cons -E- N -R- Z -E- 3 -R- (Nil -E- N))
-  in main
-
-### Specialised ###
-
-  let
-    postulate N :E: Type
-    postulate Z :R: N
-    postulate S :R: (x :R: N) -> N
-    postulate Vec :E: (_ :E: N) -> (_ :E: Type) -> Type
-    postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a
-    postulate Cons :R: (a :E: Type) -> (n :R: N) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -R- n) -E- a
-    vlen :R: (n :R: N) -> (xs :R: Vec -E- n -E- N) -> N = \(n :R: N) (xs :R: Vec -E- n -E- N).
-      case -R- xs of
-        Nil/R (a :E: Type)
-          | a = N
-          | n = Z
-          => n
-        Cons/R (a :E: Type) (m :R: N) (y :E: N) (ys :R: Vec -E- m -E- N)
-          | a = N
-          | n = S -R- m
-          => S -R- (vlen -R- m -R- ys)
-    main :R: N = vlen -R- 1 -R- (Cons -E- N -R- Z -E- 3 -R- (Nil -E- N))
-  in main
-
 ### Final annotation ###
 
   let

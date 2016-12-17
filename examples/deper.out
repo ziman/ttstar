@@ -113,65 +113,6 @@
     main :R: TwoBools = TB -R- (f -R- T -R- F) -R- (f -R- F -E- F)
   in main
 
-### Constraints ###
-
-[E] -> [E]
-[R] -> [R]
-
-### Solution ###
-
-[R]
-
-### Annotated ###
-
-  let
-    postulate Bool :E: Type
-    postulate T :R: Bool
-    postulate F :R: Bool
-    postulate TwoBools :E: Type
-    postulate TB :R: (x :R: Bool) -> (y :R: Bool) -> TwoBools
-    id :R: (x :R: Bool) -> Bool = (\x :R: Bool. x)
-    constT :R: (_ :E: Bool) -> Bool = (\_ :E: Bool. T)
-    fty :E: (x :E: Bool) -> Type = \(x :E: Bool).
-      case -E- x of
-        T/E
-          => (_ :R: Bool) -> Bool
-        F/E
-          => (_ :E: Bool) -> Bool
-    f :R: (x :R: Bool) -> fty -E- x = \(x :R: Bool).
-      case -R- x of
-        T/R
-          => id
-        F/R
-          => constT
-    main :R: TwoBools = TB -R- (f -R- T -R- F) -R- (f -R- F -E- F)
-  in main
-
-### Specialised ###
-
-  let
-    postulate Bool :E: Type
-    postulate T :R: Bool
-    postulate F :R: Bool
-    postulate TwoBools :E: Type
-    postulate TB :R: (x :R: Bool) -> (y :R: Bool) -> TwoBools
-    id :R: (x :R: Bool) -> Bool = (\x :R: Bool. x)
-    constT :R: (_ :E: Bool) -> Bool = (\_ :E: Bool. T)
-    fty :E: (x :E: Bool) -> Type = \(x :E: Bool).
-      case -E- x of
-        T/E
-          => (_ :R: Bool) -> Bool
-        F/E
-          => (_ :E: Bool) -> Bool
-    f :R: (x :R: Bool) -> fty -E- x = \(x :R: Bool).
-      case -R- x of
-        T/R
-          => id
-        F/R
-          => constT
-    main :R: TwoBools = TB -R- (f -R- T -R- F) -R- (f -R- F -E- F)
-  in main
-
 ### Final annotation ###
 
   let

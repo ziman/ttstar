@@ -155,67 +155,6 @@
     main :R: Nat = vlen -E- Bool -E- 2 -R- testVec
   in main
 
-### Constraints ###
-
-[E] -> [E]
-[R] -> [R]
-
-### Solution ###
-
-[R]
-
-### Annotated ###
-
-  let
-    postulate Bool :E: Type
-    postulate True :E: Bool
-    postulate False :E: Bool
-    postulate Nat :E: Type
-    postulate Z :R: Nat
-    postulate S :R: (n :R: Nat) -> Nat
-    postulate Vec :E: (_ :E: Nat) -> (_ :E: Type) -> Type
-    postulate VNil :R: (a :E: Type) -> Vec -E- Z -E- a
-    postulate VCons :R: (a :E: Type) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
-    vlen :R: (a :E: Type) -> (n :E: Nat) -> (xs :R: Vec -E- n -E- a) -> Nat = \(a :E: Type) (n :E: Nat) (xs :R: Vec -E- n -E- a).
-      case -R- xs of
-        VNil/R (a' :E: Type)
-          | a' = a
-          | n = Z
-          => Z
-        VCons/R (a' :E: Type) (n' :E: Nat) (x' :E: a) (xs' :R: Vec -E- n' -E- a)
-          | a' = a
-          | n = S -E- n'
-          => S -R- (vlen -E- a -E- n' -R- xs')
-    testVec :R: Vec -E- 2 -E- Bool = VCons -E- Bool -E- 1 -E- True -R- (VCons -E- Bool -E- Z -E- False -R- (VNil -E- Bool))
-    main :R: Nat = vlen -E- Bool -E- 2 -R- testVec
-  in main
-
-### Specialised ###
-
-  let
-    postulate Bool :E: Type
-    postulate True :E: Bool
-    postulate False :E: Bool
-    postulate Nat :E: Type
-    postulate Z :R: Nat
-    postulate S :R: (n :R: Nat) -> Nat
-    postulate Vec :E: (_ :E: Nat) -> (_ :E: Type) -> Type
-    postulate VNil :R: (a :E: Type) -> Vec -E- Z -E- a
-    postulate VCons :R: (a :E: Type) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
-    vlen :R: (a :E: Type) -> (n :E: Nat) -> (xs :R: Vec -E- n -E- a) -> Nat = \(a :E: Type) (n :E: Nat) (xs :R: Vec -E- n -E- a).
-      case -R- xs of
-        VNil/R (a' :E: Type)
-          | a' = a
-          | n = Z
-          => Z
-        VCons/R (a' :E: Type) (n' :E: Nat) (x' :E: a) (xs' :R: Vec -E- n' -E- a)
-          | a' = a
-          | n = S -E- n'
-          => S -R- (vlen -E- a -E- n' -R- xs')
-    testVec :R: Vec -E- 2 -E- Bool = VCons -E- Bool -E- 1 -E- True -R- (VCons -E- Bool -E- Z -E- False -R- (VNil -E- Bool))
-    main :R: Nat = vlen -E- Bool -E- 2 -R- testVec
-  in main
-
 ### Final annotation ###
 
   let

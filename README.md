@@ -26,6 +26,13 @@ Symbols:
 ### TODO
 * good error reporting
 * first-order evars for unlimited-rank polymorphism
+* mutual recursion
+    * this is fairly easy but it requires clumsy propagation of constraints
+    * (iterate checking of Defs until the set of constraints does not change)
+    * leave out of paper
+    * if let f, g in X, then while checking body of f, we have empty set of constraints for g
+    * therefore the reference to g in the body of f puts wrong constraints in
+    * also implementable by non-mutual recursion with an extra tag argument
 
 #### Short-term TODO
 * fix mutual recursion in the implementation

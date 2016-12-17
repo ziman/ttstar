@@ -11,7 +11,7 @@ g (x : Bool) : Bool
 
 h (x : Bool) : Bool
   = case x of
-      F => G x,
+      F => g x,
       T => F.
 
 main : Bool = g T.

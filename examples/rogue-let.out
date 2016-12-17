@@ -69,44 +69,6 @@
     main :R: (_ :R: Bool) -> Bool = not
   in main
 
-### Constraints ###
-
-[R] -> [R]
-
-### Solution ###
-
-[R]
-
-### Annotated ###
-
-  let
-    postulate Bool :E: Type
-    postulate T :R: Bool
-    postulate F :R: Bool
-    not :R: (x :R: Bool) -> Bool = \(x :R: Bool).
-      case -R- x of
-        T/R
-          => F
-        F/R
-          => T
-    main :R: (_ :R: Bool) -> Bool = not
-  in main
-
-### Specialised ###
-
-  let
-    postulate Bool :E: Type
-    postulate T :R: Bool
-    postulate F :R: Bool
-    not :R: (x :R: Bool) -> Bool = \(x :R: Bool).
-      case -R- x of
-        T/R
-          => F
-        F/R
-          => T
-    main :R: (_ :R: Bool) -> Bool = not
-  in main
-
 ### Final annotation ###
 
   let

@@ -128,49 +128,6 @@
     main :R: T = Op -R- test1 -R- test2
   in main
 
-### Constraints ###
-
-[E] -> [E]
-[R] -> [R]
-
-### Solution ###
-
-[R]
-
-### Annotated ###
-
-  let
-    postulate T :E: Type
-    postulate A :R: T
-    postulate B :R: T
-    postulate Op :R: (x :R: T) -> (y :R: T) -> T
-    id :R: (y :R: T) -> T = (\y :R: T. y)
-    constA :R: (_ :E: T) -> T = (\_ :E: T. A)
-    apply :E: (f :E: (_ :E: T) -> T) -> (x :E: T) -> T = (\f :E: (_ :E: T) -> T. (\x :E: T. f -E- x))
-    apply_REE :R: (f :R: (_ :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_ :E: T) -> T. (\x :E: T. f -E- x))
-    apply_RRR :R: (f :R: (_ :R: T) -> T) -> (x :R: T) -> T = (\f :R: (_ :R: T) -> T. (\x :R: T. f -R- x))
-    test1 :R: T = apply_RRR -R- id -R- B
-    test2 :R: T = apply_REE -R- constA -E- B
-    main :R: T = Op -R- test1 -R- test2
-  in main
-
-### Specialised ###
-
-  let
-    postulate T :E: Type
-    postulate A :R: T
-    postulate B :R: T
-    postulate Op :R: (x :R: T) -> (y :R: T) -> T
-    id :R: (y :R: T) -> T = (\y :R: T. y)
-    constA :R: (_ :E: T) -> T = (\_ :E: T. A)
-    apply :E: (f :E: (_ :E: T) -> T) -> (x :E: T) -> T = (\f :E: (_ :E: T) -> T. (\x :E: T. f -E- x))
-    apply_REE :R: (f :R: (_ :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_ :E: T) -> T. (\x :E: T. f -E- x))
-    apply_RRR :R: (f :R: (_ :R: T) -> T) -> (x :R: T) -> T = (\f :R: (_ :R: T) -> T. (\x :R: T. f -R- x))
-    test1 :R: T = apply_RRR -R- id -R- B
-    test2 :R: T = apply_REE -R- constA -E- B
-    main :R: T = Op -R- test1 -R- test2
-  in main
-
 ### Final annotation ###
 
   let

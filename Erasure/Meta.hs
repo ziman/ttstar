@@ -5,6 +5,7 @@ import TTLens
 import Pretty
 import Util.PrettyPrint
 
+import Lens.Family2
 import Control.Monad.Trans.State.Strict
 
 data Meta = MVar Int | Fixed Relevance deriving (Eq, Ord)
@@ -35,3 +36,9 @@ meta prog = evalState (ttRelevance freshM prog) 0
 freshM :: Maybe Relevance -> State Int Meta
 freshM Nothing  = modify (+1) >> MVar <$> get
 freshM (Just r) = return $ Fixed r
+
+metasOccurIn :: Program Meta -> Bool
+metasOccurIn prog = any isMeta (prog ^.. (ttRelevance :: Traversal' (TT Meta) Meta))
+  where
+    isMeta (MVar  _) = True
+    isMeta (Fixed _) = False

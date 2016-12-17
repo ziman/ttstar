@@ -97,6 +97,12 @@ cond r = M.mapKeysWith S.union (S.insert r)
 with :: Def Meta -> TC a -> TC a
 with d = with' $ M.insert (defName d) d
 
+{-
+withs :: [Def Meta] -> TC a -> TC a
+withs []     = id
+withs (d:ds) = with d . withs ds
+-}
+
 with' :: (Ctx Meta -> Ctx Meta) -> TC a -> TC a
 with' f = local $ \(tb, ctx) -> (tb, f ctx)
 
@@ -177,7 +183,7 @@ checkDef (Def n r ty (Abstract a) _noCs) = do
     return $ Def n r ty (Abstract a) cs
 
 checkDef d@(Def n r ty (Term tm) _noCs) = bt ("DEF-TERM", n) $ do
-    (tmty, tmcs) <- with d{defBody = Abstract Var} $ checkTm tm  -- "with d" because it could be recursive
+    (tmty, tmcs) <- with d $ checkTm tm  -- "with d" because it could be recursive
     (tyty, tycs) <- checkTm ty
     tytyTypeCs   <- conv tyty (V $ UN "Type")
     tyTmtyCs     <- conv ty tmty
@@ -187,7 +193,7 @@ checkDef d@(Def n r ty (Term tm) _noCs) = bt ("DEF-TERM", n) $ do
 checkDef d@(Def n r ty (Patterns cf) _noCs) = bt ("DEF-PATTERNS", n) $ do
     (tyty, tycs) <- checkTm ty
     tytyTypeCs   <- conv tyty (V $ UN "Type")
-    cfCs <- with d{defBody = Abstract Var} $ checkCaseFun n cf  -- "with d" because it could be recursive
+    cfCs <- with d $ checkCaseFun n cf  -- "with d" because it could be recursive
     let cs = tytyTypeCs /\ cfCs  -- in types, only conversion constraints matter
     return $ Def n r ty (Patterns cf) cs
 

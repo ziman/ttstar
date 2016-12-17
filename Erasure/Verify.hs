@@ -127,7 +127,7 @@ verProg prog = do
 
 verDefs :: [Def Relevance] -> Ver ()
 verDefs [] = return ()
-verDefs (d:ds) = verDef d *> with d (verDefs ds)
+verDefs (d:ds) = with d (verDef d *> verDefs ds)
 
 verDef :: Def Relevance -> Ver ()
 verDef (Def n r ty (Abstract _) cs) = bt ("DEF-ABSTR", n) $ do
@@ -168,7 +168,7 @@ verCase E lhs (Case E (V n) [alt]) = bt ("CASE-SING-E", lhs) $ do
     d <- lookupName n
     verBranch Single E lhs n (defType d) E alt
 
-verCase r lhs (Case s (V n) alts) = bt ("CASE-MULTI", r, lhs) $ do
+verCase r lhs (Case s (V n) alts) = bt ("CASE-MULTI", n, r, s, lhs) $ do
     d <- lookupName n
     r <-> s
     n `hasRelevance` r

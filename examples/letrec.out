@@ -29,24 +29,6 @@
   let main :R: (_ :R: Type) -> Type = (\x :R: Type. x)
   in main
 
-### Constraints ###
-
-[R] -> [R]
-
-### Solution ###
-
-[R]
-
-### Annotated ###
-
-  let main :R: (_ :R: Type) -> Type = (\x :R: Type. x)
-  in main
-
-### Specialised ###
-
-  let main :R: (_ :R: Type) -> Type = (\x :R: Type. x)
-  in main
-
 ### Final annotation ###
 
   let main :R: (_ :R: Type) -> Type = (\x :R: Type. x)

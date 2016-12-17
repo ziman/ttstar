@@ -69,41 +69,6 @@
     main :R: T = f -R- id -R- B -R- const_A -E- B
   in main
 
-### Constraints ###
-
-[E] -> [E]
-[R] -> [R]
-
-### Solution ###
-
-[R]
-
-### Annotated ###
-
-  let
-    postulate T :E: Type
-    postulate A :R: T
-    postulate B :R: T
-    postulate Op :R: (x :R: T) -> (y :R: T) -> T
-    id :R: (x :R: T) -> T = (\x :R: T. x)
-    const_A :R: (x :E: T) -> T = (\x :E: T. A)
-    f :R: (g :R: (_ :R: T) -> T) -> (z :R: T) -> (h :R: (_ :E: T) -> T) -> (w :E: T) -> T = (\g :R: (_ :R: T) -> T. (\z :R: T. (\h :R: (_ :E: T) -> T. (\w :E: T. Op -R- (g -R- z) -R- (h -E- w)))))
-    main :R: T = f -R- id -R- B -R- const_A -E- B
-  in main
-
-### Specialised ###
-
-  let
-    postulate T :E: Type
-    postulate A :R: T
-    postulate B :R: T
-    postulate Op :R: (x :R: T) -> (y :R: T) -> T
-    id :R: (x :R: T) -> T = (\x :R: T. x)
-    const_A :R: (x :E: T) -> T = (\x :E: T. A)
-    f :R: (g :R: (_ :R: T) -> T) -> (z :R: T) -> (h :R: (_ :E: T) -> T) -> (w :E: T) -> T = (\g :R: (_ :R: T) -> T. (\z :R: T. (\h :R: (_ :E: T) -> T. (\w :E: T. Op -R- (g -R- z) -R- (h -E- w)))))
-    main :R: T = f -R- id -R- B -R- const_A -E- B
-  in main
-
 ### Final annotation ###
 
   let
