@@ -147,11 +147,9 @@ caseExpr = (<?> "case expression") $ do
         arg:_ -> do
             let cf = CaseFun [arg] (Case Nothing (V $ defName arg) alts)
             return $
-                App Nothing
-                    (Bind Let
-                        [Def n Nothing ty (Patterns cf) noConstrs]
-                            (V n))
-                    tm
+                Bind Let
+                    [Def n Nothing ty (Patterns cf) noConstrs]
+                        (App Nothing (V n) tm)
         args -> fail "case function must take at least one argument"
   where
     mkArgs (Bind Pi ds tm) = ds ++ mkArgs tm
