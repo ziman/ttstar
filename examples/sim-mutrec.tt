@@ -17,10 +17,10 @@ data Tag : Type where
   Even : Tag,
   Odd : Tag.
 
--- we give a strange type signature to Even
--- to show off that the extra Nat argument
--- gets erased, even if the function is polymorphic
--- and implement mutual recursion
+-- We give a strange type signature to Odd
+-- to show off that the extra Nat argument gets erased,
+-- even if the function is polymorphic
+-- and implements mutual recursion.
 
 funTy (tag : Tag) : Type
   = case tag of
