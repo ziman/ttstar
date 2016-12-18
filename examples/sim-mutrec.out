@@ -46,7 +46,7 @@
             in _casefun1 n))
     even : (_x6 : Nat) -> Bool = fun Even
     odd : (_x7 : Nat) -> (_x8 : Nat) -> Bool = fun Odd
-    main : Bool = fun Odd 5 32
+    main : Bool = even 8
   in main
 
 ### Metaified ###
@@ -95,25 +95,24 @@
             in _casefun1 -64- n))
     even :65: (_x6 :66: Nat) -> Bool = fun -67- Even
     odd :68: (_x7 :69: Nat) -> (_x8 :70: Nat) -> Bool = fun -71- Odd
-    main :72: Bool = fun -75- Odd -74- 5 -73- 32
+    main :72: Bool = even -73- 8
   in main
 
 ### Constraints ###
 
-[] -> [2,3,5,6,7,21,22,28,30,32,33,35,36,37,38,39,40,41,42,43,44,45,47,48,51,52,53,55,56,57,58,59,60,61,62,63,64,74,75,76,77,78,79,80,R]
+[] -> [2,3,5,6,7,21,22,28,30,32,33,35,36,37,38,39,40,41,42,43,44,45,47,48,51,52,53,55,56,57,58,59,60,61,62,63,64,65,66,67,73,74,75,76,77,78,79,80,81,R]
 [9,31] -> [50]
 [10,31] -> [49]
-[31] -> [8,9,10,11,12,13,14,15,16,17,18,19,46,54,73,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112]
+[31] -> [8,9,10,11,12,13,14,15,16,17,18,19,46,54]
 [31,49] -> [10]
 [31,50] -> [9]
 [46] -> [31]
 [54] -> [31]
-[73] -> [31]
 [R] -> [72]
 
 ### Solution ###
 
-[2,3,5,6,7,21,22,28,30,32,33,35,36,37,38,39,40,41,42,43,44,45,47,48,51,52,53,55,56,57,58,59,60,61,62,63,64,72,74,75,76,77,78,79,80,R]
+[2,3,5,6,7,21,22,28,30,32,33,35,36,37,38,39,40,41,42,43,44,45,47,48,51,52,53,55,56,57,58,59,60,61,62,63,64,65,66,67,72,73,74,75,76,77,78,79,80,81,R]
 
 ### Annotated ###
 
@@ -159,9 +158,9 @@
                 S/R (n' :R: Nat)
                   => fun -R- Even -R- n'
             in _casefun1 -R- n))
-    even :E: (_x6 :E: Nat) -> Bool = fun -E- Even
+    even :R: (_x6 :R: Nat) -> Bool = fun -R- Even
     odd :E: (_x7 :E: Nat) -> (_x8 :E: Nat) -> Bool = fun -E- Odd
-    main :R: Bool = fun -R- Odd -R- 5 -E- 32
+    main :R: Bool = even -R- 8
   in main
 
 ### Specialised ###
@@ -208,9 +207,9 @@
                 S/R (n' :R: Nat)
                   => fun -R- Even -R- n'
             in _casefun1 -R- n))
-    even :E: (_x6 :E: Nat) -> Bool = fun -E- Even
+    even :R: (_x6 :R: Nat) -> Bool = fun -R- Even
     odd :E: (_x7 :E: Nat) -> (_x8 :E: Nat) -> Bool = fun -E- Odd
-    main :R: Bool = fun -R- Odd -R- 5 -E- 32
+    main :R: Bool = even -R- 8
   in main
 
 ### Final annotation ###
@@ -257,9 +256,9 @@
                 S/R (n' :R: Nat)
                   => fun -R- Even -R- n'
             in _casefun1 -R- n))
-    even :E: (_x6 :E: Nat) -> Bool = fun -E- Even
+    even :R: (_x6 :R: Nat) -> Bool = fun -R- Even
     odd :E: (_x7 :E: Nat) -> (_x8 :E: Nat) -> Bool = fun -E- Odd
-    main :R: Bool = fun -R- Odd -R- 5 -E- 32
+    main :R: Bool = even -R- 8
   in main
 
 ### Verification ###
@@ -295,7 +294,8 @@ Verification successful.
                 S n'
                   => fun Even n'
             in _casefun1 n)
-    main = fun Odd 5
+    even = fun Even
+    main = even 8
   in main
 
 ### Normal forms ###

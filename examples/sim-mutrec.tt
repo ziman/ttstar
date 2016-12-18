@@ -47,4 +47,4 @@ even : Nat -> Bool = fun Even.
 
 odd : Nat -> Nat -> Bool = fun Odd.
 
-main : Bool = fun Odd 5 32.
+main : Bool = even 8.
