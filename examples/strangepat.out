@@ -1,4 +1,4 @@
--- vim: ft=agda
+-- vim: ft=idris
 
 ### Desugared ###
 
@@ -7,8 +7,8 @@
     postulate T : Bool
     postulate F : Bool
     postulate Pair : Type
-    postulate P : (x#0 : Bool) -> (x#1 : Bool) -> Pair
-    fst : (x : (_ : Bool) -> Pair) -> Bool = \(x : (_ : Bool) -> Pair).
+    postulate P : (_x0 : Bool) -> (_x1 : Bool) -> Pair
+    fst : (x : (y : Bool) -> Pair) -> Bool = \(x : (y : Bool) -> Pair).
       case x of
         P (y : Bool)
           => y
@@ -22,8 +22,8 @@
     postulate T :2: Bool
     postulate F :3: Bool
     postulate Pair :4: Type
-    postulate P :5: (x#0 :6: Bool) -> (x#1 :7: Bool) -> Pair
-    fst :8: (x :9: (_ :10: Bool) -> Pair) -> Bool = \(x :11: (_ :12: Bool) -> Pair).
+    postulate P :5: (_x0 :6: Bool) -> (_x1 :7: Bool) -> Pair
+    fst :8: (x :9: (y :10: Bool) -> Pair) -> Bool = \(x :11: (y :12: Bool) -> Pair).
       case -13- x of
         P/14 (y :15: Bool)
           => y
@@ -48,8 +48,8 @@
     postulate T :R: Bool
     postulate F :E: Bool
     postulate Pair :E: Type
-    postulate P :R: (x#0 :R: Bool) -> (x#1 :E: Bool) -> Pair
-    fst :R: (x :R: (_ :E: Bool) -> Pair) -> Bool = \(x :R: (_ :E: Bool) -> Pair).
+    postulate P :R: (_x0 :R: Bool) -> (_x1 :E: Bool) -> Pair
+    fst :R: (x :R: (y :E: Bool) -> Pair) -> Bool = \(x :R: (y :E: Bool) -> Pair).
       case -R- x of
         P/R (y :R: Bool)
           => y
@@ -63,8 +63,8 @@
     postulate T :R: Bool
     postulate F :E: Bool
     postulate Pair :E: Type
-    postulate P :R: (x#0 :R: Bool) -> (x#1 :E: Bool) -> Pair
-    fst :R: (x :R: (_ :E: Bool) -> Pair) -> Bool = \(x :R: (_ :E: Bool) -> Pair).
+    postulate P :R: (_x0 :R: Bool) -> (_x1 :E: Bool) -> Pair
+    fst :R: (x :R: (y :E: Bool) -> Pair) -> Bool = \(x :R: (y :E: Bool) -> Pair).
       case -R- x of
         P/R (y :R: Bool)
           => y
@@ -78,8 +78,8 @@
     postulate T :R: Bool
     postulate F :E: Bool
     postulate Pair :E: Type
-    postulate P :R: (x#0 :R: Bool) -> (x#1 :E: Bool) -> Pair
-    fst :R: (x :R: (_ :E: Bool) -> Pair) -> Bool = \(x :R: (_ :E: Bool) -> Pair).
+    postulate P :R: (_x0 :R: Bool) -> (_x1 :E: Bool) -> Pair
+    fst :R: (x :R: (y :E: Bool) -> Pair) -> Bool = \(x :R: (y :E: Bool) -> Pair).
       case -R- x of
         P/R (y :R: Bool)
           => y
@@ -94,7 +94,7 @@ Verification successful.
 
   let
     postulate T : Bool
-    postulate P : (x#0) -> Pair
+    postulate P : (_x0) -> Pair
     fst = \x.
       case x of
         P y

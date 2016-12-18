@@ -17,7 +17,7 @@ id (x : Nat) : Nat
       S (y : Nat)
         => let result : Nat = S y in result.
 
-const_3 (_ : Nat) : Nat = 3.
+const_3 (x : Nat) : Nat = 3.
 
 two : Nat = S (S Z).
 

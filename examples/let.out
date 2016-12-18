@@ -1,11 +1,11 @@
--- vim: ft=agda
+-- vim: ft=idris
 
 ### Desugared ###
 
   let
     postulate Nat : Type
     postulate Z : Nat
-    postulate S : (_ :R: Nat) -> Nat
+    postulate S : (x :R: Nat) -> Nat
     plus : (n : Nat) -> (m : Nat) -> Nat = \(n : Nat) (m : Nat).
       case n of
         Z
@@ -15,7 +15,7 @@
     id : (x : Nat) -> Nat = (\x : Nat. x)
     const : (x : Nat) -> (y : Nat) -> Nat = (\x : Nat. (\y : Nat. x))
     main : Nat = 
-      let apply : (f : (x#0 : Nat) -> Nat) -> (x : Nat) -> Nat = \(f : (x#0 : Nat) -> Nat) (x : Nat).
+      let apply : (f : (_x0 : Nat) -> Nat) -> (x : Nat) -> Nat = \(f : (_x0 : Nat) -> Nat) (x : Nat).
         case x of
           Z
             => f Z
@@ -33,7 +33,7 @@
   let
     postulate Nat :1: Type
     postulate Z :2: Nat
-    postulate S :3: (_ :R: Nat) -> Nat
+    postulate S :3: (x :R: Nat) -> Nat
     plus :4: (n :5: Nat) -> (m :6: Nat) -> Nat = \(n :7: Nat) (m :8: Nat).
       case -9- n of
         Z/10
@@ -43,7 +43,7 @@
     id :16: (x :17: Nat) -> Nat = (\x :18: Nat. x)
     const :19: (x :20: Nat) -> (y :21: Nat) -> Nat = (\x :22: Nat. (\y :23: Nat. x))
     main :24: Nat = 
-      let apply :25: (f :26: (x#0 :27: Nat) -> Nat) -> (x :28: Nat) -> Nat = \(f :29: (x#0 :30: Nat) -> Nat) (x :31: Nat).
+      let apply :25: (f :26: (_x0 :27: Nat) -> Nat) -> (x :28: Nat) -> Nat = \(f :29: (_x0 :30: Nat) -> Nat) (x :31: Nat).
         case -32- x of
           Z/33
             => f -34- Z
@@ -70,7 +70,7 @@
   let
     postulate Nat :E: Type
     postulate Z :R: Nat
-    postulate S :R: (_ :R: Nat) -> Nat
+    postulate S :R: (x :R: Nat) -> Nat
     plus :R: (n :R: Nat) -> (m :R: Nat) -> Nat = \(n :R: Nat) (m :R: Nat).
       case -R- n of
         Z/R
@@ -80,7 +80,7 @@
     id :R: (x :R: Nat) -> Nat = (\x :R: Nat. x)
     const :R: (x :R: Nat) -> (y :R: Nat) -> Nat = (\x :R: Nat. (\y :R: Nat. x))
     main :R: Nat = 
-      let apply :R: (f :R: (x#0 :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = \(f :R: (x#0 :R: Nat) -> Nat) (x :R: Nat).
+      let apply :R: (f :R: (_x0 :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = \(f :R: (_x0 :R: Nat) -> Nat) (x :R: Nat).
         case -R- x of
           Z/R
             => f -R- Z
@@ -98,7 +98,7 @@
   let
     postulate Nat :E: Type
     postulate Z :R: Nat
-    postulate S :R: (_ :R: Nat) -> Nat
+    postulate S :R: (x :R: Nat) -> Nat
     plus :R: (n :R: Nat) -> (m :R: Nat) -> Nat = \(n :R: Nat) (m :R: Nat).
       case -R- n of
         Z/R
@@ -108,7 +108,7 @@
     id :R: (x :R: Nat) -> Nat = (\x :R: Nat. x)
     const :R: (x :R: Nat) -> (y :R: Nat) -> Nat = (\x :R: Nat. (\y :R: Nat. x))
     main :R: Nat = 
-      let apply :R: (f :R: (x#0 :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = \(f :R: (x#0 :R: Nat) -> Nat) (x :R: Nat).
+      let apply :R: (f :R: (_x0 :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = \(f :R: (_x0 :R: Nat) -> Nat) (x :R: Nat).
         case -R- x of
           Z/R
             => f -R- Z
@@ -126,7 +126,7 @@
   let
     postulate Nat :E: Type
     postulate Z :R: Nat
-    postulate S :R: (_ :R: Nat) -> Nat
+    postulate S :R: (x :R: Nat) -> Nat
     plus :R: (n :R: Nat) -> (m :R: Nat) -> Nat = \(n :R: Nat) (m :R: Nat).
       case -R- n of
         Z/R
@@ -136,7 +136,7 @@
     id :R: (x :R: Nat) -> Nat = (\x :R: Nat. x)
     const :R: (x :R: Nat) -> (y :R: Nat) -> Nat = (\x :R: Nat. (\y :R: Nat. x))
     main :R: Nat = 
-      let apply :R: (f :R: (x#0 :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = \(f :R: (x#0 :R: Nat) -> Nat) (x :R: Nat).
+      let apply :R: (f :R: (_x0 :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = \(f :R: (_x0 :R: Nat) -> Nat) (x :R: Nat).
         case -R- x of
           Z/R
             => f -R- Z
@@ -157,7 +157,7 @@ Verification successful.
 
   let
     postulate Z : Nat
-    postulate S : (_) -> Nat
+    postulate S : (x) -> Nat
     plus = \n m.
       case n of
         Z
@@ -186,14 +186,14 @@ unerased:
   
   let
     postulate Nat : Type
-    postulate S : (_ :R: Nat) -> Nat
+    postulate S : (x :R: Nat) -> Nat
   in 
     let postulate Q : Nat
     in S (S Q)
 
 erased:
   
-  let postulate S : (_) -> Nat
+  let postulate S : (x) -> Nat
   in 
     let postulate Q : Nat
     in S (S Q)

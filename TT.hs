@@ -18,7 +18,7 @@ instance Show Name where
     show Blank  = "_"
     show (UN n) = n
     show (IN n rs) = n ++ "_" ++ concatMap show rs
-    show (MN n i) = n ++ "#" ++ show i
+    show (MN n i) = '_' : n ++ show i
 
 type Guards  r = S.Set r
 type Uses    r = S.Set r

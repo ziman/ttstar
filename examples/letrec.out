@@ -1,13 +1,13 @@
--- vim: ft=agda
+-- vim: ft=idris
 
 ### Desugared ###
 
-  let main : (x#0 : Type) -> Type = (\x : Type. x)
+  let main : (_x0 : Type) -> Type = (\x : Type. x)
   in main
 
 ### Metaified ###
 
-  let main :1: (x#0 :2: Type) -> Type = (\x :3: Type. x)
+  let main :1: (_x0 :2: Type) -> Type = (\x :3: Type. x)
   in main
 
 ### Constraints ###
@@ -21,17 +21,17 @@
 
 ### Annotated ###
 
-  let main :R: (x#0 :R: Type) -> Type = (\x :R: Type. x)
+  let main :R: (_x0 :R: Type) -> Type = (\x :R: Type. x)
   in main
 
 ### Specialised ###
 
-  let main :R: (x#0 :R: Type) -> Type = (\x :R: Type. x)
+  let main :R: (_x0 :R: Type) -> Type = (\x :R: Type. x)
   in main
 
 ### Final annotation ###
 
-  let main :R: (x#0 :R: Type) -> Type = (\x :R: Type. x)
+  let main :R: (_x0 :R: Type) -> Type = (\x :R: Type. x)
   in main
 
 ### Verification ###

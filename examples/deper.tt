@@ -9,7 +9,7 @@ data TwoBools : Type where
 
 id (x : Bool) : Bool = x.
 
-constT (_ : Bool) : Bool = T.
+constT (x : Bool) : Bool = T.
 
 fty (x : Bool) : Type
   = case x of

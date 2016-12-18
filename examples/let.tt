@@ -2,7 +2,7 @@
 
 data Nat : Type where
   Z : Nat,
-  S : (_ :R: Nat) -> Nat.
+  S : (x :R: Nat) -> Nat.
 
 plus (n : Nat) (m : Nat) : Nat
   = case n of

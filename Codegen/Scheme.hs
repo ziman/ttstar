@@ -22,7 +22,6 @@ cgName = text . specialName . concatMap mogrify . show
     specialName n
         | n `elem` specialNames = n ++ "_TT"
         | otherwise = n
-    mogrify '#'  = "__"
     mogrify '\'' = "_"
     mogrify c = [c]
 

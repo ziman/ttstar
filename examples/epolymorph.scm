@@ -15,7 +15,7 @@
         )
           (letrec ((result (S y)))
             result))))))
-    (const_3 (lambda (_)
+    (const_3 (lambda (x)
       (S (S (S Z)))))
     (two (S (S Z)))
     (f (lambda (g)

@@ -1,4 +1,4 @@
--- vim: ft=agda
+-- vim: ft=idris
 
 ### Desugared ###
 
@@ -6,7 +6,7 @@
     postulate N : Type
     postulate Z : N
     postulate S : (x : N) -> N
-    postulate Vec : (x#0 : N) -> Type
+    postulate Vec : (_x0 : N) -> Type
     postulate Nil : Vec Z
     vlen : (n : N) -> (xs : Vec n) -> N = \(n : N) (xs : Vec n).
       case xs of
@@ -22,7 +22,7 @@
     postulate N :1: Type
     postulate Z :2: N
     postulate S :3: (x :4: N) -> N
-    postulate Vec :5: (x#0 :6: N) -> Type
+    postulate Vec :5: (_x0 :6: N) -> Type
     postulate Nil :7: Vec -8- Z
     vlen :9: (n :10: N) -> (xs :11: Vec -12- n) -> N = \(n :13: N) (xs :14: Vec -15- n).
       case -16- xs of
@@ -57,7 +57,7 @@
     postulate N :E: Type
     postulate Z :R: N
     postulate S :E: (x :E: N) -> N
-    postulate Vec :E: (x#0 :E: N) -> Type
+    postulate Vec :E: (_x0 :E: N) -> Type
     postulate Nil :E: Vec -E- Z
     vlen :R: (n :R: N) -> (xs :E: Vec -E- n) -> N = \(n :R: N) (xs :E: Vec -E- n).
       case -E- xs of
@@ -73,7 +73,7 @@
     postulate N :E: Type
     postulate Z :R: N
     postulate S :E: (x :E: N) -> N
-    postulate Vec :E: (x#0 :E: N) -> Type
+    postulate Vec :E: (_x0 :E: N) -> Type
     postulate Nil :E: Vec -E- Z
     vlen :R: (n :R: N) -> (xs :E: Vec -E- n) -> N = \(n :R: N) (xs :E: Vec -E- n).
       case -E- xs of
@@ -89,7 +89,7 @@
     postulate N :E: Type
     postulate Z :R: N
     postulate S :E: (x :E: N) -> N
-    postulate Vec :E: (x#0 :E: N) -> Type
+    postulate Vec :E: (_x0 :E: N) -> Type
     postulate Nil :E: Vec -E- Z
     vlen :R: (n :R: N) -> (xs :E: Vec -E- n) -> N = \(n :R: N) (xs :E: Vec -E- n).
       case -E- xs of

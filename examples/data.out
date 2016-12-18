@@ -1,21 +1,21 @@
--- vim: ft=agda
+-- vim: ft=idris
 
 ### Desugared ###
 
   let
     postulate N : Type
     postulate Z : N
-    postulate S : (x#0 : N) -> N
+    postulate S : (_x0 : N) -> N
     plus : (m : N) -> (n : N) -> N = \(m : N) (n : N).
       case m of
         Z
           => n
         S (m' : N)
           => S (plus m' n)
-    postulate Vect : (x#1 : N) -> Type
+    postulate Vect : (_x1 : N) -> Type
     postulate Nil : Vect Z
     postulate Cons : (n : N) -> (x : N) -> (xs : Vect n) -> Vect (S n)
-    zipWith : (n : N) -> (f : (x#2 : N) -> (x#3 : N) -> N) -> (xs : Vect n) -> (ys : Vect n) -> Vect n = \(n : N) (f : (x#2 : N) -> (x#3 : N) -> N) (xs : Vect n) (ys : Vect n).
+    zipWith : (n : N) -> (f : (_x2 : N) -> (_x3 : N) -> N) -> (xs : Vect n) -> (ys : Vect n) -> Vect n = \(n : N) (f : (_x2 : N) -> (_x3 : N) -> N) (xs : Vect n) (ys : Vect n).
       case xs of
         Cons (n1 : N) (x1 : N) (xs1 : Vect n1)
           | n = S n1
@@ -43,17 +43,17 @@
   let
     postulate N :1: Type
     postulate Z :2: N
-    postulate S :3: (x#0 :4: N) -> N
+    postulate S :3: (_x0 :4: N) -> N
     plus :5: (m :6: N) -> (n :7: N) -> N = \(m :8: N) (n :9: N).
       case -10- m of
         Z/11
           => n
         S/12 (m' :13: N)
           => S -14- (plus -16- m' -15- n)
-    postulate Vect :17: (x#1 :18: N) -> Type
+    postulate Vect :17: (_x1 :18: N) -> Type
     postulate Nil :19: Vect -20- Z
     postulate Cons :21: (n :22: N) -> (x :23: N) -> (xs :24: Vect -25- n) -> Vect -26- (S -27- n)
-    zipWith :28: (n :29: N) -> (f :30: (x#2 :31: N) -> (x#3 :32: N) -> N) -> (xs :33: Vect -34- n) -> (ys :35: Vect -36- n) -> Vect -37- n = \(n :38: N) (f :39: (x#2 :40: N) -> (x#3 :41: N) -> N) (xs :42: Vect -43- n) (ys :44: Vect -45- n).
+    zipWith :28: (n :29: N) -> (f :30: (_x2 :31: N) -> (_x3 :32: N) -> N) -> (xs :33: Vect -34- n) -> (ys :35: Vect -36- n) -> Vect -37- n = \(n :38: N) (f :39: (_x2 :40: N) -> (_x3 :41: N) -> N) (xs :42: Vect -43- n) (ys :44: Vect -45- n).
       case -46- xs of
         Cons/47 (n1 :48: N) (x1 :49: N) (xs1 :50: Vect -51- n1)
           | n = S -52- n1
@@ -90,17 +90,17 @@
   let
     postulate N :E: Type
     postulate Z :R: N
-    postulate S :R: (x#0 :R: N) -> N
+    postulate S :R: (_x0 :R: N) -> N
     plus :R: (m :R: N) -> (n :R: N) -> N = \(m :R: N) (n :R: N).
       case -R- m of
         Z/R
           => n
         S/R (m' :R: N)
           => S -R- (plus -R- m' -R- n)
-    postulate Vect :E: (x#1 :E: N) -> Type
+    postulate Vect :E: (_x1 :E: N) -> Type
     postulate Nil :E: Vect -E- Z
     postulate Cons :E: (n :E: N) -> (x :E: N) -> (xs :E: Vect -E- n) -> Vect -E- (S -E- n)
-    zipWith :E: (n :E: N) -> (f :E: (x#2 :E: N) -> (x#3 :E: N) -> N) -> (xs :E: Vect -E- n) -> (ys :E: Vect -E- n) -> Vect -E- n = \(n :E: N) (f :E: (x#2 :E: N) -> (x#3 :E: N) -> N) (xs :E: Vect -E- n) (ys :E: Vect -E- n).
+    zipWith :E: (n :E: N) -> (f :E: (_x2 :E: N) -> (_x3 :E: N) -> N) -> (xs :E: Vect -E- n) -> (ys :E: Vect -E- n) -> Vect -E- n = \(n :E: N) (f :E: (_x2 :E: N) -> (_x3 :E: N) -> N) (xs :E: Vect -E- n) (ys :E: Vect -E- n).
       case -E- xs of
         Cons/E (n1 :E: N) (x1 :E: N) (xs1 :E: Vect -E- n1)
           | n = S -E- n1
@@ -128,17 +128,17 @@
   let
     postulate N :E: Type
     postulate Z :R: N
-    postulate S :R: (x#0 :R: N) -> N
+    postulate S :R: (_x0 :R: N) -> N
     plus :R: (m :R: N) -> (n :R: N) -> N = \(m :R: N) (n :R: N).
       case -R- m of
         Z/R
           => n
         S/R (m' :R: N)
           => S -R- (plus -R- m' -R- n)
-    postulate Vect :E: (x#1 :E: N) -> Type
+    postulate Vect :E: (_x1 :E: N) -> Type
     postulate Nil :E: Vect -E- Z
     postulate Cons :E: (n :E: N) -> (x :E: N) -> (xs :E: Vect -E- n) -> Vect -E- (S -E- n)
-    zipWith :E: (n :E: N) -> (f :E: (x#2 :E: N) -> (x#3 :E: N) -> N) -> (xs :E: Vect -E- n) -> (ys :E: Vect -E- n) -> Vect -E- n = \(n :E: N) (f :E: (x#2 :E: N) -> (x#3 :E: N) -> N) (xs :E: Vect -E- n) (ys :E: Vect -E- n).
+    zipWith :E: (n :E: N) -> (f :E: (_x2 :E: N) -> (_x3 :E: N) -> N) -> (xs :E: Vect -E- n) -> (ys :E: Vect -E- n) -> Vect -E- n = \(n :E: N) (f :E: (_x2 :E: N) -> (_x3 :E: N) -> N) (xs :E: Vect -E- n) (ys :E: Vect -E- n).
       case -E- xs of
         Cons/E (n1 :E: N) (x1 :E: N) (xs1 :E: Vect -E- n1)
           | n = S -E- n1
@@ -166,17 +166,17 @@
   let
     postulate N :E: Type
     postulate Z :R: N
-    postulate S :R: (x#0 :R: N) -> N
+    postulate S :R: (_x0 :R: N) -> N
     plus :R: (m :R: N) -> (n :R: N) -> N = \(m :R: N) (n :R: N).
       case -R- m of
         Z/R
           => n
         S/R (m' :R: N)
           => S -R- (plus -R- m' -R- n)
-    postulate Vect :E: (x#1 :E: N) -> Type
+    postulate Vect :E: (_x1 :E: N) -> Type
     postulate Nil :E: Vect -E- Z
     postulate Cons :E: (n :E: N) -> (x :E: N) -> (xs :E: Vect -E- n) -> Vect -E- (S -E- n)
-    zipWith :E: (n :E: N) -> (f :E: (x#2 :E: N) -> (x#3 :E: N) -> N) -> (xs :E: Vect -E- n) -> (ys :E: Vect -E- n) -> Vect -E- n = \(n :E: N) (f :E: (x#2 :E: N) -> (x#3 :E: N) -> N) (xs :E: Vect -E- n) (ys :E: Vect -E- n).
+    zipWith :E: (n :E: N) -> (f :E: (_x2 :E: N) -> (_x3 :E: N) -> N) -> (xs :E: Vect -E- n) -> (ys :E: Vect -E- n) -> Vect -E- n = \(n :E: N) (f :E: (_x2 :E: N) -> (_x3 :E: N) -> N) (xs :E: Vect -E- n) (ys :E: Vect -E- n).
       case -E- xs of
         Cons/E (n1 :E: N) (x1 :E: N) (xs1 :E: Vect -E- n1)
           | n = S -E- n1
@@ -207,7 +207,7 @@ Verification successful.
 
   let
     postulate Z : N
-    postulate S : (x#0) -> N
+    postulate S : (_x0) -> N
     plus = \m n.
       case m of
         Z
@@ -230,13 +230,13 @@ unerased:
   
   let
     postulate Z : N
-    postulate S : (x#0 : N) -> N
+    postulate S : (_x0 : N) -> N
   in 7
 
 erased:
   
   let
     postulate Z : N
-    postulate S : (x#0) -> N
+    postulate S : (_x0) -> N
   in 7
 

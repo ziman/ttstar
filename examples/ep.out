@@ -1,4 +1,4 @@
--- vim: ft=agda
+-- vim: ft=idris
 
 ### Desugared ###
 
@@ -8,10 +8,10 @@
     postulate B : T
     postulate Op : (x :R: T) -> (y :R: T) -> T
     id : (y : T) -> T = (\y : T. y)
-    constA : (_ : T) -> T = (\_ : T. A)
-    apply : (f : (x#0 : T) -> T) -> (x : T) -> T = (\f : (x#0 : T) -> T. (\x : T. f x))
-    test1 : T = [apply : (x#1 : (x#2 : T) -> T) -> (x#3 : T) -> T] id B
-    test2 : T = [apply : (x#4 : (x#5 : T) -> T) -> (x#6 : T) -> T] constA B
+    constA : (x : T) -> T = (\x : T. A)
+    apply : (f : (_x0 : T) -> T) -> (x : T) -> T = (\f : (_x0 : T) -> T. (\x : T. f x))
+    test1 : T = [apply : (_x1 : (_x2 : T) -> T) -> (_x3 : T) -> T] id B
+    test2 : T = [apply : (_x4 : (_x5 : T) -> T) -> (_x6 : T) -> T] constA B
     main : T = Op test1 test2
   in main
 
@@ -23,10 +23,10 @@
     postulate B :3: T
     postulate Op :4: (x :R: T) -> (y :R: T) -> T
     id :5: (y :6: T) -> T = (\y :7: T. y)
-    constA :8: (_ :9: T) -> T = (\_ :10: T. A)
-    apply :11: (f :12: (x#0 :13: T) -> T) -> (x :14: T) -> T = (\f :15: (x#0 :16: T) -> T. (\x :17: T. f -18- x))
-    test1 :19: T = [apply : (x#1 :22: (x#2 :23: T) -> T) -> (x#3 :24: T) -> T] -21- id -20- B
-    test2 :25: T = [apply : (x#4 :28: (x#5 :29: T) -> T) -> (x#6 :30: T) -> T] -27- constA -26- B
+    constA :8: (x :9: T) -> T = (\x :10: T. A)
+    apply :11: (f :12: (_x0 :13: T) -> T) -> (x :14: T) -> T = (\f :15: (_x0 :16: T) -> T. (\x :17: T. f -18- x))
+    test1 :19: T = [apply : (_x1 :22: (_x2 :23: T) -> T) -> (_x3 :24: T) -> T] -21- id -20- B
+    test2 :25: T = [apply : (_x4 :28: (_x5 :29: T) -> T) -> (_x6 :30: T) -> T] -27- constA -26- B
     main :31: T = Op -33- test1 -32- test2
   in main
 
@@ -57,10 +57,10 @@
     postulate B :R: T
     postulate Op :R: (x :R: T) -> (y :R: T) -> T
     id :R: (y :R: T) -> T = (\y :R: T. y)
-    constA :R: (_ :E: T) -> T = (\_ :E: T. A)
-    apply :E: (f :E: (x#0 :E: T) -> T) -> (x :E: T) -> T = (\f :E: (x#0 :E: T) -> T. (\x :E: T. f -E- x))
-    test1 :R: T = [apply : (x#1 :R: (x#2 :R: T) -> T) -> (x#3 :R: T) -> T] -R- id -R- B
-    test2 :R: T = [apply : (x#4 :R: (x#5 :E: T) -> T) -> (x#6 :E: T) -> T] -R- constA -E- B
+    constA :R: (x :E: T) -> T = (\x :E: T. A)
+    apply :E: (f :E: (_x0 :E: T) -> T) -> (x :E: T) -> T = (\f :E: (_x0 :E: T) -> T. (\x :E: T. f -E- x))
+    test1 :R: T = [apply : (_x1 :R: (_x2 :R: T) -> T) -> (_x3 :R: T) -> T] -R- id -R- B
+    test2 :R: T = [apply : (_x4 :R: (_x5 :E: T) -> T) -> (_x6 :E: T) -> T] -R- constA -E- B
     main :R: T = Op -R- test1 -R- test2
   in main
 
@@ -72,10 +72,10 @@
     postulate B :R: T
     postulate Op :R: (x :R: T) -> (y :R: T) -> T
     id :R: (y :R: T) -> T = (\y :R: T. y)
-    constA :R: (_ :E: T) -> T = (\_ :E: T. A)
-    apply :E: (f :E: (x#0 :E: T) -> T) -> (x :E: T) -> T = (\f :E: (x#0 :E: T) -> T. (\x :E: T. f -E- x))
-    apply_REE :34: (f :R: (x#0 :E: T) -> T) -> (x :E: T) -> T = (\f :35: (x#0 :36: T) -> T. (\x :37: T. f -38- x))
-    apply_RRR :39: (f :R: (x#0 :R: T) -> T) -> (x :R: T) -> T = (\f :40: (x#0 :41: T) -> T. (\x :42: T. f -43- x))
+    constA :R: (x :E: T) -> T = (\x :E: T. A)
+    apply :E: (f :E: (_x0 :E: T) -> T) -> (x :E: T) -> T = (\f :E: (_x0 :E: T) -> T. (\x :E: T. f -E- x))
+    apply_REE :34: (f :R: (_x0 :E: T) -> T) -> (x :E: T) -> T = (\f :35: (_x0 :36: T) -> T. (\x :37: T. f -38- x))
+    apply_RRR :39: (f :R: (_x0 :R: T) -> T) -> (x :R: T) -> T = (\f :40: (_x0 :41: T) -> T. (\x :42: T. f -43- x))
     test1 :R: T = apply_RRR -R- id -R- B
     test2 :R: T = apply_REE -R- constA -E- B
     main :R: T = Op -R- test1 -R- test2
@@ -102,10 +102,10 @@
     postulate B :R: T
     postulate Op :R: (x :R: T) -> (y :R: T) -> T
     id :R: (y :R: T) -> T = (\y :R: T. y)
-    constA :R: (_ :E: T) -> T = (\_ :E: T. A)
-    apply :E: (f :E: (x#0 :E: T) -> T) -> (x :E: T) -> T = (\f :E: (x#0 :E: T) -> T. (\x :E: T. f -E- x))
-    apply_REE :R: (f :R: (x#0 :E: T) -> T) -> (x :E: T) -> T = (\f :R: (x#0 :E: T) -> T. (\x :E: T. f -E- x))
-    apply_RRR :R: (f :R: (x#0 :R: T) -> T) -> (x :R: T) -> T = (\f :R: (x#0 :R: T) -> T. (\x :R: T. f -R- x))
+    constA :R: (x :E: T) -> T = (\x :E: T. A)
+    apply :E: (f :E: (_x0 :E: T) -> T) -> (x :E: T) -> T = (\f :E: (_x0 :E: T) -> T. (\x :E: T. f -E- x))
+    apply_REE :R: (f :R: (_x0 :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_x0 :E: T) -> T. (\x :E: T. f -E- x))
+    apply_RRR :R: (f :R: (_x0 :R: T) -> T) -> (x :R: T) -> T = (\f :R: (_x0 :R: T) -> T. (\x :R: T. f -R- x))
     test1 :R: T = apply_RRR -R- id -R- B
     test2 :R: T = apply_REE -R- constA -E- B
     main :R: T = Op -R- test1 -R- test2
@@ -119,10 +119,10 @@
     postulate B :R: T
     postulate Op :R: (x :R: T) -> (y :R: T) -> T
     id :R: (y :R: T) -> T = (\y :R: T. y)
-    constA :R: (_ :E: T) -> T = (\_ :E: T. A)
-    apply :E: (f :E: (x#0 :E: T) -> T) -> (x :E: T) -> T = (\f :E: (x#0 :E: T) -> T. (\x :E: T. f -E- x))
-    apply_REE :R: (f :R: (x#0 :E: T) -> T) -> (x :E: T) -> T = (\f :R: (x#0 :E: T) -> T. (\x :E: T. f -E- x))
-    apply_RRR :R: (f :R: (x#0 :R: T) -> T) -> (x :R: T) -> T = (\f :R: (x#0 :R: T) -> T. (\x :R: T. f -R- x))
+    constA :R: (x :E: T) -> T = (\x :E: T. A)
+    apply :E: (f :E: (_x0 :E: T) -> T) -> (x :E: T) -> T = (\f :E: (_x0 :E: T) -> T. (\x :E: T. f -E- x))
+    apply_REE :R: (f :R: (_x0 :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_x0 :E: T) -> T. (\x :E: T. f -E- x))
+    apply_RRR :R: (f :R: (_x0 :R: T) -> T) -> (x :R: T) -> T = (\f :R: (_x0 :R: T) -> T. (\x :R: T. f -R- x))
     test1 :R: T = apply_RRR -R- id -R- B
     test2 :R: T = apply_REE -R- constA -E- B
     main :R: T = Op -R- test1 -R- test2
@@ -136,10 +136,10 @@
     postulate B :R: T
     postulate Op :R: (x :R: T) -> (y :R: T) -> T
     id :R: (y :R: T) -> T = (\y :R: T. y)
-    constA :R: (_ :E: T) -> T = (\_ :E: T. A)
-    apply :E: (f :E: (x#0 :E: T) -> T) -> (x :E: T) -> T = (\f :E: (x#0 :E: T) -> T. (\x :E: T. f -E- x))
-    apply_REE :R: (f :R: (x#0 :E: T) -> T) -> (x :E: T) -> T = (\f :R: (x#0 :E: T) -> T. (\x :E: T. f -E- x))
-    apply_RRR :R: (f :R: (x#0 :R: T) -> T) -> (x :R: T) -> T = (\f :R: (x#0 :R: T) -> T. (\x :R: T. f -R- x))
+    constA :R: (x :E: T) -> T = (\x :E: T. A)
+    apply :E: (f :E: (_x0 :E: T) -> T) -> (x :E: T) -> T = (\f :E: (_x0 :E: T) -> T. (\x :E: T. f -E- x))
+    apply_REE :R: (f :R: (_x0 :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_x0 :E: T) -> T. (\x :E: T. f -E- x))
+    apply_RRR :R: (f :R: (_x0 :R: T) -> T) -> (x :R: T) -> T = (\f :R: (_x0 :R: T) -> T. (\x :R: T. f -R- x))
     test1 :R: T = apply_RRR -R- id -R- B
     test2 :R: T = apply_REE -R- constA -E- B
     main :R: T = Op -R- test1 -R- test2

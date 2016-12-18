@@ -1,4 +1,4 @@
--- vim: ft=agda
+-- vim: ft=idris
 
 ### Desugared ###
 
@@ -9,7 +9,7 @@
     postulate Nat : Type
     postulate Z : Nat
     postulate S : (n :R: Nat) -> Nat
-    postulate Vec : (x#0 : Nat) -> (x#1 : Type) -> Type
+    postulate Vec : (_x0 : Nat) -> (_x1 : Type) -> Type
     postulate VNil : (a : Type) -> Vec Z a
     postulate VCons : (a : Type) -> (n : Nat) -> (x : a) -> (xs : Vec n a) -> Vec (S n) a
     vlen : (a : Type) -> (n : Nat) -> (xs : Vec n a) -> Nat = \(a : Type) (n : Nat) (xs : Vec n a).
@@ -35,7 +35,7 @@
     postulate Nat :4: Type
     postulate Z :5: Nat
     postulate S :6: (n :R: Nat) -> Nat
-    postulate Vec :7: (x#0 :8: Nat) -> (x#1 :9: Type) -> Type
+    postulate Vec :7: (_x0 :8: Nat) -> (_x1 :9: Type) -> Type
     postulate VNil :10: (a :11: Type) -> Vec -13- Z -12- a
     postulate VCons :14: (a :15: Type) -> (n :16: Nat) -> (x :17: a) -> (xs :18: Vec -20- n -19- a) -> Vec -22- (S -23- n) -21- a
     vlen :24: (a :25: Type) -> (n :26: Nat) -> (xs :27: Vec -29- n -28- a) -> Nat = \(a :30: Type) (n :31: Nat) (xs :32: Vec -34- n -33- a).
@@ -112,7 +112,7 @@
     postulate Nat :E: Type
     postulate Z :R: Nat
     postulate S :R: (n :R: Nat) -> Nat
-    postulate Vec :E: (x#0 :E: Nat) -> (x#1 :E: Type) -> Type
+    postulate Vec :E: (_x0 :E: Nat) -> (_x1 :E: Type) -> Type
     postulate VNil :R: (a :E: Type) -> Vec -E- Z -E- a
     postulate VCons :R: (a :E: Type) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     vlen :R: (a :E: Type) -> (n :E: Nat) -> (xs :R: Vec -E- n -E- a) -> Nat = \(a :E: Type) (n :E: Nat) (xs :R: Vec -E- n -E- a).
@@ -138,7 +138,7 @@
     postulate Nat :E: Type
     postulate Z :R: Nat
     postulate S :R: (n :R: Nat) -> Nat
-    postulate Vec :E: (x#0 :E: Nat) -> (x#1 :E: Type) -> Type
+    postulate Vec :E: (_x0 :E: Nat) -> (_x1 :E: Type) -> Type
     postulate VNil :R: (a :E: Type) -> Vec -E- Z -E- a
     postulate VCons :R: (a :E: Type) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     vlen :R: (a :E: Type) -> (n :E: Nat) -> (xs :R: Vec -E- n -E- a) -> Nat = \(a :E: Type) (n :E: Nat) (xs :R: Vec -E- n -E- a).
@@ -164,7 +164,7 @@
     postulate Nat :E: Type
     postulate Z :R: Nat
     postulate S :R: (n :R: Nat) -> Nat
-    postulate Vec :E: (x#0 :E: Nat) -> (x#1 :E: Type) -> Type
+    postulate Vec :E: (_x0 :E: Nat) -> (_x1 :E: Type) -> Type
     postulate VNil :R: (a :E: Type) -> Vec -E- Z -E- a
     postulate VCons :R: (a :E: Type) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     vlen :R: (a :E: Type) -> (n :E: Nat) -> (xs :R: Vec -E- n -E- a) -> Nat = \(a :E: Type) (n :E: Nat) (xs :R: Vec -E- n -E- a).

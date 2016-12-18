@@ -1,4 +1,4 @@
--- vim: ft=agda
+-- vim: ft=idris
 
 ### Desugared ###
 
@@ -6,8 +6,8 @@
     postulate T : Type
     postulate A : T
     postulate B : T
-    const_A : (x#0 : T) -> T = (\_ : T. A)
-    apply : (f : (x : T) -> T) -> (x : T) -> T = (\f : (x#1 : T) -> T. (\x : T. f x))
+    const_A : (_x0 : T) -> T = (\x : T. A)
+    apply : (f : (x : T) -> T) -> (x : T) -> T = (\f : (_x1 : T) -> T. (\x : T. f x))
     main : T = apply const_A B
   in main
 
@@ -17,8 +17,8 @@
     postulate T :1: Type
     postulate A :2: T
     postulate B :3: T
-    const_A :4: (x#0 :5: T) -> T = (\_ :6: T. A)
-    apply :7: (f :8: (x :9: T) -> T) -> (x :10: T) -> T = (\f :11: (x#1 :12: T) -> T. (\x :13: T. f -14- x))
+    const_A :4: (_x0 :5: T) -> T = (\x :6: T. A)
+    apply :7: (f :8: (x :9: T) -> T) -> (x :10: T) -> T = (\f :11: (_x1 :12: T) -> T. (\x :13: T. f -14- x))
     main :15: T = apply -17- const_A -16- B
   in main
 
@@ -45,8 +45,8 @@
     postulate T :E: Type
     postulate A :R: T
     postulate B :E: T
-    const_A :R: (x#0 :E: T) -> T = (\_ :E: T. A)
-    apply :R: (f :R: (x :E: T) -> T) -> (x :E: T) -> T = (\f :R: (x#1 :E: T) -> T. (\x :E: T. f -E- x))
+    const_A :R: (_x0 :E: T) -> T = (\x :E: T. A)
+    apply :R: (f :R: (x :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_x1 :E: T) -> T. (\x :E: T. f -E- x))
     main :R: T = apply -R- const_A -E- B
   in main
 
@@ -56,8 +56,8 @@
     postulate T :E: Type
     postulate A :R: T
     postulate B :E: T
-    const_A :R: (x#0 :E: T) -> T = (\_ :E: T. A)
-    apply :R: (f :R: (x :E: T) -> T) -> (x :E: T) -> T = (\f :R: (x#1 :E: T) -> T. (\x :E: T. f -E- x))
+    const_A :R: (_x0 :E: T) -> T = (\x :E: T. A)
+    apply :R: (f :R: (x :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_x1 :E: T) -> T. (\x :E: T. f -E- x))
     main :R: T = apply -R- const_A -E- B
   in main
 
@@ -67,8 +67,8 @@
     postulate T :E: Type
     postulate A :R: T
     postulate B :E: T
-    const_A :R: (x#0 :E: T) -> T = (\_ :E: T. A)
-    apply :R: (f :R: (x :E: T) -> T) -> (x :E: T) -> T = (\f :R: (x#1 :E: T) -> T. (\x :E: T. f -E- x))
+    const_A :R: (_x0 :E: T) -> T = (\x :E: T. A)
+    apply :R: (f :R: (x :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_x1 :E: T) -> T. (\x :E: T. f -E- x))
     main :R: T = apply -R- const_A -E- B
   in main
 

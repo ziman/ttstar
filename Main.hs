@@ -114,7 +114,7 @@ main = do
     case parseProgram fname code of
         Left e -> print e
         Right prog -> do
-            putStrLn "-- vim: ft=agda"
+            putStrLn "-- vim: ft=idris"
             putStrLn ""
             putStrLn "### Desugared ###"
             print prog

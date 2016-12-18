@@ -1,4 +1,4 @@
--- vim: ft=agda
+-- vim: ft=idris
 
 ### Desugared ###
 
@@ -6,7 +6,7 @@
     postulate N : Type
     postulate Z : N
     postulate S : (x :R: N) -> N
-    postulate Vec : (x#0 : N) -> (x#1 : Type) -> Type
+    postulate Vec : (_x0 : N) -> (_x1 : Type) -> Type
     postulate Nil : (a : Type) -> Vec Z a
     postulate Cons : (a : Type) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a
     plus : (m : N) -> (n : N) -> N = \(m : N) (n : N).
@@ -34,7 +34,7 @@
     postulate N :1: Type
     postulate Z :2: N
     postulate S :3: (x :R: N) -> N
-    postulate Vec :4: (x#0 :5: N) -> (x#1 :6: Type) -> Type
+    postulate Vec :4: (_x0 :5: N) -> (_x1 :6: Type) -> Type
     postulate Nil :7: (a :8: Type) -> Vec -10- Z -9- a
     postulate Cons :11: (a :12: Type) -> (n :13: N) -> (x :R: a) -> (xs :R: Vec -15- n -14- a) -> Vec -17- (S -18- n) -16- a
     plus :19: (m :20: N) -> (n :21: N) -> N = \(m :22: N) (n :23: N).
@@ -128,7 +128,7 @@
     postulate N :E: Type
     postulate Z :R: N
     postulate S :R: (x :R: N) -> N
-    postulate Vec :E: (x#0 :E: N) -> (x#1 :E: Type) -> Type
+    postulate Vec :E: (_x0 :E: N) -> (_x1 :E: Type) -> Type
     postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a
     postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     plus :E: (m :E: N) -> (n :E: N) -> N = \(m :E: N) (n :E: N).
@@ -156,7 +156,7 @@
     postulate N :E: Type
     postulate Z :R: N
     postulate S :R: (x :R: N) -> N
-    postulate Vec :E: (x#0 :E: N) -> (x#1 :E: Type) -> Type
+    postulate Vec :E: (_x0 :E: N) -> (_x1 :E: Type) -> Type
     postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a
     postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     plus :E: (m :E: N) -> (n :E: N) -> N = \(m :E: N) (n :E: N).
@@ -184,7 +184,7 @@
     postulate N :E: Type
     postulate Z :R: N
     postulate S :R: (x :R: N) -> N
-    postulate Vec :E: (x#0 :E: N) -> (x#1 :E: Type) -> Type
+    postulate Vec :E: (_x0 :E: N) -> (_x1 :E: Type) -> Type
     postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a
     postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     plus :E: (m :E: N) -> (n :E: N) -> N = \(m :E: N) (n :E: N).

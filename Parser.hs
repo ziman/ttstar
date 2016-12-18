@@ -52,7 +52,7 @@ kwd s = (try (string s) >> sp) <?> s
 name :: Parser Name
 name = (<?> "name") $ do
     n <- try $ do
-        x <- satisfy idChar
+        x <- satisfy isAlpha  -- let's make _idents reserved for the compiler
         xs <- many $ satisfy (\x -> idChar x || isDigit x)
         let n = x:xs
         if S.member n keywords

@@ -1,4 +1,4 @@
--- vim: ft=agda
+-- vim: ft=idris
 
 ### Desugared ###
 
@@ -21,13 +21,13 @@
         F
           => Unit
     main : Bool = not 
-      let casefun#0 : (x : Bool) -> retTy x = \(x : Bool).
+      let _casefun0 : (x : Bool) -> retTy x = \(x : Bool).
         case x of
           F
             => MkUnit
           T
             => F
-      in casefun#0 (not F)
+      in _casefun0 (not F)
   in main
 
 ### Metaified ###
@@ -51,13 +51,13 @@
         F/17
           => Unit
     main :18: Bool = not -19- 
-      let casefun#0 :20: (x :21: Bool) -> retTy -22- x = \(x :23: Bool).
+      let _casefun0 :20: (x :21: Bool) -> retTy -22- x = \(x :23: Bool).
         case -24- x of
           F/25
             => MkUnit
           T/26
             => F
-      in casefun#0 -27- (not -28- F)
+      in _casefun0 -27- (not -28- F)
   in main
 
 ### Constraints ###
@@ -90,13 +90,13 @@
         F/E
           => Unit
     main :R: Bool = not -R- 
-      let casefun#0 :R: (x :R: Bool) -> retTy -E- x = \(x :R: Bool).
+      let _casefun0 :R: (x :R: Bool) -> retTy -E- x = \(x :R: Bool).
         case -R- x of
           F/R
             => MkUnit
           T/R
             => F
-      in casefun#0 -R- (not -R- F)
+      in _casefun0 -R- (not -R- F)
   in main
 
 ### Specialised ###
@@ -120,13 +120,13 @@
         F/E
           => Unit
     main :R: Bool = not -R- 
-      let casefun#0 :R: (x :R: Bool) -> retTy -E- x = \(x :R: Bool).
+      let _casefun0 :R: (x :R: Bool) -> retTy -E- x = \(x :R: Bool).
         case -R- x of
           F/R
             => MkUnit
           T/R
             => F
-      in casefun#0 -R- (not -R- F)
+      in _casefun0 -R- (not -R- F)
   in main
 
 ### Final annotation ###
@@ -150,13 +150,13 @@
         F/E
           => Unit
     main :R: Bool = not -R- 
-      let casefun#0 :R: (x :R: Bool) -> retTy -E- x = \(x :R: Bool).
+      let _casefun0 :R: (x :R: Bool) -> retTy -E- x = \(x :R: Bool).
         case -R- x of
           F/R
             => MkUnit
           T/R
             => F
-      in casefun#0 -R- (not -R- F)
+      in _casefun0 -R- (not -R- F)
   in main
 
 ### Verification ###
@@ -176,13 +176,13 @@ Verification successful.
         F
           => T
     main = not 
-      let casefun#0 = \x.
+      let _casefun0 = \x.
         case x of
           F
             => MkUnit
           T
             => F
-      in casefun#0 (not F)
+      in _casefun0 (not F)
   in main
 
 ### Normal forms ###

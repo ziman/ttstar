@@ -1,4 +1,4 @@
--- vim: ft=agda
+-- vim: ft=idris
 
 ### Desugared ###
 
@@ -12,7 +12,7 @@
           => F
         F
           => T
-    main : (x#0 : Bool) -> Bool = not
+    main : (_x0 : Bool) -> Bool = not
   in main
 
 ### Metaified ###
@@ -27,7 +27,7 @@
           => F
         F/9
           => T
-    main :10: (x#0 :11: Bool) -> Bool = not
+    main :10: (_x0 :11: Bool) -> Bool = not
   in main
 
 ### Constraints ###
@@ -51,7 +51,7 @@
           => F
         F/R
           => T
-    main :R: (x#0 :R: Bool) -> Bool = not
+    main :R: (_x0 :R: Bool) -> Bool = not
   in main
 
 ### Specialised ###
@@ -66,7 +66,7 @@
           => F
         F/R
           => T
-    main :R: (x#0 :R: Bool) -> Bool = not
+    main :R: (_x0 :R: Bool) -> Bool = not
   in main
 
 ### Final annotation ###
@@ -81,7 +81,7 @@
           => F
         F/R
           => T
-    main :R: (x#0 :R: Bool) -> Bool = not
+    main :R: (_x0 :R: Bool) -> Bool = not
   in main
 
 ### Verification ###

@@ -1,4 +1,4 @@
--- vim: ft=agda
+-- vim: ft=idris
 
 ### Desugared ###
 
@@ -18,10 +18,10 @@
           => 
             let result : Nat = S y
             in result
-    const_3 : (_ : Nat) -> Nat = (\_ : Nat. 3)
+    const_3 : (x : Nat) -> Nat = (\x : Nat. 3)
     two : Nat = 2
-    f : (g : (x#0 : Nat) -> Nat) -> (z : Nat) -> (h : (x#1 : Nat) -> Nat) -> (w : Nat) -> Nat = (\g : (x#0 : Nat) -> Nat. (\z : Nat. (\h : (x#1 : Nat) -> Nat. (\w : Nat. Plus (g z) (h w)))))
-    apply : (f : (x#2 : Nat) -> Nat) -> (x : Nat) -> Nat = (\f : (x#2 : Nat) -> Nat. (\x : Nat. f x))
+    f : (g : (_x0 : Nat) -> Nat) -> (z : Nat) -> (h : (_x1 : Nat) -> Nat) -> (w : Nat) -> Nat = (\g : (_x0 : Nat) -> Nat. (\z : Nat. (\h : (_x1 : Nat) -> Nat. (\w : Nat. Plus (g z) (h w)))))
+    apply : (f : (_x2 : Nat) -> Nat) -> (x : Nat) -> Nat = (\f : (_x2 : Nat) -> Nat. (\x : Nat. f x))
     test_1 : Nat = Plus (apply id 2) (apply const_3 two)
     test_2 : Nat = f id 2 const_3 1
     main : Nat = Plus test_1 test_2
@@ -45,10 +45,10 @@
           => 
             let result :15: Nat = S -16- y
             in result
-    const_3 :17: (_ :18: Nat) -> Nat = (\_ :19: Nat. 3)
+    const_3 :17: (x :18: Nat) -> Nat = (\x :19: Nat. 3)
     two :23: Nat = 2
-    f :26: (g :27: (x#0 :28: Nat) -> Nat) -> (z :29: Nat) -> (h :30: (x#1 :31: Nat) -> Nat) -> (w :32: Nat) -> Nat = (\g :33: (x#0 :34: Nat) -> Nat. (\z :35: Nat. (\h :36: (x#1 :37: Nat) -> Nat. (\w :38: Nat. Plus -40- (g -41- z) -39- (h -42- w)))))
-    apply :43: (f :44: (x#2 :45: Nat) -> Nat) -> (x :46: Nat) -> Nat = (\f :47: (x#2 :48: Nat) -> Nat. (\x :49: Nat. f -50- x))
+    f :26: (g :27: (_x0 :28: Nat) -> Nat) -> (z :29: Nat) -> (h :30: (_x1 :31: Nat) -> Nat) -> (w :32: Nat) -> Nat = (\g :33: (_x0 :34: Nat) -> Nat. (\z :35: Nat. (\h :36: (_x1 :37: Nat) -> Nat. (\w :38: Nat. Plus -40- (g -41- z) -39- (h -42- w)))))
+    apply :43: (f :44: (_x2 :45: Nat) -> Nat) -> (x :46: Nat) -> Nat = (\f :47: (_x2 :48: Nat) -> Nat. (\x :49: Nat. f -50- x))
     test_1 :51: Nat = Plus -53- (apply -55- id -54- 2) -52- (apply -59- const_3 -58- two)
     test_2 :60: Nat = f -64- id -63- 2 -62- const_3 -61- 1
     main :68: Nat = Plus -70- test_1 -69- test_2
@@ -81,10 +81,10 @@
           => 
             let result :R: Nat = S -R- y
             in result
-    const_3 :R: (_ :R: Nat) -> Nat = (\_ :R: Nat. 3)
+    const_3 :R: (x :R: Nat) -> Nat = (\x :R: Nat. 3)
     two :R: Nat = 2
-    f :R: (g :R: (x#0 :R: Nat) -> Nat) -> (z :R: Nat) -> (h :R: (x#1 :R: Nat) -> Nat) -> (w :R: Nat) -> Nat = (\g :R: (x#0 :R: Nat) -> Nat. (\z :R: Nat. (\h :R: (x#1 :R: Nat) -> Nat. (\w :R: Nat. Plus -R- (g -R- z) -R- (h -R- w)))))
-    apply :R: (f :R: (x#2 :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = (\f :R: (x#2 :R: Nat) -> Nat. (\x :R: Nat. f -R- x))
+    f :R: (g :R: (_x0 :R: Nat) -> Nat) -> (z :R: Nat) -> (h :R: (_x1 :R: Nat) -> Nat) -> (w :R: Nat) -> Nat = (\g :R: (_x0 :R: Nat) -> Nat. (\z :R: Nat. (\h :R: (_x1 :R: Nat) -> Nat. (\w :R: Nat. Plus -R- (g -R- z) -R- (h -R- w)))))
+    apply :R: (f :R: (_x2 :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = (\f :R: (_x2 :R: Nat) -> Nat. (\x :R: Nat. f -R- x))
     test_1 :R: Nat = Plus -R- (apply -R- id -R- 2) -R- (apply -R- const_3 -R- two)
     test_2 :R: Nat = f -R- id -R- 2 -R- const_3 -R- 1
     main :R: Nat = Plus -R- test_1 -R- test_2
@@ -108,10 +108,10 @@
           => 
             let result :R: Nat = S -R- y
             in result
-    const_3 :R: (_ :R: Nat) -> Nat = (\_ :R: Nat. 3)
+    const_3 :R: (x :R: Nat) -> Nat = (\x :R: Nat. 3)
     two :R: Nat = 2
-    f :R: (g :R: (x#0 :R: Nat) -> Nat) -> (z :R: Nat) -> (h :R: (x#1 :R: Nat) -> Nat) -> (w :R: Nat) -> Nat = (\g :R: (x#0 :R: Nat) -> Nat. (\z :R: Nat. (\h :R: (x#1 :R: Nat) -> Nat. (\w :R: Nat. Plus -R- (g -R- z) -R- (h -R- w)))))
-    apply :R: (f :R: (x#2 :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = (\f :R: (x#2 :R: Nat) -> Nat. (\x :R: Nat. f -R- x))
+    f :R: (g :R: (_x0 :R: Nat) -> Nat) -> (z :R: Nat) -> (h :R: (_x1 :R: Nat) -> Nat) -> (w :R: Nat) -> Nat = (\g :R: (_x0 :R: Nat) -> Nat. (\z :R: Nat. (\h :R: (_x1 :R: Nat) -> Nat. (\w :R: Nat. Plus -R- (g -R- z) -R- (h -R- w)))))
+    apply :R: (f :R: (_x2 :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = (\f :R: (_x2 :R: Nat) -> Nat. (\x :R: Nat. f -R- x))
     test_1 :R: Nat = Plus -R- (apply -R- id -R- 2) -R- (apply -R- const_3 -R- two)
     test_2 :R: Nat = f -R- id -R- 2 -R- const_3 -R- 1
     main :R: Nat = Plus -R- test_1 -R- test_2
@@ -135,10 +135,10 @@
           => 
             let result :R: Nat = S -R- y
             in result
-    const_3 :R: (_ :R: Nat) -> Nat = (\_ :R: Nat. 3)
+    const_3 :R: (x :R: Nat) -> Nat = (\x :R: Nat. 3)
     two :R: Nat = 2
-    f :R: (g :R: (x#0 :R: Nat) -> Nat) -> (z :R: Nat) -> (h :R: (x#1 :R: Nat) -> Nat) -> (w :R: Nat) -> Nat = (\g :R: (x#0 :R: Nat) -> Nat. (\z :R: Nat. (\h :R: (x#1 :R: Nat) -> Nat. (\w :R: Nat. Plus -R- (g -R- z) -R- (h -R- w)))))
-    apply :R: (f :R: (x#2 :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = (\f :R: (x#2 :R: Nat) -> Nat. (\x :R: Nat. f -R- x))
+    f :R: (g :R: (_x0 :R: Nat) -> Nat) -> (z :R: Nat) -> (h :R: (_x1 :R: Nat) -> Nat) -> (w :R: Nat) -> Nat = (\g :R: (_x0 :R: Nat) -> Nat. (\z :R: Nat. (\h :R: (_x1 :R: Nat) -> Nat. (\w :R: Nat. Plus -R- (g -R- z) -R- (h -R- w)))))
+    apply :R: (f :R: (_x2 :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = (\f :R: (_x2 :R: Nat) -> Nat. (\x :R: Nat. f -R- x))
     test_1 :R: Nat = Plus -R- (apply -R- id -R- 2) -R- (apply -R- const_3 -R- two)
     test_2 :R: Nat = f -R- id -R- 2 -R- const_3 -R- 1
     main :R: Nat = Plus -R- test_1 -R- test_2
@@ -162,7 +162,7 @@ Verification successful.
           => 
             let result = S y
             in result
-    const_3 = (\_. 3)
+    const_3 = (\x. 3)
     two = 2
     f = (\g. (\z. (\h. (\w. Plus (g z) (h w)))))
     apply = (\f. (\x. f x))
