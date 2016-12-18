@@ -7,4 +7,3 @@
     (main (apply_TT const_A))
   )
     main))
-(newline)

@@ -138,7 +138,7 @@ argNames _ = []
 cgProgram :: Program () -> Doc
 cgProgram prog = parens (
     text "print" $+$ indent (cgTm prog)
-  ) $+$ parens (text "newline")
+  ) -- $+$ parens (text "newline")  -- newline for Racket
 
 codegen :: Codegen
 codegen = Codegen

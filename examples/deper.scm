@@ -15,4 +15,3 @@
     (main ((TB ((f T) F)) (f F)))
   )
     main))
-(newline)

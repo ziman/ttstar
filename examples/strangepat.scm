@@ -13,4 +13,3 @@
     (main (fst (P T)))
   )
     main))
-(newline)

@@ -33,4 +33,3 @@
     (main (even (S (S (S (S (S (S (S (S Z))))))))))
   )
     main))
-(newline)

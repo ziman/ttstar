@@ -33,4 +33,3 @@
         ((plus ((apply_TT id) (S (S Z)))) ((apply_TT (const Q)) three)))))
   )
     main))
-(newline)

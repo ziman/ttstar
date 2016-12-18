@@ -15,4 +15,3 @@
     (main (((f id) B) const_A))
   )
     main))
-(newline)

@@ -23,4 +23,3 @@
     (main ((vlen (S Z)) ((Cons Z) Nil)))
   )
     main))
-(newline)

@@ -23,4 +23,3 @@
     (main ((append_TT Nil) ((Cons (S (S (S (S Z))))) Nil)))
   )
     main))
-(newline)

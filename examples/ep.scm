@@ -18,4 +18,3 @@
     (main ((Op test1) test2))
   )
     main))
-(newline)

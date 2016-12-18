@@ -18,4 +18,3 @@
     (main (vlen testVec))
   )
     main))
-(newline)

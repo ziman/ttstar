@@ -16,4 +16,3 @@
     (main (g (Just True)))
   )
     main))
-(newline)

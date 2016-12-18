@@ -8,4 +8,3 @@
     (main (not_TT T))
   )
     main))
-(newline)

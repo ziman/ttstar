@@ -20,4 +20,3 @@
     (main ((invert F) Q))
   )
     main))
-(newline)

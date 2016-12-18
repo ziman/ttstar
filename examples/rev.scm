@@ -44,4 +44,3 @@
     (main (reverse_TT ((Cons T) ((Cons F) ((Cons T) ((Cons F) Nil))))))
   )
     main))
-(newline)

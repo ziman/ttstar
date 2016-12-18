@@ -6,4 +6,3 @@
     (main (vlen Z))
   )
     main))
-(newline)

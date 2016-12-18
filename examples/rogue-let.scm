@@ -9,4 +9,3 @@
     (main not_TT)
   )
     main))
-(newline)

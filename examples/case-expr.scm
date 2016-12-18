@@ -14,4 +14,3 @@
       (_casefun0 (not_TT F)))))
   )
     main))
-(newline)
