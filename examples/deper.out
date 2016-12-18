@@ -13,9 +13,9 @@
     fty : (x : Bool) -> Type = \(x : Bool).
       case x of
         T
-          => (_ : Bool) -> Bool
+          => (x#0 : Bool) -> Bool
         F
-          => (_ : Bool) -> Bool
+          => (x#1 : Bool) -> Bool
     f : (x : Bool) -> fty x = \(x : Bool).
       case x of
         T
@@ -38,9 +38,9 @@
     fty :12: (x :13: Bool) -> Type = \(x :14: Bool).
       case -15- x of
         T/16
-          => (_ :17: Bool) -> Bool
+          => (x#0 :17: Bool) -> Bool
         F/18
-          => (_ :19: Bool) -> Bool
+          => (x#1 :19: Bool) -> Bool
     f :20: (x :21: Bool) -> fty -22- x = \(x :23: Bool).
       case -24- x of
         T/25
@@ -76,9 +76,9 @@
     fty :E: (x :E: Bool) -> Type = \(x :E: Bool).
       case -E- x of
         T/E
-          => (_ :R: Bool) -> Bool
+          => (x#0 :R: Bool) -> Bool
         F/E
-          => (_ :E: Bool) -> Bool
+          => (x#1 :E: Bool) -> Bool
     f :R: (x :R: Bool) -> fty -E- x = \(x :R: Bool).
       case -R- x of
         T/R
@@ -101,9 +101,9 @@
     fty :E: (x :E: Bool) -> Type = \(x :E: Bool).
       case -E- x of
         T/E
-          => (_ :R: Bool) -> Bool
+          => (x#0 :R: Bool) -> Bool
         F/E
-          => (_ :E: Bool) -> Bool
+          => (x#1 :E: Bool) -> Bool
     f :R: (x :R: Bool) -> fty -E- x = \(x :R: Bool).
       case -R- x of
         T/R
@@ -126,9 +126,9 @@
     fty :E: (x :E: Bool) -> Type = \(x :E: Bool).
       case -E- x of
         T/E
-          => (_ :R: Bool) -> Bool
+          => (x#0 :R: Bool) -> Bool
         F/E
-          => (_ :E: Bool) -> Bool
+          => (x#1 :E: Bool) -> Bool
     f :R: (x :R: Bool) -> fty -E- x = \(x :R: Bool).
       case -R- x of
         T/R

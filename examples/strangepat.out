@@ -7,7 +7,7 @@
     postulate T : Bool
     postulate F : Bool
     postulate Pair : Type
-    postulate P : (_ : Bool) -> (_ : Bool) -> Pair
+    postulate P : (x#0 : Bool) -> (x#1 : Bool) -> Pair
     fst : (x : (_ : Bool) -> Pair) -> Bool = \(x : (_ : Bool) -> Pair).
       case x of
         P (y : Bool)
@@ -22,7 +22,7 @@
     postulate T :2: Bool
     postulate F :3: Bool
     postulate Pair :4: Type
-    postulate P :5: (_ :6: Bool) -> (_ :7: Bool) -> Pair
+    postulate P :5: (x#0 :6: Bool) -> (x#1 :7: Bool) -> Pair
     fst :8: (x :9: (_ :10: Bool) -> Pair) -> Bool = \(x :11: (_ :12: Bool) -> Pair).
       case -13- x of
         P/14 (y :15: Bool)
@@ -48,7 +48,7 @@
     postulate T :R: Bool
     postulate F :E: Bool
     postulate Pair :E: Type
-    postulate P :R: (_ :R: Bool) -> (_ :E: Bool) -> Pair
+    postulate P :R: (x#0 :R: Bool) -> (x#1 :E: Bool) -> Pair
     fst :R: (x :R: (_ :E: Bool) -> Pair) -> Bool = \(x :R: (_ :E: Bool) -> Pair).
       case -R- x of
         P/R (y :R: Bool)
@@ -63,7 +63,7 @@
     postulate T :R: Bool
     postulate F :E: Bool
     postulate Pair :E: Type
-    postulate P :R: (_ :R: Bool) -> (_ :E: Bool) -> Pair
+    postulate P :R: (x#0 :R: Bool) -> (x#1 :E: Bool) -> Pair
     fst :R: (x :R: (_ :E: Bool) -> Pair) -> Bool = \(x :R: (_ :E: Bool) -> Pair).
       case -R- x of
         P/R (y :R: Bool)
@@ -78,7 +78,7 @@
     postulate T :R: Bool
     postulate F :E: Bool
     postulate Pair :E: Type
-    postulate P :R: (_ :R: Bool) -> (_ :E: Bool) -> Pair
+    postulate P :R: (x#0 :R: Bool) -> (x#1 :E: Bool) -> Pair
     fst :R: (x :R: (_ :E: Bool) -> Pair) -> Bool = \(x :R: (_ :E: Bool) -> Pair).
       case -R- x of
         P/R (y :R: Bool)
@@ -94,7 +94,7 @@ Verification successful.
 
   let
     postulate T : Bool
-    postulate P : (_) -> Pair
+    postulate P : (x#0) -> Pair
     fst = \x.
       case x of
         P y

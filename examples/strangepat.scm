@@ -1,8 +1,8 @@
 (print
   (letrec (
     (T (list 'T))
-    (P (lambda (e0)
-      (list 'P e0)))
+    (P (lambda (x__0)
+      (list 'P x__0)))
     (fst (lambda (x)
       (case (car x)
         ((P) (let* (

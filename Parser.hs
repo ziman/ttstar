@@ -3,10 +3,11 @@ module Parser (parseProgram) where
 import TT
 import Data.Char
 import Text.Parsec
+import qualified Data.Map as M
 import qualified Data.Set as S
 
 data ParserState = PS
-    { psCounter :: Int
+    { psCounters :: M.Map String Int
     }
     deriving (Eq, Ord, Show)
 
@@ -18,17 +19,16 @@ parseProgram fname body = runParser ttProgram initialParserState fname body
 
 initialParserState :: ParserState
 initialParserState = PS
-    { psCounter = 0
+    { psCounters = M.empty
     }
 
-fresh :: Parser Int
-fresh = do
-    st <- getState
-    putState st{ psCounter = psCounter st + 1 }
-    return $ psCounter st
-
 freshMN :: String -> Parser Name
-freshMN stem = MN stem <$> fresh
+freshMN stem = do
+    st <- getState
+    let cs = psCounters st
+    let i = M.findWithDefault 0 stem cs
+    putState st{ psCounters = M.insert stem (i+1) cs }
+    return $ MN stem i
 
 keywords :: S.Set String
 keywords = S.fromList [
@@ -92,8 +92,9 @@ atomic = parens expr
 
 arrow :: Parser (TT MRel)
 arrow = (<?> "arrow type") $ do
+    n <- freshMN "x"
     ty <- try (atomic <* kwd "->")
-    Bind Pi [Def Blank Nothing ty (Abstract Var) noConstrs] <$> expr
+    Bind Pi [Def n Nothing ty (Abstract Var) noConstrs] <$> expr
 
 lambda :: Parser (TT MRel)
 lambda = (<?> "lambda") $ do

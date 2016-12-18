@@ -1,0 +1,50 @@
+-- vim: ft=idris
+
+data Bool : Type where
+  True : Bool,
+  False : Bool.
+
+data Nat : Type where
+  Z : Nat,
+  S : Nat -> Nat.
+
+plus (m : Nat) (n : Nat) : Nat
+  = case m of
+      Z => n,
+      S (m' : Nat) => S (plus m' n).
+
+data Tag : Type where
+  Even : Tag,
+  Odd : Tag.
+
+-- we give a strange type signature to Even
+-- to show off that the extra Nat argument
+-- gets erased, even if the function is polymorphic
+-- and implement mutual recursion
+
+funTy (tag : Tag) : Type
+  = case tag of
+      Even => Nat -> Bool,
+      Odd  => Nat -> Nat -> Bool.
+
+fun (tag : Tag) : funTy tag
+  = case tag of
+      Even =>
+        \n : Nat. (
+          case n where Nat -> Bool.
+            Z => True,
+            S (n' : Nat) => fun Odd n' (plus n' n')
+        ),
+      Odd =>
+        \n : Nat.
+          \m : Nat. (
+            case n where Nat -> Bool.
+              Z => False,
+              S (n' : Nat) => fun Even n'
+          ).
+
+even : Nat -> Bool = fun Even.
+
+odd : Nat -> Nat -> Bool = fun Odd.
+
+main : Bool = fun Odd 5 32.

@@ -2,12 +2,12 @@
 
 ### Desugared ###
 
-  let main : (_ : Type) -> Type = (\x : Type. x)
+  let main : (x#0 : Type) -> Type = (\x : Type. x)
   in main
 
 ### Metaified ###
 
-  let main :1: (_ :2: Type) -> Type = (\x :3: Type. x)
+  let main :1: (x#0 :2: Type) -> Type = (\x :3: Type. x)
   in main
 
 ### Constraints ###
@@ -21,17 +21,17 @@
 
 ### Annotated ###
 
-  let main :R: (_ :R: Type) -> Type = (\x :R: Type. x)
+  let main :R: (x#0 :R: Type) -> Type = (\x :R: Type. x)
   in main
 
 ### Specialised ###
 
-  let main :R: (_ :R: Type) -> Type = (\x :R: Type. x)
+  let main :R: (x#0 :R: Type) -> Type = (\x :R: Type. x)
   in main
 
 ### Final annotation ###
 
-  let main :R: (_ :R: Type) -> Type = (\x :R: Type. x)
+  let main :R: (x#0 :R: Type) -> Type = (\x :R: Type. x)
   in main
 
 ### Verification ###

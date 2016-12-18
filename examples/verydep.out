@@ -4,7 +4,7 @@
 
   let
     postulate Void : Type
-    postulate Maybe : (_ : Type) -> Type
+    postulate Maybe : (x#0 : Type) -> Type
     postulate Just : (a : Type) -> (x : a) -> Maybe a
     postulate Nothing : (a : Type) -> Maybe a
     postulate Bool : Type
@@ -33,7 +33,7 @@
 
   let
     postulate Void :1: Type
-    postulate Maybe :2: (_ :3: Type) -> Type
+    postulate Maybe :2: (x#0 :3: Type) -> Type
     postulate Just :4: (a :5: Type) -> (x :6: a) -> Maybe -7- a
     postulate Nothing :8: (a :9: Type) -> Maybe -10- a
     postulate Bool :11: Type
@@ -81,7 +81,7 @@
 
   let
     postulate Void :E: Type
-    postulate Maybe :E: (_ :E: Type) -> Type
+    postulate Maybe :E: (x#0 :E: Type) -> Type
     postulate Just :R: (a :E: Type) -> (x :R: a) -> Maybe -E- a
     postulate Nothing :E: (a :E: Type) -> Maybe -E- a
     postulate Bool :R: Type
@@ -110,7 +110,7 @@
 
   let
     postulate Void :E: Type
-    postulate Maybe :E: (_ :E: Type) -> Type
+    postulate Maybe :E: (x#0 :E: Type) -> Type
     postulate Just :R: (a :E: Type) -> (x :R: a) -> Maybe -E- a
     postulate Nothing :E: (a :E: Type) -> Maybe -E- a
     postulate Bool :R: Type
@@ -139,7 +139,7 @@
 
   let
     postulate Void :E: Type
-    postulate Maybe :E: (_ :E: Type) -> Type
+    postulate Maybe :E: (x#0 :E: Type) -> Type
     postulate Just :R: (a :E: Type) -> (x :R: a) -> Maybe -E- a
     postulate Nothing :E: (a :E: Type) -> Maybe -E- a
     postulate Bool :R: Type

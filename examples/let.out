@@ -15,7 +15,7 @@
     id : (x : Nat) -> Nat = (\x : Nat. x)
     const : (x : Nat) -> (y : Nat) -> Nat = (\x : Nat. (\y : Nat. x))
     main : Nat = 
-      let apply : (f : (_ : Nat) -> Nat) -> (x : Nat) -> Nat = \(f : (_ : Nat) -> Nat) (x : Nat).
+      let apply : (f : (x#0 : Nat) -> Nat) -> (x : Nat) -> Nat = \(f : (x#0 : Nat) -> Nat) (x : Nat).
         case x of
           Z
             => f Z
@@ -43,7 +43,7 @@
     id :16: (x :17: Nat) -> Nat = (\x :18: Nat. x)
     const :19: (x :20: Nat) -> (y :21: Nat) -> Nat = (\x :22: Nat. (\y :23: Nat. x))
     main :24: Nat = 
-      let apply :25: (f :26: (_ :27: Nat) -> Nat) -> (x :28: Nat) -> Nat = \(f :29: (_ :30: Nat) -> Nat) (x :31: Nat).
+      let apply :25: (f :26: (x#0 :27: Nat) -> Nat) -> (x :28: Nat) -> Nat = \(f :29: (x#0 :30: Nat) -> Nat) (x :31: Nat).
         case -32- x of
           Z/33
             => f -34- Z
@@ -80,7 +80,7 @@
     id :R: (x :R: Nat) -> Nat = (\x :R: Nat. x)
     const :R: (x :R: Nat) -> (y :R: Nat) -> Nat = (\x :R: Nat. (\y :R: Nat. x))
     main :R: Nat = 
-      let apply :R: (f :R: (_ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = \(f :R: (_ :R: Nat) -> Nat) (x :R: Nat).
+      let apply :R: (f :R: (x#0 :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = \(f :R: (x#0 :R: Nat) -> Nat) (x :R: Nat).
         case -R- x of
           Z/R
             => f -R- Z
@@ -108,7 +108,7 @@
     id :R: (x :R: Nat) -> Nat = (\x :R: Nat. x)
     const :R: (x :R: Nat) -> (y :R: Nat) -> Nat = (\x :R: Nat. (\y :R: Nat. x))
     main :R: Nat = 
-      let apply :R: (f :R: (_ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = \(f :R: (_ :R: Nat) -> Nat) (x :R: Nat).
+      let apply :R: (f :R: (x#0 :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = \(f :R: (x#0 :R: Nat) -> Nat) (x :R: Nat).
         case -R- x of
           Z/R
             => f -R- Z
@@ -136,7 +136,7 @@
     id :R: (x :R: Nat) -> Nat = (\x :R: Nat. x)
     const :R: (x :R: Nat) -> (y :R: Nat) -> Nat = (\x :R: Nat. (\y :R: Nat. x))
     main :R: Nat = 
-      let apply :R: (f :R: (_ :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = \(f :R: (_ :R: Nat) -> Nat) (x :R: Nat).
+      let apply :R: (f :R: (x#0 :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = \(f :R: (x#0 :R: Nat) -> Nat) (x :R: Nat).
         case -R- x of
           Z/R
             => f -R- Z

@@ -6,10 +6,10 @@
     postulate Bool : Type
     postulate True : Bool
     postulate False : Bool
-    postulate Foo : (_ : Bool) -> Type
+    postulate Foo : (x#0 : Bool) -> Type
     postulate Yeah : Foo True
     postulate Nope : Foo False
-    postulate Maybe : (_ : Type) -> Type
+    postulate Maybe : (x#1 : Type) -> Type
     postulate Nothing : (a : Type) -> Maybe a
     postulate Just : (a : Type) -> (x : a) -> Maybe a
     f : (x : Maybe Bool) -> Bool = \(x : Maybe Bool).
@@ -41,10 +41,10 @@
     postulate Bool :1: Type
     postulate True :2: Bool
     postulate False :3: Bool
-    postulate Foo :4: (_ :5: Bool) -> Type
+    postulate Foo :4: (x#0 :5: Bool) -> Type
     postulate Yeah :6: Foo -7- True
     postulate Nope :8: Foo -9- False
-    postulate Maybe :10: (_ :11: Type) -> Type
+    postulate Maybe :10: (x#1 :11: Type) -> Type
     postulate Nothing :12: (a :13: Type) -> Maybe -14- a
     postulate Just :15: (a :16: Type) -> (x :17: a) -> Maybe -18- a
     f :19: (x :20: Maybe -21- Bool) -> Bool = \(x :22: Maybe -23- Bool).
@@ -101,10 +101,10 @@
     postulate Bool :E: Type
     postulate True :R: Bool
     postulate False :E: Bool
-    postulate Foo :E: (_ :E: Bool) -> Type
+    postulate Foo :E: (x#0 :E: Bool) -> Type
     postulate Yeah :R: Foo -E- True
     postulate Nope :R: Foo -E- False
-    postulate Maybe :E: (_ :E: Type) -> Type
+    postulate Maybe :E: (x#1 :E: Type) -> Type
     postulate Nothing :E: (a :E: Type) -> Maybe -E- a
     postulate Just :R: (a :E: Type) -> (x :R: a) -> Maybe -E- a
     f :E: (x :E: Maybe -E- Bool) -> Bool = \(x :E: Maybe -E- Bool).
@@ -136,10 +136,10 @@
     postulate Bool :E: Type
     postulate True :R: Bool
     postulate False :E: Bool
-    postulate Foo :E: (_ :E: Bool) -> Type
+    postulate Foo :E: (x#0 :E: Bool) -> Type
     postulate Yeah :R: Foo -E- True
     postulate Nope :R: Foo -E- False
-    postulate Maybe :E: (_ :E: Type) -> Type
+    postulate Maybe :E: (x#1 :E: Type) -> Type
     postulate Nothing :E: (a :E: Type) -> Maybe -E- a
     postulate Just :R: (a :E: Type) -> (x :R: a) -> Maybe -E- a
     f :E: (x :E: Maybe -E- Bool) -> Bool = \(x :E: Maybe -E- Bool).
@@ -171,10 +171,10 @@
     postulate Bool :E: Type
     postulate True :R: Bool
     postulate False :E: Bool
-    postulate Foo :E: (_ :E: Bool) -> Type
+    postulate Foo :E: (x#0 :E: Bool) -> Type
     postulate Yeah :R: Foo -E- True
     postulate Nope :R: Foo -E- False
-    postulate Maybe :E: (_ :E: Type) -> Type
+    postulate Maybe :E: (x#1 :E: Type) -> Type
     postulate Nothing :E: (a :E: Type) -> Maybe -E- a
     postulate Just :R: (a :E: Type) -> (x :R: a) -> Maybe -E- a
     f :E: (x :E: Maybe -E- Bool) -> Bool = \(x :E: Maybe -E- Bool).
