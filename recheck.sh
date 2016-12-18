@@ -26,7 +26,7 @@ scheme_csc() {
 
 # Here, select which compiler you want to use.
 scheme() {
-    scheme_racket "$@"
+    scheme_csi "$@"
 }
 
 cabal install -j1 \

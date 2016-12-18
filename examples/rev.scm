@@ -1,5 +1,5 @@
 (print
-  (letrec (
+  (letrec* (
     (subst (lambda (w)
       w))
     (T (list 'T))

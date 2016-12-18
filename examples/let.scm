@@ -1,5 +1,5 @@
 (print
-  (letrec (
+  (letrec* (
     (Z (list 'Z))
     (S (lambda (x)
       (list 'S x)))
@@ -17,7 +17,7 @@
     (const (lambda (x)
       (lambda (y)
         x)))
-    (main (letrec ((apply_TT (lambda (f)
+    (main (letrec* ((apply_TT (lambda (f)
       (lambda (x)
         (case (car x)
           ((Z) (f Z))
@@ -26,7 +26,7 @@
             (x_ (car _args-x_))
           )
             (f (S x_)))))))))
-      (letrec (
+      (letrec* (
         (Q (list 'Q))
         (three (S (S (S Z))))
       )

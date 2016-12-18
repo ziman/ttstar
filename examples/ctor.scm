@@ -1,5 +1,5 @@
 (print
-  (letrec (
+  (letrec* (
     (T (list 'T))
     (MkUnit (list 'MkUnit))
     (not_TT (lambda (x)

@@ -1,5 +1,5 @@
 (print
-  (letrec (
+  (letrec* (
     (True (list 'True))
     (Yeah (list 'Yeah))
     (Nope (list 'Nope))

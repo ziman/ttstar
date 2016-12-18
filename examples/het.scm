@@ -1,5 +1,5 @@
 (print
-  (letrec (
+  (letrec* (
     (Tuple (lambda (x)
       (lambda (y)
         (lambda (z)

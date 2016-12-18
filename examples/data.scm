@@ -1,5 +1,5 @@
 (print
-  (letrec (
+  (letrec* (
     (Z (list 'Z))
     (S (lambda (_x0)
       (list 'S _x0)))
@@ -12,7 +12,7 @@
             (m_ (car _args-m_))
           )
             (S ((plus m_) n))))))))
-    (main (letrec ((pred (lambda (x)
+    (main (letrec* ((pred (lambda (x)
       (case (car x)
         ((Z) Z)
         ((S) (let* (

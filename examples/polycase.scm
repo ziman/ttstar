@@ -1,5 +1,5 @@
 (print
-  (letrec (
+  (letrec* (
     (Q (list 'Q))
     (W (list 'W))
     (T (list 'T))

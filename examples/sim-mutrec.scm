@@ -1,5 +1,5 @@
 (print
-  (letrec (
+  (letrec* (
     (True (list 'True))
     (False (list 'False))
     (Z (list 'Z))
@@ -10,7 +10,7 @@
     (fun (lambda (tag)
       (case (car tag)
         ((Even) (lambda (n)
-          (letrec ((_casefun0 (lambda (_x4)
+          (letrec* ((_casefun0 (lambda (_x4)
             (case (car _x4)
               ((Z) True)
               ((S) (let* (
@@ -20,7 +20,7 @@
                 ((fun Odd) n_)))))))
             (_casefun0 n))))
         ((Odd) (lambda (n)
-          (letrec ((_casefun1 (lambda (_x5)
+          (letrec* ((_casefun1 (lambda (_x5)
             (case (car _x5)
               ((Z) False)
               ((S) (let* (

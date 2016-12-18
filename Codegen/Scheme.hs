@@ -35,7 +35,7 @@ cgBody n ty (Term tm) = cgTm tm
 cgBody n ty (Patterns cf) = cgCaseFun cf
 
 cgLetRec :: [Def ()] -> Doc -> Doc
-cgLetRec ds = cgLet' "letrec" [(n, cgBody n ty b) | Def n () ty b _cs <- ds]
+cgLetRec ds = cgLet' "letrec*" [(n, cgBody n ty b) | Def n () ty b _cs <- ds]
 
 cgTm :: TT () -> Doc
 cgTm (V n) = cgName n

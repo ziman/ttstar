@@ -1,5 +1,5 @@
 (print
-  (letrec (
+  (letrec* (
     (Just (lambda (x)
       (list 'Just x)))
     (Bool (list 'Bool))

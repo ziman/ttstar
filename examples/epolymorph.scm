@@ -1,5 +1,5 @@
 (print
-  (letrec (
+  (letrec* (
     (Z (list 'Z))
     (S (lambda (n)
       (list 'S n)))
@@ -13,7 +13,7 @@
           (_args-y (cdr x))
           (y (car _args-y))
         )
-          (letrec ((result (S y)))
+          (letrec* ((result (S y)))
             result))))))
     (const_3 (lambda (x)
       (S (S (S Z)))))

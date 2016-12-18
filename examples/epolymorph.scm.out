@@ -1,1 +1,2 @@
-'(Plus (Plus (S (S (Z))) (S (S (S (Z))))) (Plus (S (S (Z))) (S (S (S (Z))))))
+(Plus (Plus (S (S (Z))) (S (S (S (Z))))) (Plus (S (S (Z))) (S (S (S (Z))))))
+

@@ -1,5 +1,5 @@
 (print
-  (letrec (
+  (letrec* (
     (A (list 'A))
     (B (list 'B))
     (Op (lambda (x)

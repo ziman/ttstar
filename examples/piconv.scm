@@ -1,5 +1,5 @@
 (print
-  (letrec (
+  (letrec* (
     (A (list 'A))
     (const_A A)
     (apply_TT (lambda (f)

@@ -1,5 +1,5 @@
 (print
-  (letrec (
+  (letrec* (
     (Z (list 'Z))
     (vlen (lambda (n)
       n))

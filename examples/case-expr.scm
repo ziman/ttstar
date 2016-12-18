@@ -1,5 +1,5 @@
 (print
-  (letrec (
+  (letrec* (
     (T (list 'T))
     (F (list 'F))
     (MkUnit (list 'MkUnit))
@@ -7,7 +7,7 @@
       (case (car x)
         ((T) F)
         ((F) T))))
-    (main (not_TT (letrec ((_casefun0 (lambda (x)
+    (main (not_TT (letrec* ((_casefun0 (lambda (x)
       (case (car x)
         ((F) MkUnit)
         ((T) F)))))

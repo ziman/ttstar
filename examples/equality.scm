@@ -1,5 +1,5 @@
 (print
-  (letrec (
+  (letrec* (
     (F (list 'F))
     (Refl (list 'Refl))
     (notnot (lambda (x)

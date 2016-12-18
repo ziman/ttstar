@@ -1,5 +1,5 @@
 (print
-  (letrec ((main (lambda (x)
+  (letrec* ((main (lambda (x)
     x)))
     main))
 (newline)
