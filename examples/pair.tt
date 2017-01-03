@@ -1,0 +1,24 @@
+-- vim: ft=idris
+
+data Bool : Type where
+  T : Bool,
+  F : Bool.
+
+data Pair : Type where
+  P : (x : Bool) -> (y : Bool) -> Pair.
+
+fst (x : Pair) : Bool
+    = case x of
+        P (l : Bool) (r : Bool) => l.
+
+snd (x : Pair) : Bool
+    = case x of
+        P (l : Bool) (r : Bool) => r.
+
+and (x : Bool) (y : Bool) : Bool
+    = case x of
+        T => y,
+        F => F.
+
+main : Bool
+    = and (fst (P T F)) (snd (P F T)).

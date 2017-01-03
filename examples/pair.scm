@@ -1,0 +1,37 @@
+(print
+  (letrec* (
+    (T (list 'T))
+    (F (list 'F))
+    (P (lambda (x)
+      (lambda (y)
+        (list 'P x y))))
+    (fst (lambda (x)
+      (case (car x)
+        ((P) (let* (
+          (_args-l (cdr x))
+          (l (car _args-l))
+        )
+          (let* (
+            (_args-r (cdr _args-l))
+            (r (car _args-r))
+          )
+            l))))))
+    (snd (lambda (x)
+      (case (car x)
+        ((P) (let* (
+          (_args-l (cdr x))
+          (l (car _args-l))
+        )
+          (let* (
+            (_args-r (cdr _args-l))
+            (r (car _args-r))
+          )
+            r))))))
+    (and (lambda (x)
+      (lambda (y)
+        (case (car x)
+          ((T) y)
+          ((F) F)))))
+    (main ((and (fst ((P T) F))) (snd ((P F) T))))
+  )
+    main))
