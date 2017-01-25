@@ -155,8 +155,8 @@ verCaseFun fn r (CaseFun ds ct) = bt ("CASEFUN", fn) $ do
 
 verCase :: Relevance -> Pat -> CaseTree Relevance -> Ver ()
 verCase r lhs (Leaf rhs) = bt ("CASE-LEAF", lhs, rhs) $ do
-    lhsTy <- verPat r lhs
-    rhsTy <- verTm  r rhs
+    lhsTy <- verTm r lhs -- verPat r lhs
+    rhsTy <- verTm r rhs
     conv r lhsTy rhsTy
 
 verCase R lhs (Case s (V n) [alt]) = bt ("CASE-SING-R", lhs) $ do
