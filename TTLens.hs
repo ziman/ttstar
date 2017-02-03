@@ -53,8 +53,8 @@ altLHSRelevance f (Ctor (CT cn r) args)
     = Ctor <$> (CT cn <$> f r) <*> traverse (defRelevance f) args
 altLHSRelevance f (Ctor (CTForced cn) args)
     = Ctor (CTForced cn) <$> traverse (defRelevance f) args
-altLHSRelevance f (ForcedVal ftm)
-    = ForcedVal <$> ttRelevance f ftm
+altLHSRelevance f (ForcedPat ftm)
+    = ForcedPat <$> ttRelevance f ftm
 
 csRelevance :: Ord r' => Traversal (Constrs r) (Constrs r') r r'
 csRelevance f = fmap M.fromList . traverse f' . M.toList

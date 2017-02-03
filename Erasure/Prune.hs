@@ -39,7 +39,7 @@ pruneAlt (Alt (Ctor ct args) rhs)
         (Ctor (pruneCT ct) (pruneDefs args))
         (pruneCaseTree rhs)
     ]
-pruneAlt (Alt (ForcedVal ftm) rhs)
+pruneAlt (Alt (ForcedPat ftm) rhs)
     = error "pruneAlt: singleton branch should have been pruned at the pruneCaseTree level"
 
 pruneCT :: CtorTag Relevance -> CtorTag ()

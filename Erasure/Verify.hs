@@ -177,7 +177,7 @@ verBranch r lhs n scrutTy s (Alt (Ctor (CT cn u) ds) rhs) = bt ("ALT-MATCH", cn,
 verBranch r lhs n scrutTy s (Alt (Ctor (CTForced cn) ds) rhs) = bt ("ALT-MATCH-F", cn, rhs) $ do
     verBranch' True r lhs n scrutTy s (cn, ds, rhs)
 
-verBranch r lhs n scrutTy s (Alt (ForcedVal pat) rhs) = bt ("ALT-FORCED", pat) $ do
+verBranch r lhs n scrutTy s (Alt (ForcedPat pat) rhs) = bt ("ALT-FORCED", pat) $ do
     verCase r (subst n (Forced pat) lhs) rhs
 
 verBranch' :: Bool -> Relevance -> Pat -> Name -> Type -> Relevance

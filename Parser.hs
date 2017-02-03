@@ -188,8 +188,9 @@ realCaseTree = (<?> "case tree") $ do
     try $ kwd "case"
     v <- name
     kwd "of"
+    kwd "{"
     alts <- caseAlt `sepBy` kwd ","
-    optional $ kwd "."
+    kwd "}"
     return $ Case Nothing (V v) alts
 
 altLHS :: Parser (AltLHS MRel)
@@ -206,7 +207,7 @@ altLHSForced = do
     kwd "]"
     ds <- many (parens $ typing Var)
     case (tm, ds) of
-        (_   , []) -> return $ ForcedVal tm
+        (_   , []) -> return $ ForcedPat tm
         (V cn, _ ) -> return $ Ctor (CTForced cn) ds
         _ -> fail "weird forced alt LHS"
 

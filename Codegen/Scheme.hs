@@ -81,7 +81,7 @@ cgAlt argsN (Alt (Ctor ct ds) rhs)
         parens (cgName $ ctName ct)
         <+> cgBinds (map defName ds) argsN (cgCaseTree rhs)
     )
-cgAlt argsN (Alt (ForcedVal ftm) rhs) = cgCaseTree rhs
+cgAlt argsN (Alt (ForcedPat ftm) rhs) = cgCaseTree rhs
 
 cgBinds :: [Name] -> Name -> Doc -> Doc
 cgBinds [] args rhs = rhs

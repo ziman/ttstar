@@ -75,12 +75,12 @@ specAlt (Alt (Ctor ctm dsm) rhsm) (Alt (Ctor ctr dsr) rhsr) = do
         M.unionWith S.union isRhs isDefs,
         Alt (Ctor (specCT ctm ctr) dsr') rhsr'
       )
-specAlt (Alt (ForcedVal ftmm) rhsm) (Alt (ForcedVal ftmr) rhsr) = do
+specAlt (Alt (ForcedPat ftmm) rhsm) (Alt (ForcedPat ftmr) rhsr) = do
     (isFtm, ftmr') <- specTm ftmm ftmr
     (isRhs, rhsr') <- specCaseTree rhsm rhsr
     return (
         M.unionWith S.union isRhs isFtm,
-        Alt (ForcedVal ftmr') rhsr'
+        Alt (ForcedPat ftmr') rhsr'
       )
 specAlt altm altr = error $ "specAlt: mismatch: " ++ show (altm, altr)
 

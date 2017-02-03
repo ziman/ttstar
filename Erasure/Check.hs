@@ -268,7 +268,7 @@ checkAlt lhs n sr (Alt (Ctor ct args) rhs) = bt ("ALT-CTOR", pat) $ do
     -- bindings from the individual vars to the scrutinee
     scrutCs = unions [defR d --> sr | d <- args]
 
-checkAlt lhs n sr (Alt (ForcedVal pat) rhs) = bt ("ALT-FORCED", pat) $ do
+checkAlt lhs n sr (Alt (ForcedPat pat) rhs) = bt ("ALT-FORCED", pat) $ do
     checkCaseTree (subst n (Forced pat) lhs) rhs
 
 checkTm :: Term -> TC (Type, Constrs Meta)

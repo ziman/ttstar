@@ -145,13 +145,13 @@ instance Termy Alt where
       where
         (args', rhs') = substBinder n tm args rhs
 
-    subst n tm (Alt (ForcedVal ftm) rhs)
-        = Alt (ForcedVal $ subst n tm ftm) (subst n tm rhs)
+    subst n tm (Alt (ForcedPat ftm) rhs)
+        = Alt (ForcedPat $ subst n tm ftm) (subst n tm rhs)
 
     freeVars (Alt Wildcard rhs) = freeVars rhs
     freeVars (Alt (Ctor ct args) rhs)
         = freeVarsBinder args rhs
-    freeVars (Alt (ForcedVal ftm) rhs)
+    freeVars (Alt (ForcedPat ftm) rhs)
         = freeVars ftm `S.union` freeVars rhs
 
 occursIn :: Termy a => Name -> a r -> Bool

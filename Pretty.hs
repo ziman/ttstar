@@ -146,7 +146,7 @@ instance PrettyR r => Pretty (AltLHS r) where
     pretty Wildcard = text "_"
     pretty (Ctor ct args)
         = pretty ct <+> hsep (map prettyParens args)
-    pretty (ForcedVal ftm)
+    pretty (ForcedPat ftm)
         = brackets (pretty ftm)
 
 instance PrettyR r => Pretty (CtorTag r) where

@@ -49,7 +49,7 @@ data CtorTag r
 
 data AltLHS r
     = Ctor (CtorTag r) [Def r]
-    | ForcedVal (TT r)
+    | ForcedPat (TT r)
     | Wildcard
     deriving (Eq, Ord)
 

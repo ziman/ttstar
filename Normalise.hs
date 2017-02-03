@@ -61,8 +61,8 @@ redAltLHS :: IsRelevance r => Form -> Ctx r -> AltLHS r -> AltLHS r
 redAltLHS NF ctx Wildcard = Wildcard
 redAltLHS NF ctx (Ctor ct args)
     = Ctor ct $ map (redDef NF ctx) args
-redAltLHS NF ctx (ForcedVal ftm)
-    = ForcedVal $ red NF ctx ftm
+redAltLHS NF ctx (ForcedPat ftm)
+    = ForcedPat $ red NF ctx ftm
 redAltLHS WHNF ctx lhs = error "impossible: redAltLHS WHNF"
 
 simplLet :: TT r -> TT r
@@ -182,7 +182,7 @@ evalAlt form ctx tm (Alt (Ctor ct argvars) rhs)
         (rhs', []) <- substArgs argvars argvals rhs
         evalCaseTree form ctx rhs'
 
-evalAlt form ctx tm (Alt (ForcedVal ftm) rhs)
+evalAlt form ctx tm (Alt (ForcedPat ftm) rhs)
     | tm == ftm
     = do evalCaseTree form ctx rhs
 
