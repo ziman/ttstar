@@ -213,17 +213,14 @@ checkCaseTree lhs (Leaf rhs) = bt ("PLAIN-TERM", lhs, rhs) $ do
     return $ flipConstrs lcs /\ rcs /\ ccs
 
 checkCaseTree lhs ct@(Case r (V n) alts) = bt ("CASE", lhs, ct) $ do
+    checkPatvar n
     nr <- defR <$> lookup n
-    cs <- unions <$> traverse (checkAlt isSingleBranch lhs n r) alts
+    cs <- unions <$> traverse (checkAlt lhs n r) alts
     return $ cs /\ r --> nr /\ scrutineeCs
   where
-    scrutineeCs
-        | isSingleBranch = noConstrs
-        | otherwise      = Fixed R --> r
-
-    isSingleBranch
-        | [_] <- alts = True
-        | otherwise   = False
+    scrutineeCs = case alts of
+        [] -> noConstrs
+        _  -> Fixed R --> r
 
 checkCaseTree lhs (Case r s alts) =
     tcfail $ NonVariableScrutinee s
@@ -239,39 +236,40 @@ checkPatvar n = do
             -> tcfail $ NonPatvarInEq n
 
 
-checkAlt :: Bool -> TT Meta -> Name -> Meta -> Alt Meta -> TC (Constrs Meta)
+checkAlt :: TT Meta -> Name -> Meta -> Alt Meta -> TC (Constrs Meta)
 
-checkAlt isSingleBranch lhs n sr (Alt Wildcard rhs) = bt ("ALT-WILDCARD") $ do
+checkAlt lhs n sr (Alt Wildcard rhs) = bt ("ALT-WILDCARD") $ do
     checkCaseTree lhs rhs
 
-checkAlt isSingleBranch lhs n sr (Alt (Ctor cr cn args eqs_NF) rhs) = bt ("ALT-CTOR", pat) $ do
+checkAlt lhs n sr (Alt (Ctor ct args) rhs) = bt ("ALT-CTOR", pat) $ do
     argCtx <- checkDefs args
-    cd <- lookup cn
-    when (defBody cd /= Abstract Postulate) $
-        tcfail (NotConstructor cn)
-    -- Typechecking will be done eventually in the case for Leaf.
-    cs <- with' (M.union argCtx) $ do
-            _ <- traverse checkPatvar $ map fst eqs
-            with' (substsInCtx eqs') $  -- substitutes in args, too; must use eqs', which includes (n, pat')
-                checkCaseTree lhs' rhs  -- rhs'
-    return $ cs /\ scrutCs /\ cr <--> defR cd
-  where
-    ctor
-        | isSingleBranch = Forced (V cn)
-        | otherwise      = V cn
 
-    eqs = [(n, Forced tm) | (n, tm) <- eqs_NF]
+    -- check we've got a constructor
+    cd <- lookup (ctName ct)
+    when (defBody cd /= Abstract Postulate) $
+        tcfail (NotConstructor $ ctName ct)
+
+    -- Typechecking will be done eventually in the case for Leaf.
+    cs <- with' (M.union argCtx) $
+                checkCaseTree (subst n pat lhs) rhs
+    return $ cs /\ scrutCs /\ ctCs (defR cd)
+  where
+    ctCs r = case ct of
+        CT cn cr -> cr <--> r
+        CTForced cn -> noConstrs
+
+    ctor = case ct of
+        CT cn cr -> V cn
+        CTForced cn -> Forced (V cn)
 
     -- don't forget to rewrite in pat!
     pat = mkApp ctor [(r, V n) | Def n r ty (Abstract Var) cs <- args]
-    pat' = substs eqs pat
-
-    eqs' = (n, pat') : eqs
-    lhs' = substs eqs' lhs
-    --rhs' = substs eqs' rhs
 
     -- bindings from the individual vars to the scrutinee
     scrutCs = unions [defR d --> sr | d <- args]
+
+checkAlt lhs n sr (Alt (ForcedVal pat) rhs) = bt ("ALT-FORCED", pat) $ do
+    checkCaseTree (subst n (Forced pat) lhs) rhs
 
 checkTm :: Term -> TC (Type, Constrs Meta)
 

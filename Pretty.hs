@@ -144,12 +144,16 @@ instance PrettyR r => Pretty (Alt r) where
 
 instance PrettyR r => Pretty (AltLHS r) where
     pretty Wildcard = text "_"
-    pretty (Ctor r cn args eqs)
-        = (pretty cn <> maybe empty (text "/" <>) (prettyAlt r))
-            <+> hsep (map prettyParens args)
-            $+$ indent (
-                    foldr ($$) empty [text "|" <+> pretty n <+> text "=" <+> pretty tm | (n, tm) <- eqs]
-                )
+    pretty (Ctor ct args)
+        = pretty ct <+> hsep (map prettyParens args)
+    pretty (ForcedVal ftm)
+        = brackets (pretty ftm)
+
+instance PrettyR r => Pretty (CtorTag r) where
+    pretty (CT cn r)
+        = pretty cn <> maybe empty (text "/" <>) (prettyAlt r)
+    pretty (CTForced cn)
+        = brackets (pretty cn)
 
 prettyParens :: PrettyR r => Def r -> Doc
 prettyParens d

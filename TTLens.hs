@@ -49,15 +49,12 @@ altRelevance f (Alt lhs rhs) = Alt <$> altLHSRelevance f lhs <*> caseTreeRelevan
 
 altLHSRelevance :: Ord r' => Traversal (AltLHS r) (AltLHS r') r r'
 altLHSRelevance f Wildcard = pure $ Wildcard
-altLHSRelevance f (Ctor r cn args eqs)
-    = Ctor
-        <$> f r
-        <*> pure cn
-        <*> traverse (defRelevance f) args
-        <*> traverse (caseEqRelevance f) eqs
-
-caseEqRelevance :: Ord r' => Traversal (Name, TT r) (Name, TT r') r r'
-caseEqRelevance f (n, tm) = (,) n <$> ttRelevance f tm
+altLHSRelevance f (Ctor (CT cn r) args)
+    = Ctor <$> (CT cn <$> f r) <*> traverse (defRelevance f) args
+altLHSRelevance f (Ctor (CTForced cn) args)
+    = Ctor (CTForced cn) <$> traverse (defRelevance f) args
+altLHSRelevance f (ForcedVal ftm)
+    = ForcedVal <$> ttRelevance f ftm
 
 csRelevance :: Ord r' => Traversal (Constrs r) (Constrs r') r r'
 csRelevance f = fmap M.fromList . traverse f' . M.toList

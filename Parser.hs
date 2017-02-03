@@ -192,29 +192,34 @@ realCaseTree = (<?> "case tree") $ do
     optional $ kwd "."
     return $ Case Nothing (V v) alts
 
-caseEq :: Parser (Name, TT MRel)
-caseEq = (<?> "case equality") $ do
-    kwd "|"
-    n <- name
-    kwd "="
+altLHS :: Parser (AltLHS MRel)
+altLHS =
+  (altLHSForced <?> "forced alt LHS")
+  <|> (altLHSCtor <?> "constructor alt LHS")
+  <|> (kwd "_" *> pure Wildcard)
+  <?> "case alt LHS"
+
+altLHSForced :: Parser (AltLHS MRel)
+altLHSForced = do
+    kwd "["
     tm <- expr
-    return (n, tm)
+    kwd "]"
+    ds <- many (parens $ typing Var)
+    case (tm, ds) of
+        (_   , []) -> return $ ForcedVal tm
+        (V cn, _ ) -> return $ Ctor (CTForced cn) ds
+        _ -> fail "weird forced alt LHS"
 
-caseLHS :: Parser (AltLHS MRel)
-caseLHS = caseLHSCtor <|> (kwd "_" *> pure Wildcard) <?> "case LHS"
-
-caseLHSCtor :: Parser (AltLHS MRel)
-caseLHSCtor
-    = Ctor Nothing
-        <$> name
+altLHSCtor :: Parser (AltLHS MRel)
+altLHSCtor
+    = Ctor
+        <$> (CT <$> name <*> pure Nothing)
         <*> many (parens $ typing Var)
-        <*> many caseEq
-        <?> "constructor case LHS"
 
 caseAlt :: Parser (Alt MRel)
 caseAlt
     = Alt
-        <$> caseLHS
+        <$> Parser.altLHS
         <*> (kwd "=>" *> caseTree)
         <?> "constructor-matching case branch"
 

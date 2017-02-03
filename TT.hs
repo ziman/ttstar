@@ -42,8 +42,14 @@ data CaseTree r
     | Case r (TT r) [Alt r]
     deriving (Eq, Ord)
 
+data CtorTag r
+    = CT { ctName :: Name, ctR :: r }
+    | CTForced { ctName :: Name }
+    deriving (Eq, Ord, Show)
+
 data AltLHS r
-    = Ctor r Name [Def r] [(Name, TT r)]
+    = Ctor (CtorTag r) [Def r]
+    | ForcedVal (TT r)
     | Wildcard
     deriving (Eq, Ord)
 

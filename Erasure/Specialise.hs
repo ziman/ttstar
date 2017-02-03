@@ -60,32 +60,27 @@ forMany spec ms rs = do
         map snd xs
       )
 
--- wtf haskell, why do I have to have a separate function for this
--- instead of "forManyEq = forMany"??
-forManyEq :: ((Name, TT Meta) -> (Name, TT Relevance) -> Spec (Name, TT Meta))
-    -> [(Name, TT Meta)] -> [(Name, TT Relevance)] -> Spec [(Name, TT Meta)]
-forManyEq spec ms rs = do
-    xs <- sequence [spec m r | (m, r) <- zip ms rs]
-    return (
-        M.unionsWith S.union $ map fst xs,
-        map snd xs
-      )
-
-specEq :: (Name, TT Meta) -> (Name, TT Relevance) -> Spec (Name, TT Meta)
-specEq (nm, tmm) (nr, tmr) = do
-    (is, tmr') <- specTm tmm tmr
-    return (is, (nr, tmr'))
+specCT :: CtorTag Meta -> CtorTag Relevance -> CtorTag Meta
+specCT (CT nm rm) (CT nr rr) = CT nr $ Fixed rr
+specCT (CTForced nm) (CTForced nr) = CTForced nr
+specCT ctm ctr = error $ "specCT: mismatch: " ++ show (ctm, ctr)
 
 specAlt :: Alt Meta -> Alt Relevance -> Spec (Alt Meta)
 specAlt (Alt Wildcard rhsm) (Alt Wildcard rhsr)
     = fmap (Alt Wildcard) <$> specCaseTree rhsm rhsr
-specAlt (Alt (Ctor rm nm dsm eqsm) rhsm) (Alt (Ctor rr nr dsr eqsr) rhsr) = do
+specAlt (Alt (Ctor ctm dsm) rhsm) (Alt (Ctor ctr dsr) rhsr) = do
     (isRhs, rhsr') <- specCaseTree rhsm rhsr
     (isDefs, dsr') <- forMany specDef dsm dsr
-    (isEqs, eqsr') <- forManyEq specEq eqsm eqsr
     return (
-        M.unionsWith S.union [isRhs, isDefs, isEqs],
-        Alt (Ctor (Fixed rr) nr dsr' eqsr') rhsr'
+        M.unionWith S.union isRhs isDefs,
+        Alt (Ctor (specCT ctm ctr) dsr') rhsr'
+      )
+specAlt (Alt (ForcedVal ftmm) rhsm) (Alt (ForcedVal ftmr) rhsr) = do
+    (isFtm, ftmr') <- specTm ftmm ftmr
+    (isRhs, rhsr') <- specCaseTree rhsm rhsr
+    return (
+        M.unionWith S.union isRhs isFtm,
+        Alt (ForcedVal ftmr') rhsr'
       )
 specAlt altm altr = error $ "specAlt: mismatch: " ++ show (altm, altr)
 

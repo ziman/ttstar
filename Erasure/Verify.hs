@@ -25,8 +25,6 @@ data VerError
     | CantConvert Term Term
     deriving Show
 
-data Cardinality = Single | Many deriving (Eq, Ord, Show)
-
 data VerFailure = VerFailure VerError [String]
 type Ver a = ReaderT (VerTraceback, Ctx Relevance) (Except VerFailure) a
 type VerTraceback = [String]
@@ -159,75 +157,63 @@ verCase r lhs (Leaf rhs) = bt ("CASE-LEAF", lhs, rhs) $ do
     rhsTy <- verTm r rhs
     conv r lhsTy rhsTy
 
-verCase R lhs (Case s (V n) [alt]) = bt ("CASE-SING-R", lhs) $ do
-    d <- lookupName n    
-    defR d <-> s
-    verBranch Single R lhs n (defType d) s alt
-
-verCase E lhs (Case E (V n) [alt]) = bt ("CASE-SING-E", lhs) $ do
-    d <- lookupName n
-    verBranch Single E lhs n (defType d) E alt
-
 verCase r lhs (Case s (V n) alts) = bt ("CASE-MULTI", n, r, s, lhs) $ do
-    d <- lookupName n
+    d <- lookupPatvar n
     r <-> s
     n `hasRelevance` r
-    mapM_ (verBranch Many r lhs n (defType d) r) alts        
+    mapM_ (verBranch r lhs n (defType d) r) alts        
 
 verCase r lhs ct@(Case s tm alts) = do
     verFail $ ComplexScrutinee ct
 
-verBranch :: Cardinality -> Relevance -> Pat -> Name -> Type -> Relevance -> Alt Relevance -> Ver ()
-verBranch q r lhs n scrutTy s (Alt Wildcard rhs) = bt ("ALT-WILD", rhs) $ do
+verBranch :: Relevance -> Pat -> Name -> Type -> Relevance -> Alt Relevance -> Ver ()
+verBranch r lhs n scrutTy s (Alt Wildcard rhs) = bt ("ALT-WILD", rhs) $ do
     verCase r lhs rhs
 
-verBranch q r lhs n scrutTy s (Alt (Ctor u cn ds eqs) rhs) = bt ("ALT-MATCH", cn, rhs) $ do
+verBranch r lhs n scrutTy s (Alt (Ctor (CT cn u) ds) rhs) = bt ("ALT-MATCH", cn, rhs) $ do
     u --> r
-    verBranch' q u lhs n scrutTy s (cn, ds, eqs, rhs)
+    verBranch' False u lhs n scrutTy s (cn, ds, rhs)
 
-verBranch' :: Cardinality -> Relevance -> Pat -> Name -> Type -> Relevance
-    -> (Name, [Def Relevance], [(Name, TT Relevance)], CaseTree Relevance)
+verBranch r lhs n scrutTy s (Alt (Ctor (CTForced cn) ds) rhs) = bt ("ALT-MATCH-F", cn, rhs) $ do
+    verBranch' True r lhs n scrutTy s (cn, ds, rhs)
+
+verBranch r lhs n scrutTy s (Alt (ForcedVal pat) rhs) = bt ("ALT-FORCED", pat) $ do
+    verCase r (subst n (Forced pat) lhs) rhs
+
+verBranch' :: Bool -> Relevance -> Pat -> Name -> Type -> Relevance
+    -> (Name, [Def Relevance], CaseTree Relevance)
     -> Ver ()
-verBranch' q r lhs n scrutTy s (cn, ds, eqs, rhs) = bt ("ALT-MATCH-INT", cn, rhs) $ do
+verBranch' ctorForced r lhs n scrutTy s (cn, ds, rhs) = bt ("ALT-MATCH-INT", cn, rhs) $ do
     cd <- lookupName cn
     when (defBody cd /= Abstract Postulate) $
         verFail (NotConstructor cn)
     verDefs ds
-    let pat = mkApp c' [(defR d, V $ defName d) | d <- ds]
-    let eqs' = [(n, Forced tm) | (n, tm) <- eqs]
-    let eqs'' = (n, substs eqs' pat) : eqs'
-    let lhs'' = substs eqs'' lhs
-    --let rhs'' = substs eqs'' rhs
     mapM_ (--> s) [defR d | d <- ds]
-    withs ds $ do
-        localVars eqs
-        with' (substsInCtx eqs'') $ bt("ALT-MATCH-INT2", r, s, substs eqs'' pat, substs eqs'' scrutTy) $ do
-            -- check that the pattern matches the scrutinee
-            --
-            -- TODO/FIXME:
-            -- Why the pattern has to be checked using verTm
-            -- rather than verPat is a mystery to me. What's going on?
-            --
-            let pat'' = substs eqs'' pat
-            let scrutTy'' = substs eqs'' scrutTy
-            pat''Ty <- verTm (r /\ s) pat'' --  verPat (op r s) pat''  -- TODO: figure this out
-            conv (r /\ s) pat''Ty scrutTy''
-
-            verCase r lhs'' rhs  -- rhs''
+    withs ds . bt("ALT-MATCH-INT2", r, s, pat, scrutTy) $ do
+        {- this is just not true
+        -- check that the pattern matches the scrutinee
+        --
+        -- TODO/FIXME:
+        -- Why the pattern has to be checked using verTm
+        -- rather than verPat is a mystery to me. What's going on?
+        --
+        let scrutTy' = subst n pat scrutTy
+        patTy <- verTm (r /\ s) pat --  verPat (op r s) pat''  -- TODO: figure this out
+        conv (r /\ s) patTy scrutTy'
+        -}
+        verCase r (subst n pat lhs) rhs
   where
-    c' :: Pat
-    c' = case q of
-            Single -> Forced (V cn)
-            Many   -> V cn
+    pat = mkApp c' [(defR d, V $ defName d) | d <- ds]
+    c' = if ctorForced
+            then Forced (V cn)
+            else V cn
 
-    localVars :: [(Name, Term)] -> Ver ()
-    localVars [] = return ()
-    localVars ((n,tm):eqs) = do
-        d <- lookupName n
-        case defBody d of
-            Abstract Var -> localVars eqs
-            _ -> verFail $ NotPatvar n
-
+lookupPatvar :: Name -> Ver (Def Relevance)
+lookupPatvar n = do
+    d <- lookupName n
+    case defBody d of
+        Abstract Var -> return d
+        _ -> verFail $ NotPatvar n
 
 verTm :: Relevance -> Term -> Ver Type
 verTm E (V n) = bt ("VAR-E", n) $ do
@@ -273,6 +259,7 @@ verTm r (Forced tm) = bt ("FORCED", tm) $ do
 verTm r tm = bt ("UNKNOWN-TERM", tm) $ do
     verFail NotImplemented
 
+{-
 verPat :: Relevance -> Pat -> Ver Type
 verPat R (V n) = bt ("PAT-REF-R", n) $ do
     defType <$> lookupName n    
@@ -309,6 +296,7 @@ verPat r (Forced tm) = bt ("PAT-FORCED", tm) $ do
     verTm E tm
 
 verPat r pat = verFail NotImplemented
+-}
 
 conv :: Relevance -> Type -> Type -> Ver ()
 conv r p q = do

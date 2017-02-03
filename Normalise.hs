@@ -59,8 +59,10 @@ redAlt WHNF ctx alt = error "impossible: redAlt WHNF"
 
 redAltLHS :: IsRelevance r => Form -> Ctx r -> AltLHS r -> AltLHS r
 redAltLHS NF ctx Wildcard = Wildcard
-redAltLHS NF ctx (Ctor r cn args eqs)
-    = Ctor r cn (map (redDef NF ctx) args) [(n, red NF ctx tm) | (n, tm) <- eqs]
+redAltLHS NF ctx (Ctor ct args)
+    = Ctor ct $ map (redDef NF ctx) args
+redAltLHS NF ctx (ForcedVal ftm)
+    = ForcedVal $ red NF ctx ftm
 redAltLHS WHNF ctx lhs = error "impossible: redAltLHS WHNF"
 
 simplLet :: TT r -> TT r
@@ -147,7 +149,7 @@ substArgs (d:ds) []     rhs = Nothing  -- ran out of values
 substArgs (d:ds) ((r,v):vs) rhs =
     substArgs ds' vs rhs'
   where
-    (ds', [], rhs') = substBinder n v ds [] rhs
+    (ds', rhs') = substBinder n v ds rhs
     n = defName d
 
 evalPatterns :: IsRelevance r => Form -> Ctx r -> CaseFun r -> TT r -> Maybe (TT r)
@@ -173,11 +175,15 @@ evalAlt :: IsRelevance r => Form -> Ctx r -> TT r -> Alt r -> Maybe (TT r)
 evalAlt form ctx tm (Alt Wildcard rhs)
     = evalCaseTree form ctx rhs
 
-evalAlt form ctx tm (Alt (Ctor r cn argvars eqs) rhs)
+evalAlt form ctx tm (Alt (Ctor ct argvars) rhs)
     | (V cn', argvals) <- unApply tm
-    , cn' == cn
+    , cn' == ctName ct
     = do
         (rhs', []) <- substArgs argvars argvals rhs
         evalCaseTree form ctx rhs'
+
+evalAlt form ctx tm (Alt (ForcedVal ftm) rhs)
+    | tm == ftm
+    = do evalCaseTree form ctx rhs
 
 evalAlt form ctx tm alt = Nothing

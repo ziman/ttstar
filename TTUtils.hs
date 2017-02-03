@@ -40,7 +40,7 @@ instance Termy TT where
 
     subst n tm (Bind b ds rhs) = Bind b ds' rhs'
       where
-        (ds', [], rhs') = substBinder n tm ds [] rhs
+        (ds', rhs') = substBinder n tm ds rhs
 
     subst n tm (App r f x) = App r (subst n tm f) (subst n tm x)
 
@@ -48,7 +48,7 @@ instance Termy TT where
 
     freeVars (V n) = S.singleton n
     freeVars (I n ty) = S.insert n $ freeVars ty
-    freeVars (Bind b ds tm) = freeVarsBinder ds [] tm
+    freeVars (Bind b ds tm) = freeVarsBinder ds tm
     freeVars (App r f x) = freeVars f `S.union` freeVars x
     freeVars (Forced tm) = freeVars tm
 
@@ -76,51 +76,31 @@ instance Termy CaseFun where
     -- see (subst n tm (Bind b d rhs)) for the general approach to subst under binders
     subst n tm (CaseFun ds ct) = CaseFun ds' ct'
       where
-        (ds', [], ct') = substBinder n tm ds [] ct
+        (ds', ct') = substBinder n tm ds ct
 
-    freeVars (CaseFun ds ct) = freeVarsBinder ds [] ct
+    freeVars (CaseFun ds ct) = freeVarsBinder ds ct
 
-substEq :: Name -> TT r -> (Name, TT r) -> (Name, TT r)
-substEq n tm@(V n') (en, etm)
-    | n == en
-    = (n', subst n tm etm)
-
-    | otherwise
-    =(en, subst n tm etm)
-
-substEq n tm (en, etm)
-    | n == en
-    = error $ "trying to substitute something strange in eqs: " ++ show n
-
-    | otherwise
-    = (en, subst n tm etm)
-
-freeVarsEq :: (Name, TT r) -> S.Set Name
-freeVarsEq (en, etm) = S.insert en (freeVars etm)
-
--- eqs are lumped together with rhs, all the way under all defs,
--- which means we don't have to worry about them until we've reached the base case
-freeVarsBinder :: Termy a => [Def r] -> [(Name, TT r)] -> a r -> S.Set Name
-freeVarsBinder [] eqs rhs = S.unions (freeVars rhs : map freeVarsEq eqs)
-freeVarsBinder (d:ds) eqs rhs
+freeVarsBinder :: Termy a => [Def r] -> a r -> S.Set Name
+freeVarsBinder [] rhs = freeVars rhs
+freeVarsBinder (d:ds) rhs
     = freeVars (defType d)
         `S.union`
             S.delete (defName d)
                 (freeVars (defBody d)
                     `S.union`
-                        freeVarsBinder ds eqs rhs
+                        freeVarsBinder ds rhs
                 )
 
 substBinder :: Termy a
     => Name -> TT r
-    ->  [Def r] -> [(Name, TT r)] -> a r
-    -> ([Def r],   [(Name, TT r)],   a r)
-substBinder n tm [] eqs rhs = ([], map (substEq n tm) eqs, subst n tm rhs)
-substBinder n tm (d:ds) eqs rhs
+    ->  [Def r] -> a r
+    -> ([Def r],   a r)
+substBinder n tm [] rhs = ([], subst n tm rhs)
+substBinder n tm (d:ds) rhs
     | n == boundName
     -- Name bound here, substitute only in the type of d.
     -- (The subst routine for Def will know not to subst in the body of d.)
-    = (subst n tm d : ds, eqs, rhs)
+    = (subst n tm d : ds, rhs)
 
     | boundName `occursIn` tm
     -- we need to rename the binder
@@ -128,25 +108,23 @@ substBinder n tm (d:ds) eqs rhs
         -- just a call to `freshen` won't work here because we're renaming the name of the def
         d'   = d{ defName = freshName, defBody = freshen (defBody d) }
         -- now we can perform the substitution we want
-        (ds', eqs', rhs') = substBinder n tm (map freshen ds) (map freshenEq eqs) (freshen rhs)
+        (ds', rhs') = substBinder n tm (map freshen ds) (freshen rhs)
       in 
-        (subst n tm d' : ds', eqs', rhs')
+        (subst n tm d' : ds', rhs')
 
     | otherwise  -- boring easy case, we just plug it in
     = let
-        (ds', eqs', rhs') = substBinder n tm ds eqs rhs
+        (ds', rhs') = substBinder n tm ds rhs
       in 
-        (subst n tm d : ds', eqs', rhs')
+        (subst n tm d : ds', rhs')
   where
     boundName  = defName d
     freshName  = head [n | n <- nameSource, n `S.notMember` takenNames]
-    takenNames = S.unions (freeVars rhs : (freeVars . defBody $ d) : map freeVarsEq eqs)
+    takenNames = freeVars rhs `S.union` (freeVars . defBody $ d)
     nameSource = [UN (show boundName ++ show i) | i <- [0 :: Integer ..]]
 
     freshen :: Termy a => a r -> a r
     freshen = rename boundName freshName
-
-    freshenEq = substEq boundName (V freshName)
 
 instance Termy CaseTree where
     subst n tm (Leaf t)
@@ -161,14 +139,20 @@ instance Termy Alt where
     -- equations are pattern-only so they are not touched by substitution
     -- (but they must be rewritten if we rename the binders!)
     subst n tm (Alt Wildcard rhs) = Alt Wildcard $ subst n tm rhs
-    subst n tm (Alt (Ctor r cn args eqs) rhs)
-        = Alt (Ctor r cn args' eqs') rhs'
+
+    subst n tm (Alt (Ctor ct args) rhs)
+        = Alt (Ctor ct args') rhs'
       where
-        (args', eqs', rhs') = substBinder n tm args eqs rhs
+        (args', rhs') = substBinder n tm args rhs
+
+    subst n tm (Alt (ForcedVal ftm) rhs)
+        = Alt (ForcedVal $ subst n tm ftm) (subst n tm rhs)
 
     freeVars (Alt Wildcard rhs) = freeVars rhs
-    freeVars (Alt (Ctor r cn args eqs) rhs)
-        = freeVarsBinder args eqs rhs
+    freeVars (Alt (Ctor ct args) rhs)
+        = freeVarsBinder args rhs
+    freeVars (Alt (ForcedVal ftm) rhs)
+        = freeVars ftm `S.union` freeVars rhs
 
 occursIn :: Termy a => Name -> a r -> Bool
 n `occursIn` tm = n `S.member` freeVars tm
@@ -186,18 +170,3 @@ rename fromN toN = subst fromN (V toN)
 -- * foldr: (S y, S (S y))
 substs :: Termy a => [(Name, TT r)] -> a r -> a r
 substs ss x = foldl (\x (n, tm) -> subst n tm x) x ss
-
-substCtx :: (Termy a, Show (Body r)) => Ctx r -> a r -> a r
-substCtx ctx tm = foldl phi tm $ M.toList ctx
-  where
-    phi t (n, Def _ _ _ (Term tm) cs) = subst n tm t
-    phi t (n, Def _ _ _ body cs)
-        = error $ "trying to substMany something strange:\n  " ++ show n ++ " ~> " ++ show body
-
-substsInCtx :: [(Name, TT r)] -> Ctx r -> Ctx r
-substsInCtx eqs = foldr step M.empty . M.toList
-  where
-    elidedNames = S.fromList $ map fst []  -- eqs
-    step (n, d) ctx
-        | n `S.member` elidedNames = ctx
-        | otherwise = M.insert n (substs eqs d) ctx

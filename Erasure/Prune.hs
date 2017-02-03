@@ -33,12 +33,18 @@ pruneCaseTree t@(Case E s alts) = error $ "trying to prune non-singleton tree: "
 
 pruneAlt :: Alt Relevance -> [Alt ()]
 pruneAlt (Alt Wildcard rhs) = [Alt Wildcard $ pruneCaseTree rhs]
-pruneAlt (Alt (Ctor E cn args eqs) rhs) = []
-pruneAlt (Alt (Ctor R cn args eqs) rhs)
+pruneAlt (Alt (Ctor (CT cn E) args) rhs) = []
+pruneAlt (Alt (Ctor ct args) rhs)
     = [Alt
-        (Ctor () cn (pruneDefs args) [])
+        (Ctor (pruneCT ct) (pruneDefs args))
         (pruneCaseTree rhs)
     ]
+pruneAlt (Alt (ForcedVal ftm) rhs)
+    = error "pruneAlt: singleton branch should have been pruned at the pruneCaseTree level"
+
+pruneCT :: CtorTag Relevance -> CtorTag ()
+pruneCT (CT cn r) = CT cn ()
+pruneCT (CTForced cn) = CTForced cn
 
 pruneDefs :: [Def Relevance] -> [Def ()]
 pruneDefs = concatMap pruneDef

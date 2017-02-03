@@ -76,11 +76,12 @@ cgCaseTree (Case () scrut alts) =
 
 cgAlt :: Name -> Alt () -> Doc
 cgAlt argsN (Alt Wildcard rhs) = parens (text "else" <+> cgCaseTree rhs)
-cgAlt argsN (Alt (Ctor () cn ds _eqs) rhs)
+cgAlt argsN (Alt (Ctor ct ds) rhs)
     = parens (
-        parens (cgName cn)
+        parens (cgName $ ctName ct)
         <+> cgBinds (map defName ds) argsN (cgCaseTree rhs)
     )
+cgAlt argsN (Alt (ForcedVal ftm) rhs) = cgCaseTree rhs
 
 cgBinds :: [Name] -> Name -> Doc -> Doc
 cgBinds [] args rhs = rhs
