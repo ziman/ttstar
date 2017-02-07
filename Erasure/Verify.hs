@@ -106,7 +106,7 @@ R /\ R = R
 _ /\ _ = E
 
 hasRelevance :: Name -> Relevance -> Ver ()
-hasRelevance n r = do
+hasRelevance n r = bt ("DEF-HAS-RELEVANCE", n, r) $ do
     d <- lookupName n
     if (r == R) && (defR d == E)
         then verFail $ RelevanceMismatch r (defR d)
@@ -159,8 +159,9 @@ verCase r lhs (Leaf rhs) = bt ("CASE-LEAF", lhs, rhs) $ do
 
 verCase r lhs (Case s (V n) alts) = bt ("CASE-MULTI", n, r, s, lhs) $ do
     d <- lookupPatvar n
-    r <-> s
-    n `hasRelevance` r
+    -- r <-> s
+    s --> r
+    n `hasRelevance` s
     mapM_ (verBranch r lhs n (defType d) r) alts        
 
 verCase r lhs ct@(Case s tm alts) = do

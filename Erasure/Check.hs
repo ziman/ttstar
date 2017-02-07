@@ -219,8 +219,9 @@ checkCaseTree lhs ct@(Case r (V n) alts) = bt ("CASE", lhs, ct) $ do
     return $ cs /\ r --> nr /\ scrutineeCs
   where
     scrutineeCs = case alts of
-        [] -> noConstrs
-        _  -> Fixed R --> r
+        []  -> error "empty list of case alts"
+        [_] -> noConstrs
+        _   -> Fixed R --> r
 
 checkCaseTree lhs (Case r s alts) =
     tcfail $ NonVariableScrutinee s
@@ -262,13 +263,13 @@ checkAlt lhs n sr (Alt (Ctor ct args) rhs) = bt ("ALT-CTOR", pat) $ do
         CT cn cr -> V cn
         CTForced cn -> Forced (V cn)
 
-    -- don't forget to rewrite in pat!
     pat = mkApp ctor [(r, V n) | Def n r ty (Abstract Var) cs <- args]
 
-    -- bindings from the individual vars to the scrutinee
+    -- links from the individual vars to the scrutinee
     scrutCs = unions [defR d --> sr | d <- args]
 
 checkAlt lhs n sr (Alt (ForcedPat pat) rhs) = bt ("ALT-FORCED", pat) $ do
+    -- no rules for sr
     checkCaseTree (subst n (Forced pat) lhs) rhs
 
 checkTm :: Term -> TC (Type, Constrs Meta)
