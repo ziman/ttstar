@@ -39,7 +39,7 @@ data TCError
     | NotConstructor Name
     | InconsistentErasure Name
     | NotImplemented String
-    | NonPatvarInEq Name
+    | NonPatvar Name
     | UncheckableTerm TTmeta
     | Other String
     deriving (Eq, Ord, Show)
@@ -97,11 +97,9 @@ cond r = M.mapKeysWith S.union (S.insert r)
 with :: Def Meta -> TC a -> TC a
 with d = with' $ M.insert (defName d) d
 
-{-
 withs :: [Def Meta] -> TC a -> TC a
 withs []     = id
 withs (d:ds) = with d . withs ds
--}
 
 with' :: (Ctx Meta -> Ctx Meta) -> TC a -> TC a
 with' f = local $ \(tb, ctx) -> (tb, f ctx)
@@ -164,9 +162,16 @@ check prog = runTC maxTag ctx $ do
 checkDefs :: [Def Meta] -> TC (Ctx Meta)
 checkDefs [] = getCtx
 checkDefs (d:ds) = do
-    d' <- with d $ checkDef d
+    d' <- with d{ defBody = Abstract Var } $ checkDef d
     let d'' = d'{ defConstraints = reduce $ defConstraints d' }
     with d'' $ checkDefs ds
+
+checkDefs' :: [Def Meta] -> TC [Def Meta]
+checkDefs' [] = return []
+checkDefs' (d:ds) = do
+    d' <- with d{ defBody = Abstract Var } $ checkDef d
+    let d'' = d'{ defConstraints = reduce $ defConstraints d' }
+    (d'' :) <$> (with d'' $ checkDefs' ds)
 
 checkDef :: Def Meta -> TC (Def Meta)
 -- In types, only conversion constraints matter but they *do* matter.
@@ -199,50 +204,54 @@ checkDef d@(Def n r ty (Patterns cf) _noCs) = bt ("DEF-PATTERNS", n) $ do
 
 checkCaseFun :: Name -> CaseFun Meta -> TC (Constrs Meta)
 checkCaseFun fn (CaseFun args ct) = bt ("CASE-FUN", fn) $ do
-    argCtx <- checkDefs args
-    with' (M.union argCtx)
-        $ checkCaseTree lhs ct
+    pvars <- checkDefs' args
+    checkCaseTree pvars lhs ct
   where
     lhs = mkApp (V fn) [(r, V n) | Def n r ty (Abstract Var) cs <- args]
 
-checkCaseTree :: TT Meta -> CaseTree Meta -> TC (Constrs Meta)
-checkCaseTree lhs (Leaf rhs) = bt ("PLAIN-TERM", lhs, rhs) $ do
-    (lty, lcs) <- checkTm lhs
-    (rty, rcs) <- checkTm rhs
-    ccs <- conv lty rty
-    return $ flipConstrs lcs /\ rcs /\ ccs
+checkCaseTree :: [Def Meta] -> TT Meta -> CaseTree Meta -> TC (Constrs Meta)
+checkCaseTree pvars lhs (Leaf rhs) = bt ("PLAIN-TERM", lhs, rhs) $ do
+    withs pvars $ do
+        (lty, lcs) <- checkTm lhs
+        (rty, rcs) <- checkTm rhs
+        ccs <- conv lty rty
+        return $ flipConstrs lcs /\ rcs /\ ccs
 
-checkCaseTree lhs ct@(Case r (V n) alts) = bt ("CASE", lhs, ct) $ do
-    checkPatvar n
-    nr <- defR <$> lookup n
-    cs <- unions <$> traverse (checkAlt lhs n r) alts
-    return $ cs /\ r --> nr /\ scrutineeCs
+checkCaseTree pvars lhs ct@(Case r (V n) alts) = bt ("CASE", lhs, ct) $ do
+    scrutD <- lookupPatvar n pvars
+    cs <- unions <$> traverse (checkAlt pvars lhs n r) alts
+    return $ cs /\ r --> defR scrutD /\ scrutineeCs
   where
     scrutineeCs = case alts of
         []  -> error "empty list of case alts"
         [_] -> noConstrs
         _   -> Fixed R --> r
 
-checkCaseTree lhs (Case r s alts) =
+checkCaseTree pvars lhs (Case r s alts) =
     tcfail $ NonVariableScrutinee s
 
 
-checkPatvar :: Name -> TC ()
-checkPatvar n = do
-    d <- lookup n
-    case d of
-        Def n r ty (Abstract Var) cs
-            -> return ()
-        _
-            -> tcfail $ NonPatvarInEq n
+lookupPatvar :: Name -> [Def Meta] -> TC (Def Meta)
+lookupPatvar n [] = tcfail $ NonPatvar n
+lookupPatvar n (d:ds)
+    | defName d == n = return d
+    | otherwise = lookupPatvar n ds
 
+substPV :: Name -> TT Meta -> [Def Meta] -> [Def Meta]
+substPV n tm [] = []
+substPV n tm (d:ds)
+    | defName d == n
+    = substPV n tm ds  -- leave out that patvar
 
-checkAlt :: TT Meta -> Name -> Meta -> Alt Meta -> TC (Constrs Meta)
+    | otherwise
+    = subst n tm d : substPV n tm ds
 
-checkAlt lhs n sr (Alt Wildcard rhs) = bt ("ALT-WILDCARD") $ do
-    checkCaseTree lhs rhs
+checkAlt :: [Def Meta] -> TT Meta -> Name -> Meta -> Alt Meta -> TC (Constrs Meta)
 
-checkAlt lhs n sr (Alt (Ctor ct args) rhs) = bt ("ALT-CTOR", pat) $ do
+checkAlt pvars lhs n sr (Alt Wildcard rhs) = bt ("ALT-WILDCARD") $ do
+    checkCaseTree pvars lhs rhs
+
+checkAlt pvars lhs n sr (Alt (Ctor ct args) rhs) = bt ("ALT-CTOR", pat) $ do
     argCtx <- checkDefs args
 
     -- check we've got a constructor
@@ -252,7 +261,7 @@ checkAlt lhs n sr (Alt (Ctor ct args) rhs) = bt ("ALT-CTOR", pat) $ do
 
     -- Typechecking will be done eventually in the case for Leaf.
     cs <- with' (M.union argCtx) $
-                checkCaseTree (subst n pat lhs) rhs
+                checkCaseTree (substPV n pat pvars) (subst n pat lhs) rhs
     return $ cs /\ scrutCs /\ ctCs (defR cd)
   where
     ctCs r = case ct of
@@ -268,9 +277,9 @@ checkAlt lhs n sr (Alt (Ctor ct args) rhs) = bt ("ALT-CTOR", pat) $ do
     -- links from the individual vars to the scrutinee
     scrutCs = unions [defR d --> sr | d <- args]
 
-checkAlt lhs n sr (Alt (ForcedPat pat) rhs) = bt ("ALT-FORCED", pat) $ do
+checkAlt pvars lhs n sr (Alt (ForcedPat pat) rhs) = bt ("ALT-FORCED", pat) $ do
     -- no rules for sr
-    checkCaseTree (subst n (Forced pat) lhs) rhs
+    checkCaseTree (substPV n (Forced pat) pvars) (subst n (Forced pat) lhs) rhs
 
 checkTm :: Term -> TC (Type, Constrs Meta)
 
