@@ -13,26 +13,22 @@ data Bool : Type where
 retTy (x : Maybe Bool) : Type
     = case x of {
         Just (a : Type) (t : Bool) =>
-            case a of {
-                [Bool] => Bool
-            },
+            case a of
+                [Bool] => Bool,
         Nothing (a : Type) =>
-            case a of {
+            case a of
                 [Bool] => Type
-            }
-    }
+      }
 
 f (x : Maybe Bool) : retTy x
     = case x of {
         Just (a : Type) (b : Bool) =>
-            case a of {
-                [Bool] => b
-            },
+            case a of
+                [Bool] => b,
         Nothing (a : Type) =>
-            case a of {
+            case a of
                 [Bool] => Bool
-            }
-    }
+      }
 
 main : Bool
     = f (Just Bool False).

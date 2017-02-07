@@ -188,9 +188,9 @@ realCaseTree = (<?> "case tree") $ do
     try $ kwd "case"
     v <- name
     kwd "of"
-    kwd "{"
-    alts <- caseAlt `sepBy` kwd ","
-    kwd "}"
+    alts <-
+        (kwd "{" *> (caseAlt `sepBy` kwd ",") <* kwd "}")
+        <|> return <$> caseAlt
     return $ Case Nothing (V v) alts
 
 altLHS :: Parser (AltLHS MRel)
