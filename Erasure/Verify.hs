@@ -154,7 +154,7 @@ verCase r pvars lhs (Leaf rhs) = bt ("CASE-LEAF", lhs, rhs) $ do
 verCase r pvars lhs (Case s (V n) alts) = bt ("CASE-MULTI", n, r, s, lhs) $ do
     d <- lookupPatvar n pvars
     defR d <-> s
-    s --> r  -- <->?
+    s --> r  -- it's not (<->) because we can have forced inspections, which don't cause usage
     mapM_ (verBranch r pvars lhs n (defType d) r) alts        
 
 verCase r pvars lhs ct@(Case s tm alts) = do
