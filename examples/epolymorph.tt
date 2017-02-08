@@ -12,10 +12,11 @@ data Nat : Type where
 postulate Plus : (x :R: Nat) -> (y :R: Nat) -> Nat.
 
 id (x : Nat) : Nat
-  = case x of
+  = case x of {
       Z => Z,
       S (y : Nat)
-        => let result : Nat = S y in result.
+        => let result : Nat = S y in result
+    }
 
 const_3 (x : Nat) : Nat = 3.
 

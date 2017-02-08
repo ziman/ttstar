@@ -5,13 +5,15 @@ data Bool : Type where
   F : Bool.
 
 g (x : Bool) : Bool
-  = case x of
+  = case x of {
       T => h x,
-      F => T.
+      F => T
+    }
 
 h (x : Bool) : Bool
-  = case x of
+  = case x of {
       F => g x,
-      T => F.
+      T => F
+    }
 
 main : Bool = g T.

@@ -9,9 +9,10 @@ data Nat : Type where
   S : Nat -> Nat.
 
 plus (m : Nat) (n : Nat) : Nat
-  = case m of
+  = case m of {
       Z => n,
-      S (m' : Nat) => S (plus m' n).
+      S (m' : Nat) => S (plus m' n)
+    }
 
 data Tag : Type where
   Even : Tag,
@@ -23,25 +24,24 @@ data Tag : Type where
 -- and implements mutual recursion.
 
 funTy (tag : Tag) : Type
-  = case tag of
+  = case tag of {
       Even => Nat -> Bool,
-      Odd  => Nat -> Nat -> Bool.
+      Odd  => Nat -> Nat -> Bool
+    }
 
 fun (tag : Tag) : funTy tag
-  = case tag of
+  = case tag of {
       Even =>
-        \n : Nat. (
-          case n where Nat -> Bool.
+        \n : Nat. case n where Nat -> Bool {
             Z => True,
             S (n' : Nat) => fun Odd n' (plus n' n')
-        ),
+        },
       Odd =>
-        \n : Nat.
-          \m : Nat. (
-            case n where Nat -> Bool.
+        \n : Nat. \m : Nat. case n where Nat -> Bool {
               Z => False,
               S (n' : Nat) => fun Even n'
-          ).
+        }
+    }
 
 even : Nat -> Bool = fun Even.
 

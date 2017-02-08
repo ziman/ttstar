@@ -13,16 +13,17 @@ data Vec : Nat -> Type -> Type where
   VCons : (a : Type) -> (n : Nat) -> (x : a) -> (xs : Vec n a) -> Vec (S n) a.
 
 vlen (a : Type) (n : Nat) (xs : Vec n a) : Nat
-  = case xs of
-      VNil (a' : Type)
-        | a' = a
-        | n = Z
-        => Z,
+  = case xs of {
+      VNil (a' : Type) =>
+        case a' of [a] =>
+          case n of [Z] =>
+            Z,
 
-      VCons (a' : Type) (n' : Nat) (x' : a) (xs' : Vec n' a)
-        | a' = a
-        | n = S n'
-        => S (vlen a n' xs').
+      VCons (a' : Type) (n' : Nat) (x' : a) (xs' : Vec n' a) =>
+        case a' of [a] =>
+          case n of [S n'] =>
+            S (vlen a n' xs')
+    }
 
 testVec : Vec (S (S Z)) Bool
     = VCons Bool (S Z) True (VCons Bool Z False (VNil Bool)).

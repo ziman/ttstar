@@ -16,9 +16,10 @@ snd (x : Pair) : Bool
         P (l : Bool) (r : Bool) => r.
 
 and (x : Bool) (y : Bool) : Bool
-    = case x of
+    = case x of {
         T => y,
-        F => F.
+        F => F
+      }
 
 main : Bool
     = and (fst (P T F)) (snd (P F T)).
