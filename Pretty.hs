@@ -135,6 +135,11 @@ instance PrettyR r => Pretty (CaseFun r) where
 
 instance PrettyR r => Pretty (CaseTree r) where
     pretty (Leaf tm) = pretty tm
+    pretty (Case r n [Alt (ForcedPat lhs) rhs]) =
+        text "case" <> prettyApp r <> pretty n <+> text "of"
+            <+> brackets (pretty lhs) <+> text "=>"
+            $$ indent (pretty rhs)
+
     pretty (Case r n alts) =
         text "case" <> prettyApp r <> pretty n <+> text "of"
         $$ indent (vcat $ map pretty alts)
