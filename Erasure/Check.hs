@@ -252,7 +252,7 @@ checkAlt pvars lhs n sr (Alt Wildcard rhs) = bt ("ALT-WILDCARD") $ do
     checkCaseTree pvars lhs rhs
 
 checkAlt pvars lhs n sr (Alt (Ctor ct args) rhs) = bt ("ALT-CTOR", pat) $ do
-    argCtx <- checkDefs args
+    args' <- checkDefs' args  -- do we check the args here? or only in the leaf?
 
     -- check we've got a constructor
     cd <- lookup (ctName ct)
@@ -260,8 +260,8 @@ checkAlt pvars lhs n sr (Alt (Ctor ct args) rhs) = bt ("ALT-CTOR", pat) $ do
         tcfail (NotConstructor $ ctName ct)
 
     -- Typechecking will be done eventually in the case for Leaf.
-    cs <- with' (M.union argCtx) $
-                checkCaseTree (substPV n pat pvars) (subst n pat lhs) rhs
+    cs <- checkCaseTree (substPV n pat pvars ++ args') (subst n pat lhs) rhs
+
     return $ cs /\ scrutCs /\ ctCs (defR cd)
   where
     ctCs r = case ct of

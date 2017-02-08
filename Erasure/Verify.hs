@@ -105,13 +105,6 @@ infixr 3 /\
 R /\ R = R
 _ /\ _ = E
 
-hasRelevance :: Name -> Relevance -> Ver ()
-hasRelevance n r = bt ("DEF-HAS-RELEVANCE", n, r) $ do
-    d <- lookupName n
-    if (r == R) && (defR d == E)
-        then verFail $ RelevanceMismatch r (defR d)
-        else return ()
-
 mustBeType :: TT Relevance -> Ver ()
 mustBeType ty = conv E ty (V typeOfTypes)
 
@@ -148,49 +141,50 @@ verCaseFun :: Name -> Relevance -> CaseFun Relevance -> Ver ()
 verCaseFun fn r (CaseFun ds ct) = bt ("CASEFUN", fn) $ do
     verDefs ds
     let lhs = mkApp (V fn) [(defR d, V $ defName d) | d <- ds]
-    withs ds $
-        verCase r lhs ct
+    verCase r ds lhs ct
 
-verCase :: Relevance -> Pat -> CaseTree Relevance -> Ver ()
-verCase r lhs (Leaf rhs) = bt ("CASE-LEAF", lhs, rhs) $ do
-    lhsTy <- verTm r lhs -- verPat r lhs
-    rhsTy <- verTm r rhs
-    conv r lhsTy rhsTy
+verCase :: Relevance -> [Def Relevance] -> Pat -> CaseTree Relevance -> Ver ()
+verCase r pvars lhs (Leaf rhs) = bt ("CASE-LEAF", lhs, rhs) $ do
+    withs pvars $ do
+        lhsTy <- verTm r lhs -- verPat r lhs
+        rhsTy <- verTm r rhs
+        conv r lhsTy rhsTy
 
-verCase r lhs (Case s (V n) alts) = bt ("CASE-MULTI", n, r, s, lhs) $ do
-    d <- lookupPatvar n
-    -- r <-> s
-    s --> r
-    n `hasRelevance` s
-    mapM_ (verBranch r lhs n (defType d) r) alts        
+verCase r pvars lhs (Case s (V n) alts) = bt ("CASE-MULTI", n, r, s, lhs) $ do
+    d <- lookupPatvar n pvars
+    defR d <-> s
+    s --> r  -- <->?
+    mapM_ (verBranch r pvars lhs n (defType d) r) alts        
 
-verCase r lhs ct@(Case s tm alts) = do
+verCase r pvars lhs ct@(Case s tm alts) = do
     verFail $ ComplexScrutinee ct
 
-verBranch :: Relevance -> Pat -> Name -> Type -> Relevance -> Alt Relevance -> Ver ()
-verBranch r lhs n scrutTy s (Alt Wildcard rhs) = bt ("ALT-WILD", rhs) $ do
-    verCase r lhs rhs
+verBranch :: Relevance -> [Def Relevance] -> Pat -> Name -> Type -> Relevance -> Alt Relevance -> Ver ()
+verBranch r pvars lhs n scrutTy s (Alt Wildcard rhs) = bt ("ALT-WILD", rhs) $ do
+    verCase r pvars lhs rhs
 
-verBranch r lhs n scrutTy s (Alt (Ctor (CT cn u) ds) rhs) = bt ("ALT-MATCH", cn, rhs) $ do
+verBranch r pvars lhs n scrutTy s (Alt (Ctor (CT cn u) ds) rhs) = bt ("ALT-MATCH", cn, rhs) $ do
     u --> r
-    verBranch' False u lhs n scrutTy s (cn, ds, rhs)
+    verBranch' False u pvars lhs n scrutTy s (cn, ds, rhs)
 
-verBranch r lhs n scrutTy s (Alt (Ctor (CTForced cn) ds) rhs) = bt ("ALT-MATCH-F", cn, rhs) $ do
-    verBranch' True r lhs n scrutTy s (cn, ds, rhs)
+verBranch r pvars lhs n scrutTy s (Alt (Ctor (CTForced cn) ds) rhs) = bt ("ALT-MATCH-F", cn, rhs) $ do
+    verBranch' True r pvars lhs n scrutTy s (cn, ds, rhs)
 
-verBranch r lhs n scrutTy s (Alt (ForcedPat pat) rhs) = bt ("ALT-FORCED", pat) $ do
-    verCase r (subst n (Forced pat) lhs) rhs
+verBranch r pvars lhs n scrutTy s (Alt (ForcedPat pat) rhs) = bt ("ALT-FORCED", pat) $ do
+    verCase r (substPV n (Forced pat) pvars) (subst n (Forced pat) lhs) rhs
 
-verBranch' :: Bool -> Relevance -> Pat -> Name -> Type -> Relevance
+verBranch' :: Bool -> Relevance -> [Def Relevance] -> Pat -> Name -> Type -> Relevance
     -> (Name, [Def Relevance], CaseTree Relevance)
     -> Ver ()
-verBranch' ctorForced r lhs n scrutTy s (cn, ds, rhs) = bt ("ALT-MATCH-INT", cn, rhs) $ do
+verBranch' ctorForced r pvars lhs n scrutTy s (cn, ds, rhs) = bt ("ALT-MATCH-INT", cn, rhs) $ do
     cd <- lookupName cn
     when (defBody cd /= Abstract Postulate) $
         verFail (NotConstructor cn)
-    verDefs ds
-    mapM_ (--> s) [defR d | d <- ds]
-    withs ds . bt("ALT-MATCH-INT2", r, s, pat, scrutTy) $ do
+
+    verDefs ds  -- do we check the args here or only in the leaf?
+
+    sequence_ [defR d --> s | d <- ds]
+    bt("ALT-MATCH-INT2", r, s, pat, scrutTy) $ do
         {- this is just not true
         -- check that the pattern matches the scrutinee
         --
@@ -202,19 +196,27 @@ verBranch' ctorForced r lhs n scrutTy s (cn, ds, rhs) = bt ("ALT-MATCH-INT", cn,
         patTy <- verTm (r /\ s) pat --  verPat (op r s) pat''  -- TODO: figure this out
         conv (r /\ s) patTy scrutTy'
         -}
-        verCase r (subst n pat lhs) rhs
+        verCase r (substPV n pat pvars ++ ds) (subst n pat lhs) rhs
   where
     pat = mkApp c' [(defR d, V $ defName d) | d <- ds]
     c' = if ctorForced
             then Forced (V cn)
             else V cn
 
-lookupPatvar :: Name -> Ver (Def Relevance)
-lookupPatvar n = do
-    d <- lookupName n
-    case defBody d of
-        Abstract Var -> return d
-        _ -> verFail $ NotPatvar n
+substPV :: Name -> TT Relevance -> [Def Relevance] -> [Def Relevance]
+substPV n tm [] = []
+substPV n tm (d:ds)
+    | defName d == n = substPV n tm ds
+    | otherwise = subst n tm d : substPV n tm ds
+
+lookupPatvar :: Name -> [Def Relevance] -> Ver (Def Relevance)
+lookupPatvar n [] = verFail $ NotPatvar n
+lookupPatvar n (d:ds)
+    | defName d == n
+    = return d
+
+    | otherwise
+    = lookupPatvar n ds
 
 verTm :: Relevance -> Term -> Ver Type
 verTm E (V n) = bt ("VAR-E", n) $ do
