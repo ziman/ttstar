@@ -9,21 +9,23 @@ data Vec : N -> Type -> Type where
   Cons : (a : Type) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a.
 
 plus (m : N) (n : N) : N
-  = case m of
+  = case m of {
       Z => n,
-      S (m' : N) => S (plus m' n).
+      S (m' : N) => S (plus m' n)
+    }
 
 append (a : Type) (m : N) (n : N) (xs : Vec m a) (ys : Vec n a) : Vec (plus m n) a
-  = case xs of
-      Nil (a' : Type)
-        | a = a'
-        | m = Z
-        => ys,
+  = case xs of {
+      Nil (a' : Type) =>
+        case a of [a'] =>
+          case m of [Z] =>
+            ys,
 
-      Cons (a' : Type) (m' : N) (x : a') (xs' : Vec m' a')
-        | a' = a
-        | m = S m'
-        => Cons a (plus m' n) x (append a m' n xs' ys).
+      Cons (a' : Type) (m' : N) (x : a') (xs' : Vec m' a') =>
+        case a' of [a] =>
+          case m of [S m'] =>
+            Cons a (plus m' n) x (append a m' n xs' ys)
+    }
 
 main : Vec 1 N
     = append N 0 1 (Nil N) (Cons N Z 4 (Nil N)).
