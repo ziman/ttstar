@@ -11,12 +11,12 @@
     postulate Cons : (a : Type) -> (n : N) -> (x : a) -> (xs : Vec n a) -> Vec (S n) a
     vlen : (n : N) -> (xs : Vec n N) -> N = \(n : N) (xs : Vec n N).
       case xs of
-        Nil (a : Type)
-          => case a of [N] =>
+        Nil (a : Type) =>
+          case a of [N] =>
             case n of [Z] =>
               n
-        Cons (a : Type) (m : N) (y : N) (ys : Vec m N)
-          => case a of [N] =>
+        Cons (a : Type) (m : N) (y : N) (ys : Vec m N) =>
+          case a of [N] =>
             case n of [S m] =>
               S (vlen m ys)
     main : N = vlen 1 (Cons N Z 3 (Nil N))
@@ -33,12 +33,12 @@
     postulate Cons :11: (a :12: Type) -> (n :13: N) -> (x :14: a) -> (xs :15: Vec -17- n -16- a) -> Vec -19- (S -20- n) -18- a
     vlen :21: (n :22: N) -> (xs :23: Vec -25- n -24- N) -> N = \(n :26: N) (xs :27: Vec -29- n -28- N).
       case -30- xs of
-        Nil/31 (a :32: Type)
-          => case -33- a of [N] =>
+        Nil/31 (a :32: Type) =>
+          case -33- a of [N] =>
             case -34- n of [Z] =>
               n
-        Cons/35 (a :36: Type) (m :37: N) (y :38: N) (ys :39: Vec -41- m -40- N)
-          => case -42- a of [N] =>
+        Cons/35 (a :36: Type) (m :37: N) (y :38: N) (ys :39: Vec -41- m -40- N) =>
+          case -42- a of [N] =>
             case -43- n of [S -44- m] =>
               S -45- (vlen -47- m -46- ys)
     main :48: N = vlen -50- 1 -49- (Cons -55- N -54- Z -53- 3 -52- (Nil -59- N))
@@ -60,12 +60,12 @@ ttstar: Traceback:
     postulate Cons :11: (a :12: Type) -> (n :13: N) -> (x :14: a) -> (xs :15: Vec -17- n -16- a) -> Vec -19- (S -20- n) -18- a
     vlen :21: (n :22: N) -> (xs :23: Vec -25- n -24- N) -> N = \(n :26: N) (xs :27: Vec -29- n -28- N).
       case -30- xs of
-        Nil/31 (a :32: Type)
-          => case -33- a of [N] =>
+        Nil/31 (a :32: Type) =>
+          case -33- a of [N] =>
             case -34- n of [Z] =>
               n
-        Cons/35 (a :36: Type) (m :37: N) (y :38: N) (ys :39: Vec -41- m -40- N)
-          => case -42- a of [N] =>
+        Cons/35 (a :36: Type) (m :37: N) (y :38: N) (ys :39: Vec -41- m -40- N) =>
+          case -42- a of [N] =>
             case -43- n of [S -44- m] =>
               S -45- (vlen -47- m -46- ys)
     main :48: N = vlen -50- 1 -49- (Cons -55- N -54- Z -53- 3 -52- (Nil -59- N))
@@ -106,12 +106,12 @@ ttstar: Traceback:
   vlen : (n :22: N) -> (xs :23: Vec -25- n -24- N) -> N
 
 ("CASE",vlen -26- n -27- xs,case -30- xs of
-  Nil/31 (a :32: Type)
-    => case -33- a of [N] =>
+  Nil/31 (a :32: Type) =>
+    case -33- a of [N] =>
       case -34- n of [Z] =>
         n
-  Cons/35 (a :36: Type) (m :37: N) (y :38: N) (ys :39: Vec -41- m -40- N)
-    => case -42- a of [N] =>
+  Cons/35 (a :36: Type) (m :37: N) (y :38: N) (ys :39: Vec -41- m -40- N) =>
+    case -42- a of [N] =>
       case -43- n of [S -44- m] =>
         S -45- (vlen -47- m -46- ys))
 

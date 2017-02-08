@@ -12,10 +12,10 @@
     postulate Plus : (x :R: Nat) -> (y :R: Nat) -> Nat
     id : (x : Nat) -> Nat = \(x : Nat).
       case x of
-        Z
-          => Z
-        S (y : Nat)
-          => 
+        Z =>
+          Z
+        S (y : Nat) =>
+          
             let result : Nat = S y
             in result
     const_3 : (x : Nat) -> Nat = (\x : Nat. 3)
@@ -39,10 +39,10 @@
     postulate Plus :7: (x :R: Nat) -> (y :R: Nat) -> Nat
     id :8: (x :9: Nat) -> Nat = \(x :10: Nat).
       case -11- x of
-        Z/12
-          => Z
-        S/13 (y :14: Nat)
-          => 
+        Z/12 =>
+          Z
+        S/13 (y :14: Nat) =>
+          
             let result :15: Nat = S -16- y
             in result
     const_3 :17: (x :18: Nat) -> Nat = (\x :19: Nat. 3)
@@ -75,10 +75,10 @@
     postulate Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
     id :R: (x :R: Nat) -> Nat = \(x :R: Nat).
       case -R- x of
-        Z/R
-          => Z
-        S/R (y :R: Nat)
-          => 
+        Z/R =>
+          Z
+        S/R (y :R: Nat) =>
+          
             let result :R: Nat = S -R- y
             in result
     const_3 :R: (x :R: Nat) -> Nat = (\x :R: Nat. 3)
@@ -102,10 +102,10 @@
     postulate Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
     id :R: (x :R: Nat) -> Nat = \(x :R: Nat).
       case -R- x of
-        Z/R
-          => Z
-        S/R (y :R: Nat)
-          => 
+        Z/R =>
+          Z
+        S/R (y :R: Nat) =>
+          
             let result :R: Nat = S -R- y
             in result
     const_3 :R: (x :R: Nat) -> Nat = (\x :R: Nat. 3)
@@ -129,10 +129,10 @@
     postulate Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
     id :R: (x :R: Nat) -> Nat = \(x :R: Nat).
       case -R- x of
-        Z/R
-          => Z
-        S/R (y :R: Nat)
-          => 
+        Z/R =>
+          Z
+        S/R (y :R: Nat) =>
+          
             let result :R: Nat = S -R- y
             in result
     const_3 :R: (x :R: Nat) -> Nat = (\x :R: Nat. 3)
@@ -156,10 +156,10 @@ Verification successful.
     postulate Plus : (x) -> (y) -> Nat
     id = \x.
       case x of
-        Z
-          => Z
-        S y
-          => 
+        Z =>
+          Z
+        S y =>
+          
             let result = S y
             in result
     const_3 = (\x. 3)

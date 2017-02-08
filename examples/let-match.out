@@ -9,10 +9,10 @@
     main : Bool = 
       let not : (x : Bool) -> Bool = \(x : Bool).
         case x of
-          T
-            => F
-          F
-            => T
+          T =>
+            F
+          F =>
+            T
       in not F
   in main
 
@@ -25,10 +25,10 @@
     main :4: Bool = 
       let not :6: (x :7: Bool) -> Bool = \(x :8: Bool).
         case -9- x of
-          T/10
-            => F
-          F/11
-            => T
+          T/10 =>
+            F
+          F/11 =>
+            T
       in not -5- F
   in main
 
@@ -50,10 +50,10 @@
     main :R: Bool = 
       let not :R: (x :R: Bool) -> Bool = \(x :R: Bool).
         case -R- x of
-          T/R
-            => F
-          F/R
-            => T
+          T/R =>
+            F
+          F/R =>
+            T
       in not -R- F
   in main
 
@@ -66,10 +66,10 @@
     main :R: Bool = 
       let not :R: (x :R: Bool) -> Bool = \(x :R: Bool).
         case -R- x of
-          T/R
-            => F
-          F/R
-            => T
+          T/R =>
+            F
+          F/R =>
+            T
       in not -R- F
   in main
 
@@ -82,10 +82,10 @@
     main :R: Bool = 
       let not :R: (x :R: Bool) -> Bool = \(x :R: Bool).
         case -R- x of
-          T/R
-            => F
-          F/R
-            => T
+          T/R =>
+            F
+          F/R =>
+            T
       in not -R- F
   in main
 
@@ -101,10 +101,10 @@ Verification successful.
     main = 
       let not = \x.
         case x of
-          T
-            => F
-          F
-            => T
+          T =>
+            F
+          F =>
+            T
       in not F
   in main
 

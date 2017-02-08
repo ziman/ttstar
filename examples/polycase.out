@@ -13,34 +13,34 @@
     postulate Refl : (a : Type) -> (x : a) -> Id a x x
     not : (x : Bool) -> Bool = \(x : Bool).
       case x of
-        T
-          => F
-        F
-          => T
+        T =>
+          F
+        F =>
+          T
     notnot : (x : Bool) -> Id Bool x (not (not x)) = \(x : Bool).
       case x of
-        T
-          => Refl Bool T
-        F
-          => Refl Bool F
+        T =>
+          Refl Bool T
+        F =>
+          Refl Bool F
     retTy : (x : Bool) -> Type = \(x : Bool).
       case x of
-        T
-          => Bool
-        F
-          => Mool
+        T =>
+          Bool
+        F =>
+          Mool
     mot : (m : Mool) -> Mool = \(m : Mool).
       case m of
-        Q
-          => W
-        W
-          => Q
+        Q =>
+          W
+        W =>
+          Q
     invert : (t : Bool) -> (x : retTy t) -> retTy t = \(t : Bool) (x : retTy t).
       case t of
-        T
-          => not x
-        F
-          => mot x
+        T =>
+          not x
+        F =>
+          mot x
     main : Mool = invert F Q
   in main
 
@@ -57,34 +57,34 @@
     postulate Refl :11: (a :12: Type) -> (x :13: a) -> Id -16- a -15- x -14- x
     not :17: (x :18: Bool) -> Bool = \(x :19: Bool).
       case -20- x of
-        T/21
-          => F
-        F/22
-          => T
+        T/21 =>
+          F
+        F/22 =>
+          T
     notnot :23: (x :24: Bool) -> Id -27- Bool -26- x -25- (not -28- (not -29- x)) = \(x :30: Bool).
       case -31- x of
-        T/32
-          => Refl -34- Bool -33- T
-        F/35
-          => Refl -37- Bool -36- F
+        T/32 =>
+          Refl -34- Bool -33- T
+        F/35 =>
+          Refl -37- Bool -36- F
     retTy :38: (x :39: Bool) -> Type = \(x :40: Bool).
       case -41- x of
-        T/42
-          => Bool
-        F/43
-          => Mool
+        T/42 =>
+          Bool
+        F/43 =>
+          Mool
     mot :44: (m :45: Mool) -> Mool = \(m :46: Mool).
       case -47- m of
-        Q/48
-          => W
-        W/49
-          => Q
+        Q/48 =>
+          W
+        W/49 =>
+          Q
     invert :50: (t :51: Bool) -> (x :52: retTy -53- t) -> retTy -54- t = \(t :55: Bool) (x :56: retTy -57- t).
       case -58- t of
-        T/59
-          => not -60- x
-        F/61
-          => mot -62- x
+        T/59 =>
+          not -60- x
+        F/61 =>
+          mot -62- x
     main :63: Mool = invert -65- F -64- Q
   in main
 
@@ -110,34 +110,34 @@
     postulate Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
     not :R: (x :R: Bool) -> Bool = \(x :R: Bool).
       case -R- x of
-        T/R
-          => F
-        F/R
-          => T
+        T/R =>
+          F
+        F/R =>
+          T
     notnot :E: (x :E: Bool) -> Id -E- Bool -E- x -E- (not -E- (not -E- x)) = \(x :E: Bool).
       case -E- x of
-        T/E
-          => Refl -E- Bool -E- T
-        F/E
-          => Refl -E- Bool -E- F
+        T/E =>
+          Refl -E- Bool -E- T
+        F/E =>
+          Refl -E- Bool -E- F
     retTy :E: (x :E: Bool) -> Type = \(x :E: Bool).
       case -E- x of
-        T/E
-          => Bool
-        F/E
-          => Mool
+        T/E =>
+          Bool
+        F/E =>
+          Mool
     mot :R: (m :R: Mool) -> Mool = \(m :R: Mool).
       case -R- m of
-        Q/R
-          => W
-        W/R
-          => Q
+        Q/R =>
+          W
+        W/R =>
+          Q
     invert :R: (t :R: Bool) -> (x :R: retTy -E- t) -> retTy -E- t = \(t :R: Bool) (x :R: retTy -E- t).
       case -R- t of
-        T/R
-          => not -R- x
-        F/R
-          => mot -R- x
+        T/R =>
+          not -R- x
+        F/R =>
+          mot -R- x
     main :R: Mool = invert -R- F -R- Q
   in main
 
@@ -154,34 +154,34 @@
     postulate Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
     not :R: (x :R: Bool) -> Bool = \(x :R: Bool).
       case -R- x of
-        T/R
-          => F
-        F/R
-          => T
+        T/R =>
+          F
+        F/R =>
+          T
     notnot :E: (x :E: Bool) -> Id -E- Bool -E- x -E- (not -E- (not -E- x)) = \(x :E: Bool).
       case -E- x of
-        T/E
-          => Refl -E- Bool -E- T
-        F/E
-          => Refl -E- Bool -E- F
+        T/E =>
+          Refl -E- Bool -E- T
+        F/E =>
+          Refl -E- Bool -E- F
     retTy :E: (x :E: Bool) -> Type = \(x :E: Bool).
       case -E- x of
-        T/E
-          => Bool
-        F/E
-          => Mool
+        T/E =>
+          Bool
+        F/E =>
+          Mool
     mot :R: (m :R: Mool) -> Mool = \(m :R: Mool).
       case -R- m of
-        Q/R
-          => W
-        W/R
-          => Q
+        Q/R =>
+          W
+        W/R =>
+          Q
     invert :R: (t :R: Bool) -> (x :R: retTy -E- t) -> retTy -E- t = \(t :R: Bool) (x :R: retTy -E- t).
       case -R- t of
-        T/R
-          => not -R- x
-        F/R
-          => mot -R- x
+        T/R =>
+          not -R- x
+        F/R =>
+          mot -R- x
     main :R: Mool = invert -R- F -R- Q
   in main
 
@@ -198,34 +198,34 @@
     postulate Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
     not :R: (x :R: Bool) -> Bool = \(x :R: Bool).
       case -R- x of
-        T/R
-          => F
-        F/R
-          => T
+        T/R =>
+          F
+        F/R =>
+          T
     notnot :E: (x :E: Bool) -> Id -E- Bool -E- x -E- (not -E- (not -E- x)) = \(x :E: Bool).
       case -E- x of
-        T/E
-          => Refl -E- Bool -E- T
-        F/E
-          => Refl -E- Bool -E- F
+        T/E =>
+          Refl -E- Bool -E- T
+        F/E =>
+          Refl -E- Bool -E- F
     retTy :E: (x :E: Bool) -> Type = \(x :E: Bool).
       case -E- x of
-        T/E
-          => Bool
-        F/E
-          => Mool
+        T/E =>
+          Bool
+        F/E =>
+          Mool
     mot :R: (m :R: Mool) -> Mool = \(m :R: Mool).
       case -R- m of
-        Q/R
-          => W
-        W/R
-          => Q
+        Q/R =>
+          W
+        W/R =>
+          Q
     invert :R: (t :R: Bool) -> (x :R: retTy -E- t) -> retTy -E- t = \(t :R: Bool) (x :R: retTy -E- t).
       case -R- t of
-        T/R
-          => not -R- x
-        F/R
-          => mot -R- x
+        T/R =>
+          not -R- x
+        F/R =>
+          mot -R- x
     main :R: Mool = invert -R- F -R- Q
   in main
 
@@ -242,22 +242,22 @@ Verification successful.
     postulate F : Bool
     not = \x.
       case x of
-        T
-          => F
-        F
-          => T
+        T =>
+          F
+        F =>
+          T
     mot = \m.
       case m of
-        Q
-          => W
-        W
-          => Q
+        Q =>
+          W
+        W =>
+          Q
     invert = \t x.
       case t of
-        T
-          => not x
-        F
-          => mot x
+        T =>
+          not x
+        F =>
+          mot x
     main = invert F Q
   in main
 

@@ -8,10 +8,10 @@
     postulate F : Bool
     not : (x : Bool) -> Bool = \(x : Bool).
       case x of
-        T
-          => F
-        F
-          => T
+        T =>
+          F
+        F =>
+          T
     main : (_x0 : Bool) -> Bool = not
   in main
 
@@ -23,10 +23,10 @@
     postulate F :3: Bool
     not :4: (x :5: Bool) -> Bool = \(x :6: Bool).
       case -7- x of
-        T/8
-          => F
-        F/9
-          => T
+        T/8 =>
+          F
+        F/9 =>
+          T
     main :10: (_x0 :11: Bool) -> Bool = not
   in main
 
@@ -47,10 +47,10 @@
     postulate F :R: Bool
     not :R: (x :R: Bool) -> Bool = \(x :R: Bool).
       case -R- x of
-        T/R
-          => F
-        F/R
-          => T
+        T/R =>
+          F
+        F/R =>
+          T
     main :R: (_x0 :R: Bool) -> Bool = not
   in main
 
@@ -62,10 +62,10 @@
     postulate F :R: Bool
     not :R: (x :R: Bool) -> Bool = \(x :R: Bool).
       case -R- x of
-        T/R
-          => F
-        F/R
-          => T
+        T/R =>
+          F
+        F/R =>
+          T
     main :R: (_x0 :R: Bool) -> Bool = not
   in main
 
@@ -77,10 +77,10 @@
     postulate F :R: Bool
     not :R: (x :R: Bool) -> Bool = \(x :R: Bool).
       case -R- x of
-        T/R
-          => F
-        F/R
-          => T
+        T/R =>
+          F
+        F/R =>
+          T
     main :R: (_x0 :R: Bool) -> Bool = not
   in main
 
@@ -95,10 +95,10 @@ Verification successful.
     postulate F : Bool
     not = \x.
       case x of
-        T
-          => F
-        F
-          => T
+        T =>
+          F
+        F =>
+          T
     main = not
   in main
 
@@ -108,19 +108,19 @@ unerased:
   
   let not : (x : Bool) -> Bool = \(x : Bool).
     case x of
-      T
-        => F
-      F
-        => T
+      T =>
+        F
+      F =>
+        T
   in not
 
 erased:
   
   let not = \x.
     case x of
-      T
-        => F
-      F
-        => T
+      T =>
+        F
+      F =>
+        T
   in not
 

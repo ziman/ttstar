@@ -8,19 +8,19 @@
     postulate S : (x :R: Nat) -> Nat
     plus : (n : Nat) -> (m : Nat) -> Nat = \(n : Nat) (m : Nat).
       case n of
-        Z
-          => m
-        S (n' : Nat)
-          => S (plus n' m)
+        Z =>
+          m
+        S (n' : Nat) =>
+          S (plus n' m)
     id : (x : Nat) -> Nat = (\x : Nat. x)
     const : (x : Nat) -> (y : Nat) -> Nat = (\x : Nat. (\y : Nat. x))
     main : Nat = 
       let apply : (f : (_x0 : Nat) -> Nat) -> (x : Nat) -> Nat = \(f : (_x0 : Nat) -> Nat) (x : Nat).
         case x of
-          Z
-            => f Z
-          S (x' : Nat)
-            => f (S x')
+          Z =>
+            f Z
+          S (x' : Nat) =>
+            f (S x')
       in 
         let
           postulate Q : Nat
@@ -36,19 +36,19 @@
     postulate S :3: (x :R: Nat) -> Nat
     plus :4: (n :5: Nat) -> (m :6: Nat) -> Nat = \(n :7: Nat) (m :8: Nat).
       case -9- n of
-        Z/10
-          => m
-        S/11 (n' :12: Nat)
-          => S -13- (plus -15- n' -14- m)
+        Z/10 =>
+          m
+        S/11 (n' :12: Nat) =>
+          S -13- (plus -15- n' -14- m)
     id :16: (x :17: Nat) -> Nat = (\x :18: Nat. x)
     const :19: (x :20: Nat) -> (y :21: Nat) -> Nat = (\x :22: Nat. (\y :23: Nat. x))
     main :24: Nat = 
       let apply :25: (f :26: (_x0 :27: Nat) -> Nat) -> (x :28: Nat) -> Nat = \(f :29: (_x0 :30: Nat) -> Nat) (x :31: Nat).
         case -32- x of
-          Z/33
-            => f -34- Z
-          S/35 (x' :36: Nat)
-            => f -37- (S -38- x')
+          Z/33 =>
+            f -34- Z
+          S/35 (x' :36: Nat) =>
+            f -37- (S -38- x')
       in 
         let
           postulate Q :39: Nat
@@ -73,19 +73,19 @@
     postulate S :R: (x :R: Nat) -> Nat
     plus :R: (n :R: Nat) -> (m :R: Nat) -> Nat = \(n :R: Nat) (m :R: Nat).
       case -R- n of
-        Z/R
-          => m
-        S/R (n' :R: Nat)
-          => S -R- (plus -R- n' -R- m)
+        Z/R =>
+          m
+        S/R (n' :R: Nat) =>
+          S -R- (plus -R- n' -R- m)
     id :R: (x :R: Nat) -> Nat = (\x :R: Nat. x)
     const :R: (x :R: Nat) -> (y :R: Nat) -> Nat = (\x :R: Nat. (\y :R: Nat. x))
     main :R: Nat = 
       let apply :R: (f :R: (_x0 :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = \(f :R: (_x0 :R: Nat) -> Nat) (x :R: Nat).
         case -R- x of
-          Z/R
-            => f -R- Z
-          S/R (x' :R: Nat)
-            => f -R- (S -R- x')
+          Z/R =>
+            f -R- Z
+          S/R (x' :R: Nat) =>
+            f -R- (S -R- x')
       in 
         let
           postulate Q :R: Nat
@@ -101,19 +101,19 @@
     postulate S :R: (x :R: Nat) -> Nat
     plus :R: (n :R: Nat) -> (m :R: Nat) -> Nat = \(n :R: Nat) (m :R: Nat).
       case -R- n of
-        Z/R
-          => m
-        S/R (n' :R: Nat)
-          => S -R- (plus -R- n' -R- m)
+        Z/R =>
+          m
+        S/R (n' :R: Nat) =>
+          S -R- (plus -R- n' -R- m)
     id :R: (x :R: Nat) -> Nat = (\x :R: Nat. x)
     const :R: (x :R: Nat) -> (y :R: Nat) -> Nat = (\x :R: Nat. (\y :R: Nat. x))
     main :R: Nat = 
       let apply :R: (f :R: (_x0 :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = \(f :R: (_x0 :R: Nat) -> Nat) (x :R: Nat).
         case -R- x of
-          Z/R
-            => f -R- Z
-          S/R (x' :R: Nat)
-            => f -R- (S -R- x')
+          Z/R =>
+            f -R- Z
+          S/R (x' :R: Nat) =>
+            f -R- (S -R- x')
       in 
         let
           postulate Q :R: Nat
@@ -129,19 +129,19 @@
     postulate S :R: (x :R: Nat) -> Nat
     plus :R: (n :R: Nat) -> (m :R: Nat) -> Nat = \(n :R: Nat) (m :R: Nat).
       case -R- n of
-        Z/R
-          => m
-        S/R (n' :R: Nat)
-          => S -R- (plus -R- n' -R- m)
+        Z/R =>
+          m
+        S/R (n' :R: Nat) =>
+          S -R- (plus -R- n' -R- m)
     id :R: (x :R: Nat) -> Nat = (\x :R: Nat. x)
     const :R: (x :R: Nat) -> (y :R: Nat) -> Nat = (\x :R: Nat. (\y :R: Nat. x))
     main :R: Nat = 
       let apply :R: (f :R: (_x0 :R: Nat) -> Nat) -> (x :R: Nat) -> Nat = \(f :R: (_x0 :R: Nat) -> Nat) (x :R: Nat).
         case -R- x of
-          Z/R
-            => f -R- Z
-          S/R (x' :R: Nat)
-            => f -R- (S -R- x')
+          Z/R =>
+            f -R- Z
+          S/R (x' :R: Nat) =>
+            f -R- (S -R- x')
       in 
         let
           postulate Q :R: Nat
@@ -160,19 +160,19 @@ Verification successful.
     postulate S : (x) -> Nat
     plus = \n m.
       case n of
-        Z
-          => m
-        S n'
-          => S (plus n' m)
+        Z =>
+          m
+        S n' =>
+          S (plus n' m)
     id = (\x. x)
     const = (\x. (\y. x))
     main = 
       let apply = \f x.
         case x of
-          Z
-            => f Z
-          S x'
-            => f (S x')
+          Z =>
+            f Z
+          S x' =>
+            f (S x')
       in 
         let
           postulate Q : Nat

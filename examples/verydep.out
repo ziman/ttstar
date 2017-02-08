@@ -12,19 +12,19 @@
     postulate False : Bool
     retTy : (x : Maybe Bool) -> Type = \(x : Maybe Bool).
       case x of
-        Just (a : Type) (t : Bool)
-          => case a of [Bool] =>
+        Just (a : Type) (t : Bool) =>
+          case a of [Bool] =>
             Bool
-        Nothing (a : Type)
-          => case a of [Bool] =>
+        Nothing (a : Type) =>
+          case a of [Bool] =>
             Type
     f : (x : Maybe Bool) -> retTy x = \(x : Maybe Bool).
       case x of
-        Just (a : Type) (b : Bool)
-          => case a of [Bool] =>
+        Just (a : Type) (b : Bool) =>
+          case a of [Bool] =>
             b
-        Nothing (a : Type)
-          => case a of [Bool] =>
+        Nothing (a : Type) =>
+          case a of [Bool] =>
             Bool
     main : Bool = f (Just Bool False)
   in main
@@ -41,19 +41,19 @@
     postulate False :13: Bool
     retTy :14: (x :15: Maybe -16- Bool) -> Type = \(x :17: Maybe -18- Bool).
       case -19- x of
-        Just/20 (a :21: Type) (t :22: Bool)
-          => case -23- a of [Bool] =>
+        Just/20 (a :21: Type) (t :22: Bool) =>
+          case -23- a of [Bool] =>
             Bool
-        Nothing/24 (a :25: Type)
-          => case -26- a of [Bool] =>
+        Nothing/24 (a :25: Type) =>
+          case -26- a of [Bool] =>
             Type
     f :27: (x :28: Maybe -29- Bool) -> retTy -30- x = \(x :31: Maybe -32- Bool).
       case -33- x of
-        Just/34 (a :35: Type) (b :36: Bool)
-          => case -37- a of [Bool] =>
+        Just/34 (a :35: Type) (b :36: Bool) =>
+          case -37- a of [Bool] =>
             b
-        Nothing/38 (a :39: Type)
-          => case -40- a of [Bool] =>
+        Nothing/38 (a :39: Type) =>
+          case -40- a of [Bool] =>
             Bool
     main :41: Bool = f -42- (Just -44- Bool -43- False)
   in main
@@ -91,19 +91,19 @@
     postulate False :R: Bool
     retTy :E: (x :E: Maybe -E- Bool) -> Type = \(x :E: Maybe -E- Bool).
       case -E- x of
-        Just/E (a :E: Type) (t :E: Bool)
-          => case -E- a of [Bool] =>
+        Just/E (a :E: Type) (t :E: Bool) =>
+          case -E- a of [Bool] =>
             Bool
-        Nothing/E (a :E: Type)
-          => case -E- a of [Bool] =>
+        Nothing/E (a :E: Type) =>
+          case -E- a of [Bool] =>
             Type
     f :R: (x :R: Maybe -E- Bool) -> retTy -E- x = \(x :R: Maybe -E- Bool).
       case -R- x of
-        Just/R (a :E: Type) (b :R: Bool)
-          => case -E- a of [Bool] =>
+        Just/R (a :E: Type) (b :R: Bool) =>
+          case -E- a of [Bool] =>
             b
-        Nothing/E (a :E: Type)
-          => case -E- a of [Bool] =>
+        Nothing/E (a :E: Type) =>
+          case -E- a of [Bool] =>
             Bool
     main :R: Bool = f -R- (Just -E- Bool -R- False)
   in main
@@ -120,19 +120,19 @@
     postulate False :R: Bool
     retTy :E: (x :E: Maybe -E- Bool) -> Type = \(x :E: Maybe -E- Bool).
       case -E- x of
-        Just/E (a :E: Type) (t :E: Bool)
-          => case -E- a of [Bool] =>
+        Just/E (a :E: Type) (t :E: Bool) =>
+          case -E- a of [Bool] =>
             Bool
-        Nothing/E (a :E: Type)
-          => case -E- a of [Bool] =>
+        Nothing/E (a :E: Type) =>
+          case -E- a of [Bool] =>
             Type
     f :R: (x :R: Maybe -E- Bool) -> retTy -E- x = \(x :R: Maybe -E- Bool).
       case -R- x of
-        Just/R (a :E: Type) (b :R: Bool)
-          => case -E- a of [Bool] =>
+        Just/R (a :E: Type) (b :R: Bool) =>
+          case -E- a of [Bool] =>
             b
-        Nothing/E (a :E: Type)
-          => case -E- a of [Bool] =>
+        Nothing/E (a :E: Type) =>
+          case -E- a of [Bool] =>
             Bool
     main :R: Bool = f -R- (Just -E- Bool -R- False)
   in main
@@ -149,19 +149,19 @@
     postulate False :R: Bool
     retTy :E: (x :E: Maybe -E- Bool) -> Type = \(x :E: Maybe -E- Bool).
       case -E- x of
-        Just/E (a :E: Type) (t :E: Bool)
-          => case -E- a of [Bool] =>
+        Just/E (a :E: Type) (t :E: Bool) =>
+          case -E- a of [Bool] =>
             Bool
-        Nothing/E (a :E: Type)
-          => case -E- a of [Bool] =>
+        Nothing/E (a :E: Type) =>
+          case -E- a of [Bool] =>
             Type
     f :R: (x :R: Maybe -E- Bool) -> retTy -E- x = \(x :R: Maybe -E- Bool).
       case -R- x of
-        Just/R (a :E: Type) (b :R: Bool)
-          => case -E- a of [Bool] =>
+        Just/R (a :E: Type) (b :R: Bool) =>
+          case -E- a of [Bool] =>
             b
-        Nothing/E (a :E: Type)
-          => case -E- a of [Bool] =>
+        Nothing/E (a :E: Type) =>
+          case -E- a of [Bool] =>
             Bool
     main :R: Bool = f -R- (Just -E- Bool -R- False)
   in main
@@ -178,8 +178,8 @@ Verification successful.
     postulate False : Bool
     f = \x.
       case x of
-        Just b
-          => b
+        Just b =>
+          b
     main = f (Just False)
   in main
 

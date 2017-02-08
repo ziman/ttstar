@@ -10,8 +10,8 @@
     postulate Nil : Vec Z
     vlen : (n : N) -> (xs : Vec n) -> N = \(n : N) (xs : Vec n).
       case xs of
-        Nil
-          => case n of [Z] =>
+        Nil =>
+          case n of [Z] =>
             n
     main : N = vlen Z Nil
   in main
@@ -26,8 +26,8 @@
     postulate Nil :7: Vec -8- Z
     vlen :9: (n :10: N) -> (xs :11: Vec -12- n) -> N = \(n :13: N) (xs :14: Vec -15- n).
       case -16- xs of
-        Nil/17
-          => case -18- n of [Z] =>
+        Nil/17 =>
+          case -18- n of [Z] =>
             n
     main :19: N = vlen -21- Z -20- Nil
   in main
@@ -47,8 +47,8 @@ ttstar: Traceback:
     postulate Nil :7: Vec -8- Z
     vlen :9: (n :10: N) -> (xs :11: Vec -12- n) -> N = \(n :13: N) (xs :14: Vec -15- n).
       case -16- xs of
-        Nil/17
-          => case -18- n of [Z] =>
+        Nil/17 =>
+          case -18- n of [Z] =>
             n
     main :19: N = vlen -21- Z -20- Nil
   in main)
@@ -85,8 +85,8 @@ ttstar: Traceback:
   vlen : (n :10: N) -> (xs :11: Vec -12- n) -> N
 
 ("CASE",vlen -13- n -14- xs,case -16- xs of
-  Nil/17
-    => case -18- n of [Z] =>
+  Nil/17 =>
+    case -18- n of [Z] =>
       n)
 
 5. In context:

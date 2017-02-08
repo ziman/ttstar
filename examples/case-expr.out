@@ -10,23 +10,23 @@
     postulate MkUnit : Unit
     not : (x : Bool) -> Bool = \(x : Bool).
       case x of
-        T
-          => F
-        F
-          => T
+        T =>
+          F
+        F =>
+          T
     retTy : (x : Bool) -> Type = \(x : Bool).
       case x of
-        T
-          => Bool
-        F
-          => Unit
+        T =>
+          Bool
+        F =>
+          Unit
     main : Bool = not 
       let _casefun0 : (x : Bool) -> retTy x = \(x : Bool).
         case x of
-          F
-            => MkUnit
-          T
-            => F
+          F =>
+            MkUnit
+          T =>
+            F
       in _casefun0 (not F)
   in main
 
@@ -40,23 +40,23 @@
     postulate MkUnit :5: Unit
     not :6: (x :7: Bool) -> Bool = \(x :8: Bool).
       case -9- x of
-        T/10
-          => F
-        F/11
-          => T
+        T/10 =>
+          F
+        F/11 =>
+          T
     retTy :12: (x :13: Bool) -> Type = \(x :14: Bool).
       case -15- x of
-        T/16
-          => Bool
-        F/17
-          => Unit
+        T/16 =>
+          Bool
+        F/17 =>
+          Unit
     main :18: Bool = not -19- 
       let _casefun0 :20: (x :21: Bool) -> retTy -22- x = \(x :23: Bool).
         case -24- x of
-          F/25
-            => MkUnit
-          T/26
-            => F
+          F/25 =>
+            MkUnit
+          T/26 =>
+            F
       in _casefun0 -27- (not -28- F)
   in main
 
@@ -79,23 +79,23 @@
     postulate MkUnit :R: Unit
     not :R: (x :R: Bool) -> Bool = \(x :R: Bool).
       case -R- x of
-        T/R
-          => F
-        F/R
-          => T
+        T/R =>
+          F
+        F/R =>
+          T
     retTy :E: (x :E: Bool) -> Type = \(x :E: Bool).
       case -E- x of
-        T/E
-          => Bool
-        F/E
-          => Unit
+        T/E =>
+          Bool
+        F/E =>
+          Unit
     main :R: Bool = not -R- 
       let _casefun0 :R: (x :R: Bool) -> retTy -E- x = \(x :R: Bool).
         case -R- x of
-          F/R
-            => MkUnit
-          T/R
-            => F
+          F/R =>
+            MkUnit
+          T/R =>
+            F
       in _casefun0 -R- (not -R- F)
   in main
 
@@ -109,23 +109,23 @@
     postulate MkUnit :R: Unit
     not :R: (x :R: Bool) -> Bool = \(x :R: Bool).
       case -R- x of
-        T/R
-          => F
-        F/R
-          => T
+        T/R =>
+          F
+        F/R =>
+          T
     retTy :E: (x :E: Bool) -> Type = \(x :E: Bool).
       case -E- x of
-        T/E
-          => Bool
-        F/E
-          => Unit
+        T/E =>
+          Bool
+        F/E =>
+          Unit
     main :R: Bool = not -R- 
       let _casefun0 :R: (x :R: Bool) -> retTy -E- x = \(x :R: Bool).
         case -R- x of
-          F/R
-            => MkUnit
-          T/R
-            => F
+          F/R =>
+            MkUnit
+          T/R =>
+            F
       in _casefun0 -R- (not -R- F)
   in main
 
@@ -139,23 +139,23 @@
     postulate MkUnit :R: Unit
     not :R: (x :R: Bool) -> Bool = \(x :R: Bool).
       case -R- x of
-        T/R
-          => F
-        F/R
-          => T
+        T/R =>
+          F
+        F/R =>
+          T
     retTy :E: (x :E: Bool) -> Type = \(x :E: Bool).
       case -E- x of
-        T/E
-          => Bool
-        F/E
-          => Unit
+        T/E =>
+          Bool
+        F/E =>
+          Unit
     main :R: Bool = not -R- 
       let _casefun0 :R: (x :R: Bool) -> retTy -E- x = \(x :R: Bool).
         case -R- x of
-          F/R
-            => MkUnit
-          T/R
-            => F
+          F/R =>
+            MkUnit
+          T/R =>
+            F
       in _casefun0 -R- (not -R- F)
   in main
 
@@ -171,17 +171,17 @@ Verification successful.
     postulate MkUnit : Unit
     not = \x.
       case x of
-        T
-          => F
-        F
-          => T
+        T =>
+          F
+        F =>
+          T
     main = not 
       let _casefun0 = \x.
         case x of
-          F
-            => MkUnit
-          T
-            => F
+          F =>
+            MkUnit
+          T =>
+            F
       in _casefun0 (not F)
   in main
 

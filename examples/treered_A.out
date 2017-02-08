@@ -11,12 +11,12 @@
     postulate Cons : (a : Type) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a
     vlen : (n : N) -> (xs : Vec n N) -> N = \(n : N) (xs : Vec n N).
       case xs of
-        Nil (a : Type)
-          => case a of [N] =>
+        Nil (a : Type) =>
+          case a of [N] =>
             case n of [Z] =>
               Z
-        Cons (a : Type) (m : N) (y : N) (ys : Vec m N)
-          => case a of [N] =>
+        Cons (a : Type) (m : N) (y : N) (ys : Vec m N) =>
+          case a of [N] =>
             case n of [S m] =>
               S (vlen m ys)
     main : N = vlen 1 (Cons N Z 3 (Nil N))
@@ -33,12 +33,12 @@
     postulate Cons :11: (a :12: Type) -> (n :13: N) -> (x :R: a) -> (xs :R: Vec -15- n -14- a) -> Vec -17- (S -18- n) -16- a
     vlen :19: (n :20: N) -> (xs :21: Vec -23- n -22- N) -> N = \(n :24: N) (xs :25: Vec -27- n -26- N).
       case -28- xs of
-        Nil/29 (a :30: Type)
-          => case -31- a of [N] =>
+        Nil/29 (a :30: Type) =>
+          case -31- a of [N] =>
             case -32- n of [Z] =>
               Z
-        Cons/33 (a :34: Type) (m :35: N) (y :36: N) (ys :37: Vec -39- m -38- N)
-          => case -40- a of [N] =>
+        Cons/33 (a :34: Type) (m :35: N) (y :36: N) (ys :37: Vec -39- m -38- N) =>
+          case -40- a of [N] =>
             case -41- n of [S -42- m] =>
               S -43- (vlen -45- m -44- ys)
     main :46: N = vlen -48- 1 -47- (Cons -53- N -52- Z -51- 3 -50- (Nil -57- N))
@@ -94,12 +94,12 @@
     postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N = \(n :E: N) (xs :R: Vec -E- n -E- N).
       case -R- xs of
-        Nil/R (a :E: Type)
-          => case -E- a of [N] =>
+        Nil/R (a :E: Type) =>
+          case -E- a of [N] =>
             case -E- n of [Z] =>
               Z
-        Cons/R (a :E: Type) (m :E: N) (y :E: N) (ys :R: Vec -E- m -E- N)
-          => case -E- a of [N] =>
+        Cons/R (a :E: Type) (m :E: N) (y :E: N) (ys :R: Vec -E- m -E- N) =>
+          case -E- a of [N] =>
             case -E- n of [S -E- m] =>
               S -R- (vlen -E- m -R- ys)
     main :R: N = vlen -E- 1 -R- (Cons -E- N -E- Z -R- 3 -R- (Nil -E- N))
@@ -116,12 +116,12 @@
     postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N = \(n :E: N) (xs :R: Vec -E- n -E- N).
       case -R- xs of
-        Nil/R (a :E: Type)
-          => case -E- a of [N] =>
+        Nil/R (a :E: Type) =>
+          case -E- a of [N] =>
             case -E- n of [Z] =>
               Z
-        Cons/R (a :E: Type) (m :E: N) (y :E: N) (ys :R: Vec -E- m -E- N)
-          => case -E- a of [N] =>
+        Cons/R (a :E: Type) (m :E: N) (y :E: N) (ys :R: Vec -E- m -E- N) =>
+          case -E- a of [N] =>
             case -E- n of [S -E- m] =>
               S -R- (vlen -E- m -R- ys)
     main :R: N = vlen -E- 1 -R- (Cons -E- N -E- Z -R- 3 -R- (Nil -E- N))
@@ -138,12 +138,12 @@
     postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N = \(n :E: N) (xs :R: Vec -E- n -E- N).
       case -R- xs of
-        Nil/R (a :E: Type)
-          => case -E- a of [N] =>
+        Nil/R (a :E: Type) =>
+          case -E- a of [N] =>
             case -E- n of [Z] =>
               Z
-        Cons/R (a :E: Type) (m :E: N) (y :E: N) (ys :R: Vec -E- m -E- N)
-          => case -E- a of [N] =>
+        Cons/R (a :E: Type) (m :E: N) (y :E: N) (ys :R: Vec -E- m -E- N) =>
+          case -E- a of [N] =>
             case -E- n of [S -E- m] =>
               S -R- (vlen -E- m -R- ys)
     main :R: N = vlen -E- 1 -R- (Cons -E- N -E- Z -R- 3 -R- (Nil -E- N))
@@ -157,12 +157,12 @@ ttstar: !! verification failed: Traceback:
 
 ("LET",R,[postulate N :E: Type,postulate Z :R: N,postulate S :R: (x :R: N) -> N,postulate Vec :E: (_x0 :E: N) -> (_x1 :E: Type) -> Type,postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a,postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a,vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N = \(n :E: N) (xs :R: Vec -E- n -E- N).
   case -R- xs of
-    Nil/R (a :E: Type)
-      => case -E- a of [N] =>
+    Nil/R (a :E: Type) =>
+      case -E- a of [N] =>
         case -E- n of [Z] =>
           Z
-    Cons/R (a :E: Type) (m :E: N) (y :E: N) (ys :R: Vec -E- m -E- N)
-      => case -E- a of [N] =>
+    Cons/R (a :E: Type) (m :E: N) (y :E: N) (ys :R: Vec -E- m -E- N) =>
+      case -E- a of [N] =>
         case -E- n of [S -E- m] =>
           S -R- (vlen -E- m -R- ys),main :R: N = vlen -E- 1 -R- (Cons -E- N -E- Z -R- 3 -R- (Nil -E- N))])
 

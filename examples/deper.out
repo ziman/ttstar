@@ -12,16 +12,16 @@
     constT : (x : Bool) -> Bool = (\x : Bool. T)
     fty : (x : Bool) -> Type = \(x : Bool).
       case x of
-        T
-          => (_x0 : Bool) -> Bool
-        F
-          => (_x1 : Bool) -> Bool
+        T =>
+          (_x0 : Bool) -> Bool
+        F =>
+          (_x1 : Bool) -> Bool
     f : (x : Bool) -> fty x = \(x : Bool).
       case x of
-        T
-          => id
-        F
-          => constT
+        T =>
+          id
+        F =>
+          constT
     main : TwoBools = TB (f T F) (f F F)
   in main
 
@@ -37,16 +37,16 @@
     constT :9: (x :10: Bool) -> Bool = (\x :11: Bool. T)
     fty :12: (x :13: Bool) -> Type = \(x :14: Bool).
       case -15- x of
-        T/16
-          => (_x0 :17: Bool) -> Bool
-        F/18
-          => (_x1 :19: Bool) -> Bool
+        T/16 =>
+          (_x0 :17: Bool) -> Bool
+        F/18 =>
+          (_x1 :19: Bool) -> Bool
     f :20: (x :21: Bool) -> fty -22- x = \(x :23: Bool).
       case -24- x of
-        T/25
-          => id
-        F/26
-          => constT
+        T/25 =>
+          id
+        F/26 =>
+          constT
     main :27: TwoBools = TB -29- (f -31- T -30- F) -28- (f -33- F -32- F)
   in main
 
@@ -75,16 +75,16 @@
     constT :R: (x :E: Bool) -> Bool = (\x :E: Bool. T)
     fty :E: (x :E: Bool) -> Type = \(x :E: Bool).
       case -E- x of
-        T/E
-          => (_x0 :R: Bool) -> Bool
-        F/E
-          => (_x1 :E: Bool) -> Bool
+        T/E =>
+          (_x0 :R: Bool) -> Bool
+        F/E =>
+          (_x1 :E: Bool) -> Bool
     f :R: (x :R: Bool) -> fty -E- x = \(x :R: Bool).
       case -R- x of
-        T/R
-          => id
-        F/R
-          => constT
+        T/R =>
+          id
+        F/R =>
+          constT
     main :R: TwoBools = TB -R- (f -R- T -R- F) -R- (f -R- F -E- F)
   in main
 
@@ -100,16 +100,16 @@
     constT :R: (x :E: Bool) -> Bool = (\x :E: Bool. T)
     fty :E: (x :E: Bool) -> Type = \(x :E: Bool).
       case -E- x of
-        T/E
-          => (_x0 :R: Bool) -> Bool
-        F/E
-          => (_x1 :E: Bool) -> Bool
+        T/E =>
+          (_x0 :R: Bool) -> Bool
+        F/E =>
+          (_x1 :E: Bool) -> Bool
     f :R: (x :R: Bool) -> fty -E- x = \(x :R: Bool).
       case -R- x of
-        T/R
-          => id
-        F/R
-          => constT
+        T/R =>
+          id
+        F/R =>
+          constT
     main :R: TwoBools = TB -R- (f -R- T -R- F) -R- (f -R- F -E- F)
   in main
 
@@ -125,16 +125,16 @@
     constT :R: (x :E: Bool) -> Bool = (\x :E: Bool. T)
     fty :E: (x :E: Bool) -> Type = \(x :E: Bool).
       case -E- x of
-        T/E
-          => (_x0 :R: Bool) -> Bool
-        F/E
-          => (_x1 :E: Bool) -> Bool
+        T/E =>
+          (_x0 :R: Bool) -> Bool
+        F/E =>
+          (_x1 :E: Bool) -> Bool
     f :R: (x :R: Bool) -> fty -E- x = \(x :R: Bool).
       case -R- x of
-        T/R
-          => id
-        F/R
-          => constT
+        T/R =>
+          id
+        F/R =>
+          constT
     main :R: TwoBools = TB -R- (f -R- T -R- F) -R- (f -R- F -E- F)
   in main
 
@@ -152,10 +152,10 @@ Verification successful.
     constT = T
     f = \x.
       case x of
-        T
-          => id
-        F
-          => constT
+        T =>
+          id
+        F =>
+          constT
     main = TB (f T F) (f F)
   in main
 

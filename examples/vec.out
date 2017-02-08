@@ -11,18 +11,18 @@
     postulate Cons : (a : Type) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a
     plus : (m : N) -> (n : N) -> N = \(m : N) (n : N).
       case m of
-        Z
-          => n
-        S (m' : N)
-          => S (plus m' n)
+        Z =>
+          n
+        S (m' : N) =>
+          S (plus m' n)
     append : (a : Type) -> (m : N) -> (n : N) -> (xs : Vec m a) -> (ys : Vec n a) -> Vec (plus m n) a = \(a : Type) (m : N) (n : N) (xs : Vec m a) (ys : Vec n a).
       case xs of
-        Nil (a' : Type)
-          => case a of [a'] =>
+        Nil (a' : Type) =>
+          case a of [a'] =>
             case m of [Z] =>
               ys
-        Cons (a' : Type) (m' : N) (x : a') (xs' : Vec m' a')
-          => case a' of [a] =>
+        Cons (a' : Type) (m' : N) (x : a') (xs' : Vec m' a') =>
+          case a' of [a] =>
             case m of [S m'] =>
               Cons a (plus m' n) x (append a m' n xs' ys)
     main : Vec 1 N = append N Z 1 (Nil N) (Cons N Z 4 (Nil N))
@@ -39,18 +39,18 @@
     postulate Cons :11: (a :12: Type) -> (n :13: N) -> (x :R: a) -> (xs :R: Vec -15- n -14- a) -> Vec -17- (S -18- n) -16- a
     plus :19: (m :20: N) -> (n :21: N) -> N = \(m :22: N) (n :23: N).
       case -24- m of
-        Z/25
-          => n
-        S/26 (m' :27: N)
-          => S -28- (plus -30- m' -29- n)
+        Z/25 =>
+          n
+        S/26 (m' :27: N) =>
+          S -28- (plus -30- m' -29- n)
     append :31: (a :32: Type) -> (m :33: N) -> (n :34: N) -> (xs :35: Vec -37- m -36- a) -> (ys :38: Vec -40- n -39- a) -> Vec -42- (plus -44- m -43- n) -41- a = \(a :45: Type) (m :46: N) (n :47: N) (xs :48: Vec -50- m -49- a) (ys :51: Vec -53- n -52- a).
       case -54- xs of
-        Nil/55 (a' :56: Type)
-          => case -57- a of [a'] =>
+        Nil/55 (a' :56: Type) =>
+          case -57- a of [a'] =>
             case -58- m of [Z] =>
               ys
-        Cons/59 (a' :60: Type) (m' :61: N) (x :62: a') (xs' :63: Vec -65- m' -64- a')
-          => case -66- a' of [a] =>
+        Cons/59 (a' :60: Type) (m' :61: N) (x :62: a') (xs' :63: Vec -65- m' -64- a') =>
+          case -66- a' of [a] =>
             case -67- m of [S -68- m'] =>
               Cons -72- a -71- (plus -74- m' -73- n) -70- x -69- (append -79- a -78- m' -77- n -76- xs' -75- ys)
     main :80: Vec -82- 1 -81- N = append -88- N -87- Z -86- 1 -85- (Nil -90- N) -84- (Cons -94- N -93- Z -92- 4 -91- (Nil -99- N))
@@ -137,18 +137,18 @@
     postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     plus :E: (m :E: N) -> (n :E: N) -> N = \(m :E: N) (n :E: N).
       case -E- m of
-        Z/E
-          => n
-        S/E (m' :E: N)
-          => S -E- (plus -E- m' -E- n)
+        Z/E =>
+          n
+        S/E (m' :E: N) =>
+          S -E- (plus -E- m' -E- n)
     append :R: (a :E: Type) -> (m :E: N) -> (n :E: N) -> (xs :R: Vec -E- m -E- a) -> (ys :R: Vec -E- n -E- a) -> Vec -E- (plus -E- m -E- n) -E- a = \(a :E: Type) (m :E: N) (n :E: N) (xs :R: Vec -E- m -E- a) (ys :R: Vec -E- n -E- a).
       case -R- xs of
-        Nil/R (a' :E: Type)
-          => case -E- a of [a'] =>
+        Nil/R (a' :E: Type) =>
+          case -E- a of [a'] =>
             case -E- m of [Z] =>
               ys
-        Cons/R (a' :E: Type) (m' :E: N) (x :R: a') (xs' :R: Vec -E- m' -E- a')
-          => case -E- a' of [a] =>
+        Cons/R (a' :E: Type) (m' :E: N) (x :R: a') (xs' :R: Vec -E- m' -E- a') =>
+          case -E- a' of [a] =>
             case -E- m of [S -E- m'] =>
               Cons -E- a -E- (plus -E- m' -E- n) -R- x -R- (append -E- a -E- m' -E- n -R- xs' -R- ys)
     main :R: Vec -E- 1 -E- N = append -E- N -E- Z -E- 1 -R- (Nil -E- N) -R- (Cons -E- N -E- Z -R- 4 -R- (Nil -E- N))
@@ -165,18 +165,18 @@
     postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     plus :E: (m :E: N) -> (n :E: N) -> N = \(m :E: N) (n :E: N).
       case -E- m of
-        Z/E
-          => n
-        S/E (m' :E: N)
-          => S -E- (plus -E- m' -E- n)
+        Z/E =>
+          n
+        S/E (m' :E: N) =>
+          S -E- (plus -E- m' -E- n)
     append :R: (a :E: Type) -> (m :E: N) -> (n :E: N) -> (xs :R: Vec -E- m -E- a) -> (ys :R: Vec -E- n -E- a) -> Vec -E- (plus -E- m -E- n) -E- a = \(a :E: Type) (m :E: N) (n :E: N) (xs :R: Vec -E- m -E- a) (ys :R: Vec -E- n -E- a).
       case -R- xs of
-        Nil/R (a' :E: Type)
-          => case -E- a of [a'] =>
+        Nil/R (a' :E: Type) =>
+          case -E- a of [a'] =>
             case -E- m of [Z] =>
               ys
-        Cons/R (a' :E: Type) (m' :E: N) (x :R: a') (xs' :R: Vec -E- m' -E- a')
-          => case -E- a' of [a] =>
+        Cons/R (a' :E: Type) (m' :E: N) (x :R: a') (xs' :R: Vec -E- m' -E- a') =>
+          case -E- a' of [a] =>
             case -E- m of [S -E- m'] =>
               Cons -E- a -E- (plus -E- m' -E- n) -R- x -R- (append -E- a -E- m' -E- n -R- xs' -R- ys)
     main :R: Vec -E- 1 -E- N = append -E- N -E- Z -E- 1 -R- (Nil -E- N) -R- (Cons -E- N -E- Z -R- 4 -R- (Nil -E- N))
@@ -193,18 +193,18 @@
     postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     plus :E: (m :E: N) -> (n :E: N) -> N = \(m :E: N) (n :E: N).
       case -E- m of
-        Z/E
-          => n
-        S/E (m' :E: N)
-          => S -E- (plus -E- m' -E- n)
+        Z/E =>
+          n
+        S/E (m' :E: N) =>
+          S -E- (plus -E- m' -E- n)
     append :R: (a :E: Type) -> (m :E: N) -> (n :E: N) -> (xs :R: Vec -E- m -E- a) -> (ys :R: Vec -E- n -E- a) -> Vec -E- (plus -E- m -E- n) -E- a = \(a :E: Type) (m :E: N) (n :E: N) (xs :R: Vec -E- m -E- a) (ys :R: Vec -E- n -E- a).
       case -R- xs of
-        Nil/R (a' :E: Type)
-          => case -E- a of [a'] =>
+        Nil/R (a' :E: Type) =>
+          case -E- a of [a'] =>
             case -E- m of [Z] =>
               ys
-        Cons/R (a' :E: Type) (m' :E: N) (x :R: a') (xs' :R: Vec -E- m' -E- a')
-          => case -E- a' of [a] =>
+        Cons/R (a' :E: Type) (m' :E: N) (x :R: a') (xs' :R: Vec -E- m' -E- a') =>
+          case -E- a' of [a] =>
             case -E- m of [S -E- m'] =>
               Cons -E- a -E- (plus -E- m' -E- n) -R- x -R- (append -E- a -E- m' -E- n -R- xs' -R- ys)
     main :R: Vec -E- 1 -E- N = append -E- N -E- Z -E- 1 -R- (Nil -E- N) -R- (Cons -E- N -E- Z -R- 4 -R- (Nil -E- N))
@@ -223,10 +223,10 @@ Verification successful.
     postulate Cons : (x) -> (xs) -> Vec
     append = \xs ys.
       case xs of
-        Nil
-          => ys
-        Cons x xs'
-          => Cons x (append xs' ys)
+        Nil =>
+          ys
+        Cons x xs' =>
+          Cons x (append xs' ys)
     main = append Nil (Cons 4 Nil)
   in main
 

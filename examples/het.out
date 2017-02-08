@@ -15,23 +15,23 @@
     postulate M : U
     ty : (u : U) -> Type = \(u : U).
       case u of
-        B
-          => Bool
-        M
-          => Mool
+        B =>
+          Bool
+        M =>
+          Mool
     f : (u : U) -> (x : ty u) -> Type = \(u : U) (x : ty u).
       case x of
-        T
-          => case u of [B] =>
+        T =>
+          case u of [B] =>
             Bool
-        F
-          => case u of [B] =>
+        F =>
+          case u of [B] =>
             Bool
-        Q
-          => case u of [M] =>
+        Q =>
+          case u of [M] =>
             Mool
-        W
-          => case u of [M] =>
+        W =>
+          case u of [M] =>
             Mool
     main : Type = Tuple (f B T) (f B F) (f M Q) (f M W)
   in main
@@ -51,23 +51,23 @@
     postulate M :10: U
     ty :11: (u :12: U) -> Type = \(u :13: U).
       case -14- u of
-        B/15
-          => Bool
-        M/16
-          => Mool
+        B/15 =>
+          Bool
+        M/16 =>
+          Mool
     f :17: (u :18: U) -> (x :19: ty -20- u) -> Type = \(u :21: U) (x :22: ty -23- u).
       case -24- x of
-        T/25
-          => case -26- u of [B] =>
+        T/25 =>
+          case -26- u of [B] =>
             Bool
-        F/27
-          => case -28- u of [B] =>
+        F/27 =>
+          case -28- u of [B] =>
             Bool
-        Q/29
-          => case -30- u of [M] =>
+        Q/29 =>
+          case -30- u of [M] =>
             Mool
-        W/31
-          => case -32- u of [M] =>
+        W/31 =>
+          case -32- u of [M] =>
             Mool
     main :33: Type = Tuple -37- (f -39- B -38- T) -36- (f -41- B -40- F) -35- (f -43- M -42- Q) -34- (f -45- M -44- W)
   in main
@@ -106,23 +106,23 @@
     postulate M :E: U
     ty :E: (u :E: U) -> Type = \(u :E: U).
       case -E- u of
-        B/E
-          => Bool
-        M/E
-          => Mool
+        B/E =>
+          Bool
+        M/E =>
+          Mool
     f :R: (u :E: U) -> (x :R: ty -E- u) -> Type = \(u :E: U) (x :R: ty -E- u).
       case -R- x of
-        T/R
-          => case -E- u of [B] =>
+        T/R =>
+          case -E- u of [B] =>
             Bool
-        F/R
-          => case -E- u of [B] =>
+        F/R =>
+          case -E- u of [B] =>
             Bool
-        Q/R
-          => case -E- u of [M] =>
+        Q/R =>
+          case -E- u of [M] =>
             Mool
-        W/R
-          => case -E- u of [M] =>
+        W/R =>
+          case -E- u of [M] =>
             Mool
     main :R: Type = Tuple -R- (f -E- B -R- T) -R- (f -E- B -R- F) -R- (f -E- M -R- Q) -R- (f -E- M -R- W)
   in main
@@ -142,23 +142,23 @@
     postulate M :E: U
     ty :E: (u :E: U) -> Type = \(u :E: U).
       case -E- u of
-        B/E
-          => Bool
-        M/E
-          => Mool
+        B/E =>
+          Bool
+        M/E =>
+          Mool
     f :R: (u :E: U) -> (x :R: ty -E- u) -> Type = \(u :E: U) (x :R: ty -E- u).
       case -R- x of
-        T/R
-          => case -E- u of [B] =>
+        T/R =>
+          case -E- u of [B] =>
             Bool
-        F/R
-          => case -E- u of [B] =>
+        F/R =>
+          case -E- u of [B] =>
             Bool
-        Q/R
-          => case -E- u of [M] =>
+        Q/R =>
+          case -E- u of [M] =>
             Mool
-        W/R
-          => case -E- u of [M] =>
+        W/R =>
+          case -E- u of [M] =>
             Mool
     main :R: Type = Tuple -R- (f -E- B -R- T) -R- (f -E- B -R- F) -R- (f -E- M -R- Q) -R- (f -E- M -R- W)
   in main
@@ -178,23 +178,23 @@
     postulate M :E: U
     ty :E: (u :E: U) -> Type = \(u :E: U).
       case -E- u of
-        B/E
-          => Bool
-        M/E
-          => Mool
+        B/E =>
+          Bool
+        M/E =>
+          Mool
     f :R: (u :E: U) -> (x :R: ty -E- u) -> Type = \(u :E: U) (x :R: ty -E- u).
       case -R- x of
-        T/R
-          => case -E- u of [B] =>
+        T/R =>
+          case -E- u of [B] =>
             Bool
-        F/R
-          => case -E- u of [B] =>
+        F/R =>
+          case -E- u of [B] =>
             Bool
-        Q/R
-          => case -E- u of [M] =>
+        Q/R =>
+          case -E- u of [M] =>
             Mool
-        W/R
-          => case -E- u of [M] =>
+        W/R =>
+          case -E- u of [M] =>
             Mool
     main :R: Type = Tuple -R- (f -E- B -R- T) -R- (f -E- B -R- F) -R- (f -E- M -R- Q) -R- (f -E- M -R- W)
   in main
@@ -215,14 +215,14 @@ Verification successful.
     postulate W : Mool
     f = \x.
       case x of
-        T
-          => Bool
-        F
-          => Bool
-        Q
-          => Mool
-        W
-          => Mool
+        T =>
+          Bool
+        F =>
+          Bool
+        Q =>
+          Mool
+        W =>
+          Mool
     main = Tuple (f T) (f F) (f Q) (f W)
   in main
 

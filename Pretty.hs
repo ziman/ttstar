@@ -145,7 +145,7 @@ instance PrettyR r => Pretty (CaseTree r) where
         $$ indent (vcat $ map pretty alts)
 
 instance PrettyR r => Pretty (Alt r) where
-    pretty (Alt lhs rhs) = pretty lhs $$ indent (text "=>" <+> pretty rhs)
+    pretty (Alt lhs rhs) = pretty lhs <+> text "=>" $$ indent (pretty rhs)
 
 instance PrettyR r => Pretty (AltLHS r) where
     pretty Wildcard = text "_"

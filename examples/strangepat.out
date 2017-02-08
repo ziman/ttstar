@@ -10,8 +10,8 @@
     postulate P : (_x0 : Bool) -> (_x1 : Bool) -> Pair
     fst : (x : (y : Bool) -> Pair) -> Bool = \(x : (y : Bool) -> Pair).
       case x of
-        P (y : Bool)
-          => y
+        P (y : Bool) =>
+          y
     main : Bool = fst (P T)
   in main
 
@@ -25,8 +25,8 @@
     postulate P :5: (_x0 :6: Bool) -> (_x1 :7: Bool) -> Pair
     fst :8: (x :9: (y :10: Bool) -> Pair) -> Bool = \(x :11: (y :12: Bool) -> Pair).
       case -13- x of
-        P/14 (y :15: Bool)
-          => y
+        P/14 (y :15: Bool) =>
+          y
     main :16: Bool = fst -17- (P -18- T)
   in main
 
@@ -51,8 +51,8 @@
     postulate P :R: (_x0 :R: Bool) -> (_x1 :E: Bool) -> Pair
     fst :R: (x :R: (y :E: Bool) -> Pair) -> Bool = \(x :R: (y :E: Bool) -> Pair).
       case -R- x of
-        P/R (y :R: Bool)
-          => y
+        P/R (y :R: Bool) =>
+          y
     main :R: Bool = fst -R- (P -R- T)
   in main
 
@@ -66,8 +66,8 @@
     postulate P :R: (_x0 :R: Bool) -> (_x1 :E: Bool) -> Pair
     fst :R: (x :R: (y :E: Bool) -> Pair) -> Bool = \(x :R: (y :E: Bool) -> Pair).
       case -R- x of
-        P/R (y :R: Bool)
-          => y
+        P/R (y :R: Bool) =>
+          y
     main :R: Bool = fst -R- (P -R- T)
   in main
 
@@ -81,8 +81,8 @@
     postulate P :R: (_x0 :R: Bool) -> (_x1 :E: Bool) -> Pair
     fst :R: (x :R: (y :E: Bool) -> Pair) -> Bool = \(x :R: (y :E: Bool) -> Pair).
       case -R- x of
-        P/R (y :R: Bool)
-          => y
+        P/R (y :R: Bool) =>
+          y
     main :R: Bool = fst -R- (P -R- T)
   in main
 
@@ -97,8 +97,8 @@ Verification successful.
     postulate P : (_x0) -> Pair
     fst = \x.
       case x of
-        P y
-          => y
+        P y =>
+          y
     main = fst (P T)
   in main
 

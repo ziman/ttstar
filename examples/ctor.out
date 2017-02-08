@@ -10,10 +10,10 @@
     postulate MkUnit : Unit
     not : (x : Bool) -> Unit = \(x : Bool).
       case x of
-        T
-          => MkUnit
-        F
-          => MkUnit
+        T =>
+          MkUnit
+        F =>
+          MkUnit
     main : Unit = not T
   in main
 
@@ -27,10 +27,10 @@
     postulate MkUnit :5: Unit
     not :6: (x :7: Bool) -> Unit = \(x :8: Bool).
       case -9- x of
-        T/10
-          => MkUnit
-        F/11
-          => MkUnit
+        T/10 =>
+          MkUnit
+        F/11 =>
+          MkUnit
     main :12: Unit = not -13- T
   in main
 
@@ -55,10 +55,10 @@
     postulate MkUnit :R: Unit
     not :R: (x :R: Bool) -> Unit = \(x :R: Bool).
       case -R- x of
-        T/R
-          => MkUnit
-        F/E
-          => MkUnit
+        T/R =>
+          MkUnit
+        F/E =>
+          MkUnit
     main :R: Unit = not -R- T
   in main
 
@@ -72,10 +72,10 @@
     postulate MkUnit :R: Unit
     not :R: (x :R: Bool) -> Unit = \(x :R: Bool).
       case -R- x of
-        T/R
-          => MkUnit
-        F/E
-          => MkUnit
+        T/R =>
+          MkUnit
+        F/E =>
+          MkUnit
     main :R: Unit = not -R- T
   in main
 
@@ -89,10 +89,10 @@
     postulate MkUnit :R: Unit
     not :R: (x :R: Bool) -> Unit = \(x :R: Bool).
       case -R- x of
-        T/R
-          => MkUnit
-        F/E
-          => MkUnit
+        T/R =>
+          MkUnit
+        F/E =>
+          MkUnit
     main :R: Unit = not -R- T
   in main
 
@@ -107,8 +107,8 @@ Verification successful.
     postulate MkUnit : Unit
     not = \x.
       case x of
-        T
-          => MkUnit
+        T =>
+          MkUnit
     main = not T
   in main
 

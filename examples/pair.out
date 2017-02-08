@@ -10,18 +10,18 @@
     postulate P : (x : Bool) -> (y : Bool) -> Pair
     fst : (x : Pair) -> Bool = \(x : Pair).
       case x of
-        P (l : Bool) (r : Bool)
-          => l
+        P (l : Bool) (r : Bool) =>
+          l
     snd : (x : Pair) -> Bool = \(x : Pair).
       case x of
-        P (l : Bool) (r : Bool)
-          => r
+        P (l : Bool) (r : Bool) =>
+          r
     and : (x : Bool) -> (y : Bool) -> Bool = \(x : Bool) (y : Bool).
       case x of
-        T
-          => y
-        F
-          => F
+        T =>
+          y
+        F =>
+          F
     main : Bool = and (fst (P T F)) (snd (P F T))
   in main
 
@@ -35,18 +35,18 @@
     postulate P :5: (x :6: Bool) -> (y :7: Bool) -> Pair
     fst :8: (x :9: Pair) -> Bool = \(x :10: Pair).
       case -11- x of
-        P/12 (l :13: Bool) (r :14: Bool)
-          => l
+        P/12 (l :13: Bool) (r :14: Bool) =>
+          l
     snd :15: (x :16: Pair) -> Bool = \(x :17: Pair).
       case -18- x of
-        P/19 (l :20: Bool) (r :21: Bool)
-          => r
+        P/19 (l :20: Bool) (r :21: Bool) =>
+          r
     and :22: (x :23: Bool) -> (y :24: Bool) -> Bool = \(x :25: Bool) (y :26: Bool).
       case -27- x of
-        T/28
-          => y
-        F/29
-          => F
+        T/28 =>
+          y
+        F/29 =>
+          F
     main :30: Bool = and -32- (fst -33- (P -35- T -34- F)) -31- (snd -36- (P -38- F -37- T))
   in main
 
@@ -69,18 +69,18 @@
     postulate P :R: (x :R: Bool) -> (y :R: Bool) -> Pair
     fst :R: (x :R: Pair) -> Bool = \(x :R: Pair).
       case -R- x of
-        P/R (l :R: Bool) (r :R: Bool)
-          => l
+        P/R (l :R: Bool) (r :R: Bool) =>
+          l
     snd :R: (x :R: Pair) -> Bool = \(x :R: Pair).
       case -R- x of
-        P/R (l :R: Bool) (r :R: Bool)
-          => r
+        P/R (l :R: Bool) (r :R: Bool) =>
+          r
     and :R: (x :R: Bool) -> (y :R: Bool) -> Bool = \(x :R: Bool) (y :R: Bool).
       case -R- x of
-        T/R
-          => y
-        F/R
-          => F
+        T/R =>
+          y
+        F/R =>
+          F
     main :R: Bool = and -R- (fst -R- (P -R- T -R- F)) -R- (snd -R- (P -R- F -R- T))
   in main
 
@@ -94,18 +94,18 @@
     postulate P :R: (x :R: Bool) -> (y :R: Bool) -> Pair
     fst :R: (x :R: Pair) -> Bool = \(x :R: Pair).
       case -R- x of
-        P/R (l :R: Bool) (r :R: Bool)
-          => l
+        P/R (l :R: Bool) (r :R: Bool) =>
+          l
     snd :R: (x :R: Pair) -> Bool = \(x :R: Pair).
       case -R- x of
-        P/R (l :R: Bool) (r :R: Bool)
-          => r
+        P/R (l :R: Bool) (r :R: Bool) =>
+          r
     and :R: (x :R: Bool) -> (y :R: Bool) -> Bool = \(x :R: Bool) (y :R: Bool).
       case -R- x of
-        T/R
-          => y
-        F/R
-          => F
+        T/R =>
+          y
+        F/R =>
+          F
     main :R: Bool = and -R- (fst -R- (P -R- T -R- F)) -R- (snd -R- (P -R- F -R- T))
   in main
 
@@ -119,18 +119,18 @@
     postulate P :R: (x :R: Bool) -> (y :R: Bool) -> Pair
     fst :R: (x :R: Pair) -> Bool = \(x :R: Pair).
       case -R- x of
-        P/R (l :R: Bool) (r :R: Bool)
-          => l
+        P/R (l :R: Bool) (r :R: Bool) =>
+          l
     snd :R: (x :R: Pair) -> Bool = \(x :R: Pair).
       case -R- x of
-        P/R (l :R: Bool) (r :R: Bool)
-          => r
+        P/R (l :R: Bool) (r :R: Bool) =>
+          r
     and :R: (x :R: Bool) -> (y :R: Bool) -> Bool = \(x :R: Bool) (y :R: Bool).
       case -R- x of
-        T/R
-          => y
-        F/R
-          => F
+        T/R =>
+          y
+        F/R =>
+          F
     main :R: Bool = and -R- (fst -R- (P -R- T -R- F)) -R- (snd -R- (P -R- F -R- T))
   in main
 
@@ -146,18 +146,18 @@ Verification successful.
     postulate P : (x) -> (y) -> Pair
     fst = \x.
       case x of
-        P l r
-          => l
+        P l r =>
+          l
     snd = \x.
       case x of
-        P l r
-          => r
+        P l r =>
+          r
     and = \x y.
       case x of
-        T
-          => y
-        F
-          => F
+        T =>
+          y
+        F =>
+          F
     main = and (fst (P T F)) (snd (P F T))
   in main
 

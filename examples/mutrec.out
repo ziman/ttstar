@@ -8,16 +8,16 @@
     postulate F : Bool
     g : (x : Bool) -> Bool = \(x : Bool).
       case x of
-        T
-          => h x
-        F
-          => T
+        T =>
+          h x
+        F =>
+          T
     h : (x : Bool) -> Bool = \(x : Bool).
       case x of
-        F
-          => g x
-        T
-          => F
+        F =>
+          g x
+        T =>
+          F
     main : Bool = g T
   in main
 
@@ -29,16 +29,16 @@
     postulate F :3: Bool
     g :4: (x :5: Bool) -> Bool = \(x :6: Bool).
       case -7- x of
-        T/8
-          => h -9- x
-        F/10
-          => T
+        T/8 =>
+          h -9- x
+        F/10 =>
+          T
     h :11: (x :12: Bool) -> Bool = \(x :13: Bool).
       case -14- x of
-        F/15
-          => g -16- x
-        T/17
-          => F
+        F/15 =>
+          g -16- x
+        T/17 =>
+          F
     main :18: Bool = g -19- T
   in main
 
@@ -55,16 +55,16 @@ ttstar: Traceback:
     postulate F :3: Bool
     g :4: (x :5: Bool) -> Bool = \(x :6: Bool).
       case -7- x of
-        T/8
-          => h -9- x
-        F/10
-          => T
+        T/8 =>
+          h -9- x
+        F/10 =>
+          T
     h :11: (x :12: Bool) -> Bool = \(x :13: Bool).
       case -14- x of
-        F/15
-          => g -16- x
-        T/17
-          => F
+        F/15 =>
+          g -16- x
+        T/17 =>
+          F
     main :18: Bool = g -19- T
   in main)
 
@@ -94,10 +94,10 @@ ttstar: Traceback:
   g : (x :5: Bool) -> Bool
 
 ("CASE",g -6- x,case -7- x of
-  T/8
-    => h -9- x
-  F/10
-    => T)
+  T/8 =>
+    h -9- x
+  F/10 =>
+    T)
 
 5. In context:
   Bool : Type
