@@ -8,8 +8,9 @@ data Unit : Type where
   MkUnit : Unit.
 
 not (x : Bool) : Unit
-  = case x of
+  = case x of {
       T => MkUnit,
-      F => MkUnit.
+      F => MkUnit
+    }
 
 main : Unit = not T.

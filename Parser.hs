@@ -85,6 +85,7 @@ natural = mkNat . read <$> (many1 (satisfy isDigit) <* sp) <?> "number"
 
 atomic :: Parser (TT MRel)
 atomic = parens expr
+    <|> caseExpr
     <|> erasureInstance
     <|> var
     <|> natural
@@ -143,8 +144,9 @@ caseExpr = (<?> "case expression") $ do
     tm <- expr
     kwd "where"
     ty <- expr
-    kwd "."
+    kwd "{"
     alts <- caseAlt `sepBy` kwd ","
+    kwd "}"
     case mkArgs ty of
         arg:_ -> do
             let cf = CaseFun [arg] (Case Nothing (V $ defName arg) alts)
@@ -158,11 +160,7 @@ caseExpr = (<?> "case expression") $ do
     mkArgs _ = []
 
 expr :: Parser (TT MRel)
-expr = 
-        caseExpr
-    <|> bind
-    <|> app
-    <?> "expression"  -- app includes nullary-applied atoms
+expr = bind <|> app <?> "expression"  -- app includes nullary-applied atoms
 
 typing :: Abstractness -> Parser (Def MRel)
 typing a = (<?> "name binding") $ do
