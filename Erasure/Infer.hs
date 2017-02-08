@@ -1,6 +1,6 @@
 {-# LANGUAGE ViewPatterns, GeneralizedNewtypeDeriving #-}
 
-module Erasure.Check (check, instantiate, unions, TCFailure) where
+module Erasure.Infer (infer, instantiate, unions, TCFailure) where
 
 import TT
 import TTLens
@@ -143,9 +143,9 @@ freshTag = lift $ lift (modify (+1) >> get)
 runTC :: Int -> Ctx Meta -> TC a -> Either TCFailure a
 runTC maxTag ctx tc = evalState (runExceptT $ runReaderT tc ([], ctx)) maxTag
 
-check :: Program Meta -> Either TCFailure (Constrs Meta)
-check prog = runTC maxTag ctx $ do
-    (_ty, cs) <- checkTm prog
+infer :: Program Meta -> Either TCFailure (Constrs Meta)
+infer prog = runTC maxTag ctx $ do
+    (_ty, cs) <- inferTm prog
     return cs
   where
     getTag :: Meta -> Int
@@ -159,68 +159,68 @@ check prog = runTC maxTag ctx $ do
 
     ctx = builtins (Fixed relOfType)
 
-checkDefs :: [Def Meta] -> TC (Ctx Meta)
-checkDefs [] = getCtx
-checkDefs (d:ds) = do
-    d' <- with d{ defBody = Abstract Var } $ checkDef d
+inferDefs :: [Def Meta] -> TC (Ctx Meta)
+inferDefs [] = getCtx
+inferDefs (d:ds) = do
+    d' <- with d{ defBody = Abstract Var } $ inferDef d
     let d'' = d'{ defConstraints = reduce $ defConstraints d' }
-    with d'' $ checkDefs ds
+    with d'' $ inferDefs ds
 
-checkDefs' :: [Def Meta] -> TC [Def Meta]
-checkDefs' [] = return []
-checkDefs' (d:ds) = do
-    d' <- with d{ defBody = Abstract Var } $ checkDef d
+inferDefs' :: [Def Meta] -> TC [Def Meta]
+inferDefs' [] = return []
+inferDefs' (d:ds) = do
+    d' <- with d{ defBody = Abstract Var } $ inferDef d
     let d'' = d'{ defConstraints = reduce $ defConstraints d' }
-    (d'' :) <$> (with d'' $ checkDefs' ds)
+    (d'' :) <$> (with d'' $ inferDefs' ds)
 
-checkDef :: Def Meta -> TC (Def Meta)
+inferDef :: Def Meta -> TC (Def Meta)
 -- In types, only conversion constraints matter but they *do* matter.
 -- We should probably explain on an example why.
 --
--- The point is that the conversion check binds the type signature (the asserted type)
+-- The point is that the conversion infer binds the type signature (the asserted type)
 -- with the inferred type, also binding the metavars in them, so that the signature
 -- can later represent the whole definition.
 
-checkDef (Def n r ty (Abstract a) _noCs) = do
-    (tyty, tycs) <- checkTm ty
+inferDef (Def n r ty (Abstract a) _noCs) = do
+    (tyty, tycs) <- inferTm ty
     tytyTypeCs <- conv tyty (V $ UN "Type")
     let cs = tytyTypeCs  -- in types, only conversion constraints matter
     return $ Def n r ty (Abstract a) cs
 
-checkDef d@(Def n r ty (Term tm) _noCs) = bt ("DEF-TERM", n) $ do
-    (tmty, tmcs) <- with d $ checkTm tm  -- "with d" because it could be recursive
-    (tyty, tycs) <- checkTm ty
+inferDef d@(Def n r ty (Term tm) _noCs) = bt ("DEF-TERM", n) $ do
+    (tmty, tmcs) <- with d $ inferTm tm  -- "with d" because it could be recursive
+    (tyty, tycs) <- inferTm ty
     tytyTypeCs   <- conv tyty (V $ UN "Type")
     tyTmtyCs     <- conv ty tmty
     let cs = tmcs /\ tytyTypeCs /\ tyTmtyCs  -- in types, only conversion constraints matter
     return $ Def n r ty (Term tm) cs
 
-checkDef d@(Def n r ty (Patterns cf) _noCs) = bt ("DEF-PATTERNS", n) $ do
-    (tyty, tycs) <- checkTm ty
+inferDef d@(Def n r ty (Patterns cf) _noCs) = bt ("DEF-PATTERNS", n) $ do
+    (tyty, tycs) <- inferTm ty
     tytyTypeCs   <- conv tyty (V $ UN "Type")
-    cfCs <- with d $ checkCaseFun n cf  -- "with d" because it could be recursive
+    cfCs <- with d $ inferCaseFun n cf  -- "with d" because it could be recursive
     let cs = tytyTypeCs /\ cfCs  -- in types, only conversion constraints matter
     return $ Def n r ty (Patterns cf) cs
 
-checkCaseFun :: Name -> CaseFun Meta -> TC (Constrs Meta)
-checkCaseFun fn (CaseFun args ct) = bt ("CASE-FUN", fn) $ do
-    pvars <- checkDefs' args
-    checkCaseTree pvars lhs ct
+inferCaseFun :: Name -> CaseFun Meta -> TC (Constrs Meta)
+inferCaseFun fn (CaseFun args ct) = bt ("CASE-FUN", fn) $ do
+    pvars <- inferDefs' args
+    inferCaseTree pvars lhs ct
   where
     lhs = mkApp (V fn) [(r, V n) | Def n r ty (Abstract Var) cs <- args]
 
-checkCaseTree :: [Def Meta] -> TT Meta -> CaseTree Meta -> TC (Constrs Meta)
-checkCaseTree pvars lhs (Leaf rhs) = bt ("PLAIN-TERM", lhs, rhs) $ do
-    pvars' <- checkDefs' pvars
+inferCaseTree :: [Def Meta] -> TT Meta -> CaseTree Meta -> TC (Constrs Meta)
+inferCaseTree pvars lhs (Leaf rhs) = bt ("PLAIN-TERM", lhs, rhs) $ do
+    pvars' <- inferDefs' pvars
     withs pvars' $ do
-        (lty, lcs) <- checkTm lhs
-        (rty, rcs) <- checkTm rhs
+        (lty, lcs) <- inferTm lhs
+        (rty, rcs) <- inferTm rhs
         ccs <- conv lty rty
         return $ flipConstrs lcs /\ rcs /\ ccs
 
-checkCaseTree pvars lhs ct@(Case r (V n) alts) = bt ("CASE", lhs, ct) $ do
+inferCaseTree pvars lhs ct@(Case r (V n) alts) = bt ("CASE", lhs, ct) $ do
     scrutD <- lookupPatvar n pvars
-    cs <- unions <$> traverse (checkAlt pvars lhs n r) alts
+    cs <- unions <$> traverse (inferAlt pvars lhs n r) alts
     return $ cs /\ r --> defR scrutD /\ scrutineeCs
   where
     scrutineeCs = case alts of
@@ -228,7 +228,7 @@ checkCaseTree pvars lhs ct@(Case r (V n) alts) = bt ("CASE", lhs, ct) $ do
         [_] -> noConstrs
         _   -> Fixed R --> r
 
-checkCaseTree pvars lhs (Case r s alts) =
+inferCaseTree pvars lhs (Case r s alts) =
     tcfail $ NonVariableScrutinee s
 
 
@@ -247,21 +247,21 @@ substPV n tm (d:ds)
     | otherwise
     = subst n tm d : substPV n tm ds
 
-checkAlt :: [Def Meta] -> TT Meta -> Name -> Meta -> Alt Meta -> TC (Constrs Meta)
+inferAlt :: [Def Meta] -> TT Meta -> Name -> Meta -> Alt Meta -> TC (Constrs Meta)
 
-checkAlt pvars lhs n sr (Alt Wildcard rhs) = bt ("ALT-WILDCARD") $ do
-    checkCaseTree pvars lhs rhs
+inferAlt pvars lhs n sr (Alt Wildcard rhs) = bt ("ALT-WILDCARD") $ do
+    inferCaseTree pvars lhs rhs
 
-checkAlt pvars lhs n sr (Alt (Ctor ct args) rhs) = bt ("ALT-CTOR", pat) $ do
-    --args' <- withs pvars $ checkDefs' args  -- do we check the args here? or only in the leaf?
+inferAlt pvars lhs n sr (Alt (Ctor ct args) rhs) = bt ("ALT-CTOR", pat) $ do
+    --args' <- withs pvars $ inferDefs' args  -- do we infer the args here? or only in the leaf?
 
-    -- check we've got a constructor
+    -- infer we've got a constructor
     cd <- lookup (ctName ct)
     when (defBody cd /= Abstract Postulate) $
         tcfail (NotConstructor $ ctName ct)
 
     -- Typechecking will be done eventually in the case for Leaf.
-    cs <- checkCaseTree (substPV n pat pvars ++ args) (subst n pat lhs) rhs
+    cs <- inferCaseTree (substPV n pat pvars ++ args) (subst n pat lhs) rhs
 
     return $ cs /\ scrutCs /\ ctCs (defR cd)
   where
@@ -278,22 +278,22 @@ checkAlt pvars lhs n sr (Alt (Ctor ct args) rhs) = bt ("ALT-CTOR", pat) $ do
     -- links from the individual vars to the scrutinee
     scrutCs = unions [defR d --> sr | d <- args]
 
-checkAlt pvars lhs n sr (Alt (ForcedPat pat) rhs) = bt ("ALT-FORCED", pat) $ do
+inferAlt pvars lhs n sr (Alt (ForcedPat pat) rhs) = bt ("ALT-FORCED", pat) $ do
     -- no rules for sr
-    checkCaseTree (substPV n (Forced pat) pvars) (subst n (Forced pat) lhs) rhs
+    inferCaseTree (substPV n (Forced pat) pvars) (subst n (Forced pat) lhs) rhs
 
-checkTm :: Term -> TC (Type, Constrs Meta)
+inferTm :: Term -> TC (Type, Constrs Meta)
 
 -- this is sketchy
-checkTm (V Blank) = return (V Blank, noConstrs)
+inferTm (V Blank) = return (V Blank, noConstrs)
 
-checkTm t@(V n) = bt ("VAR", n) $ do
+inferTm t@(V n) = bt ("VAR", n) $ do
     -- at the point of usage of a bound name,
     -- the constraints associated with that name come in
     d <- lookup n
     return (defType d, defConstraints d /\ Fixed R --> defR d)
 
-checkTm t@(I n ty) = bt ("INST", n, ty) $ do
+inferTm t@(I n ty) = bt ("INST", n, ty) $ do
     -- here, we need to freshen the constraints before bringing them up
     d <- instantiate freshTag IM.empty =<< lookup n
     convCs <- conv (defType d) ty
@@ -312,29 +312,29 @@ checkTm t@(I n ty) = bt ("INST", n, ty) $ do
     -- Also, all unused instances should be recognised as erased (I didn't check that).
     return (ty, defConstraints d /\ Fixed R --> defR d /\ convCs)
 
-checkTm t@(Bind Lam [d@(Def n r ty (Abstract Var) _noCs)] tm) = bt ("LAM", t) $ do
-    d' <- checkDef d
-    (tmty, tmcs) <- with d' $ checkTm tm
+inferTm t@(Bind Lam [d@(Def n r ty (Abstract Var) _noCs)] tm) = bt ("LAM", t) $ do
+    d' <- inferDef d
+    (tmty, tmcs) <- with d' $ inferTm tm
     return (Bind Pi [d'] tmty, tmcs)
 
-checkTm t@(Bind Pi [d@(Def n r ty (Abstract Var) _noCs)] tm) = bt ("PI", t) $ do
-    d' <- checkDef d
-    -- (tyty, _tycs) <- checkTm ty
+inferTm t@(Bind Pi [d@(Def n r ty (Abstract Var) _noCs)] tm) = bt ("PI", t) $ do
+    d' <- inferDef d
+    -- (tyty, _tycs) <- inferTm ty
     -- cs' <- conv (V $ UN "Type") tyty
     tmcs <- with d' $ do
-        (tmty, tmcs) <- checkTm tm
+        (tmty, tmcs) <- inferTm tm
         cs <- conv (V $ UN "Type") tmty
         return $ tmcs /\ cs
     return (V $ UN "Type", tmcs)
 
-checkTm t@(Bind Let ds tm) = bt ("LET", t) $ do
-    ds' <- checkDefs ds
-    (tmty, tmcs) <- with' (M.union ds') $ checkTm tm
+inferTm t@(Bind Let ds tm) = bt ("LET", t) $ do
+    ds' <- inferDefs ds
+    (tmty, tmcs) <- with' (M.union ds') $ inferTm tm
     return (tmty, tmcs)
 
-checkTm t@(App app_r f x) = bt ("APP", t) $ do
-    (fty, fcs) <- checkTm f
-    (xty, xcs) <- checkTm x
+inferTm t@(App app_r f x) = bt ("APP", t) $ do
+    (fty, fcs) <- inferTm f
+    (xty, xcs) <- inferTm x
     ctx <- getCtx
     case whnf ctx fty of
         Bind Pi [Def n' pi_r ty' (Abstract Var) _noCs] retTy -> do
@@ -352,11 +352,11 @@ checkTm t@(App app_r f x) = bt ("APP", t) $ do
         _ -> do
             tcfail $ NonFunction f fty
 
-checkTm (Forced tm) = bt ("FORCED", tm) $ do
-    (ty, _cs) <- checkTm tm
+inferTm (Forced tm) = bt ("FORCED", tm) $ do
+    (ty, _cs) <- inferTm tm
     return (ty, noConstrs)
 
-checkTm tm = bt ("UNCHECKABLE-TERM", tm) $ do
+inferTm tm = bt ("UNCHECKABLE-TERM", tm) $ do
     tcfail $ UncheckableTerm tm
 
 freshen :: Monad m => m Int -> Meta -> StateT (IM.IntMap Meta) m Meta

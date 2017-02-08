@@ -12,7 +12,7 @@ import qualified Codegen.Scheme
 import Util.PrettyPrint
 
 import Erasure.Meta
-import Erasure.Check
+import Erasure.Infer
 import Erasure.Solve
 import Erasure.Annotate
 import Erasure.Specialise
@@ -127,7 +127,7 @@ main = do
 
             let iterSpecialisation metaified = do
                     putStrLn "### Constraints ###\n"
-                    let cs = either (error . show) id . check $ metaified
+                    let cs = either (error . show) id . infer $ metaified
                     mapM_ (putStrLn . fmtCtr) $ M.toList cs
                     putStrLn ""
 

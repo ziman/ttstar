@@ -4,7 +4,7 @@ import TT
 import TTLens
 
 import Erasure.Meta
-import Erasure.Check
+import Erasure.Infer
 
 import Control.Monad.Trans.State
 import qualified Data.Map as M
