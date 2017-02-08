@@ -145,6 +145,7 @@ verCaseFun fn r (CaseFun ds ct) = bt ("CASEFUN", fn) $ do
 
 verCase :: Relevance -> [Def Relevance] -> Pat -> CaseTree Relevance -> Ver ()
 verCase r pvars lhs (Leaf rhs) = bt ("CASE-LEAF", lhs, rhs) $ do
+    verDefs pvars
     withs pvars $ do
         lhsTy <- verTm r lhs -- verPat r lhs
         rhsTy <- verTm r rhs
@@ -181,7 +182,7 @@ verBranch' ctorForced r pvars lhs n scrutTy s (cn, ds, rhs) = bt ("ALT-MATCH-INT
     when (defBody cd /= Abstract Postulate) $
         verFail (NotConstructor cn)
 
-    withs pvars $ verDefs ds  -- do we check the args here or only in the leaf?
+    --withs pvars $ verDefs ds  -- do we check the args here or only in the leaf?
 
     sequence_ [defR d --> s | d <- ds]
     bt("ALT-MATCH-INT2", r, s, pat, scrutTy) $ do
