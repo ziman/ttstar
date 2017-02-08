@@ -181,7 +181,7 @@ verBranch' ctorForced r pvars lhs n scrutTy s (cn, ds, rhs) = bt ("ALT-MATCH-INT
     when (defBody cd /= Abstract Postulate) $
         verFail (NotConstructor cn)
 
-    verDefs ds  -- do we check the args here or only in the leaf?
+    withs pvars $ verDefs ds  -- do we check the args here or only in the leaf?
 
     sequence_ [defR d --> s | d <- ds]
     bt("ALT-MATCH-INT2", r, s, pat, scrutTy) $ do

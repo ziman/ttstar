@@ -12,14 +12,16 @@ id (x : Bool) : Bool = x.
 constT (x : Bool) : Bool = T.
 
 fty (x : Bool) : Type
-  = case x of
+  = case x of {
       T => Bool -> Bool,
-      F => Bool -> Bool.
+      F => Bool -> Bool
+    }
 
 f (x : Bool) : fty x
-  = case x of
+  = case x of {
       T => id,
-      F => constT.
+      F => constT
+    }
 
 main : TwoBools
   = TB (f T F) (f F F).

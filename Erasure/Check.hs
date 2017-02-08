@@ -252,7 +252,7 @@ checkAlt pvars lhs n sr (Alt Wildcard rhs) = bt ("ALT-WILDCARD") $ do
     checkCaseTree pvars lhs rhs
 
 checkAlt pvars lhs n sr (Alt (Ctor ct args) rhs) = bt ("ALT-CTOR", pat) $ do
-    args' <- checkDefs' args  -- do we check the args here? or only in the leaf?
+    args' <- withs pvars $ checkDefs' args  -- do we check the args here? or only in the leaf?
 
     -- check we've got a constructor
     cd <- lookup (ctName ct)
