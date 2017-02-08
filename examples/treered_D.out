@@ -214,11 +214,9 @@ Verification successful.
     postulate Nope : Foo
     postulate Just : (x) -> Maybe
     g = \x.
-      case x of
-        Just b =>
-          case b of
-            True =>
-              Yeah
+      case x of Just b =>
+        case b of True =>
+          Yeah
     main = g (Just True)
   in main
 

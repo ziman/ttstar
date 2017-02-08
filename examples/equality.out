@@ -151,9 +151,8 @@ Verification successful.
     postulate F : Bool
     postulate Refl : Id
     notnot = \x.
-      case x of
-        F =>
-          Refl
+      case x of F =>
+        Refl
     main = notnot F
   in main
 

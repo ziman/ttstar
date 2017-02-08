@@ -106,9 +106,8 @@ Verification successful.
     postulate T : Bool
     postulate MkUnit : Unit
     not = \x.
-      case x of
-        T =>
-          MkUnit
+      case x of T =>
+        MkUnit
     main = not T
   in main
 

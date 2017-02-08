@@ -177,9 +177,8 @@ Verification successful.
     postulate Bool : Type
     postulate False : Bool
     f = \x.
-      case x of
-        Just b =>
-          b
+      case x of Just b =>
+        b
     main = f (Just False)
   in main
 
