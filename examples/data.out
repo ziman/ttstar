@@ -18,16 +18,16 @@
     zipWith : (n : N) -> (f : (_x2 : N) -> (_x3 : N) -> N) -> (xs : Vect n) -> (ys : Vect n) -> Vect n = \(n : N) (f : (_x2 : N) -> (_x3 : N) -> N) (xs : Vect n) (ys : Vect n).
       case xs of
         Cons (n1 : N) (x1 : N) (xs1 : Vect n1)
-          | n = S n1
-          => case ys of
-            Cons (n2 : N) (x2 : N) (xs2 : Vect n1)
-              | n2 = n1
-              => Cons n1 (f x1 x2) (zipWith n1 f xs1 xs2)
+          => case n of [S n1] =>
+            case ys of
+              Cons (n2 : N) (x2 : N) (xs2 : Vect n1)
+                => case n2 of [n1] =>
+                  Cons n1 (f x1 x2) (zipWith n1 f xs1 xs2)
         Nil
-          | n = Z
-          => case ys of
-            Nil
-              => Nil
+          => case n of [Z] =>
+            case ys of
+              Nil
+                => Nil
     main : N = 
       let pred : (x : N) -> N = \(x : N).
         case x of
@@ -56,34 +56,34 @@
     zipWith :28: (n :29: N) -> (f :30: (_x2 :31: N) -> (_x3 :32: N) -> N) -> (xs :33: Vect -34- n) -> (ys :35: Vect -36- n) -> Vect -37- n = \(n :38: N) (f :39: (_x2 :40: N) -> (_x3 :41: N) -> N) (xs :42: Vect -43- n) (ys :44: Vect -45- n).
       case -46- xs of
         Cons/47 (n1 :48: N) (x1 :49: N) (xs1 :50: Vect -51- n1)
-          | n = S -52- n1
-          => case -53- ys of
-            Cons/54 (n2 :55: N) (x2 :56: N) (xs2 :57: Vect -58- n1)
-              | n2 = n1
-              => Cons -61- n1 -60- (f -63- x1 -62- x2) -59- (zipWith -67- n1 -66- f -65- xs1 -64- xs2)
-        Nil/68
-          | n = Z
-          => case -69- ys of
-            Nil/70
-              => Nil
-    main :71: N = 
-      let pred :72: (x :73: N) -> N = \(x :74: N).
-        case -75- x of
-          Z/76
+          => case -52- n of [S -53- n1] =>
+            case -54- ys of
+              Cons/55 (n2 :56: N) (x2 :57: N) (xs2 :58: Vect -59- n1)
+                => case -60- n2 of [n1] =>
+                  Cons -63- n1 -62- (f -65- x1 -64- x2) -61- (zipWith -69- n1 -68- f -67- xs1 -66- xs2)
+        Nil/70
+          => case -71- n of [Z] =>
+            case -72- ys of
+              Nil/73
+                => Nil
+    main :74: N = 
+      let pred :75: (x :76: N) -> N = \(x :77: N).
+        case -78- x of
+          Z/79
             => Z
-          S/77 (x' :78: N)
+          S/80 (x' :81: N)
             => x'
-      in plus -80- (pred -81- 4) -79- (pred -86- 5)
+      in plus -83- (pred -84- 4) -82- (pred -89- 5)
   in main
 
 ### Constraints ###
 
-[] -> [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,R]
-[R] -> [71]
+[] -> [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,R]
+[R] -> [74]
 
 ### Solution ###
 
-[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,R]
+[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,R]
 
 ### Annotated ###
 
@@ -103,16 +103,16 @@
     zipWith :E: (n :E: N) -> (f :E: (_x2 :E: N) -> (_x3 :E: N) -> N) -> (xs :E: Vect -E- n) -> (ys :E: Vect -E- n) -> Vect -E- n = \(n :E: N) (f :E: (_x2 :E: N) -> (_x3 :E: N) -> N) (xs :E: Vect -E- n) (ys :E: Vect -E- n).
       case -E- xs of
         Cons/E (n1 :E: N) (x1 :E: N) (xs1 :E: Vect -E- n1)
-          | n = S -E- n1
-          => case -E- ys of
-            Cons/E (n2 :E: N) (x2 :E: N) (xs2 :E: Vect -E- n1)
-              | n2 = n1
-              => Cons -E- n1 -E- (f -E- x1 -E- x2) -E- (zipWith -E- n1 -E- f -E- xs1 -E- xs2)
+          => case -E- n of [S -E- n1] =>
+            case -E- ys of
+              Cons/E (n2 :E: N) (x2 :E: N) (xs2 :E: Vect -E- n1)
+                => case -E- n2 of [n1] =>
+                  Cons -E- n1 -E- (f -E- x1 -E- x2) -E- (zipWith -E- n1 -E- f -E- xs1 -E- xs2)
         Nil/E
-          | n = Z
-          => case -E- ys of
-            Nil/E
-              => Nil
+          => case -E- n of [Z] =>
+            case -E- ys of
+              Nil/E
+                => Nil
     main :R: N = 
       let pred :R: (x :R: N) -> N = \(x :R: N).
         case -R- x of
@@ -141,16 +141,16 @@
     zipWith :E: (n :E: N) -> (f :E: (_x2 :E: N) -> (_x3 :E: N) -> N) -> (xs :E: Vect -E- n) -> (ys :E: Vect -E- n) -> Vect -E- n = \(n :E: N) (f :E: (_x2 :E: N) -> (_x3 :E: N) -> N) (xs :E: Vect -E- n) (ys :E: Vect -E- n).
       case -E- xs of
         Cons/E (n1 :E: N) (x1 :E: N) (xs1 :E: Vect -E- n1)
-          | n = S -E- n1
-          => case -E- ys of
-            Cons/E (n2 :E: N) (x2 :E: N) (xs2 :E: Vect -E- n1)
-              | n2 = n1
-              => Cons -E- n1 -E- (f -E- x1 -E- x2) -E- (zipWith -E- n1 -E- f -E- xs1 -E- xs2)
+          => case -E- n of [S -E- n1] =>
+            case -E- ys of
+              Cons/E (n2 :E: N) (x2 :E: N) (xs2 :E: Vect -E- n1)
+                => case -E- n2 of [n1] =>
+                  Cons -E- n1 -E- (f -E- x1 -E- x2) -E- (zipWith -E- n1 -E- f -E- xs1 -E- xs2)
         Nil/E
-          | n = Z
-          => case -E- ys of
-            Nil/E
-              => Nil
+          => case -E- n of [Z] =>
+            case -E- ys of
+              Nil/E
+                => Nil
     main :R: N = 
       let pred :R: (x :R: N) -> N = \(x :R: N).
         case -R- x of
@@ -179,16 +179,16 @@
     zipWith :E: (n :E: N) -> (f :E: (_x2 :E: N) -> (_x3 :E: N) -> N) -> (xs :E: Vect -E- n) -> (ys :E: Vect -E- n) -> Vect -E- n = \(n :E: N) (f :E: (_x2 :E: N) -> (_x3 :E: N) -> N) (xs :E: Vect -E- n) (ys :E: Vect -E- n).
       case -E- xs of
         Cons/E (n1 :E: N) (x1 :E: N) (xs1 :E: Vect -E- n1)
-          | n = S -E- n1
-          => case -E- ys of
-            Cons/E (n2 :E: N) (x2 :E: N) (xs2 :E: Vect -E- n1)
-              | n2 = n1
-              => Cons -E- n1 -E- (f -E- x1 -E- x2) -E- (zipWith -E- n1 -E- f -E- xs1 -E- xs2)
+          => case -E- n of [S -E- n1] =>
+            case -E- ys of
+              Cons/E (n2 :E: N) (x2 :E: N) (xs2 :E: Vect -E- n1)
+                => case -E- n2 of [n1] =>
+                  Cons -E- n1 -E- (f -E- x1 -E- x2) -E- (zipWith -E- n1 -E- f -E- xs1 -E- xs2)
         Nil/E
-          | n = Z
-          => case -E- ys of
-            Nil/E
-              => Nil
+          => case -E- n of [Z] =>
+            case -E- ys of
+              Nil/E
+                => Nil
     main :R: N = 
       let pred :R: (x :R: N) -> N = \(x :R: N).
         case -R- x of

@@ -15,13 +15,13 @@
     vlen : (a : Type) -> (n : Nat) -> (xs : Vec n a) -> Nat = \(a : Type) (n : Nat) (xs : Vec n a).
       case xs of
         VNil (a' : Type)
-          | a' = a
-          | n = Z
-          => Z
+          => case a' of [a] =>
+            case n of [Z] =>
+              Z
         VCons (a' : Type) (n' : Nat) (x' : a) (xs' : Vec n' a)
-          | a' = a
-          | n = S n'
-          => S (vlen a n' xs')
+          => case a' of [a] =>
+            case n of [S n'] =>
+              S (vlen a n' xs')
     testVec : Vec 2 Bool = VCons Bool 1 True (VCons Bool Z False (VNil Bool))
     main : Nat = vlen Bool 2 testVec
   in main
@@ -41,67 +41,71 @@
     vlen :24: (a :25: Type) -> (n :26: Nat) -> (xs :27: Vec -29- n -28- a) -> Nat = \(a :30: Type) (n :31: Nat) (xs :32: Vec -34- n -33- a).
       case -35- xs of
         VNil/36 (a' :37: Type)
-          | a' = a
-          | n = Z
-          => Z
-        VCons/38 (a' :39: Type) (n' :40: Nat) (x' :41: a) (xs' :42: Vec -44- n' -43- a)
-          | a' = a
-          | n = S -45- n'
-          => S -46- (vlen -49- a -48- n' -47- xs')
-    testVec :50: Vec -52- 2 -51- Bool = VCons -58- Bool -57- 1 -56- True -55- (VCons -63- Bool -62- Z -61- False -60- (VNil -64- Bool))
-    main :65: Nat = vlen -68- Bool -67- 2 -66- testVec
+          => case -38- a' of [a] =>
+            case -39- n of [Z] =>
+              Z
+        VCons/40 (a' :41: Type) (n' :42: Nat) (x' :43: a) (xs' :44: Vec -46- n' -45- a)
+          => case -47- a' of [a] =>
+            case -48- n of [S -49- n'] =>
+              S -50- (vlen -53- a -52- n' -51- xs')
+    testVec :54: Vec -56- 2 -55- Bool = VCons -62- Bool -61- 1 -60- True -59- (VCons -67- Bool -66- Z -65- False -64- (VNil -68- Bool))
+    main :69: Nat = vlen -72- Bool -71- 2 -70- testVec
   in main
 
 ### Constraints ###
 
-[] -> [5,6,10,14,18,24,27,32,35,36,38,42,46,47,50,55,60,66,R]
-[11] -> [1,37,64]
+[] -> [5,6,10,14,18,24,27,32,35,36,40,44,50,51,54,59,64,70,R]
+[11] -> [1,37,68]
 [12] -> [19,28]
 [13] -> [20,29]
-[15] -> [1,39,58,63]
-[16] -> [40,57,59,62]
-[17] -> [2,3,41,56,61]
-[19] -> [12,21,43]
-[20] -> [13,22,44]
-[21] -> [19,28,51]
-[22] -> [20,29,52]
-[23] -> [45,53,59]
-[25] -> [1,30,49,68]
-[26] -> [31,40,48,67,69,70]
-[28] -> [12,21,43,51]
-[29] -> [13,22,44,52]
+[15] -> [1,41,62,67]
+[16] -> [42,61,63,66]
+[17] -> [2,3,43,60,65]
+[19] -> [12,21,45]
+[20] -> [13,22,46]
+[21] -> [19,28,55]
+[22] -> [20,29,56]
+[23] -> [49,57,63]
+[25] -> [1,30,53,72]
+[26] -> [31,42,52,71,73,74]
+[28] -> [12,21,45,55]
+[29] -> [13,22,46,56]
 [30] -> [25]
 [31] -> [26]
 [37] -> [11]
-[39] -> [15]
-[40] -> [16]
-[41] -> [17]
-[43] -> [19,28]
-[44] -> [20,29]
-[45] -> [23]
-[48] -> [26]
-[49] -> [25]
-[51] -> [21,28]
-[52] -> [22,29]
-[53] -> [23,69]
-[54] -> [59,70]
-[56] -> [17]
-[57] -> [16]
-[58] -> [15]
-[59] -> [23,54]
-[61] -> [17]
-[62] -> [16]
-[63] -> [15]
-[64] -> [11]
-[67] -> [26]
-[68] -> [25]
-[69] -> [53]
-[70] -> [54]
-[R] -> [65]
+[38] -> [37]
+[39] -> [31]
+[41] -> [15]
+[42] -> [16]
+[43] -> [17]
+[45] -> [19,28]
+[46] -> [20,29]
+[47] -> [41]
+[48] -> [31]
+[49] -> [23]
+[52] -> [26]
+[53] -> [25]
+[55] -> [21,28]
+[56] -> [22,29]
+[57] -> [23,73]
+[58] -> [63,74]
+[60] -> [17]
+[61] -> [16]
+[62] -> [15]
+[63] -> [23,58]
+[65] -> [17]
+[66] -> [16]
+[67] -> [15]
+[68] -> [11]
+[71] -> [26]
+[72] -> [25]
+[73] -> [57]
+[74] -> [58]
+[R] -> [69]
 
 ### Solution ###
 
-[5,6,10,14,18,24,27,32,35,36,38,42,46,47,50,55,60,65,66,R]
+[5,6,10,14,18,24,27,32,35,36,40,44,50,51,54,59,64,69,70,R]
 
 ### Annotated ###
 
@@ -118,13 +122,13 @@
     vlen :R: (a :E: Type) -> (n :E: Nat) -> (xs :R: Vec -E- n -E- a) -> Nat = \(a :E: Type) (n :E: Nat) (xs :R: Vec -E- n -E- a).
       case -R- xs of
         VNil/R (a' :E: Type)
-          | a' = a
-          | n = Z
-          => Z
+          => case -E- a' of [a] =>
+            case -E- n of [Z] =>
+              Z
         VCons/R (a' :E: Type) (n' :E: Nat) (x' :E: a) (xs' :R: Vec -E- n' -E- a)
-          | a' = a
-          | n = S -E- n'
-          => S -R- (vlen -E- a -E- n' -R- xs')
+          => case -E- a' of [a] =>
+            case -E- n of [S -E- n'] =>
+              S -R- (vlen -E- a -E- n' -R- xs')
     testVec :R: Vec -E- 2 -E- Bool = VCons -E- Bool -E- 1 -E- True -R- (VCons -E- Bool -E- Z -E- False -R- (VNil -E- Bool))
     main :R: Nat = vlen -E- Bool -E- 2 -R- testVec
   in main
@@ -144,13 +148,13 @@
     vlen :R: (a :E: Type) -> (n :E: Nat) -> (xs :R: Vec -E- n -E- a) -> Nat = \(a :E: Type) (n :E: Nat) (xs :R: Vec -E- n -E- a).
       case -R- xs of
         VNil/R (a' :E: Type)
-          | a' = a
-          | n = Z
-          => Z
+          => case -E- a' of [a] =>
+            case -E- n of [Z] =>
+              Z
         VCons/R (a' :E: Type) (n' :E: Nat) (x' :E: a) (xs' :R: Vec -E- n' -E- a)
-          | a' = a
-          | n = S -E- n'
-          => S -R- (vlen -E- a -E- n' -R- xs')
+          => case -E- a' of [a] =>
+            case -E- n of [S -E- n'] =>
+              S -R- (vlen -E- a -E- n' -R- xs')
     testVec :R: Vec -E- 2 -E- Bool = VCons -E- Bool -E- 1 -E- True -R- (VCons -E- Bool -E- Z -E- False -R- (VNil -E- Bool))
     main :R: Nat = vlen -E- Bool -E- 2 -R- testVec
   in main
@@ -170,13 +174,13 @@
     vlen :R: (a :E: Type) -> (n :E: Nat) -> (xs :R: Vec -E- n -E- a) -> Nat = \(a :E: Type) (n :E: Nat) (xs :R: Vec -E- n -E- a).
       case -R- xs of
         VNil/R (a' :E: Type)
-          | a' = a
-          | n = Z
-          => Z
+          => case -E- a' of [a] =>
+            case -E- n of [Z] =>
+              Z
         VCons/R (a' :E: Type) (n' :E: Nat) (x' :E: a) (xs' :R: Vec -E- n' -E- a)
-          | a' = a
-          | n = S -E- n'
-          => S -R- (vlen -E- a -E- n' -R- xs')
+          => case -E- a' of [a] =>
+            case -E- n of [S -E- n'] =>
+              S -R- (vlen -E- a -E- n' -R- xs')
     testVec :R: Vec -E- 2 -E- Bool = VCons -E- Bool -E- 1 -E- True -R- (VCons -E- Bool -E- Z -E- False -R- (VNil -E- Bool))
     main :R: Nat = vlen -E- Bool -E- 2 -R- testVec
   in main

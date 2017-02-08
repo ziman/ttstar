@@ -11,8 +11,8 @@
     vlen : (n : N) -> (xs : Vec n) -> N = \(n : N) (xs : Vec n).
       case xs of
         Nil
-          | n = Z
-          => n
+          => case n of [Z] =>
+            n
     main : N = vlen Z Nil
   in main
 
@@ -27,100 +27,125 @@
     vlen :9: (n :10: N) -> (xs :11: Vec -12- n) -> N = \(n :13: N) (xs :14: Vec -15- n).
       case -16- xs of
         Nil/17
-          | n = Z
-          => n
-    main :18: N = vlen -20- Z -19- Nil
+          => case -18- n of [Z] =>
+            n
+    main :19: N = vlen -21- Z -20- Nil
   in main
 
 ### Constraints ###
 
-[] -> [2,9,10,13,20,R]
-[7] -> [17]
-[8] -> [11,12]
-[8,11] -> [12]
-[11] -> [7,14,19]
-[11,12] -> [8]
-[12] -> [8,11]
-[14] -> [11]
-[16] -> [14]
-[17] -> [7]
-[19] -> [11]
-[R] -> [18]
+ttstar: Traceback:
+1. In context:
+  Type : Type
 
-### Solution ###
-
-[2,9,10,13,18,20,R]
-
-### Annotated ###
-
+("LET",
   let
-    postulate N :E: Type
-    postulate Z :R: N
-    postulate S :E: (x :E: N) -> N
-    postulate Vec :E: (_x0 :E: N) -> Type
-    postulate Nil :E: Vec -E- Z
-    vlen :R: (n :R: N) -> (xs :E: Vec -E- n) -> N = \(n :R: N) (xs :E: Vec -E- n).
-      case -E- xs of
-        Nil/E
-          | n = Z
-          => n
-    main :R: N = vlen -R- Z -E- Nil
-  in main
+    postulate N :1: Type
+    postulate Z :2: N
+    postulate S :3: (x :4: N) -> N
+    postulate Vec :5: (_x0 :6: N) -> Type
+    postulate Nil :7: Vec -8- Z
+    vlen :9: (n :10: N) -> (xs :11: Vec -12- n) -> N = \(n :13: N) (xs :14: Vec -15- n).
+      case -16- xs of
+        Nil/17
+          => case -18- n of [Z] =>
+            n
+    main :19: N = vlen -21- Z -20- Nil
+  in main)
 
-### Specialised ###
+2. In context:
+  N : Type
+  Nil : Vec -8- Z
+  S : (x :4: N) -> N
+  Type : Type
+  Vec : (_x0 :6: N) -> Type
+  Z : N
+  vlen : (n :10: N) -> (xs :11: Vec -12- n) -> N
 
-  let
-    postulate N :E: Type
-    postulate Z :R: N
-    postulate S :E: (x :E: N) -> N
-    postulate Vec :E: (_x0 :E: N) -> Type
-    postulate Nil :E: Vec -E- Z
-    vlen :R: (n :R: N) -> (xs :E: Vec -E- n) -> N = \(n :R: N) (xs :E: Vec -E- n).
-      case -E- xs of
-        Nil/E
-          | n = Z
-          => n
-    main :R: N = vlen -R- Z -E- Nil
-  in main
+("DEF-PATTERNS",vlen)
 
-### Final annotation ###
+3. In context:
+  N : Type
+  Nil : Vec -8- Z
+  S : (x :4: N) -> N
+  Type : Type
+  Vec : (_x0 :6: N) -> Type
+  Z : N
+  vlen : (n :10: N) -> (xs :11: Vec -12- n) -> N
 
-  let
-    postulate N :E: Type
-    postulate Z :R: N
-    postulate S :E: (x :E: N) -> N
-    postulate Vec :E: (_x0 :E: N) -> Type
-    postulate Nil :E: Vec -E- Z
-    vlen :R: (n :R: N) -> (xs :E: Vec -E- n) -> N = \(n :R: N) (xs :E: Vec -E- n).
-      case -E- xs of
-        Nil/E
-          | n = Z
-          => n
-    main :R: N = vlen -R- Z -E- Nil
-  in main
+("CASE-FUN",vlen)
 
-### Verification ###
+4. In context:
+  N : Type
+  Nil : Vec -8- Z
+  S : (x :4: N) -> N
+  Type : Type
+  Vec : (_x0 :6: N) -> Type
+  Z : N
+  vlen : (n :10: N) -> (xs :11: Vec -12- n) -> N
 
-Verification successful.
+("CASE",vlen -13- n -14- xs,case -16- xs of
+  Nil/17
+    => case -18- n of [Z] =>
+      n)
 
-### Pruned ###
+5. In context:
+  N : Type
+  Nil : Vec -8- Z
+  S : (x :4: N) -> N
+  Type : Type
+  Vec : (_x0 :6: N) -> Type
+  Z : N
+  vlen : (n :10: N) -> (xs :11: Vec -12- n) -> N
 
-  let
-    postulate Z : N
-    vlen = \n.
-      n
-    main = vlen Z
-  in main
+("ALT-CTOR",Nil)
 
-### Normal forms ###
+6. In context:
+  N : Type
+  Nil : Vec -8- Z
+  S : (x :4: N) -> N
+  Type : Type
+  Vec : (_x0 :6: N) -> Type
+  Z : N
+  vlen : (n :10: N) -> (xs :11: Vec -12- n) -> N
 
-unerased:
-  
-  let postulate Z : N
-  in Z
+("CASE",vlen -13- n -14- Nil,case -18- n of [Z] =>
+  n)
 
-erased:
-  
-  let postulate Z : N
-  in Z
+7. In context:
+  N : Type
+  Nil : Vec -8- Z
+  S : (x :4: N) -> N
+  Type : Type
+  Vec : (_x0 :6: N) -> Type
+  Z : N
+  vlen : (n :10: N) -> (xs :11: Vec -12- n) -> N
 
+("ALT-FORCED",Z)
+
+8. In context:
+  N : Type
+  Nil : Vec -8- Z
+  S : (x :4: N) -> N
+  Type : Type
+  Vec : (_x0 :6: N) -> Type
+  Z : N
+  vlen : (n :10: N) -> (xs :11: Vec -12- n) -> N
+
+("PLAIN-TERM",vlen -13- [Z] -14- Nil,n)
+
+9. In context:
+  N : Type
+  Nil : Vec -8- Z
+  S : (x :4: N) -> N
+  Type : Type
+  Vec : (_x0 :6: N) -> Type
+  Z : N
+  vlen : (n :10: N) -> (xs :11: Vec -12- n) -> N
+
+("VAR",n)
+
+Error: UnknownName n
+
+CallStack (from HasCallStack):
+  error, called at Main.hs:130:38 in main:Main

@@ -22,17 +22,17 @@
     f : (u : U) -> (x : ty u) -> Type = \(u : U) (x : ty u).
       case x of
         T
-          | u = B
-          => Bool
+          => case u of [B] =>
+            Bool
         F
-          | u = B
-          => Bool
+          => case u of [B] =>
+            Bool
         Q
-          | u = M
-          => Mool
+          => case u of [M] =>
+            Mool
         W
-          | u = M
-          => Mool
+          => case u of [M] =>
+            Mool
     main : Type = Tuple (f B T) (f B F) (f M Q) (f M W)
   in main
 
@@ -58,34 +58,38 @@
     f :17: (u :18: U) -> (x :19: ty -20- u) -> Type = \(u :21: U) (x :22: ty -23- u).
       case -24- x of
         T/25
-          | u = B
-          => Bool
-        F/26
-          | u = B
-          => Bool
-        Q/27
-          | u = M
-          => Mool
-        W/28
-          | u = M
-          => Mool
-    main :29: Type = Tuple -33- (f -35- B -34- T) -32- (f -37- B -36- F) -31- (f -39- M -38- Q) -30- (f -41- M -40- W)
+          => case -26- u of [B] =>
+            Bool
+        F/27
+          => case -28- u of [B] =>
+            Bool
+        Q/29
+          => case -30- u of [M] =>
+            Mool
+        W/31
+          => case -32- u of [M] =>
+            Mool
+    main :33: Type = Tuple -37- (f -39- B -38- T) -36- (f -41- B -40- F) -35- (f -43- M -42- Q) -34- (f -45- M -44- W)
   in main
 
 ### Constraints ###
 
-[] -> [1,2,3,4,5,6,7,17,19,22,24,25,26,27,28,30,31,32,33,34,36,38,40,R]
-[18] -> [9,10,21,35,37,39,41]
+[] -> [1,2,3,4,5,6,7,17,19,22,24,25,27,29,31,34,35,36,37,38,40,42,44,R]
+[18] -> [9,10,21,39,41,43,45]
 [21] -> [18]
-[35] -> [18]
-[37] -> [18]
+[26] -> [21]
+[28] -> [21]
+[30] -> [21]
+[32] -> [21]
 [39] -> [18]
 [41] -> [18]
-[R] -> [29]
+[43] -> [18]
+[45] -> [18]
+[R] -> [33]
 
 ### Solution ###
 
-[1,2,3,4,5,6,7,17,19,22,24,25,26,27,28,29,30,31,32,33,34,36,38,40,R]
+[1,2,3,4,5,6,7,17,19,22,24,25,27,29,31,33,34,35,36,37,38,40,42,44,R]
 
 ### Annotated ###
 
@@ -109,17 +113,17 @@
     f :R: (u :E: U) -> (x :R: ty -E- u) -> Type = \(u :E: U) (x :R: ty -E- u).
       case -R- x of
         T/R
-          | u = B
-          => Bool
+          => case -E- u of [B] =>
+            Bool
         F/R
-          | u = B
-          => Bool
+          => case -E- u of [B] =>
+            Bool
         Q/R
-          | u = M
-          => Mool
+          => case -E- u of [M] =>
+            Mool
         W/R
-          | u = M
-          => Mool
+          => case -E- u of [M] =>
+            Mool
     main :R: Type = Tuple -R- (f -E- B -R- T) -R- (f -E- B -R- F) -R- (f -E- M -R- Q) -R- (f -E- M -R- W)
   in main
 
@@ -145,17 +149,17 @@
     f :R: (u :E: U) -> (x :R: ty -E- u) -> Type = \(u :E: U) (x :R: ty -E- u).
       case -R- x of
         T/R
-          | u = B
-          => Bool
+          => case -E- u of [B] =>
+            Bool
         F/R
-          | u = B
-          => Bool
+          => case -E- u of [B] =>
+            Bool
         Q/R
-          | u = M
-          => Mool
+          => case -E- u of [M] =>
+            Mool
         W/R
-          | u = M
-          => Mool
+          => case -E- u of [M] =>
+            Mool
     main :R: Type = Tuple -R- (f -E- B -R- T) -R- (f -E- B -R- F) -R- (f -E- M -R- Q) -R- (f -E- M -R- W)
   in main
 
@@ -181,17 +185,17 @@
     f :R: (u :E: U) -> (x :R: ty -E- u) -> Type = \(u :E: U) (x :R: ty -E- u).
       case -R- x of
         T/R
-          | u = B
-          => Bool
+          => case -E- u of [B] =>
+            Bool
         F/R
-          | u = B
-          => Bool
+          => case -E- u of [B] =>
+            Bool
         Q/R
-          | u = M
-          => Mool
+          => case -E- u of [M] =>
+            Mool
         W/R
-          | u = M
-          => Mool
+          => case -E- u of [M] =>
+            Mool
     main :R: Type = Tuple -R- (f -E- B -R- T) -R- (f -E- B -R- F) -R- (f -E- M -R- Q) -R- (f -E- M -R- W)
   in main
 

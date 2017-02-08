@@ -12,13 +12,13 @@
     vlen : (n : N) -> (xs : Vec n N) -> N = \(n : N) (xs : Vec n N).
       case xs of
         Nil (a : Type)
-          | a = N
-          | n = Z
-          => Z
+          => case a of [N] =>
+            case n of [Z] =>
+              Z
         Cons (a : Type) (m : N) (y : N) (ys : Vec m N)
-          | a = N
-          | n = S m
-          => S (vlen m ys)
+          => case a of [N] =>
+            case n of [S m] =>
+              S (vlen m ys)
     main : N = vlen 1 (Cons N Z 3 (Nil N))
   in main
 
@@ -34,50 +34,54 @@
     vlen :19: (n :20: N) -> (xs :21: Vec -23- n -22- N) -> N = \(n :24: N) (xs :25: Vec -27- n -26- N).
       case -28- xs of
         Nil/29 (a :30: Type)
-          | a = N
-          | n = Z
-          => Z
-        Cons/31 (a :32: Type) (m :33: N) (y :34: N) (ys :35: Vec -37- m -36- N)
-          | a = N
-          | n = S -38- m
-          => S -39- (vlen -41- m -40- ys)
-    main :42: N = vlen -44- 1 -43- (Cons -49- N -48- Z -47- 3 -46- (Nil -53- N))
+          => case -31- a of [N] =>
+            case -32- n of [Z] =>
+              Z
+        Cons/33 (a :34: Type) (m :35: N) (y :36: N) (ys :37: Vec -39- m -38- N)
+          => case -40- a of [N] =>
+            case -41- n of [S -42- m] =>
+              S -43- (vlen -45- m -44- ys)
+    main :46: N = vlen -48- 1 -47- (Cons -53- N -52- Z -51- 3 -50- (Nil -57- N))
   in main
 
 ### Constraints ###
 
-[] -> [2,3,7,11,19,21,25,28,29,31,35,39,40,43,46,47,50,51,52,R]
-[8] -> [1,30,53]
+[] -> [2,3,7,11,19,21,25,28,29,33,37,43,44,47,50,51,54,55,56,R]
+[8] -> [1,30,57]
 [9] -> [14,22]
 [10] -> [15,23]
-[12] -> [1,32,49]
-[13] -> [33,48]
-[14] -> [9,36]
-[15] -> [10,37]
+[12] -> [1,34,53]
+[13] -> [35,52]
+[14] -> [9,38]
+[15] -> [10,39]
 [16] -> [22]
 [17] -> [23]
-[18] -> [38,45]
-[20] -> [24,33,41,44,45]
-[22] -> [9,16,36]
-[23] -> [10,17,37]
+[18] -> [42,49]
+[20] -> [24,35,45,48,49]
+[22] -> [9,16,38]
+[23] -> [10,17,39]
 [24] -> [20]
 [30] -> [8]
-[32] -> [12]
-[33] -> [13]
-[36] -> [14,22]
-[37] -> [15,23]
-[38] -> [18]
-[41] -> [20]
-[44] -> [20]
-[45] -> [18]
-[48] -> [13]
-[49] -> [12]
-[53] -> [8]
-[R] -> [42]
+[31] -> [30]
+[32] -> [24]
+[34] -> [12]
+[35] -> [13]
+[38] -> [14,22]
+[39] -> [15,23]
+[40] -> [34]
+[41] -> [24]
+[42] -> [18]
+[45] -> [20]
+[48] -> [20]
+[49] -> [18]
+[52] -> [13]
+[53] -> [12]
+[57] -> [8]
+[R] -> [46]
 
 ### Solution ###
 
-[2,3,7,11,19,21,25,28,29,31,35,39,40,42,43,46,47,50,51,52,R]
+[2,3,7,11,19,21,25,28,29,33,37,43,44,46,47,50,51,54,55,56,R]
 
 ### Annotated ###
 
@@ -91,13 +95,13 @@
     vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N = \(n :E: N) (xs :R: Vec -E- n -E- N).
       case -R- xs of
         Nil/R (a :E: Type)
-          | a = N
-          | n = Z
-          => Z
+          => case -E- a of [N] =>
+            case -E- n of [Z] =>
+              Z
         Cons/R (a :E: Type) (m :E: N) (y :E: N) (ys :R: Vec -E- m -E- N)
-          | a = N
-          | n = S -E- m
-          => S -R- (vlen -E- m -R- ys)
+          => case -E- a of [N] =>
+            case -E- n of [S -E- m] =>
+              S -R- (vlen -E- m -R- ys)
     main :R: N = vlen -E- 1 -R- (Cons -E- N -E- Z -R- 3 -R- (Nil -E- N))
   in main
 
@@ -113,13 +117,13 @@
     vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N = \(n :E: N) (xs :R: Vec -E- n -E- N).
       case -R- xs of
         Nil/R (a :E: Type)
-          | a = N
-          | n = Z
-          => Z
+          => case -E- a of [N] =>
+            case -E- n of [Z] =>
+              Z
         Cons/R (a :E: Type) (m :E: N) (y :E: N) (ys :R: Vec -E- m -E- N)
-          | a = N
-          | n = S -E- m
-          => S -R- (vlen -E- m -R- ys)
+          => case -E- a of [N] =>
+            case -E- n of [S -E- m] =>
+              S -R- (vlen -E- m -R- ys)
     main :R: N = vlen -E- 1 -R- (Cons -E- N -E- Z -R- 3 -R- (Nil -E- N))
   in main
 
@@ -135,13 +139,13 @@
     vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N = \(n :E: N) (xs :R: Vec -E- n -E- N).
       case -R- xs of
         Nil/R (a :E: Type)
-          | a = N
-          | n = Z
-          => Z
+          => case -E- a of [N] =>
+            case -E- n of [Z] =>
+              Z
         Cons/R (a :E: Type) (m :E: N) (y :E: N) (ys :R: Vec -E- m -E- N)
-          | a = N
-          | n = S -E- m
-          => S -R- (vlen -E- m -R- ys)
+          => case -E- a of [N] =>
+            case -E- n of [S -E- m] =>
+              S -R- (vlen -E- m -R- ys)
     main :R: N = vlen -E- 1 -R- (Cons -E- N -E- Z -R- 3 -R- (Nil -E- N))
   in main
 
@@ -154,13 +158,13 @@ ttstar: !! verification failed: Traceback:
 ("LET",R,[postulate N :E: Type,postulate Z :R: N,postulate S :R: (x :R: N) -> N,postulate Vec :E: (_x0 :E: N) -> (_x1 :E: Type) -> Type,postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a,postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a,vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N = \(n :E: N) (xs :R: Vec -E- n -E- N).
   case -R- xs of
     Nil/R (a :E: Type)
-      | a = N
-      | n = Z
-      => Z
+      => case -E- a of [N] =>
+        case -E- n of [Z] =>
+          Z
     Cons/R (a :E: Type) (m :E: N) (y :E: N) (ys :R: Vec -E- m -E- N)
-      | a = N
-      | n = S -E- m
-      => S -R- (vlen -E- m -R- ys),main :R: N = vlen -E- 1 -R- (Cons -E- N -E- Z -R- 3 -R- (Nil -E- N))])
+      => case -E- a of [N] =>
+        case -E- n of [S -E- m] =>
+          S -R- (vlen -E- m -R- ys),main :R: N = vlen -E- 1 -R- (Cons -E- N -E- Z -R- 3 -R- (Nil -E- N))])
 
 2. In context:
   Cons : (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
@@ -194,9 +198,7 @@ ttstar: !! verification failed: Traceback:
   Type : Type
   Vec : (_x0 :E: N) -> (_x1 :E: Type) -> Type
   Z : N
-  n : N
   vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
-  xs : Vec -E- n -E- N
 
 ("CASE-MULTI",xs,R,R,vlen -E- n -R- xs)
 
@@ -208,11 +210,11 @@ ttstar: !! verification failed: Traceback:
   Type : Type
   Vec : (_x0 :E: N) -> (_x1 :E: Type) -> Type
   Z : N
-  n : N
   vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
-  xs : Vec -E- n -E- N
 
-("ALT-MATCH",Cons,S -R- (vlen -E- m -R- ys))
+("ALT-MATCH",Cons,case -E- a of [N] =>
+  case -E- n of [S -E- m] =>
+    S -R- (vlen -E- m -R- ys))
 
 6. In context:
   Cons : (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
@@ -222,11 +224,11 @@ ttstar: !! verification failed: Traceback:
   Type : Type
   Vec : (_x0 :E: N) -> (_x1 :E: Type) -> Type
   Z : N
-  n : N
   vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
-  xs : Vec -E- n -E- N
 
-("ALT-MATCH-INT",Cons,S -R- (vlen -E- m -R- ys))
+("ALT-MATCH-INT",Cons,case -E- a of [N] =>
+  case -E- n of [S -E- m] =>
+    S -R- (vlen -E- m -R- ys))
 
 7. In context:
   Cons : (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
@@ -236,15 +238,9 @@ ttstar: !! verification failed: Traceback:
   Type : Type
   Vec : (_x0 :E: N) -> (_x1 :E: Type) -> Type
   Z : N
-  a : Type
-  m : N
-  n : N
   vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
-  xs : Vec -E- [S -E- m] -E- N
-  y : N
-  ys : Vec -E- m -E- N
 
-("ALT-MATCH-INT2",R,R,Cons -E- [N] -E- m -E- y -R- ys,Vec -E- [S -E- m] -E- N)
+("ALT-MATCH-INT2",R,R,Cons -E- a -E- m -E- y -R- ys,Vec -E- n -E- N)
 
 8. In context:
   Cons : (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
@@ -254,15 +250,9 @@ ttstar: !! verification failed: Traceback:
   Type : Type
   Vec : (_x0 :E: N) -> (_x1 :E: Type) -> Type
   Z : N
-  a : Type
-  m : N
-  n : N
   vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
-  xs : Vec -E- [S -E- m] -E- N
-  y : N
-  ys : Vec -E- m -E- N
 
-("APP",R,Cons -E- [N] -E- m -E- y,R,ys)
+("CASE-MULTI",a,R,E,vlen -E- n -R- (Cons -E- a -E- m -E- y -R- ys))
 
 9. In context:
   Cons : (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
@@ -272,15 +262,9 @@ ttstar: !! verification failed: Traceback:
   Type : Type
   Vec : (_x0 :E: N) -> (_x1 :E: Type) -> Type
   Z : N
-  a : Type
-  m : N
-  n : N
   vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
-  xs : Vec -E- [S -E- m] -E- N
-  y : N
-  ys : Vec -E- m -E- N
 
-("APP",R,Cons -E- [N] -E- m,E,y)
+("ALT-FORCED",N)
 
 10. In context:
   Cons : (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
@@ -290,11 +274,89 @@ ttstar: !! verification failed: Traceback:
   Type : Type
   Vec : (_x0 :E: N) -> (_x1 :E: Type) -> Type
   Z : N
-  a : Type
-  m : N
-  n : N
   vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
-  xs : Vec -E- [S -E- m] -E- N
+
+("CASE-MULTI",n,R,E,vlen -E- n -R- (Cons -E- [N] -E- m -E- y -R- ys))
+
+11. In context:
+  Cons : (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+  N : Type
+  Nil : (a :E: Type) -> Vec -E- Z -E- a
+  S : (x :R: N) -> N
+  Type : Type
+  Vec : (_x0 :E: N) -> (_x1 :E: Type) -> Type
+  Z : N
+  vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
+
+("ALT-FORCED",S -E- m)
+
+12. In context:
+  Cons : (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+  N : Type
+  Nil : (a :E: Type) -> Vec -E- Z -E- a
+  S : (x :R: N) -> N
+  Type : Type
+  Vec : (_x0 :E: N) -> (_x1 :E: Type) -> Type
+  Z : N
+  vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
+
+("CASE-LEAF",vlen -E- [S -E- m] -R- (Cons -E- [N] -E- m -E- y -R- ys),S -R- (vlen -E- m -R- ys))
+
+13. In context:
+  Cons : (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+  N : Type
+  Nil : (a :E: Type) -> Vec -E- Z -E- a
+  S : (x :R: N) -> N
+  Type : Type
+  Vec : (_x0 :E: N) -> (_x1 :E: Type) -> Type
+  Z : N
+  m : N
+  vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
+  y : N
+  ys : Vec -E- m -E- N
+
+("APP",R,vlen -E- [S -E- m],R,Cons -E- [N] -E- m -E- y -R- ys)
+
+14. In context:
+  Cons : (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+  N : Type
+  Nil : (a :E: Type) -> Vec -E- Z -E- a
+  S : (x :R: N) -> N
+  Type : Type
+  Vec : (_x0 :E: N) -> (_x1 :E: Type) -> Type
+  Z : N
+  m : N
+  vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
+  y : N
+  ys : Vec -E- m -E- N
+
+("APP",R,Cons -E- [N] -E- m -E- y,R,ys)
+
+15. In context:
+  Cons : (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+  N : Type
+  Nil : (a :E: Type) -> Vec -E- Z -E- a
+  S : (x :R: N) -> N
+  Type : Type
+  Vec : (_x0 :E: N) -> (_x1 :E: Type) -> Type
+  Z : N
+  m : N
+  vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
+  y : N
+  ys : Vec -E- m -E- N
+
+("APP",R,Cons -E- [N] -E- m,E,y)
+
+16. In context:
+  Cons : (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+  N : Type
+  Nil : (a :E: Type) -> Vec -E- Z -E- a
+  S : (x :R: N) -> N
+  Type : Type
+  Vec : (_x0 :E: N) -> (_x1 :E: Type) -> Type
+  Z : N
+  m : N
+  vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
   y : N
   ys : Vec -E- m -E- N
 
