@@ -9,16 +9,17 @@ data Vec : N -> Type -> Type where
   Cons : (a : Type) -> (n : N) -> (x : a) -> (xs : Vec n a) -> Vec (S n) a.
 
 vlen (n : N) (xs : Vec n N) : N
-  = case xs of
-      Nil (a : Type)
-        | a = N
-        | n = Z
-        => n,
+  = case xs of {
+      Nil (a : Type) =>
+        case a of [N] =>
+          case n of [Z] =>
+            n,
 
-      Cons (a : Type) (m : N) (y : N) (ys : Vec m N)
-        | a = N
-        | n = S m
-        => S (vlen m ys).
+      Cons (a : Type) (m : N) (y : N) (ys : Vec m N) =>
+        case a of [N] =>
+          case n of [S m] =>
+            S (vlen m ys)
+    }
 
 main : N
   = vlen 1 (Cons N Z 3 (Nil N)).

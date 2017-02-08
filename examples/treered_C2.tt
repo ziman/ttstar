@@ -8,8 +8,9 @@ data Vec : N -> Type where
   Nil : Vec Z.
 
 vlen (n : N) (xs : Vec n) : N
-  = case xs of
-      Nil | n = Z => n.
+  = case xs of Nil =>
+      case n of [Z] =>
+        n.
 
 main : N
   = vlen Z Nil.
@@ -17,7 +18,7 @@ main : N
 {-
 
 Bug 3v2:
-  - `n` in the Nil branch causes unknown variable error at runtime
-  - NOT caught by the verification typechecker!!
+  - `n` in the Nil branch causes unknown variable error
+  - caught by the verification typechecker
 
 -}
