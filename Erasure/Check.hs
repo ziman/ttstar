@@ -211,7 +211,8 @@ checkCaseFun fn (CaseFun args ct) = bt ("CASE-FUN", fn) $ do
 
 checkCaseTree :: [Def Meta] -> TT Meta -> CaseTree Meta -> TC (Constrs Meta)
 checkCaseTree pvars lhs (Leaf rhs) = bt ("PLAIN-TERM", lhs, rhs) $ do
-    withs pvars $ do
+    pvars' <- checkDefs' pvars
+    withs pvars' $ do
         (lty, lcs) <- checkTm lhs
         (rty, rcs) <- checkTm rhs
         ccs <- conv lty rty
@@ -252,7 +253,7 @@ checkAlt pvars lhs n sr (Alt Wildcard rhs) = bt ("ALT-WILDCARD") $ do
     checkCaseTree pvars lhs rhs
 
 checkAlt pvars lhs n sr (Alt (Ctor ct args) rhs) = bt ("ALT-CTOR", pat) $ do
-    args' <- withs pvars $ checkDefs' args  -- do we check the args here? or only in the leaf?
+    --args' <- withs pvars $ checkDefs' args  -- do we check the args here? or only in the leaf?
 
     -- check we've got a constructor
     cd <- lookup (ctName ct)
@@ -260,7 +261,7 @@ checkAlt pvars lhs n sr (Alt (Ctor ct args) rhs) = bt ("ALT-CTOR", pat) $ do
         tcfail (NotConstructor $ ctName ct)
 
     -- Typechecking will be done eventually in the case for Leaf.
-    cs <- checkCaseTree (substPV n pat pvars ++ args') (subst n pat lhs) rhs
+    cs <- checkCaseTree (substPV n pat pvars ++ args) (subst n pat lhs) rhs
 
     return $ cs /\ scrutCs /\ ctCs (defR cd)
   where
