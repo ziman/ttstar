@@ -139,7 +139,7 @@ verDef d@(Def n r ty (Patterns cf) cs) = bt ("DEF-TERM", n) $ do
 
 verCaseFun :: Name -> Relevance -> CaseFun Relevance -> Ver ()
 verCaseFun fn r (CaseFun ds ct) = bt ("CASEFUN", fn) $ do
-    verDefs ds
+    -- verDefs ds
     let lhs = mkApp (V fn) [(defR d, V $ defName d) | d <- ds]
     verCase r ds lhs ct
 

@@ -204,8 +204,8 @@ inferDef d@(Def n r ty (Patterns cf) _noCs) = bt ("DEF-PATTERNS", n) $ do
 
 inferCaseFun :: Name -> CaseFun Meta -> TC (Constrs Meta)
 inferCaseFun fn (CaseFun args ct) = bt ("CASE-FUN", fn) $ do
-    pvars <- inferDefs' args
-    inferCaseTree pvars lhs ct
+    --pvars <- inferDefs' args
+    inferCaseTree args lhs ct
   where
     lhs = mkApp (V fn) [(r, V n) | Def n r ty (Abstract Var) cs <- args]
 
