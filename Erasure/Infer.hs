@@ -255,12 +255,9 @@ inferAlt pvars lhs n sr (Alt (Ctor (CT cn cr) args) rhs) = bt ("ALT-CTOR", pat) 
 
     cs <- inferCaseTree (substPV n pat pvars ++ args) (subst n pat lhs) rhs
 
-    return $ cs /\ scrutCs /\  cr <--> defR cd /\ Fixed R --> sr
+    return $ cs /\ cr <--> defR cd /\ Fixed R --> sr
   where
     pat = mkApp (V cn) [(r, V n) | Def n r ty (Abstract Var) cs <- args]
-
-    -- links from the individual vars to the scrutinee
-    scrutCs = unions [defR d --> sr | d <- args]
 
 inferAlt pvars lhs n sr (Alt (Ctor (CTForced cn) args) rhs) = bt ("ALT-FORCED-CTOR", pat) $ do
     -- check we've got a constructor
