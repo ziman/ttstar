@@ -263,11 +263,11 @@ inferAlt pvars lhs n sr (Alt (Ctor ct args) rhs) = bt ("ALT-CTOR", pat) $ do
     -- Typechecking will be done eventually in the case for Leaf.
     cs <- inferCaseTree (substPV n pat pvars ++ args) (subst n pat lhs) rhs
 
-    return $ cs /\ scrutCs /\ ctCs (defR cd)
+    return $ cs /\ scrutCs /\ ctR <--> defR cd /\ ctR --> sr
   where
-    ctCs r = case ct of
-        CT cn cr -> cr <--> r
-        CTForced cn -> noConstrs
+    ctR = case ct of
+        CT cn cr    -> cr
+        CTForced cn -> Fixed E
 
     ctor = case ct of
         CT cn cr -> V cn
