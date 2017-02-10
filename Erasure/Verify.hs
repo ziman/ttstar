@@ -151,33 +151,34 @@ verCase r pvars lhs (Leaf rhs) = bt ("CASE-LEAF", lhs, rhs) $ do
         rhsTy <- verTm r rhs
         conv r lhsTy rhsTy
 
-verCase r pvars lhs (Case s (V n) alts) = bt ("CASE-MULTI", n, r, s, lhs) $ do
+verCase r pvars lhs (Case s (V n) alts) = bt ("CASE-SPLIT", n, r, s, lhs) $ do
     d <- lookupPatvar n pvars
     defR d <-> s
-    s --> r  -- it's not (<->) because we can have forced inspections, which don't cause usage
-    mapM_ (verBranch r pvars lhs n (defType d) r) alts        
+    s --> r  -- it's not (<->) because we can have forced inspections (where s = E),
+             -- which don't cause usage
+    mapM_ (verBranch r pvars lhs n s) alts        
 
 verCase r pvars lhs ct@(Case s tm alts) = do
     verFail $ ComplexScrutinee ct
 
-verBranch :: Relevance -> [Def Relevance] -> Pat -> Name -> Type -> Relevance -> Alt Relevance -> Ver ()
-verBranch r pvars lhs n scrutTy s (Alt Wildcard rhs) = bt ("ALT-WILD", rhs) $ do
+verBranch :: Relevance -> [Def Relevance] -> Pat -> Name -> Relevance -> Alt Relevance -> Ver ()
+verBranch r pvars lhs n s (Alt Wildcard rhs) = bt ("ALT-WILD", rhs) $ do
     verCase r pvars lhs rhs
 
-verBranch r pvars lhs n scrutTy s (Alt (Ctor (CT cn u) ds) rhs) = bt ("ALT-MATCH", cn, rhs) $ do
+verBranch r pvars lhs n s (Alt (Ctor (CT cn u) ds) rhs) = bt ("ALT-MATCH", cn, rhs) $ do
     u --> r
-    verBranch' False u pvars lhs n scrutTy s (cn, ds, rhs)
+    verBranch' False u pvars lhs n s (cn, ds, rhs)
 
-verBranch r pvars lhs n scrutTy s (Alt (Ctor (CTForced cn) ds) rhs) = bt ("ALT-MATCH-F", cn, rhs) $ do
-    verBranch' True r pvars lhs n scrutTy s (cn, ds, rhs)
+verBranch r pvars lhs n s (Alt (Ctor (CTForced cn) ds) rhs) = bt ("ALT-MATCH-F", cn, rhs) $ do
+    verBranch' True r pvars lhs n s (cn, ds, rhs)
 
-verBranch r pvars lhs n scrutTy s (Alt (ForcedPat pat) rhs) = bt ("ALT-FORCED", pat) $ do
+verBranch r pvars lhs n s (Alt (ForcedPat pat) rhs) = bt ("ALT-FORCED", pat) $ do
     verCase r (substPV n (Forced pat) pvars) (subst n (Forced pat) lhs) rhs
 
-verBranch' :: Bool -> Relevance -> [Def Relevance] -> Pat -> Name -> Type -> Relevance
+verBranch' :: Bool -> Relevance -> [Def Relevance] -> Pat -> Name -> Relevance
     -> (Name, [Def Relevance], CaseTree Relevance)
     -> Ver ()
-verBranch' ctorForced r pvars lhs n scrutTy s (cn, ds, rhs) = bt ("ALT-MATCH-INT", cn, rhs) $ do
+verBranch' ctorForced r pvars lhs n s (cn, ds, rhs) = bt ("ALT-MATCH-INT", cn, rhs) $ do
     cd <- lookupName cn
     when (defBody cd /= Abstract Postulate) $
         verFail (NotConstructor cn)
@@ -185,7 +186,7 @@ verBranch' ctorForced r pvars lhs n scrutTy s (cn, ds, rhs) = bt ("ALT-MATCH-INT
     --withs pvars $ verDefs ds  -- do we check the args here or only in the leaf?
 
     sequence_ [defR d --> s | d <- ds]
-    bt("ALT-MATCH-INT2", r, s, pat, scrutTy) $ do
+    bt("ALT-MATCH-INT2", r, s, pat) $ do
         {- this is just not true
         -- check that the pattern matches the scrutinee
         --
