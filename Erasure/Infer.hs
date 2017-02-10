@@ -221,14 +221,7 @@ inferCaseTree pvars lhs (Leaf rhs) = bt ("PLAIN-TERM", lhs, rhs) $ do
 inferCaseTree pvars lhs ct@(Case r (V n) alts) = bt ("CASE", lhs, ct) $ do
     scrutD <- lookupPatvar n pvars
     cs <- unions <$> traverse (inferAlt pvars lhs n r) alts
-    return $ cs /\ r --> defR scrutD -- /\ scrutineeCs
-{-
-  where
-    scrutineeCs = case alts of
-        []  -> error "empty list of case alts"
-        [_] -> noConstrs
-        _   -> Fixed R --> r
--}
+    return $ cs /\ r --> defR scrutD
 
 inferCaseTree pvars lhs (Case r s alts) =
     tcfail $ NonVariableScrutinee s
