@@ -200,7 +200,7 @@ ttstar: !! verification failed: Traceback:
   Z : N
   vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
 
-("CASE-MULTI",xs,R,R,vlen -E- n -R- xs)
+("CASE-SPLIT",xs,R,R,vlen -E- n -R- xs)
 
 5. In context:
   Cons : (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
@@ -240,7 +240,7 @@ ttstar: !! verification failed: Traceback:
   Z : N
   vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
 
-("ALT-MATCH-INT2",R,R,Cons -E- a -E- m -E- y -R- ys,Vec -E- n -E- N)
+("ALT-MATCH-INT2",R,R,Cons -E- a -E- m -E- y -R- ys)
 
 8. In context:
   Cons : (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
@@ -252,7 +252,7 @@ ttstar: !! verification failed: Traceback:
   Z : N
   vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
 
-("CASE-MULTI",a,R,E,vlen -E- n -R- (Cons -E- a -E- m -E- y -R- ys))
+("CASE-SPLIT",a,R,E,vlen -E- n -R- (Cons -E- a -E- m -E- y -R- ys))
 
 9. In context:
   Cons : (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
@@ -276,7 +276,7 @@ ttstar: !! verification failed: Traceback:
   Z : N
   vlen : (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N
 
-("CASE-MULTI",n,R,E,vlen -E- n -R- (Cons -E- [N] -E- m -E- y -R- ys))
+("CASE-SPLIT",n,R,E,vlen -E- n -R- (Cons -E- [N] -E- m -E- y -R- ys))
 
 11. In context:
   Cons : (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
