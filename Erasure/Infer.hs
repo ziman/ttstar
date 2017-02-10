@@ -221,12 +221,14 @@ inferCaseTree pvars lhs (Leaf rhs) = bt ("PLAIN-TERM", lhs, rhs) $ do
 inferCaseTree pvars lhs ct@(Case r (V n) alts) = bt ("CASE", lhs, ct) $ do
     scrutD <- lookupPatvar n pvars
     cs <- unions <$> traverse (inferAlt pvars lhs n r) alts
-    return $ cs /\ r --> defR scrutD /\ scrutineeCs
+    return $ cs /\ r --> defR scrutD -- /\ scrutineeCs
+{-
   where
     scrutineeCs = case alts of
         []  -> error "empty list of case alts"
         [_] -> noConstrs
         _   -> Fixed R --> r
+-}
 
 inferCaseTree pvars lhs (Case r s alts) =
     tcfail $ NonVariableScrutinee s
@@ -252,33 +254,37 @@ inferAlt :: [Def Meta] -> TT Meta -> Name -> Meta -> Alt Meta -> TC (Constrs Met
 inferAlt pvars lhs n sr (Alt Wildcard rhs) = bt ("ALT-WILDCARD") $ do
     inferCaseTree pvars lhs rhs
 
-inferAlt pvars lhs n sr (Alt (Ctor ct args) rhs) = bt ("ALT-CTOR", pat) $ do
-    --args' <- withs pvars $ inferDefs' args  -- do we infer the args here? or only in the leaf?
-
-    -- infer we've got a constructor
-    cd <- lookup (ctName ct)
+inferAlt pvars lhs n sr (Alt (Ctor (CT cn cr) args) rhs) = bt ("ALT-CTOR", pat) $ do
+    -- check we've got a constructor
+    cd <- lookup cn
     when (defBody cd /= Abstract Postulate) $
-        tcfail (NotConstructor $ ctName ct)
+        tcfail (NotConstructor cn)
 
-    -- Typechecking will be done eventually in the case for Leaf.
     cs <- inferCaseTree (substPV n pat pvars ++ args) (subst n pat lhs) rhs
 
-    return $ cs /\ scrutCs /\ ctR <--> defR cd /\ ctR --> sr
+    return $ cs /\ scrutCs /\  cr <--> defR cd /\ Fixed R --> sr
   where
-    ctR = case ct of
-        CT cn cr    -> cr
-        CTForced cn -> Fixed E
-
-    ctor = case ct of
-        CT cn cr -> V cn
-        CTForced cn -> Forced (V cn)
-
-    pat = mkApp ctor [(r, V n) | Def n r ty (Abstract Var) cs <- args]
+    pat = mkApp (V cn) [(r, V n) | Def n r ty (Abstract Var) cs <- args]
 
     -- links from the individual vars to the scrutinee
     scrutCs = unions [defR d --> sr | d <- args]
 
-inferAlt pvars lhs n sr (Alt (ForcedPat pat) rhs) = bt ("ALT-FORCED", pat) $ do
+inferAlt pvars lhs n sr (Alt (Ctor (CTForced cn) args) rhs) = bt ("ALT-FORCED-CTOR", pat) $ do
+    -- check we've got a constructor
+    cd <- lookup cn
+    when (defBody cd /= Abstract Postulate) $
+        tcfail (NotConstructor cn)
+
+    cs <- inferCaseTree (substPV n pat pvars ++ args) (subst n pat lhs) rhs
+
+    return $ cs /\ scrutCs
+  where
+    pat = mkApp (Forced (V cn)) [(r, V n) | Def n r ty (Abstract Var) cs <- args]
+
+    -- links from the individual vars to the scrutinee
+    scrutCs = unions [defR d --> sr | d <- args]
+
+inferAlt pvars lhs n sr (Alt (ForcedPat pat) rhs) = bt ("ALT-FORCED-PAT", pat) $ do
     -- no rules for sr
     inferCaseTree (substPV n (Forced pat) pvars) (subst n (Forced pat) lhs) rhs
 

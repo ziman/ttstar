@@ -175,7 +175,7 @@ ttstar: Traceback:
   append : (a :32: Type) -> (m :33: N) -> (n :34: N) -> (xs :35: Vec -37- m -36- a) -> (ys :38: Vec -40- n -39- a) -> Vec -42- (plus -44- m -43- n) -41- a
   plus : (m :20: N) -> (n :21: N) -> N
 
-("ALT-FORCED",a')
+("ALT-FORCED-PAT",a')
 
 8. In context:
   Cons : (a :12: Type) -> (n :13: N) -> (x :R: a) -> (xs :R: Vec -15- n -14- a) -> Vec -17- (S -18- n) -16- a
@@ -202,7 +202,7 @@ ttstar: Traceback:
   append : (a :32: Type) -> (m :33: N) -> (n :34: N) -> (xs :35: Vec -37- m -36- a) -> (ys :38: Vec -40- n -39- a) -> Vec -42- (plus -44- m -43- n) -41- a
   plus : (m :20: N) -> (n :21: N) -> N
 
-("ALT-FORCED",Z)
+("ALT-FORCED-PAT",Z)
 
 10. In context:
   Cons : (a :12: Type) -> (n :13: N) -> (x :R: a) -> (xs :R: Vec -15- n -14- a) -> Vec -17- (S -18- n) -16- a

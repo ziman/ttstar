@@ -117,7 +117,7 @@ ttstar: Traceback:
   Z : N
   vlen : (n :10: N) -> (xs :11: Vec -12- n) -> N
 
-("ALT-FORCED",Z)
+("ALT-FORCED-PAT",Z)
 
 8. In context:
   N : Type

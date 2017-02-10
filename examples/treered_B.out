@@ -151,7 +151,7 @@ ttstar: Traceback:
   Z : N
   vlen : (n :22: N) -> (xs :23: Vec -25- n -24- N) -> N
 
-("ALT-FORCED",N)
+("ALT-FORCED-PAT",N)
 
 8. In context:
   Cons : (a :12: Type) -> (n :13: N) -> (x :14: a) -> (xs :15: Vec -17- n -16- a) -> Vec -19- (S -20- n) -18- a
@@ -176,7 +176,7 @@ ttstar: Traceback:
   Z : N
   vlen : (n :22: N) -> (xs :23: Vec -25- n -24- N) -> N
 
-("ALT-FORCED",Z)
+("ALT-FORCED-PAT",Z)
 
 10. In context:
   Cons : (a :12: Type) -> (n :13: N) -> (x :14: a) -> (xs :15: Vec -17- n -16- a) -> Vec -19- (S -20- n) -18- a
