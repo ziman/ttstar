@@ -166,7 +166,7 @@ verBranch r pvars lhs n s (Alt Wildcard rhs) = bt ("ALT-WILD", rhs) $ do
     verCase r pvars lhs rhs
 
 verBranch r pvars lhs n s (Alt (Ctor (CT cn u) ds) rhs) = bt ("ALT-MATCH", cn, rhs) $ do
-    u --> r
+    u --> s  -- do we need this rule?
     verBranch' False u pvars lhs n s (cn, ds, rhs)
 
 verBranch r pvars lhs n s (Alt (Ctor (CTForced cn) ds) rhs) = bt ("ALT-MATCH-F", cn, rhs) $ do
