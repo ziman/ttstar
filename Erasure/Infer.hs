@@ -149,7 +149,7 @@ infer prog = runTC maxTag ctx $ do
     return cs
   where
     getTag :: Evar -> Int
-    getTag (MVar i) = i
+    getTag (EV i) = i
     getTag _        = 0  -- whatever, we're looking for maximum
 
     allTags :: [Int]
@@ -357,13 +357,13 @@ inferTm tm = bt ("UNCHECKABLE-TERM", tm) $ do
 
 freshen :: Monad m => m Int -> Evar -> StateT (IM.IntMap Evar) m Evar
 freshen freshTag m@(Fixed r) = return m
-freshen freshTag (MVar i) = do
+freshen freshTag (EV i) = do
     imap <- get
     case IM.lookup i imap of
         Just j ->
             return j
         Nothing -> do
-            j <- MVar <$> lift freshTag
+            j <- EV <$> lift freshTag
             modify $ IM.insert i j
             return j
 

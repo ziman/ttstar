@@ -29,7 +29,7 @@ bindEvars (r : rs) (m : ms) = bind r m $ bindEvars rs ms
   where
     bind R (Fixed R) = id
     bind E (Fixed E) = id
-    bind r (MVar  i) = IM.insert i (Fixed r)
+    bind r (EV  i) = IM.insert i (Fixed r)
     bind r m = error $ "bindEvars.bind: inconsistency: " ++ show (r, m)
 bindEvars rs ms = error $ "bindEvars: length mismatch: " ++ show (rs, ms)
 
@@ -49,7 +49,7 @@ specialise pm pr
 
     initialState :: Int
     initialState = 1 + maximum (0 : [
-        i | MVar i <- pm ^.. (ttRelevance :: Traversal' (TT Evar) Evar)
+        i | EV i <- pm ^.. (ttRelevance :: Traversal' (TT Evar) Evar)
       ])
 
 forMany :: (f Evar -> f Relevance -> Spec (f Evar)) -> [f Evar] -> [f Relevance] -> Spec [f Evar]

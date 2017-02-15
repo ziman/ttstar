@@ -8,11 +8,11 @@ import Util.PrettyPrint
 import Lens.Family2
 import Control.Monad.Trans.State.Strict
 
-data Evar = MVar Int | Fixed Relevance deriving (Eq, Ord)
+data Evar = EV Int | Fixed Relevance deriving (Eq, Ord)
 type TTevar = TT Evar
 
 instance Show Evar where
-    show (MVar  i) = show i
+    show (EV  i) = show i
     show (Fixed r) = show r
 
 instance ShowUnicode Evar where
@@ -28,17 +28,17 @@ instance PrettyR Evar where
         | otherwise  = text " -" <> showd x <> text "- "
 
     prettyAlt (Fixed r) = Just (showd r)
-    prettyAlt (MVar i) = Just (showd i)
+    prettyAlt (EV i) = Just (showd i)
 
 evar :: Program (Maybe Relevance) -> Program Evar
 evar prog = evalState (ttRelevance freshM prog) 0
 
 freshM :: Maybe Relevance -> State Int Evar
-freshM Nothing  = modify (+1) >> MVar <$> get
+freshM Nothing  = modify (+1) >> EV <$> get
 freshM (Just r) = return $ Fixed r
 
 evarsOccurIn :: Program Evar -> Bool
 evarsOccurIn prog = any isEvar (prog ^.. (ttRelevance :: Traversal' (TT Evar) Evar))
   where
-    isEvar (MVar  _) = True
+    isEvar (EV  _) = True
     isEvar (Fixed _) = False

@@ -24,7 +24,7 @@ span cls body = "<span class=\"" ++ cls ++ "\">" ++ body ++ "</span>"
 rel :: Uses -> Evar -> String
 rel uses (Fixed R) = span "rel rel-R" " :<sub>R</sub> "
 rel uses (Fixed E) = span "rel rel-E" " :<sub>E</sub> "
-rel uses (MVar i) = span ("rel mvar-num-" ++ show i) (" :<sub>" ++ show i ++ "</sub> ")
+rel uses (EV i) = span ("rel mvar-num-" ++ show i) (" :<sub>" ++ show i ++ "</sub> ")
 
 link :: String -> String -> String
 link cls body = "<a class=\"" ++ cls ++ "\" href=\"#\">" ++ body ++ "</a>"
@@ -40,7 +40,7 @@ nrty uses n r ty = erasedSpan uses r (name n ++ rel uses r ++ term uses ty ++ "\
   where
     wrap
         | Fixed _ <- r = span ("nrty " ++ cls)
-        | MVar i <- r = span ("nrty nrty-" ++ show i ++ " " ++ cls)
+        | EV i <- r = span ("nrty nrty-" ++ show i ++ " " ++ cls)
 
     cls | r `S.member` uses = "nrty-R"
         | otherwise = "nrty-E erased"
@@ -82,7 +82,7 @@ alt uses (ConCase cn tm) = unwords
 app :: Evar -> String
 app (Fixed R) = span "ap ap-R" "R"
 app (Fixed E) = span "ap ap-E" "E"
-app (MVar i) = span ("ap mvar-num-" ++ show i) (show i)
+app (EV i) = span ("ap mvar-num-" ++ show i) (show i)
 
 erasedSpan :: Uses -> Evar -> String -> String
 erasedSpan uses m = span $ erasedCls uses m
@@ -95,7 +95,7 @@ erasedCls uses m = erasure ++ " " ++ mvar
         | otherwise = "erased"
 
     mvar
-        | MVar i <- m = "mvar mvar-" ++ show i
+        | EV i <- m = "mvar mvar-" ++ show i
         | otherwise = ""
 
 htmlDef :: Uses -> Def Evar cs -> String
@@ -121,13 +121,13 @@ htmlEvars ms = op "{" ++ intercalate (op ", ") (map htmlEvar ms) ++ op "}"
 htmlEvar :: Evar -> String
 htmlEvar (Fixed R) = span "evar-R" "R"
 htmlEvar (Fixed E) = span "evar-E" "E"
-htmlEvar (MVar i) = span ("evar mvar mvar-" ++ show i) (show i)
+htmlEvar (EV i) = span ("evar mvar mvar-" ++ show i) (show i)
 
 jsConstr :: (Uses, Guards) -> String
 jsConstr (us, gs) = show [map num $ S.toList us, map num $ S.toList gs] ++ ",\n"
   where
     num (Fixed r) = show r
-    num (MVar i) = show i
+    num (EV i) = show i
 
 genHtml :: String -> Program Evar cs -> Constrs -> Uses -> IO ()
 genHtml fname prog (CS cs) uses = do
