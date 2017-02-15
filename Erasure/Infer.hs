@@ -6,7 +6,7 @@ import TT
 import TTLens
 import TTUtils
 import Normalise
-import Erasure.Meta
+import Erasure.Evar
 import Erasure.Solve
 
 import Prelude hiding (lookup)
@@ -27,20 +27,20 @@ import qualified Data.IntMap as IM
 --import Debug.Trace
 
 data TCError
-    = CantConvert TTmeta TTmeta
+    = CantConvert TTevar TTevar
     | Mismatch String String
     | UnknownName Name
-    | WrongType TTmeta TTmeta  -- term, type
-    | BadCtorType TTmeta
-    | NonFunction TTmeta TTmeta  -- term, type
-    | EmptyCaseTree TTmeta
-    | CantMatch TTmeta TTmeta
-    | NonVariableScrutinee TTmeta
+    | WrongType TTevar TTevar  -- term, type
+    | BadCtorType TTevar
+    | NonFunction TTevar TTevar  -- term, type
+    | EmptyCaseTree TTevar
+    | CantMatch TTevar TTevar
+    | NonVariableScrutinee TTevar
     | NotConstructor Name
     | InconsistentErasure Name
     | NotImplemented String
     | NonPatvar Name
-    | UncheckableTerm TTmeta
+    | UncheckableTerm TTevar
     | Other String
     deriving (Eq, Ord, Show)
 
@@ -58,31 +58,31 @@ instance Show TCFailure where
 
 type TCTraceback = [String]
 type TCState = Int
-type TC a = ReaderT (TCTraceback, Ctx Meta) (ExceptT TCFailure (State TCState)) a
+type TC a = ReaderT (TCTraceback, Ctx Evar) (ExceptT TCFailure (State TCState)) a
 
-type Term = TT Meta
-type Type = TT Meta
+type Term = TT Evar
+type Type = TT Evar
 
 infixl 2 /\
-(/\) :: Constrs Meta -> Constrs Meta -> Constrs Meta
+(/\) :: Constrs Evar -> Constrs Evar -> Constrs Evar
 (/\) = union
 
 infix 3 -->
-(-->) :: Meta -> Meta -> Constrs Meta
+(-->) :: Evar -> Evar -> Constrs Evar
 g --> u = M.singleton (S.singleton g) (S.singleton u)
 
 infix 3 <-->
-(<-->) :: Meta -> Meta -> Constrs Meta
+(<-->) :: Evar -> Evar -> Constrs Evar
 p <--> q = p --> q /\ q --> p
 
-union :: Constrs Meta -> Constrs Meta -> Constrs Meta
+union :: Constrs Evar -> Constrs Evar -> Constrs Evar
 union = M.unionWith S.union
 
-unions :: [Constrs Meta] -> Constrs Meta
+unions :: [Constrs Evar] -> Constrs Evar
 unions = M.unionsWith S.union
 
 -- newtype Constrs' r = CS { runCS :: M.Map (Guards' r) (Uses' r) }
-flipConstrs :: Constrs Meta -> Constrs Meta
+flipConstrs :: Constrs Evar -> Constrs Evar
 flipConstrs cs
     = unions
         [ p --> q
@@ -91,17 +91,17 @@ flipConstrs cs
         , p <- S.toList (ps `S.difference` S.singleton (Fixed R))
         ]
 
-cond :: Meta -> Constrs Meta -> Constrs Meta
+cond :: Evar -> Constrs Evar -> Constrs Evar
 cond r = M.mapKeysWith S.union (S.insert r)
 
-with :: Def Meta -> TC a -> TC a
+with :: Def Evar -> TC a -> TC a
 with d = with' $ M.insert (defName d) d
 
-withs :: [Def Meta] -> TC a -> TC a
+withs :: [Def Evar] -> TC a -> TC a
 withs []     = id
 withs (d:ds) = with d . withs ds
 
-with' :: (Ctx Meta -> Ctx Meta) -> TC a -> TC a
+with' :: (Ctx Evar -> Ctx Evar) -> TC a -> TC a
 with' f = local $ \(tb, ctx) -> (tb, f ctx)
 
 bt :: Show a => a -> TC b -> TC b
@@ -110,7 +110,7 @@ bt dbg sub = do
     let btLine = "In context:\n" ++ showCtx ctx ++ "\n" ++ show dbg ++ "\n"
     local (\(tb,ctx) -> (btLine:tb,ctx)) sub
 
-showCtx :: Ctx Meta -> String
+showCtx :: Ctx Evar -> String
 showCtx ctx = unlines
     [ "  " ++ show (defName d) ++ " : " ++ show (defType d)
     | d <- M.elems ctx
@@ -121,7 +121,7 @@ tcfail e = do
     (tb, ctx) <- ask
     lift . throwE $ TCFailure e tb
 
-getCtx :: TC (Ctx Meta)
+getCtx :: TC (Ctx Evar)
 getCtx = do
     (tb, ctx) <- ask
     return ctx
@@ -130,7 +130,7 @@ require :: Bool -> TCError -> TC ()
 require True  e = return ()
 require False e = tcfail e
 
-lookup :: Name -> TC (Def Meta)
+lookup :: Name -> TC (Def Evar)
 lookup n = do
     ctx <- getCtx
     case M.lookup n ctx of
@@ -140,45 +140,45 @@ lookup n = do
 freshTag :: TC Int
 freshTag = lift $ lift (modify (+1) >> get)
 
-runTC :: Int -> Ctx Meta -> TC a -> Either TCFailure a
+runTC :: Int -> Ctx Evar -> TC a -> Either TCFailure a
 runTC maxTag ctx tc = evalState (runExceptT $ runReaderT tc ([], ctx)) maxTag
 
-infer :: Program Meta -> Either TCFailure (Constrs Meta)
+infer :: Program Evar -> Either TCFailure (Constrs Evar)
 infer prog = runTC maxTag ctx $ do
     (_ty, cs) <- inferTm prog
     return cs
   where
-    getTag :: Meta -> Int
+    getTag :: Evar -> Int
     getTag (MVar i) = i
     getTag _        = 0  -- whatever, we're looking for maximum
 
     allTags :: [Int]
-    allTags = map getTag (prog ^.. (ttRelevance :: Traversal' (Program Meta) Meta))
+    allTags = map getTag (prog ^.. (ttRelevance :: Traversal' (Program Evar) Evar))
 
     maxTag = L.maximum allTags
 
     ctx = builtins (Fixed relOfType)
 
-inferDefs :: [Def Meta] -> TC (Ctx Meta)
+inferDefs :: [Def Evar] -> TC (Ctx Evar)
 inferDefs [] = getCtx
 inferDefs (d:ds) = do
     d' <- with d{ defBody = Abstract Var } $ inferDef d
     let d'' = d'{ defConstraints = reduce $ defConstraints d' }
     with d'' $ inferDefs ds
 
-inferDefs' :: [Def Meta] -> TC [Def Meta]
+inferDefs' :: [Def Evar] -> TC [Def Evar]
 inferDefs' [] = return []
 inferDefs' (d:ds) = do
     d' <- with d{ defBody = Abstract Var } $ inferDef d
     let d'' = d'{ defConstraints = reduce $ defConstraints d' }
     (d'' :) <$> (with d'' $ inferDefs' ds)
 
-inferDef :: Def Meta -> TC (Def Meta)
+inferDef :: Def Evar -> TC (Def Evar)
 -- In types, only conversion constraints matter but they *do* matter.
 -- We should probably explain on an example why.
 --
 -- The point is that the conversion infer binds the type signature (the asserted type)
--- with the inferred type, also binding the metavars in them, so that the signature
+-- with the inferred type, also binding the evarvars in them, so that the signature
 -- can later represent the whole definition.
 
 inferDef (Def n r ty (Abstract a) _noCs) = do
@@ -202,14 +202,14 @@ inferDef d@(Def n r ty (Patterns cf) _noCs) = bt ("DEF-PATTERNS", n) $ do
     let cs = tytyTypeCs /\ cfCs  -- in types, only conversion constraints matter
     return $ Def n r ty (Patterns cf) cs
 
-inferCaseFun :: Name -> CaseFun Meta -> TC (Constrs Meta)
+inferCaseFun :: Name -> CaseFun Evar -> TC (Constrs Evar)
 inferCaseFun fn (CaseFun args ct) = bt ("CASE-FUN", fn) $ do
     --pvars <- inferDefs' args
     inferCaseTree args lhs ct
   where
     lhs = mkApp (V fn) [(r, V n) | Def n r ty (Abstract Var) cs <- args]
 
-inferCaseTree :: [Def Meta] -> TT Meta -> CaseTree Meta -> TC (Constrs Meta)
+inferCaseTree :: [Def Evar] -> TT Evar -> CaseTree Evar -> TC (Constrs Evar)
 inferCaseTree pvars lhs (Leaf rhs) = bt ("PLAIN-TERM", lhs, rhs) $ do
     pvars' <- inferDefs' pvars
     withs pvars' $ do
@@ -227,13 +227,13 @@ inferCaseTree pvars lhs (Case r s alts) =
     tcfail $ NonVariableScrutinee s
 
 
-lookupPatvar :: Name -> [Def Meta] -> TC (Def Meta)
+lookupPatvar :: Name -> [Def Evar] -> TC (Def Evar)
 lookupPatvar n [] = tcfail $ NonPatvar n
 lookupPatvar n (d:ds)
     | defName d == n = return d
     | otherwise = lookupPatvar n ds
 
-substPV :: Name -> TT Meta -> [Def Meta] -> [Def Meta]
+substPV :: Name -> TT Evar -> [Def Evar] -> [Def Evar]
 substPV n tm [] = []
 substPV n tm (d:ds)
     | defName d == n
@@ -242,7 +242,7 @@ substPV n tm (d:ds)
     | otherwise
     = subst n tm d : substPV n tm ds
 
-inferAlt :: [Def Meta] -> TT Meta -> Name -> Meta -> Alt Meta -> TC (Constrs Meta)
+inferAlt :: [Def Evar] -> TT Evar -> Name -> Evar -> Alt Evar -> TC (Constrs Evar)
 
 inferAlt pvars lhs n sr (Alt Wildcard rhs) = bt ("ALT-WILDCARD") $ do
     inferCaseTree pvars lhs rhs
@@ -278,7 +278,7 @@ inferAlt pvars lhs n sr (Alt (ForcedPat pat) rhs) = bt ("ALT-FORCED-PAT", pat) $
     -- no rules for sr
     inferCaseTree (substPV n (Forced pat) pvars) (subst n (Forced pat) lhs) rhs
 
-inferTm :: Term -> TC (Type, Constrs Meta)
+inferTm :: Term -> TC (Type, Constrs Evar)
 
 -- this is sketchy
 inferTm (V Blank) = return (V Blank, noConstrs)
@@ -355,7 +355,7 @@ inferTm (Forced tm) = bt ("FORCED", tm) $ do
 inferTm tm = bt ("UNCHECKABLE-TERM", tm) $ do
     tcfail $ UncheckableTerm tm
 
-freshen :: Monad m => m Int -> Meta -> StateT (IM.IntMap Meta) m Meta
+freshen :: Monad m => m Int -> Evar -> StateT (IM.IntMap Evar) m Evar
 freshen freshTag m@(Fixed r) = return m
 freshen freshTag (MVar i) = do
     imap <- get
@@ -367,19 +367,19 @@ freshen freshTag (MVar i) = do
             modify $ IM.insert i j
             return j
 
-instantiate :: Monad m => m Int -> IM.IntMap Meta -> Def Meta -> m (Def Meta)
-instantiate freshTag metaMap def = evalStateT refresh metaMap
+instantiate :: Monad m => m Int -> IM.IntMap Evar -> Def Evar -> m (Def Evar)
+instantiate freshTag evarMap def = evalStateT refresh evarMap
   where
     refresh = defRelevance (freshen freshTag) def
 
 -- left: from context (from outside), right: from expression (from inside)
-conv :: Type -> Type -> TC (Constrs Meta)
+conv :: Type -> Type -> TC (Constrs Evar)
 conv p q = do
     ctx <- getCtx
     conv' (whnf ctx p) (whnf ctx q)
 
 -- note that this function gets arguments in WHNF
-conv' :: Type -> Type -> TC (Constrs Meta)
+conv' :: Type -> Type -> TC (Constrs Evar)
 
 -- whnf is variable (something irreducible, constructor or axiom)
 conv' (V n) (V n') = bt ("C-VAR", n, n') $ do

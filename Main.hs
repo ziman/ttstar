@@ -11,7 +11,7 @@ import qualified Codegen.Scheme
 
 import Util.PrettyPrint
 
-import Erasure.Meta
+import Erasure.Evar
 import Erasure.Infer
 import Erasure.Solve
 import Erasure.Annotate
@@ -57,8 +57,8 @@ import qualified Data.Map as M
 --
 -- ***
 --
--- A meta on a Pi is the upper bound of all Lambdas typed by that Pi.
--- We could add another meta to every Pi, which is the lower bound of all Lams typed by it.
+-- A evar on a Pi is the upper bound of all Lambdas typed by that Pi.
+-- We could add another evar to every Pi, which is the lower bound of all Lams typed by it.
 -- Then we could tell whether *all* lambdas are relevant or whether some are irrelevant.
 --
 -- => therefore we can annotate every binder with the supremum and infimum of their variables
@@ -120,21 +120,21 @@ main = do
             print prog
             putStrLn ""
 
-            putStrLn "### Metaified ###"
-            let metaified_1st = meta prog
-            print metaified_1st
+            putStrLn "### Evarified ###"
+            let evarified_1st = evar prog
+            print evarified_1st
             putStrLn ""
 
-            let iterSpecialisation metaified = do
+            let iterSpecialisation evarified = do
                     putStrLn "### Constraints ###\n"
-                    let cs = either (error . show) id . infer $ metaified
+                    let cs = either (error . show) id . infer $ evarified
                     mapM_ (putStrLn . fmtCtr) $ M.toList cs
                     putStrLn ""
 
                     putStrLn "### Solution ###\n"
                     let (uses, _residue) = solve cs
                     print $ S.toList uses
-                    -- genHtml (fname ++ ".html") metaified cs uses
+                    -- genHtml (fname ++ ".html") evarified cs uses
                     putStrLn ""
 
                     if Fixed E `S.member` uses
@@ -143,12 +143,12 @@ main = do
 
 
                     putStrLn "### Annotated ###"
-                    let annotated = annotate uses $ metaified
+                    let annotated = annotate uses $ evarified
                     print annotated
                     putStrLn ""
 
                     putStrLn "### Specialised ###"
-                    let specialised = specialise metaified annotated
+                    let specialised = specialise evarified annotated
                     print specialised
                     putStrLn ""
 
@@ -160,11 +160,11 @@ main = do
                     --
                     -- + perhaps separate verification checker?
 
-                    if metasOccurIn specialised
+                    if evarsOccurIn specialised
                         then iterSpecialisation specialised
                         else return annotated  -- fixed point reached
 
-            annotated <- iterSpecialisation metaified_1st
+            annotated <- iterSpecialisation evarified_1st
 
             putStrLn "### Final annotation ###"
             print annotated

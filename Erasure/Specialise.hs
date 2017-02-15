@@ -3,7 +3,7 @@ module Erasure.Specialise (specialise) where
 import TT
 import TTLens
 
-import Erasure.Meta
+import Erasure.Evar
 import Erasure.Infer
 
 import Control.Monad.Trans.State
@@ -23,24 +23,24 @@ fresh = do
     put $ i+1
     return i
 
-bindMetas :: [Relevance] -> [Meta] -> IM.IntMap Meta
-bindMetas [] [] = IM.empty
-bindMetas (r : rs) (m : ms) = bind r m $ bindMetas rs ms
+bindEvars :: [Relevance] -> [Evar] -> IM.IntMap Evar
+bindEvars [] [] = IM.empty
+bindEvars (r : rs) (m : ms) = bind r m $ bindEvars rs ms
   where
     bind R (Fixed R) = id
     bind E (Fixed E) = id
     bind r (MVar  i) = IM.insert i (Fixed r)
-    bind r m = error $ "bindMetas.bind: inconsistency: " ++ show (r, m)
-bindMetas rs ms = error $ "bindMetas: length mismatch: " ++ show (rs, ms)
+    bind r m = error $ "bindEvars.bind: inconsistency: " ++ show (r, m)
+bindEvars rs ms = error $ "bindEvars: length mismatch: " ++ show (rs, ms)
 
 specName :: Name -> ErPattern -> Name
 specName (UN n) epat = IN n epat
 specName n _ = error $ "trying to specialise a strange name: " ++ show n
 
 specialise ::
-    Program Meta          -- raw, just metaified definitions (material to specialise)   
+    Program Evar          -- raw, just evarified definitions (material to specialise)   
     -> Program Relevance  -- program to extend
-    -> Program Meta       -- extended program
+    -> Program Evar       -- extended program
 specialise pm pr
     | M.null residue = pr'
     | otherwise = error $ "could not specialise: " ++ show residue
@@ -49,10 +49,10 @@ specialise pm pr
 
     initialState :: Int
     initialState = 1 + maximum (0 : [
-        i | MVar i <- pm ^.. (ttRelevance :: Traversal' (TT Meta) Meta)
+        i | MVar i <- pm ^.. (ttRelevance :: Traversal' (TT Evar) Evar)
       ])
 
-forMany :: (f Meta -> f Relevance -> Spec (f Meta)) -> [f Meta] -> [f Relevance] -> Spec [f Meta]
+forMany :: (f Evar -> f Relevance -> Spec (f Evar)) -> [f Evar] -> [f Relevance] -> Spec [f Evar]
 forMany spec ms rs = do
     xs <- sequence [spec m r | (m, r) <- zip ms rs]
     return (
@@ -60,12 +60,12 @@ forMany spec ms rs = do
         map snd xs
       )
 
-specCT :: CtorTag Meta -> CtorTag Relevance -> CtorTag Meta
+specCT :: CtorTag Evar -> CtorTag Relevance -> CtorTag Evar
 specCT (CT nm rm) (CT nr rr) = CT nr $ Fixed rr
 specCT (CTForced nm) (CTForced nr) = CTForced nr
 specCT ctm ctr = error $ "specCT: mismatch: " ++ show (ctm, ctr)
 
-specAlt :: Alt Meta -> Alt Relevance -> Spec (Alt Meta)
+specAlt :: Alt Evar -> Alt Relevance -> Spec (Alt Evar)
 specAlt (Alt Wildcard rhsm) (Alt Wildcard rhsr)
     = fmap (Alt Wildcard) <$> specCaseTree rhsm rhsr
 specAlt (Alt (Ctor ctm dsm) rhsm) (Alt (Ctor ctr dsr) rhsr) = do
@@ -84,7 +84,7 @@ specAlt (Alt (ForcedPat ftmm) rhsm) (Alt (ForcedPat ftmr) rhsr) = do
       )
 specAlt altm altr = error $ "specAlt: mismatch: " ++ show (altm, altr)
 
-specCaseTree :: CaseTree Meta -> CaseTree Relevance -> Spec (CaseTree Meta)
+specCaseTree :: CaseTree Evar -> CaseTree Relevance -> Spec (CaseTree Evar)
 specCaseTree (Leaf tmm) (Leaf tmr) = fmap Leaf <$> specTm tmm tmr
 specCaseTree (Case rm sm altsm) (Case rr sr altsr) = do
     (is, sr') <- specTm sm sr
@@ -95,7 +95,7 @@ specCaseTree (Case rm sm altsm) (Case rr sr altsr) = do
       )
 specCaseTree ctm ctr = error $ "specCaseTree: mismatch: " ++ show (ctm, ctr)
 
-specCaseFun :: CaseFun Meta -> CaseFun Relevance -> Spec (CaseFun Meta)
+specCaseFun :: CaseFun Evar -> CaseFun Relevance -> Spec (CaseFun Evar)
 specCaseFun (CaseFun dsm ctm) (CaseFun dsr ctr) = do
     -- spec the definitions first
     (is, dsr') <- forMany specDef dsm dsr
@@ -105,19 +105,19 @@ specCaseFun (CaseFun dsm ctm) (CaseFun dsr ctr) = do
         CaseFun dsr' ctr'
       )
 
-specBody :: Body Meta -> Body Relevance -> Spec (Body Meta)
+specBody :: Body Evar -> Body Relevance -> Spec (Body Evar)
 specBody bm (Abstract a) = return $ (M.empty, Abstract a)
 specBody (Term tmm) (Term tmr) = fmap Term <$> specTm tmm tmr
 specBody (Patterns cfm) (Patterns cfr) = fmap Patterns <$> specCaseFun cfm cfr
 specBody bm br = error $ "specBody: non-matching bodies: " ++ show (bm, br)
 
-specDef :: Def Meta -> Def Relevance -> Spec (Def Meta)
+specDef :: Def Evar -> Def Relevance -> Spec (Def Evar)
 specDef (Def nm rm tym bodym _csm) (Def nr rr tyr bodyr csr) = do
     (is, tyr') <- specTm tym tyr
     (is', bodyr') <- specBody bodym bodyr
     return $ (M.unionWith S.union is is', Def nr (Fixed rr) tyr' bodyr' noConstrs)
 
-specTm :: TT Meta -> TT Relevance -> Spec (TT Meta)
+specTm :: TT Evar -> TT Relevance -> Spec (TT Evar)
 specTm tmm (V n) = return (M.empty, V n)
 specTm tmm (I n@(UN ns) ty)
     = return (spec n rs, V (IN ns rs))
@@ -135,7 +135,7 @@ specTm (Bind bm (dm:dsm) tmm) (Bind br (dr:dsr) tmr) = do
     (isSub, Bind _br' dsr' tmr') <- specTm (Bind bm dsm tmm) (Bind br dsr tmr)
     let is = M.unionWith S.union isDef isSub
     specs <- sequence [
-        instantiate fresh (bindMetas ep (defType dm ^.. (ttRelevance :: Traversal' (TT Meta) Meta)))
+        instantiate fresh (bindEvars ep (defType dm ^.. (ttRelevance :: Traversal' (TT Evar) Evar)))
             $ dm{ defName = specName n ep }
         | ep <- S.toList $ M.findWithDefault S.empty n is
       ]

@@ -1,4 +1,4 @@
-module Erasure.Meta where
+module Erasure.Evar where
 
 import TT
 import TTLens
@@ -8,17 +8,17 @@ import Util.PrettyPrint
 import Lens.Family2
 import Control.Monad.Trans.State.Strict
 
-data Meta = MVar Int | Fixed Relevance deriving (Eq, Ord)
-type TTmeta = TT Meta
+data Evar = MVar Int | Fixed Relevance deriving (Eq, Ord)
+type TTevar = TT Evar
 
-instance Show Meta where
+instance Show Evar where
     show (MVar  i) = show i
     show (Fixed r) = show r
 
-instance ShowUnicode Meta where
+instance ShowUnicode Evar where
     showUnicode = text . map sup . show
 
-instance PrettyR Meta where
+instance PrettyR Evar where
     prettyCol x
         | useUnicode = colon <> showUnicode x
         | otherwise  = colon <> showd x <> colon
@@ -30,15 +30,15 @@ instance PrettyR Meta where
     prettyAlt (Fixed r) = Just (showd r)
     prettyAlt (MVar i) = Just (showd i)
 
-meta :: Program (Maybe Relevance) -> Program Meta
-meta prog = evalState (ttRelevance freshM prog) 0
+evar :: Program (Maybe Relevance) -> Program Evar
+evar prog = evalState (ttRelevance freshM prog) 0
 
-freshM :: Maybe Relevance -> State Int Meta
+freshM :: Maybe Relevance -> State Int Evar
 freshM Nothing  = modify (+1) >> MVar <$> get
 freshM (Just r) = return $ Fixed r
 
-metasOccurIn :: Program Meta -> Bool
-metasOccurIn prog = any isMeta (prog ^.. (ttRelevance :: Traversal' (TT Meta) Meta))
+evarsOccurIn :: Program Evar -> Bool
+evarsOccurIn prog = any isEvar (prog ^.. (ttRelevance :: Traversal' (TT Evar) Evar))
   where
-    isMeta (MVar  _) = True
-    isMeta (Fixed _) = False
+    isEvar (MVar  _) = True
+    isEvar (Fixed _) = False

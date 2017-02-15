@@ -2,7 +2,7 @@
 module Erasure.Solve where
 
 import TT
-import Erasure.Meta
+import Erasure.Evar
 
 import qualified Data.Map as M
 import qualified Data.Set as S
@@ -10,17 +10,17 @@ import qualified Data.Set as S
 --import Debug.Trace
 
 -- reduce the constraint set, keeping the empty-guard constraint
-reduce :: Constrs Meta -> Constrs Meta
+reduce :: Constrs Evar -> Constrs Evar
 reduce cs
     | S.null (S.delete (Fixed R) us) = residue
     | otherwise = M.insert S.empty us residue
   where
     (us, residue) = solve cs
 
-solve :: Constrs Meta -> (Uses Meta, Constrs Meta)
+solve :: Constrs Evar -> (Uses Evar, Constrs Evar)
 solve = step $ S.singleton (Fixed R)
   where
-    step :: Uses Meta -> Constrs Meta -> (Uses Meta, Constrs Meta)
+    step :: Uses Evar -> Constrs Evar -> (Uses Evar, Constrs Evar)
     step ans cs
         | S.null new = (ans, prunedCs)
         | otherwise = step (S.union ans new) prunedCs

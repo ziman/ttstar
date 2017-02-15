@@ -2,7 +2,7 @@ module Explorer (genHtml) where
 
 import TT
 
-import Erasure.Meta
+import Erasure.Evar
 import Erasure.Check
 import Erasure.Solve
 
@@ -12,7 +12,7 @@ import Prelude hiding (div, span)
 import qualified Data.Set as S
 import qualified Data.Map as M
 
-htmlProg :: Uses -> Program Meta cs -> String
+htmlProg :: Uses -> Program Evar cs -> String
 htmlProg uses (Prog defs) = concatMap (htmlDef uses) defs
 
 div :: String -> String -> String
@@ -21,7 +21,7 @@ div cls body = "<div class=\"" ++ cls ++ "\">\n" ++ body ++ "\n</div>\n"
 span :: String -> String -> String
 span cls body = "<span class=\"" ++ cls ++ "\">" ++ body ++ "</span>"
 
-rel :: Uses -> Meta -> String
+rel :: Uses -> Evar -> String
 rel uses (Fixed R) = span "rel rel-R" " :<sub>R</sub> "
 rel uses (Fixed E) = span "rel rel-E" " :<sub>E</sub> "
 rel uses (MVar i) = span ("rel mvar-num-" ++ show i) (" :<sub>" ++ show i ++ "</sub> ")
@@ -35,7 +35,7 @@ name n = span ("name name-" ++ show n) (show n)
 op :: String -> String
 op = span "op"
 
-nrty :: Uses -> Name -> Meta -> TT Meta -> String
+nrty :: Uses -> Name -> Evar -> TT Evar -> String
 nrty uses n r ty = erasedSpan uses r (name n ++ rel uses r ++ term uses ty ++ "\n")
   where
     wrap
@@ -51,7 +51,7 @@ parens s = span "paren" "(" ++ s ++ span "paren" ")"
 ul :: String -> [String] -> String
 ul cls lis = "<ul class=\"" ++ cls ++ "\">" ++ unlines ["<li>" ++ s ++ "</li>" | s <- lis] ++ "</ul>"
 
-term :: Uses -> TT Meta -> String
+term :: Uses -> TT Evar -> String
 term uses (V n) = span "var" $ name n
 term uses (I n ty) = span "var instance" $ name n ++ " : " ++ term uses ty
 term uses (Bind Pi n r ty tm) = span "pi" $ parens (nrty uses n r ty) ++ op " &#8594; " ++ term uses tm
@@ -68,7 +68,7 @@ term uses (Case s ty alts) =
     ret Nothing = ""
     ret (Just ty) = span "kwd" "returns" ++ term uses ty
 
-alt :: Uses -> Alt Meta -> String
+alt :: Uses -> Alt Evar -> String
 alt uses (DefaultCase tm) = "_ -> " ++ term uses tm
 alt uses (ConCase cn tm) = unwords
     [ show cn
@@ -79,15 +79,15 @@ alt uses (ConCase cn tm) = unwords
   where
     (args, rhs) = splitBinder Pat tm
 
-app :: Meta -> String
+app :: Evar -> String
 app (Fixed R) = span "ap ap-R" "R"
 app (Fixed E) = span "ap ap-E" "E"
 app (MVar i) = span ("ap mvar-num-" ++ show i) (show i)
 
-erasedSpan :: Uses -> Meta -> String -> String
+erasedSpan :: Uses -> Evar -> String -> String
 erasedSpan uses m = span $ erasedCls uses m
 
-erasedCls :: Uses -> Meta -> String
+erasedCls :: Uses -> Evar -> String
 erasedCls uses m = erasure ++ " " ++ mvar
   where
     erasure
@@ -98,7 +98,7 @@ erasedCls uses m = erasure ++ " " ++ mvar
         | MVar i <- m = "mvar mvar-" ++ show i
         | otherwise = ""
 
-htmlDef :: Uses -> Def Meta cs -> String
+htmlDef :: Uses -> Def Evar cs -> String
 htmlDef uses (Def n r ty Nothing mcs) = div "def axiom" $ div "type" (nrty uses n r ty)
 htmlDef uses (Def n r ty (Just tm) mcs) =
   div "def function" (
@@ -110,18 +110,18 @@ htmlDef uses (Def n r ty (Just tm) mcs) =
 
 htmlConstr :: (Int, (Uses, Guards)) -> String
 htmlConstr (i, (us, gs)) = span ("constr constr-" ++ show i) (
-    span "uses" (htmlMetas $ S.toList us)
+    span "uses" (htmlEvars $ S.toList us)
     ++ op " &#8594; "
-    ++ span "guards" (htmlMetas $ S.toList gs)
+    ++ span "guards" (htmlEvars $ S.toList gs)
   ) ++ ", "
 
-htmlMetas :: [Meta] -> String
-htmlMetas ms = op "{" ++ intercalate (op ", ") (map htmlMeta ms) ++ op "}"
+htmlEvars :: [Evar] -> String
+htmlEvars ms = op "{" ++ intercalate (op ", ") (map htmlEvar ms) ++ op "}"
 
-htmlMeta :: Meta -> String
-htmlMeta (Fixed R) = span "meta-R" "R"
-htmlMeta (Fixed E) = span "meta-E" "E"
-htmlMeta (MVar i) = span ("meta mvar mvar-" ++ show i) (show i)
+htmlEvar :: Evar -> String
+htmlEvar (Fixed R) = span "evar-R" "R"
+htmlEvar (Fixed E) = span "evar-E" "E"
+htmlEvar (MVar i) = span ("evar mvar mvar-" ++ show i) (show i)
 
 jsConstr :: (Uses, Guards) -> String
 jsConstr (us, gs) = show [map num $ S.toList us, map num $ S.toList gs] ++ ",\n"
@@ -129,13 +129,13 @@ jsConstr (us, gs) = show [map num $ S.toList us, map num $ S.toList gs] ++ ",\n"
     num (Fixed r) = show r
     num (MVar i) = show i
 
-genHtml :: String -> Program Meta cs -> Constrs -> Uses -> IO ()
+genHtml :: String -> Program Evar cs -> Constrs -> Uses -> IO ()
 genHtml fname prog (CS cs) uses = do
     hdr <- readFile "html/header.html"
     writeFile fname (hdr ++ body)
   where
     body = unlines
-        [ "<h2>Metaified program</h2>"
+        [ "<h2>Evarified program</h2>"
         , htmlProg uses prog
         , "<h2>Constraints</h2>"
         , div "constraints" $ concatMap htmlConstr (zip [0..] $ M.toList cs)
