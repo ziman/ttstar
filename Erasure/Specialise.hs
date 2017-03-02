@@ -17,6 +17,13 @@ type Instances = M.Map Name (S.Set ErPattern)
 type ErPattern = [Relevance]
 type Spec a = State Int (Instances, a)
 
+-- The Spec monad works as follows:
+-- 1. we specialise the given term, returning it as the "a" in (Instances, a)
+-- 2. on the side, we also gather all instances methioned within, and return
+--    them as the "Instances" in (Instances, a)
+-- 3. this knowledge of which instances are mentioned in subterms
+--    is necessary to instantiate let-bindings.
+
 fresh :: State Int Int
 fresh = do
     i <- get
@@ -60,55 +67,14 @@ forMany spec ms rs = do
         map snd xs
       )
 
-specCT :: CtorTag Evar -> CtorTag Relevance -> CtorTag Evar
-specCT (CT nm rm) (CT nr rr) = CT nr $ Fixed rr
-specCT (CTForced nm) (CTForced nr) = CTForced nr
-specCT ctm ctr = error $ "specCT: mismatch: " ++ show (ctm, ctr)
-
-specAlt :: Alt Evar -> Alt Relevance -> Spec (Alt Evar)
-specAlt (Alt Wildcard rhsm) (Alt Wildcard rhsr)
-    = fmap (Alt Wildcard) <$> specCaseTree rhsm rhsr
-specAlt (Alt (Ctor ctm dsm) rhsm) (Alt (Ctor ctr dsr) rhsr) = do
-    (isRhs, rhsr') <- specCaseTree rhsm rhsr
-    (isDefs, dsr') <- forMany specDef dsm dsr
-    return (
-        M.unionWith S.union isRhs isDefs,
-        Alt (Ctor (specCT ctm ctr) dsr') rhsr'
-      )
-specAlt (Alt (ForcedPat ftmm) rhsm) (Alt (ForcedPat ftmr) rhsr) = do
-    (isFtm, ftmr') <- specTm ftmm ftmr
-    (isRhs, rhsr') <- specCaseTree rhsm rhsr
-    return (
-        M.unionWith S.union isRhs isFtm,
-        Alt (ForcedPat ftmr') rhsr'
-      )
-specAlt altm altr = error $ "specAlt: mismatch: " ++ show (altm, altr)
-
-specCaseTree :: CaseTree Evar -> CaseTree Relevance -> Spec (CaseTree Evar)
-specCaseTree (Leaf tmm) (Leaf tmr) = fmap Leaf <$> specTm tmm tmr
-specCaseTree (Case rm sm altsm) (Case rr sr altsr) = do
-    (is, sr') <- specTm sm sr
-    (is', altsr') <- forMany specAlt altsm altsr
-    return (
-        M.unionWith S.union is is',
-        Case (Fixed rr) sr' altsr'
-      )
-specCaseTree ctm ctr = error $ "specCaseTree: mismatch: " ++ show (ctm, ctr)
-
-specCaseFun :: CaseFun Evar -> CaseFun Relevance -> Spec (CaseFun Evar)
-specCaseFun (CaseFun dsm ctm) (CaseFun dsr ctr) = do
-    -- spec the definitions first
-    (is, dsr') <- forMany specDef dsm dsr
-    (is', ctr') <- specCaseTree ctm ctr
-    return (
-        M.unionWith S.union is is',
-        CaseFun dsr' ctr'
-      )
+specClause :: Clause Evar -> Clause Relevance -> Spec (Clause Evar)
+specClause (Clause pm lm rm) (Clause pr lr rr) = do
+    (isp, p') <- sequence [specDef m r | (m,r) <- zip pm pr]
 
 specBody :: Body Evar -> Body Relevance -> Spec (Body Evar)
 specBody bm (Abstract a) = return $ (M.empty, Abstract a)
 specBody (Term tmm) (Term tmr) = fmap Term <$> specTm tmm tmr
-specBody (Patterns cfm) (Patterns cfr) = fmap Patterns <$> specCaseFun cfm cfr
+specBody (Clauses csm) (Clauses csr) = fmap Clauses <$> traverse specClause csm csr
 specBody bm br = error $ "specBody: non-matching bodies: " ++ show (bm, br)
 
 specDef :: Def Evar -> Def Relevance -> Spec (Def Evar)

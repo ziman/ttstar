@@ -21,7 +21,6 @@ data VerError
     | NotPatvar Name
     | NotImplemented
     | NotConstructor Name
-    | ComplexScrutinee (CaseTree Relevance)
     | CantConvert Term Term
     deriving Show
 
@@ -128,97 +127,22 @@ verDef (Def n r ty (Abstract _) cs) = bt ("DEF-ABSTR", n) $ do
 verDef d@(Def n r ty (Term tm) cs) = bt ("DEF-TERM", n) $ do
     tyty <- verTm E ty
     mustBeType tyty
-    tmty <- with d $ verTm r tm
+    tmty <- with d{ defBody = Abstract Var } $ verTm r tm
     conv r tmty ty
 
-verDef d@(Def n r ty (Patterns cf) cs) = bt ("DEF-TERM", n) $ do
+verDef d@(Def n r ty (Clauses cls) cs) = bt ("DEF-CLAUSES", n) $ do
     tyty <- verTm E ty
     mustBeType tyty
-    with d $
-        verCaseFun n r cf
+    with d{ defBody = Abstract Var } $
+        traverse_ verClause cls
 
-verCaseFun :: Name -> Relevance -> CaseFun Relevance -> Ver ()
-verCaseFun fn r (CaseFun ds ct) = bt ("CASEFUN", fn) $ do
-    verDefs ds  -- we don't include this check in the paper; should be superfluous
-    let lhs = mkApp (V fn) [(defR d, V $ defName d) | d <- ds]
-    verCase r ds lhs ct
-
-verCase :: Relevance -> [Def Relevance] -> Pat -> CaseTree Relevance -> Ver ()
-verCase r pvars lhs (Leaf rhs) = bt ("CASE-LEAF", lhs, rhs) $ do
-    verDefs pvars
-    withs pvars $ do
+verClause :: Clause Relevance -> Ver ()
+verClause (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
+    verDefs pvs
+    withs pvs $ do
         lhsTy <- verTm r lhs -- verPat r lhs
         rhsTy <- verTm r rhs
         conv r lhsTy rhsTy
-
-verCase r pvars lhs (Case s (V n) alts) = bt ("CASE-SPLIT", n, r, s, lhs) $ do
-    d <- lookupPatvar n pvars
-    defR d <-> s
-    s --> r  -- it's not (<->) because we can have forced inspections (where s = E),
-             -- which don't cause usage
-    mapM_ (verBranch r pvars lhs n s) alts        
-
-verCase r pvars lhs ct@(Case s tm alts) = do
-    verFail $ ComplexScrutinee ct
-
-verBranch :: Relevance -> [Def Relevance] -> Pat -> Name -> Relevance -> Alt Relevance -> Ver ()
-verBranch r pvars lhs n s (Alt Wildcard rhs) = bt ("ALT-WILD", rhs) $ do
-    verCase r pvars lhs rhs
-
-verBranch r pvars lhs n s (Alt (Ctor (CT cn u) ds) rhs) = bt ("ALT-MATCH", cn, rhs) $ do
-    u --> s  -- do we need this rule?
-    verBranch' False u pvars lhs n s (cn, ds, rhs)
-
-verBranch r pvars lhs n s (Alt (Ctor (CTForced cn) ds) rhs) = bt ("ALT-MATCH-F", cn, rhs) $ do
-    verBranch' True r pvars lhs n s (cn, ds, rhs)
-
-verBranch r pvars lhs n s (Alt (ForcedPat pat) rhs) = bt ("ALT-FORCED", pat) $ do
-    verCase r (substPV n (Forced pat) pvars) (subst n (Forced pat) lhs) rhs
-
-verBranch' :: Bool -> Relevance -> [Def Relevance] -> Pat -> Name -> Relevance
-    -> (Name, [Def Relevance], CaseTree Relevance)
-    -> Ver ()
-verBranch' ctorForced r pvars lhs n s (cn, ds, rhs) = bt ("ALT-MATCH-INT", cn, rhs) $ do
-    cd <- lookupName cn
-    when (defBody cd /= Abstract Postulate) $
-        verFail (NotConstructor cn)
-
-    --withs pvars $ verDefs ds  -- do we check the args here or only in the leaf?
-
-    sequence_ [defR d --> s | d <- ds]
-    bt("ALT-MATCH-INT2", r, s, pat) $ do
-        {- this is just not true
-        -- check that the pattern matches the scrutinee
-        --
-        -- TODO/FIXME:
-        -- Why the pattern has to be checked using verTm
-        -- rather than verPat is a mystery to me. What's going on?
-        --
-        let scrutTy' = subst n pat scrutTy
-        patTy <- verTm (r /\ s) pat --  verPat (op r s) pat''  -- TODO: figure this out
-        conv (r /\ s) patTy scrutTy'
-        -}
-        verCase r (substPV n pat pvars ++ ds) (subst n pat lhs) rhs
-  where
-    pat = mkApp c' [(defR d, V $ defName d) | d <- ds]
-    c' = if ctorForced
-            then Forced (V cn)
-            else V cn
-
-substPV :: Name -> TT Relevance -> [Def Relevance] -> [Def Relevance]
-substPV n tm [] = []
-substPV n tm (d:ds)
-    | defName d == n = substPV n tm ds
-    | otherwise = subst n tm d : substPV n tm ds
-
-lookupPatvar :: Name -> [Def Relevance] -> Ver (Def Relevance)
-lookupPatvar n [] = verFail $ NotPatvar n
-lookupPatvar n (d:ds)
-    | defName d == n
-    = return d
-
-    | otherwise
-    = lookupPatvar n ds
 
 verTm :: Relevance -> Term -> Ver Type
 verTm E (V n) = bt ("VAR-E", n) $ do

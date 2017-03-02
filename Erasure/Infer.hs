@@ -10,7 +10,6 @@ import Erasure.Evar
 import Erasure.Solve
 
 import Prelude hiding (lookup)
-import Control.Monad (when)
 
 import Control.Monad.Trans.Class
 import Control.Monad.Trans.State
@@ -195,88 +194,22 @@ inferDef d@(Def n r ty (Term tm) _noCs) = bt ("DEF-TERM", n) $ do
     let cs = tmcs /\ tytyTypeCs /\ tyTmtyCs  -- in types, only conversion constraints matter
     return $ Def n r ty (Term tm) cs
 
-inferDef d@(Def n r ty (Patterns cf) _noCs) = bt ("DEF-PATTERNS", n) $ do
+inferDef d@(Def n r ty (Clauses cls) _noCs) = bt ("DEF-CLAUSES", n) $ do
     (tyty, tycs) <- inferTm ty
     tytyTypeCs   <- conv tyty (V $ UN "Type")
-    cfCs <- with d $ inferCaseFun n cf  -- "with d" because it could be recursive
+    cfCs <- with d{ defBody = Abstract Var } $ do
+        unions <$> traverse inferClause cls
     let cs = tytyTypeCs /\ cfCs  -- in types, only conversion constraints matter
-    return $ Def n r ty (Patterns cf) cs
+    return $ Def n r ty (Clauses cls) cs
 
-inferCaseFun :: Name -> CaseFun Evar -> TC (Constrs Evar)
-inferCaseFun fn (CaseFun args ct) = bt ("CASE-FUN", fn) $ do
-    --pvars <- inferDefs' args
-    inferCaseTree args lhs ct
-  where
-    lhs = mkApp (V fn) [(r, V n) | Def n r ty (Abstract Var) cs <- args]
-
-inferCaseTree :: [Def Evar] -> TT Evar -> CaseTree Evar -> TC (Constrs Evar)
-inferCaseTree pvars lhs (Leaf rhs) = bt ("PLAIN-TERM", lhs, rhs) $ do
-    pvars' <- inferDefs' pvars
-    withs pvars' $ do
+inferClause :: Clause Evar -> TC (Constrs Evar)
+inferClause (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
+    pvs' <- inferDefs' pvs
+    withs pvs' $ do
         (lty, lcs) <- inferTm lhs
         (rty, rcs) <- inferTm rhs
         ccs <- conv lty rty
         return $ flipConstrs lcs /\ rcs /\ ccs
-
-inferCaseTree pvars lhs ct@(Case r (V n) alts) = bt ("CASE", lhs, ct) $ do
-    scrutD <- lookupPatvar n pvars
-    cs <- unions <$> traverse (inferAlt pvars lhs n r) alts
-    return $ cs /\ r --> defR scrutD
-
-inferCaseTree pvars lhs (Case r s alts) =
-    tcfail $ NonVariableScrutinee s
-
-
-lookupPatvar :: Name -> [Def Evar] -> TC (Def Evar)
-lookupPatvar n [] = tcfail $ NonPatvar n
-lookupPatvar n (d:ds)
-    | defName d == n = return d
-    | otherwise = lookupPatvar n ds
-
-substPV :: Name -> TT Evar -> [Def Evar] -> [Def Evar]
-substPV n tm [] = []
-substPV n tm (d:ds)
-    | defName d == n
-    = substPV n tm ds  -- leave out that patvar
-
-    | otherwise
-    = subst n tm d : substPV n tm ds
-
-inferAlt :: [Def Evar] -> TT Evar -> Name -> Evar -> Alt Evar -> TC (Constrs Evar)
-
-inferAlt pvars lhs n sr (Alt Wildcard rhs) = bt ("ALT-WILDCARD") $ do
-    inferCaseTree pvars lhs rhs
-
-inferAlt pvars lhs n sr (Alt (Ctor (CT cn cr) args) rhs) = bt ("ALT-CTOR", pat) $ do
-    -- check we've got a constructor
-    cd <- lookup cn
-    when (defBody cd /= Abstract Postulate) $
-        tcfail (NotConstructor cn)
-
-    cs <- inferCaseTree (substPV n pat pvars ++ args) (subst n pat lhs) rhs
-
-    return $ cs /\ cr <--> defR cd /\ Fixed R --> sr
-  where
-    pat = mkApp (V cn) [(r, V n) | Def n r ty (Abstract Var) cs <- args]
-
-inferAlt pvars lhs n sr (Alt (Ctor (CTForced cn) args) rhs) = bt ("ALT-FORCED-CTOR", pat) $ do
-    -- check we've got a constructor
-    cd <- lookup cn
-    when (defBody cd /= Abstract Postulate) $
-        tcfail (NotConstructor cn)
-
-    cs <- inferCaseTree (substPV n pat pvars ++ args) (subst n pat lhs) rhs
-
-    return $ cs /\ scrutCs
-  where
-    pat = mkApp (Forced (V cn)) [(r, V n) | Def n r ty (Abstract Var) cs <- args]
-
-    -- links from the individual vars to the scrutinee
-    scrutCs = unions [defR d --> sr | d <- args]
-
-inferAlt pvars lhs n sr (Alt (ForcedPat pat) rhs) = bt ("ALT-FORCED-PAT", pat) $ do
-    -- no rules for sr
-    inferCaseTree (substPV n (Forced pat) pvars) (subst n (Forced pat) lhs) rhs
 
 inferTm :: Term -> TC (Type, Constrs Evar)
 
