@@ -190,7 +190,9 @@ verPat R (PV n) = bt ("PAT-REF-R", n) $ do
 
 verPat E (PV n) = bt ("PAT-REF-E", n) $ do
     d <- lookupName n
-    defR d <-> E
+    case defBody d of
+        Abstract Var -> defR d <-> E
+        _            -> return ()
     return $ defType d
 
 verPat R (PApp r f x) = bt ("PAT-APP-R", f, x) $ do

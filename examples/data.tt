@@ -4,34 +4,28 @@ data N : Type where
   Z : N,
   S : N -> N.
 
-plus (m : N) (n : N) : N =
-  case m of {
-    Z          => n,
-    S (m' : N) => S (plus m' n)
-  }
+plus : N -> N -> N.
+  pat (m : N).
+    plus Z m = m,
+  pat (m : N) (n : N).
+    plus (S n) m = S (plus n m).
 
 data Vect : N -> Type where
   Nil : Vect Z,
   Cons : (n : N) -> (x : N) -> (xs : Vect n) -> Vect (S n).
 
-zipWith (n : N) (f : N -> N -> N) (xs : Vect n) (ys : Vect n) : Vect n
-  = case xs of {
-      Cons (n1 : N) (x1 : N) (xs1 : Vect n1) =>
-        case n of [S n1] =>
-          case ys of Cons (n2 : N) (x2 : N) (xs2 : Vect n1) =>
-            case n2 of [n1] =>
-              Cons n1 (f x1 x2) (zipWith n1 f xs1 xs2),
-      Nil =>
-        case n of [Z] =>
-          case ys of Nil =>
-            Nil
-    }
+zipWith : (n : N) -> (f : N -> N -> N) -> (xs : Vect n) -> (ys : Vect n) -> Vect n.
+  pat (f : N -> N -> N).
+    zipWith [Z] f Nil Nil = Nil,
+  pat (n : N) (f : N -> N -> N) (x : N) (y : N) (xs : Vect n) (ys : Vect n).
+    zipWith (S n) f (Cons [n] x xs) (Cons [n] y ys) = Cons n (f x y) (zipWith n f xs ys).
 
 main : N
   = let
-      pred (x : N) : N =
-        case x of {
-          Z => Z,
-          S (x' : N) => x'
-        }
-    in plus (pred 4) (pred 5).
+      pred : N -> N.
+        pat.
+          pred Z = Z,
+        pat (n : N).
+          pred (S n) = n.
+    in
+      plus (pred 4) (pred 5).

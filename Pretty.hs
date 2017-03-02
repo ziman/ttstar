@@ -66,11 +66,7 @@ instance Pretty Name where
 instance PrettyR r => Pretty (Body r) where
     pretty (Abstract _) = empty
     pretty (Term tm) = text "=" <+> pretty tm
-    pretty (Clauses cs)
-        = blankLine $$ vcat [
-            text "|" <+> pretty c
-            | c <- cs
-        ]
+    pretty (Clauses cs) = blankLine $$ (indent . vcat . map pretty) cs
 
 instance PrettyR r => Pretty (Def r) where
     pretty (Def n r ty body cs) =

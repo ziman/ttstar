@@ -212,9 +212,7 @@ termBody = Term <$> expr
 
 clause :: Parser (Clause MRel)
 clause = (<?> "pattern clause") $ do
-    kwd "pat"
-    pvs <- many $ typing Var
-    kwd "."
+    pvs <- (kwd "pat" *> many (parens $ typing Var) <* kwd ".") <|> pure []
     lhs <- pattern
     kwd "="
     rhs <- expr
