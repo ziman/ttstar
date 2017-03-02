@@ -5,9 +5,9 @@ data N : Type where
   S : N -> N.
 
 plus : N -> N -> N.
-  pat (m : N).
+  (m : N)
     plus Z m = m,
-  pat (m : N) (n : N).
+  (m : N) (n : N)
     plus (S n) m = S (plus n m).
 
 data Vect : N -> Type where
@@ -15,17 +15,16 @@ data Vect : N -> Type where
   Cons : (n : N) -> (x : N) -> (xs : Vect n) -> Vect (S n).
 
 zipWith : (n : N) -> (f : N -> N -> N) -> (xs : Vect n) -> (ys : Vect n) -> Vect n.
-  pat (f : N -> N -> N).
+  (f : N -> N -> N)
     zipWith [Z] f Nil Nil = Nil,
-  pat (n : N) (f : N -> N -> N) (x : N) (y : N) (xs : Vect n) (ys : Vect n).
+  (n : N) (f : N -> N -> N) (x : N) (y : N) (xs : Vect n) (ys : Vect n)
     zipWith (S n) f (Cons [n] x xs) (Cons [n] y ys) = Cons n (f x y) (zipWith n f xs ys).
 
 main : N
   = let
       pred : N -> N.
-        pat.
-          pred Z = Z,
-        pat (n : N).
+        pred Z = Z,
+        (n : N)
           pred (S n) = n.
     in
       plus (pred 4) (pred 5).
