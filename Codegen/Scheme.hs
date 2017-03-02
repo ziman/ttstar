@@ -59,6 +59,7 @@ cgCtor n ty
   where
     argNs = uniqNames $ argNames ty
 
+{-
 cgBinds :: [Name] -> Name -> Doc -> Doc
 cgBinds [] args rhs = rhs
 cgBinds (n:ns) args rhs =
@@ -72,11 +73,12 @@ cgBinds (n:ns) args rhs =
 cgCase :: Doc -> [Doc] -> Doc
 cgCase scrut alts = parens (text "case" <+> scrut $+$ indent (vcat alts))
 
-cgLambda :: Name -> Doc -> Doc
-cgLambda n body = parens (text "lambda" <+> parens (cgName n) $+$ indent body)
-
 cgLetStar :: [(Name, Doc)] -> Doc -> Doc
 cgLetStar = cgLet' "let*"
+-}
+
+cgLambda :: Name -> Doc -> Doc
+cgLambda n body = parens (text "lambda" <+> parens (cgName n) $+$ indent body)
 
 cgLet' :: String -> [(Name, Doc)] -> Doc -> Doc
 cgLet' letN [(n, body)] rhs = parens (

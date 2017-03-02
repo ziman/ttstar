@@ -10,41 +10,16 @@ pruneDef (Def n R ty (Abstract Postulate) mcs) = [Def n () (pruneTm ty) (Abstrac
 pruneDef (Def n R ty body mcs) = [Def n () (V Blank) (pruneBody body) noConstrs]
 
 pruneBody :: Body Relevance -> Body ()
-pruneBody (Abstract a)  = Abstract a
-pruneBody (Term tm)     = Term $ pruneTm tm
-pruneBody (Patterns cf) = 
-    case pruneCaseFun cf of
-        CaseFun [] (Leaf tm) -> Term tm
-            -- ^^ makes stuff neater
-            -- there's a bug in normalisation somewhere that doesn't reduce
-            -- zero-arg CaseFuns. Let's just clean it here.
+pruneBody (Abstract a) = Abstract a
+pruneBody (Term tm)    = Term $ pruneTm tm
+pruneBody (Clauses cs) = Clauses $ map pruneClause cs
 
-        cf' -> Patterns cf'
-
-pruneCaseFun :: CaseFun Relevance -> CaseFun ()
-pruneCaseFun (CaseFun args ct)
-    = CaseFun (pruneDefs args) (pruneCaseTree ct)
-
-pruneCaseTree :: CaseTree Relevance -> CaseTree ()
-pruneCaseTree (Leaf tm) = Leaf $ pruneTm tm
-pruneCaseTree (Case E s [Alt lhs rhs]) = pruneCaseTree rhs
-pruneCaseTree (Case R s alts) = Case () (pruneTm s) $ concatMap pruneAlt alts
-pruneCaseTree t@(Case E s alts) = error $ "trying to prune non-singleton tree: " ++ show t
-
-pruneAlt :: Alt Relevance -> [Alt ()]
-pruneAlt (Alt Wildcard rhs) = [Alt Wildcard $ pruneCaseTree rhs]
-pruneAlt (Alt (Ctor (CT cn E) args) rhs) = []
-pruneAlt (Alt (Ctor ct args) rhs)
-    = [Alt
-        (Ctor (pruneCT ct) (pruneDefs args))
-        (pruneCaseTree rhs)
-    ]
-pruneAlt (Alt (ForcedPat ftm) rhs)
-    = error "pruneAlt: singleton branch should have been pruned at the pruneCaseTree level"
-
-pruneCT :: CtorTag Relevance -> CtorTag ()
-pruneCT (CT cn r) = CT cn ()
-pruneCT (CTForced cn) = CTForced cn
+pruneClause :: Clause Relevance -> Clause ()
+pruneClause (Clause pvs lhs rhs)
+    = Clause
+        (pruneDefs pvs)
+        (pruneTm lhs)
+        (pruneTm rhs)
 
 pruneDefs :: [Def Relevance] -> [Def ()]
 pruneDefs = concatMap pruneDef
@@ -53,7 +28,7 @@ pruneTm :: TT Relevance -> TT ()
 pruneTm (V n) = V n
 pruneTm (I n ty) = error $ "non-specialised instance found in pruneTm: " ++ show (n, ty)
 pruneTm (Bind b ds tm)
-    = case concatMap pruneDef ds of
+    = case pruneDefs ds of
         []  -> pruneTm tm
         ds' -> Bind b ds' (pruneTm tm)
 pruneTm (App E f x) = pruneTm f

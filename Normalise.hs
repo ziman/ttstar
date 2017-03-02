@@ -5,7 +5,6 @@ import TT
 import TTUtils
 import Pretty
 
-import Data.Maybe
 import Control.Applicative
 import qualified Data.Map as M
 
@@ -35,7 +34,7 @@ redDef form ctx (Def n r ty body cs) = Def n r (red form ctx ty) (redBody form c
 redBody :: IsRelevance r => Form -> Ctx r -> Body r -> Body r
 redBody form ctx (Abstract a) = Abstract a
 redBody form ctx (Term tm)    = Term (red form ctx tm)
-redBody NF   ctx (Clauses cs) = Clauses $ map (redClause NF) cs
+redBody NF   ctx (Clauses cs) = Clauses $ map (redClause NF ctx) cs
 redBody WHNF ctx body@(Clauses cs) = body
 
 redClause :: IsRelevance r => Form -> Ctx r -> Clause r -> Clause r
@@ -44,12 +43,14 @@ redClause NF ctx (Clause pvs lhs rhs) =
         (map (redDef NF ctx) pvs)
         (redPat NF ctx lhs)
         (red NF ctx rhs)
+redClause _ ctx clause = error $ "redClause non-NF"
 
 redPat :: IsRelevance r => Form -> Ctx r -> TT r -> TT r
 redPat NF ctx (App r f x) = App r (redPat NF ctx f) (redPat NF ctx x)
 redPat NF ctx tm@(V _)    = tm
 redPat NF ctx (Forced tm) = red NF ctx tm
 redPat NF ctx pat = error $ "trying to pat-reduce non-pattern: " ++ show pat
+redPat _ ctx pat = error $ "redPat non-NF"
 
 simplLet :: TT r -> TT r
 simplLet (Bind Let [] tm) = tm
@@ -129,14 +130,11 @@ red form ctx t@(App r f x)
 
 red form ctx (Forced tm) = red form ctx tm
 
-matchClause :: TT r -> Clause r -> Maybe (TT r)
+matchClause :: PrettyR r => TT r -> Clause r -> Maybe (TT r)
 matchClause tm (Clause pvs lhs rhs)
-    | Just ss <- match lhs tm
-    = substs (M.toList ss) rhs
+    = substs . M.toList <$> match lhs tm <*> pure rhs
 
-    | otherwise = Nothing
-
-match :: TT r -> TT r -> Maybe (Ctx r)
+match :: PrettyR r => TT r -> TT r -> Maybe (M.Map Name (TT r))
 match (V n) tm' = Just $ M.singleton n tm'
 match (App r f x) (App r' f' x')
     = M.unionWith (\_ _ -> error "non-linear pattern")
@@ -144,15 +142,6 @@ match (App r f x) (App r' f' x')
         <*> match x x'
 match (Forced tm) tm' = Just $ M.empty
 match pat _tm' = error $ "trying to match non-pattern: " ++ show pat
-
-substArgs :: Termy f => [Def r] -> [(r, TT r)] -> f r -> Maybe (f r, [(r, TT r)])
-substArgs []     extras rhs = Just (rhs, extras)
-substArgs (d:ds) []     rhs = Nothing  -- ran out of values
-substArgs (d:ds) ((r,v):vs) rhs =
-    substArgs ds' vs rhs'
-  where
-    (ds', rhs') = substBinder n v ds rhs
-    n = defName d
 
 firstMatch :: Alternative f => [f a] -> f a
 firstMatch = foldr (<|>) empty
