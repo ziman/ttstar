@@ -45,11 +45,10 @@ redClause NF ctx (Clause pvs lhs rhs) =
         (red NF ctx rhs)
 redClause _ ctx clause = error $ "redClause non-NF"
 
-redPat :: IsRelevance r => Form -> Ctx r -> TT r -> TT r
-redPat NF ctx (App r f x) = App r (redPat NF ctx f) (redPat NF ctx x)
-redPat NF ctx tm@(V _)    = tm
-redPat NF ctx (Forced tm) = red NF ctx tm
-redPat NF ctx pat = error $ "trying to pat-reduce non-pattern: " ++ show pat
+redPat :: IsRelevance r => Form -> Ctx r -> Pat r -> Pat r
+redPat NF ctx (PApp r f x) = PApp r (redPat NF ctx f) (redPat NF ctx x)
+redPat NF ctx tm@(PV _)    = tm
+redPat NF ctx (PForced tm) = PForced $ red NF ctx tm
 redPat _ ctx pat = error $ "redPat non-NF"
 
 simplLet :: TT r -> TT r
@@ -128,20 +127,18 @@ red form ctx t@(App r f x)
         NF   -> red NF ctx x
         WHNF -> x
 
-red form ctx (Forced tm) = red form ctx tm
-
 matchClause :: PrettyR r => TT r -> Clause r -> Maybe (TT r)
 matchClause tm (Clause pvs lhs rhs)
     = substs . M.toList <$> match lhs tm <*> pure rhs
 
-match :: PrettyR r => TT r -> TT r -> Maybe (M.Map Name (TT r))
-match (V n) tm' = Just $ M.singleton n tm'
-match (App r f x) (App r' f' x')
+match :: PrettyR r => Pat r -> TT r -> Maybe (M.Map Name (TT r))
+match (PV n) tm' = Just $ M.singleton n tm'
+match (PApp r f x) (App r' f' x')
     = M.unionWith (\_ _ -> error "non-linear pattern")
         <$> match f f'
         <*> match x x'
-match (Forced tm) tm' = Just $ M.empty
-match pat _tm' = error $ "trying to match non-pattern: " ++ show pat
+match (PForced tm) tm' = Just $ M.empty
+match _ _ = Nothing
 
 firstMatch :: Alternative f => [f a] -> f a
 firstMatch = foldr (<|>) empty

@@ -139,7 +139,7 @@ verClause :: Relevance -> Clause Relevance -> Ver ()
 verClause r (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
     verDefs pvs
     withs pvs $ do
-        lhsTy <- verTm r lhs -- verPat r lhs
+        lhsTy <- verPat r lhs
         rhsTy <- verTm r rhs
         conv r lhsTy rhsTy
 
@@ -181,50 +181,43 @@ verTm r (App s f x) = bt ("APP", r, f, s, x) $ do
 
         _ -> verFail $ NotPi fty
 
-verTm r (Forced tm) = bt ("FORCED", tm) $ do
-    verTm r tm
-
 verTm r tm = bt ("UNKNOWN-TERM", tm) $ do
     verFail NotImplemented
 
-{-
-verPat :: Relevance -> Pat -> Ver Type
-verPat R (V n) = bt ("PAT-REF-R", n) $ do
+verPat :: Relevance -> Pat Relevance -> Ver Type
+verPat R (PV n) = bt ("PAT-REF-R", n) $ do
     defType <$> lookupName n    
 
-verPat E (V n) = bt ("PAT-REF-E", n) $ do
+verPat E (PV n) = bt ("PAT-REF-E", n) $ do
     d <- lookupName n
     defR d <-> E
     return $ defType d
 
-verPat R (App r f x) = bt ("PAT-APP-R", f, x) $ do
+verPat R (PApp r f x) = bt ("PAT-APP-R", f, x) $ do
     ctx <- getCtx
-    fty <- verTm R f
+    fty <- verPat R f
     case whnf ctx fty of
         Bind Pi [Def n s piTy (Abstract Var) _] piRhs -> do
-            xty <- verTm r x
+            xty <- verPat r x
             conv r xty piTy  -- here, conversion check may be R
             r <-> s          -- but r and s must match
-            return $ subst n x piRhs
+            return $ subst n (pat2term x) piRhs
 
         _ -> verFail $ NotPi fty
 
-verPat E (App r f x) = bt ("PAT-APP-E", f, x) $ do
+verPat E (PApp r f x) = bt ("PAT-APP-E", f, x) $ do
     ctx <- getCtx
-    fty <- verTm E f
+    fty <- verPat E f
     case whnf ctx fty of
         Bind Pi [Def n s piTy (Abstract Var) _] piRhs -> do
-            xty <- verTm E x
+            xty <- verPat E x
             conv E xty piTy   -- here, conversion check must be E, but r and s needn't match
-            return $ subst n x piRhs
+            return $ subst n (pat2term x) piRhs
 
         _ -> verFail $ NotPi fty
 
-verPat r (Forced tm) = bt ("PAT-FORCED", tm) $ do
+verPat r (PForced tm) = bt ("PAT-FORCED", tm) $ do
     verTm E tm
-
-verPat r pat = verFail NotImplemented
--}
 
 conv :: Relevance -> Type -> Type -> Ver ()
 conv r p q = do

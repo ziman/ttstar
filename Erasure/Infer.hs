@@ -206,15 +206,49 @@ inferClause :: Clause Evar -> TC (Constrs Evar)
 inferClause (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
     pvs' <- inferDefs' pvs
     withs pvs' $ do
-        (lty, lcs) <- inferTm lhs
+        (lty, lcs) <- inferPat lhs
         (rty, rcs) <- inferTm rhs
         ccs <- conv lty rty
         return $ flipConstrs lcs /\ rcs /\ ccs
 
+-- This is tricky.
+-- Now we do have patterns as a separate type and inferPat separately,
+-- but it still seems to be easier to just copy out the inference engine
+-- for the pattern fragment of the language, process it as terms,
+-- and then just call flipConstrs on it.
+-- We don't do anything smarter for now.
+inferPat :: Pat Evar -> TC (Type, Constrs Evar)
+inferPat t@(PV n) = bt ("PAT-VAR", n) $ do
+    d <- lookup n
+    return (defType d, defConstraints d /\ Fixed R --> defR d)
+
+inferPat t@(PApp app_r f x) = bt ("PAT-APP", t) $ do
+    (fty, fcs) <- inferPat f
+    (xty, xcs) <- inferPat x
+    ctx <- getCtx
+    case whnf ctx fty of
+        Bind Pi [Def n' pi_r ty' (Abstract Var) _noCs] retTy -> do
+            tycs <- conv xty ty'
+            let cs =
+                    -- we can't leave tycs out entirely because
+                    -- if it's relevant, it needs to be erasure-correct as well
+                    -- but if it's not used, then it needn't be erasure-correct
+                    cond pi_r tycs
+                    /\ fcs
+                    /\ cond pi_r xcs
+                    /\ pi_r <--> app_r
+            return (subst n' (pat2term x) retTy, cs)
+
+        _ -> do
+            tcfail $ NonFunction (pat2term f) fty
+
+inferPat t@(PForced tm) = bt ("PAT-FORCED", tm) $ do
+    (ty, cs) <- inferTm tm    
+    return (ty, noConstrs)
+
 inferTm :: Term -> TC (Type, Constrs Evar)
 
--- this is sketchy
-inferTm (V Blank) = return (V Blank, noConstrs)
+inferTm t@(V Blank) = tcfail $ UncheckableTerm t
 
 inferTm t@(V n) = bt ("VAR", n) $ do
     -- at the point of usage of a bound name,
@@ -280,10 +314,6 @@ inferTm t@(App app_r f x) = bt ("APP", t) $ do
 
         _ -> do
             tcfail $ NonFunction f fty
-
-inferTm (Forced tm) = bt ("FORCED", tm) $ do
-    (ty, _cs) <- inferTm tm
-    return (ty, noConstrs)
 
 inferTm tm = bt ("UNCHECKABLE-TERM", tm) $ do
     tcfail $ UncheckableTerm tm

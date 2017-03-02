@@ -120,6 +120,24 @@ bind = arrow
 app :: Parser (TT MRel)
 app = foldl (App Nothing) <$> atomic <*> many atomic <?> "application"
 
+brackets :: Parser a -> Parser a
+brackets p = kwd "[" *> p <* kwd "]"
+
+patVar :: Parser (Pat MRel)
+patVar = PV <$> name <?> "pattern variable"
+
+patForced :: Parser (Pat MRel)
+patForced = PForced <$> brackets expr <?> "forced pattern"
+
+patAtom :: Parser (Pat MRel)
+patAtom = parens pattern <|> patForced <|> patVar <?> "pattern atom"
+
+patApp :: Parser (Pat MRel)
+patApp = foldl (PApp Nothing) <$> patAtom <*> many patAtom <?> "pattern application"
+
+pattern :: Parser (Pat MRel)
+pattern = patApp
+
 let_ :: Parser (TT MRel)
 let_ = (<?> "let expression") $ do
     kwd "let"
@@ -197,7 +215,7 @@ clause = (<?> "pattern clause") $ do
     kwd "pat"
     pvs <- many $ typing Var
     kwd "."
-    lhs <- expr
+    lhs <- pattern
     kwd "="
     rhs <- expr
     return $ Clause pvs lhs rhs

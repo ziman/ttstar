@@ -67,7 +67,7 @@ specClause (Clause pm lm rm) (Clause pr lr rr) = do
     isp' <- sequence [specDef m r | (m,r) <- zip pm pr]
     let isp = M.unionsWith S.union $ map fst isp'
     let p' = map snd isp'
-    (isl, l') <- specTm lm lr
+    (isl, l') <- specPat lm lr
     (isr, r') <- specTm rm rr
     return (M.unionsWith S.union [isp,isl,isr], Clause p' l' r')
 
@@ -84,6 +84,15 @@ specDef (Def nm rm tym bodym _csm) (Def nr rr tyr bodyr csr) = do
     (is, tyr') <- specTm tym tyr
     (is', bodyr') <- specBody bodym bodyr
     return $ (M.unionWith S.union is is', Def nr (Fixed rr) tyr' bodyr' noConstrs)
+
+specPat :: Pat Evar -> Pat Relevance -> Spec (Pat Evar)
+specPat pm (PV n) = return (M.empty, PV n)
+specPat (PApp rm fm xm) (PApp rr fr xr) = do
+    (isf, fr') <- specPat fm fr
+    (isx, xr') <- specPat xm xr
+    return (M.unionWith S.union isf isx, PApp (Fixed rr) fr' xr')
+
+specPat pm pr = error $ "cannot specialise: " ++ show (pm, pr)
 
 specTm :: TT Evar -> TT Relevance -> Spec (TT Evar)
 specTm tmm (V n) = return (M.empty, V n)
@@ -118,7 +127,5 @@ specTm (App rm fm xm) (App rr fr xr) = do
     (isf, fr') <- specTm fm fr
     (isx, xr') <- specTm xm xr
     return (M.unionWith S.union isf isx, App (Fixed rr) fr' xr')
-
-specTm (Forced tmm) (Forced tmr) = fmap Forced <$> specTm tmm tmr
 
 specTm tmm tmr = error $ "cannot specialise: " ++ show (tmm, tmr)

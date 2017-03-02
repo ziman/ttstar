@@ -35,13 +35,25 @@ instance Termy TT where
 
     subst n tm (App r f x) = App r (subst n tm f) (subst n tm x)
 
-    subst n tm (Forced t) = Forced (subst n tm t)
-
     freeVars (V n) = S.singleton n
     freeVars (I n ty) = S.insert n $ freeVars ty
     freeVars (Bind b ds tm) = freeVarsBinder ds tm
     freeVars (App r f x) = freeVars f `S.union` freeVars x
-    freeVars (Forced tm) = freeVars tm
+
+instance Termy Pat where
+    subst n tm pat@(PV n')
+        | n' == n   = error $ "trying to substitute for patvar: " ++ show n
+        | otherwise = pat
+
+    subst n tm pat@(PApp r f x)
+        = PApp r (subst n tm f) (subst n tm x)
+
+    subst n tm pat@(PForced tm')
+        = PForced $ subst n tm tm'
+
+    freeVars (PV n) = S.singleton n
+    freeVars (PApp r f x) = freeVars f `S.union` freeVars x
+    freeVars (PForced tm) = freeVars tm
 
 instance Termy Def where
     subst n tm (Def dn r ty body mcs)
@@ -134,3 +146,8 @@ rename fromN toN = subst fromN (V toN)
 -- * foldr: (S y, S (S y))
 substs :: Termy a => [(Name, TT r)] -> a r -> a r
 substs ss x = foldl (\x (n, tm) -> subst n tm x) x ss
+
+pat2term :: Pat r -> TT r
+pat2term (PV n) = V n
+pat2term (PApp r f x) = App r (pat2term f) (pat2term x)
+pat2term (PForced tm) = tm

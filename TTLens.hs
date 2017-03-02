@@ -18,8 +18,17 @@ ttRelevance f = g
             -> Bind b <$> traverse (defRelevance f) ds <*> g tm
         App r fun arg
             -> App <$> f r <*> g fun <*> g arg
-        Forced tm
-            -> Forced <$> g tm
+
+patRelevance :: Ord r' => Traversal (Pat r) (Pat r') r r'
+patRelevance f = g
+  where
+    g pat = case pat of
+        PV n
+            -> pure $ PV n
+        PApp r fun arg
+            -> PApp <$> f r <*> g fun <*> g arg
+        PForced tm
+            -> PForced <$> ttRelevance f tm
 
 defRelevance :: Ord r' => Traversal (Def r) (Def r') r r'
 defRelevance f (Def n r ty body mcs)
@@ -38,7 +47,7 @@ clauseRelevance :: Ord r' => Traversal (Clause r) (Clause r') r r'
 clauseRelevance f (Clause pvs lhs rhs)
     = Clause
         <$> traverse (defRelevance f) pvs
-        <*> ttRelevance f lhs
+        <*> patRelevance f lhs
         <*> ttRelevance f rhs
 
 csRelevance :: Ord r' => Traversal (Constrs r) (Constrs r') r r'

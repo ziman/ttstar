@@ -29,12 +29,17 @@ data TT r
     | I Name (TT r)  -- instance of a global definition with a specific erasure type
     | Bind Binder [Def r] (TT r)
     | App r (TT r) (TT r)
-    | Forced (TT r)  -- forced terms don't generate constraints
+    deriving (Eq, Ord)
+
+data Pat r
+    = PV Name
+    | PApp r (Pat r) (Pat r)
+    | PForced (TT r)
     deriving (Eq, Ord)
 
 data Clause r = Clause
     { cPatVars :: [Def r]
-    , cLHS :: TT r
+    , cLHS :: Pat r
     , cRHS :: TT r
     } deriving (Eq, Ord)
 

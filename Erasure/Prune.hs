@@ -18,7 +18,7 @@ pruneClause :: Clause Relevance -> Clause ()
 pruneClause (Clause pvs lhs rhs)
     = Clause
         (pruneDefs pvs)
-        (pruneTm lhs)
+        (prunePat lhs)
         (pruneTm rhs)
 
 pruneDefs :: [Def Relevance] -> [Def ()]
@@ -33,4 +33,9 @@ pruneTm (Bind b ds tm)
         ds' -> Bind b ds' (pruneTm tm)
 pruneTm (App E f x) = pruneTm f
 pruneTm (App R f x) = App () (pruneTm f) (pruneTm x)
-pruneTm (Forced tm) = error $ "pruneTm: forced term: " ++ show tm
+
+prunePat :: Pat Relevance -> Pat ()
+prunePat (PV n) = PV n
+prunePat (PApp E f x) = prunePat f
+prunePat (PApp R f x) = PApp () (prunePat f) (prunePat x)
+prunePat (PForced tm) = PV Blank
