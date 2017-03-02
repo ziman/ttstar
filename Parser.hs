@@ -123,8 +123,8 @@ app = foldl (App Nothing) <$> atomic <*> many atomic <?> "application"
 let_ :: Parser (TT MRel)
 let_ = (<?> "let expression") $ do
     kwd "let"
-    d <- simpleDef
-    ds <- many (kwd "," *> simpleDef)
+    d <- definition
+    ds <- many (kwd "," *> definition)
     kwd "in"
     Bind Let (d:ds) <$> expr
 
@@ -175,77 +175,23 @@ postulate = (<?> "postulate") $ do
     d <- typing Postulate
     return d
 
-caseTree :: Parser (CaseTree MRel)
-caseTree = realCaseTree <|> leaf <?> "case tree or term"
-
-leaf :: Parser (CaseTree MRel)
-leaf = Leaf <$> expr
-
-realCaseTree :: Parser (CaseTree MRel)
-realCaseTree = (<?> "case tree") $ do
-    try $ kwd "case"
-    v <- name
-    kwd "of"
-    alts <-
-        (kwd "{" *> (caseAlt `sepBy` kwd ",") <* kwd "}")
-        <|> return <$> caseAlt
-    return $ Case Nothing (V v) alts
-
-altLHS :: Parser (AltLHS MRel)
-altLHS =
-  (altLHSForced <?> "forced alt LHS")
-  <|> (altLHSCtor <?> "constructor alt LHS")
-  <|> (kwd "_" *> pure Wildcard)
-  <?> "case alt LHS"
-
-altLHSForced :: Parser (AltLHS MRel)
-altLHSForced = do
-    kwd "["
-    tm <- expr
-    kwd "]"
-    ds <- many (parens $ typing Var)
-    case (tm, ds) of
-        (_   , []) -> return $ ForcedPat tm
-        (V cn, _ ) -> return $ Ctor (CTForced cn) ds
-        _ -> fail "weird forced alt LHS"
-
-altLHSCtor :: Parser (AltLHS MRel)
-altLHSCtor
-    = Ctor
-        <$> (CT <$> name <*> pure Nothing)
-        <*> many (parens $ typing Var)
-
-caseAlt :: Parser (Alt MRel)
-caseAlt
-    = Alt
-        <$> Parser.altLHS
-        <*> (kwd "=>" *> caseTree)
-        <?> "constructor-matching case branch"
-
 fundef :: Parser (Def MRel)
-fundef = (<?> "function definition") $ do
-    n <- name
-    args <- many $ parens (typing Var)
-    r <- rcolon
-    retTy <- expr
-    kwd "="
+fundef = (<?> "definition") $ do
+    d <- typing Var
+    body <-
+        (kwd "." *> clausesBody)
+        <|> (kwd "=" *> termBody)
+    kwd "."
+    return d{ defBody = body }
 
-    let ty = chain Pi args retTy
+clausesBody :: Parser (Body r)
+clausesBody = Clauses <$> (clause `sepBy` kwd ",")
 
-    let lambdaDef = do
-            tm <- expr
-            return $ Def n r ty (Term $ chain Lam args tm) noConstrs
+termBody :: Parser (Body r)
+termBody = Term <$> expr
 
-    let matchingDef = do
-            ct <- realCaseTree  -- `caseTree` allows plain terms but we don't want those here
-            -- also, don't require the dot after the case expression because
-            -- the case expression knows when to terminate itself
-            return $ Def n r ty (Patterns $ CaseFun args ct) noConstrs
-
-    matchingDef <|> lambdaDef
-  where
-    chain bnd [] tm = tm
-    chain bnd (d : args) tm = Bind bnd [d] $ chain bnd args tm
+clause :: Parser (Clause r)
+clause = Clause <$> expr <* kwd "=" <*> expr <?> "pattern clause"
 
 dataDef :: Parser [Def MRel]
 dataDef = (<?> "data definition") $ do

@@ -20,15 +20,6 @@ class Termy f where
     subst :: Name -> TT r -> f r -> f r
     freeVars :: f r -> S.Set Name
 
-{-
-instance Termy Ctx where
-    subst n tm ctx
-        = M.fromList [(n', subst n tm d) | (n', d) <- M.toList ctx, n' /= n]
-
-    freeVars ctx
-        = S.unions (map freeVars $ M.elems ctx) `S.difference` M.keysSet ctx
--}
-
 instance Termy TT where
     subst n tm (V n')
         | n' == n   = tm
@@ -66,19 +57,20 @@ instance Termy Def where
 instance Termy Body where
     subst n tm (Abstract a)  = Abstract a
     subst n tm (Term t)      = Term $ subst n tm t
-    subst n tm (Patterns cf) = Patterns $ subst n tm cf
+    subst n tm (Clauses cs)  = Clauses $ map (subst n tm) cs
 
     freeVars (Abstract _)  = S.empty
     freeVars (Term tm)     = freeVars tm
-    freeVars (Patterns cf) = freeVars cf
+    freeVars (Clauses cs)  = S.unions $ map freeVars cs
 
-instance Termy CaseFun where
-    -- see (subst n tm (Bind b d rhs)) for the general approach to subst under binders
-    subst n tm (CaseFun ds ct) = CaseFun ds' ct'
-      where
-        (ds', ct') = substBinder n tm ds ct
+instance Termy Clause where
+    subst n tm c@(Clause pvs lhs rhs)
+        | n `elem` map defName pvs = c
+        | otherwise = Clause (map (subst n tm) pvs) (subst n tm lhs) (subst n tm rhs)
 
-    freeVars (CaseFun ds ct) = freeVarsBinder ds ct
+    freeVars (Clause pvs lhs rhs)
+        = (freeVars lhs `S.union` freeVars rhs)
+            `S.difference` S.fromList (map defName pvs)
 
 freeVarsBinder :: Termy a => [Def r] -> a r -> S.Set Name
 freeVarsBinder [] rhs = freeVars rhs
@@ -125,34 +117,6 @@ substBinder n tm (d:ds) rhs
 
     freshen :: Termy a => a r -> a r
     freshen = rename boundName freshName
-
-instance Termy CaseTree where
-    subst n tm (Leaf t)
-        = Leaf $ subst n tm t
-    subst n tm (Case r s alts)
-        = Case r (subst n tm s) $ map (subst n tm) alts
-
-    freeVars (Leaf tm) = freeVars tm
-    freeVars (Case r s alts) = S.unions (freeVars s : map freeVars alts)
-
-instance Termy Alt where
-    -- equations are pattern-only so they are not touched by substitution
-    -- (but they must be rewritten if we rename the binders!)
-    subst n tm (Alt Wildcard rhs) = Alt Wildcard $ subst n tm rhs
-
-    subst n tm (Alt (Ctor ct args) rhs)
-        = Alt (Ctor ct args') rhs'
-      where
-        (args', rhs') = substBinder n tm args rhs
-
-    subst n tm (Alt (ForcedPat ftm) rhs)
-        = Alt (ForcedPat $ subst n tm ftm) (subst n tm rhs)
-
-    freeVars (Alt Wildcard rhs) = freeVars rhs
-    freeVars (Alt (Ctor ct args) rhs)
-        = freeVarsBinder args rhs
-    freeVars (Alt (ForcedPat ftm) rhs)
-        = freeVars ftm `S.union` freeVars rhs
 
 occursIn :: Termy a => Name -> a r -> Bool
 n `occursIn` tm = n `S.member` freeVars tm

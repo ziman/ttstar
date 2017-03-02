@@ -32,33 +32,17 @@ defRelevance f (Def n r ty body mcs)
 bodyRelevance :: Ord r' => Traversal (Body r) (Body r') r r'
 bodyRelevance f (Abstract a) = pure $ Abstract a
 bodyRelevance f (Term tm) = Term <$> ttRelevance f tm
-bodyRelevance f (Patterns cf) = Patterns <$> caseFunRelevance f cf
+bodyRelevance f (Clauses cs) = Clauses <$> traverse (clauseRelevance f) cs
 
-caseFunRelevance :: Ord r' => Traversal (CaseFun r) (CaseFun r') r r'
-caseFunRelevance f (CaseFun args ct)
-    = CaseFun
-        <$> traverse (defRelevance f) args
-        <*> caseTreeRelevance f ct
-
-caseTreeRelevance :: Ord r' => Traversal (CaseTree r) (CaseTree r') r r'
-caseTreeRelevance f (Leaf tm) = Leaf <$> ttRelevance f tm
-caseTreeRelevance f (Case r s alts) = Case <$> f r <*> ttRelevance f s <*> traverse (altRelevance f) alts
-
-altRelevance :: Ord r' => Traversal (Alt r) (Alt r') r r'
-altRelevance f (Alt lhs rhs) = Alt <$> altLHSRelevance f lhs <*> caseTreeRelevance f rhs
-
-altLHSRelevance :: Ord r' => Traversal (AltLHS r) (AltLHS r') r r'
-altLHSRelevance f Wildcard = pure $ Wildcard
-altLHSRelevance f (Ctor (CT cn r) args)
-    = Ctor <$> (CT cn <$> f r) <*> traverse (defRelevance f) args
-altLHSRelevance f (Ctor (CTForced cn) args)
-    = Ctor (CTForced cn) <$> traverse (defRelevance f) args
-altLHSRelevance f (ForcedPat ftm)
-    = ForcedPat <$> ttRelevance f ftm
+clauseRelevance :: Ord r' => Traversal (Clause r) (Clause r') r r'
+clauseRelevance f (Clause pvs lhs rhs)
+    = Clause
+        <$> traverse (defRelevance f) pvs
+        <*> ttRelevance f lhs
+        <*> ttRelevance f rhs
 
 csRelevance :: Ord r' => Traversal (Constrs r) (Constrs r') r r'
 csRelevance f = fmap M.fromList . traverse f' . M.toList
   where
     f' (x, y) = (,) <$> f'' x <*> f'' y
     f'' = fmap S.fromList . traverse f . S.toList
-

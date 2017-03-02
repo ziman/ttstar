@@ -32,7 +32,7 @@ cgBody :: Name -> TT () -> Body () -> Doc
 cgBody n ty (Abstract Postulate) = cgCtor n ty
 cgBody n ty (Abstract Var) = error $ "let-bound variable: " ++ show n
 cgBody n ty (Term tm) = cgTm tm
-cgBody n ty (Patterns cf) = cgCaseFun cf
+cgBody n ty (Clauses cs) = error "NOT IMPLEMENTED"
 
 cgLetRec :: [Def ()] -> Doc -> Doc
 cgLetRec ds = cgLet' "letrec*" [(n, cgBody n ty b) | Def n () ty b _cs <- ds]
@@ -48,12 +48,6 @@ cgTm tm = error $ "can't cg tm: " ++ show tm
 cgApp :: Doc -> Doc -> Doc
 cgApp f x = parens (f <+> x)
 
-cgCaseFun :: CaseFun () -> Doc
-cgCaseFun (CaseFun args ct) = 
-    nestLambdas argNs $ cgCaseTree ct
-  where
-    argNs = uniqNames $ map defName args
-
 cgCtor :: Name -> TT () -> Doc
 cgCtor n ty
     = nestLambdas argNs $
@@ -64,24 +58,6 @@ cgCtor n ty
         )
   where
     argNs = uniqNames $ argNames ty
-
-cgCaseTree :: CaseTree () -> Doc
-cgCaseTree (Leaf tm) = cgTm tm
-cgCaseTree (Case () (V scrutN) alts) =
-    cgCase (text "car" `cgApp` cgName scrutN)
-        $ map (cgAlt scrutN) alts
-
-cgCaseTree (Case () scrut alts) =
-    error $ "can't cg case scrutinee: " ++ show scrut
-
-cgAlt :: Name -> Alt () -> Doc
-cgAlt argsN (Alt Wildcard rhs) = parens (text "else" <+> cgCaseTree rhs)
-cgAlt argsN (Alt (Ctor ct ds) rhs)
-    = parens (
-        parens (cgName $ ctName ct)
-        <+> cgBinds (map defName ds) argsN (cgCaseTree rhs)
-    )
-cgAlt argsN (Alt (ForcedPat ftm) rhs) = cgCaseTree rhs
 
 cgBinds :: [Name] -> Name -> Doc -> Doc
 cgBinds [] args rhs = rhs

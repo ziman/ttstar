@@ -66,7 +66,11 @@ instance Pretty Name where
 instance PrettyR r => Pretty (Body r) where
     pretty (Abstract _) = empty
     pretty (Term tm) = text "=" <+> pretty tm
-    pretty (Patterns cf) = pretty cf
+    pretty (Clauses cs)
+        = blankLine $$ vcat [
+            text "|" <+> pretty c
+            | c <- cs
+        ]
 
 instance PrettyR r => Pretty (Def r) where
     pretty (Def n r ty body cs) =
@@ -77,13 +81,15 @@ instance PrettyR r => Pretty (Def r) where
         <+> case ty of
                 V Blank -> empty
                 _       -> prettyCol r <+> pretty ty
-        <+> case body of
-                Abstract _  -> empty
-                Term tm     -> text "=" <+> pretty tm
-                Patterns cf -> text "=" <+> pretty cf
+        <+> pretty body
         <+> if M.null cs
                 then empty
                 else text "{- constraints apply -}"
+
+instance PrettyR r => Pretty (Clause r) where
+    pretty (Clause pvs lhs rhs) =
+        text "pat" <+> hsep (map pretty pvs) <> text "."
+        $$ indent (pretty lhs <+> text "=" <+> pretty rhs)
 
 instance PrettyR r => Pretty (TT r) where
     pretty tm = pretty' False tm
@@ -126,55 +132,7 @@ instance PrettyR r => Show (Def r) where
     show = prettyShow
 
 deriving instance PrettyR r => Show (Body r)
-
-instance PrettyR r => Pretty (CaseFun r) where
-    pretty (CaseFun [] t) = pretty t
-    pretty (CaseFun ns t) =
-        text "\\" <> hsep (map prettyParens ns) <> text "."
-        $$ indent (pretty t)
-
-instance PrettyR r => Pretty (CaseTree r) where
-    pretty (Leaf tm) = pretty tm
-    pretty (Case r n [alt]) =
-        text "case" <> prettyApp r <> pretty n <+> text "of"
-            <+> pretty alt
-
-    pretty (Case r n alts) =
-        text "case" <> prettyApp r <> pretty n <+> text "of"
-        $$ indent (vcat $ map pretty alts)
-
-instance PrettyR r => Pretty (Alt r) where
-    pretty (Alt lhs rhs) = pretty lhs <+> text "=>" $$ indent (pretty rhs)
-
-instance PrettyR r => Pretty (AltLHS r) where
-    pretty Wildcard = text "_"
-    pretty (Ctor ct args)
-        = pretty ct <+> hsep (map prettyParens args)
-    pretty (ForcedPat ftm)
-        = brackets (pretty ftm)
-
-instance PrettyR r => Pretty (CtorTag r) where
-    pretty (CT cn r)
-        = pretty cn <> maybe empty (text "/" <>) (prettyAlt r)
-    pretty (CTForced cn)
-        = brackets (pretty cn)
-
-prettyParens :: PrettyR r => Def r -> Doc
-prettyParens d
-    | V Blank <- defType d
-    = pretty d
-
-    | otherwise
-    = parens $ pretty d
-
-instance PrettyR r => Show (CaseFun r) where
-    show = prettyShow
-
-instance PrettyR r => Show (CaseTree r) where
-    show = prettyShow
-
-instance PrettyR r => Show (Alt r) where
-    show = prettyShow
+deriving instance PrettyR r => Show (Clause r)
 
 indent :: Doc -> Doc
 indent = nest 2

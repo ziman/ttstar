@@ -32,37 +32,17 @@ data TT r
     | Forced (TT r)  -- forced terms don't generate constraints
     deriving (Eq, Ord)
 
-data CaseFun r = CaseFun
-    { cfArgs :: [Def r]
-    , cfTree :: CaseTree r
-    } deriving (Eq, Ord)
-
-data CaseTree r
-    = Leaf (TT r)
-    | Case r (TT r) [Alt r]
-    deriving (Eq, Ord)
-
-data CtorTag r
-    = CT { ctName :: Name, ctR :: r }
-    | CTForced { ctName :: Name }
-    deriving (Eq, Ord, Show)
-
-data AltLHS r
-    = Ctor (CtorTag r) [Def r]
-    | ForcedPat (TT r)
-    | Wildcard
-    deriving (Eq, Ord)
-
-data Alt r = Alt
-    { altLHS :: AltLHS r
-    , altRHS :: CaseTree r
+data Clause r = Clause
+    { cPatVars :: [Def r]
+    , cLHS :: TT r
+    , cRHS :: TT r
     } deriving (Eq, Ord)
 
 -- The difference between Var and Postulate is that for Var, the value is unknown,
 -- for postulate; the term itself is the value. A variable stands for something else,
 -- a postulate stands for itself.
 data Abstractness = Var | Postulate deriving (Eq, Ord, Show)
-data Body r = Abstract Abstractness | Term (TT r) | Patterns (CaseFun r) deriving (Eq, Ord)
+data Body r = Abstract Abstractness | Term (TT r) | Clauses [Clause r] deriving (Eq, Ord)
 data Def r = Def
     { defName :: Name
     , defR    :: r

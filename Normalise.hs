@@ -33,37 +33,23 @@ redDef :: IsRelevance r => Form -> Ctx r -> Def r -> Def r
 redDef form ctx (Def n r ty body cs) = Def n r (red form ctx ty) (redBody form ctx body) cs
 
 redBody :: IsRelevance r => Form -> Ctx r -> Body r -> Body r
-redBody form ctx (Abstract a)  = Abstract a
-redBody form ctx (Term tm)     = Term (red form ctx tm)
-redBody NF   ctx (Patterns cf) = Patterns (redCaseFun NF ctx cf)
-redBody WHNF ctx body@(Patterns cf) = body
+redBody form ctx (Abstract a) = Abstract a
+redBody form ctx (Term tm)    = Term (red form ctx tm)
+redBody NF   ctx (Clauses cs) = Clauses $ map (redClause NF) cs
+redBody WHNF ctx body@(Clauses cs) = body
 
-redCaseFun :: IsRelevance r => Form -> Ctx r -> CaseFun r -> CaseFun r
-redCaseFun NF ctx (CaseFun args ct) = go ctx [] args
-  where
-    go ctx rargs [] = CaseFun (reverse rargs) (redCaseTree NF ctx ct)
-    go ctx rargs (d:ds) =
-        let d' = redDef NF ctx d
-          in go (M.insert (defName d) d' ctx) (d':rargs) ds
+redClause :: IsRelevance r => Form -> Ctx r -> Clause r -> Clause r
+redClause NF ctx (Clause pvs lhs rhs) =
+    Clause
+        (map (redDef NF ctx) pvs)
+        (redPat NF ctx lhs)
+        (red NF ctx rhs)
 
-redCaseFun WHNF ctx cf = error "impossible: redCaseFun WHNF"
-
-redCaseTree :: IsRelevance r => Form -> Ctx r -> CaseTree r -> CaseTree r
-redCaseTree NF ctx (Leaf tm) = Leaf $ red NF ctx tm
-redCaseTree NF ctx (Case r v alts) = Case r v $ map (redAlt NF ctx) alts
-redCaseTree WHNF ctx ct = error "impossible: redCaseTree WHNF"
-
-redAlt :: IsRelevance r => Form -> Ctx r -> Alt r -> Alt r
-redAlt NF ctx (Alt lhs rhs) = Alt (redAltLHS NF ctx lhs) (redCaseTree NF ctx rhs)
-redAlt WHNF ctx alt = error "impossible: redAlt WHNF"
-
-redAltLHS :: IsRelevance r => Form -> Ctx r -> AltLHS r -> AltLHS r
-redAltLHS NF ctx Wildcard = Wildcard
-redAltLHS NF ctx (Ctor ct args)
-    = Ctor ct $ map (redDef NF ctx) args
-redAltLHS NF ctx (ForcedPat ftm)
-    = ForcedPat $ red NF ctx ftm
-redAltLHS WHNF ctx lhs = error "impossible: redAltLHS WHNF"
+redPat :: IsRelevance r => Form -> Ctx r -> TT r -> TT r
+redPat NF ctx (App r f x) = App r (redPat NF ctx f) (redPat NF ctx x)
+redPat NF ctx tm@(V _)    = tm
+redPat NF ctx (Forced tm) = red NF ctx tm
+redPat NF ctx pat = error $ "trying to pat-reduce non-pattern: " ++ show pat
 
 simplLet :: TT r -> TT r
 simplLet (Bind Let [] tm) = tm
@@ -78,7 +64,7 @@ red form ctx t@(V n)
     = case body of
         Abstract _  -> t
         Term     tm -> red form ctx tm
-        Patterns cf -> t
+        Clauses  cs -> t
 
     | otherwise = error $ "unknown variable: " ++ show n  -- unknown variable
 
@@ -127,9 +113,9 @@ red form ctx t@(App r f x)
 
     -- pattern-matching definitions
     | (V fn, args) <- unApply t
-    , Just (Def _ _ _ (Patterns cf) _) <- M.lookup fn ctx
-    , length args == length (cfArgs cf)
-    = fromMaybe redT $ (red form ctx <$> evalPatterns form ctx cf redT)
+    , Just (Def _ _ _ (Clauses cs) _) <- M.lookup fn ctx
+    , Just rhs <- firstMatch $ map (matchClause t) cs
+    = red form ctx rhs
 
     -- everything else
     | otherwise
@@ -143,6 +129,22 @@ red form ctx t@(App r f x)
 
 red form ctx (Forced tm) = red form ctx tm
 
+matchClause :: TT r -> Clause r -> Maybe (TT r)
+matchClause tm (Clause pvs lhs rhs)
+    | Just ss <- match lhs tm
+    = substs (M.toList ss) rhs
+
+    | otherwise = Nothing
+
+match :: TT r -> TT r -> Maybe (Ctx r)
+match (V n) tm' = Just $ M.singleton n tm'
+match (App r f x) (App r' f' x')
+    = M.unionWith (\_ _ -> error "non-linear pattern")
+        <$> match f f'
+        <*> match x x'
+match (Forced tm) tm' = Just $ M.empty
+match pat _tm' = error $ "trying to match non-pattern: " ++ show pat
+
 substArgs :: Termy f => [Def r] -> [(r, TT r)] -> f r -> Maybe (f r, [(r, TT r)])
 substArgs []     extras rhs = Just (rhs, extras)
 substArgs (d:ds) []     rhs = Nothing  -- ran out of values
@@ -152,38 +154,5 @@ substArgs (d:ds) ((r,v):vs) rhs =
     (ds', rhs') = substBinder n v ds rhs
     n = defName d
 
-evalPatterns :: IsRelevance r => Form -> Ctx r -> CaseFun r -> TT r -> Maybe (TT r)
-evalPatterns form ctx (CaseFun argvars ct) tm = do
-    (ct', extras) <- substArgs argvars argvals ct
-    rhs <- evalCaseTree form ctx ct'
-    return $ red form ctx (mkApp rhs extras)
-  where
-    (V _fn, argvals) = unApply tm
-
-evalCaseTree :: IsRelevance r => Form -> Ctx r -> CaseTree r -> Maybe (TT r)
-evalCaseTree form ctx (Leaf tm) = Just $ red form ctx tm
-evalCaseTree form ctx (Case r tm alts)
-    = firstMatch $ map (evalAlt form ctx tm') alts
-  where
-    tm' = red form ctx tm
-
 firstMatch :: Alternative f => [f a] -> f a
 firstMatch = foldr (<|>) empty
-
--- here, the term tm is in WHNF
-evalAlt :: IsRelevance r => Form -> Ctx r -> TT r -> Alt r -> Maybe (TT r)
-evalAlt form ctx tm (Alt Wildcard rhs)
-    = evalCaseTree form ctx rhs
-
-evalAlt form ctx tm (Alt (Ctor ct argvars) rhs)
-    | (V cn', argvals) <- unApply tm
-    , cn' == ctName ct
-    = do
-        (rhs', []) <- substArgs argvars argvals rhs
-        evalCaseTree form ctx rhs'
-
-evalAlt form ctx tm (Alt (ForcedPat ftm) rhs)
-    | tm == ftm
-    = do evalCaseTree form ctx rhs
-
-evalAlt form ctx tm alt = Nothing
