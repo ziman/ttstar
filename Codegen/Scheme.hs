@@ -32,7 +32,7 @@ cgBody :: Name -> TT () -> Body () -> Doc
 cgBody n ty (Abstract Postulate) = cgCtor n ty
 cgBody n ty (Abstract Var) = error $ "let-bound variable: " ++ show n
 cgBody n ty (Term tm) = cgTm tm
-cgBody n ty (Clauses cs) = error "NOT IMPLEMENTED"
+cgBody n ty (Clauses cs) = text "(error \"NOT IMPLEMENTED\")"
 
 cgLetRec :: [Def ()] -> Doc -> Doc
 cgLetRec ds = cgLet' "letrec*" [(n, cgBody n ty b) | Def n () ty b _cs <- ds]
