@@ -23,6 +23,9 @@ type Spec a = State Int (Instances, a)
 --    them as the "Instances" in (Instances, a)
 -- 3. this knowledge of which instances are mentioned in subterms
 --    is necessary to instantiate let-bindings.
+-- 4. the whole thing happens in the state monad
+-- 5. we pass the raw metaified term because we need material for let-definitions;
+--    everywhere else we just recurse in parallel without interaction
 
 fresh :: State Int Int
 fresh = do
@@ -59,22 +62,21 @@ specialise pm pr
         i | EV i <- pm ^.. (ttRelevance :: Traversal' (TT Evar) Evar)
       ])
 
-forMany :: (f Evar -> f Relevance -> Spec (f Evar)) -> [f Evar] -> [f Relevance] -> Spec [f Evar]
-forMany spec ms rs = do
-    xs <- sequence [spec m r | (m, r) <- zip ms rs]
-    return (
-        M.unionsWith S.union $ map fst xs,
-        map snd xs
-      )
-
 specClause :: Clause Evar -> Clause Relevance -> Spec (Clause Evar)
 specClause (Clause pm lm rm) (Clause pr lr rr) = do
-    (isp, p') <- sequence [specDef m r | (m,r) <- zip pm pr]
+    isp' <- sequence [specDef m r | (m,r) <- zip pm pr]
+    let isp = M.unionsWith S.union $ map fst isp'
+    let p' = map snd isp'
+    (isl, l') <- specTm lm lr
+    (isr, r') <- specTm rm rr
+    return (M.unionsWith S.union [isp,isl,isr], Clause p' l' r')
 
 specBody :: Body Evar -> Body Relevance -> Spec (Body Evar)
 specBody bm (Abstract a) = return $ (M.empty, Abstract a)
 specBody (Term tmm) (Term tmr) = fmap Term <$> specTm tmm tmr
-specBody (Clauses csm) (Clauses csr) = fmap Clauses <$> traverse specClause csm csr
+specBody (Clauses csm) (Clauses csr) = do
+    tss <- sequence [specClause m r | (m, r) <- zip csm csr]
+    return (M.unionsWith S.union $ map fst tss, Clauses $ map snd tss)
 specBody bm br = error $ "specBody: non-matching bodies: " ++ show (bm, br)
 
 specDef :: Def Evar -> Def Relevance -> Spec (Def Evar)

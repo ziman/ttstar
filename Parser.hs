@@ -85,7 +85,7 @@ natural = mkNat . read <$> (many1 (satisfy isDigit) <* sp) <?> "number"
 
 atomic :: Parser (TT MRel)
 atomic = parens expr
-    <|> caseExpr
+    -- <|> caseExpr
     <|> erasureInstance
     <|> var
     <|> natural
@@ -123,8 +123,8 @@ app = foldl (App Nothing) <$> atomic <*> many atomic <?> "application"
 let_ :: Parser (TT MRel)
 let_ = (<?> "let expression") $ do
     kwd "let"
-    d <- definition
-    ds <- many (kwd "," *> definition)
+    d <- simpleDef
+    ds <- many (kwd "," *> simpleDef)
     kwd "in"
     Bind Let (d:ds) <$> expr
 
@@ -137,6 +137,7 @@ erasureInstance = (<?> "erasure instance") $ do
     kwd "]"
     return $ I n ty
 
+{-
 caseExpr :: Parser (TT MRel)
 caseExpr = (<?> "case expression") $ do
     n <- freshMN "casefun"
@@ -158,6 +159,7 @@ caseExpr = (<?> "case expression") $ do
   where
     mkArgs (Bind Pi ds tm) = ds ++ mkArgs tm
     mkArgs _ = []
+-}
 
 expr :: Parser (TT MRel)
 expr = bind <|> app <?> "expression"  -- app includes nullary-applied atoms
@@ -184,14 +186,21 @@ fundef = (<?> "definition") $ do
     kwd "."
     return d{ defBody = body }
 
-clausesBody :: Parser (Body r)
+clausesBody :: Parser (Body MRel)
 clausesBody = Clauses <$> (clause `sepBy` kwd ",")
 
-termBody :: Parser (Body r)
+termBody :: Parser (Body MRel)
 termBody = Term <$> expr
 
-clause :: Parser (Clause r)
-clause = Clause <$> expr <* kwd "=" <*> expr <?> "pattern clause"
+clause :: Parser (Clause MRel)
+clause = (<?> "pattern clause") $ do
+    kwd "pat"
+    pvs <- many $ typing Var
+    kwd "."
+    lhs <- expr
+    kwd "="
+    rhs <- expr
+    return $ Clause pvs lhs rhs
 
 dataDef :: Parser [Def MRel]
 dataDef = (<?> "data definition") $ do

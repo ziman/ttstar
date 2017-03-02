@@ -8,7 +8,6 @@ import TTUtils
 import Normalise (whnf)
 import Pretty ()
 
-import Control.Monad (when)
 import qualified Data.Map as M
 import Control.Monad.Trans.Except
 import Control.Monad.Trans.Class
@@ -30,7 +29,6 @@ type VerTraceback = [String]
 
 type Term = TT Relevance
 type Type = TT Relevance
-type Pat  = TT Relevance
 
 instance Show VerFailure where
     show (VerFailure e []) = show e
@@ -93,11 +91,12 @@ infix 3 <->
 (<->) :: Relevance -> Relevance -> Ver ()
 (<->) = eqR
 
+{-
 infix 3 -->
 (-->) :: Relevance -> Relevance -> Ver ()
 R --> E = verFail $ RelevanceMismatch R E
 _ --> _ = return ()
-
+-}
 
 infixr 3 /\
 (/\) :: Relevance -> Relevance -> Relevance
@@ -134,10 +133,10 @@ verDef d@(Def n r ty (Clauses cls) cs) = bt ("DEF-CLAUSES", n) $ do
     tyty <- verTm E ty
     mustBeType tyty
     with d{ defBody = Abstract Var } $
-        traverse_ verClause cls
+        mapM_ (verClause r) cls
 
-verClause :: Clause Relevance -> Ver ()
-verClause (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
+verClause :: Relevance -> Clause Relevance -> Ver ()
+verClause r (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
     verDefs pvs
     withs pvs $ do
         lhsTy <- verTm r lhs -- verPat r lhs
