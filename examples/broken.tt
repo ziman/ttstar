@@ -1,0 +1,21 @@
+-- vim: ft=idris
+
+data Bool : Type where
+  T : Bool,
+  F : Bool.
+
+-- patvar scoping bug
+broken : Bool -> Bool.
+(n : Bool)
+  broken n =
+    let id : Bool -> Bool.
+          id n = n
+      in
+        id n.
+
+-- postulate checking bug
+eek : Bool -> Bool.
+(n : Bool)
+  eek (broken n) = n.
+
+main : Bool = eek (broken T).
