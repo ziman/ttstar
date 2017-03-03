@@ -9,6 +9,6 @@
       x))
     (constT T)
     (f (error "NOT IMPLEMENTED"))
-    (main ((TB ((f T) F)) (f F)))
+    (main ((TB (f F)) f))
   )
     main))

@@ -193,6 +193,22 @@ clauseDef = (<?> "pattern-clause definition") $ do
         <|> (kwd "=" *> termBody)
     return d{ defBody = body }
 
+mlDef :: Parser (Def MRel)
+mlDef = (<?> "ml-style definition") $ do
+    n <- try (name <* kwd "\\")
+    args <- many (parens $ typing Var)
+    r <- rcolon
+    retTy <- expr
+    kwd "="
+    rhs <- expr
+    return $ Def n r (mkPi args retTy) (Term $ mkLam args rhs) noConstrs
+  where
+    mkLam [] rhs = rhs
+    mkLam (d:ds) rhs = Bind Lam [d] $ mkLam ds rhs
+
+    mkPi [] retTy = retTy
+    mkPi (d:ds) retTy = Bind Pi [d] $ mkPi ds retTy
+
 clausesBody :: Parser (Body MRel)
 clausesBody = Clauses <$> (clause `sepBy` kwd ",")
 
@@ -216,7 +232,7 @@ dataDef = (<?> "data definition") $ do
     return (tfd : ctors)
 
 simpleDef :: Parser (Def MRel)
-simpleDef = postulate <|> clauseDef <?> "simple definition"
+simpleDef = postulate <|> mlDef <|> clauseDef <?> "simple definition"
 
 definition :: Parser [Def MRel]
 definition = dataDef <|> (pure <$> simpleDef) <?> "definition"

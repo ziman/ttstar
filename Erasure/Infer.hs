@@ -39,6 +39,7 @@ data TCError
     | InconsistentErasure Name
     | NotImplemented String
     | NonPatvar Name
+    | InvalidPattern (Pat Evar)
     | UncheckableTerm TTevar
     | Other String
     deriving (Eq, Ord, Show)
@@ -79,16 +80,6 @@ union = M.unionWith S.union
 
 unions :: [Constrs Evar] -> Constrs Evar
 unions = M.unionsWith S.union
-
--- newtype Constrs' r = CS { runCS :: M.Map (Guards' r) (Uses' r) }
-flipConstrs :: Constrs Evar -> Constrs Evar
-flipConstrs cs
-    = unions
-        [ p --> q
-        | (qs, ps) <- M.toList cs
-        , q <- S.toList qs
-        , p <- S.toList (ps `S.difference` S.singleton (Fixed R))
-        ]
 
 cond :: Evar -> Constrs Evar -> Constrs Evar
 cond r = M.mapKeysWith S.union (S.insert r)
@@ -206,45 +197,48 @@ inferClause :: Clause Evar -> TC (Constrs Evar)
 inferClause (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
     pvs' <- inferDefs' pvs
     withs pvs' $ do
-        (lty, lcs) <- inferPat lhs
+        (lty, lcs) <- inferPat (Fixed R) lhs
         (rty, rcs) <- inferTm rhs
         ccs <- conv lty rty
-        return $ flipConstrs lcs /\ rcs /\ ccs
+        return $ lcs /\ rcs /\ ccs
 
--- This is tricky.
--- Now we do have patterns as a separate type and inferPat separately,
--- but it still seems to be easier to just copy out the inference engine
--- for the pattern fragment of the language, process it as terms,
--- and then just call flipConstrs on it.
--- We don't do anything smarter for now.
-inferPat :: Pat Evar -> TC (Type, Constrs Evar)
-inferPat t@(PV n) = bt ("PAT-VAR", n) $ do
-    d <- lookup n
-    return (defType d, defConstraints d /\ Fixed R --> defR d)
+-- the relevance evar "s" stands for "surrounding"
+-- it's the relevance of the whole pattern
+inferPat :: Evar -> Pat Evar -> TC (Type, Constrs Evar)
+inferPat s pat@(PV n) = bt ("PAT-NAME", n) $ do
+    d@(Def n r ty body cs) <- lookup n
+    case body of
+        Abstract Var
+            -> return (ty, r --> s)  -- relevance of this var forces surrounding to be relevant
+        Abstract Postulate
+            -> return (ty, s --> r)  -- if context is relevant, then this postulate is used
+        _
+            -> tcfail $ InvalidPattern pat
 
-inferPat t@(PApp app_r f x) = bt ("PAT-APP", t) $ do
-    (fty, fcs) <- inferPat f
-    (xty, xcs) <- inferPat x
+inferPat s pat@(PForced tm) = bt ("PAT-FORCED", tm) $ do
+    (ty, cs) <- inferTm tm
+    return (ty, noConstrs)  -- forced terms don't generate constraints
+
+inferPat s pat@(PApp app_r f x) = bt ("PAT-APP", pat) $ do
+    (fty, fcs) <- inferPat s f
+    (xty, xcs) <- inferPat app_r x
     ctx <- getCtx
     case whnf ctx fty of
         Bind Pi [Def n' pi_r ty' (Abstract Var) _noCs] retTy -> do
             tycs <- conv xty ty'
             let cs =
+                    app_r <--> pi_r   -- if we inspect here, then the pi must reflect that
+                    /\ app_r --> s    -- if we inspect anywhere here, then the whole pattern inspects
+                    /\ fcs
+                    /\ xcs
+                    /\ tycs  -- do we need to cond this on app_r?
                     -- we can't leave tycs out entirely because
                     -- if it's relevant, it needs to be erasure-correct as well
                     -- but if it's not used, then it needn't be erasure-correct
-                    cond pi_r tycs
-                    /\ fcs
-                    /\ cond pi_r xcs
-                    /\ pi_r <--> app_r
             return (subst n' (pat2term x) retTy, cs)
 
         _ -> do
             tcfail $ NonFunction (pat2term f) fty
-
-inferPat t@(PForced tm) = bt ("PAT-FORCED", tm) $ do
-    (ty, cs) <- inferTm tm    
-    return (ty, noConstrs)
 
 inferTm :: Term -> TC (Type, Constrs Evar)
 
