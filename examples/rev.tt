@@ -64,10 +64,10 @@ rev' : (xs : List) -> (rxs : Rev xs) -> (ys : List) -> Rev (app xs ys).
   (xs : List) (rxs : Rev xs) (y : Bool) (ys : List)
     rev' xs rxs (Cons y ys)
       = subst List Rev
-            (app (app xs (one y)) ys')
-            (app xs (Cons y ys'))
-            (appAssoc xs (one y) ys')
-            (rev' (app xs (one y)) (RSnoc xs y rxs) ys').
+            (app (app xs (one y)) ys)
+            (app xs (Cons y ys))
+            (appAssoc xs (one y) ys)
+            (rev' (app xs (one y)) (RSnoc xs y rxs) ys).
 
 rev \(xs : List) : Rev xs
   = rev' Nil RNil xs.

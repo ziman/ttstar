@@ -131,9 +131,17 @@ red form ctx t@(App r f x)
 
 matchClause :: IsRelevance r => Ctx r -> TT r -> Clause r -> Maybe (TT r)
 matchClause ctx tm (Clause pvs lhs rhs)
-    = substs . M.toList <$> match ctx' lhs tm <*> pure rhs
+    = substsSafe . M.toList <$> match ctx' lhs tm <*> pure rhs
   where
     ctx' = M.fromList [(defName d, d)|d<-pvs] `M.union` ctx
+
+substsSafe :: [(Name, TT r)] -> TT r -> TT r
+substsSafe [] tm = tm
+substsSafe ((n,x):xs) tm =
+    App undefined
+        (Bind Lam [Def n undefined undefined (Abstract Var) undefined]
+            $ substsSafe xs tm)
+        x
 
 match :: IsRelevance r => Ctx r -> Pat r -> TT r -> Maybe (M.Map Name (TT r))
 match ctx (PV n) tm'
