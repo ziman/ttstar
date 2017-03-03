@@ -13,9 +13,11 @@ broken : Bool -> Bool.
       in
         id n.
 
--- postulate checking bug
+-- postulate checking bug FIXED
+{-
 eek : Bool -> Bool.
 (n : Bool)
   eek (broken n) = n.
+-}
 
-main : Bool = eek (broken T).
+main : Bool = broken T.
