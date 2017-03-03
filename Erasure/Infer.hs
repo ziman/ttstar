@@ -232,6 +232,7 @@ inferPat s pat@(PApp app_r f x) = bt ("PAT-APP", pat) $ do
             let cs =
                     cond s (app_r <--> pi_r)  -- if we inspect here, then the pi must reflect that
                                               -- but only in relevant surroundings
+                                              -- (look at treered_A.tt what happens if you don't cond)
                     /\ app_r --> s    -- if we inspect anywhere here, then the whole pattern inspects
                     /\ fcs
                     /\ xcs
