@@ -14,19 +14,15 @@ data U : Type where
   B : U,
   M : U.
 
-ty (u : U) : Type =
-  case u of {
-    B => Bool,
-    M => Mool
-  }
+ty : U -> Type.
+ty B = Bool,
+ty M = Mool.
 
-f (u : U) (x : ty u) : Type =
-  case x of {
-    T => case u of [B] => Bool,
-    F => case u of [B] => Bool,
-    Q => case u of [M] => Mool,
-    W => case u of [M] => Mool
-  }
+f : (u : U) -> (x : ty u) -> Type.
+f [B] T = Bool,
+f [B] F = Mool,
+f [M] Q = Bool,
+f [M] W = Mool.
 
 main : Type =
   Tuple (f B T) (f B F) (f M Q) (f M W).
