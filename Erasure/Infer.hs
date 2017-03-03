@@ -210,8 +210,11 @@ inferPat s pat@(PV n) = bt ("PAT-NAME", n) $ do
     case body of
         Abstract Var
             -> return (ty, r --> s)  -- relevance of this var forces surrounding to be relevant
-        Abstract Postulate
-            -> return (ty, s --> r)  -- if context is relevant, then this postulate is used
+        Abstract Postulate           -- here we inspect: show that in 1) surrounding, 2) ctor relevance
+            -> return (
+                    ty,
+                    Fixed R --> s /\ Fixed R --> r
+                )
         _
             -> tcfail $ InvalidPattern pat
 
