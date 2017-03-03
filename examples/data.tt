@@ -10,6 +10,16 @@ plus : N -> N -> N.
   (m : N) (n : N)
     plus (S n) m = S (plus n m).
 
+-- this is currently accepted by TTstar
+-- TODO: make patvar scoping work right
+broken : N -> N.
+(n : N)
+  broken n =
+    let id : N -> N.
+          id n = n
+      in
+        id n.
+
 data Vect : N -> Type where
   Nil : Vect Z,
   Cons : (n : N) -> (x : N) -> (xs : Vect n) -> Vect (S n).
