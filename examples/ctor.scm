@@ -1,10 +1,7 @@
 (print
   (letrec* (
-    (T (list 'T))
     (MkUnit (list 'MkUnit))
-    (not_TT (lambda (x)
-      (case (car x)
-        ((T) MkUnit))))
-    (main (not_TT T))
+    (not_TT (error "NOT IMPLEMENTED"))
+    (main not_TT)
   )
     main))

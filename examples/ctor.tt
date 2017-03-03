@@ -7,10 +7,8 @@ data Bool : Type where
 data Unit : Type where
   MkUnit : Unit.
 
-not (x : Bool) : Unit
-  = case x of {
-      T => MkUnit,
-      F => MkUnit
-    }
+not : Bool -> Unit.
+not T = MkUnit,
+not F = MkUnit.
 
 main : Unit = not T.
