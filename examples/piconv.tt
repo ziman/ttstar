@@ -4,7 +4,11 @@ data T : Type where
   A : T,
   B : T.
 
-const_A : T -> T = \x : T. A.
-apply : (f : (x : T) -> T) -> (x : T) -> T = \f : T -> T. \x : T. f x.
+const_A : T -> T
+  = \x : T. A.
+
+apply : (f : (x : T) -> T) -> (x : T) -> T
+  = \f : T -> T.
+      \x : T. f x.
 
 main : T = apply const_A B.
