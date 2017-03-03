@@ -25,6 +25,6 @@ main : N
       pred : N -> N.
         pred Z = Z,
         (n : N)
-          pred (S n) = n.
+          pred (S n) = n
     in
       plus (pred 4) (pred 5).

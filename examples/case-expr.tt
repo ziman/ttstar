@@ -7,21 +7,17 @@ data Bool : Type where
 data Unit : Type where
   MkUnit : Unit.
 
-not (x : Bool) : Bool
-  = case x of {
-      T => F,
-      F => T
-    }
+not : Bool -> Bool.
+not T = F,
+not F = T.
 
-retTy (x : Bool) : Type
-  = case x of {
-      T => Bool,
-      F => Unit
-    }
+retTy : Bool -> Type.
+retTy T = Bool,
+retTy F = Unit.
 
 main : Bool
   = not
-      case not F where (x : Bool) -> retTy x {
-        F => MkUnit,
-        T => F
-      }.
+      case not F with
+        f : (x : Bool) -> retTy x.
+        f F = MkUnit,
+        f T = F.

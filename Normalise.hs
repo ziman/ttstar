@@ -114,7 +114,7 @@ red form ctx t@(App r f x)
     -- pattern-matching definitions
     | (V fn, args) <- unApply t
     , Just (Def _ _ _ (Clauses cs) _) <- M.lookup fn ctx
-    , Just rhs <- firstMatch $ map (matchClause t) cs
+    , Just rhs <- firstMatch $ map (matchClause ctx t) cs
     = red form ctx rhs
 
     -- everything else
@@ -127,18 +127,25 @@ red form ctx t@(App r f x)
         NF   -> red NF ctx x
         WHNF -> x
 
-matchClause :: PrettyR r => TT r -> Clause r -> Maybe (TT r)
-matchClause tm (Clause pvs lhs rhs)
-    = substs . M.toList <$> match lhs tm <*> pure rhs
+matchClause :: IsRelevance r => Ctx r -> TT r -> Clause r -> Maybe (TT r)
+matchClause ctx tm (Clause pvs lhs rhs)
+    = substs . M.toList <$> match ctx lhs tm <*> pure rhs
 
-match :: PrettyR r => Pat r -> TT r -> Maybe (M.Map Name (TT r))
-match (PV n) tm' = Just $ M.singleton n tm'
-match (PApp r f x) (App r' f' x')
+match :: IsRelevance r => Ctx r -> Pat r -> TT r -> Maybe (M.Map Name (TT r))
+match ctx (PV n) tm'
+    | Just (Def _ _ _ (Abstract Var) _) <- M.lookup n ctx
+    = Just $ M.singleton n tm'
+
+match ctx (PV n) (V n')
+    | n == n'
+    = Just M.empty
+
+match ctx (PApp r f x) (App r' f' x')
     = M.unionWith (\_ _ -> error "non-linear pattern")
-        <$> match f f'
-        <*> match x x'
-match (PForced tm) tm' = Just $ M.empty
-match _ _ = Nothing
+        <$> match ctx f f'
+        <*> match ctx x (red WHNF ctx x')
+match ctx (PForced tm) tm' = Just $ M.empty
+match _ _ _ = Nothing
 
 firstMatch :: Alternative f => [f a] -> f a
 firstMatch = foldr (<|>) empty

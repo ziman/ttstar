@@ -1,5 +1,12 @@
 module Codegen.Scheme (codegen) where
 
+{- This does not work since we switched to clauses.
+ -
+ - Both Chicken Scheme and Racket have pattern matching.
+ - TODO: implement codegen for that
+ -
+ -}
+
 import TT
 import Pretty ()
 import Util.PrettyPrint

@@ -85,7 +85,7 @@ natural = mkNat . read <$> (many1 (satisfy isDigit) <* sp) <?> "number"
 
 atomic :: Parser (TT MRel)
 atomic = parens expr
-    -- <|> caseExpr
+    <|> caseExpr
     <|> erasureInstance
     <|> var
     <|> natural
@@ -155,29 +155,13 @@ erasureInstance = (<?> "erasure instance") $ do
     kwd "]"
     return $ I n ty
 
-{-
 caseExpr :: Parser (TT MRel)
 caseExpr = (<?> "case expression") $ do
-    n <- freshMN "casefun"
     kwd "case"
     tm <- expr
-    kwd "where"
-    ty <- expr
-    kwd "{"
-    alts <- caseAlt `sepBy` kwd ","
-    kwd "}"
-    case mkArgs ty of
-        arg:_ -> do
-            let cf = CaseFun [arg] (Case Nothing (V $ defName arg) alts)
-            return $
-                Bind Let
-                    [Def n Nothing ty (Patterns cf) noConstrs]
-                        (App Nothing (V n) tm)
-        args -> fail "case function must take at least one argument"
-  where
-    mkArgs (Bind Pi ds tm) = ds ++ mkArgs tm
-    mkArgs _ = []
--}
+    kwd "with"
+    d <- fundef
+    return $ Bind Let [d] (App Nothing (V $ defName d) tm)
 
 expr :: Parser (TT MRel)
 expr = bind <|> app <?> "expression"  -- app includes nullary-applied atoms
@@ -201,7 +185,6 @@ fundef = (<?> "definition") $ do
     body <-
         (kwd "." *> clausesBody)
         <|> (kwd "=" *> termBody)
-    kwd "."
     return d{ defBody = body }
 
 clausesBody :: Parser (Body MRel)
