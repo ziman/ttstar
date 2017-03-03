@@ -7,8 +7,8 @@ data Bool : Type where
 data Pair : Type where
   P : Bool -> Bool -> Pair.
 
-fst (x : (y : Bool) -> Pair) : Bool
-  = case x of
-      P (y : Bool) => y.
+fst : (Bool -> Pair) -> Bool.
+  (y : Bool)
+    fst (P y) = y.
 
 main : Bool = fst (P T).
