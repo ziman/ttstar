@@ -49,8 +49,8 @@ sp = many ((satisfy isSpace *> return ()) <|> lineComment <|> bigComment) *> ret
 kwd :: String -> Parser ()
 kwd s = (try (string s) >> sp) <?> s
 
-name :: Parser Name
-name = (<?> "name") $ do
+identifier :: Parser Name
+identifier = (<?> "identifier") $ do
     n <- try $ do
         x <- satisfy isAlpha  -- let's make _idents reserved for the compiler
         xs <- many $ satisfy (\x -> idChar x || isDigit x)
@@ -62,6 +62,12 @@ name = (<?> "name") $ do
     return $ UN n
   where
     idChar x = isAlpha x || x `elem` "_'"
+
+blankName :: Parser Name
+blankName = kwd "_" *> freshMN "" <?> "blank name"
+
+name :: Parser Name
+name = identifier <|> blankName <?> "name"
 
 rcolon :: Parser MRel
 rcolon =
@@ -160,7 +166,7 @@ caseExpr = (<?> "case expression") $ do
     kwd "case"
     tm <- expr
     kwd "with"
-    d <- fundef
+    d <- clauseDef
     return $ Bind Let [d] (App Nothing (V $ defName d) tm)
 
 expr :: Parser (TT MRel)
@@ -179,8 +185,8 @@ postulate = (<?> "postulate") $ do
     d <- typing Postulate
     return d
 
-fundef :: Parser (Def MRel)
-fundef = (<?> "definition") $ do
+clauseDef :: Parser (Def MRel)
+clauseDef = (<?> "pattern-clause definition") $ do
     d <- typing Var
     body <-
         (kwd "." *> clausesBody)
@@ -210,7 +216,7 @@ dataDef = (<?> "data definition") $ do
     return (tfd : ctors)
 
 simpleDef :: Parser (Def MRel)
-simpleDef = postulate <|> fundef <?> "simple definition"
+simpleDef = postulate <|> clauseDef <?> "simple definition"
 
 definition :: Parser [Def MRel]
 definition = dataDef <|> (pure <$> simpleDef) <?> "definition"

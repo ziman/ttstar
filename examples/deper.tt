@@ -7,21 +7,17 @@ data Bool : Type where
 data TwoBools : Type where
   TB : (x :R: Bool) -> (y :R: Bool) -> TwoBools.
 
-id (x : Bool) : Bool = x.
+id : Bool -> Bool = \x:Bool. x.
 
-constT (x : Bool) : Bool = T.
+constT : Bool -> Bool = \_:Bool. T.
 
-fty (x : Bool) : Type
-  = case x of {
-      T => Bool -> Bool,
-      F => Bool -> Bool
-    }
+fty : Bool -> Type.
+fty T = Bool -> Bool,
+fty F = Bool -> Bool.
 
-f (x : Bool) : fty x
-  = case x of {
-      T => id,
-      F => constT
-    }
+f : (x : Bool) -> fty x.
+f T = id,
+f F = constT.
 
 main : TwoBools
   = TB (f T F) (f F F).
