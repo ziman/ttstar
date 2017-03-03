@@ -7,11 +7,11 @@ data T : Type where
 -- built-in primitive op
 postulate Op : (x :R: T) -> (y :R: T) -> T.
 
-id (y : T) : T = y.
+id \(y : T) : T = y.
 
-constA (x : T) : T = A.
+constA \(x : T) : T = A.
 
-apply (f : T -> T) (x : T) : T = f x.
+apply \(f : T -> T) (x : T) : T = f x.
 
 test1 : T
   = [apply : (T -> T) -> T -> T] id B.
