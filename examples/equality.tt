@@ -7,16 +7,13 @@ data Bool : Type where
 data Id : (a : Type) -> (x : a) -> (y : a) -> Type where
   Refl : (a : Type) -> (x : a) -> Id a x x.
 
-not (x : Bool) : Bool
-  = case x of {
-      T => F,
-      F => T
-    }
+not : Bool -> Bool.
+not T = F,
+not F = T.
 
-notnot (x : Bool) : Id Bool x (not (not x))
-  = case x of {
-      T => Refl Bool T,
-      F => Refl Bool F
-    }
+-- a proof that pointwise, not.not = id
+notnot : (x : Bool) -> Id Bool x (not (not x)).
+notnot T = Refl Bool T,
+notnot F = Refl Bool F.
 
 main : Id Bool F (not (not F)) = notnot F.

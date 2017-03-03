@@ -1,10 +1,9 @@
 (print
   (letrec* (
+    (T (list 'T))
     (F (list 'F))
     (Refl (list 'Refl))
-    (notnot (lambda (x)
-      (case (car x)
-        ((F) Refl))))
+    (notnot (error "NOT IMPLEMENTED"))
     (main (notnot F))
   )
     main))
