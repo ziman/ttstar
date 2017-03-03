@@ -167,7 +167,6 @@ caseExpr = (<?> "case expression") $ do
     tm <- expr
     kwd "with"
     d <- clauseDef
-    kwd "."
     return $ Bind Let [d] (App Nothing (V $ defName d) tm)
 
 expr :: Parser (TT MRel)
@@ -211,7 +210,7 @@ mlDef = (<?> "ml-style definition") $ do
     mkPi (d:ds) retTy = Bind Pi [d] $ mkPi ds retTy
 
 clausesBody :: Parser (Body MRel)
-clausesBody = Clauses <$> (clause `sepBy` kwd ",")
+clausesBody = Clauses <$> (clause `sepBy` kwd ",") <* optional (kwd ".")
 
 termBody :: Parser (Body MRel)
 termBody = Term <$> expr
