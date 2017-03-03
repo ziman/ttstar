@@ -3,20 +3,23 @@
 data Id : (a : Type) -> (x : a) -> (y : a) -> Type where
   Refl : (a : Type) -> (x : a) -> Id a x x.
 
-id (a : Type) : a -> a
-  = \x : a. x.
+id : (a : Type) -> a -> a
+  = \a:Type. \x:a. x.
 
-subst (a : Type) (P : a -> Type) (x : a) (y : a) (eq : Id a x y)
-  : (P x) -> P y
-  = case eq of [Refl a x] =>
-      case y of [x] =>
-        \w : P x. w.
+subst : (a : Type) -> (P : a -> Type)
+  -> (x : a) -> (y : a)
+  -> (eq : Id a x y)
+  -> (w : P x) -> P y.
 
-cong (a : Type) (b : Type) (f : a -> b) (x : a) (y : a) (eq : Id a x y)
-  : Id b (f x) (f y)
-  = case eq of [Refl a x] =>
-      case y of [x] =>
-        Refl b (f x).
+(a : Type) (P : a -> Type) (x : a) (y : a) (w : P x)
+  subst a P x [x] [Refl a x] = \w : P x. w.
+
+cong : (a : Type) -> (b : Type) -> (f : a -> b)
+  -> (x : a) -> (y : a) -> (eq : Id a x y)
+  -> Id b (f x) (f y).
+
+(a : Type) (b : Type) (f : a -> b) (x : a)
+  cong a b f x [x] [Refl a x] = Refl b (f x).
 
 data Bool : Type where
   T : Bool,
@@ -27,65 +30,54 @@ data List : Type where
   Nil : List,
   Cons : (x :R: Bool) -> (xs :R: List) -> List.
 
-one (x : Bool) : List
+one \(x : Bool) : List
   = Cons x Nil.
 
-app (xs : List) (ys : List) : List
-  = case xs of {
-      Nil => ys,
-      Cons (x : Bool) (xs' : List) => Cons x (app xs' ys)
-    }
+app : List -> List -> List.
+  (ys : List)
+    app Nil ys = ys,
+  (x : Bool) (xs : List) (ys : List)
+    app (Cons x xs) ys = Cons x (app xs ys).
 
-appRightNeutral (ys : List) : Id List ys (app ys Nil)
-  = case ys of {
-      Nil
-        => Refl List Nil,
-      Cons (x : Bool) (xs : List)
-        => cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs)
-    }
+appRightNeutral : (ys : List) -> Id List ys (app ys Nil).
+  appRightNeutral Nil = Refl List Nil,
+  (x : Bool) (xs : List)
+    appRightNeutral (Cons x xs) = 
+      cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs).
 
-appAssoc (xs : List) (ys : List) (zs : List)
-  : Id List (app (app xs ys) zs) (app xs (app ys zs))
-  = case xs of {
-      Nil
-        => Refl List (app ys zs),
-
-      Cons (x : Bool) (xs' : List)
-        => cong List List (Cons x) (app (app xs' ys) zs) (app xs' (app ys zs)) (appAssoc xs' ys zs)
-    }
+appAssoc : (xs : List) -> (ys : List) -> (zs : List)
+  -> Id List (app (app xs ys) zs) (app xs (app ys zs)).
+  (ys : List) (zs : List)
+    appAssoc Nil ys zs = Refl List (app ys zs),
+  (x : Bool) (xs : List) (ys : List) (zs : List)
+    appAssoc (Cons x xs) ys zs =
+      cong List List (Cons x) (app (app xs ys) zs) (app xs (app ys zs)) (appAssoc xs ys zs).
 
 data Rev : List -> Type where
   RNil : Rev Nil,
   RSnoc : (xs : List) -> (x : Bool) -> (rxs : Rev xs)
     -> Rev (app xs (one x)).
 
-rev' (xs : List) (rxs : Rev xs) (ys : List) : Rev (app xs ys)
-  = case ys of {
-      Nil
-        => subst List Rev xs (app xs Nil) (appRightNeutral xs) rxs,
-      Cons (y : Bool) (ys' : List)
-        => subst List Rev
+rev' : (xs : List) -> (rxs : Rev xs) -> (ys : List) -> Rev (app xs ys).
+  (xs : List) (rxs : Rev xs)
+    rev' xs rxs Nil = subst List Rev xs (app xs Nil) (appRightNeutral xs) rxs,
+  (xs : List) (rxs : Rev xs) (y : Bool) (ys : List)
+    rev' xs rxs (Cons y ys)
+      = subst List Rev
             (app (app xs (one y)) ys')
             (app xs (Cons y ys'))
             (appAssoc xs (one y) ys')
-            (rev' (app xs (one y)) (RSnoc xs y rxs) ys')
-    }
+            (rev' (app xs (one y)) (RSnoc xs y rxs) ys').
 
-rev (xs : List) : Rev xs
+rev \(xs : List) : Rev xs
   = rev' Nil RNil xs.
 
-reverse' (xs : List) (rxs : Rev xs) : List
-  = case rxs of {
-      RNil =>
-        case xs of [Nil] =>
-          Nil,
+reverse' : (xs : List) -> (rxs : Rev xs) -> List.
+  reverse' [Nil] RNil = Nil,
+  (xs : List) (x : Bool) (rxs : Rev xs)
+    reverse' [app xs (one x)] (RSnoc xs x rxs) = Cons x (reverse' xs rxs).
 
-      RSnoc (xs' : List) (x : Bool) (rxs' : Rev xs') =>
-        case xs of [app xs' (one x)] =>
-          Cons x (reverse' xs' rxs')
-    }
-
-reverse (xs : List) : List
+reverse \(xs : List) : List
   = reverse' xs (rev xs).
 
 main : List
