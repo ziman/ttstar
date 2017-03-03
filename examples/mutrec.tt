@@ -4,16 +4,12 @@ data Bool : Type where
   T : Bool,
   F : Bool.
 
-g (x : Bool) : Bool
-  = case x of {
-      T => h x,
-      F => T
-    }
+g : Bool -> Bool.
+g T = h x,
+g F = T.
 
-h (x : Bool) : Bool
-  = case x of {
-      F => g x,
-      T => F
-    }
+h : Bool -> Bool.
+h F = g x,
+h T = F.
 
 main : Bool = g T.

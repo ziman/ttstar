@@ -6,7 +6,8 @@ data Bool : Type where
 
 main : Bool = 
   (let
-    not (x : Bool) : Bool
-      = case x of { T => F, F => T }
+    not : Bool -> Bool.
+      not T = F,
+      not F = T
     in not
   ) F.

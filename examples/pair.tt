@@ -7,19 +7,19 @@ data Bool : Type where
 data Pair : Type where
   P : (x : Bool) -> (y : Bool) -> Pair.
 
-fst (x : Pair) : Bool
-    = case x of
-        P (l : Bool) (r : Bool) => l.
+fst : Pair -> Bool.
+(l : Bool) (r : Bool)
+  fst (P l r) = l.
 
-snd (x : Pair) : Bool
-    = case x of
-        P (l : Bool) (r : Bool) => r.
+snd : Pair -> Bool.
+(l : Bool) (r : Bool)
+  snd (P l r) = r.
 
-and (x : Bool) (y : Bool) : Bool
-    = case x of {
-        T => y,
-        F => F
-      }
+and : Bool -> Bool -> Bool.
+(y : Bool)
+  and T y = y,
+(y : Bool)
+  and F y = F.
 
 main : Bool
     = and (fst (P T F)) (snd (P F T)).
