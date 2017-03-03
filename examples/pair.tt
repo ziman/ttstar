@@ -8,18 +8,18 @@ data Pair : Type where
   P : (x : Bool) -> (y : Bool) -> Pair.
 
 fst : Pair -> Bool.
-(l : Bool) (r : Bool)
-  fst (P l r) = l.
+  (l : Bool) (r : Bool)
+    fst (P l r) = l.
 
 snd : Pair -> Bool.
-(l : Bool) (r : Bool)
-  snd (P l r) = r.
+  (l : Bool) (r : Bool)
+    snd (P l r) = r.
 
 and : Bool -> Bool -> Bool.
-(y : Bool)
-  and T y = y,
-(y : Bool)
-  and F y = F.
+  (y : Bool)
+    and T y = y,
+  (y : Bool)
+    and F y = F.
 
 main : Bool
     = and (fst (P T F)) (snd (P F T)).
