@@ -4,6 +4,7 @@
     (F (list 'F))
     (Refl (list 'Refl))
     (notnot (error "NOT IMPLEMENTED"))
-    (main (notnot F))
+    (subst (error "NOT IMPLEMENTED"))
+    (main (notnot (subst F)))
   )
     main))

@@ -16,4 +16,17 @@ notnot : (x : Bool) -> Id Bool x (not (not x)).
 notnot T = Refl Bool T,
 notnot F = Refl Bool F.
 
-main : Id Bool F (not (not F)) = notnot F.
+subst : (a : Type)
+  -> (P : a -> Type)
+  -> (x : a)
+  -> (y : a)
+  -> (eq : Id a x y)
+  -> (w : P x)
+  -> P y.
+(a : Type) (P : a -> Type) (x : a) (y : a) (w : P x)
+subst a P x [x] [Refl a x] = \w : P x. w.
+
+main : Id Bool F (not (not F))
+  = notnot (
+    subst Type (\a:Type. a) Bool Bool (Refl Type Bool) F
+  ).
