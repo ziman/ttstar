@@ -16,6 +16,7 @@ data Form = NF | WHNF deriving Show
 
 --dbg :: Show a => a -> b -> b
 --dbg = traceShow
+
 dbg :: a -> b -> b
 dbg _ x = x
 
@@ -129,7 +130,9 @@ red form ctx t@(App r f x)
 
 matchClause :: IsRelevance r => Ctx r -> TT r -> Clause r -> Maybe (TT r)
 matchClause ctx tm (Clause pvs lhs rhs)
-    = substs . M.toList <$> match ctx lhs tm <*> pure rhs
+    = substs . M.toList <$> match ctx' lhs tm <*> pure rhs
+  where
+    ctx' = M.fromList [(defName d, d)|d<-pvs] `M.union` ctx
 
 match :: IsRelevance r => Ctx r -> Pat r -> TT r -> Maybe (M.Map Name (TT r))
 match ctx (PV n) tm'

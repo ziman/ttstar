@@ -83,11 +83,16 @@ instance PrettyR r => Pretty (Def r) where
                 else text "{- constraints apply -}"
 
 instance PrettyR r => Pretty (Clause r) where
-    pretty (Clause [] lhs rhs)
-        = pretty lhs <+> text "=" <+> pretty rhs
-    pretty (Clause pvs lhs rhs) =
-        hsep (map pretty pvs)
-        $$ indent (pretty $ Clause [] lhs rhs)
+    pretty (Clause pvs lhs rhs) = pretty' $ Clause (filter typed pvs) lhs rhs
+      where
+        typed (Def _n _r (V Blank) _b _cs) = False
+        typed _ = True
+
+        pretty' (Clause [] lhs rhs)
+            = pretty lhs <+> text "=" <+> pretty rhs
+        pretty' (Clause pvs lhs rhs) =
+            hsep (map pretty pvs)
+            $$ indent (pretty $ Clause [] lhs rhs)
 
 instance PrettyR r => Pretty (TT r) where
     pretty tm = pretty' False tm
