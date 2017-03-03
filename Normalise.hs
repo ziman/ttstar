@@ -135,6 +135,8 @@ matchClause ctx tm (Clause pvs lhs rhs)
   where
     ctx' = M.fromList [(defName d, d)|d<-pvs] `M.union` ctx
 
+-- We just turn it into a lambda and let the rest of the system
+-- take care of name capture and alpha conversion.
 substsSafe :: [(Name, TT r)] -> TT r -> TT r
 substsSafe [] tm = tm
 substsSafe ((n,x):xs) tm =
