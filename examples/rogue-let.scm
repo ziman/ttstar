@@ -2,10 +2,7 @@
   (letrec* (
     (T (list 'T))
     (F (list 'F))
-    (not_TT (lambda (x)
-      (case (car x)
-        ((T) F)
-        ((F) T))))
+    (not_TT (error "NOT IMPLEMENTED"))
     (main not_TT)
   )
     main))

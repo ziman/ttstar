@@ -167,6 +167,7 @@ caseExpr = (<?> "case expression") $ do
     tm <- expr
     kwd "with"
     d <- clauseDef
+    kwd "."
     return $ Bind Let [d] (App Nothing (V $ defName d) tm)
 
 expr :: Parser (TT MRel)

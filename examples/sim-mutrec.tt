@@ -8,40 +8,38 @@ data Nat : Type where
   Z : Nat,
   S : Nat -> Nat.
 
-plus (m : Nat) (n : Nat) : Nat
-  = case m of {
-      Z => n,
-      S (m' : Nat) => S (plus m' n)
-    }
+plus : Nat -> Nat -> Nat.
+  (n : Nat)
+    plus Z n = n,
+  (m : Nat) (n : Nat)
+    plus (S m) n = S (plus m n).
 
 data Tag : Type where
   Even : Tag,
   Odd : Tag.
 
 -- We give a strange type signature to Odd
--- to show off that the extra Nat argument gets erased,
+-- to show off that the unused Nat argument gets erased,
 -- even if the function is polymorphic
 -- and implements mutual recursion.
 
-funTy (tag : Tag) : Type
-  = case tag of {
-      Even => Nat -> Bool,
-      Odd  => Nat -> Nat -> Bool
-    }
+funTy : Tag -> Type.
+funTy Even = Nat -> Bool,
+funTy Odd  = Nat -> Nat -> Bool.
 
-fun (tag : Tag) : funTy tag
-  = case tag of {
-      Even =>
-        \n : Nat. case n where Nat -> Bool {
-            Z => True,
-            S (n' : Nat) => fun Odd n' (plus n' n')
-        },
-      Odd =>
-        \n : Nat. \m : Nat. case n where Nat -> Bool {
-              Z => False,
-              S (n' : Nat) => fun Even n'
-        }
-    }
+fun : (tag : Tag) -> funTy tag.
+
+fun Even = \n : Nat.
+  case n with f : Nat -> Bool.
+    f Z = True,
+    (m : Nat)
+      f (S m) = fun Odd m (plus m m).,
+
+fun Odd = \n : Nat. \q : Nat.
+  case n with f : Nat -> Bool.
+    f Z = False,
+    (m : Nat)
+      f (S m) = fun Even m..
 
 even : Nat -> Bool = fun Even.
 
