@@ -38,4 +38,4 @@ prunePat :: Pat Relevance -> Pat ()
 prunePat (PV n) = PV n
 prunePat (PApp E f x) = prunePat f
 prunePat (PApp R f x) = PApp () (prunePat f) (prunePat x)
-prunePat (PForced tm) = PV Blank
+prunePat (PForced tm) = PForced $ V Blank
