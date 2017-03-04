@@ -5,7 +5,7 @@
   let main :R: (x :E: Type) -> Type = (\x :E: Type. x)
   in main
 
-### Metaified ###
+### Evarified ###
 
   let main :R: (x :E: Type) -> Type = (\x :E: Type. x)
   in main

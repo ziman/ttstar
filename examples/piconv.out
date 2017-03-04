@@ -11,7 +11,7 @@
     main : T = apply const_A B
   in main
 
-### Metaified ###
+### Evarified ###
 
   let
     postulate T :1: Type

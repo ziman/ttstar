@@ -5,7 +5,7 @@
   let main : Type = Type
   in main
 
-### Metaified ###
+### Evarified ###
 
   let main :1: Type = Type
   in main

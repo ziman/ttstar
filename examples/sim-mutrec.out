@@ -9,47 +9,36 @@
     postulate Nat : Type
     postulate Z : Nat
     postulate S : (_x0 : Nat) -> Nat
-    plus : (m : Nat) -> (n : Nat) -> Nat = \(m : Nat) (n : Nat).
-      case m of
-        Z =>
-          n
-        S (m' : Nat) =>
-          S (plus m' n)
+    plus : (_x1 : Nat) -> (_x2 : Nat) -> Nat 
+      n : Nat
+        plus Z n = n
+      m : Nat n : Nat
+        plus (S m) n = S (plus m n)
     postulate Tag : Type
     postulate Even : Tag
     postulate Odd : Tag
-    funTy : (tag : Tag) -> Type = \(tag : Tag).
-      case tag of
-        Even =>
-          (_x1 : Nat) -> Bool
-        Odd =>
-          (_x2 : Nat) -> (_x3 : Nat) -> Bool
-    fun : (tag : Tag) -> funTy tag = \(tag : Tag).
-      case tag of
-        Even =>
-          (\n : Nat. 
-            let _casefun0 : (_x4 : Nat) -> Bool = \(_x4 : Nat).
-              case _x4 of
-                Z =>
-                  True
-                S (n' : Nat) =>
-                  fun Odd n' (plus n' n')
-            in _casefun0 n)
-        Odd =>
-          (\n : Nat. (\m : Nat. 
-            let _casefun1 : (_x5 : Nat) -> Bool = \(_x5 : Nat).
-              case _x5 of
-                Z =>
-                  False
-                S (n' : Nat) =>
-                  fun Even n'
-            in _casefun1 n))
-    even : (_x6 : Nat) -> Bool = fun Even
-    odd : (_x7 : Nat) -> (_x8 : Nat) -> Bool = fun Odd
+    funTy : (_x3 : Tag) -> Type 
+      funTy Even = (_x4 : Nat) -> Bool
+      funTy Odd = (_x5 : Nat) -> (_x6 : Nat) -> Bool
+    fun : (tag : Tag) -> funTy tag 
+      fun Even = (\n : Nat. 
+        let f : (_x7 : Nat) -> Bool 
+          f Z = True
+          m : Nat
+            f (S m) = fun Odd m (plus m m)
+        in f n)
+      fun Odd = (\n : Nat. (\q : Nat. 
+        let f : (_x8 : Nat) -> Bool 
+          f Z = False
+          m : Nat
+            f (S m) = fun Even m
+        in f n))
+    even : (_x9 : Nat) -> Bool = fun Even
+    odd : (_x10 : Nat) -> (_x11 : Nat) -> Bool = fun Odd
     main : Bool = even 8
   in main
 
-### Metaified ###
+### Evarified ###
 
   let
     postulate Bool :1: Type
@@ -58,61 +47,52 @@
     postulate Nat :4: Type
     postulate Z :5: Nat
     postulate S :6: (_x0 :7: Nat) -> Nat
-    plus :8: (m :9: Nat) -> (n :10: Nat) -> Nat = \(m :11: Nat) (n :12: Nat).
-      case -13- m of
-        Z/14 =>
-          n
-        S/15 (m' :16: Nat) =>
-          S -17- (plus -19- m' -18- n)
-    postulate Tag :20: Type
-    postulate Even :21: Tag
-    postulate Odd :22: Tag
-    funTy :23: (tag :24: Tag) -> Type = \(tag :25: Tag).
-      case -26- tag of
-        Even/27 =>
-          (_x1 :28: Nat) -> Bool
-        Odd/29 =>
-          (_x2 :30: Nat) -> (_x3 :31: Nat) -> Bool
-    fun :32: (tag :33: Tag) -> funTy -34- tag = \(tag :35: Tag).
-      case -36- tag of
-        Even/37 =>
-          (\n :38: Nat. 
-            let _casefun0 :39: (_x4 :40: Nat) -> Bool = \(_x4 :41: Nat).
-              case -42- _x4 of
-                Z/43 =>
-                  True
-                S/44 (n' :45: Nat) =>
-                  fun -48- Odd -47- n' -46- (plus -50- n' -49- n')
-            in _casefun0 -51- n)
-        Odd/52 =>
-          (\n :53: Nat. (\m :54: Nat. 
-            let _casefun1 :55: (_x5 :56: Nat) -> Bool = \(_x5 :57: Nat).
-              case -58- _x5 of
-                Z/59 =>
-                  False
-                S/60 (n' :61: Nat) =>
-                  fun -63- Even -62- n'
-            in _casefun1 -64- n))
-    even :65: (_x6 :66: Nat) -> Bool = fun -67- Even
-    odd :68: (_x7 :69: Nat) -> (_x8 :70: Nat) -> Bool = fun -71- Odd
-    main :72: Bool = even -73- 8
+    plus :8: (_x1 :9: Nat) -> (_x2 :10: Nat) -> Nat 
+      n :11: Nat
+        plus -13- Z -12- n = n
+      m :14: Nat n :15: Nat
+        plus -17- (S -18- m) -16- n = S -19- (plus -21- m -20- n)
+    postulate Tag :22: Type
+    postulate Even :23: Tag
+    postulate Odd :24: Tag
+    funTy :25: (_x3 :26: Tag) -> Type 
+      funTy -27- Even = (_x4 :28: Nat) -> Bool
+      funTy -29- Odd = (_x5 :30: Nat) -> (_x6 :31: Nat) -> Bool
+    fun :32: (tag :33: Tag) -> funTy -34- tag 
+      fun -35- Even = (\n :36: Nat. 
+        let f :37: (_x7 :38: Nat) -> Bool 
+          f -39- Z = True
+          m :40: Nat
+            f -41- (S -42- m) = fun -45- Odd -44- m -43- (plus -47- m -46- m)
+        in f -48- n)
+      fun -49- Odd = (\n :50: Nat. (\q :51: Nat. 
+        let f :52: (_x8 :53: Nat) -> Bool 
+          f -54- Z = False
+          m :55: Nat
+            f -56- (S -57- m) = fun -59- Even -58- m
+        in f -60- n))
+    even :61: (_x9 :62: Nat) -> Bool = fun -63- Even
+    odd :64: (_x10 :65: Nat) -> (_x11 :66: Nat) -> Bool = fun -67- Odd
+    main :68: Bool = even -69- 8
   in main
 
 ### Constraints ###
 
-[] -> [2,3,5,6,7,21,22,28,30,32,33,35,36,37,38,39,40,41,42,43,44,45,47,48,51,52,53,55,56,57,58,59,60,61,62,63,64,65,66,67,73,74,75,76,77,78,79,80,81,R]
-[9,31] -> [50]
-[10,31] -> [49]
-[31] -> [8,9,10,11,12,13,14,15,16,17,18,19,46,54]
-[31,49] -> [10]
-[31,50] -> [9]
-[46] -> [31]
-[54] -> [31]
-[R] -> [72]
+[] -> [2,3,5,6,7,23,24,28,30,32,33,35,36,37,38,39,40,41,42,44,45,48,49,50,52,53,54,55,56,57,58,59,60,61,62,63,69,70,71,72,73,74,75,76,77,R]
+[9,31] -> [47]
+[10,31] -> [46]
+[14,31] -> [18]
+[18,31] -> [14]
+[31] -> [8,9,10,11,12,13,14,15,16,17,18,19,20,21,43,51]
+[31,46] -> [10]
+[31,47] -> [9]
+[43] -> [31]
+[51] -> [31]
+[R] -> [68]
 
 ### Solution ###
 
-[2,3,5,6,7,21,22,28,30,32,33,35,36,37,38,39,40,41,42,43,44,45,47,48,51,52,53,55,56,57,58,59,60,61,62,63,64,65,66,67,72,73,74,75,76,77,78,79,80,81,R]
+[2,3,5,6,7,23,24,28,30,32,33,35,36,37,38,39,40,41,42,44,45,48,49,50,52,53,54,55,56,57,58,59,60,61,62,63,68,69,70,71,72,73,74,75,76,77,R]
 
 ### Annotated ###
 
@@ -123,43 +103,32 @@
     postulate Nat :E: Type
     postulate Z :R: Nat
     postulate S :R: (_x0 :R: Nat) -> Nat
-    plus :E: (m :E: Nat) -> (n :E: Nat) -> Nat = \(m :E: Nat) (n :E: Nat).
-      case -E- m of
-        Z/E =>
-          n
-        S/E (m' :E: Nat) =>
-          S -E- (plus -E- m' -E- n)
+    plus :E: (_x1 :E: Nat) -> (_x2 :E: Nat) -> Nat 
+      n :E: Nat
+        plus -E- Z -E- n = n
+      m :E: Nat n :E: Nat
+        plus -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
     postulate Tag :E: Type
     postulate Even :R: Tag
     postulate Odd :R: Tag
-    funTy :E: (tag :E: Tag) -> Type = \(tag :E: Tag).
-      case -E- tag of
-        Even/E =>
-          (_x1 :R: Nat) -> Bool
-        Odd/E =>
-          (_x2 :R: Nat) -> (_x3 :E: Nat) -> Bool
-    fun :R: (tag :R: Tag) -> funTy -E- tag = \(tag :R: Tag).
-      case -R- tag of
-        Even/R =>
-          (\n :R: Nat. 
-            let _casefun0 :R: (_x4 :R: Nat) -> Bool = \(_x4 :R: Nat).
-              case -R- _x4 of
-                Z/R =>
-                  True
-                S/R (n' :R: Nat) =>
-                  fun -R- Odd -R- n' -E- (plus -E- n' -E- n')
-            in _casefun0 -R- n)
-        Odd/R =>
-          (\n :R: Nat. (\m :E: Nat. 
-            let _casefun1 :R: (_x5 :R: Nat) -> Bool = \(_x5 :R: Nat).
-              case -R- _x5 of
-                Z/R =>
-                  False
-                S/R (n' :R: Nat) =>
-                  fun -R- Even -R- n'
-            in _casefun1 -R- n))
-    even :R: (_x6 :R: Nat) -> Bool = fun -R- Even
-    odd :E: (_x7 :E: Nat) -> (_x8 :E: Nat) -> Bool = fun -E- Odd
+    funTy :E: (_x3 :E: Tag) -> Type 
+      funTy -E- Even = (_x4 :R: Nat) -> Bool
+      funTy -E- Odd = (_x5 :R: Nat) -> (_x6 :E: Nat) -> Bool
+    fun :R: (tag :R: Tag) -> funTy -E- tag 
+      fun -R- Even = (\n :R: Nat. 
+        let f :R: (_x7 :R: Nat) -> Bool 
+          f -R- Z = True
+          m :R: Nat
+            f -R- (S -R- m) = fun -R- Odd -R- m -E- (plus -E- m -E- m)
+        in f -R- n)
+      fun -R- Odd = (\n :R: Nat. (\q :E: Nat. 
+        let f :R: (_x8 :R: Nat) -> Bool 
+          f -R- Z = False
+          m :R: Nat
+            f -R- (S -R- m) = fun -R- Even -R- m
+        in f -R- n))
+    even :R: (_x9 :R: Nat) -> Bool = fun -R- Even
+    odd :E: (_x10 :E: Nat) -> (_x11 :E: Nat) -> Bool = fun -E- Odd
     main :R: Bool = even -R- 8
   in main
 
@@ -172,43 +141,32 @@
     postulate Nat :E: Type
     postulate Z :R: Nat
     postulate S :R: (_x0 :R: Nat) -> Nat
-    plus :E: (m :E: Nat) -> (n :E: Nat) -> Nat = \(m :E: Nat) (n :E: Nat).
-      case -E- m of
-        Z/E =>
-          n
-        S/E (m' :E: Nat) =>
-          S -E- (plus -E- m' -E- n)
+    plus :E: (_x1 :E: Nat) -> (_x2 :E: Nat) -> Nat 
+      n :E: Nat
+        plus -E- Z -E- n = n
+      m :E: Nat n :E: Nat
+        plus -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
     postulate Tag :E: Type
     postulate Even :R: Tag
     postulate Odd :R: Tag
-    funTy :E: (tag :E: Tag) -> Type = \(tag :E: Tag).
-      case -E- tag of
-        Even/E =>
-          (_x1 :R: Nat) -> Bool
-        Odd/E =>
-          (_x2 :R: Nat) -> (_x3 :E: Nat) -> Bool
-    fun :R: (tag :R: Tag) -> funTy -E- tag = \(tag :R: Tag).
-      case -R- tag of
-        Even/R =>
-          (\n :R: Nat. 
-            let _casefun0 :R: (_x4 :R: Nat) -> Bool = \(_x4 :R: Nat).
-              case -R- _x4 of
-                Z/R =>
-                  True
-                S/R (n' :R: Nat) =>
-                  fun -R- Odd -R- n' -E- (plus -E- n' -E- n')
-            in _casefun0 -R- n)
-        Odd/R =>
-          (\n :R: Nat. (\m :E: Nat. 
-            let _casefun1 :R: (_x5 :R: Nat) -> Bool = \(_x5 :R: Nat).
-              case -R- _x5 of
-                Z/R =>
-                  False
-                S/R (n' :R: Nat) =>
-                  fun -R- Even -R- n'
-            in _casefun1 -R- n))
-    even :R: (_x6 :R: Nat) -> Bool = fun -R- Even
-    odd :E: (_x7 :E: Nat) -> (_x8 :E: Nat) -> Bool = fun -E- Odd
+    funTy :E: (_x3 :E: Tag) -> Type 
+      funTy -E- Even = (_x4 :R: Nat) -> Bool
+      funTy -E- Odd = (_x5 :R: Nat) -> (_x6 :E: Nat) -> Bool
+    fun :R: (tag :R: Tag) -> funTy -E- tag 
+      fun -R- Even = (\n :R: Nat. 
+        let f :R: (_x7 :R: Nat) -> Bool 
+          f -R- Z = True
+          m :R: Nat
+            f -R- (S -R- m) = fun -R- Odd -R- m -E- (plus -E- m -E- m)
+        in f -R- n)
+      fun -R- Odd = (\n :R: Nat. (\q :E: Nat. 
+        let f :R: (_x8 :R: Nat) -> Bool 
+          f -R- Z = False
+          m :R: Nat
+            f -R- (S -R- m) = fun -R- Even -R- m
+        in f -R- n))
+    even :R: (_x9 :R: Nat) -> Bool = fun -R- Even
+    odd :E: (_x10 :E: Nat) -> (_x11 :E: Nat) -> Bool = fun -E- Odd
     main :R: Bool = even -R- 8
   in main
 
@@ -221,43 +179,32 @@
     postulate Nat :E: Type
     postulate Z :R: Nat
     postulate S :R: (_x0 :R: Nat) -> Nat
-    plus :E: (m :E: Nat) -> (n :E: Nat) -> Nat = \(m :E: Nat) (n :E: Nat).
-      case -E- m of
-        Z/E =>
-          n
-        S/E (m' :E: Nat) =>
-          S -E- (plus -E- m' -E- n)
+    plus :E: (_x1 :E: Nat) -> (_x2 :E: Nat) -> Nat 
+      n :E: Nat
+        plus -E- Z -E- n = n
+      m :E: Nat n :E: Nat
+        plus -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
     postulate Tag :E: Type
     postulate Even :R: Tag
     postulate Odd :R: Tag
-    funTy :E: (tag :E: Tag) -> Type = \(tag :E: Tag).
-      case -E- tag of
-        Even/E =>
-          (_x1 :R: Nat) -> Bool
-        Odd/E =>
-          (_x2 :R: Nat) -> (_x3 :E: Nat) -> Bool
-    fun :R: (tag :R: Tag) -> funTy -E- tag = \(tag :R: Tag).
-      case -R- tag of
-        Even/R =>
-          (\n :R: Nat. 
-            let _casefun0 :R: (_x4 :R: Nat) -> Bool = \(_x4 :R: Nat).
-              case -R- _x4 of
-                Z/R =>
-                  True
-                S/R (n' :R: Nat) =>
-                  fun -R- Odd -R- n' -E- (plus -E- n' -E- n')
-            in _casefun0 -R- n)
-        Odd/R =>
-          (\n :R: Nat. (\m :E: Nat. 
-            let _casefun1 :R: (_x5 :R: Nat) -> Bool = \(_x5 :R: Nat).
-              case -R- _x5 of
-                Z/R =>
-                  False
-                S/R (n' :R: Nat) =>
-                  fun -R- Even -R- n'
-            in _casefun1 -R- n))
-    even :R: (_x6 :R: Nat) -> Bool = fun -R- Even
-    odd :E: (_x7 :E: Nat) -> (_x8 :E: Nat) -> Bool = fun -E- Odd
+    funTy :E: (_x3 :E: Tag) -> Type 
+      funTy -E- Even = (_x4 :R: Nat) -> Bool
+      funTy -E- Odd = (_x5 :R: Nat) -> (_x6 :E: Nat) -> Bool
+    fun :R: (tag :R: Tag) -> funTy -E- tag 
+      fun -R- Even = (\n :R: Nat. 
+        let f :R: (_x7 :R: Nat) -> Bool 
+          f -R- Z = True
+          m :R: Nat
+            f -R- (S -R- m) = fun -R- Odd -R- m -E- (plus -E- m -E- m)
+        in f -R- n)
+      fun -R- Odd = (\n :R: Nat. (\q :E: Nat. 
+        let f :R: (_x8 :R: Nat) -> Bool 
+          f -R- Z = False
+          m :R: Nat
+            f -R- (S -R- m) = fun -R- Even -R- m
+        in f -R- n))
+    even :R: (_x9 :R: Nat) -> Bool = fun -R- Even
+    odd :E: (_x10 :E: Nat) -> (_x11 :E: Nat) -> Bool = fun -E- Odd
     main :R: Bool = even -R- 8
   in main
 
@@ -274,26 +221,17 @@ Verification successful.
     postulate S : (_x0) -> Nat
     postulate Even : Tag
     postulate Odd : Tag
-    fun = \tag.
-      case tag of
-        Even =>
-          (\n. 
-            let _casefun0 = \_x4.
-              case _x4 of
-                Z =>
-                  True
-                S n' =>
-                  fun Odd n'
-            in _casefun0 n)
-        Odd =>
-          (\n. 
-            let _casefun1 = \_x5.
-              case _x5 of
-                Z =>
-                  False
-                S n' =>
-                  fun Even n'
-            in _casefun1 n)
+    fun 
+      fun Even = (\n. 
+        let f 
+          f Z = True
+          f (S m) = fun Odd m
+        in f n)
+      fun Odd = (\n. 
+        let f 
+          f Z = False
+          f (S m) = fun Even m
+        in f n)
     even = fun Even
     main = even 8
   in main

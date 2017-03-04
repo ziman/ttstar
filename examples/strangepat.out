@@ -8,13 +8,13 @@
     postulate F : Bool
     postulate Pair : Type
     postulate P : (_x0 : Bool) -> (_x1 : Bool) -> Pair
-    fst : (x : (y : Bool) -> Pair) -> Bool = \(x : (y : Bool) -> Pair).
-      case x of P (y : Bool) =>
-        y
+    fst : (_x2 : (_x3 : Bool) -> Pair) -> Bool 
+      y : Bool
+        fst (P y) = y
     main : Bool = fst (P T)
   in main
 
-### Metaified ###
+### Evarified ###
 
   let
     postulate Bool :1: Type
@@ -22,22 +22,22 @@
     postulate F :3: Bool
     postulate Pair :4: Type
     postulate P :5: (_x0 :6: Bool) -> (_x1 :7: Bool) -> Pair
-    fst :8: (x :9: (y :10: Bool) -> Pair) -> Bool = \(x :11: (y :12: Bool) -> Pair).
-      case -13- x of P/14 (y :15: Bool) =>
-        y
-    main :16: Bool = fst -17- (P -18- T)
+    fst :8: (_x2 :9: (_x3 :10: Bool) -> Pair) -> Bool 
+      y :11: Bool
+        fst -12- (P -13- y) = y
+    main :14: Bool = fst -15- (P -16- T)
   in main
 
 ### Constraints ###
 
-[] -> [2,5,6,8,9,11,13,14,15,17,18,R]
+[] -> [2,5,6,8,9,11,12,13,15,16,R]
 [7] -> [10]
 [10] -> [7]
-[R] -> [16]
+[R] -> [14]
 
 ### Solution ###
 
-[2,5,6,8,9,11,13,14,15,16,17,18,R]
+[2,5,6,8,9,11,12,13,14,15,16,R]
 
 ### Annotated ###
 
@@ -47,9 +47,9 @@
     postulate F :E: Bool
     postulate Pair :E: Type
     postulate P :R: (_x0 :R: Bool) -> (_x1 :E: Bool) -> Pair
-    fst :R: (x :R: (y :E: Bool) -> Pair) -> Bool = \(x :R: (y :E: Bool) -> Pair).
-      case -R- x of P/R (y :R: Bool) =>
-        y
+    fst :R: (_x2 :R: (_x3 :E: Bool) -> Pair) -> Bool 
+      y :R: Bool
+        fst -R- (P -R- y) = y
     main :R: Bool = fst -R- (P -R- T)
   in main
 
@@ -61,9 +61,9 @@
     postulate F :E: Bool
     postulate Pair :E: Type
     postulate P :R: (_x0 :R: Bool) -> (_x1 :E: Bool) -> Pair
-    fst :R: (x :R: (y :E: Bool) -> Pair) -> Bool = \(x :R: (y :E: Bool) -> Pair).
-      case -R- x of P/R (y :R: Bool) =>
-        y
+    fst :R: (_x2 :R: (_x3 :E: Bool) -> Pair) -> Bool 
+      y :R: Bool
+        fst -R- (P -R- y) = y
     main :R: Bool = fst -R- (P -R- T)
   in main
 
@@ -75,9 +75,9 @@
     postulate F :E: Bool
     postulate Pair :E: Type
     postulate P :R: (_x0 :R: Bool) -> (_x1 :E: Bool) -> Pair
-    fst :R: (x :R: (y :E: Bool) -> Pair) -> Bool = \(x :R: (y :E: Bool) -> Pair).
-      case -R- x of P/R (y :R: Bool) =>
-        y
+    fst :R: (_x2 :R: (_x3 :E: Bool) -> Pair) -> Bool 
+      y :R: Bool
+        fst -R- (P -R- y) = y
     main :R: Bool = fst -R- (P -R- T)
   in main
 
@@ -90,9 +90,8 @@ Verification successful.
   let
     postulate T : Bool
     postulate P : (_x0) -> Pair
-    fst = \x.
-      case x of P y =>
-        y
+    fst 
+      fst (P y) = y
     main = fst (P T)
   in main
 

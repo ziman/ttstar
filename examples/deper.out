@@ -8,24 +8,18 @@
     postulate F : Bool
     postulate TwoBools : Type
     postulate TB : (x :R: Bool) -> (y :R: Bool) -> TwoBools
-    id : (x : Bool) -> Bool = (\x : Bool. x)
-    constT : (x : Bool) -> Bool = (\x : Bool. T)
-    fty : (x : Bool) -> Type = \(x : Bool).
-      case x of
-        T =>
-          (_x0 : Bool) -> Bool
-        F =>
-          (_x1 : Bool) -> Bool
-    f : (x : Bool) -> fty x = \(x : Bool).
-      case x of
-        T =>
-          id
-        F =>
-          constT
+    id : (_x0 : Bool) -> Bool = (\x : Bool. x)
+    constT : (_x1 : Bool) -> Bool = (\_0 : Bool. T)
+    fty : (_x2 : Bool) -> Type 
+      fty T = (_x3 : Bool) -> Bool
+      fty F = (_x4 : Bool) -> Bool
+    f : (x : Bool) -> fty x 
+      f T = id
+      f F = constT
     main : TwoBools = TB (f T F) (f F F)
   in main
 
-### Metaified ###
+### Evarified ###
 
   let
     postulate Bool :1: Type
@@ -33,35 +27,29 @@
     postulate F :3: Bool
     postulate TwoBools :4: Type
     postulate TB :5: (x :R: Bool) -> (y :R: Bool) -> TwoBools
-    id :6: (x :7: Bool) -> Bool = (\x :8: Bool. x)
-    constT :9: (x :10: Bool) -> Bool = (\x :11: Bool. T)
-    fty :12: (x :13: Bool) -> Type = \(x :14: Bool).
-      case -15- x of
-        T/16 =>
-          (_x0 :17: Bool) -> Bool
-        F/18 =>
-          (_x1 :19: Bool) -> Bool
-    f :20: (x :21: Bool) -> fty -22- x = \(x :23: Bool).
-      case -24- x of
-        T/25 =>
-          id
-        F/26 =>
-          constT
-    main :27: TwoBools = TB -29- (f -31- T -30- F) -28- (f -33- F -32- F)
+    id :6: (_x0 :7: Bool) -> Bool = (\x :8: Bool. x)
+    constT :9: (_x1 :10: Bool) -> Bool = (\_0 :11: Bool. T)
+    fty :12: (_x2 :13: Bool) -> Type 
+      fty -14- T = (_x3 :15: Bool) -> Bool
+      fty -16- F = (_x4 :17: Bool) -> Bool
+    f :18: (x :19: Bool) -> fty -20- x 
+      f -21- T = id
+      f -22- F = constT
+    main :23: TwoBools = TB -25- (f -27- T -26- F) -24- (f -29- F -28- F)
   in main
 
 ### Constraints ###
 
-[] -> [2,3,5,6,7,8,9,17,20,21,23,24,25,26,28,29,30,31,33,R]
-[10] -> [11,19]
+[] -> [2,3,5,6,7,8,9,15,18,19,21,22,24,25,26,27,29,R]
+[10] -> [11,17]
 [11] -> [10]
-[19] -> [10,32]
-[32] -> [19]
-[R] -> [27]
+[17] -> [10,28]
+[28] -> [17]
+[R] -> [23]
 
 ### Solution ###
 
-[2,3,5,6,7,8,9,17,20,21,23,24,25,26,27,28,29,30,31,33,R]
+[2,3,5,6,7,8,9,15,18,19,21,22,23,24,25,26,27,29,R]
 
 ### Annotated ###
 
@@ -71,20 +59,14 @@
     postulate F :R: Bool
     postulate TwoBools :E: Type
     postulate TB :R: (x :R: Bool) -> (y :R: Bool) -> TwoBools
-    id :R: (x :R: Bool) -> Bool = (\x :R: Bool. x)
-    constT :R: (x :E: Bool) -> Bool = (\x :E: Bool. T)
-    fty :E: (x :E: Bool) -> Type = \(x :E: Bool).
-      case -E- x of
-        T/E =>
-          (_x0 :R: Bool) -> Bool
-        F/E =>
-          (_x1 :E: Bool) -> Bool
-    f :R: (x :R: Bool) -> fty -E- x = \(x :R: Bool).
-      case -R- x of
-        T/R =>
-          id
-        F/R =>
-          constT
+    id :R: (_x0 :R: Bool) -> Bool = (\x :R: Bool. x)
+    constT :R: (_x1 :E: Bool) -> Bool = (\_0 :E: Bool. T)
+    fty :E: (_x2 :E: Bool) -> Type 
+      fty -E- T = (_x3 :R: Bool) -> Bool
+      fty -E- F = (_x4 :E: Bool) -> Bool
+    f :R: (x :R: Bool) -> fty -E- x 
+      f -R- T = id
+      f -R- F = constT
     main :R: TwoBools = TB -R- (f -R- T -R- F) -R- (f -R- F -E- F)
   in main
 
@@ -96,20 +78,14 @@
     postulate F :R: Bool
     postulate TwoBools :E: Type
     postulate TB :R: (x :R: Bool) -> (y :R: Bool) -> TwoBools
-    id :R: (x :R: Bool) -> Bool = (\x :R: Bool. x)
-    constT :R: (x :E: Bool) -> Bool = (\x :E: Bool. T)
-    fty :E: (x :E: Bool) -> Type = \(x :E: Bool).
-      case -E- x of
-        T/E =>
-          (_x0 :R: Bool) -> Bool
-        F/E =>
-          (_x1 :E: Bool) -> Bool
-    f :R: (x :R: Bool) -> fty -E- x = \(x :R: Bool).
-      case -R- x of
-        T/R =>
-          id
-        F/R =>
-          constT
+    id :R: (_x0 :R: Bool) -> Bool = (\x :R: Bool. x)
+    constT :R: (_x1 :E: Bool) -> Bool = (\_0 :E: Bool. T)
+    fty :E: (_x2 :E: Bool) -> Type 
+      fty -E- T = (_x3 :R: Bool) -> Bool
+      fty -E- F = (_x4 :E: Bool) -> Bool
+    f :R: (x :R: Bool) -> fty -E- x 
+      f -R- T = id
+      f -R- F = constT
     main :R: TwoBools = TB -R- (f -R- T -R- F) -R- (f -R- F -E- F)
   in main
 
@@ -121,20 +97,14 @@
     postulate F :R: Bool
     postulate TwoBools :E: Type
     postulate TB :R: (x :R: Bool) -> (y :R: Bool) -> TwoBools
-    id :R: (x :R: Bool) -> Bool = (\x :R: Bool. x)
-    constT :R: (x :E: Bool) -> Bool = (\x :E: Bool. T)
-    fty :E: (x :E: Bool) -> Type = \(x :E: Bool).
-      case -E- x of
-        T/E =>
-          (_x0 :R: Bool) -> Bool
-        F/E =>
-          (_x1 :E: Bool) -> Bool
-    f :R: (x :R: Bool) -> fty -E- x = \(x :R: Bool).
-      case -R- x of
-        T/R =>
-          id
-        F/R =>
-          constT
+    id :R: (_x0 :R: Bool) -> Bool = (\x :R: Bool. x)
+    constT :R: (_x1 :E: Bool) -> Bool = (\_0 :E: Bool. T)
+    fty :E: (_x2 :E: Bool) -> Type 
+      fty -E- T = (_x3 :R: Bool) -> Bool
+      fty -E- F = (_x4 :E: Bool) -> Bool
+    f :R: (x :R: Bool) -> fty -E- x 
+      f -R- T = id
+      f -R- F = constT
     main :R: TwoBools = TB -R- (f -R- T -R- F) -R- (f -R- F -E- F)
   in main
 
@@ -150,12 +120,9 @@ Verification successful.
     postulate TB : (x) -> (y) -> TwoBools
     id = (\x. x)
     constT = T
-    f = \x.
-      case x of
-        T =>
-          id
-        F =>
-          constT
+    f 
+      f T = id
+      f F = constT
     main = TB (f T F) (f F)
   in main
 

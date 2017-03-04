@@ -13,7 +13,7 @@
     main : T = f id B const_A B
   in main
 
-### Metaified ###
+### Evarified ###
 
   let
     postulate T :1: Type

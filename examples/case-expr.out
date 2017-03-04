@@ -8,29 +8,20 @@
     postulate F : Bool
     postulate Unit : Type
     postulate MkUnit : Unit
-    not : (x : Bool) -> Bool = \(x : Bool).
-      case x of
-        T =>
-          F
-        F =>
-          T
-    retTy : (x : Bool) -> Type = \(x : Bool).
-      case x of
-        T =>
-          Bool
-        F =>
-          Unit
+    not : (_x0 : Bool) -> Bool 
+      not T = F
+      not F = T
+    retTy : (_x1 : Bool) -> Type 
+      retTy T = Bool
+      retTy F = Unit
     main : Bool = not 
-      let _casefun0 : (x : Bool) -> retTy x = \(x : Bool).
-        case x of
-          F =>
-            MkUnit
-          T =>
-            F
-      in _casefun0 (not F)
+      let f : (x : Bool) -> retTy x 
+        f F = MkUnit
+        f T = F
+      in f (not F)
   in main
 
-### Metaified ###
+### Evarified ###
 
   let
     postulate Bool :1: Type
@@ -38,36 +29,27 @@
     postulate F :3: Bool
     postulate Unit :4: Type
     postulate MkUnit :5: Unit
-    not :6: (x :7: Bool) -> Bool = \(x :8: Bool).
-      case -9- x of
-        T/10 =>
-          F
-        F/11 =>
-          T
-    retTy :12: (x :13: Bool) -> Type = \(x :14: Bool).
-      case -15- x of
-        T/16 =>
-          Bool
-        F/17 =>
-          Unit
-    main :18: Bool = not -19- 
-      let _casefun0 :20: (x :21: Bool) -> retTy -22- x = \(x :23: Bool).
-        case -24- x of
-          F/25 =>
-            MkUnit
-          T/26 =>
-            F
-      in _casefun0 -27- (not -28- F)
+    not :6: (_x0 :7: Bool) -> Bool 
+      not -8- T = F
+      not -9- F = T
+    retTy :10: (_x1 :11: Bool) -> Type 
+      retTy -12- T = Bool
+      retTy -13- F = Unit
+    main :14: Bool = not -15- 
+      let f :16: (x :17: Bool) -> retTy -18- x 
+        f -19- F = MkUnit
+        f -20- T = F
+      in f -21- (not -22- F)
   in main
 
 ### Constraints ###
 
-[] -> [2,3,5,6,7,8,9,10,11,19,20,21,23,24,25,26,27,28,R]
-[R] -> [18]
+[] -> [2,3,5,6,7,8,9,15,16,17,19,20,21,22,R]
+[R] -> [14]
 
 ### Solution ###
 
-[2,3,5,6,7,8,9,10,11,18,19,20,21,23,24,25,26,27,28,R]
+[2,3,5,6,7,8,9,14,15,16,17,19,20,21,22,R]
 
 ### Annotated ###
 
@@ -77,26 +59,17 @@
     postulate F :R: Bool
     postulate Unit :E: Type
     postulate MkUnit :R: Unit
-    not :R: (x :R: Bool) -> Bool = \(x :R: Bool).
-      case -R- x of
-        T/R =>
-          F
-        F/R =>
-          T
-    retTy :E: (x :E: Bool) -> Type = \(x :E: Bool).
-      case -E- x of
-        T/E =>
-          Bool
-        F/E =>
-          Unit
+    not :R: (_x0 :R: Bool) -> Bool 
+      not -R- T = F
+      not -R- F = T
+    retTy :E: (_x1 :E: Bool) -> Type 
+      retTy -E- T = Bool
+      retTy -E- F = Unit
     main :R: Bool = not -R- 
-      let _casefun0 :R: (x :R: Bool) -> retTy -E- x = \(x :R: Bool).
-        case -R- x of
-          F/R =>
-            MkUnit
-          T/R =>
-            F
-      in _casefun0 -R- (not -R- F)
+      let f :R: (x :R: Bool) -> retTy -E- x 
+        f -R- F = MkUnit
+        f -R- T = F
+      in f -R- (not -R- F)
   in main
 
 ### Specialised ###
@@ -107,26 +80,17 @@
     postulate F :R: Bool
     postulate Unit :E: Type
     postulate MkUnit :R: Unit
-    not :R: (x :R: Bool) -> Bool = \(x :R: Bool).
-      case -R- x of
-        T/R =>
-          F
-        F/R =>
-          T
-    retTy :E: (x :E: Bool) -> Type = \(x :E: Bool).
-      case -E- x of
-        T/E =>
-          Bool
-        F/E =>
-          Unit
+    not :R: (_x0 :R: Bool) -> Bool 
+      not -R- T = F
+      not -R- F = T
+    retTy :E: (_x1 :E: Bool) -> Type 
+      retTy -E- T = Bool
+      retTy -E- F = Unit
     main :R: Bool = not -R- 
-      let _casefun0 :R: (x :R: Bool) -> retTy -E- x = \(x :R: Bool).
-        case -R- x of
-          F/R =>
-            MkUnit
-          T/R =>
-            F
-      in _casefun0 -R- (not -R- F)
+      let f :R: (x :R: Bool) -> retTy -E- x 
+        f -R- F = MkUnit
+        f -R- T = F
+      in f -R- (not -R- F)
   in main
 
 ### Final annotation ###
@@ -137,26 +101,17 @@
     postulate F :R: Bool
     postulate Unit :E: Type
     postulate MkUnit :R: Unit
-    not :R: (x :R: Bool) -> Bool = \(x :R: Bool).
-      case -R- x of
-        T/R =>
-          F
-        F/R =>
-          T
-    retTy :E: (x :E: Bool) -> Type = \(x :E: Bool).
-      case -E- x of
-        T/E =>
-          Bool
-        F/E =>
-          Unit
+    not :R: (_x0 :R: Bool) -> Bool 
+      not -R- T = F
+      not -R- F = T
+    retTy :E: (_x1 :E: Bool) -> Type 
+      retTy -E- T = Bool
+      retTy -E- F = Unit
     main :R: Bool = not -R- 
-      let _casefun0 :R: (x :R: Bool) -> retTy -E- x = \(x :R: Bool).
-        case -R- x of
-          F/R =>
-            MkUnit
-          T/R =>
-            F
-      in _casefun0 -R- (not -R- F)
+      let f :R: (x :R: Bool) -> retTy -E- x 
+        f -R- F = MkUnit
+        f -R- T = F
+      in f -R- (not -R- F)
   in main
 
 ### Verification ###
@@ -169,20 +124,14 @@ Verification successful.
     postulate T : Bool
     postulate F : Bool
     postulate MkUnit : Unit
-    not = \x.
-      case x of
-        T =>
-          F
-        F =>
-          T
+    not 
+      not T = F
+      not F = T
     main = not 
-      let _casefun0 = \x.
-        case x of
-          F =>
-            MkUnit
-          T =>
-            F
-      in _casefun0 (not F)
+      let f 
+        f F = MkUnit
+        f T = F
+      in f (not F)
   in main
 
 ### Normal forms ###

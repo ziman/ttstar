@@ -8,22 +8,21 @@
     postulate F : Bool
     postulate Pair : Type
     postulate P : (x : Bool) -> (y : Bool) -> Pair
-    fst : (x : Pair) -> Bool = \(x : Pair).
-      case x of P (l : Bool) (r : Bool) =>
-        l
-    snd : (x : Pair) -> Bool = \(x : Pair).
-      case x of P (l : Bool) (r : Bool) =>
-        r
-    and : (x : Bool) -> (y : Bool) -> Bool = \(x : Bool) (y : Bool).
-      case x of
-        T =>
-          y
-        F =>
-          F
+    fst : (_x0 : Pair) -> Bool 
+      l : Bool r : Bool
+        fst (P l r) = l
+    snd : (_x1 : Pair) -> Bool 
+      l : Bool r : Bool
+        snd (P l r) = r
+    and : (_x2 : Bool) -> (_x3 : Bool) -> Bool 
+      y : Bool
+        and T y = y
+      y : Bool
+        and F y = F
     main : Bool = and (fst (P T F)) (snd (P F T))
   in main
 
-### Metaified ###
+### Evarified ###
 
   let
     postulate Bool :1: Type
@@ -31,29 +30,28 @@
     postulate F :3: Bool
     postulate Pair :4: Type
     postulate P :5: (x :6: Bool) -> (y :7: Bool) -> Pair
-    fst :8: (x :9: Pair) -> Bool = \(x :10: Pair).
-      case -11- x of P/12 (l :13: Bool) (r :14: Bool) =>
-        l
-    snd :15: (x :16: Pair) -> Bool = \(x :17: Pair).
-      case -18- x of P/19 (l :20: Bool) (r :21: Bool) =>
-        r
-    and :22: (x :23: Bool) -> (y :24: Bool) -> Bool = \(x :25: Bool) (y :26: Bool).
-      case -27- x of
-        T/28 =>
-          y
-        F/29 =>
-          F
-    main :30: Bool = and -32- (fst -33- (P -35- T -34- F)) -31- (snd -36- (P -38- F -37- T))
+    fst :8: (_x0 :9: Pair) -> Bool 
+      l :10: Bool r :11: Bool
+        fst -12- (P -14- l -13- r) = l
+    snd :15: (_x1 :16: Pair) -> Bool 
+      l :17: Bool r :18: Bool
+        snd -19- (P -21- l -20- r) = r
+    and :22: (_x2 :23: Bool) -> (_x3 :24: Bool) -> Bool 
+      y :25: Bool
+        and -27- T -26- y = y
+      y :28: Bool
+        and -30- F -29- y = F
+    main :31: Bool = and -33- (fst -34- (P -36- T -35- F)) -32- (snd -37- (P -39- F -38- T))
   in main
 
 ### Constraints ###
 
-[] -> [2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,31,32,33,34,35,36,37,38,R]
-[R] -> [30]
+[] -> [2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,32,33,34,35,36,37,38,39,R]
+[R] -> [31]
 
 ### Solution ###
 
-[2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,R]
+[2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,R]
 
 ### Annotated ###
 
@@ -63,18 +61,17 @@
     postulate F :R: Bool
     postulate Pair :E: Type
     postulate P :R: (x :R: Bool) -> (y :R: Bool) -> Pair
-    fst :R: (x :R: Pair) -> Bool = \(x :R: Pair).
-      case -R- x of P/R (l :R: Bool) (r :R: Bool) =>
-        l
-    snd :R: (x :R: Pair) -> Bool = \(x :R: Pair).
-      case -R- x of P/R (l :R: Bool) (r :R: Bool) =>
-        r
-    and :R: (x :R: Bool) -> (y :R: Bool) -> Bool = \(x :R: Bool) (y :R: Bool).
-      case -R- x of
-        T/R =>
-          y
-        F/R =>
-          F
+    fst :R: (_x0 :R: Pair) -> Bool 
+      l :R: Bool r :R: Bool
+        fst -R- (P -R- l -R- r) = l
+    snd :R: (_x1 :R: Pair) -> Bool 
+      l :R: Bool r :R: Bool
+        snd -R- (P -R- l -R- r) = r
+    and :R: (_x2 :R: Bool) -> (_x3 :R: Bool) -> Bool 
+      y :R: Bool
+        and -R- T -R- y = y
+      y :R: Bool
+        and -R- F -R- y = F
     main :R: Bool = and -R- (fst -R- (P -R- T -R- F)) -R- (snd -R- (P -R- F -R- T))
   in main
 
@@ -86,18 +83,17 @@
     postulate F :R: Bool
     postulate Pair :E: Type
     postulate P :R: (x :R: Bool) -> (y :R: Bool) -> Pair
-    fst :R: (x :R: Pair) -> Bool = \(x :R: Pair).
-      case -R- x of P/R (l :R: Bool) (r :R: Bool) =>
-        l
-    snd :R: (x :R: Pair) -> Bool = \(x :R: Pair).
-      case -R- x of P/R (l :R: Bool) (r :R: Bool) =>
-        r
-    and :R: (x :R: Bool) -> (y :R: Bool) -> Bool = \(x :R: Bool) (y :R: Bool).
-      case -R- x of
-        T/R =>
-          y
-        F/R =>
-          F
+    fst :R: (_x0 :R: Pair) -> Bool 
+      l :R: Bool r :R: Bool
+        fst -R- (P -R- l -R- r) = l
+    snd :R: (_x1 :R: Pair) -> Bool 
+      l :R: Bool r :R: Bool
+        snd -R- (P -R- l -R- r) = r
+    and :R: (_x2 :R: Bool) -> (_x3 :R: Bool) -> Bool 
+      y :R: Bool
+        and -R- T -R- y = y
+      y :R: Bool
+        and -R- F -R- y = F
     main :R: Bool = and -R- (fst -R- (P -R- T -R- F)) -R- (snd -R- (P -R- F -R- T))
   in main
 
@@ -109,18 +105,17 @@
     postulate F :R: Bool
     postulate Pair :E: Type
     postulate P :R: (x :R: Bool) -> (y :R: Bool) -> Pair
-    fst :R: (x :R: Pair) -> Bool = \(x :R: Pair).
-      case -R- x of P/R (l :R: Bool) (r :R: Bool) =>
-        l
-    snd :R: (x :R: Pair) -> Bool = \(x :R: Pair).
-      case -R- x of P/R (l :R: Bool) (r :R: Bool) =>
-        r
-    and :R: (x :R: Bool) -> (y :R: Bool) -> Bool = \(x :R: Bool) (y :R: Bool).
-      case -R- x of
-        T/R =>
-          y
-        F/R =>
-          F
+    fst :R: (_x0 :R: Pair) -> Bool 
+      l :R: Bool r :R: Bool
+        fst -R- (P -R- l -R- r) = l
+    snd :R: (_x1 :R: Pair) -> Bool 
+      l :R: Bool r :R: Bool
+        snd -R- (P -R- l -R- r) = r
+    and :R: (_x2 :R: Bool) -> (_x3 :R: Bool) -> Bool 
+      y :R: Bool
+        and -R- T -R- y = y
+      y :R: Bool
+        and -R- F -R- y = F
     main :R: Bool = and -R- (fst -R- (P -R- T -R- F)) -R- (snd -R- (P -R- F -R- T))
   in main
 
@@ -134,18 +129,13 @@ Verification successful.
     postulate T : Bool
     postulate F : Bool
     postulate P : (x) -> (y) -> Pair
-    fst = \x.
-      case x of P l r =>
-        l
-    snd = \x.
-      case x of P l r =>
-        r
-    and = \x y.
-      case x of
-        T =>
-          y
-        F =>
-          F
+    fst 
+      fst (P l r) = l
+    snd 
+      snd (P l r) = r
+    and 
+      and T y = y
+      and F y = F
     main = and (fst (P T F)) (snd (P F T))
   in main
 

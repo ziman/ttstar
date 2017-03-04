@@ -6,14 +6,12 @@
     postulate Id : (a : Type) -> (x : a) -> (y : a) -> Type
     postulate Refl : (a : Type) -> (x : a) -> Id a x x
     id : (a : Type) -> (_x0 : a) -> a = (\a : Type. (\x : a. x))
-    subst : (a : Type) -> (P : (_x1 : a) -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -> (_x2 : P x) -> P y = \(a : Type) (P : (_x1 : a) -> Type) (x : a) (y : a) (eq : Id a x y).
-      case eq of [Refl a x] =>
-        case y of [x] =>
-          (\w : P x. w)
-    cong : (a : Type) -> (b : Type) -> (f : (_x3 : a) -> b) -> (x : a) -> (y : a) -> (eq : Id a x y) -> Id b (f x) (f y) = \(a : Type) (b : Type) (f : (_x3 : a) -> b) (x : a) (y : a) (eq : Id a x y).
-      case eq of [Refl a x] =>
-        case y of [x] =>
-          Refl b (f x)
+    subst : (a : Type) -> (P : (_x1 : a) -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -> (w : P x) -> P y 
+      a : Type P : (_x2 : a) -> Type x : a w : P x
+        subst a P x [x] [Refl a x] = (\w : P x. w)
+    cong : (a : Type) -> (b : Type) -> (f : (_x3 : a) -> b) -> (x : a) -> (y : a) -> (eq : Id a x y) -> Id b (f x) (f y) 
+      a : Type b : Type f : (_x4 : a) -> b x : a
+        cong a b f x [x] [Refl a x] = Refl b (f x)
     postulate Bool : Type
     postulate T : Bool
     postulate F : Bool
@@ -21,375 +19,365 @@
     postulate Nil : List
     postulate Cons : (x :R: Bool) -> (xs :R: List) -> List
     one : (x : Bool) -> List = (\x : Bool. Cons x Nil)
-    app : (xs : List) -> (ys : List) -> List = \(xs : List) (ys : List).
-      case xs of
-        Nil =>
-          ys
-        Cons (x : Bool) (xs' : List) =>
-          Cons x (app xs' ys)
-    appRightNeutral : (ys : List) -> Id List ys (app ys Nil) = \(ys : List).
-      case ys of
-        Nil =>
-          Refl List Nil
-        Cons (x : Bool) (xs : List) =>
-          cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs)
-    appAssoc : (xs : List) -> (ys : List) -> (zs : List) -> Id List (app (app xs ys) zs) (app xs (app ys zs)) = \(xs : List) (ys : List) (zs : List).
-      case xs of
-        Nil =>
-          Refl List (app ys zs)
-        Cons (x : Bool) (xs' : List) =>
-          cong List List (Cons x) (app (app xs' ys) zs) (app xs' (app ys zs)) (appAssoc xs' ys zs)
-    postulate Rev : (_x4 : List) -> Type
+    app : (_x5 : List) -> (_x6 : List) -> List 
+      ys : List
+        app Nil ys = ys
+      x : Bool xs : List ys : List
+        app (Cons x xs) ys = Cons x (app xs ys)
+    appRightNeutral : (ys : List) -> Id List ys (app ys Nil) 
+      appRightNeutral Nil = Refl List Nil
+      x : Bool xs : List
+        appRightNeutral (Cons x xs) = cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs)
+    appAssoc : (xs : List) -> (ys : List) -> (zs : List) -> Id List (app (app xs ys) zs) (app xs (app ys zs)) 
+      ys : List zs : List
+        appAssoc Nil ys zs = Refl List (app ys zs)
+      x : Bool xs : List ys : List zs : List
+        appAssoc (Cons x xs) ys zs = cong List List (Cons x) (app (app xs ys) zs) (app xs (app ys zs)) (appAssoc xs ys zs)
+    postulate Rev : (_x7 : List) -> Type
     postulate RNil : Rev Nil
     postulate RSnoc : (xs : List) -> (x : Bool) -> (rxs : Rev xs) -> Rev (app xs (one x))
-    rev' : (xs : List) -> (rxs : Rev xs) -> (ys : List) -> Rev (app xs ys) = \(xs : List) (rxs : Rev xs) (ys : List).
-      case ys of
-        Nil =>
-          subst List Rev xs (app xs Nil) (appRightNeutral xs) rxs
-        Cons (y : Bool) (ys' : List) =>
-          subst List Rev (app (app xs (one y)) ys') (app xs (Cons y ys')) (appAssoc xs (one y) ys') (rev' (app xs (one y)) (RSnoc xs y rxs) ys')
+    rev' : (xs : List) -> (rxs : Rev xs) -> (ys : List) -> Rev (app xs ys) 
+      xs : List rxs : Rev xs
+        rev' xs rxs Nil = subst List Rev xs (app xs Nil) (appRightNeutral xs) rxs
+      xs : List rxs : Rev xs y : Bool ys : List
+        rev' xs rxs (Cons y ys) = subst List Rev (app (app xs (one y)) ys) (app xs (Cons y ys)) (appAssoc xs (one y) ys) (rev' (app xs (one y)) (RSnoc xs y rxs) ys)
     rev : (xs : List) -> Rev xs = (\xs : List. rev' Nil RNil xs)
-    reverse' : (xs : List) -> (rxs : Rev xs) -> List = \(xs : List) (rxs : Rev xs).
-      case rxs of
-        RNil =>
-          case xs of [Nil] =>
-            Nil
-        RSnoc (xs' : List) (x : Bool) (rxs' : Rev xs') =>
-          case xs of [app xs' (one x)] =>
-            Cons x (reverse' xs' rxs')
+    reverse' : (xs : List) -> (rxs : Rev xs) -> List 
+      reverse' [Nil] RNil = Nil
+      xs : List x : Bool rxs : Rev xs
+        reverse' [app xs (one x)] (RSnoc xs x rxs) = Cons x (reverse' xs rxs)
     reverse : (xs : List) -> List = (\xs : List. reverse' xs (rev xs))
     main : List = reverse (Cons T (Cons F (Cons T (Cons F Nil))))
   in main
 
-### Metaified ###
+### Evarified ###
 
   let
     postulate Id :1: (a :2: Type) -> (x :3: a) -> (y :4: a) -> Type
     postulate Refl :5: (a :6: Type) -> (x :7: a) -> Id -10- a -9- x -8- x
     id :11: (a :12: Type) -> (_x0 :13: a) -> a = (\a :14: Type. (\x :15: a. x))
-    subst :16: (a :17: Type) -> (P :18: (_x1 :19: a) -> Type) -> (x :20: a) -> (y :21: a) -> (eq :22: Id -25- a -24- x -23- y) -> (_x2 :26: P -27- x) -> P -28- y = \(a :29: Type) (P :30: (_x1 :31: a) -> Type) (x :32: a) (y :33: a) (eq :34: Id -37- a -36- x -35- y).
-      case -38- eq of [Refl -40- a -39- x] =>
-        case -41- y of [x] =>
-          (\w :42: P -43- x. w)
-    cong :44: (a :45: Type) -> (b :46: Type) -> (f :47: (_x3 :48: a) -> b) -> (x :49: a) -> (y :50: a) -> (eq :51: Id -54- a -53- x -52- y) -> Id -57- b -56- (f -58- x) -55- (f -59- y) = \(a :60: Type) (b :61: Type) (f :62: (_x3 :63: a) -> b) (x :64: a) (y :65: a) (eq :66: Id -69- a -68- x -67- y).
-      case -70- eq of [Refl -72- a -71- x] =>
-        case -73- y of [x] =>
-          Refl -75- b -74- (f -76- x)
-    postulate Bool :77: Type
-    postulate T :78: Bool
-    postulate F :79: Bool
-    postulate List :80: Type
-    postulate Nil :81: List
-    postulate Cons :82: (x :R: Bool) -> (xs :R: List) -> List
-    one :83: (x :84: Bool) -> List = (\x :85: Bool. Cons -87- x -86- Nil)
-    app :88: (xs :89: List) -> (ys :90: List) -> List = \(xs :91: List) (ys :92: List).
-      case -93- xs of
-        Nil/94 =>
-          ys
-        Cons/95 (x :96: Bool) (xs' :97: List) =>
-          Cons -99- x -98- (app -101- xs' -100- ys)
-    appRightNeutral :102: (ys :103: List) -> Id -106- List -105- ys -104- (app -108- ys -107- Nil) = \(ys :109: List).
-      case -110- ys of
-        Nil/111 =>
-          Refl -113- List -112- Nil
-        Cons/114 (x :115: Bool) (xs :116: List) =>
-          cong -122- List -121- List -120- (Cons -123- x) -119- xs -118- (app -125- xs -124- Nil) -117- (appRightNeutral -126- xs)
-    appAssoc :127: (xs :128: List) -> (ys :129: List) -> (zs :130: List) -> Id -133- List -132- (app -135- (app -137- xs -136- ys) -134- zs) -131- (app -139- xs -138- (app -141- ys -140- zs)) = \(xs :142: List) (ys :143: List) (zs :144: List).
-      case -145- xs of
-        Nil/146 =>
-          Refl -148- List -147- (app -150- ys -149- zs)
-        Cons/151 (x :152: Bool) (xs' :153: List) =>
-          cong -159- List -158- List -157- (Cons -160- x) -156- (app -162- (app -164- xs' -163- ys) -161- zs) -155- (app -166- xs' -165- (app -168- ys -167- zs)) -154- (appAssoc -171- xs' -170- ys -169- zs)
-    postulate Rev :172: (_x4 :173: List) -> Type
-    postulate RNil :174: Rev -175- Nil
-    postulate RSnoc :176: (xs :177: List) -> (x :178: Bool) -> (rxs :179: Rev -180- xs) -> Rev -181- (app -183- xs -182- (one -184- x))
-    rev' :185: (xs :186: List) -> (rxs :187: Rev -188- xs) -> (ys :189: List) -> Rev -190- (app -192- xs -191- ys) = \(xs :193: List) (rxs :194: Rev -195- xs) (ys :196: List).
-      case -197- ys of
-        Nil/198 =>
-          subst -204- List -203- Rev -202- xs -201- (app -206- xs -205- Nil) -200- (appRightNeutral -207- xs) -199- rxs
-        Cons/208 (y :209: Bool) (ys' :210: List) =>
-          subst -216- List -215- Rev -214- (app -218- (app -220- xs -219- (one -221- y)) -217- ys') -213- (app -223- xs -222- (Cons -225- y -224- ys')) -212- (appAssoc -228- xs -227- (one -229- y) -226- ys') -211- (rev' -232- (app -234- xs -233- (one -235- y)) -231- (RSnoc -238- xs -237- y -236- rxs) -230- ys')
-    rev :239: (xs :240: List) -> Rev -241- xs = (\xs :242: List. rev' -245- Nil -244- RNil -243- xs)
-    reverse' :246: (xs :247: List) -> (rxs :248: Rev -249- xs) -> List = \(xs :250: List) (rxs :251: Rev -252- xs).
-      case -253- rxs of
-        RNil/254 =>
-          case -255- xs of [Nil] =>
-            Nil
-        RSnoc/256 (xs' :257: List) (x :258: Bool) (rxs' :259: Rev -260- xs') =>
-          case -261- xs of [app -263- xs' -262- (one -264- x)] =>
-            Cons -266- x -265- (reverse' -268- xs' -267- rxs')
-    reverse :269: (xs :270: List) -> List = (\xs :271: List. reverse' -273- xs -272- (rev -274- xs))
-    main :275: List = reverse -276- (Cons -278- T -277- (Cons -280- F -279- (Cons -282- T -281- (Cons -284- F -283- Nil))))
+    subst :16: (a :17: Type) -> (P :18: (_x1 :19: a) -> Type) -> (x :20: a) -> (y :21: a) -> (eq :22: Id -25- a -24- x -23- y) -> (w :26: P -27- x) -> P -28- y 
+      a :29: Type P :30: (_x2 :31: a) -> Type x :32: a w :33: P -34- x
+        subst -39- a -38- P -37- x -36- [x] -35- [Refl -41- a -40- x] = (\w :42: P -43- x. w)
+    cong :44: (a :45: Type) -> (b :46: Type) -> (f :47: (_x3 :48: a) -> b) -> (x :49: a) -> (y :50: a) -> (eq :51: Id -54- a -53- x -52- y) -> Id -57- b -56- (f -58- x) -55- (f -59- y) 
+      a :60: Type b :61: Type f :62: (_x4 :63: a) -> b x :64: a
+        cong -70- a -69- b -68- f -67- x -66- [x] -65- [Refl -72- a -71- x] = Refl -74- b -73- (f -75- x)
+    postulate Bool :76: Type
+    postulate T :77: Bool
+    postulate F :78: Bool
+    postulate List :79: Type
+    postulate Nil :80: List
+    postulate Cons :81: (x :R: Bool) -> (xs :R: List) -> List
+    one :82: (x :83: Bool) -> List = (\x :84: Bool. Cons -86- x -85- Nil)
+    app :87: (_x5 :88: List) -> (_x6 :89: List) -> List 
+      ys :90: List
+        app -92- Nil -91- ys = ys
+      x :93: Bool xs :94: List ys :95: List
+        app -97- (Cons -99- x -98- xs) -96- ys = Cons -101- x -100- (app -103- xs -102- ys)
+    appRightNeutral :104: (ys :105: List) -> Id -108- List -107- ys -106- (app -110- ys -109- Nil) 
+      appRightNeutral -111- Nil = Refl -113- List -112- Nil
+      x :114: Bool xs :115: List
+        appRightNeutral -116- (Cons -118- x -117- xs) = cong -124- List -123- List -122- (Cons -125- x) -121- xs -120- (app -127- xs -126- Nil) -119- (appRightNeutral -128- xs)
+    appAssoc :129: (xs :130: List) -> (ys :131: List) -> (zs :132: List) -> Id -135- List -134- (app -137- (app -139- xs -138- ys) -136- zs) -133- (app -141- xs -140- (app -143- ys -142- zs)) 
+      ys :144: List zs :145: List
+        appAssoc -148- Nil -147- ys -146- zs = Refl -150- List -149- (app -152- ys -151- zs)
+      x :153: Bool xs :154: List ys :155: List zs :156: List
+        appAssoc -159- (Cons -161- x -160- xs) -158- ys -157- zs = cong -167- List -166- List -165- (Cons -168- x) -164- (app -170- (app -172- xs -171- ys) -169- zs) -163- (app -174- xs -173- (app -176- ys -175- zs)) -162- (appAssoc -179- xs -178- ys -177- zs)
+    postulate Rev :180: (_x7 :181: List) -> Type
+    postulate RNil :182: Rev -183- Nil
+    postulate RSnoc :184: (xs :185: List) -> (x :186: Bool) -> (rxs :187: Rev -188- xs) -> Rev -189- (app -191- xs -190- (one -192- x))
+    rev' :193: (xs :194: List) -> (rxs :195: Rev -196- xs) -> (ys :197: List) -> Rev -198- (app -200- xs -199- ys) 
+      xs :201: List rxs :202: Rev -203- xs
+        rev' -206- xs -205- rxs -204- Nil = subst -212- List -211- Rev -210- xs -209- (app -214- xs -213- Nil) -208- (appRightNeutral -215- xs) -207- rxs
+      xs :216: List rxs :217: Rev -218- xs y :219: Bool ys :220: List
+        rev' -223- xs -222- rxs -221- (Cons -225- y -224- ys) = subst -231- List -230- Rev -229- (app -233- (app -235- xs -234- (one -236- y)) -232- ys) -228- (app -238- xs -237- (Cons -240- y -239- ys)) -227- (appAssoc -243- xs -242- (one -244- y) -241- ys) -226- (rev' -247- (app -249- xs -248- (one -250- y)) -246- (RSnoc -253- xs -252- y -251- rxs) -245- ys)
+    rev :254: (xs :255: List) -> Rev -256- xs = (\xs :257: List. rev' -260- Nil -259- RNil -258- xs)
+    reverse' :261: (xs :262: List) -> (rxs :263: Rev -264- xs) -> List 
+      reverse' -266- [Nil] -265- RNil = Nil
+      xs :267: List x :268: Bool rxs :269: Rev -270- xs
+        reverse' -272- [app -274- xs -273- (one -275- x)] -271- (RSnoc -278- xs -277- x -276- rxs) = Cons -280- x -279- (reverse' -282- xs -281- rxs)
+    reverse :283: (xs :284: List) -> List = (\xs :285: List. reverse' -287- xs -286- (rev -288- xs))
+    main :289: List = reverse -290- (Cons -292- T -291- (Cons -294- F -293- (Cons -296- T -295- (Cons -298- F -297- Nil))))
   in main
 
 ### Constraints ###
 
-[] -> [16,26,42,78,79,81,82,174,176,178,179,185,187,189,194,196,197,198,199,208,209,210,211,224,225,230,231,236,237,239,240,242,243,244,246,248,251,253,254,256,258,259,265,266,267,269,270,271,272,274,276,277,278,279,280,281,282,283,284,R]
-[6,22] -> [61,75,80,113,148]
-[7,22] -> [62,74,88,89,90,91,92,93,94,95,96,97,98,99,100,101,112,147]
-[7,22,63] -> [64,76]
-[7,22,76] -> [63]
-[7,22,89] -> [143,150]
-[7,22,90] -> [144,149]
-[7,22,149] -> [90]
-[7,22,150] -> [89]
-[8] -> [22,23]
-[8,22] -> [51,52,55,104,131]
-[9] -> [22,24]
-[9,22] -> [51,53,56,105,132]
-[10] -> [22,25]
-[10,22] -> [51,54,57,106,133]
-[17] -> [29,80,204,216]
-[18] -> [30,172,203,215]
-[18,19] -> [173]
-[18,173] -> [19]
-[19] -> [18,31]
-[20] -> [32,88,89,90,91,92,93,94,95,96,97,98,99,100,101,193,202,214]
-[20,84,89,90] -> [221]
-[20,89] -> [88,89,90,91,92,93,94,95,96,97,98,99,100,101,193,218,220]
-[20,89,90] -> [83,84,85,86,87,219]
-[20,89,90,221] -> [84]
-[20,89,219] -> [90]
-[20,89,220] -> [89]
-[20,90] -> [217]
-[20,217] -> [90]
-[20,218] -> [89]
-[21] -> [33,88,89,90,91,92,93,94,95,96,97,98,99,100,101,201,213]
-[21,89] -> [193,206,223]
-[21,90] -> [205,222]
-[21,205] -> [90]
-[21,206] -> [89]
-[21,222] -> [90]
-[21,223] -> [89]
-[22] -> [5,34,44,98,99,102,103,109,110,111,114,127,128,142,145,146,151,200,212]
-[22,23] -> [104,131]
-[22,24] -> [105,132]
-[22,25] -> [106,133]
-[22,45] -> [60,80,122,159]
-[22,46] -> [61,80,121,158]
-[22,47] -> [48,62,115,120,123,152,157,160]
-[22,48] -> [47,63]
-[22,49] -> [64,88,89,90,91,92,93,94,95,96,97,98,99,100,101,116,119,156]
-[22,49,89] -> [88,89,90,91,92,93,94,95,96,97,98,99,100,101,153,162,164]
-[22,49,89,90] -> [143,163]
-[22,49,89,163] -> [90]
-[22,49,89,164] -> [89]
-[22,49,90] -> [144,161]
-[22,49,161] -> [90]
-[22,49,162] -> [89]
-[22,50] -> [65,88,89,90,91,92,93,94,95,96,97,98,99,100,101,118,155]
-[22,50,89] -> [116,125,153,166]
-[22,50,89,90] -> [143,168]
-[22,50,90] -> [88,89,90,91,92,93,94,95,96,97,98,99,100,101,124,144,165,167]
-[22,50,90,167] -> [90]
-[22,50,90,168] -> [89]
-[22,50,124] -> [90]
-[22,50,125] -> [89]
-[22,50,165] -> [90]
-[22,50,166] -> [89]
-[22,51] -> [66,102,116,117,126,127,153,154,171]
-[22,51,52] -> [104,131]
-[22,51,53] -> [105,132]
-[22,51,54] -> [106,133]
-[22,51,104] -> [52]
-[22,51,105] -> [53]
-[22,51,106] -> [54]
-[22,51,107] -> [124]
-[22,51,108] -> [125]
-[22,51,124] -> [107]
-[22,51,125] -> [108]
-[22,51,129] -> [143,170]
-[22,51,130] -> [144,169]
-[22,51,131] -> [52]
-[22,51,132] -> [53]
-[22,51,133] -> [54]
-[22,51,134] -> [161]
-[22,51,135] -> [162]
-[22,51,136] -> [163]
-[22,51,137] -> [164]
-[22,51,138] -> [165]
-[22,51,139] -> [166]
-[22,51,140] -> [167]
-[22,51,141] -> [168]
-[22,51,161] -> [134]
-[22,51,162] -> [135]
-[22,51,163] -> [136]
-[22,51,164] -> [137]
-[22,51,165] -> [138]
-[22,51,166] -> [139]
-[22,51,167] -> [140]
-[22,51,168] -> [141]
-[22,51,169] -> [130]
-[22,51,170] -> [129]
-[22,52] -> [8,51]
-[22,53] -> [9,51]
-[22,54] -> [10,51]
-[22,55] -> [8,104,131]
-[22,56] -> [9,105,132]
-[22,57] -> [10,106,133]
-[22,58] -> [76,98,116]
-[22,59] -> [76,98]
-[22,60] -> [45]
-[22,61] -> [46]
-[22,62] -> [47]
-[22,63] -> [47,48]
-[22,64] -> [49]
-[22,65] -> [50]
-[22,66] -> [51]
-[22,70] -> [66]
-[22,73] -> [65]
-[22,74] -> [7]
-[22,75] -> [6]
-[22,76] -> [58,59]
-[22,84,129] -> [229]
+[] -> [16,26,42,77,78,80,81,182,184,186,187,193,195,197,202,204,205,207,217,219,220,221,222,224,225,226,239,240,245,246,251,252,254,255,257,258,259,261,263,265,268,269,271,276,277,279,280,281,283,284,285,286,288,290,291,292,293,294,295,296,297,298,R]
+[6,22] -> [61,74,79,113,150]
+[7,22] -> [62,63,73,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,112,149]
+[7,22,63] -> [64,75]
+[7,22,75] -> [63]
+[7,22,88] -> [144,152]
+[7,22,89] -> [145,151]
+[7,22,151] -> [89]
+[7,22,152] -> [88]
+[8] -> [23]
+[8,22] -> [52,55,106,133]
+[9] -> [24]
+[9,22] -> [53,56,107,134]
+[10] -> [25]
+[10,22] -> [54,57,108,135]
+[17] -> [39,79,212,231]
+[18] -> [38,180,211,230]
+[18,19] -> [181]
+[18,181] -> [19]
+[19] -> [31]
+[20] -> [37,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,201,210,229]
+[20,83,88,89] -> [236]
+[20,88] -> [87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,216,233,235]
+[20,88,89] -> [82,83,84,85,86,234]
+[20,88,89,236] -> [83]
+[20,88,234] -> [89]
+[20,88,235] -> [88]
+[20,89] -> [232]
+[20,232] -> [89]
+[20,233] -> [88]
+[21] -> [36,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,209,228]
+[21,88] -> [201,214,216,238]
+[21,89] -> [213,237]
+[21,213] -> [89]
+[21,214] -> [88]
+[21,237] -> [89]
+[21,238] -> [88]
+[22] -> [5,35,44,58,59,75,100,101,104,105,111,114,115,116,117,118,125,129,130,148,153,154,159,160,161,208,227]
+[22,23] -> [106,133]
+[22,24] -> [107,134]
+[22,25] -> [108,135]
+[22,45] -> [70,79,124,167]
+[22,46] -> [69,79,123,166]
+[22,47] -> [48,68,122,165,168]
+[22,48] -> [63]
+[22,49] -> [67,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,121,164]
+[22,49,88] -> [87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,170,172]
+[22,49,88,89] -> [155,171]
+[22,49,88,171] -> [89]
+[22,49,88,172] -> [88]
+[22,49,89] -> [156,169]
+[22,49,169] -> [89]
+[22,49,170] -> [88]
+[22,50] -> [66,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,120,163]
+[22,50,88] -> [127,174]
+[22,50,88,89] -> [155,176]
+[22,50,89] -> [87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,126,156,173,175]
+[22,50,89,175] -> [89]
+[22,50,89,176] -> [88]
+[22,50,126] -> [89]
+[22,50,127] -> [88]
+[22,50,173] -> [89]
+[22,50,174] -> [88]
+[22,51] -> [65,119,128,162,179]
+[22,51,52] -> [106,133]
+[22,51,53] -> [107,134]
+[22,51,54] -> [108,135]
+[22,51,106] -> [52]
+[22,51,107] -> [53]
+[22,51,108] -> [54]
+[22,51,109] -> [126]
+[22,51,110] -> [127]
+[22,51,126] -> [109]
+[22,51,127] -> [110]
+[22,51,131] -> [155,178]
+[22,51,132] -> [156,177]
+[22,51,133] -> [52]
+[22,51,134] -> [53]
+[22,51,135] -> [54]
+[22,51,136] -> [169]
+[22,51,137] -> [170]
+[22,51,138] -> [171]
+[22,51,139] -> [172]
+[22,51,140] -> [173]
+[22,51,141] -> [174]
+[22,51,142] -> [175]
+[22,51,143] -> [176]
+[22,51,169] -> [136]
+[22,51,170] -> [137]
+[22,51,171] -> [138]
+[22,51,172] -> [139]
+[22,51,173] -> [140]
+[22,51,174] -> [141]
+[22,51,175] -> [142]
+[22,51,176] -> [143]
+[22,51,177] -> [132]
+[22,51,178] -> [131]
+[22,52] -> [8]
+[22,53] -> [9]
+[22,54] -> [10]
+[22,55] -> [8,106,133]
+[22,56] -> [9,107,134]
+[22,57] -> [10,108,135]
+[22,58] -> [75,100]
+[22,59] -> [75,100]
+[22,60] -> [70]
+[22,61] -> [69]
+[22,62] -> [68]
+[22,63] -> [48]
+[22,64] -> [67]
+[22,65] -> [51]
+[22,66] -> [50]
+[22,67] -> [49,64]
+[22,68] -> [47,62]
+[22,69] -> [46,61]
+[22,70] -> [45,60]
+[22,73] -> [7]
+[22,74] -> [6]
+[22,75] -> [58,59]
+[22,83,131] -> [244]
+[22,85] -> [85]
 [22,86] -> [86]
-[22,87] -> [87]
-[22,98] -> [58,59]
-[22,99] -> [123,160]
-[22,100] -> [124,161,163,165]
-[22,101] -> [125,162,164,166]
-[22,103] -> [193,207]
-[22,104] -> [8,23,55]
-[22,105] -> [9,24,56]
-[22,106] -> [10,25,57]
-[22,107] -> [205]
-[22,108] -> [206]
+[22,100] -> [58,59]
+[22,101] -> [168]
+[22,102] -> [126,169,171,173]
+[22,103] -> [127,170,172,174]
+[22,105] -> [201,215]
+[22,106] -> [8,23,55]
+[22,107] -> [9,24,56]
+[22,108] -> [10,25,57]
+[22,109] -> [213]
+[22,110] -> [214]
 [22,112] -> [7]
 [22,113] -> [6]
-[22,115] -> [123]
-[22,116] -> [58]
-[22,117] -> [51]
-[22,118] -> [50]
-[22,119] -> [49]
-[22,120] -> [47]
-[22,121] -> [46]
-[22,122] -> [45]
-[22,123] -> [99,115]
-[22,124] -> [100]
-[22,125] -> [101]
-[22,128] -> [193,228]
-[22,129] -> [83,84,85,86,87,143,227]
-[22,129,229] -> [84]
-[22,130] -> [144,226]
-[22,131] -> [8,23,55]
-[22,132] -> [9,24,56]
-[22,133] -> [10,25,57]
-[22,134] -> [149,217]
-[22,135] -> [150,218]
-[22,136] -> [219]
-[22,137] -> [220]
-[22,138] -> [222]
-[22,139] -> [223]
-[22,140] -> [149,167]
-[22,141] -> [150,168]
-[22,143] -> [129]
-[22,144] -> [130]
-[22,147] -> [7]
-[22,148] -> [6]
-[22,149] -> [134,140]
-[22,150] -> [135,141]
-[22,154] -> [51]
-[22,155] -> [50]
-[22,156] -> [49]
-[22,157] -> [47]
-[22,158] -> [46]
-[22,159] -> [45]
-[22,160] -> [99]
-[22,161] -> [100]
-[22,162] -> [101]
-[22,163] -> [100]
-[22,164] -> [101]
-[22,165] -> [100]
-[22,166] -> [101]
-[22,167] -> [140]
-[22,168] -> [141]
-[22,205] -> [107]
-[22,206] -> [108]
-[22,207] -> [103]
-[22,217] -> [134]
-[22,218] -> [135]
-[22,219] -> [136]
-[22,220] -> [137]
-[22,222] -> [138]
-[22,223] -> [139]
-[22,226] -> [130]
-[22,227] -> [129]
-[22,228] -> [128]
-[23] -> [8,22]
-[24] -> [9,22]
-[25] -> [10,22]
-[27] -> [43,190,195]
-[28] -> [43,190]
-[29] -> [17]
-[30] -> [18]
-[31] -> [18,19]
-[32] -> [20]
-[33] -> [21]
-[34] -> [22]
-[38] -> [34]
-[41] -> [33]
+[22,119] -> [51]
+[22,120] -> [50]
+[22,121] -> [49]
+[22,122] -> [47]
+[22,123] -> [46]
+[22,124] -> [45]
+[22,126] -> [102]
+[22,127] -> [103]
+[22,130] -> [216,243]
+[22,131] -> [82,83,84,85,86,147,158,242]
+[22,131,244] -> [83]
+[22,132] -> [146,157,241]
+[22,133] -> [8,23,55]
+[22,134] -> [9,24,56]
+[22,135] -> [10,25,57]
+[22,136] -> [151,232]
+[22,137] -> [152,233]
+[22,138] -> [234]
+[22,139] -> [235]
+[22,140] -> [237]
+[22,141] -> [238]
+[22,142] -> [151,175]
+[22,143] -> [152,176]
+[22,144] -> [147]
+[22,145] -> [146]
+[22,146] -> [132,145]
+[22,147] -> [131,144]
+[22,149] -> [7]
+[22,150] -> [6]
+[22,151] -> [136,142]
+[22,152] -> [137,143]
+[22,155] -> [158]
+[22,156] -> [157]
+[22,157] -> [132,156]
+[22,158] -> [131,155]
+[22,162] -> [51]
+[22,163] -> [50]
+[22,164] -> [49]
+[22,165] -> [47]
+[22,166] -> [46]
+[22,167] -> [45]
+[22,168] -> [101]
+[22,169] -> [102]
+[22,170] -> [103]
+[22,171] -> [102]
+[22,172] -> [103]
+[22,173] -> [102]
+[22,174] -> [103]
+[22,175] -> [142]
+[22,176] -> [143]
+[22,213] -> [109]
+[22,214] -> [110]
+[22,215] -> [105]
+[22,232] -> [136]
+[22,233] -> [137]
+[22,234] -> [138]
+[22,235] -> [139]
+[22,237] -> [140]
+[22,238] -> [141]
+[22,241] -> [132]
+[22,242] -> [131]
+[22,243] -> [130]
+[23] -> [8]
+[24] -> [9]
+[25] -> [10]
+[27] -> [43,198,203]
+[28] -> [43,198]
+[29] -> [39]
+[30] -> [38]
+[31] -> [19]
+[32] -> [37]
+[35] -> [22]
+[36] -> [21]
+[37] -> [20,32]
+[38] -> [18,30]
+[39] -> [17,29]
 [43] -> [27,28]
-[84,90,186] -> [235]
+[83,89,194] -> [250]
+[85] -> [85]
 [86] -> [86]
-[87] -> [87]
-[89,186] -> [193,234]
-[90,186] -> [83,84,85,86,87,233]
-[90,186,235] -> [84]
-[175] -> [188,249]
-[177] -> [193,238,257]
-[180] -> [195,260]
-[181] -> [188,249]
-[182] -> [233,262]
-[183] -> [234,263]
-[186] -> [88,89,90,91,92,93,94,95,96,97,98,99,100,101,193,232,245]
-[186,233] -> [90]
-[186,234] -> [89]
-[188] -> [175,181,195]
-[190] -> [27,28,241]
-[191] -> [205,217,222]
-[192] -> [206,218,223]
-[193] -> [186]
-[195] -> [27,180,188]
-[200] -> [22]
-[201] -> [21]
-[202] -> [20]
-[203] -> [18]
-[204] -> [17]
-[205] -> [191]
-[206] -> [192]
-[212] -> [22]
-[213] -> [21]
-[214] -> [20]
-[215] -> [18]
-[216] -> [17]
-[217] -> [191]
-[218] -> [192]
-[219] -> [233]
-[220] -> [234]
-[222] -> [191]
-[223] -> [192]
-[232] -> [186]
-[233] -> [182,219]
-[234] -> [183,220]
-[238] -> [177]
-[241] -> [190,249]
-[245] -> [186]
-[247] -> [250,257,268,273]
-[249] -> [175,181,241,260]
-[250] -> [247]
-[255] -> [250]
-[257] -> [177]
-[260] -> [180,249]
-[261] -> [250]
-[262] -> [182]
-[263] -> [183]
-[268] -> [247]
-[273] -> [247]
-[R] -> [275]
+[88,194] -> [216,249]
+[89,194] -> [82,83,84,85,86,248]
+[89,194,250] -> [83]
+[183] -> [196,264]
+[185] -> [216,253,278]
+[188] -> [218,270]
+[189] -> [196,264]
+[190] -> [248,273]
+[191] -> [249,274]
+[194] -> [87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,206,223,247,260]
+[194,248] -> [89]
+[194,249] -> [88]
+[196] -> [183,189,203,218]
+[198] -> [27,28,256]
+[199] -> [213,232,237]
+[200] -> [214,233,238]
+[201] -> [206]
+[203] -> [27,196]
+[206] -> [194,201]
+[208] -> [22]
+[209] -> [21]
+[210] -> [20]
+[211] -> [18]
+[212] -> [17]
+[213] -> [199]
+[214] -> [200]
+[216] -> [223]
+[218] -> [188,196]
+[223] -> [194,216]
+[227] -> [22]
+[228] -> [21]
+[229] -> [20]
+[230] -> [18]
+[231] -> [17]
+[232] -> [199]
+[233] -> [200]
+[234] -> [248]
+[235] -> [249]
+[237] -> [199]
+[238] -> [200]
+[247] -> [194]
+[248] -> [190,234]
+[249] -> [191,235]
+[253] -> [185]
+[256] -> [198,264]
+[260] -> [194]
+[262] -> [266,267,272,282,287]
+[264] -> [183,189,256,270]
+[266] -> [262]
+[267] -> [278]
+[270] -> [188,264]
+[272] -> [262]
+[273] -> [190]
+[274] -> [191]
+[278] -> [185,267]
+[282] -> [262]
+[287] -> [262]
+[R] -> [289]
 
 ### Solution ###
 
-[16,26,42,78,79,81,82,174,176,178,179,185,187,189,194,196,197,198,199,208,209,210,211,224,225,230,231,236,237,239,240,242,243,244,246,248,251,253,254,256,258,259,265,266,267,269,270,271,272,274,275,276,277,278,279,280,281,282,283,284,R]
+[16,26,42,77,78,80,81,182,184,186,187,193,195,197,202,204,205,207,217,219,220,221,222,224,225,226,239,240,245,246,251,252,254,255,257,258,259,261,263,265,268,269,271,276,277,279,280,281,283,284,285,286,288,289,290,291,292,293,294,295,296,297,298,R]
 
 ### Annotated ###
 
@@ -397,14 +385,12 @@
     postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
     postulate Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
     id :E: (a :E: Type) -> (_x0 :E: a) -> a = (\a :E: Type. (\x :E: a. x))
-    subst :R: (a :E: Type) -> (P :E: (_x1 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (_x2 :R: P -E- x) -> P -E- y = \(a :E: Type) (P :E: (_x1 :E: a) -> Type) (x :E: a) (y :E: a) (eq :E: Id -E- a -E- x -E- y).
-      case -E- eq of [Refl -E- a -E- x] =>
-        case -E- y of [x] =>
-          (\w :R: P -E- x. w)
-    cong :E: (a :E: Type) -> (b :E: Type) -> (f :E: (_x3 :E: a) -> b) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> Id -E- b -E- (f -E- x) -E- (f -E- y) = \(a :E: Type) (b :E: Type) (f :E: (_x3 :E: a) -> b) (x :E: a) (y :E: a) (eq :E: Id -E- a -E- x -E- y).
-      case -E- eq of [Refl -E- a -E- x] =>
-        case -E- y of [x] =>
-          Refl -E- b -E- (f -E- x)
+    subst :R: (a :E: Type) -> (P :E: (_x1 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (w :R: P -E- x) -> P -E- y 
+      a :E: Type P :E: (_x2 :E: a) -> Type x :E: a w :E: P -E- x
+        subst -E- a -E- P -E- x -E- [x] -E- [Refl -E- a -E- x] = (\w :R: P -E- x. w)
+    cong :E: (a :E: Type) -> (b :E: Type) -> (f :E: (_x3 :E: a) -> b) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> Id -E- b -E- (f -E- x) -E- (f -E- y) 
+      a :E: Type b :E: Type f :E: (_x4 :E: a) -> b x :E: a
+        cong -E- a -E- b -E- f -E- x -E- [x] -E- [Refl -E- a -E- x] = Refl -E- b -E- (f -E- x)
     postulate Bool :E: Type
     postulate T :R: Bool
     postulate F :R: Bool
@@ -412,42 +398,33 @@
     postulate Nil :R: List
     postulate Cons :R: (x :R: Bool) -> (xs :R: List) -> List
     one :E: (x :E: Bool) -> List = (\x :E: Bool. Cons -E- x -E- Nil)
-    app :E: (xs :E: List) -> (ys :E: List) -> List = \(xs :E: List) (ys :E: List).
-      case -E- xs of
-        Nil/E =>
-          ys
-        Cons/E (x :E: Bool) (xs' :E: List) =>
-          Cons -E- x -E- (app -E- xs' -E- ys)
-    appRightNeutral :E: (ys :E: List) -> Id -E- List -E- ys -E- (app -E- ys -E- Nil) = \(ys :E: List).
-      case -E- ys of
-        Nil/E =>
-          Refl -E- List -E- Nil
-        Cons/E (x :E: Bool) (xs :E: List) =>
-          cong -E- List -E- List -E- (Cons -E- x) -E- xs -E- (app -E- xs -E- Nil) -E- (appRightNeutral -E- xs)
-    appAssoc :E: (xs :E: List) -> (ys :E: List) -> (zs :E: List) -> Id -E- List -E- (app -E- (app -E- xs -E- ys) -E- zs) -E- (app -E- xs -E- (app -E- ys -E- zs)) = \(xs :E: List) (ys :E: List) (zs :E: List).
-      case -E- xs of
-        Nil/E =>
-          Refl -E- List -E- (app -E- ys -E- zs)
-        Cons/E (x :E: Bool) (xs' :E: List) =>
-          cong -E- List -E- List -E- (Cons -E- x) -E- (app -E- (app -E- xs' -E- ys) -E- zs) -E- (app -E- xs' -E- (app -E- ys -E- zs)) -E- (appAssoc -E- xs' -E- ys -E- zs)
-    postulate Rev :E: (_x4 :E: List) -> Type
+    app :E: (_x5 :E: List) -> (_x6 :E: List) -> List 
+      ys :E: List
+        app -E- Nil -E- ys = ys
+      x :E: Bool xs :E: List ys :E: List
+        app -E- (Cons -E- x -E- xs) -E- ys = Cons -E- x -E- (app -E- xs -E- ys)
+    appRightNeutral :E: (ys :E: List) -> Id -E- List -E- ys -E- (app -E- ys -E- Nil) 
+      appRightNeutral -E- Nil = Refl -E- List -E- Nil
+      x :E: Bool xs :E: List
+        appRightNeutral -E- (Cons -E- x -E- xs) = cong -E- List -E- List -E- (Cons -E- x) -E- xs -E- (app -E- xs -E- Nil) -E- (appRightNeutral -E- xs)
+    appAssoc :E: (xs :E: List) -> (ys :E: List) -> (zs :E: List) -> Id -E- List -E- (app -E- (app -E- xs -E- ys) -E- zs) -E- (app -E- xs -E- (app -E- ys -E- zs)) 
+      ys :E: List zs :E: List
+        appAssoc -E- Nil -E- ys -E- zs = Refl -E- List -E- (app -E- ys -E- zs)
+      x :E: Bool xs :E: List ys :E: List zs :E: List
+        appAssoc -E- (Cons -E- x -E- xs) -E- ys -E- zs = cong -E- List -E- List -E- (Cons -E- x) -E- (app -E- (app -E- xs -E- ys) -E- zs) -E- (app -E- xs -E- (app -E- ys -E- zs)) -E- (appAssoc -E- xs -E- ys -E- zs)
+    postulate Rev :E: (_x7 :E: List) -> Type
     postulate RNil :R: Rev -E- Nil
     postulate RSnoc :R: (xs :E: List) -> (x :R: Bool) -> (rxs :R: Rev -E- xs) -> Rev -E- (app -E- xs -E- (one -E- x))
-    rev' :R: (xs :E: List) -> (rxs :R: Rev -E- xs) -> (ys :R: List) -> Rev -E- (app -E- xs -E- ys) = \(xs :E: List) (rxs :R: Rev -E- xs) (ys :R: List).
-      case -R- ys of
-        Nil/R =>
-          subst -E- List -E- Rev -E- xs -E- (app -E- xs -E- Nil) -E- (appRightNeutral -E- xs) -R- rxs
-        Cons/R (y :R: Bool) (ys' :R: List) =>
-          subst -E- List -E- Rev -E- (app -E- (app -E- xs -E- (one -E- y)) -E- ys') -E- (app -E- xs -E- (Cons -R- y -R- ys')) -E- (appAssoc -E- xs -E- (one -E- y) -E- ys') -R- (rev' -E- (app -E- xs -E- (one -E- y)) -R- (RSnoc -E- xs -R- y -R- rxs) -R- ys')
+    rev' :R: (xs :E: List) -> (rxs :R: Rev -E- xs) -> (ys :R: List) -> Rev -E- (app -E- xs -E- ys) 
+      xs :E: List rxs :R: Rev -E- xs
+        rev' -E- xs -R- rxs -R- Nil = subst -E- List -E- Rev -E- xs -E- (app -E- xs -E- Nil) -E- (appRightNeutral -E- xs) -R- rxs
+      xs :E: List rxs :R: Rev -E- xs y :R: Bool ys :R: List
+        rev' -E- xs -R- rxs -R- (Cons -R- y -R- ys) = subst -E- List -E- Rev -E- (app -E- (app -E- xs -E- (one -E- y)) -E- ys) -E- (app -E- xs -E- (Cons -R- y -R- ys)) -E- (appAssoc -E- xs -E- (one -E- y) -E- ys) -R- (rev' -E- (app -E- xs -E- (one -E- y)) -R- (RSnoc -E- xs -R- y -R- rxs) -R- ys)
     rev :R: (xs :R: List) -> Rev -E- xs = (\xs :R: List. rev' -E- Nil -R- RNil -R- xs)
-    reverse' :R: (xs :E: List) -> (rxs :R: Rev -E- xs) -> List = \(xs :E: List) (rxs :R: Rev -E- xs).
-      case -R- rxs of
-        RNil/R =>
-          case -E- xs of [Nil] =>
-            Nil
-        RSnoc/R (xs' :E: List) (x :R: Bool) (rxs' :R: Rev -E- xs') =>
-          case -E- xs of [app -E- xs' -E- (one -E- x)] =>
-            Cons -R- x -R- (reverse' -E- xs' -R- rxs')
+    reverse' :R: (xs :E: List) -> (rxs :R: Rev -E- xs) -> List 
+      reverse' -E- [Nil] -R- RNil = Nil
+      xs :E: List x :R: Bool rxs :R: Rev -E- xs
+        reverse' -E- [app -E- xs -E- (one -E- x)] -R- (RSnoc -E- xs -R- x -R- rxs) = Cons -R- x -R- (reverse' -E- xs -R- rxs)
     reverse :R: (xs :R: List) -> List = (\xs :R: List. reverse' -E- xs -R- (rev -R- xs))
     main :R: List = reverse -R- (Cons -R- T -R- (Cons -R- F -R- (Cons -R- T -R- (Cons -R- F -R- Nil))))
   in main
@@ -458,14 +435,12 @@
     postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
     postulate Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
     id :E: (a :E: Type) -> (_x0 :E: a) -> a = (\a :E: Type. (\x :E: a. x))
-    subst :R: (a :E: Type) -> (P :E: (_x1 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (_x2 :R: P -E- x) -> P -E- y = \(a :E: Type) (P :E: (_x1 :E: a) -> Type) (x :E: a) (y :E: a) (eq :E: Id -E- a -E- x -E- y).
-      case -E- eq of [Refl -E- a -E- x] =>
-        case -E- y of [x] =>
-          (\w :R: P -E- x. w)
-    cong :E: (a :E: Type) -> (b :E: Type) -> (f :E: (_x3 :E: a) -> b) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> Id -E- b -E- (f -E- x) -E- (f -E- y) = \(a :E: Type) (b :E: Type) (f :E: (_x3 :E: a) -> b) (x :E: a) (y :E: a) (eq :E: Id -E- a -E- x -E- y).
-      case -E- eq of [Refl -E- a -E- x] =>
-        case -E- y of [x] =>
-          Refl -E- b -E- (f -E- x)
+    subst :R: (a :E: Type) -> (P :E: (_x1 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (w :R: P -E- x) -> P -E- y 
+      a :E: Type P :E: (_x2 :E: a) -> Type x :E: a w :E: P -E- x
+        subst -E- a -E- P -E- x -E- [x] -E- [Refl -E- a -E- x] = (\w :R: P -E- x. w)
+    cong :E: (a :E: Type) -> (b :E: Type) -> (f :E: (_x3 :E: a) -> b) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> Id -E- b -E- (f -E- x) -E- (f -E- y) 
+      a :E: Type b :E: Type f :E: (_x4 :E: a) -> b x :E: a
+        cong -E- a -E- b -E- f -E- x -E- [x] -E- [Refl -E- a -E- x] = Refl -E- b -E- (f -E- x)
     postulate Bool :E: Type
     postulate T :R: Bool
     postulate F :R: Bool
@@ -473,42 +448,33 @@
     postulate Nil :R: List
     postulate Cons :R: (x :R: Bool) -> (xs :R: List) -> List
     one :E: (x :E: Bool) -> List = (\x :E: Bool. Cons -E- x -E- Nil)
-    app :E: (xs :E: List) -> (ys :E: List) -> List = \(xs :E: List) (ys :E: List).
-      case -E- xs of
-        Nil/E =>
-          ys
-        Cons/E (x :E: Bool) (xs' :E: List) =>
-          Cons -E- x -E- (app -E- xs' -E- ys)
-    appRightNeutral :E: (ys :E: List) -> Id -E- List -E- ys -E- (app -E- ys -E- Nil) = \(ys :E: List).
-      case -E- ys of
-        Nil/E =>
-          Refl -E- List -E- Nil
-        Cons/E (x :E: Bool) (xs :E: List) =>
-          cong -E- List -E- List -E- (Cons -E- x) -E- xs -E- (app -E- xs -E- Nil) -E- (appRightNeutral -E- xs)
-    appAssoc :E: (xs :E: List) -> (ys :E: List) -> (zs :E: List) -> Id -E- List -E- (app -E- (app -E- xs -E- ys) -E- zs) -E- (app -E- xs -E- (app -E- ys -E- zs)) = \(xs :E: List) (ys :E: List) (zs :E: List).
-      case -E- xs of
-        Nil/E =>
-          Refl -E- List -E- (app -E- ys -E- zs)
-        Cons/E (x :E: Bool) (xs' :E: List) =>
-          cong -E- List -E- List -E- (Cons -E- x) -E- (app -E- (app -E- xs' -E- ys) -E- zs) -E- (app -E- xs' -E- (app -E- ys -E- zs)) -E- (appAssoc -E- xs' -E- ys -E- zs)
-    postulate Rev :E: (_x4 :E: List) -> Type
+    app :E: (_x5 :E: List) -> (_x6 :E: List) -> List 
+      ys :E: List
+        app -E- Nil -E- ys = ys
+      x :E: Bool xs :E: List ys :E: List
+        app -E- (Cons -E- x -E- xs) -E- ys = Cons -E- x -E- (app -E- xs -E- ys)
+    appRightNeutral :E: (ys :E: List) -> Id -E- List -E- ys -E- (app -E- ys -E- Nil) 
+      appRightNeutral -E- Nil = Refl -E- List -E- Nil
+      x :E: Bool xs :E: List
+        appRightNeutral -E- (Cons -E- x -E- xs) = cong -E- List -E- List -E- (Cons -E- x) -E- xs -E- (app -E- xs -E- Nil) -E- (appRightNeutral -E- xs)
+    appAssoc :E: (xs :E: List) -> (ys :E: List) -> (zs :E: List) -> Id -E- List -E- (app -E- (app -E- xs -E- ys) -E- zs) -E- (app -E- xs -E- (app -E- ys -E- zs)) 
+      ys :E: List zs :E: List
+        appAssoc -E- Nil -E- ys -E- zs = Refl -E- List -E- (app -E- ys -E- zs)
+      x :E: Bool xs :E: List ys :E: List zs :E: List
+        appAssoc -E- (Cons -E- x -E- xs) -E- ys -E- zs = cong -E- List -E- List -E- (Cons -E- x) -E- (app -E- (app -E- xs -E- ys) -E- zs) -E- (app -E- xs -E- (app -E- ys -E- zs)) -E- (appAssoc -E- xs -E- ys -E- zs)
+    postulate Rev :E: (_x7 :E: List) -> Type
     postulate RNil :R: Rev -E- Nil
     postulate RSnoc :R: (xs :E: List) -> (x :R: Bool) -> (rxs :R: Rev -E- xs) -> Rev -E- (app -E- xs -E- (one -E- x))
-    rev' :R: (xs :E: List) -> (rxs :R: Rev -E- xs) -> (ys :R: List) -> Rev -E- (app -E- xs -E- ys) = \(xs :E: List) (rxs :R: Rev -E- xs) (ys :R: List).
-      case -R- ys of
-        Nil/R =>
-          subst -E- List -E- Rev -E- xs -E- (app -E- xs -E- Nil) -E- (appRightNeutral -E- xs) -R- rxs
-        Cons/R (y :R: Bool) (ys' :R: List) =>
-          subst -E- List -E- Rev -E- (app -E- (app -E- xs -E- (one -E- y)) -E- ys') -E- (app -E- xs -E- (Cons -R- y -R- ys')) -E- (appAssoc -E- xs -E- (one -E- y) -E- ys') -R- (rev' -E- (app -E- xs -E- (one -E- y)) -R- (RSnoc -E- xs -R- y -R- rxs) -R- ys')
+    rev' :R: (xs :E: List) -> (rxs :R: Rev -E- xs) -> (ys :R: List) -> Rev -E- (app -E- xs -E- ys) 
+      xs :E: List rxs :R: Rev -E- xs
+        rev' -E- xs -R- rxs -R- Nil = subst -E- List -E- Rev -E- xs -E- (app -E- xs -E- Nil) -E- (appRightNeutral -E- xs) -R- rxs
+      xs :E: List rxs :R: Rev -E- xs y :R: Bool ys :R: List
+        rev' -E- xs -R- rxs -R- (Cons -R- y -R- ys) = subst -E- List -E- Rev -E- (app -E- (app -E- xs -E- (one -E- y)) -E- ys) -E- (app -E- xs -E- (Cons -R- y -R- ys)) -E- (appAssoc -E- xs -E- (one -E- y) -E- ys) -R- (rev' -E- (app -E- xs -E- (one -E- y)) -R- (RSnoc -E- xs -R- y -R- rxs) -R- ys)
     rev :R: (xs :R: List) -> Rev -E- xs = (\xs :R: List. rev' -E- Nil -R- RNil -R- xs)
-    reverse' :R: (xs :E: List) -> (rxs :R: Rev -E- xs) -> List = \(xs :E: List) (rxs :R: Rev -E- xs).
-      case -R- rxs of
-        RNil/R =>
-          case -E- xs of [Nil] =>
-            Nil
-        RSnoc/R (xs' :E: List) (x :R: Bool) (rxs' :R: Rev -E- xs') =>
-          case -E- xs of [app -E- xs' -E- (one -E- x)] =>
-            Cons -R- x -R- (reverse' -E- xs' -R- rxs')
+    reverse' :R: (xs :E: List) -> (rxs :R: Rev -E- xs) -> List 
+      reverse' -E- [Nil] -R- RNil = Nil
+      xs :E: List x :R: Bool rxs :R: Rev -E- xs
+        reverse' -E- [app -E- xs -E- (one -E- x)] -R- (RSnoc -E- xs -R- x -R- rxs) = Cons -R- x -R- (reverse' -E- xs -R- rxs)
     reverse :R: (xs :R: List) -> List = (\xs :R: List. reverse' -E- xs -R- (rev -R- xs))
     main :R: List = reverse -R- (Cons -R- T -R- (Cons -R- F -R- (Cons -R- T -R- (Cons -R- F -R- Nil))))
   in main
@@ -519,14 +485,12 @@
     postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
     postulate Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
     id :E: (a :E: Type) -> (_x0 :E: a) -> a = (\a :E: Type. (\x :E: a. x))
-    subst :R: (a :E: Type) -> (P :E: (_x1 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (_x2 :R: P -E- x) -> P -E- y = \(a :E: Type) (P :E: (_x1 :E: a) -> Type) (x :E: a) (y :E: a) (eq :E: Id -E- a -E- x -E- y).
-      case -E- eq of [Refl -E- a -E- x] =>
-        case -E- y of [x] =>
-          (\w :R: P -E- x. w)
-    cong :E: (a :E: Type) -> (b :E: Type) -> (f :E: (_x3 :E: a) -> b) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> Id -E- b -E- (f -E- x) -E- (f -E- y) = \(a :E: Type) (b :E: Type) (f :E: (_x3 :E: a) -> b) (x :E: a) (y :E: a) (eq :E: Id -E- a -E- x -E- y).
-      case -E- eq of [Refl -E- a -E- x] =>
-        case -E- y of [x] =>
-          Refl -E- b -E- (f -E- x)
+    subst :R: (a :E: Type) -> (P :E: (_x1 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (w :R: P -E- x) -> P -E- y 
+      a :E: Type P :E: (_x2 :E: a) -> Type x :E: a w :E: P -E- x
+        subst -E- a -E- P -E- x -E- [x] -E- [Refl -E- a -E- x] = (\w :R: P -E- x. w)
+    cong :E: (a :E: Type) -> (b :E: Type) -> (f :E: (_x3 :E: a) -> b) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> Id -E- b -E- (f -E- x) -E- (f -E- y) 
+      a :E: Type b :E: Type f :E: (_x4 :E: a) -> b x :E: a
+        cong -E- a -E- b -E- f -E- x -E- [x] -E- [Refl -E- a -E- x] = Refl -E- b -E- (f -E- x)
     postulate Bool :E: Type
     postulate T :R: Bool
     postulate F :R: Bool
@@ -534,42 +498,33 @@
     postulate Nil :R: List
     postulate Cons :R: (x :R: Bool) -> (xs :R: List) -> List
     one :E: (x :E: Bool) -> List = (\x :E: Bool. Cons -E- x -E- Nil)
-    app :E: (xs :E: List) -> (ys :E: List) -> List = \(xs :E: List) (ys :E: List).
-      case -E- xs of
-        Nil/E =>
-          ys
-        Cons/E (x :E: Bool) (xs' :E: List) =>
-          Cons -E- x -E- (app -E- xs' -E- ys)
-    appRightNeutral :E: (ys :E: List) -> Id -E- List -E- ys -E- (app -E- ys -E- Nil) = \(ys :E: List).
-      case -E- ys of
-        Nil/E =>
-          Refl -E- List -E- Nil
-        Cons/E (x :E: Bool) (xs :E: List) =>
-          cong -E- List -E- List -E- (Cons -E- x) -E- xs -E- (app -E- xs -E- Nil) -E- (appRightNeutral -E- xs)
-    appAssoc :E: (xs :E: List) -> (ys :E: List) -> (zs :E: List) -> Id -E- List -E- (app -E- (app -E- xs -E- ys) -E- zs) -E- (app -E- xs -E- (app -E- ys -E- zs)) = \(xs :E: List) (ys :E: List) (zs :E: List).
-      case -E- xs of
-        Nil/E =>
-          Refl -E- List -E- (app -E- ys -E- zs)
-        Cons/E (x :E: Bool) (xs' :E: List) =>
-          cong -E- List -E- List -E- (Cons -E- x) -E- (app -E- (app -E- xs' -E- ys) -E- zs) -E- (app -E- xs' -E- (app -E- ys -E- zs)) -E- (appAssoc -E- xs' -E- ys -E- zs)
-    postulate Rev :E: (_x4 :E: List) -> Type
+    app :E: (_x5 :E: List) -> (_x6 :E: List) -> List 
+      ys :E: List
+        app -E- Nil -E- ys = ys
+      x :E: Bool xs :E: List ys :E: List
+        app -E- (Cons -E- x -E- xs) -E- ys = Cons -E- x -E- (app -E- xs -E- ys)
+    appRightNeutral :E: (ys :E: List) -> Id -E- List -E- ys -E- (app -E- ys -E- Nil) 
+      appRightNeutral -E- Nil = Refl -E- List -E- Nil
+      x :E: Bool xs :E: List
+        appRightNeutral -E- (Cons -E- x -E- xs) = cong -E- List -E- List -E- (Cons -E- x) -E- xs -E- (app -E- xs -E- Nil) -E- (appRightNeutral -E- xs)
+    appAssoc :E: (xs :E: List) -> (ys :E: List) -> (zs :E: List) -> Id -E- List -E- (app -E- (app -E- xs -E- ys) -E- zs) -E- (app -E- xs -E- (app -E- ys -E- zs)) 
+      ys :E: List zs :E: List
+        appAssoc -E- Nil -E- ys -E- zs = Refl -E- List -E- (app -E- ys -E- zs)
+      x :E: Bool xs :E: List ys :E: List zs :E: List
+        appAssoc -E- (Cons -E- x -E- xs) -E- ys -E- zs = cong -E- List -E- List -E- (Cons -E- x) -E- (app -E- (app -E- xs -E- ys) -E- zs) -E- (app -E- xs -E- (app -E- ys -E- zs)) -E- (appAssoc -E- xs -E- ys -E- zs)
+    postulate Rev :E: (_x7 :E: List) -> Type
     postulate RNil :R: Rev -E- Nil
     postulate RSnoc :R: (xs :E: List) -> (x :R: Bool) -> (rxs :R: Rev -E- xs) -> Rev -E- (app -E- xs -E- (one -E- x))
-    rev' :R: (xs :E: List) -> (rxs :R: Rev -E- xs) -> (ys :R: List) -> Rev -E- (app -E- xs -E- ys) = \(xs :E: List) (rxs :R: Rev -E- xs) (ys :R: List).
-      case -R- ys of
-        Nil/R =>
-          subst -E- List -E- Rev -E- xs -E- (app -E- xs -E- Nil) -E- (appRightNeutral -E- xs) -R- rxs
-        Cons/R (y :R: Bool) (ys' :R: List) =>
-          subst -E- List -E- Rev -E- (app -E- (app -E- xs -E- (one -E- y)) -E- ys') -E- (app -E- xs -E- (Cons -R- y -R- ys')) -E- (appAssoc -E- xs -E- (one -E- y) -E- ys') -R- (rev' -E- (app -E- xs -E- (one -E- y)) -R- (RSnoc -E- xs -R- y -R- rxs) -R- ys')
+    rev' :R: (xs :E: List) -> (rxs :R: Rev -E- xs) -> (ys :R: List) -> Rev -E- (app -E- xs -E- ys) 
+      xs :E: List rxs :R: Rev -E- xs
+        rev' -E- xs -R- rxs -R- Nil = subst -E- List -E- Rev -E- xs -E- (app -E- xs -E- Nil) -E- (appRightNeutral -E- xs) -R- rxs
+      xs :E: List rxs :R: Rev -E- xs y :R: Bool ys :R: List
+        rev' -E- xs -R- rxs -R- (Cons -R- y -R- ys) = subst -E- List -E- Rev -E- (app -E- (app -E- xs -E- (one -E- y)) -E- ys) -E- (app -E- xs -E- (Cons -R- y -R- ys)) -E- (appAssoc -E- xs -E- (one -E- y) -E- ys) -R- (rev' -E- (app -E- xs -E- (one -E- y)) -R- (RSnoc -E- xs -R- y -R- rxs) -R- ys)
     rev :R: (xs :R: List) -> Rev -E- xs = (\xs :R: List. rev' -E- Nil -R- RNil -R- xs)
-    reverse' :R: (xs :E: List) -> (rxs :R: Rev -E- xs) -> List = \(xs :E: List) (rxs :R: Rev -E- xs).
-      case -R- rxs of
-        RNil/R =>
-          case -E- xs of [Nil] =>
-            Nil
-        RSnoc/R (xs' :E: List) (x :R: Bool) (rxs' :R: Rev -E- xs') =>
-          case -E- xs of [app -E- xs' -E- (one -E- x)] =>
-            Cons -R- x -R- (reverse' -E- xs' -R- rxs')
+    reverse' :R: (xs :E: List) -> (rxs :R: Rev -E- xs) -> List 
+      reverse' -E- [Nil] -R- RNil = Nil
+      xs :E: List x :R: Bool rxs :R: Rev -E- xs
+        reverse' -E- [app -E- xs -E- (one -E- x)] -R- (RSnoc -E- xs -R- x -R- rxs) = Cons -R- x -R- (reverse' -E- xs -R- rxs)
     reverse :R: (xs :R: List) -> List = (\xs :R: List. reverse' -E- xs -R- (rev -R- xs))
     main :R: List = reverse -R- (Cons -R- T -R- (Cons -R- F -R- (Cons -R- T -R- (Cons -R- F -R- Nil))))
   in main
@@ -581,26 +536,21 @@ Verification successful.
 ### Pruned ###
 
   let
-    subst = (\w. w)
+    subst 
+      subst = (\w. w)
     postulate T : Bool
     postulate F : Bool
     postulate Nil : List
     postulate Cons : (x) -> (xs) -> List
     postulate RNil : Rev
     postulate RSnoc : (x) -> (rxs) -> Rev
-    rev' = \rxs ys.
-      case ys of
-        Nil =>
-          subst rxs
-        Cons y ys' =>
-          subst (rev' (RSnoc y rxs) ys')
+    rev' 
+      rev' rxs Nil = subst rxs
+      rev' rxs (Cons y ys) = subst (rev' (RSnoc y rxs) ys)
     rev = (\xs. rev' RNil xs)
-    reverse' = \rxs.
-      case rxs of
-        RNil =>
-          Nil
-        RSnoc x rxs' =>
-          Cons x (reverse' rxs')
+    reverse' 
+      reverse' RNil = Nil
+      reverse' (RSnoc x rxs) = Cons x (reverse' rxs)
     reverse = (\xs. reverse' (rev xs))
     main = reverse (Cons T (Cons F (Cons T (Cons F Nil))))
   in main
@@ -614,17 +564,7 @@ unerased:
     postulate F : Bool
     postulate Nil : List
     postulate Cons : (x :R: Bool) -> (xs :R: List) -> List
-    postulate RNil : Rev Nil
-    postulate RSnoc : (xs : List) -> (x : Bool) -> (rxs : Rev xs) -> Rev (app xs (one x))
-    reverse' : (xs : List) -> (rxs : Rev xs) -> List = \(xs : List) (rxs : Rev xs).
-      case rxs of
-        RNil =>
-          case xs of [Nil] =>
-            Nil
-        RSnoc (xs' : List) (x : Bool) (rxs' : Rev xs') =>
-          case xs of [app xs' (one x)] =>
-            Cons x (reverse' xs' rxs')
-  in reverse' (Cons T (Cons F (Cons T (Cons F Nil)))) (RSnoc (Cons T (Cons F (Cons T Nil))) F (RSnoc (Cons T (Cons F Nil)) T (RSnoc (Cons T Nil) F (RSnoc Nil T RNil))))
+  in Cons F (Cons T (Cons F (Cons T Nil)))
 
 erased:
   

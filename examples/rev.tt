@@ -11,7 +11,7 @@ subst : (a : Type) -> (P : a -> Type)
   -> (eq : Id a x y)
   -> (w : P x) -> P y.
 
-(a : Type) (P : a -> Type) (x : a) (y : a) (w : P x)
+(a : Type) (P : a -> Type) (x : a) (w : P x)
   subst a P x [x] [Refl a x] = \w : P x. w.
 
 cong : (a : Type) -> (b : Type) -> (f : a -> b)

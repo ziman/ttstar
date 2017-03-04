@@ -8,16 +8,13 @@
     postulate F : Bool
     postulate Unit : Type
     postulate MkUnit : Unit
-    not : (x : Bool) -> Unit = \(x : Bool).
-      case x of
-        T =>
-          MkUnit
-        F =>
-          MkUnit
+    not : (_x0 : Bool) -> Unit 
+      not T = MkUnit
+      not F = MkUnit
     main : Unit = not T
   in main
 
-### Metaified ###
+### Evarified ###
 
   let
     postulate Bool :1: Type
@@ -25,40 +22,32 @@
     postulate F :3: Bool
     postulate Unit :4: Type
     postulate MkUnit :5: Unit
-    not :6: (x :7: Bool) -> Unit = \(x :8: Bool).
-      case -9- x of
-        T/10 =>
-          MkUnit
-        F/11 =>
-          MkUnit
-    main :12: Unit = not -13- T
+    not :6: (_x0 :7: Bool) -> Unit 
+      not -8- T = MkUnit
+      not -9- F = MkUnit
+    main :10: Unit = not -11- T
   in main
 
 ### Constraints ###
 
-[] -> [2,5,6,7,8,9,10,13,R]
-[3] -> [11]
-[11] -> [3]
-[R] -> [12]
+[] -> [2,3,5,6,7,8,9,11,R]
+[R] -> [10]
 
 ### Solution ###
 
-[2,5,6,7,8,9,10,12,13,R]
+[2,3,5,6,7,8,9,10,11,R]
 
 ### Annotated ###
 
   let
     postulate Bool :E: Type
     postulate T :R: Bool
-    postulate F :E: Bool
+    postulate F :R: Bool
     postulate Unit :E: Type
     postulate MkUnit :R: Unit
-    not :R: (x :R: Bool) -> Unit = \(x :R: Bool).
-      case -R- x of
-        T/R =>
-          MkUnit
-        F/E =>
-          MkUnit
+    not :R: (_x0 :R: Bool) -> Unit 
+      not -R- T = MkUnit
+      not -R- F = MkUnit
     main :R: Unit = not -R- T
   in main
 
@@ -67,15 +56,12 @@
   let
     postulate Bool :E: Type
     postulate T :R: Bool
-    postulate F :E: Bool
+    postulate F :R: Bool
     postulate Unit :E: Type
     postulate MkUnit :R: Unit
-    not :R: (x :R: Bool) -> Unit = \(x :R: Bool).
-      case -R- x of
-        T/R =>
-          MkUnit
-        F/E =>
-          MkUnit
+    not :R: (_x0 :R: Bool) -> Unit 
+      not -R- T = MkUnit
+      not -R- F = MkUnit
     main :R: Unit = not -R- T
   in main
 
@@ -84,15 +70,12 @@
   let
     postulate Bool :E: Type
     postulate T :R: Bool
-    postulate F :E: Bool
+    postulate F :R: Bool
     postulate Unit :E: Type
     postulate MkUnit :R: Unit
-    not :R: (x :R: Bool) -> Unit = \(x :R: Bool).
-      case -R- x of
-        T/R =>
-          MkUnit
-        F/E =>
-          MkUnit
+    not :R: (_x0 :R: Bool) -> Unit 
+      not -R- T = MkUnit
+      not -R- F = MkUnit
     main :R: Unit = not -R- T
   in main
 
@@ -104,10 +87,11 @@ Verification successful.
 
   let
     postulate T : Bool
+    postulate F : Bool
     postulate MkUnit : Unit
-    not = \x.
-      case x of T =>
-        MkUnit
+    not 
+      not T = MkUnit
+      not F = MkUnit
     main = not T
   in main
 

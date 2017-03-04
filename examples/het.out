@@ -13,30 +13,18 @@
     postulate U : Type
     postulate B : U
     postulate M : U
-    ty : (u : U) -> Type = \(u : U).
-      case u of
-        B =>
-          Bool
-        M =>
-          Mool
-    f : (u : U) -> (x : ty u) -> Type = \(u : U) (x : ty u).
-      case x of
-        T =>
-          case u of [B] =>
-            Bool
-        F =>
-          case u of [B] =>
-            Bool
-        Q =>
-          case u of [M] =>
-            Mool
-        W =>
-          case u of [M] =>
-            Mool
+    ty : (_x0 : U) -> Type 
+      ty B = Bool
+      ty M = Mool
+    f : (u : U) -> (x : ty u) -> Type 
+      f [B] T = Bool
+      f [B] F = Mool
+      f [M] Q = Bool
+      f [M] W = Mool
     main : Type = Tuple (f B T) (f B F) (f M Q) (f M W)
   in main
 
-### Metaified ###
+### Evarified ###
 
   let
     postulate Tuple :1: (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type
@@ -49,47 +37,34 @@
     postulate U :8: Type
     postulate B :9: U
     postulate M :10: U
-    ty :11: (u :12: U) -> Type = \(u :13: U).
-      case -14- u of
-        B/15 =>
-          Bool
-        M/16 =>
-          Mool
-    f :17: (u :18: U) -> (x :19: ty -20- u) -> Type = \(u :21: U) (x :22: ty -23- u).
-      case -24- x of
-        T/25 =>
-          case -26- u of [B] =>
-            Bool
-        F/27 =>
-          case -28- u of [B] =>
-            Bool
-        Q/29 =>
-          case -30- u of [M] =>
-            Mool
-        W/31 =>
-          case -32- u of [M] =>
-            Mool
-    main :33: Type = Tuple -37- (f -39- B -38- T) -36- (f -41- B -40- F) -35- (f -43- M -42- Q) -34- (f -45- M -44- W)
+    ty :11: (_x0 :12: U) -> Type 
+      ty -13- B = Bool
+      ty -14- M = Mool
+    f :15: (u :16: U) -> (x :17: ty -18- u) -> Type 
+      f -20- [B] -19- T = Bool
+      f -22- [B] -21- F = Mool
+      f -24- [M] -23- Q = Bool
+      f -26- [M] -25- W = Mool
+    main :27: Type = Tuple -31- (f -33- B -32- T) -30- (f -35- B -34- F) -29- (f -37- M -36- Q) -28- (f -39- M -38- W)
   in main
 
 ### Constraints ###
 
-[] -> [1,2,3,4,5,6,7,17,19,22,24,25,27,29,31,34,35,36,37,38,40,42,44,R]
-[18] -> [9,10,21,39,41,43,45]
-[21] -> [18]
-[26] -> [21]
-[28] -> [21]
-[30] -> [21]
-[32] -> [21]
-[39] -> [18]
-[41] -> [18]
-[43] -> [18]
-[45] -> [18]
-[R] -> [33]
+[] -> [1,2,3,4,5,6,7,15,17,19,21,23,25,28,29,30,31,32,34,36,38,R]
+[16] -> [9,10,20,22,24,26,33,35,37,39]
+[20] -> [16]
+[22] -> [16]
+[24] -> [16]
+[26] -> [16]
+[33] -> [16]
+[35] -> [16]
+[37] -> [16]
+[39] -> [16]
+[R] -> [27]
 
 ### Solution ###
 
-[1,2,3,4,5,6,7,17,19,22,24,25,27,29,31,33,34,35,36,37,38,40,42,44,R]
+[1,2,3,4,5,6,7,15,17,19,21,23,25,27,28,29,30,31,32,34,36,38,R]
 
 ### Annotated ###
 
@@ -104,26 +79,14 @@
     postulate U :E: Type
     postulate B :E: U
     postulate M :E: U
-    ty :E: (u :E: U) -> Type = \(u :E: U).
-      case -E- u of
-        B/E =>
-          Bool
-        M/E =>
-          Mool
-    f :R: (u :E: U) -> (x :R: ty -E- u) -> Type = \(u :E: U) (x :R: ty -E- u).
-      case -R- x of
-        T/R =>
-          case -E- u of [B] =>
-            Bool
-        F/R =>
-          case -E- u of [B] =>
-            Bool
-        Q/R =>
-          case -E- u of [M] =>
-            Mool
-        W/R =>
-          case -E- u of [M] =>
-            Mool
+    ty :E: (_x0 :E: U) -> Type 
+      ty -E- B = Bool
+      ty -E- M = Mool
+    f :R: (u :E: U) -> (x :R: ty -E- u) -> Type 
+      f -E- [B] -R- T = Bool
+      f -E- [B] -R- F = Mool
+      f -E- [M] -R- Q = Bool
+      f -E- [M] -R- W = Mool
     main :R: Type = Tuple -R- (f -E- B -R- T) -R- (f -E- B -R- F) -R- (f -E- M -R- Q) -R- (f -E- M -R- W)
   in main
 
@@ -140,26 +103,14 @@
     postulate U :E: Type
     postulate B :E: U
     postulate M :E: U
-    ty :E: (u :E: U) -> Type = \(u :E: U).
-      case -E- u of
-        B/E =>
-          Bool
-        M/E =>
-          Mool
-    f :R: (u :E: U) -> (x :R: ty -E- u) -> Type = \(u :E: U) (x :R: ty -E- u).
-      case -R- x of
-        T/R =>
-          case -E- u of [B] =>
-            Bool
-        F/R =>
-          case -E- u of [B] =>
-            Bool
-        Q/R =>
-          case -E- u of [M] =>
-            Mool
-        W/R =>
-          case -E- u of [M] =>
-            Mool
+    ty :E: (_x0 :E: U) -> Type 
+      ty -E- B = Bool
+      ty -E- M = Mool
+    f :R: (u :E: U) -> (x :R: ty -E- u) -> Type 
+      f -E- [B] -R- T = Bool
+      f -E- [B] -R- F = Mool
+      f -E- [M] -R- Q = Bool
+      f -E- [M] -R- W = Mool
     main :R: Type = Tuple -R- (f -E- B -R- T) -R- (f -E- B -R- F) -R- (f -E- M -R- Q) -R- (f -E- M -R- W)
   in main
 
@@ -176,26 +127,14 @@
     postulate U :E: Type
     postulate B :E: U
     postulate M :E: U
-    ty :E: (u :E: U) -> Type = \(u :E: U).
-      case -E- u of
-        B/E =>
-          Bool
-        M/E =>
-          Mool
-    f :R: (u :E: U) -> (x :R: ty -E- u) -> Type = \(u :E: U) (x :R: ty -E- u).
-      case -R- x of
-        T/R =>
-          case -E- u of [B] =>
-            Bool
-        F/R =>
-          case -E- u of [B] =>
-            Bool
-        Q/R =>
-          case -E- u of [M] =>
-            Mool
-        W/R =>
-          case -E- u of [M] =>
-            Mool
+    ty :E: (_x0 :E: U) -> Type 
+      ty -E- B = Bool
+      ty -E- M = Mool
+    f :R: (u :E: U) -> (x :R: ty -E- u) -> Type 
+      f -E- [B] -R- T = Bool
+      f -E- [B] -R- F = Mool
+      f -E- [M] -R- Q = Bool
+      f -E- [M] -R- W = Mool
     main :R: Type = Tuple -R- (f -E- B -R- T) -R- (f -E- B -R- F) -R- (f -E- M -R- Q) -R- (f -E- M -R- W)
   in main
 
@@ -213,16 +152,11 @@ Verification successful.
     postulate Mool : Type
     postulate Q : Mool
     postulate W : Mool
-    f = \x.
-      case x of
-        T =>
-          Bool
-        F =>
-          Bool
-        Q =>
-          Mool
-        W =>
-          Mool
+    f 
+      f T = Bool
+      f F = Mool
+      f Q = Bool
+      f W = Mool
     main = Tuple (f T) (f F) (f Q) (f W)
   in main
 
@@ -234,7 +168,7 @@ unerased:
     postulate Tuple : (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type
     postulate Bool : Type
     postulate Mool : Type
-  in Tuple Bool Bool Mool Mool
+  in Tuple Bool Mool Bool Mool
 
 erased:
   
@@ -242,5 +176,5 @@ erased:
     postulate Tuple : (x) -> (y) -> (z) -> (w) -> Type
     postulate Bool : Type
     postulate Mool : Type
-  in Tuple Bool Bool Mool Mool
+  in Tuple Bool Mool Bool Mool
 

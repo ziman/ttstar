@@ -15,7 +15,7 @@
     main : T = Op test1 test2
   in main
 
-### Metaified ###
+### Evarified ###
 
   let
     postulate T :1: Type
