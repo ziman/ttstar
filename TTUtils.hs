@@ -137,6 +137,11 @@ insertDefs :: [Def r] -> Ctx r -> Ctx r
 insertDefs (d:ds) = insertDefs ds . M.insert (defName d) d
 insertDefs []     = id
 
+freePatVars :: Pat r -> S.Set Name
+freePatVars (PV n) = S.singleton n
+freePatVars (PApp r f x) = freePatVars f `S.union` freePatVars x
+freePatVars (PForced tm) = S.empty
+
 rename :: Termy a => Name -> Name -> a r -> a r
 rename fromN toN = subst fromN (V toN)
 

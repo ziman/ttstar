@@ -41,6 +41,7 @@ data TCError
     | NonPatvar Name
     | InvalidPattern (Pat Evar)
     | UncheckableTerm TTevar
+    | UnmatchedPatvars [Name]
     | Other String
     deriving (Eq, Ord, Show)
 
@@ -195,6 +196,9 @@ inferDef d@(Def n r ty (Clauses cls) _noCs) = bt ("DEF-CLAUSES", n) $ do
 
 inferClause :: Clause Evar -> TC (Constrs Evar)
 inferClause (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
+    case S.toList (S.fromList (map defName pvs) S.\\ freePatVars lhs) of
+        [] -> return ()  -- no bogus patvars
+        ns -> tcfail $ UnmatchedPatvars ns
     pvs' <- inferDefs' pvs
     withs pvs' $ do
         (lty, lcs) <- inferPat (Fixed R) lhs

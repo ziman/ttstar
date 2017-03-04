@@ -8,6 +8,7 @@ import TTUtils
 import Normalise (whnf)
 import Pretty ()
 
+import qualified Data.Set as S
 import qualified Data.Map as M
 import Control.Monad.Trans.Except
 import Control.Monad.Trans.Class
@@ -21,6 +22,7 @@ data VerError
     | NotImplemented
     | NotConstructor Name
     | CantConvert Term Term
+    | UnmatchedPatvars [Name]
     deriving Show
 
 data VerFailure = VerFailure VerError [String]
@@ -137,6 +139,9 @@ verDef d@(Def n r ty (Clauses cls) cs) = bt ("DEF-CLAUSES", n) $ do
 
 verClause :: Relevance -> Clause Relevance -> Ver ()
 verClause r (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
+    case S.toList (S.fromList (map defName pvs) S.\\ freePatVars lhs) of
+        [] -> return ()  -- no bogus patvars
+        ns -> verFail $ UnmatchedPatvars ns
     verDefs pvs
     withs pvs $ do
         lhsTy <- verPat r lhs
