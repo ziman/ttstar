@@ -1,1 +1,2 @@
-main (x : Type) :R: Type = x.
+-- vim: ft=idris
+main \(x : Type) :R: Type = x.
