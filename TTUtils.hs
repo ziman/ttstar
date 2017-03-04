@@ -142,6 +142,12 @@ freePatVars (PV n) = S.singleton n
 freePatVars (PApp r f x) = freePatVars f `S.union` freePatVars x
 freePatVars (PForced tm) = S.empty
 
+unApplyPat :: Pat r -> (Pat r, [(r, Pat r)])
+unApplyPat pat = ua pat []
+  where
+    ua (PApp r f x) args = ua f ((r, x):args)
+    ua pat args = (pat, args)
+
 rename :: Termy a => Name -> Name -> a r -> a r
 rename fromN toN = subst fromN (V toN)
 

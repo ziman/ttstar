@@ -1,16 +1,11 @@
 module Codegen.Scheme (codegen) where
 
-{- This does not work since we switched to clauses.
- -
- - Both Chicken Scheme and Racket have pattern matching.
- - TODO: implement codegen for that
- -
- -}
-
 import TT
+import TTUtils
 import Pretty ()
 import Util.PrettyPrint
 import Codegen.Common
+import qualified Data.Set as S
 
 indent :: Doc -> Doc
 indent = nest 2
@@ -39,7 +34,7 @@ cgBody :: Name -> TT () -> Body () -> Doc
 cgBody n ty (Abstract Postulate) = cgCtor n ty
 cgBody n ty (Abstract Var) = error $ "let-bound variable: " ++ show n
 cgBody n ty (Term tm) = cgTm tm
-cgBody n ty (Clauses cs) = text "(error \"NOT IMPLEMENTED\")"
+cgBody n ty (Clauses cs) = cgMatchLambda cs
 
 cgLetRec :: [Def ()] -> Doc -> Doc
 cgLetRec ds = cgLet' "letrec*" [(n, cgBody n ty b) | Def n () ty b _cs <- ds]
@@ -66,23 +61,39 @@ cgCtor n ty
   where
     argNs = uniqNames $ argNames ty
 
-{-
-cgBinds :: [Name] -> Name -> Doc -> Doc
-cgBinds [] args rhs = rhs
-cgBinds (n:ns) args rhs =
-    cgLetStar [
-        (subvalsN, cgApp (text "cdr") (cgName args)),
-        (n, cgApp (text "car") (cgName subvalsN))
-    ] $ cgBinds ns subvalsN rhs
+cgMatchLambda :: [Clause ()] -> Doc
+cgMatchLambda cs = parens (
+        text "match-lambda*"  -- the asterisk means any number of arguments
+        $$ indent (vcat $ map cgMatchClause cs)
+    )
+
+cgMatchClause :: Clause () -> Doc
+cgMatchClause (Clause pvs lhs rhs)
+    = brackets (
+        parens (cgClauseLHS patvars lhs)
+        $$ indent (cgTm rhs)
+    )
   where
-    subvalsN = let UN s = n in UN ("_args-" ++ s)
+    patvars = S.fromList $ map defName pvs
 
-cgCase :: Doc -> [Doc] -> Doc
-cgCase scrut alts = parens (text "case" <+> scrut $+$ indent (vcat alts))
+cgClauseLHS :: S.Set Name -> Pat () -> Doc
+cgClauseLHS pvs pat =
+    hsep [cgPat pvs p | (r, p) <- args]
+  where
+    (_f, args) = unApplyPat pat
 
-cgLetStar :: [(Name, Doc)] -> Doc -> Doc
-cgLetStar = cgLet' "let*"
--}
+cgPat :: S.Set Name -> Pat () -> Doc
+cgPat pvs (PV n)
+    | n `S.member` pvs = cgName n
+    | otherwise = parens (text "'" <> cgName n)
+
+cgPat pvs pat@(PApp r f x)
+    | (PV cn, args) <- unApplyPat pat
+    = parens (hsep $ (text "'" <> cgName cn) : map (cgPat pvs . snd) args)
+
+cgPat pvs pat@(PApp r f x) = error $ "can't compile pattern: " ++ show pat
+
+cgPat pvs (PForced tm) = text "_"
 
 cgLambda :: Name -> Doc -> Doc
 cgLambda n body = parens (text "lambda" <+> parens (cgName n) $+$ indent body)
@@ -122,9 +133,11 @@ argNames (Bind Pi ds rhs) = map defName ds ++ argNames rhs
 argNames _ = []
 
 cgProgram :: Program () -> Doc
-cgProgram prog = parens (
-    text "print" $+$ indent (cgTm prog)
-  ) -- $+$ parens (text "newline")  -- newline for Racket
+cgProgram prog = 
+    parens (text "require-extension" <+> text "matchable")
+    $$ parens (
+        text "print" $+$ indent (cgTm prog)
+    ) -- $+$ parens (text "newline")  -- newline for Racket
 
 codegen :: Codegen
 codegen = Codegen

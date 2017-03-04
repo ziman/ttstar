@@ -29,6 +29,11 @@ scheme() {
     scheme_csi "$@"
 }
 
+install() {
+    chicken-install matchable
+    # pattern matching is in racket base already
+}
+
 cabal install -j1 \
     || die "could not install"
 
