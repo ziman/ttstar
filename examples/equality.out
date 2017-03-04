@@ -15,7 +15,7 @@
       notnot T = Refl Bool T
       notnot F = Refl Bool F
     subst : (a : Type) -> (P : (_x1 : a) -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -> (w : P x) -> P y 
-      a : Type P : (_x2 : a) -> Type x : a w : P x
+      a : Type P : (_x2 : a) -> Type x : a
         subst a P x [x] [Refl a x] = (\w : P x. w)
     main : Id Bool F (not (not F)) = notnot (subst Type (\a : Type. a) Bool Bool (Refl Type Bool) F)
   in main
@@ -35,72 +35,72 @@
       notnot -25- T = Refl -27- Bool -26- T
       notnot -28- F = Refl -30- Bool -29- F
     subst :31: (a :32: Type) -> (P :33: (_x1 :34: a) -> Type) -> (x :35: a) -> (y :36: a) -> (eq :37: Id -40- a -39- x -38- y) -> (w :41: P -42- x) -> P -43- y 
-      a :44: Type P :45: (_x2 :46: a) -> Type x :47: a w :48: P -49- x
-        subst -54- a -53- P -52- x -51- [x] -50- [Refl -56- a -55- x] = (\w :57: P -58- x. w)
-    main :59: Id -62- Bool -61- F -60- (not -63- (not -64- F)) = notnot -65- (subst -71- Type -70- (\a :72: Type. a) -69- Bool -68- Bool -67- (Refl -74- Type -73- Bool) -66- F)
+      a :44: Type P :45: (_x2 :46: a) -> Type x :47: a
+        subst -52- a -51- P -50- x -49- [x] -48- [Refl -54- a -53- x] = (\w :55: P -56- x. w)
+    main :57: Id -60- Bool -59- F -58- (not -61- (not -62- F)) = notnot -63- (subst -69- Type -68- (\a :70: Type. a) -67- Bool -66- Bool -65- (Refl -72- Type -71- Bool) -64- F)
   in main
 
 ### Constraints ###
 
-[] -> [2,3,8,18,19,25,28,31,41,57,65,66,R]
+[] -> [2,3,8,18,19,25,28,31,41,55,63,64,R]
 [9] -> [1,27,30]
-[9,37] -> [74,E]
+[9,37] -> [72,E]
 [10] -> [26,29]
-[10,37] -> [1,73]
+[10,37] -> [1,71]
 [11] -> [20,38]
 [11,37] -> [38]
 [12] -> [21,39]
 [12,37] -> [39]
 [13] -> [22,40]
 [13,37] -> [40]
-[20] -> [11,60]
-[21] -> [12,61]
-[22] -> [13,62]
+[20] -> [11,58]
+[21] -> [12,59]
+[22] -> [13,60]
 [26] -> [10]
 [27] -> [9]
 [29] -> [10]
 [30] -> [9]
-[32] -> [54,71,E]
-[33] -> [53,70,72]
-[33,34] -> [72]
-[33,72] -> [34]
+[32] -> [52,69,E]
+[33] -> [51,68,70]
+[33,34] -> [70]
+[33,70] -> [34]
 [34] -> [46]
-[35] -> [1,52,69]
-[36] -> [1,51,68]
-[37] -> [50,67]
+[35] -> [1,50,67]
+[36] -> [1,49,66]
+[37] -> [48,65]
 [37,38] -> [11]
 [37,39] -> [12]
 [37,40] -> [13]
-[37,73] -> [10]
-[37,74] -> [9]
+[37,71] -> [10]
+[37,72] -> [9]
 [38] -> [11]
 [39] -> [12]
 [40] -> [13]
-[42] -> [58]
-[43] -> [58]
-[44] -> [54]
-[45] -> [53]
+[42] -> [56]
+[43] -> [56]
+[44] -> [52]
+[45] -> [51]
 [46] -> [34]
-[47] -> [52]
-[50] -> [37]
-[51] -> [36]
-[52] -> [35,47]
-[53] -> [33,45]
-[54] -> [32,44]
-[58] -> [42,43]
-[60] -> [20]
-[61] -> [21]
-[62] -> [22]
-[67] -> [37]
-[68] -> [36]
-[69] -> [35]
-[70] -> [33]
-[71] -> [32]
-[R] -> [59]
+[47] -> [50]
+[48] -> [37]
+[49] -> [36]
+[50] -> [35,47]
+[51] -> [33,45]
+[52] -> [32,44]
+[56] -> [42,43]
+[58] -> [20]
+[59] -> [21]
+[60] -> [22]
+[65] -> [37]
+[66] -> [36]
+[67] -> [35]
+[68] -> [33]
+[69] -> [32]
+[R] -> [57]
 
 ### Solution ###
 
-[2,3,8,18,19,25,28,31,41,57,59,65,66,R]
+[2,3,8,18,19,25,28,31,41,55,57,63,64,R]
 
 ### Annotated ###
 
@@ -117,7 +117,7 @@
       notnot -R- T = Refl -E- Bool -E- T
       notnot -R- F = Refl -E- Bool -E- F
     subst :R: (a :E: Type) -> (P :E: (_x1 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (w :R: P -E- x) -> P -E- y 
-      a :E: Type P :E: (_x2 :E: a) -> Type x :E: a w :E: P -E- x
+      a :E: Type P :E: (_x2 :E: a) -> Type x :E: a
         subst -E- a -E- P -E- x -E- [x] -E- [Refl -E- a -E- x] = (\w :R: P -E- x. w)
     main :R: Id -E- Bool -E- F -E- (not -E- (not -E- F)) = notnot -R- (subst -E- Type -E- (\a :E: Type. a) -E- Bool -E- Bool -E- (Refl -E- Type -E- Bool) -R- F)
   in main
@@ -137,7 +137,7 @@
       notnot -R- T = Refl -E- Bool -E- T
       notnot -R- F = Refl -E- Bool -E- F
     subst :R: (a :E: Type) -> (P :E: (_x1 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (w :R: P -E- x) -> P -E- y 
-      a :E: Type P :E: (_x2 :E: a) -> Type x :E: a w :E: P -E- x
+      a :E: Type P :E: (_x2 :E: a) -> Type x :E: a
         subst -E- a -E- P -E- x -E- [x] -E- [Refl -E- a -E- x] = (\w :R: P -E- x. w)
     main :R: Id -E- Bool -E- F -E- (not -E- (not -E- F)) = notnot -R- (subst -E- Type -E- (\a :E: Type. a) -E- Bool -E- Bool -E- (Refl -E- Type -E- Bool) -R- F)
   in main
@@ -157,7 +157,7 @@
       notnot -R- T = Refl -E- Bool -E- T
       notnot -R- F = Refl -E- Bool -E- F
     subst :R: (a :E: Type) -> (P :E: (_x1 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (w :R: P -E- x) -> P -E- y 
-      a :E: Type P :E: (_x2 :E: a) -> Type x :E: a w :E: P -E- x
+      a :E: Type P :E: (_x2 :E: a) -> Type x :E: a
         subst -E- a -E- P -E- x -E- [x] -E- [Refl -E- a -E- x] = (\w :R: P -E- x. w)
     main :R: Id -E- Bool -E- F -E- (not -E- (not -E- F)) = notnot -R- (subst -E- Type -E- (\a :E: Type. a) -E- Bool -E- Bool -E- (Refl -E- Type -E- Bool) -R- F)
   in main
