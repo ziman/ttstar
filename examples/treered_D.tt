@@ -12,30 +12,15 @@ data Maybe : Type -> Type where
   Nothing : (a : Type) -> Maybe a,
   Just : (a : Type) -> (x : a) -> Maybe a.
 
-f (x : Maybe Bool) : Bool
-  = case x of {
-      Just (a : Type) (b : Bool) =>
-        case a of [Bool] =>
-          b,
+f : (x : Maybe Bool) -> Bool.
+  (b : Bool)
+    f (Just [Bool] b) = b,
+  f (Nothing [Bool]) = False.
 
-      Nothing (a : Type) =>
-        case a of [Bool] =>
-          False
-    }
-
-g (x : Maybe Bool) : Foo (f x)
-  = case x of {
-      Just (a : Type) (b : Bool) =>
-        case a of [Bool] =>
-          case b of {
-            True => Yeah,
-            False => Nope
-          },
-
-      Nothing (a : Type) =>
-        case a of [Bool] =>
-          Nope
-    }
+g : (x : Maybe Bool) -> Foo (f x).
+g (Just [Bool] True) = Yeah,
+g (Just [Bool] False) = Nope,
+g (Nothing [Bool]) = Nope.
 
 main : Foo True
   = g (Just Bool True).

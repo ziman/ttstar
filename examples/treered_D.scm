@@ -1,18 +1,13 @@
 (print
   (letrec* (
     (True (list 'True))
+    (False (list 'False))
     (Yeah (list 'Yeah))
     (Nope (list 'Nope))
+    (Nothing (list 'Nothing))
     (Just (lambda (x)
       (list 'Just x)))
-    (g (lambda (x)
-      (case (car x)
-        ((Just) (let* (
-          (_args-b (cdr x))
-          (b (car _args-b))
-        )
-          (case (car b)
-            ((True) Yeah)))))))
+    (g (error "NOT IMPLEMENTED"))
     (main (g (Just True)))
   )
     main))
