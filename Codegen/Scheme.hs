@@ -62,10 +62,13 @@ cgCtor n ty
     argNs = uniqNames $ argNames ty
 
 cgMatchLambda :: [Clause ()] -> Doc
-cgMatchLambda cs = parens (
-        text "match-lambda*"  -- the asterisk means any number of arguments
+cgMatchLambda cs = nestLambdas ns $ parens (
+        text "match" <+> parens (text "list" <+> hsep (map cgName ns))
         $$ indent (vcat $ map cgMatchClause cs)
     )
+  where
+    ns = [MN "e" i | i <- [0..nargs-1]]
+    nargs = maximum [length . snd . unApplyPat $ lhs | Clause pvs lhs rhs <- cs]
 
 cgMatchClause :: Clause () -> Doc
 cgMatchClause (Clause pvs lhs rhs)
