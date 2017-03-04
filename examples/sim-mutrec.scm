@@ -1,3 +1,4 @@
+(require-extension matchable)
 (print
   (letrec* (
     (True (list 'True))
@@ -7,7 +8,26 @@
       (list 'S _x0)))
     (Even (list 'Even))
     (Odd (list 'Odd))
-    (fun (error "NOT IMPLEMENTED"))
+    (fun (lambda (_e0)
+      (match (list _e0)
+        [(('Even))
+          (lambda (n)
+            (letrec* ((f (lambda (_e0)
+              (match (list _e0)
+                [(('Z))
+                  True]
+                [(('S m))
+                  ((fun Odd) m)]))))
+              (f n)))]
+        [(('Odd))
+          (lambda (n)
+            (letrec* ((f (lambda (_e0)
+              (match (list _e0)
+                [(('Z))
+                  False]
+                [(('S m))
+                  ((fun Even) m)]))))
+              (f n)))])))
     (even (fun Even))
     (main (even (S (S (S (S (S (S (S (S Z))))))))))
   )

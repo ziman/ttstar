@@ -1,3 +1,4 @@
+(require-extension matchable)
 (print
   (letrec* (
     (A (list 'A))

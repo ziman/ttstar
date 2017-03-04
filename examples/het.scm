@@ -1,3 +1,4 @@
+(require-extension matchable)
 (print
   (letrec* (
     (Tuple (lambda (x)
@@ -11,7 +12,16 @@
     (Mool (list 'Mool))
     (Q (list 'Q))
     (W (list 'W))
-    (f (error "NOT IMPLEMENTED"))
+    (f (lambda (_e0)
+      (match (list _e0)
+        [(('T))
+          Bool]
+        [(('F))
+          Mool]
+        [(('Q))
+          Bool]
+        [(('W))
+          Mool])))
     (main ((((Tuple (f T)) (f F)) (f Q)) (f W)))
   )
     main))

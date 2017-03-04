@@ -1,3 +1,4 @@
+(require-extension matchable)
 (print
   (letrec* (
     (T (list 'T))
@@ -8,7 +9,12 @@
     (id (lambda (x)
       x))
     (constT T)
-    (f (error "NOT IMPLEMENTED"))
+    (f (lambda (_e0)
+      (match (list _e0)
+        [(('T))
+          id]
+        [(('F))
+          constT])))
     (main ((TB ((f T) F)) (f F)))
   )
     main))

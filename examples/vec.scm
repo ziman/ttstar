@@ -1,3 +1,4 @@
+(require-extension matchable)
 (print
   (letrec* (
     (Z (list 'Z))
@@ -7,7 +8,13 @@
     (Cons (lambda (x)
       (lambda (xs)
         (list 'Cons x xs))))
-    (append_TT (error "NOT IMPLEMENTED"))
+    (append_TT (lambda (_e0)
+      (lambda (_e1)
+        (match (list _e0 _e1)
+          [(('Nil) ys)
+            ys]
+          [(('Cons x xs) ys)
+            ((Cons x) ((append_TT xs) ys))]))))
     (main ((append_TT Nil) ((Cons (S (S (S (S Z))))) Nil)))
   )
     main))

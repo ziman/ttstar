@@ -1,3 +1,4 @@
+(require-extension matchable)
 (print
   (letrec* (
     (Z (list 'Z))
@@ -6,7 +7,13 @@
     (Plus (lambda (x)
       (lambda (y)
         (list 'Plus x y))))
-    (id (error "NOT IMPLEMENTED"))
+    (id (lambda (_e0)
+      (match (list _e0)
+        [(('Z))
+          Z]
+        [(('S y))
+          (letrec* ((result (S y)))
+            result)])))
     (const_3 (lambda (x)
       (S (S (S Z)))))
     (two (S (S Z)))
