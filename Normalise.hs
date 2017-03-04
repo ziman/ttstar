@@ -130,20 +130,19 @@ red form ctx t@(App r f x)
         WHNF -> x
 
 matchClause :: IsRelevance r => Ctx r -> TT r -> Clause r -> Maybe (TT r)
-matchClause ctx tm (Clause pvs lhs rhs)
-    = substsSafe . M.toList <$> match ctx' lhs tm <*> pure rhs
+matchClause ctx tm (Clause pvs lhs rhs) = do
+    pvSubst <- match ctx' lhs tm
+    return $ safeSubst pvs [pvSubst M.! defName d | d <- pvs] rhs
   where
-    ctx' = M.fromList [(defName d, d)|d<-pvs] `M.union` ctx
+    ctx' = M.fromList [(defName d, d) | d <- pvs] `M.union` ctx
 
--- We just turn it into a lambda and let the rest of the system
--- take care of name capture and alpha conversion.
-substsSafe :: [(Name, TT r)] -> TT r -> TT r
-substsSafe [] tm = tm
-substsSafe ((n,x):xs) tm =
-    App undefined
-        (Bind Lam [Def n undefined undefined (Abstract Var) undefined]
-            $ substsSafe xs tm)
-        x
+safeSubst :: [Def r] -> [TT r] -> TT r -> TT r
+safeSubst [] [] rhs = rhs
+safeSubst (d:ds) (t:ts) rhs
+    = safeSubst ds' ts rhs'
+  where
+    (ds', rhs') = substBinder (defName d) t ds rhs
+safeSubst _ _ rhs = error $ "safeSubst: defs vs. terms do not match up"
 
 match :: IsRelevance r => Ctx r -> Pat r -> TT r -> Maybe (M.Map Name (TT r))
 match ctx (PV n) tm'
