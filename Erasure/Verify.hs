@@ -22,7 +22,8 @@ data VerError
     | NotImplemented
     | NotConstructor Name
     | CantConvert Term Term
-    | UnmatchedPatvars [Name]
+    | PatvarsPatternMismatch [Name] [Name]
+    | NonLinearPattern (Pat Relevance)
     deriving Show
 
 data VerFailure = VerFailure VerError [String]
@@ -139,14 +140,25 @@ verDef d@(Def n r ty (Clauses cls) cs) = bt ("DEF-CLAUSES", n) $ do
 
 verClause :: Relevance -> Clause Relevance -> Ver ()
 verClause r (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
-    case S.toList (S.fromList (map defName pvs) S.\\ freePatVars lhs) of
-        [] -> return ()  -- no bogus patvars
-        ns -> verFail $ UnmatchedPatvars ns
+    -- check patvars
+    ctx <- getCtx
+    let pvsN = S.fromList (map defName pvs)
+    patN <- case freePatVars ctx lhs' of
+        Just pvs -> return pvs
+        Nothing  -> verFail $ NonLinearPattern lhs
+
+    if pvsN /= patN
+        then verFail $ PatvarsPatternMismatch (S.toList pvsN) (S.toList patN)
+        else return ()
+
     verDefs pvs
     withs pvs $ do
         lhsTy <- verPat r lhs
         rhsTy <- verTm r rhs
         conv r lhsTy rhsTy
+  where
+    (PV f, args) = unApplyPat lhs
+    lhs' = mkAppPat (PForced $ V f) args
 
 verTm :: Relevance -> Term -> Ver Type
 verTm E (V n) = bt ("VAR-E", n) $ do

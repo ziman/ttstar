@@ -3,6 +3,7 @@ module TTUtils where
 
 import TT
 
+import Control.Monad
 import qualified Data.Map as M
 import qualified Data.Set as S
 
@@ -15,6 +16,16 @@ unApply tm = ua tm []
 mkApp :: TT r -> [(r, TT r)] -> TT r
 mkApp f [] = f
 mkApp f ((r, x) : xs) = mkApp (App r f x) xs
+
+unApplyPat :: Pat r -> (Pat r, [(r, Pat r)])
+unApplyPat pat = ua pat []
+  where
+    ua (PApp r f x) args = ua f ((r, x):args)
+    ua pat args = (pat, args)
+
+mkAppPat :: Pat r -> [(r, Pat r)] -> Pat r
+mkAppPat f [] = f
+mkAppPat f ((r, x) : xs) = mkAppPat (PApp r f x) xs
 
 class Termy f where
     subst :: Name -> TT r -> f r -> f r
@@ -137,16 +148,19 @@ insertDefs :: [Def r] -> Ctx r -> Ctx r
 insertDefs (d:ds) = insertDefs ds . M.insert (defName d) d
 insertDefs []     = id
 
-freePatVars :: Pat r -> S.Set Name
-freePatVars (PV n) = S.singleton n
-freePatVars (PApp r f x) = freePatVars f `S.union` freePatVars x
-freePatVars (PForced tm) = S.empty
+freePatVars :: Ctx r -> Pat r -> Maybe (S.Set Name)
+freePatVars ctx (PV n)
+    | Just (Def _n _r _ty (Abstract Postulate) _cs) <- M.lookup n ctx
+    = Just S.empty
 
-unApplyPat :: Pat r -> (Pat r, [(r, Pat r)])
-unApplyPat pat = ua pat []
+    | otherwise = Just $ S.singleton n
+freePatVars ctx (PForced tm) = Just S.empty
+freePatVars ctx (PApp r f x)
+    = join (linUnion <$> freePatVars ctx f <*> freePatVars ctx x)
   where
-    ua (PApp r f x) args = ua f ((r, x):args)
-    ua pat args = (pat, args)
+    linUnion x y
+        | S.null (S.intersection x y) = Just $ S.union x y
+        | otherwise = Nothing
 
 rename :: Termy a => Name -> Name -> a r -> a r
 rename fromN toN = subst fromN (V toN)

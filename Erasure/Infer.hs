@@ -41,7 +41,8 @@ data TCError
     | NonPatvar Name
     | InvalidPattern (Pat Evar)
     | UncheckableTerm TTevar
-    | UnmatchedPatvars [Name]
+    | PatvarsPatternMismatch [Name] [Name]
+    | NonlinearPattern (Pat Evar)
     | Other String
     deriving (Eq, Ord, Show)
 
@@ -196,15 +197,26 @@ inferDef d@(Def n r ty (Clauses cls) _noCs) = bt ("DEF-CLAUSES", n) $ do
 
 inferClause :: Clause Evar -> TC (Constrs Evar)
 inferClause (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
-    case S.toList (S.fromList (map defName pvs) S.\\ freePatVars lhs) of
-        [] -> return ()  -- no bogus patvars
-        ns -> tcfail $ UnmatchedPatvars ns
+    -- check patvars
+    ctx <- getCtx
+    let pvsN = S.fromList (map defName pvs)
+    patN <- case freePatVars ctx lhs' of
+        Just pvs -> return pvs
+        Nothing  -> tcfail $ NonlinearPattern lhs
+
+    if pvsN /= patN
+        then tcfail $ PatvarsPatternMismatch (S.toList pvsN) (S.toList patN)
+        else return ()
+
     pvs' <- inferDefs' pvs
     withs pvs' $ do
         (lty, lcs) <- inferPat (Fixed R) lhs
         (rty, rcs) <- inferTm rhs
         ccs <- conv lty rty
         return $ lcs /\ rcs /\ ccs
+  where
+    (PV f, args) = unApplyPat lhs
+    lhs' = mkAppPat (PForced $ V f) args
 
 -- the relevance evar "s" stands for "surrounding"
 -- it's the relevance of the whole pattern
