@@ -1,0 +1,6 @@
+-- vim: ft=idris
+f : Type -> Type -> Type.
+  (x : Type)
+    f x x = x.
+
+main : Type = f Type Type.

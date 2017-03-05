@@ -1,0 +1,50 @@
+-- vim: ft=idris
+
+### Desugared ###
+
+  let
+    f : (_x0 : Type) -> (_x1 : Type) -> Type 
+      x : Type
+        f x x = x
+    main : Type = f Type Type
+  in main
+
+### Evarified ###
+
+  let
+    f :1: (_x0 :2: Type) -> (_x1 :3: Type) -> Type 
+      x :4: Type
+        f -6- x -5- x = x
+    main :7: Type = f -9- Type -8- Type
+  in main
+
+### Constraints ###
+
+ttstar: Traceback:
+1. In context:
+  Type : Type
+
+("LET",
+  let
+    f :1: (_x0 :2: Type) -> (_x1 :3: Type) -> Type 
+      x :4: Type
+        f -6- x -5- x = x
+    main :7: Type = f -9- Type -8- Type
+  in main)
+
+2. In context:
+  Type : Type
+  f : (_x0 :2: Type) -> (_x1 :3: Type) -> Type
+
+("DEF-CLAUSES",f)
+
+3. In context:
+  Type : Type
+  f : (_x0 :2: Type) -> (_x1 :3: Type) -> Type
+
+("CLAUSE",PApp 5 (PApp 6 (PV f) (PV x)) (PV x))
+
+Error: NonlinearPattern (PApp 5 (PApp 6 (PV f) (PV x)) (PV x))
+
+CallStack (from HasCallStack):
+  error, called at Main.hs:130:38 in main:Main
