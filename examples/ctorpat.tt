@@ -1,0 +1,15 @@
+-- vim: ft=idris
+
+data B : Type where
+  T : B,
+  F : B.
+
+data K : Type where
+  P : B -> K,
+  Q : B -> K.
+
+f : K -> (B -> K).
+  (c : B -> K) (x : B)
+    f (c x) = c.
+
+main : B -> K = f (P T).
