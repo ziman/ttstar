@@ -1,0 +1,129 @@
+-- vim: ft=idris
+
+### Desugared ###
+
+  let
+    postulate N : Type
+    postulate Z : N
+    postulate S : (_x0 : N) -> N
+    postulate B : Type
+    postulate T : B
+    postulate F : B
+    isSuc : (_x1 : N) -> B 
+      n : N
+        isSuc (S n) = T
+      n : N
+        isSuc n = F
+    main : (_x2 : N) -> B = (\x : N. isSuc x)
+  in main
+
+### Evarified ###
+
+  let
+    postulate N :1: Type
+    postulate Z :2: N
+    postulate S :3: (_x0 :4: N) -> N
+    postulate B :5: Type
+    postulate T :6: B
+    postulate F :7: B
+    isSuc :8: (_x1 :9: N) -> B 
+      n :10: N
+        isSuc -11- (S -12- n) = T
+      n :13: N
+        isSuc -14- n = F
+    main :15: (_x2 :16: N) -> B = (\x :17: N. isSuc -18- x)
+  in main
+
+### Constraints ###
+
+[] -> [3,6,7,8,9,11,13,14,16,17,18,R]
+[4] -> [12]
+[10] -> [12]
+[12] -> [4,10]
+[R] -> [15]
+
+### Solution ###
+
+[3,6,7,8,9,11,13,14,15,16,17,18,R]
+
+### Annotated ###
+
+  let
+    postulate N :E: Type
+    postulate Z :E: N
+    postulate S :R: (_x0 :E: N) -> N
+    postulate B :E: Type
+    postulate T :R: B
+    postulate F :R: B
+    isSuc :R: (_x1 :R: N) -> B 
+      n :E: N
+        isSuc -R- (S -E- n) = T
+      n :R: N
+        isSuc -R- n = F
+    main :R: (_x2 :R: N) -> B = (\x :R: N. isSuc -R- x)
+  in main
+
+### Specialised ###
+
+  let
+    postulate N :E: Type
+    postulate Z :E: N
+    postulate S :R: (_x0 :E: N) -> N
+    postulate B :E: Type
+    postulate T :R: B
+    postulate F :R: B
+    isSuc :R: (_x1 :R: N) -> B 
+      n :E: N
+        isSuc -R- (S -E- n) = T
+      n :R: N
+        isSuc -R- n = F
+    main :R: (_x2 :R: N) -> B = (\x :R: N. isSuc -R- x)
+  in main
+
+### Final annotation ###
+
+  let
+    postulate N :E: Type
+    postulate Z :E: N
+    postulate S :R: (_x0 :E: N) -> N
+    postulate B :E: Type
+    postulate T :R: B
+    postulate F :R: B
+    isSuc :R: (_x1 :R: N) -> B 
+      n :E: N
+        isSuc -R- (S -E- n) = T
+      n :R: N
+        isSuc -R- n = F
+    main :R: (_x2 :R: N) -> B = (\x :R: N. isSuc -R- x)
+  in main
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+  let
+    postulate S : N
+    postulate T : B
+    postulate F : B
+    isSuc 
+      isSuc S = T
+      isSuc n = F
+    main = (\x. isSuc x)
+  in main
+
+### Normal forms ###
+
+unerased:
+  
+  let
+    postulate N : Type
+    postulate F : B
+  in (\x : N. F)
+
+erased:
+  
+  let postulate F : B
+  in (\x. F)
+

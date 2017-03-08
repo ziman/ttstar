@@ -1,0 +1,18 @@
+-- vim: ft=idris
+
+data N : Type where
+  Z : N,
+  S : N -> N.
+
+data B : Type where
+  T : B,
+  F : B.
+
+isSuc : N -> B.
+  (n : N)
+    isSuc (S n) = T,
+  (n : N)
+    isSuc n = F.
+
+-- this incorrectly reduces to \x. F
+main : N -> B = \x : N. isSuc x.
