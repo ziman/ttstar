@@ -152,8 +152,8 @@ verClause r (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
         else return ()
 
     verDefs pvs
+    lhsTy <- verPat r (M.fromList [(defName d, d) | d <- pvs]) lhs
     withs pvs $ do
-        lhsTy <- verPat r lhs
         rhsTy <- verTm r rhs
         conv r lhsTy rhsTy
   where
@@ -201,42 +201,51 @@ verTm r (App s f x) = bt ("APP", r, f, s, x) $ do
 verTm r tm = bt ("UNKNOWN-TERM", tm) $ do
     verFail NotImplemented
 
-verPat :: Relevance -> Pat Relevance -> Ver Type
-verPat R (PV n) = bt ("PAT-REF-R", n) $ do
+verPat :: Relevance -> Ctx Relevance -> Pat Relevance -> Ver Type
+verPat r pvs (PV n)
+    | Just d <- M.lookup n pvs
+    = do
+        defR d <-> r
+        return $ defType d
+
+verPat R pvs (PV n) = bt ("PAT-REF-R", n) $ do
     defType <$> lookupName n    
 
-verPat E (PV n) = bt ("PAT-REF-E", n) $ do
+verPat E pvs (PV n) = bt ("PAT-REF-E", n) $ do
     d <- lookupName n
     case defBody d of
         Abstract Var -> defR d <-> E
         _            -> return ()
     return $ defType d
 
-verPat R (PApp r f x) = bt ("PAT-APP-R", f, x) $ do
+verPat R pvs (PApp r f x) = bt ("PAT-APP-R", f, x) $ do
     ctx <- getCtx
-    fty <- verPat R f
+    fty <- verPat R pvs f
     case whnf ctx fty of
         Bind Pi [Def n s piTy (Abstract Var) _] piRhs -> do
-            xty <- verPat r x
-            conv r xty piTy  -- here, conversion check may be R
+            xty <- verPat r pvs x
+            with' (M.union pvs) $
+                conv r xty piTy  -- here, conversion check may be R
             r <-> s          -- but r and s must match
             return $ subst n (pat2term x) piRhs
 
         _ -> verFail $ NotPi fty
 
-verPat E (PApp r f x) = bt ("PAT-APP-E", f, x) $ do
+verPat E pvs (PApp r f x) = bt ("PAT-APP-E", f, x) $ do
     ctx <- getCtx
-    fty <- verPat E f
+    fty <- verPat E pvs f
     case whnf ctx fty of
         Bind Pi [Def n s piTy (Abstract Var) _] piRhs -> do
-            xty <- verPat E x
-            conv E xty piTy   -- here, conversion check must be E, but r and s needn't match
+            xty <- verPat E pvs x
+            with' (M.union pvs) $
+                conv E xty piTy   -- here, conversion check must be E, but r and s needn't match
             return $ subst n (pat2term x) piRhs
 
         _ -> verFail $ NotPi fty
 
-verPat r (PForced tm) = bt ("PAT-FORCED", tm) $ do
-    verTm E tm
+verPat r pvs (PForced tm) = bt ("PAT-FORCED", tm) $ do
+    with' (M.union pvs) $ do
+        verTm E tm
 
 conv :: Relevance -> Type -> Type -> Ver ()
 conv r p q = do
