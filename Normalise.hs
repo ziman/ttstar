@@ -14,6 +14,34 @@ type IsRelevance r = (PrettyR r, Eq r)
 
 data Form = NF | WHNF deriving Show
 
+data Match a = Yes a | No | Unknown deriving Show
+
+instance Functor Match where
+    fmap f (Yes x) = Yes (f x)
+    fmap f No = No
+    fmap f Unknown = Unknown
+
+instance Applicative Match where
+    pure = Yes
+    Yes f <*> Yes x = Yes (f x)
+    Yes f <*> No = No
+    Yes f <*> Unknown = Unknown
+    No <*> _ = No
+    Unknown <*> No = No
+    Unknown <*> _ = Unknown
+
+instance Alternative Match where
+    empty = No
+    Yes x <|> _ = Yes x
+    No <|> y = y
+    Unknown <|> _ = Unknown
+
+instance Monad Match where
+    return = Yes
+    Yes x >>= f = f x
+    No >>= f = No
+    Unknown >>= f = Unknown
+
 --dbg :: Show a => a -> b -> b
 --dbg = traceShow
 
@@ -116,7 +144,7 @@ red form ctx t@(App r f x)
     -- pattern-matching definitions
     | (V fn, args) <- unApply t
     , Just (Def _ _ _ (Clauses cs) _) <- M.lookup fn ctx
-    , Just rhs <- firstMatch $ map (matchClause ctx t) cs
+    , Yes rhs <- firstMatch $ map (matchClause ctx t) cs
     = red form ctx rhs
 
     -- everything else
@@ -129,7 +157,7 @@ red form ctx t@(App r f x)
         NF   -> red NF ctx x
         WHNF -> x
 
-matchClause :: IsRelevance r => Ctx r -> TT r -> Clause r -> Maybe (TT r)
+matchClause :: IsRelevance r => Ctx r -> TT r -> Clause r -> Match (TT r)
 matchClause ctx tm (Clause pvs lhs rhs) = do
     pvSubst <- match ctx' lhs tm
     return $ safeSubst pvs [pvSubst M.! defName d | d <- pvs] rhs
@@ -144,21 +172,27 @@ safeSubst (d:ds) (t:ts) rhs
     (ds', rhs') = substBinder (defName d) t ds rhs
 safeSubst _ _ rhs = error $ "safeSubst: defs vs. terms do not match up"
 
-match :: IsRelevance r => Ctx r -> Pat r -> TT r -> Maybe (M.Map Name (TT r))
+match :: IsRelevance r => Ctx r -> Pat r -> TT r -> Match (M.Map Name (TT r))
 match ctx (PV n) tm'
     | Just (Def _ _ _ (Abstract Var) _) <- M.lookup n ctx
-    = Just $ M.singleton n tm'
+    = Yes $ M.singleton n tm'
 
 match ctx (PV n) (V n')
     | n == n'
-    = Just M.empty
+    = Yes M.empty
 
 match ctx (PApp r f x) (App r' f' x')
     = M.unionWith (\_ _ -> error "non-linear pattern")
         <$> match ctx f f'
         <*> match ctx x (red WHNF ctx x')
-match ctx (PForced tm) tm' = Just $ M.empty
-match _ _ _ = Nothing
+match ctx (PForced tm) tm' = Yes $ M.empty
+
+match ctx pat (V n)
+    | Just d <- M.lookup n ctx
+    , Abstract Var <- defBody d
+    = Unknown  -- variables may or may not match as we learn what they are
+
+match _ _ _ = No
 
 firstMatch :: Alternative f => [f a] -> f a
 firstMatch = foldr (<|>) empty

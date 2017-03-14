@@ -119,11 +119,17 @@ unerased:
   
   let
     postulate N : Type
-    postulate F : B
-  in (\x : N. F)
+    isSuc : (_x1 : N) -> B 
+      n : N
+        [isSuc] (S n) = T
+      n : N
+        [isSuc] n = F
+  in (\x : N. isSuc x)
 
 erased:
   
-  let postulate F : B
-  in (\x. F)
+  let isSuc 
+    [_] S = T
+    [_] n = F
+  in (\x. isSuc x)
 
