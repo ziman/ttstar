@@ -186,7 +186,8 @@ verTm r (App s f x) = bt ("APP", r, f, s, x) $ do
     ctx <- getCtx
     fty <- verTm r f
     case whnf ctx fty of
-        Bind Pi [Def n s piTy (Abstract Var) _] piRhs -> do
+        Bind Pi [Def n piR piTy (Abstract Var) _] piRhs -> do
+            (r /\ piR) <-> (r /\ s)
             xty <- verTm (r /\ s) x
             conv (r /\ s) xty piTy            
             return $ subst n x piRhs
