@@ -14,12 +14,12 @@
     postulate Just : (a : Type) -> (x : a) -> Maybe a
     f : (x : Maybe Bool) -> Bool 
       b : Bool
-        f (Just [Bool] b) = b
-      f (Nothing [Bool]) = False
+        [f] (Just [Bool] b) = b
+      [f] (Nothing [Bool]) = False
     g : (x : Maybe Bool) -> Foo (f x) 
-      g (Just [Bool] True) = Yeah
-      g (Just [Bool] False) = Nope
-      g (Nothing [Bool]) = Nope
+      [g] (Just [Bool] True) = Yeah
+      [g] (Just [Bool] False) = Nope
+      [g] (Nothing [Bool]) = Nope
     main : Foo True = g (Just Bool True)
   in main
 
@@ -37,12 +37,12 @@
     postulate Just :15: (a :16: Type) -> (x :17: a) -> Maybe -18- a
     f :19: (x :20: Maybe -21- Bool) -> Bool 
       b :22: Bool
-        f -23- (Just -25- [Bool] -24- b) = b
-      f -26- (Nothing -27- [Bool]) = False
+        [f] -23- (Just -25- [Bool] -24- b) = b
+      [f] -26- (Nothing -27- [Bool]) = False
     g :28: (x :29: Maybe -30- Bool) -> Foo -31- (f -32- x) 
-      g -33- (Just -35- [Bool] -34- True) = Yeah
-      g -36- (Just -38- [Bool] -37- False) = Nope
-      g -39- (Nothing -40- [Bool]) = Nope
+      [g] -33- (Just -35- [Bool] -34- True) = Yeah
+      [g] -36- (Just -38- [Bool] -37- False) = Nope
+      [g] -39- (Nothing -40- [Bool]) = Nope
     main :41: Foo -42- True = g -43- (Just -45- Bool -44- True)
   in main
 
@@ -82,12 +82,12 @@
     postulate Just :R: (a :E: Type) -> (x :R: a) -> Maybe -E- a
     f :E: (x :E: Maybe -E- Bool) -> Bool 
       b :E: Bool
-        f -E- (Just -E- [Bool] -E- b) = b
-      f -E- (Nothing -E- [Bool]) = False
+        [f] -E- (Just -E- [Bool] -E- b) = b
+      [f] -E- (Nothing -E- [Bool]) = False
     g :R: (x :R: Maybe -E- Bool) -> Foo -E- (f -E- x) 
-      g -R- (Just -E- [Bool] -R- True) = Yeah
-      g -R- (Just -E- [Bool] -R- False) = Nope
-      g -R- (Nothing -E- [Bool]) = Nope
+      [g] -R- (Just -E- [Bool] -R- True) = Yeah
+      [g] -R- (Just -E- [Bool] -R- False) = Nope
+      [g] -R- (Nothing -E- [Bool]) = Nope
     main :R: Foo -E- True = g -R- (Just -E- Bool -R- True)
   in main
 
@@ -105,12 +105,12 @@
     postulate Just :R: (a :E: Type) -> (x :R: a) -> Maybe -E- a
     f :E: (x :E: Maybe -E- Bool) -> Bool 
       b :E: Bool
-        f -E- (Just -E- [Bool] -E- b) = b
-      f -E- (Nothing -E- [Bool]) = False
+        [f] -E- (Just -E- [Bool] -E- b) = b
+      [f] -E- (Nothing -E- [Bool]) = False
     g :R: (x :R: Maybe -E- Bool) -> Foo -E- (f -E- x) 
-      g -R- (Just -E- [Bool] -R- True) = Yeah
-      g -R- (Just -E- [Bool] -R- False) = Nope
-      g -R- (Nothing -E- [Bool]) = Nope
+      [g] -R- (Just -E- [Bool] -R- True) = Yeah
+      [g] -R- (Just -E- [Bool] -R- False) = Nope
+      [g] -R- (Nothing -E- [Bool]) = Nope
     main :R: Foo -E- True = g -R- (Just -E- Bool -R- True)
   in main
 
@@ -128,12 +128,12 @@
     postulate Just :R: (a :E: Type) -> (x :R: a) -> Maybe -E- a
     f :E: (x :E: Maybe -E- Bool) -> Bool 
       b :E: Bool
-        f -E- (Just -E- [Bool] -E- b) = b
-      f -E- (Nothing -E- [Bool]) = False
+        [f] -E- (Just -E- [Bool] -E- b) = b
+      [f] -E- (Nothing -E- [Bool]) = False
     g :R: (x :R: Maybe -E- Bool) -> Foo -E- (f -E- x) 
-      g -R- (Just -E- [Bool] -R- True) = Yeah
-      g -R- (Just -E- [Bool] -R- False) = Nope
-      g -R- (Nothing -E- [Bool]) = Nope
+      [g] -R- (Just -E- [Bool] -R- True) = Yeah
+      [g] -R- (Just -E- [Bool] -R- False) = Nope
+      [g] -R- (Nothing -E- [Bool]) = Nope
     main :R: Foo -E- True = g -R- (Just -E- Bool -R- True)
   in main
 
@@ -151,9 +151,9 @@ Verification successful.
     postulate Nothing : Maybe
     postulate Just : (x) -> Maybe
     g 
-      g (Just True) = Yeah
-      g (Just False) = Nope
-      g Nothing = Nope
+      [_] (Just True) = Yeah
+      [_] (Just False) = Nope
+      [_] Nothing = Nope
     main = g (Just True)
   in main
 

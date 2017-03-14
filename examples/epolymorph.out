@@ -11,9 +11,9 @@
     postulate S : (n :R: Nat) -> Nat
     postulate Plus : (x :R: Nat) -> (y :R: Nat) -> Nat
     id : (_x0 : Nat) -> Nat 
-      id Z = Z
+      [id] Z = Z
       y : Nat
-        id (S y) = 
+        [id] (S y) = 
           let result : Nat = S y
           in result
     const_3 : (x : Nat) -> Nat = (\x : Nat. 3)
@@ -36,9 +36,9 @@
     postulate S :6: (n :R: Nat) -> Nat
     postulate Plus :7: (x :R: Nat) -> (y :R: Nat) -> Nat
     id :8: (_x0 :9: Nat) -> Nat 
-      id -10- Z = Z
+      [id] -10- Z = Z
       y :11: Nat
-        id -12- (S -13- y) = 
+        [id] -12- (S -13- y) = 
           let result :14: Nat = S -15- y
           in result
     const_3 :16: (x :17: Nat) -> Nat = (\x :18: Nat. 3)
@@ -70,9 +70,9 @@
     postulate S :R: (n :R: Nat) -> Nat
     postulate Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
     id :R: (_x0 :R: Nat) -> Nat 
-      id -R- Z = Z
+      [id] -R- Z = Z
       y :R: Nat
-        id -R- (S -R- y) = 
+        [id] -R- (S -R- y) = 
           let result :R: Nat = S -R- y
           in result
     const_3 :R: (x :R: Nat) -> Nat = (\x :R: Nat. 3)
@@ -95,9 +95,9 @@
     postulate S :R: (n :R: Nat) -> Nat
     postulate Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
     id :R: (_x0 :R: Nat) -> Nat 
-      id -R- Z = Z
+      [id] -R- Z = Z
       y :R: Nat
-        id -R- (S -R- y) = 
+        [id] -R- (S -R- y) = 
           let result :R: Nat = S -R- y
           in result
     const_3 :R: (x :R: Nat) -> Nat = (\x :R: Nat. 3)
@@ -120,9 +120,9 @@
     postulate S :R: (n :R: Nat) -> Nat
     postulate Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
     id :R: (_x0 :R: Nat) -> Nat 
-      id -R- Z = Z
+      [id] -R- Z = Z
       y :R: Nat
-        id -R- (S -R- y) = 
+        [id] -R- (S -R- y) = 
           let result :R: Nat = S -R- y
           in result
     const_3 :R: (x :R: Nat) -> Nat = (\x :R: Nat. 3)
@@ -145,8 +145,8 @@ Verification successful.
     postulate S : (n) -> Nat
     postulate Plus : (x) -> (y) -> Nat
     id 
-      id Z = Z
-      id (S y) = 
+      [_] Z = Z
+      [_] (S y) = 
         let result = S y
         in result
     const_3 = (\x. 3)

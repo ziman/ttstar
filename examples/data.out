@@ -8,14 +8,14 @@
     postulate S : (_x0 : N) -> N
     plus : (_x1 : N) -> (_x2 : N) -> N 
       m : N
-        plus Z m = m
+        [plus] Z m = m
       m : N n : N
-        plus (S n) m = S (plus n m)
+        [plus] (S n) m = S (plus n m)
     main : N = 
       let pred : (_x3 : N) -> N 
-        pred Z = Z
+        [pred] Z = Z
         n : N
-          pred (S n) = n
+          [pred] (S n) = n
       in plus 2 3
   in main
 
@@ -27,14 +27,14 @@
     postulate S :3: (_x0 :4: N) -> N
     plus :5: (_x1 :6: N) -> (_x2 :7: N) -> N 
       m :8: N
-        plus -10- Z -9- m = m
+        [plus] -10- Z -9- m = m
       m :11: N n :12: N
-        plus -14- (S -15- n) -13- m = S -16- (plus -18- n -17- m)
+        [plus] -14- (S -15- n) -13- m = S -16- (plus -18- n -17- m)
     main :19: N = 
       let pred :20: (_x3 :21: N) -> N 
-        pred -22- Z = Z
+        [pred] -22- Z = Z
         n :23: N
-          pred -24- (S -25- n) = n
+          [pred] -24- (S -25- n) = n
       in plus -27- 2 -26- 3
   in main
 
@@ -64,14 +64,14 @@
     postulate S :R: (_x0 :E: N) -> N
     plus :R: (_x1 :R: N) -> (_x2 :R: N) -> N 
       m :R: N
-        plus -R- Z -R- m = m
+        [plus] -R- Z -R- m = m
       m :R: N n :E: N
-        plus -R- (S -E- n) -R- m = S -E- (plus -E- n -E- m)
+        [plus] -R- (S -E- n) -R- m = S -E- (plus -E- n -E- m)
     main :R: N = 
       let pred :E: (_x3 :E: N) -> N 
-        pred -E- Z = Z
+        [pred] -E- Z = Z
         n :E: N
-          pred -E- (S -E- n) = n
+          [pred] -E- (S -E- n) = n
       in plus -R- 2 -R- 3
   in main
 
@@ -83,14 +83,14 @@
     postulate S :R: (_x0 :E: N) -> N
     plus :R: (_x1 :R: N) -> (_x2 :R: N) -> N 
       m :R: N
-        plus -R- Z -R- m = m
+        [plus] -R- Z -R- m = m
       m :R: N n :E: N
-        plus -R- (S -E- n) -R- m = S -E- (plus -E- n -E- m)
+        [plus] -R- (S -E- n) -R- m = S -E- (plus -E- n -E- m)
     main :R: N = 
       let pred :E: (_x3 :E: N) -> N 
-        pred -E- Z = Z
+        [pred] -E- Z = Z
         n :E: N
-          pred -E- (S -E- n) = n
+          [pred] -E- (S -E- n) = n
       in plus -R- 2 -R- 3
   in main
 
@@ -102,14 +102,14 @@
     postulate S :R: (_x0 :E: N) -> N
     plus :R: (_x1 :R: N) -> (_x2 :R: N) -> N 
       m :R: N
-        plus -R- Z -R- m = m
+        [plus] -R- Z -R- m = m
       m :R: N n :E: N
-        plus -R- (S -E- n) -R- m = S -E- (plus -E- n -E- m)
+        [plus] -R- (S -E- n) -R- m = S -E- (plus -E- n -E- m)
     main :R: N = 
       let pred :E: (_x3 :E: N) -> N 
-        pred -E- Z = Z
+        [pred] -E- Z = Z
         n :E: N
-          pred -E- (S -E- n) = n
+          [pred] -E- (S -E- n) = n
       in plus -R- 2 -R- 3
   in main
 
@@ -123,8 +123,8 @@ Verification successful.
     postulate Z : N
     postulate S : N
     plus 
-      plus Z m = m
-      plus S m = S
+      [_] Z m = m
+      [_] S m = S
     main = plus S S
   in main
 

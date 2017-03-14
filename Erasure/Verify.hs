@@ -94,12 +94,10 @@ infix 3 <->
 (<->) :: Relevance -> Relevance -> Ver ()
 (<->) = eqR
 
-{-
 infix 3 -->
 (-->) :: Relevance -> Relevance -> Ver ()
 R --> E = verFail $ RelevanceMismatch R E
 _ --> _ = return ()
--}
 
 infixr 3 /\
 (/\) :: Relevance -> Relevance -> Relevance
@@ -143,7 +141,7 @@ verClause r (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
     -- check patvars
     ctx <- getCtx
     let pvsN = S.fromList (map defName pvs)
-    patN <- case freePatVars ctx lhs' of
+    patN <- case freePatVars ctx lhs of
         Just pvs -> return pvs
         Nothing  -> verFail $ NonLinearPattern lhs
 
@@ -156,9 +154,6 @@ verClause r (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
     withs pvs $ do
         rhsTy <- verTm r rhs
         conv r lhsTy rhsTy
-  where
-    (PV f, args) = unApplyPat lhs
-    lhs' = mkAppPat (PForced $ V f) args
 
 verTm :: Relevance -> Term -> Ver Type
 verTm E (V n) = bt ("VAR-E", n) $ do
@@ -204,18 +199,16 @@ verTm r tm = bt ("UNKNOWN-TERM", tm) $ do
 verPat :: Relevance -> Ctx Relevance -> Pat Relevance -> Ver Type
 verPat r pvs (PV n)
     | Just d <- M.lookup n pvs
-    = do
+    = bt ("PAT-VAR", n) $ do
         defR d <-> r
         return $ defType d
 
-verPat R pvs (PV n) = bt ("PAT-REF-R", n) $ do
-    defType <$> lookupName n    
-
-verPat E pvs (PV n) = bt ("PAT-REF-E", n) $ do
+verPat r pvs (PV n) = bt ("PAT-REF", n) $ do
     d <- lookupName n
+    r --> defR d
     case defBody d of
-        Abstract Var -> defR d <-> E
-        _            -> return ()
+        Abstract Postulate -> return ()
+        _ -> verFail $ NotConstructor n
     return $ defType d
 
 verPat R pvs (PApp r f x) = bt ("PAT-APP-R", f, x) $ do

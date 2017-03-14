@@ -1,6 +1,8 @@
 module Parser (parseProgram) where
 
 import TT
+import TTUtils
+import Pretty ()
 import Data.Char
 import Text.Parsec
 import qualified Data.Map as M
@@ -218,10 +220,16 @@ termBody = Term <$> expr
 clause :: Parser (Clause MRel)
 clause = (<?> "pattern clause") $ do
     pvs <- many (parens $ typing Var) <|> pure []
-    lhs <- pattern
+    lhs <- forceHead <$> pattern
     kwd "="
     rhs <- expr
     return $ Clause pvs lhs rhs
+
+forceHead :: Pat MRel -> Pat MRel
+forceHead p | (PV f, args) <- unApplyPat p
+    = mkAppPat (PForced $ V f) args
+forceHead p
+    = error $ "invalid clause LHS: " ++ show p
 
 dataDef :: Parser [Def MRel]
 dataDef = (<?> "data definition") $ do

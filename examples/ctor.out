@@ -9,8 +9,8 @@
     postulate Unit : Type
     postulate MkUnit : Unit
     not : (_x0 : Bool) -> Unit 
-      not T = MkUnit
-      not F = MkUnit
+      [not] T = MkUnit
+      [not] F = MkUnit
     main : Unit = not T
   in main
 
@@ -23,8 +23,8 @@
     postulate Unit :4: Type
     postulate MkUnit :5: Unit
     not :6: (_x0 :7: Bool) -> Unit 
-      not -8- T = MkUnit
-      not -9- F = MkUnit
+      [not] -8- T = MkUnit
+      [not] -9- F = MkUnit
     main :10: Unit = not -11- T
   in main
 
@@ -46,8 +46,8 @@
     postulate Unit :E: Type
     postulate MkUnit :R: Unit
     not :R: (_x0 :R: Bool) -> Unit 
-      not -R- T = MkUnit
-      not -R- F = MkUnit
+      [not] -R- T = MkUnit
+      [not] -R- F = MkUnit
     main :R: Unit = not -R- T
   in main
 
@@ -60,8 +60,8 @@
     postulate Unit :E: Type
     postulate MkUnit :R: Unit
     not :R: (_x0 :R: Bool) -> Unit 
-      not -R- T = MkUnit
-      not -R- F = MkUnit
+      [not] -R- T = MkUnit
+      [not] -R- F = MkUnit
     main :R: Unit = not -R- T
   in main
 
@@ -74,8 +74,8 @@
     postulate Unit :E: Type
     postulate MkUnit :R: Unit
     not :R: (_x0 :R: Bool) -> Unit 
-      not -R- T = MkUnit
-      not -R- F = MkUnit
+      [not] -R- T = MkUnit
+      [not] -R- F = MkUnit
     main :R: Unit = not -R- T
   in main
 
@@ -90,8 +90,8 @@ Verification successful.
     postulate F : Bool
     postulate MkUnit : Unit
     not 
-      not T = MkUnit
-      not F = MkUnit
+      [_] T = MkUnit
+      [_] F = MkUnit
     main = not T
   in main
 

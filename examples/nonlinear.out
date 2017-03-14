@@ -5,7 +5,7 @@
   let
     f : (_x0 : Type) -> (_x1 : Type) -> Type 
       x : Type
-        f x x = x
+        [f] x x = x
     main : Type = f Type Type
   in main
 
@@ -14,7 +14,7 @@
   let
     f :1: (_x0 :2: Type) -> (_x1 :3: Type) -> Type 
       x :4: Type
-        f -6- x -5- x = x
+        [f] -6- x -5- x = x
     main :7: Type = f -9- Type -8- Type
   in main
 
@@ -28,7 +28,7 @@ ttstar: Traceback:
   let
     f :1: (_x0 :2: Type) -> (_x1 :3: Type) -> Type 
       x :4: Type
-        f -6- x -5- x = x
+        [f] -6- x -5- x = x
     main :7: Type = f -9- Type -8- Type
   in main)
 
@@ -42,9 +42,9 @@ ttstar: Traceback:
   Type : Type
   f : (_x0 :2: Type) -> (_x1 :3: Type) -> Type
 
-("CLAUSE",PApp 5 (PApp 6 (PV f) (PV x)) (PV x))
+("CLAUSE",PApp 5 (PApp 6 (PForced f) (PV x)) (PV x))
 
-Error: NonlinearPattern (PApp 5 (PApp 6 (PV f) (PV x)) (PV x))
+Error: NonlinearPattern (PApp 5 (PApp 6 (PForced f) (PV x)) (PV x))
 
 CallStack (from HasCallStack):
   error, called at Main.hs:130:38 in main:Main

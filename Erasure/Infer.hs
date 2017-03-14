@@ -200,7 +200,7 @@ inferClause (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
     -- check patvars
     ctx <- getCtx
     let pvsN = S.fromList (map defName pvs)
-    patN <- case freePatVars ctx lhs' of
+    patN <- case freePatVars ctx lhs of
         Just pvs -> return pvs
         Nothing  -> tcfail $ NonlinearPattern lhs
 
@@ -214,9 +214,6 @@ inferClause (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
         (rty, rcs) <- inferTm rhs
         ccs <- conv lty rty
         return $ lcs /\ rcs /\ ccs
-  where
-    (PV f, args) = unApplyPat lhs
-    lhs' = mkAppPat (PForced $ V f) args
 
 -- the relevance evar "s" stands for "surrounding"
 -- it's the relevance of the whole pattern

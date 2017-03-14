@@ -9,15 +9,15 @@
     postulate Unit : Type
     postulate MkUnit : Unit
     not : (_x0 : Bool) -> Bool 
-      not T = F
-      not F = T
+      [not] T = F
+      [not] F = T
     retTy : (_x1 : Bool) -> Type 
-      retTy T = Bool
-      retTy F = Unit
+      [retTy] T = Bool
+      [retTy] F = Unit
     main : Bool = not 
       let f : (x : Bool) -> retTy x 
-        f F = MkUnit
-        f T = F
+        [f] F = MkUnit
+        [f] T = F
       in f (not F)
   in main
 
@@ -30,15 +30,15 @@
     postulate Unit :4: Type
     postulate MkUnit :5: Unit
     not :6: (_x0 :7: Bool) -> Bool 
-      not -8- T = F
-      not -9- F = T
+      [not] -8- T = F
+      [not] -9- F = T
     retTy :10: (_x1 :11: Bool) -> Type 
-      retTy -12- T = Bool
-      retTy -13- F = Unit
+      [retTy] -12- T = Bool
+      [retTy] -13- F = Unit
     main :14: Bool = not -15- 
       let f :16: (x :17: Bool) -> retTy -18- x 
-        f -19- F = MkUnit
-        f -20- T = F
+        [f] -19- F = MkUnit
+        [f] -20- T = F
       in f -21- (not -22- F)
   in main
 
@@ -60,15 +60,15 @@
     postulate Unit :E: Type
     postulate MkUnit :R: Unit
     not :R: (_x0 :R: Bool) -> Bool 
-      not -R- T = F
-      not -R- F = T
+      [not] -R- T = F
+      [not] -R- F = T
     retTy :E: (_x1 :E: Bool) -> Type 
-      retTy -E- T = Bool
-      retTy -E- F = Unit
+      [retTy] -E- T = Bool
+      [retTy] -E- F = Unit
     main :R: Bool = not -R- 
       let f :R: (x :R: Bool) -> retTy -E- x 
-        f -R- F = MkUnit
-        f -R- T = F
+        [f] -R- F = MkUnit
+        [f] -R- T = F
       in f -R- (not -R- F)
   in main
 
@@ -81,15 +81,15 @@
     postulate Unit :E: Type
     postulate MkUnit :R: Unit
     not :R: (_x0 :R: Bool) -> Bool 
-      not -R- T = F
-      not -R- F = T
+      [not] -R- T = F
+      [not] -R- F = T
     retTy :E: (_x1 :E: Bool) -> Type 
-      retTy -E- T = Bool
-      retTy -E- F = Unit
+      [retTy] -E- T = Bool
+      [retTy] -E- F = Unit
     main :R: Bool = not -R- 
       let f :R: (x :R: Bool) -> retTy -E- x 
-        f -R- F = MkUnit
-        f -R- T = F
+        [f] -R- F = MkUnit
+        [f] -R- T = F
       in f -R- (not -R- F)
   in main
 
@@ -102,15 +102,15 @@
     postulate Unit :E: Type
     postulate MkUnit :R: Unit
     not :R: (_x0 :R: Bool) -> Bool 
-      not -R- T = F
-      not -R- F = T
+      [not] -R- T = F
+      [not] -R- F = T
     retTy :E: (_x1 :E: Bool) -> Type 
-      retTy -E- T = Bool
-      retTy -E- F = Unit
+      [retTy] -E- T = Bool
+      [retTy] -E- F = Unit
     main :R: Bool = not -R- 
       let f :R: (x :R: Bool) -> retTy -E- x 
-        f -R- F = MkUnit
-        f -R- T = F
+        [f] -R- F = MkUnit
+        [f] -R- T = F
       in f -R- (not -R- F)
   in main
 
@@ -125,12 +125,12 @@ Verification successful.
     postulate F : Bool
     postulate MkUnit : Unit
     not 
-      not T = F
-      not F = T
+      [_] T = F
+      [_] F = T
     main = not 
       let f 
-        f F = MkUnit
-        f T = F
+        [_] F = MkUnit
+        [_] T = F
       in f (not F)
   in main
 

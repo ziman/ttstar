@@ -7,11 +7,11 @@
     postulate T : Bool
     postulate F : Bool
     g : (_x0 : Bool) -> Bool 
-      g T = h x
-      g F = T
+      [g] T = h x
+      [g] F = T
     h : (_x1 : Bool) -> Bool 
-      h F = g x
-      h T = F
+      [h] F = g x
+      [h] T = F
     main : Bool = g T
   in main
 
@@ -22,11 +22,11 @@
     postulate T :2: Bool
     postulate F :3: Bool
     g :4: (_x0 :5: Bool) -> Bool 
-      g -6- T = h -7- x
-      g -8- F = T
+      [g] -6- T = h -7- x
+      [g] -8- F = T
     h :9: (_x1 :10: Bool) -> Bool 
-      h -11- F = g -12- x
-      h -13- T = F
+      [h] -11- F = g -12- x
+      [h] -13- T = F
     main :14: Bool = g -15- T
   in main
 
@@ -42,11 +42,11 @@ ttstar: Traceback:
     postulate T :2: Bool
     postulate F :3: Bool
     g :4: (_x0 :5: Bool) -> Bool 
-      g -6- T = h -7- x
-      g -8- F = T
+      [g] -6- T = h -7- x
+      [g] -8- F = T
     h :9: (_x1 :10: Bool) -> Bool 
-      h -11- F = g -12- x
-      h -13- T = F
+      [h] -11- F = g -12- x
+      [h] -13- T = F
     main :14: Bool = g -15- T
   in main)
 
@@ -66,7 +66,7 @@ ttstar: Traceback:
   Type : Type
   g : (_x0 :5: Bool) -> Bool
 
-("CLAUSE",PApp 6 (PV g) (PV T))
+("CLAUSE",PApp 6 (PForced g) (PV T))
 
 4. In context:
   Bool : Type

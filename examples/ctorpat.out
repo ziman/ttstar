@@ -11,7 +11,7 @@
     postulate Q : (_x1 : B) -> K
     f : (_x2 : K) -> (_x3 : B) -> K 
       c : (_x4 : B) -> K x : B
-        f (c x) = c
+        [f] (c x) = c
     main : (_x5 : B) -> K = f (P T)
   in main
 
@@ -26,7 +26,7 @@
     postulate Q :7: (_x1 :8: B) -> K
     f :9: (_x2 :10: K) -> (_x3 :11: B) -> K 
       c :12: (_x4 :13: B) -> K x :14: B
-        f -15- (c -16- x) = c
+        [f] -15- (c -16- x) = c
     main :17: (_x5 :18: B) -> K = f -19- (P -20- T)
   in main
 
@@ -57,7 +57,7 @@
     postulate Q :E: (_x1 :E: B) -> K
     f :R: (_x2 :R: K) -> (_x3 :E: B) -> K 
       c :R: (_x4 :E: B) -> K x :E: B
-        f -R- (c -E- x) = c
+        [f] -R- (c -E- x) = c
     main :R: (_x5 :E: B) -> K = f -R- (P -E- T)
   in main
 
@@ -72,7 +72,7 @@
     postulate Q :E: (_x1 :E: B) -> K
     f :R: (_x2 :R: K) -> (_x3 :E: B) -> K 
       c :R: (_x4 :E: B) -> K x :E: B
-        f -R- (c -E- x) = c
+        [f] -R- (c -E- x) = c
     main :R: (_x5 :E: B) -> K = f -R- (P -E- T)
   in main
 
@@ -87,7 +87,7 @@
     postulate Q :E: (_x1 :E: B) -> K
     f :R: (_x2 :R: K) -> (_x3 :E: B) -> K 
       c :R: (_x4 :E: B) -> K x :E: B
-        f -R- (c -E- x) = c
+        [f] -R- (c -E- x) = c
     main :R: (_x5 :E: B) -> K = f -R- (P -E- T)
   in main
 
@@ -100,7 +100,7 @@ Verification successful.
   let
     postulate P : K
     f 
-      f c = c
+      [_] c = c
     main = f P
   in main
 
