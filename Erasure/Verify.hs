@@ -211,27 +211,15 @@ verPat r pvs (PV n) = bt ("PAT-REF", n) $ do
         _ -> verFail $ NotConstructor n
     return $ defType d
 
-verPat R pvs (PApp r f x) = bt ("PAT-APP-R", f, x) $ do
+verPat r pvs (PApp s f x) = bt ("PAT-APP", r, s, f, x) $ do
     ctx <- getCtx
-    fty <- verPat R pvs f
+    fty <- verPat r pvs f
     case whnf ctx fty of
-        Bind Pi [Def n s piTy (Abstract Var) _] piRhs -> do
-            xty <- verPat r pvs x
+        Bind Pi [Def n piR piTy (Abstract Var) _] piRhs -> do
+            (r /\ piR) <-> (r /\ s)
+            xty <- verPat (r /\ s) pvs x
             with' (M.union pvs) $
-                conv r xty piTy  -- here, conversion check may be R
-            r <-> s          -- but r and s must match
-            return $ subst n (pat2term x) piRhs
-
-        _ -> verFail $ NotPi fty
-
-verPat E pvs (PApp r f x) = bt ("PAT-APP-E", f, x) $ do
-    ctx <- getCtx
-    fty <- verPat E pvs f
-    case whnf ctx fty of
-        Bind Pi [Def n s piTy (Abstract Var) _] piRhs -> do
-            xty <- verPat E pvs x
-            with' (M.union pvs) $
-                conv E xty piTy   -- here, conversion check must be E, but r and s needn't match
+                conv (r /\ s) xty piTy
             return $ subst n (pat2term x) piRhs
 
         _ -> verFail $ NotPi fty
