@@ -234,7 +234,7 @@ inferPat s pat@(PV n) = bt ("PAT-NAME", n) $ do
 
 inferPat s pat@(PForced tm) = bt ("PAT-FORCED", tm) $ do
     (ty, cs) <- inferTm tm
-    return (ty, noConstrs)  -- forced terms don't generate constraints
+    return (ty, cond s cs)  -- forced terms don't generate constraints
 
 inferPat s pat@(PApp app_r f x) = bt ("PAT-APP", pat) $ do
     (fty, fcs) <- inferPat s f

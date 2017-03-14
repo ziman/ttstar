@@ -238,7 +238,7 @@ verPat E pvs (PApp r f x) = bt ("PAT-APP-E", f, x) $ do
 
 verPat r pvs (PForced tm) = bt ("PAT-FORCED", tm) $ do
     with' (M.union pvs) $ do
-        verTm E tm
+        verTm r tm
 
 conv :: Relevance -> Type -> Type -> Ver ()
 conv r p q = do
