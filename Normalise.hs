@@ -14,33 +14,33 @@ type IsRelevance r = (PrettyR r, Eq r)
 
 data Form = NF | WHNF deriving Show
 
-data Match a = Yes a | No | Unknown deriving Show
+data Match a = Yes a | No | S deriving Show
 
 instance Functor Match where
     fmap f (Yes x) = Yes (f x)
     fmap f No = No
-    fmap f Unknown = Unknown
+    fmap f Stuck = Stuck
 
 instance Applicative Match where
     pure = Yes
     Yes f <*> Yes x = Yes (f x)
     Yes f <*> No = No
-    Yes f <*> Unknown = Unknown
+    Yes f <*> Stuck = Stuck
     No <*> _ = No
-    Unknown <*> No = No
-    Unknown <*> _ = Unknown
+    Stuck <*> No = No
+    Stuck <*> _ = Stuck
 
 instance Alternative Match where
     empty = No
     Yes x <|> _ = Yes x
     No <|> y = y
-    Unknown <|> _ = Unknown
+    Stuck <|> _ = Stuck
 
 instance Monad Match where
     return = Yes
     Yes x >>= f = f x
     No >>= f = No
-    Unknown >>= f = Unknown
+    Stuck >>= f = Stuck
 
 --dbg :: Show a => a -> b -> b
 --dbg = traceShow
@@ -194,7 +194,7 @@ match pvs ctx (PForced tm) tm' = Yes $ M.empty
 match pvs ctx pat (V n)
     | Just d <- M.lookup n ctx
     , Abstract Var <- defBody d
-    = Unknown  -- variables may or may not match as we learn what they are
+    = Stuck  -- variables may or may not match as we learn what they are
 
 match _ _ _ _ = No
 
