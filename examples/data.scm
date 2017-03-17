@@ -8,7 +8,7 @@
         (match (list _e0 _e1)
           [(('Z) m)
             m]
-          [(('S) m)
+          [(('S) _)
             S]))))
     (main ((plus S) S))
   )

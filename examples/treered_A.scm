@@ -12,7 +12,7 @@
       (match (list _e0)
         [(('Nil))
           Z]
-        [(('Cons y ys))
+        [(('Cons _ ys))
           (S (vlen ys))])))
     (main (vlen ((Cons (S (S (S Z)))) Nil)))
   )

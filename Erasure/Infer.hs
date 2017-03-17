@@ -222,9 +222,8 @@ inferPat s pat@(PV n) = bt ("PAT-NAME", n) $ do
     d@(Def n r ty body cs) <- lookup n
     case body of
         Abstract Var
-            -- is the left arrow here correct?
-            -> return (ty, r <--> s)  -- relevance of this var forces surrounding to be relevant
-        Abstract Postulate           -- here we inspect: show that in 1) surrounding, 2) ctor relevance
+            -> return (ty, r --> s)  -- relevance of this var forces surrounding to be relevant
+        Abstract Postulate           -- here we inspect: that affects 1) surrounding, 2) ctor relevance
             -> return (
                     ty,
                     Fixed R --> s /\ Fixed R --> r

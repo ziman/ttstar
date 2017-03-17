@@ -46,12 +46,12 @@
 
 ### Constraints ###
 
-[] -> [2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,32,33,34,35,36,37,38,39,R]
+[] -> [2,3,5,6,7,8,9,10,12,13,14,15,16,18,19,20,21,22,23,24,25,26,27,29,30,32,33,34,35,36,37,38,39,R]
 [R] -> [31]
 
 ### Solution ###
 
-[2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,R]
+[2,3,5,6,7,8,9,10,12,13,14,15,16,18,19,20,21,22,23,24,25,26,27,29,30,31,32,33,34,35,36,37,38,39,R]
 
 ### Annotated ###
 
@@ -62,15 +62,15 @@
     postulate Pair :E: Type
     postulate P :R: (x :R: Bool) -> (y :R: Bool) -> Pair
     fst :R: (_x0 :R: Pair) -> Bool 
-      l :R: Bool r :R: Bool
+      l :R: Bool r :E: Bool
         [fst] -R- (P -R- l -R- r) = l
     snd :R: (_x1 :R: Pair) -> Bool 
-      l :R: Bool r :R: Bool
+      l :E: Bool r :R: Bool
         [snd] -R- (P -R- l -R- r) = r
     and :R: (_x2 :R: Bool) -> (_x3 :R: Bool) -> Bool 
       y :R: Bool
         [and] -R- T -R- y = y
-      y :R: Bool
+      y :E: Bool
         [and] -R- F -R- y = F
     main :R: Bool = and -R- (fst -R- (P -R- T -R- F)) -R- (snd -R- (P -R- F -R- T))
   in main
@@ -84,15 +84,15 @@
     postulate Pair :E: Type
     postulate P :R: (x :R: Bool) -> (y :R: Bool) -> Pair
     fst :R: (_x0 :R: Pair) -> Bool 
-      l :R: Bool r :R: Bool
+      l :R: Bool r :E: Bool
         [fst] -R- (P -R- l -R- r) = l
     snd :R: (_x1 :R: Pair) -> Bool 
-      l :R: Bool r :R: Bool
+      l :E: Bool r :R: Bool
         [snd] -R- (P -R- l -R- r) = r
     and :R: (_x2 :R: Bool) -> (_x3 :R: Bool) -> Bool 
       y :R: Bool
         [and] -R- T -R- y = y
-      y :R: Bool
+      y :E: Bool
         [and] -R- F -R- y = F
     main :R: Bool = and -R- (fst -R- (P -R- T -R- F)) -R- (snd -R- (P -R- F -R- T))
   in main
@@ -106,15 +106,15 @@
     postulate Pair :E: Type
     postulate P :R: (x :R: Bool) -> (y :R: Bool) -> Pair
     fst :R: (_x0 :R: Pair) -> Bool 
-      l :R: Bool r :R: Bool
+      l :R: Bool r :E: Bool
         [fst] -R- (P -R- l -R- r) = l
     snd :R: (_x1 :R: Pair) -> Bool 
-      l :R: Bool r :R: Bool
+      l :E: Bool r :R: Bool
         [snd] -R- (P -R- l -R- r) = r
     and :R: (_x2 :R: Bool) -> (_x3 :R: Bool) -> Bool 
       y :R: Bool
         [and] -R- T -R- y = y
-      y :R: Bool
+      y :E: Bool
         [and] -R- F -R- y = F
     main :R: Bool = and -R- (fst -R- (P -R- T -R- F)) -R- (snd -R- (P -R- F -R- T))
   in main
@@ -130,12 +130,12 @@ Verification successful.
     postulate F : Bool
     postulate P : (x) -> (y) -> Pair
     fst 
-      [_] (P l r) = l
+      [_] (P l _) = l
     snd 
-      [_] (P l r) = r
+      [_] (P _ r) = r
     and 
       [_] T y = y
-      [_] F y = F
+      [_] F _ = F
     main = and (fst (P T F)) (snd (P F T))
   in main
 

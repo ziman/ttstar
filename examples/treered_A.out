@@ -34,7 +34,7 @@
 
 ### Constraints ###
 
-[] -> [2,3,7,11,19,21,24,28,29,32,35,36,39,40,43,46,47,50,51,52,R]
+[] -> [2,3,7,11,19,21,24,29,32,35,36,39,40,43,46,47,50,51,52,R]
 [8] -> [1,26,53]
 [9] -> [14,22]
 [10] -> [15,23]
@@ -54,7 +54,7 @@
 [30] -> [14,22]
 [31] -> [15,23]
 [33] -> [20,34]
-[34] -> [18,27,33]
+[34] -> [18,33]
 [37] -> [13,27]
 [38] -> [1,12]
 [41] -> [20]
@@ -67,7 +67,7 @@
 
 ### Solution ###
 
-[2,3,7,11,19,21,24,28,29,32,35,36,39,40,42,43,46,47,50,51,52,R]
+[2,3,7,11,19,21,24,29,32,35,36,39,40,42,43,46,47,50,51,52,R]
 
 ### Annotated ###
 
@@ -80,7 +80,7 @@
     postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N 
       [vlen] -E- [Z] -R- (Nil -E- [N]) = Z
-      m :E: N y :R: N ys :R: Vec -E- m -E- N
+      m :E: N y :E: N ys :R: Vec -E- m -E- N
         [vlen] -E- ([S] -E- m) -R- (Cons -E- [N] -E- [m] -R- y -R- ys) = S -R- (vlen -E- m -R- ys)
     main :R: N = vlen -E- 1 -R- (Cons -E- N -E- Z -R- 3 -R- (Nil -E- N))
   in main
@@ -96,7 +96,7 @@
     postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N 
       [vlen] -E- [Z] -R- (Nil -E- [N]) = Z
-      m :E: N y :R: N ys :R: Vec -E- m -E- N
+      m :E: N y :E: N ys :R: Vec -E- m -E- N
         [vlen] -E- ([S] -E- m) -R- (Cons -E- [N] -E- [m] -R- y -R- ys) = S -R- (vlen -E- m -R- ys)
     main :R: N = vlen -E- 1 -R- (Cons -E- N -E- Z -R- 3 -R- (Nil -E- N))
   in main
@@ -112,7 +112,7 @@
     postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N 
       [vlen] -E- [Z] -R- (Nil -E- [N]) = Z
-      m :E: N y :R: N ys :R: Vec -E- m -E- N
+      m :E: N y :E: N ys :R: Vec -E- m -E- N
         [vlen] -E- ([S] -E- m) -R- (Cons -E- [N] -E- [m] -R- y -R- ys) = S -R- (vlen -E- m -R- ys)
     main :R: N = vlen -E- 1 -R- (Cons -E- N -E- Z -R- 3 -R- (Nil -E- N))
   in main
@@ -130,7 +130,7 @@ Verification successful.
     postulate Cons : (x) -> (xs) -> Vec
     vlen 
       [_] Nil = Z
-      [_] (Cons y ys) = S (vlen ys)
+      [_] (Cons _ ys) = S (vlen ys)
     main = vlen (Cons 3 Nil)
   in main
 

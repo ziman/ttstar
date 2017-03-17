@@ -36,15 +36,15 @@
 
 ### Constraints ###
 
-[] -> [3,6,7,8,9,11,13,14,16,17,18,R]
+[] -> [3,6,7,8,9,11,14,16,17,18,R]
 [4] -> [12]
 [10] -> [12]
-[12] -> [4,10]
+[12] -> [4]
 [R] -> [15]
 
 ### Solution ###
 
-[3,6,7,8,9,11,13,14,15,16,17,18,R]
+[3,6,7,8,9,11,14,15,16,17,18,R]
 
 ### Annotated ###
 
@@ -58,7 +58,7 @@
     isSuc :R: (_x1 :R: N) -> B 
       n :E: N
         [isSuc] -R- (S -E- n) = T
-      n :R: N
+      n :E: N
         [isSuc] -R- n = F
     main :R: (_x2 :R: N) -> B = (\x :R: N. isSuc -R- x)
   in main
@@ -75,7 +75,7 @@
     isSuc :R: (_x1 :R: N) -> B 
       n :E: N
         [isSuc] -R- (S -E- n) = T
-      n :R: N
+      n :E: N
         [isSuc] -R- n = F
     main :R: (_x2 :R: N) -> B = (\x :R: N. isSuc -R- x)
   in main
@@ -92,7 +92,7 @@
     isSuc :R: (_x1 :R: N) -> B 
       n :E: N
         [isSuc] -R- (S -E- n) = T
-      n :R: N
+      n :E: N
         [isSuc] -R- n = F
     main :R: (_x2 :R: N) -> B = (\x :R: N. isSuc -R- x)
   in main
@@ -109,7 +109,7 @@ Verification successful.
     postulate F : B
     isSuc 
       [_] S = T
-      [_] n = F
+      [_] _ = F
     main = (\x. isSuc x)
   in main
 
@@ -130,6 +130,6 @@ erased:
   
   let isSuc 
     [_] S = T
-    [_] n = F
+    [_] _ = F
   in (\x. isSuc x)
 

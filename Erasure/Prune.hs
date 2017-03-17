@@ -2,6 +2,7 @@ module Erasure.Prune where
 
 import TT
 import Pretty ()
+import qualified Data.Map as M
 
 pruneDef :: Def Relevance -> [Def ()]
 pruneDef (Def n E ty body mcs) = []
@@ -18,7 +19,7 @@ pruneClause :: Clause Relevance -> Clause ()
 pruneClause (Clause pvs lhs rhs)
     = Clause
         (pruneDefs pvs)
-        (prunePat lhs)
+        (prunePat (M.fromList [(defName d, d) | d <- pvs]) lhs)
         (pruneTm rhs)
 
 pruneDefs :: [Def Relevance] -> [Def ()]
@@ -34,8 +35,12 @@ pruneTm (Bind b ds tm)
 pruneTm (App E f x) = pruneTm f
 pruneTm (App R f x) = App () (pruneTm f) (pruneTm x)
 
-prunePat :: Pat Relevance -> Pat ()
-prunePat (PV n) = PV n
-prunePat (PApp E f x) = prunePat f
-prunePat (PApp R f x) = PApp () (prunePat f) (prunePat x)
-prunePat (PForced tm) = PForced $ V Blank
+prunePat :: Ctx Relevance -> Pat Relevance -> Pat ()
+prunePat pvs (PV n)
+    = case defR <$> M.lookup n pvs of
+        Just R  -> PV n  -- relevant patvar
+        Just E  -> PV Blank  -- irrelevant patvar
+        Nothing -> PV n  -- constructor
+prunePat pvs (PApp E f x) = prunePat pvs f
+prunePat pvs (PApp R f x) = PApp () (prunePat pvs f) (prunePat pvs x)
+prunePat pvs (PForced tm) = PForced $ V Blank

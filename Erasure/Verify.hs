@@ -201,7 +201,7 @@ verPat :: Relevance -> Ctx Relevance -> Pat Relevance -> Ver Type
 verPat r pvs (PV n)
     | Just d <- M.lookup n pvs
     = bt ("PAT-VAR", n) $ do
-        defR d <-> r
+        defR d --> r
         return $ defType d
 
 verPat r pvs (PV n) = bt ("PAT-REF", n) $ do

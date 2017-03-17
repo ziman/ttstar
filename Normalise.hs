@@ -173,6 +173,9 @@ safeSubst (d:ds) (t:ts) rhs
 safeSubst _ _ rhs = error $ "safeSubst: defs vs. terms do not match up"
 
 match :: IsRelevance r => Ctx r -> Pat r -> TT r -> Match (M.Map Name (TT r))
+match ctx (PV Blank) tm'
+    = Yes M.empty
+
 match ctx (PV n) tm'
     | Just (Def _ _ _ (Abstract Var) _) <- M.lookup n ctx
     = Yes $ M.singleton n tm'

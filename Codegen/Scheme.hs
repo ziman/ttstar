@@ -86,6 +86,7 @@ cgClauseLHS pvs pat =
     (_f, args) = unApplyPat pat
 
 cgPat :: S.Set Name -> Pat () -> Doc
+cgPat pvs (PV Blank) = text "_"
 cgPat pvs (PV n)
     | n `S.member` pvs = cgName n
     | otherwise = parens (text "'" <> cgName n)

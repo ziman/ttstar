@@ -8,7 +8,7 @@
       (match (list _e0)
         [(('S))
           T]
-        [(n)
+        [(_)
           F])))
     (main (lambda (x)
       (isSuc x)))
