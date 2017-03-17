@@ -16,7 +16,7 @@ vlen : (a : Type) -> (n : Nat) -> (xs : Vec n a) -> Nat.
   (a : Type)
     vlen a [Z] (VNil [a]) = Z,
   (a : Type) (n : Nat) (x : a) (xs : Vec n a)
-    vlen a (S n) (VCons [a] [n] x xs) = S (vlen a n xs).
+    vlen a ([S] n) (VCons [a] [n] x xs) = S (vlen a n xs).
 
 testVec : Vec (S (S Z)) Bool
     = VCons Bool (S Z) True (VCons Bool Z False (VNil Bool)).
