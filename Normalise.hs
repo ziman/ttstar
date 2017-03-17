@@ -159,10 +159,10 @@ red form ctx t@(App r f x)
 
 matchClause :: IsRelevance r => Ctx r -> TT r -> Clause r -> Match (TT r)
 matchClause ctx tm (Clause pvs lhs rhs) = do
-    pvSubst <- match ctx' lhs tm
+    pvSubst <- match pvs' ctx lhs tm
     return $ safeSubst pvs [pvSubst M.! defName d | d <- pvs] rhs
   where
-    ctx' = M.fromList [(defName d, d) | d <- pvs] `M.union` ctx
+    pvs' = M.fromList [(defName d, d) | d <- pvs]
 
 safeSubst :: [Def r] -> [TT r] -> TT r -> TT r
 safeSubst [] [] rhs = rhs
@@ -172,30 +172,30 @@ safeSubst (d:ds) (t:ts) rhs
     (ds', rhs') = substBinder (defName d) t ds rhs
 safeSubst _ _ rhs = error $ "safeSubst: defs vs. terms do not match up"
 
-match :: IsRelevance r => Ctx r -> Pat r -> TT r -> Match (M.Map Name (TT r))
-match ctx (PV Blank) tm'
+match :: IsRelevance r => Ctx r -> Ctx r -> Pat r -> TT r -> Match (M.Map Name (TT r))
+match pvs ctx (PV Blank) tm'
     = Yes M.empty
 
-match ctx (PV n) tm'
-    | Just (Def _ _ _ (Abstract Var) _) <- M.lookup n ctx
+match pvs ctx (PV n) tm'
+    | Just (Def _ _ _ (Abstract Var) _) <- M.lookup n pvs
     = Yes $ M.singleton n tm'
 
-match ctx (PV n) (V n')
+match pvs ctx (PV n) (V n')
     | n == n'
     = Yes M.empty
 
-match ctx (PApp r f x) (App r' f' x')
+match pvs ctx (PApp r f x) (App r' f' x')
     = M.unionWith (\_ _ -> error "non-linear pattern")
-        <$> match ctx f f'
-        <*> match ctx x (red WHNF ctx x')
-match ctx (PForced tm) tm' = Yes $ M.empty
+        <$> match pvs ctx f f'
+        <*> match pvs ctx x (red WHNF ctx x')
+match pvs ctx (PForced tm) tm' = Yes $ M.empty
 
-match ctx pat (V n)
+match pvs ctx pat (V n)
     | Just d <- M.lookup n ctx
     , Abstract Var <- defBody d
     = Unknown  -- variables may or may not match as we learn what they are
 
-match _ _ _ = No
+match _ _ _ _ = No
 
 firstMatch :: Alternative f => [f a] -> f a
 firstMatch = foldr (<|>) empty
