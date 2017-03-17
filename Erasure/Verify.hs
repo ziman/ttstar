@@ -241,14 +241,14 @@ conv' r (V n) (V n')
 conv' s (App r f x) (App r' f' x') = bt ("CONV-APP", f, x, f', x') $ do
     (s /\ r) <-> (s /\ r')
     conv s f f'
-    conv s x x'
+    conv (s /\ r) x x'
 
 conv' s
     (Bind b  [d@(Def  n  r  ty  (Abstract Var) _)] tm)
     (Bind b' [d'@(Def n' r' ty' (Abstract Var) _)] tm')
     | b == b' = bt ("CONV-BIND", b, d, tm, d', tm') $ do
         (s /\ r) <-> (s /\ r')
-        conv s ty ty'
+        conv (s /\ r) ty ty'
         with d $ 
             conv s tm (subst n' (V n) tm')
 
