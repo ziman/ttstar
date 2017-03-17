@@ -182,6 +182,7 @@ match pvs ctx (PV n) tm'
 
 match pvs ctx (PV n) (V n')
     | n == n'
+    , Just (Def _ _ _ (Abstract Postulate) _) <- M.lookup n ctx
     = Yes M.empty
 
 match pvs ctx (PApp r f x) (App r' f' x')
