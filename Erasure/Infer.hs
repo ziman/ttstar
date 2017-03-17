@@ -348,6 +348,9 @@ instantiate freshTag evarMap def = evalStateT refresh evarMap
     refresh = defRelevance (freshen freshTag) def
 
 -- left: from context (from outside), right: from expression (from inside)
+-- this function does not take the relevance variable of the context
+-- because in inference, we always assume we're relevant.
+-- Because this can be overriden using "cond", anyway.
 conv :: Type -> Type -> TC (Constrs Evar)
 conv p q = do
     ctx <- getCtx
