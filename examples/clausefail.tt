@@ -14,6 +14,6 @@ isSuc : N -> B.
   (n : N)
     isSuc n = F.
 
--- TTstar says that the NF of main is (\x. F),
--- which is incorrect.
+-- TTstar used to say that the NF of main is (\x. F),
+-- which was incorrect. This has been fixed.
 main : N -> B = \x : N. isSuc x.
