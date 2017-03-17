@@ -238,31 +238,19 @@ conv' :: Relevance -> Type -> Type -> Ver ()
 conv' r (V n) (V n')
     | n == n' = return ()
 
-conv' R (App r f x) (App r' f' x') = bt ("CONV-APP-R", f, x, f', x') $ do
-    r <-> r'
-    conv R f f'
-    conv R x x'
+conv' s (App r f x) (App r' f' x') = bt ("CONV-APP", f, x, f', x') $ do
+    (s /\ r) <-> (s /\ r')
+    conv s f f'
+    conv s x x'
 
-conv' E (App r f x) (App r' f' x') = bt ("CONV-APP-E", f, x, f', x') $ do
-    conv E f f'
-    conv E x x'
-
-conv' R
+conv' s
     (Bind b  [d@(Def  n  r  ty  (Abstract Var) _)] tm)
     (Bind b' [d'@(Def n' r' ty' (Abstract Var) _)] tm')
     | b == b' = bt ("CONV-BIND", b, d, tm, d', tm') $ do
-        r <-> r'
-        conv R ty ty'
+        (s /\ r) <-> (s /\ r')
+        conv s ty ty'
         with d $ 
-            conv R tm (subst n' (V n) tm')
-
-conv' E
-    (Bind b  [d@(Def  n  r  ty  (Abstract Var) _)] tm)
-    (Bind b' [d'@(Def n' r' ty' (Abstract Var) _)] tm')
-    | b == b' = bt ("CONV-BIND", b, d, tm, d', tm') $ do
-        conv E ty ty'
-        with d $ 
-            conv E tm (subst n' (V n) tm')
+            conv s tm (subst n' (V n) tm')
 
 {- This would be necessary for conversion-checking of multilets. Let's disable them for now.
 conv' r (Bind b (d:ds) tm) (Bind b' (d':ds') tm')
