@@ -1,7 +1,7 @@
 (require-extension matchable)
 (print
   (letrec* (
-    (A (list 'A))
+    (A `(A))
     (const_A A)
     (apply_TT (lambda (f)
       f))

@@ -1,13 +1,13 @@
 (require-extension matchable)
 (print
   (letrec* (
-    (Z (list 'Z))
+    (Z `(Z))
     (S (lambda (x)
-      (list 'S x)))
-    (Nil (list 'Nil))
+      `(S ,x)))
+    (Nil `(Nil))
     (Cons (lambda (x)
       (lambda (xs)
-        (list 'Cons x xs))))
+        `(Cons ,x ,xs))))
     (vlen (lambda (_e0)
       (match (list _e0)
         [(('Nil))

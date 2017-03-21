@@ -1,11 +1,11 @@
 (require-extension matchable)
 (print
   (letrec* (
-    (T (list 'T))
-    (F (list 'F))
+    (T `(T))
+    (F `(F))
     (P (lambda (x)
       (lambda (y)
-        (list 'P x y))))
+        `(P ,x ,y))))
     (fst (lambda (_e0)
       (match (list _e0)
         [(('P l _))

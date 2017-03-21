@@ -1,13 +1,13 @@
 (require-extension matchable)
 (print
   (letrec* (
-    (True (list 'True))
-    (False (list 'False))
-    (Z (list 'Z))
+    (True `(True))
+    (False `(False))
+    (Z `(Z))
     (S (lambda (_x0)
-      (list 'S _x0)))
-    (Even (list 'Even))
-    (Odd (list 'Odd))
+      `(S ,_x0)))
+    (Even `(Even))
+    (Odd `(Odd))
     (fun (letrec* (
       (even (lambda (_e0)
         (match (list _e0)

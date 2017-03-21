@@ -1,7 +1,7 @@
 (require-extension matchable)
 (print
   (letrec* (
-    (P (list 'P))
+    (P `(P))
     (f (lambda (_e0)
       (match (list _e0)
         [(c)

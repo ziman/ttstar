@@ -1,8 +1,8 @@
 (require-extension matchable)
 (print
   (letrec* (
-    (T (list 'T))
-    (F (list 'F))
+    (T `(T))
+    (F `(F))
     (main ((letrec* ((not_TT (lambda (_e0)
       (match (list _e0)
         [(('T))

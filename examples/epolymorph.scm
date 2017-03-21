@@ -1,12 +1,12 @@
 (require-extension matchable)
 (print
   (letrec* (
-    (Z (list 'Z))
+    (Z `(Z))
     (S (lambda (n)
-      (list 'S n)))
+      `(S ,n)))
     (Plus (lambda (x)
       (lambda (y)
-        (list 'Plus x y))))
+        `(Plus ,x ,y))))
     (id (lambda (_e0)
       (match (list _e0)
         [(('Z))

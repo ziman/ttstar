@@ -53,10 +53,9 @@ cgApp f x = parens (f <+> x)
 cgCtor :: Name -> TT () -> Doc
 cgCtor n ty
     = nestLambdas argNs $
-        parens (
-            text "list"
-            <+> text "'" <> cgName n
-            <+> hsep (map cgName argNs)
+        text"`" <> parens (
+            cgName n
+            <+> hsep [text "," <> cgName n | n <- argNs]
         )
   where
     argNs = uniqNames $ argNames ty

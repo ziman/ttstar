@@ -2,10 +2,10 @@
 (print
   (letrec* (
     (Just (lambda (x)
-      (list 'Just x)))
-    (Nothing (list 'Nothing))
-    (Bool (list 'Bool))
-    (False (list 'False))
+      `(Just ,x)))
+    (Nothing `(Nothing))
+    (Bool `(Bool))
+    (False `(False))
     (f (lambda (_e0)
       (match (list _e0)
         [(('Just b))

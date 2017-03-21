@@ -1,11 +1,11 @@
 (require-extension matchable)
 (print
   (letrec* (
-    (A (list 'A))
-    (B (list 'B))
+    (A `(A))
+    (B `(B))
     (Op (lambda (x)
       (lambda (y)
-        (list 'Op x y))))
+        `(Op ,x ,y))))
     (id (lambda (y)
       y))
     (constA A)
