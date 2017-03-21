@@ -2,6 +2,7 @@
 module Main where
 
 import TT
+import Pretty
 import Parser
 -- import Explorer
 import Normalise
@@ -188,14 +189,15 @@ main = do
             putStrLn $ "  " ++ show (red NF (builtins ()) pruned)
             putStrLn ""
 
-            codegen Codegen.Scheme.codegen fname pruned
+            codegen Codegen.Scheme.codegen fname "-unerased" annotated
+            codegen Codegen.Scheme.codegen fname ""          pruned
 
   where
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
 
-codegen :: Codegen -> String -> Program () -> IO ()
-codegen cg fname prog = writeFile fname' code
+codegen :: PrettyR r => Codegen -> String -> String -> Program r -> IO ()
+codegen cg fname ext prog = writeFile fname' code
   where
     (baseFn, _oldext) = break (=='.') fname
-    fname' = baseFn ++ "." ++ cgExt cg
+    fname' = baseFn ++ ext ++ "." ++ cgExt cg
     code = render ";" (cgRun cg prog) ++ "\n"

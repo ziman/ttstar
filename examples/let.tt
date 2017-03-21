@@ -4,23 +4,23 @@ data Nat : Type where
   Z : Nat,
   S : (x :R: Nat) -> Nat.
 
-plus (n : Nat) (m : Nat) : Nat
-  = case n of {
-      Z => m,
-      S (n' : Nat) => S (plus n' m)
-    }
+plus : Nat -> Nat -> Nat.
+(m : Nat)
+    plus Z m = m,
+(n : Nat) (m : Nat)
+    plus (S n) m = S (plus n m).
 
-id (x : Nat) : Nat = x.
+id \(x : Nat) : Nat = x.
 
-const (x : Nat) (y : Nat) : Nat = x.
+const \(x : Nat) (y : Nat) : Nat = x.
 
 main : Nat
     = let
-        apply (f : Nat -> Nat) (x : Nat) : Nat
-          = case x of {
-              Z => f Z,
-              S (x' : Nat) => f (S x')
-            }
+        apply : (Nat -> Nat) -> Nat -> Nat.
+          (f : Nat -> Nat)
+            apply f Z = f Z,
+          (f : Nat -> Nat) (x : Nat)
+            apply f (S x) = f (S x).
       in let
            postulate Q : Nat,
            three : Nat = 3

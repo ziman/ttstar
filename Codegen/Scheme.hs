@@ -2,7 +2,7 @@ module Codegen.Scheme (codegen) where
 
 import TT
 import TTUtils
-import Pretty ()
+import Pretty
 import Util.PrettyPrint
 import Codegen.Common
 import qualified Data.Set as S
@@ -30,22 +30,26 @@ cgName = text . specialName . concatMap mogrify . show
 -- flavours of `let` in Scheme:
 -- http://www.cs.rpi.edu/academics/courses/fall00/ai/scheme/reference/schintro-v14/schintro_126.html
 
-cgBody :: Name -> TT r -> Body r -> Doc
+cgBody :: PrettyR r => Name -> TT r -> Body r -> Doc
 cgBody n ty (Abstract Postulate) = cgCtor n ty
 cgBody n ty (Abstract Var) = error $ "let-bound variable: " ++ show n
 cgBody n ty (Term tm) = cgTm tm
 cgBody n ty (Clauses cs) = cgMatchLambda cs
 
-cgLetRec :: [Def r] -> Doc -> Doc
+cgOmitted :: Doc
+cgOmitted = text "'_"
+
+cgLetRec :: PrettyR r => [Def r] -> Doc -> Doc
 cgLetRec ds = cgLet' "letrec*" [(n, cgBody n ty b) | Def n r ty b _cs <- ds]
 
-cgTm :: TT r -> Doc
+cgTm :: PrettyR r => TT r -> Doc
 cgTm (V n) = cgName n
-cgTm tm@(I n ty) = error $ "e-instance in codegen: " -- ++ show tm
+cgTm tm@(I n ty) = error $ "e-instance in codegen: " ++ show tm
 cgTm (Bind Lam [Def n r ty (Abstract Var) cs] rhs) = cgLambda n $ cgTm rhs
 cgTm (Bind Let ds rhs) = cgLetRec ds $ cgTm rhs
+cgTm (Bind Pi ds rhs) = cgOmitted
 cgTm (App r f x) = cgApp (cgTm f) (cgTm x)
-cgTm tm = error $ "can't cg tm: " -- ++ show tm
+cgTm tm = error $ "can't cg tm: " ++ show tm
 
 cgApp :: Doc -> Doc -> Doc
 cgApp f x = parens (f <+> x)
@@ -60,7 +64,7 @@ cgCtor n ty
   where
     argNs = uniqNames $ argNames ty
 
-cgMatchLambda :: [Clause r] -> Doc
+cgMatchLambda :: PrettyR r => [Clause r] -> Doc
 cgMatchLambda cs = nestLambdas ns $ parens (
         text "match" <+> parens (text "list" <+> hsep (map cgName ns))
         $$ indent (vcat $ map cgMatchClause cs)
@@ -69,7 +73,7 @@ cgMatchLambda cs = nestLambdas ns $ parens (
     ns = [MN "e" i | i <- [0..nargs-1]]
     nargs = maximum [length . snd . unApplyPat $ lhs | Clause pvs lhs rhs <- cs]
 
-cgMatchClause :: Clause r -> Doc
+cgMatchClause :: PrettyR r => Clause r -> Doc
 cgMatchClause (Clause pvs lhs rhs)
     = brackets (
         parens (cgClauseLHS patvars lhs)
@@ -78,13 +82,13 @@ cgMatchClause (Clause pvs lhs rhs)
   where
     patvars = S.fromList $ map defName pvs
 
-cgClauseLHS :: S.Set Name -> Pat r -> Doc
+cgClauseLHS :: PrettyR r => S.Set Name -> Pat r -> Doc
 cgClauseLHS pvs pat =
     hsep [cgPat pvs p | (r, p) <- args]
   where
     (_f, args) = unApplyPat pat
 
-cgPat :: S.Set Name -> Pat r -> Doc
+cgPat :: PrettyR r => S.Set Name -> Pat r -> Doc
 cgPat pvs (PV Blank) = text "_"
 cgPat pvs (PV n)
     | n `S.member` pvs = cgName n
@@ -92,9 +96,14 @@ cgPat pvs (PV n)
 
 cgPat pvs pat@(PApp r f x)
     | (PV cn, args) <- unApplyPat pat
-    = parens (hsep $ (text "'" <> cgName cn) : map (cgPat pvs . snd) args)
+    = cgPatApp cn args
 
-cgPat pvs pat@(PApp r f x) = error $ "can't compile pattern: " -- ++ show pat
+    | (PForced (V cn), args) <- unApplyPat pat
+    = cgPatApp cn args
+  where
+    cgPatApp cn args = parens (hsep $ (text "'" <> cgName cn) : map (cgPat pvs . snd) args)
+
+cgPat pvs pat@(PApp r f x) = error $ "can't compile pattern: " ++ show pat
 
 cgPat pvs (PForced tm) = text "_"
 
@@ -135,7 +144,7 @@ argNames :: TT r -> [Name]
 argNames (Bind Pi ds rhs) = map defName ds ++ argNames rhs
 argNames _ = []
 
-cgProgram :: Program r -> Doc
+cgProgram :: PrettyR r => Program r -> Doc
 cgProgram prog = 
     parens (text "require-extension" <+> text "matchable")
     $$ parens (
