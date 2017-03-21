@@ -14,7 +14,7 @@ type IsRelevance r = (PrettyR r, Eq r)
 
 data Form = NF | WHNF deriving Show
 
-data Match a = Yes a | No | S deriving Show
+data Match a = Yes a | No | Stuck deriving Show
 
 instance Functor Match where
     fmap f (Yes x) = Yes (f x)
