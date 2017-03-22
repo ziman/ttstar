@@ -17,14 +17,14 @@
     (W `(W))
     (f (lambda (_e0)
       (match (list _e0)
-        [(('T))
-          Bool]
-        [(('F))
-          Mool]
-        [(('Q))
-          Bool]
-        [(('W))
-          Mool])))
+        ((('T))
+          Bool)
+        ((('F))
+          Mool)
+        ((('Q))
+          Bool)
+        ((('W))
+          Mool))))
     (main ((((Tuple (f T)) (f F)) (f Q)) (f W)))
   )
     main))

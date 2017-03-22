@@ -13,12 +13,12 @@
       `(Just ,x)))
     (g (lambda (_e0)
       (match (list _e0)
-        [(('Just ('True)))
-          Yeah]
-        [(('Just ('False)))
-          Nope]
-        [(('Nothing))
-          Nope])))
+        ((('Just ('True)))
+          Yeah)
+        ((('Just ('False)))
+          Nope)
+        ((('Nothing))
+          Nope))))
     (main (g (Just True)))
   )
     main))

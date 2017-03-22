@@ -76,7 +76,7 @@ cgMatchLambda cs = nestLambdas ns $ parens (
 
 cgMatchClause :: PrettyR r => Clause r -> Doc
 cgMatchClause (Clause pvs lhs rhs)
-    = brackets (
+    = parens (
         parens (cgClauseLHS patvars lhs)
         $$ indent (cgTm rhs)
     )
