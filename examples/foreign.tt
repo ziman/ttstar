@@ -1,0 +1,10 @@
+-- vim: ft=idris
+
+data N : Type where
+  Z : N,
+  S : (x :R: N) -> N.
+
+foreign input : N = "(rts-arg-peano 'Z 'S 0)".
+
+main : N.
+main = S input.

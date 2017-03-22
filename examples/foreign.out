@@ -1,0 +1,100 @@
+-- vim: ft=idris
+
+### Desugared ###
+
+  let
+    postulate N : Type
+    postulate Z : N
+    postulate S : (x :R: N) -> N
+    foreign input : N
+    main : N 
+      [main] = S input
+  in main
+
+### Evarified ###
+
+  let
+    postulate N :1: Type
+    postulate Z :2: N
+    postulate S :3: (x :R: N) -> N
+    foreign input :4: N
+    main :5: N 
+      [main] = S -6- input
+  in main
+
+### Constraints ###
+
+[] -> [3,4,5,6,R]
+[R] -> [5]
+
+### Solution ###
+
+[3,4,5,6,R]
+
+### Annotated ###
+
+  let
+    postulate N :E: Type
+    postulate Z :E: N
+    postulate S :R: (x :R: N) -> N
+    foreign input :R: N
+    main :R: N 
+      [main] = S -R- input
+  in main
+
+### Specialised ###
+
+  let
+    postulate N :E: Type
+    postulate Z :E: N
+    postulate S :R: (x :R: N) -> N
+    foreign input :R: N
+    main :R: N 
+      [main] = S -R- input
+  in main
+
+### Final annotation ###
+
+  let
+    postulate N :E: Type
+    postulate Z :E: N
+    postulate S :R: (x :R: N) -> N
+    foreign input :R: N
+    main :R: N 
+      [main] = S -R- input
+  in main
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+  let
+    postulate S : (x) -> N
+    foreign input
+    main 
+      [_] = S input
+  in main
+
+### Normal forms ###
+
+unerased:
+  
+  let
+    postulate N : Type
+    postulate S : (x :R: N) -> N
+    foreign input : N
+    main : N 
+      [main] = S input
+  in main
+
+erased:
+  
+  let
+    postulate S : (x) -> N
+    foreign input
+    main 
+      [_] = S input
+  in main
+
