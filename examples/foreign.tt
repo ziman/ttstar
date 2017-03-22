@@ -29,7 +29,7 @@ data Eq : (a : Type) -> a -> a -> Type where
 
 data Maybe : Type -> Type where
   Nothing : (a : Type) -> Maybe a,
-  Just : (a : Type) -> (x :R: a) -> Maybe a.
+  Just : (a : Type) -> (x : a) -> Maybe a.
 
 semiDecEqB : (x : B) -> (y : B) -> Maybe (Eq B x y).
 semiDecEqB T T = Just (Eq B T T) (Refl B T),
