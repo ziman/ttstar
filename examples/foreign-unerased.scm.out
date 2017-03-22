@@ -1,1 +1,1 @@
-(S (S (S (S (S (Z))))))
+(Just (Eq (List) (Cons (T) (Cons (F) (Cons (T) (Cons (F) (Cons (T) (Cons (F) (Cons (T) (Cons (F) (Cons (T) (Cons (F) (Nil))))))))))) (Cons (T) (Cons (F) (Cons (T) (Cons (F) (Cons (T) (Cons (F) (Cons (T) (Cons (F) (Cons (T) (Cons (F) (Nil)))))))))))) (Refl (List) (Cons (T) (Cons (F) (Cons (T) (Cons (F) (Cons (T) (Cons (F) (Cons (T) (Cons (F) (Cons (T) (Cons (F) (Nil)))))))))))))
