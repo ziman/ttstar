@@ -5,11 +5,12 @@ data Bool : Type where
   F : Bool.
 
 g : Bool -> Bool.
-g T = h x,
+g T =
+    let
+      h : Bool -> Bool.
+      h F = g F,
+      h T = T
+    in h F,
 g F = T.
-
-h : Bool -> Bool.
-h F = g x,
-h T = F.
 
 main : Bool = g T.

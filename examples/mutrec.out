@@ -7,11 +7,12 @@
     postulate T : Bool
     postulate F : Bool
     g : (_x0 : Bool) -> Bool 
-      [g] T = h x
+      [g] T = 
+        let h : (_x1 : Bool) -> Bool 
+          [h] F = g F
+          [h] T = T
+        in h F
       [g] F = T
-    h : (_x1 : Bool) -> Bool 
-      [h] F = g x
-      [h] T = F
     main : Bool = g T
   in main
 
@@ -22,71 +23,102 @@
     postulate T :2: Bool
     postulate F :3: Bool
     g :4: (_x0 :5: Bool) -> Bool 
-      [g] -6- T = h -7- x
-      [g] -8- F = T
-    h :9: (_x1 :10: Bool) -> Bool 
-      [h] -11- F = g -12- x
-      [h] -13- T = F
+      [g] -6- T = 
+        let h :7: (_x1 :8: Bool) -> Bool 
+          [h] -9- F = g -10- F
+          [h] -11- T = T
+        in h -12- F
+      [g] -13- F = T
     main :14: Bool = g -15- T
   in main
 
 ### Constraints ###
 
-ttstar: Traceback:
-1. In context:
-  Type : Type
+[] -> [2,3,4,5,6,7,8,9,10,11,12,13,15,R]
+[R] -> [14]
 
-("LET",
+### Solution ###
+
+[2,3,4,5,6,7,8,9,10,11,12,13,14,15,R]
+
+### Annotated ###
+
   let
-    postulate Bool :1: Type
-    postulate T :2: Bool
-    postulate F :3: Bool
-    g :4: (_x0 :5: Bool) -> Bool 
-      [g] -6- T = h -7- x
-      [g] -8- F = T
-    h :9: (_x1 :10: Bool) -> Bool 
-      [h] -11- F = g -12- x
-      [h] -13- T = F
-    main :14: Bool = g -15- T
-  in main)
+    postulate Bool :E: Type
+    postulate T :R: Bool
+    postulate F :R: Bool
+    g :R: (_x0 :R: Bool) -> Bool 
+      [g] -R- T = 
+        let h :R: (_x1 :R: Bool) -> Bool 
+          [h] -R- F = g -R- F
+          [h] -R- T = T
+        in h -R- F
+      [g] -R- F = T
+    main :R: Bool = g -R- T
+  in main
 
-2. In context:
-  Bool : Type
-  F : Bool
-  T : Bool
-  Type : Type
-  g : (_x0 :5: Bool) -> Bool
+### Specialised ###
 
-("DEF-CLAUSES",g)
+  let
+    postulate Bool :E: Type
+    postulate T :R: Bool
+    postulate F :R: Bool
+    g :R: (_x0 :R: Bool) -> Bool 
+      [g] -R- T = 
+        let h :R: (_x1 :R: Bool) -> Bool 
+          [h] -R- F = g -R- F
+          [h] -R- T = T
+        in h -R- F
+      [g] -R- F = T
+    main :R: Bool = g -R- T
+  in main
 
-3. In context:
-  Bool : Type
-  F : Bool
-  T : Bool
-  Type : Type
-  g : (_x0 :5: Bool) -> Bool
+### Final annotation ###
 
-("CLAUSE",PApp 6 (PForced g) (PV T))
+  let
+    postulate Bool :E: Type
+    postulate T :R: Bool
+    postulate F :R: Bool
+    g :R: (_x0 :R: Bool) -> Bool 
+      [g] -R- T = 
+        let h :R: (_x1 :R: Bool) -> Bool 
+          [h] -R- F = g -R- F
+          [h] -R- T = T
+        in h -R- F
+      [g] -R- F = T
+    main :R: Bool = g -R- T
+  in main
 
-4. In context:
-  Bool : Type
-  F : Bool
-  T : Bool
-  Type : Type
-  g : (_x0 :5: Bool) -> Bool
+### Verification ###
 
-("APP",h -7- x)
+Verification successful.
 
-5. In context:
-  Bool : Type
-  F : Bool
-  T : Bool
-  Type : Type
-  g : (_x0 :5: Bool) -> Bool
+### Pruned ###
 
-("VAR",h)
+  let
+    postulate T : Bool
+    postulate F : Bool
+    g 
+      [_] T = 
+        let h 
+          [_] F = g F
+          [_] T = T
+        in h F
+      [_] F = T
+    main = g T
+  in main
 
-Error: UnknownName h
+### Normal forms ###
 
-CallStack (from HasCallStack):
-  error, called at Main.hs:131:38 in main:Main
+unerased:
+  
+  let
+    postulate Bool : Type
+    postulate T : Bool
+  in T
+
+erased:
+  
+  let postulate T : Bool
+  in T
+
