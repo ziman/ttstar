@@ -3,3 +3,4 @@ TAGS
 .cabal-sandbox/
 dist/
 cabal.sandbox.config
+examples/timelog.txt

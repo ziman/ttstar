@@ -1,6 +1,8 @@
 #!/bin/bash
 
 set -o pipefail
+TIMELOG="examples/timelog.txt"
+export TIMEFORMAT="%3U"
 
 die() {
     echo "$@"
@@ -15,8 +17,15 @@ scheme_racket() {
 
 # Chicken Scheme, interpreter
 scheme_csi() {
-    csi -qs "$1".scm $(cat "$1".args 2>/dev/null) &> $1.scm.out
-    csi -qs "$1"-unerased.scm $(cat "$1".args 2>/dev/null) &> $1-unerased.scm.out
+    printf '%-30s %6s\n' \
+        "$1" \
+        "$( (time csi -qs "$1".scm $(cat "$1".args 2>/dev/null) &> $1.scm.out) 2>&1 )" \
+        >> "$TIMELOG"
+
+    printf '%-30s %6s\n' \
+        "${1}-unerased" \
+        "$( (time csi -qs "$1"-unerased.scm $(cat "$1".args 2>/dev/null) &> $1-unerased.scm.out) 2>&1 )" \
+        >> "$TIMELOG"
 }
 
 # Chicken Scheme, compiler
@@ -41,6 +50,7 @@ install() {
 cabal install -j1 \
     || die "could not install"
 
+> "$TIMELOG"
 for i in examples/*.tt; do
     n=${i%.tt}
 
