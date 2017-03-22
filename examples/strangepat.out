@@ -99,7 +99,9 @@ Verification successful.
 
 unerased:
   
-  let postulate T : Bool
+  let
+    postulate Bool : Type
+    postulate T : Bool
   in T
 
 erased:

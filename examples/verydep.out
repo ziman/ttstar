@@ -143,11 +143,15 @@ Verification successful.
 
 unerased:
   
-  let postulate False : Bool
+  let
+    postulate Bool : Type
+    postulate False : Bool
   in False
 
 erased:
   
-  let postulate False : Bool
+  let
+    postulate Bool : Type
+    postulate False : Bool
   in False
 

@@ -133,6 +133,7 @@ Verification successful.
 unerased:
   
   let
+    postulate N : Type
     postulate Z : N
     postulate S : (_x0 : N) -> N
   in 5

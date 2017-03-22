@@ -99,7 +99,9 @@ Verification successful.
 
 unerased:
   
-  let postulate MkUnit : Unit
+  let
+    postulate Unit : Type
+    postulate MkUnit : Unit
   in MkUnit
 
 erased:

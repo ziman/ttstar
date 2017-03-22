@@ -103,6 +103,7 @@ Verification successful.
 unerased:
   
   let
+    postulate T : Type
     postulate A : T
     postulate B : T
     postulate Op : (x :R: T) -> (y :R: T) -> T

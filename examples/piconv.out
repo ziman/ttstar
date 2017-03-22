@@ -89,7 +89,9 @@ Verification successful.
 
 unerased:
   
-  let postulate A : T
+  let
+    postulate T : Type
+    postulate A : T
   in A
 
 erased:

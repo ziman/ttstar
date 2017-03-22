@@ -12,10 +12,10 @@ Error: (match) no matching pattern
 	<eval>	  (fst (P T))
 	<eval>	  (P T)
 	<eval>	  [fst] (list _e0)
-	<eval>	  [fst] (pair?63 v37)
-	<eval>	  [fst] (null?64 (cdr65 v37))
-	<eval>	  [fst] (cdr65 v37)
-	<eval>	  [fst] (car68 v37)
-	<eval>	  [fst] (pair?94 w67)
-	<eval>	  [fst] (failure43)
-	<eval>	  [failure43] (error190 (quote191 match192) "no matching pattern")	<--
+	<eval>	  [fst] (pair?71 v45)
+	<eval>	  [fst] (null?72 (cdr73 v45))
+	<eval>	  [fst] (cdr73 v45)
+	<eval>	  [fst] (car76 v45)
+	<eval>	  [fst] (pair?102 w75)
+	<eval>	  [fst] (failure51)
+	<eval>	  [failure51] (error198 (quote199 match200) "no matching pattern")	<--

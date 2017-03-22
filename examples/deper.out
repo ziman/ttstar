@@ -131,8 +131,10 @@ Verification successful.
 unerased:
   
   let
+    postulate Bool : Type
     postulate T : Bool
     postulate F : Bool
+    postulate TwoBools : Type
     postulate TB : (x :R: Bool) -> (y :R: Bool) -> TwoBools
   in TB F T
 

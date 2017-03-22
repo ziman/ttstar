@@ -206,7 +206,9 @@ Verification successful.
 
 unerased:
   
-  let postulate W : Mool
+  let
+    postulate Mool : Type
+    postulate W : Mool
   in W
 
 erased:

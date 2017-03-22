@@ -119,6 +119,10 @@ unerased:
   
   let
     postulate N : Type
+    postulate S : (_x0 : N) -> N
+    postulate B : Type
+    postulate T : B
+    postulate F : B
     isSuc : (_x1 : N) -> B 
       n : N
         [isSuc] (S n) = T
@@ -128,8 +132,12 @@ unerased:
 
 erased:
   
-  let isSuc 
-    [_] S = T
-    [_] _ = F
+  let
+    postulate S : N
+    postulate T : B
+    postulate F : B
+    isSuc 
+      [_] S = T
+      [_] _ = F
   in (\x. isSuc x)
 

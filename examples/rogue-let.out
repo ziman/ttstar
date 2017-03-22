@@ -88,15 +88,22 @@ Verification successful.
 
 unerased:
   
-  let not : (_x0 : Bool) -> Bool 
-    [not] T = F
-    [not] F = T
+  let
+    postulate Bool : Type
+    postulate T : Bool
+    postulate F : Bool
+    not : (_x0 : Bool) -> Bool 
+      [not] T = F
+      [not] F = T
   in not
 
 erased:
   
-  let not 
-    [_] T = F
-    [_] F = T
+  let
+    postulate T : Bool
+    postulate F : Bool
+    not 
+      [_] T = F
+      [_] F = T
   in not
 

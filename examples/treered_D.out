@@ -161,7 +161,11 @@ Verification successful.
 
 unerased:
   
-  let postulate Yeah : Foo True
+  let
+    postulate Bool : Type
+    postulate True : Bool
+    postulate Foo : (_x0 : Bool) -> Type
+    postulate Yeah : Foo True
   in Yeah
 
 erased:

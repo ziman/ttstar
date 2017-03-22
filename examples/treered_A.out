@@ -139,6 +139,7 @@ Verification successful.
 unerased:
   
   let
+    postulate N : Type
     postulate Z : N
     postulate S : (x :R: N) -> N
   in 1

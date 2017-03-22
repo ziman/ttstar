@@ -6,6 +6,7 @@ import TTUtils
 import Pretty
 
 import Control.Applicative
+import qualified Data.Set as S
 import qualified Data.Map as M
 
 --import Debug.Trace
@@ -84,6 +85,17 @@ simplLet :: TT r -> TT r
 simplLet (Bind Let [] tm) = tm
 simplLet tm = tm
 
+pruneLet :: TT r -> TT r
+pruneLet (Bind Let ds rhs) = Bind Let [d | d <- ds, defName d `S.member` reachableFrom (freeVars rhs)] rhs
+  where
+    reachableFrom :: S.Set Name -> S.Set Name
+    reachableFrom orig
+        | new `S.isSubsetOf` orig = orig
+        | otherwise = reachableFrom $ S.union orig new
+      where
+        new = S.unions [freeVars d | d <- ds, defName d `S.member` orig]
+pruneLet tm = tm
+
 red :: IsRelevance r => Form -> Ctx r -> TT r -> TT r
 
 red form ctx t@(V Blank) = t
@@ -111,7 +123,7 @@ red form ctx t@(Bind Let ds tm)
     | reducedTm /= tm  = red form ctx $ Bind Let ds reducedTm
 
     -- no progress: stop trying and go back
-    | otherwise = simplLet $ Bind Let [d | d <- ds, defName d `occursIn` reducedTm] reducedTm
+    | otherwise = simplLet . pruneLet $ Bind Let ds reducedTm
   where
     reducedTm = red form (insertDefs ds ctx) tm
 

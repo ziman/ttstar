@@ -163,6 +163,7 @@ Verification successful.
 unerased:
   
   let
+    postulate Nat : Type
     postulate Z : Nat
     postulate S : (n :R: Nat) -> Nat
     postulate Plus : (x :R: Nat) -> (y :R: Nat) -> Nat

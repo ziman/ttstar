@@ -185,6 +185,7 @@ Verification successful.
 unerased:
   
   let
+    postulate Nat : Type
     postulate Z : Nat
     postulate S : (n :R: Nat) -> Nat
   in 2

@@ -239,7 +239,9 @@ Verification successful.
 
 unerased:
   
-  let postulate True : Bool
+  let
+    postulate Bool : Type
+    postulate True : Bool
   in True
 
 erased:

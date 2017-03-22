@@ -211,6 +211,7 @@ unerased:
     postulate N : Type
     postulate Z : N
     postulate S : (x :R: N) -> N
+    postulate Vec : (_x0 : N) -> (_x1 : Type) -> Type
     postulate Nil : (a : Type) -> Vec Z a
     postulate Cons : (a : Type) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a
   in Cons N Z 4 (Nil N)

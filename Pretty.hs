@@ -72,6 +72,7 @@ instance PrettyR r => Pretty (Def r) where
     pretty (Def n r ty body cs) =
         case body of
             Abstract Postulate -> text "postulate"
+            Abstract (Foreign code) -> text "foreign"
             _ -> empty
         <+> pretty n
         <+> case ty of

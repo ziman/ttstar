@@ -108,7 +108,10 @@ Verification successful.
 
 unerased:
   
-  let postulate P : (_x0 : B) -> K
+  let
+    postulate B : Type
+    postulate K : Type
+    postulate P : (_x0 : B) -> K
   in P
 
 erased:

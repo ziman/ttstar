@@ -191,13 +191,18 @@ unerased:
   let
     postulate Bool : Type
     postulate F : Bool
+    postulate Id : (a : Type) -> (x : a) -> (y : a) -> Type
     postulate Refl : (a : Type) -> (x : a) -> Id a x x
   in Refl Bool F
 
 erased:
   
-  let notnot 
-    [_] T = Refl
-    [_] F = Refl
+  let
+    postulate T : Bool
+    postulate F : Bool
+    postulate Refl : Id
+    notnot 
+      [_] T = Refl
+      [_] F = Refl
   in notnot (\w. w)
 
