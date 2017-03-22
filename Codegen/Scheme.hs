@@ -147,6 +147,7 @@ argNames _ = []
 cgProgram :: PrettyR r => Program r -> Doc
 cgProgram prog = 
     parens (text "require-extension" <+> text "matchable")
+    $$ text "(define Type '(Type))"
     $$ parens (
         text "print" $+$ indent (cgTm prog)
     ) -- $+$ parens (text "newline")  -- newline for Racket

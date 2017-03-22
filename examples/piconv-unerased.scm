@@ -1,0 +1,15 @@
+(require-extension matchable)
+(define Type '(Type))
+(print
+  (letrec* (
+    (T `(T))
+    (A `(A))
+    (B `(B))
+    (const_A (lambda (x)
+      A))
+    (apply_TT (lambda (f)
+      (lambda (x)
+        (f x))))
+    (main ((apply_TT const_A) B))
+  )
+    main))

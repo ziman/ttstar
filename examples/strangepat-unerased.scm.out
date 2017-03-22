@@ -1,0 +1,21 @@
+
+Error: (match) no matching pattern
+
+	Call history:
+
+	<syntax>	  (##core#undefined)
+	<eval>	  (print (letrec* ((Bool (quasiquote (Bool))) (T (quasiquote (T))) (F (quasiquote (F))) (Pair (quasiqu...
+	<eval>	  (##sys#list (##core#quote Bool))
+	<eval>	  (##sys#list (##core#quote T))
+	<eval>	  (##sys#list (##core#quote F))
+	<eval>	  (##sys#list (##core#quote Pair))
+	<eval>	  (fst (P T))
+	<eval>	  (P T)
+	<eval>	  [fst] (list _e0)
+	<eval>	  [fst] (pair?63 v37)
+	<eval>	  [fst] (null?64 (cdr65 v37))
+	<eval>	  [fst] (cdr65 v37)
+	<eval>	  [fst] (car68 v37)
+	<eval>	  [fst] (pair?94 w67)
+	<eval>	  [fst] (failure43)
+	<eval>	  [failure43] (error190 (quote191 match192) "no matching pattern")	<--

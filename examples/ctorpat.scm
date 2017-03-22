@@ -1,4 +1,5 @@
 (require-extension matchable)
+(define Type '(Type))
 (print
   (letrec* (
     (P `(P))

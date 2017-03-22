@@ -1,0 +1,18 @@
+(require-extension matchable)
+(define Type '(Type))
+(print
+  (letrec* (
+    (Bool `(Bool))
+    (T `(T))
+    (F `(F))
+    (Pair `(Pair))
+    (P (lambda (_x0)
+      (lambda (_x1)
+        `(P ,_x0 ,_x1))))
+    (fst (lambda (_e0)
+      (match (list _e0)
+        [(('P y))
+          y])))
+    (main (fst (P T)))
+  )
+    main))

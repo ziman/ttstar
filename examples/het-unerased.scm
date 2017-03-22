@@ -1,0 +1,38 @@
+(require-extension matchable)
+(define Type '(Type))
+(print
+  (letrec* (
+    (Tuple (lambda (x)
+      (lambda (y)
+        (lambda (z)
+          (lambda (w)
+            `(Tuple ,x ,y ,z ,w))))))
+    (Bool `(Bool))
+    (T `(T))
+    (F `(F))
+    (Mool `(Mool))
+    (Q `(Q))
+    (W `(W))
+    (U `(U))
+    (B `(B))
+    (M `(M))
+    (ty (lambda (_e0)
+      (match (list _e0)
+        [(('B))
+          Bool]
+        [(('M))
+          Mool])))
+    (f (lambda (_e0)
+      (lambda (_e1)
+        (match (list _e0 _e1)
+          [(_ ('T))
+            Bool]
+          [(_ ('F))
+            Mool]
+          [(_ ('Q))
+            Bool]
+          [(_ ('W))
+            Mool]))))
+    (main ((((Tuple ((f B) T)) ((f B) F)) ((f M) Q)) ((f M) W)))
+  )
+    main))

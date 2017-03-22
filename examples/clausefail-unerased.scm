@@ -1,0 +1,21 @@
+(require-extension matchable)
+(define Type '(Type))
+(print
+  (letrec* (
+    (N `(N))
+    (Z `(Z))
+    (S (lambda (_x0)
+      `(S ,_x0)))
+    (B `(B))
+    (T `(T))
+    (F `(F))
+    (isSuc (lambda (_e0)
+      (match (list _e0)
+        [(('S n))
+          T]
+        [(n)
+          F])))
+    (main (lambda (x)
+      (isSuc x)))
+  )
+    main))
