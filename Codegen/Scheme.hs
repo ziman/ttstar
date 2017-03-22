@@ -31,6 +31,7 @@ cgName = text . specialName . concatMap mogrify . show
 -- http://www.cs.rpi.edu/academics/courses/fall00/ai/scheme/reference/schintro-v14/schintro_126.html
 
 cgBody :: PrettyR r => Name -> TT r -> Body r -> Doc
+cgBody n ty (Abstract (Foreign code)) = text code
 cgBody n ty (Abstract Postulate) = cgCtor n ty
 cgBody n ty (Abstract Var) = error $ "let-bound variable: " ++ show n
 cgBody n ty (Term tm) = cgTm tm

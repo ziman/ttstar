@@ -46,7 +46,7 @@ data Clause r = Clause
 -- The difference between Var and Postulate is that for Var, the value is unknown,
 -- for postulate; the term itself is the value. A variable stands for something else,
 -- a postulate stands for itself.
-data Abstractness = Var | Postulate deriving (Eq, Ord, Show)
+data Abstractness = Var | Postulate | Foreign String deriving (Eq, Ord, Show)
 data Body r = Abstract Abstractness | Term (TT r) | Clauses [Clause r] deriving (Eq, Ord)
 data Def r = Def
     { defName :: Name

@@ -125,6 +125,19 @@ bind = arrow
     <|> let_
     <?> "binder"
 
+stringLiteral :: Parser String
+stringLiteral = (<?> "string literal") $ do
+    kwd "\""
+    s <- many stringChar
+    kwd "\""
+    return s
+  where
+    stringChar :: Parser Char
+    stringChar =
+        satisfy (/= '"')
+        <|> (kwd "\\\"" *> return '"')
+        <|> (kwd "\\\\" *> return '\\')
+
 app :: Parser (TT MRel)
 app = foldl (App Nothing) <$> atomic <*> many atomic <?> "application"
 
@@ -239,8 +252,16 @@ dataDef = (<?> "data definition") $ do
     ctors <- typing Postulate `sepBy` kwd ","
     return (tfd : ctors)
 
+foreignDef :: Parser (Def MRel)
+foreignDef = (<?> "foreign definition") $ do
+    kwd "foreign"
+    d <- typing $ Foreign undefined
+    kwd "="
+    code <- stringLiteral
+    return d{defBody = Abstract $ Foreign code}
+
 simpleDef :: Parser (Def MRel)
-simpleDef = postulate <|> mlDef <|> clauseDef <?> "simple definition"
+simpleDef = foreignDef <|> postulate <|> mlDef <|> clauseDef <?> "simple definition"
 
 definition :: Parser [Def MRel]
 definition = dataDef <|> (pure <$> simpleDef) <?> "definition"
