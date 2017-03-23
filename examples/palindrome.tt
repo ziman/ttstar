@@ -102,7 +102,7 @@ reverse \(xs : List) : List
 data U : List -> Type where
   UNil : U Nil,
   UOne : (x : B) -> U (Cons x Nil),
-  UTwo : (x : B) -> (u : U xs) -> (y : B)
+  UTwo : (x : B) -> (xs : List) -> (u : U xs) -> (y : B)
     -> U (Cons x (app xs (one y))).
 
 length : List -> N.
@@ -126,7 +126,7 @@ build : (n : N) -> (xs : List) -> (ys : List) -> U (index n xs ys).
   (x : B) (xs : List) (y : B) (ys : List)
     build    (S Z)  (x :: xs) (y :: ys) = UOne x,
   (n : N) (x : B) (xs : List) (y : B) (ys : List)
-    build (S (S n)) (x :: xs) (y :: ys) = UTwo x (build n xs ys) y,
+    build (S (S n)) (x :: xs) (y :: ys) = UTwo x (index n xs ys) (build n xs ys) y,
   (n : N)
     build    (S n)        []        []  = UNil.
 
@@ -145,16 +145,32 @@ data IsPalindrome : List -> Type where
   PTwo : (b : B) -> (xs : List) -> IsPalindrome (Cons b (app xs (one b))).
 
 decEq : (x : B) -> (y : B) -> Maybe (Id Bool x y).
+decEq T T = Just (Id Bool T T) (Refl T),
+decEq F F = Just (Id Bool F F) (Refl F),
+decEq T F = Nothing (Id Bool T F),
+decEq F T = Nothing (Id Bool F T).
 
 isPalinU : (xs : List) -> U xs -> Maybe (Palindrome xs)
 isPalinU [Nil]        UNil     = Just (Palindrome Nil) PNil
 isPalinU [Cons x Nil] (UOne x) = Just (Palindrome (Cons x Nil)) (POne x)
-isPalinU (UTwo x u y) with (decEq x y)
-  isPalinU (UTwo x u x) | Yes Refl = PTwo x `map` isPalinU u
-  isPalinU (UTwo x u y) | No  neq  = Nothing
+isPalinU [Cons x (app xs (one y))] (UTwo x xs u y)
+  = let
+        isPalinU' : (x : B) -> (y : B) -> (xs : List) -> (u : U xs)
+            -> (pfB : Maybe (Id Bool x y))
+            -> (pfU : Maybe (IsPalindrome xs))
+            -> Maybe (IsPalindrome (Cons x (app xs (one y)))).
+          (x : B) (xs : List) (u : U xs)
+            isPalinU' x [x] xs u
+              (Just [Id Bool x x] [Refl Bool x])
+              (Just [IsPalindrome xs] pfU)
+              = PTwo x pfU,
+          (x : B) (y : B) (xs : List) (u : U xs)
+            (pfB : Maybe (Id Bool x y)) (pfU : Maybe (IsPalindrome xs))
+              isPalinU' x y xs u pfB pfU = Nothing.
+    in
+        isPalinU' x y xs u (decEq x y) (isPalinU xs u).
 
-isPalindrome : (xs : List) -> Maybe (IsPalindrome xs)
-isPalindrome xs = isPalinU (toU xs)
+isPalindrome \(xs : List) : Maybe (IsPalindrome xs) = isPalinU xs (toU xs).
 
 -- Main Palindrome program
 
