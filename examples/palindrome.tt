@@ -114,21 +114,21 @@ index : N -> List -> List -> List.
   (xs : List) (ys : List)
     index       Z         xs        ys  = Nil,
   (x : B) (xs : List) (y : B) (ys : List)
-    index    (S Z)  (x :: xs) (y :: ys) = Cons x Nil,
+    index    (S Z)  (Cons x xs) (Cons y ys) = Cons x Nil,
   (n : N) (x : B) (xs : List) (y : B) (ys : List)
-    index (S (S n)) (x :: xs) (y :: ys) = Cons x (app (index n xs ys) (one y)),
+    index (S (S n)) (Cons x xs) (Cons y ys) = Cons x (app (index n xs ys) (one y)),
   (n : N)
-    index    (S n)        []        []  = [].
+    index    (S n)        Nil        Nil  = Nil.
 
 build : (n : N) -> (xs : List) -> (ys : List) -> U (index n xs ys).
   (xs : List) (ys : List)
     build       Z         xs        ys  = UNil,
   (x : B) (xs : List) (y : B) (ys : List)
-    build    (S Z)  (x :: xs) (y :: ys) = UOne x,
+    build    (S Z)  (Cons x xs) (Cons y ys) = UOne x,
   (n : N) (x : B) (xs : List) (y : B) (ys : List)
-    build (S (S n)) (x :: xs) (y :: ys) = UTwo x (index n xs ys) (build n xs ys) y,
+    build (S (S n)) (Cons x xs) (Cons y ys) = UTwo x (index n xs ys) (build n xs ys) y,
   (n : N)
-    build    (S n)        []        []  = UNil.
+    build    (S n)        Nil        Nil  = UNil.
 
 postulate eq : (xs : List) -> Id List (index (length xs) xs (reverse xs)) xs.
 
@@ -144,28 +144,28 @@ data IsPalindrome : List -> Type where
   POne : (b : B) -> IsPalindrome (Cons b Nil),
   PTwo : (b : B) -> (xs : List) -> IsPalindrome (Cons b (app xs (one b))).
 
-decEq : (x : B) -> (y : B) -> Maybe (Id Bool x y).
-decEq T T = Just (Id Bool T T) (Refl T),
-decEq F F = Just (Id Bool F F) (Refl F),
-decEq T F = Nothing (Id Bool T F),
-decEq F T = Nothing (Id Bool F T).
+decEq : (x : B) -> (y : B) -> Maybe (Id B x y).
+decEq T T = Just (Id B T T) (Refl T),
+decEq F F = Just (Id B F F) (Refl F),
+decEq T F = Nothing (Id B T F),
+decEq F T = Nothing (Id B F T).
 
-isPalinU : (xs : List) -> U xs -> Maybe (Palindrome xs)
-isPalinU [Nil]        UNil     = Just (Palindrome Nil) PNil
-isPalinU [Cons x Nil] (UOne x) = Just (Palindrome (Cons x Nil)) (POne x)
+isPalinU : (xs : List) -> (u : U xs) -> Maybe (Palindrome xs).
+isPalinU [Nil]        UNil     = Just (Palindrome Nil) PNil,
+isPalinU [Cons x Nil] (UOne x) = Just (Palindrome (Cons x Nil)) (POne x),
 isPalinU [Cons x (app xs (one y))] (UTwo x xs u y)
   = let
         isPalinU' : (x : B) -> (y : B) -> (xs : List) -> (u : U xs)
-            -> (pfB : Maybe (Id Bool x y))
+            -> (pfB : Maybe (Id B x y))
             -> (pfU : Maybe (IsPalindrome xs))
             -> Maybe (IsPalindrome (Cons x (app xs (one y)))).
           (x : B) (xs : List) (u : U xs)
             isPalinU' x [x] xs u
-              (Just [Id Bool x x] [Refl Bool x])
+              (Just [Id B x x] [Refl B x])
               (Just [IsPalindrome xs] pfU)
               = PTwo x pfU,
           (x : B) (y : B) (xs : List) (u : U xs)
-            (pfB : Maybe (Id Bool x y)) (pfU : Maybe (IsPalindrome xs))
+            (pfB : Maybe (Id B x y)) (pfU : Maybe (IsPalindrome xs))
               isPalinU' x y xs u pfB pfU = Nothing.
     in
         isPalinU' x y xs u (decEq x y) (isPalinU xs u).
