@@ -1,5 +1,8 @@
 -- vim: ft=idris
 
+
+-- Basic data types
+
 data N : Type where
     Z : N,
     S : N -> N.
@@ -20,17 +23,79 @@ not : B -> B.
 not T = F,
 not F = T.
 
+
+-- The reverse view
+
+data Id : (a : Type) -> (x : a) -> (y : a) -> Type where
+  Refl : (a : Type) -> (x : a) -> Id a x x.
+
+id : (a : Type) -> a -> a
+  = \a:Type. \x:a. x.
+
+subst : (a : Type) -> (P : a -> Type)
+  -> (x : a) -> (y : a)
+  -> (eq : Id a x y)
+  -> (w : P x) -> P y.
+
+(a : Type) (P : a -> Type) (x : a)
+  subst a P x [x] [Refl a x] = \w : P x. w.
+
+cong : (a : Type) -> (b : Type) -> (f : a -> b)
+  -> (x : a) -> (y : a) -> (eq : Id a x y)
+  -> Id b (f x) (f y).
+
+(a : Type) (b : Type) (f : a -> b) (x : a)
+  cong a b f x [x] [Refl a x] = Refl b (f x).
+
+one \(x : B) : List
+  = Cons x Nil.
+
+app : List -> List -> List.
+  (ys : List)
+    app Nil ys = ys,
+  (x : B) (xs : List) (ys : List)
+    app (Cons x xs) ys = Cons x (app xs ys).
+
+appRightNeutral : (ys : List) -> Id List ys (app ys Nil).
+  appRightNeutral Nil = Refl List Nil,
+  (x : B) (xs : List)
+    appRightNeutral (Cons x xs) = 
+      cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs).
+
+appAssoc : (xs : List) -> (ys : List) -> (zs : List)
+  -> Id List (app (app xs ys) zs) (app xs (app ys zs)).
+  (ys : List) (zs : List)
+    appAssoc Nil ys zs = Refl List (app ys zs),
+  (x : B) (xs : List) (ys : List) (zs : List)
+    appAssoc (Cons x xs) ys zs =
+      cong List List (Cons x) (app (app xs ys) zs) (app xs (app ys zs)) (appAssoc xs ys zs).
+
+data Rev : List -> Type where
+  RNil : Rev Nil,
+  RSnoc : (xs : List) -> (x : B) -> (rxs : Rev xs)
+    -> Rev (app xs (one x)).
+
+rev' : (xs : List) -> (rxs : Rev xs) -> (ys : List) -> Rev (app xs ys).
+  (xs : List) (rxs : Rev xs)
+    rev' xs rxs Nil = subst List Rev xs (app xs Nil) (appRightNeutral xs) rxs,
+  (xs : List) (rxs : Rev xs) (y : B) (ys : List)
+    rev' xs rxs (Cons y ys)
+      = subst List Rev
+            (app (app xs (one y)) ys)
+            (app xs (Cons y ys))
+            (appAssoc xs (one y) ys)
+            (rev' (app xs (one y)) (RSnoc xs y rxs) ys).
+
+rev \(xs : List) : Rev xs
+  = rev' Nil RNil xs.
+
+-- Main Palindrome program
+
 genList : B -> N -> List.
   (b : B)
     genList b Z = Nil,
   (b : B) (n : N)
     genList b (S n) = Cons b (genList (not b) n).
-
-snoc : List -> B -> List.
-  (b : B)
-    snoc Nil b = Cons b Nil,
-  (b : B) (x : B) (xs : List)
-    snoc (Cons x xs) b = Cons x (snoc xs b).
 
 isJust : (a : Type) -> (x : Maybe a) -> B.
   (a : Type) (x : a)
@@ -41,9 +106,14 @@ isJust : (a : Type) -> (x : Maybe a) -> B.
 data IsPalindrome : List -> Type where
   PNil : IsPalindrome Nil,
   POne : (b : B) -> IsPalindrome (Cons b Nil),
-  PTwo : (b : B) -> (xs : List) -> IsPalindrome (Cons b (snoc xs b)).
+  PTwo : (b : B) -> (xs : List) -> IsPalindrome (Cons b (app xs (one b))).
 
-postulate decPalindrome : (xs : List) -> Maybe (IsPalindrome xs).
+decPalindrome' : (xs : List) -> (rxs : Rev xs) -> Maybe (IsPalindrome xs).
+  (xs : List) (rxs : Rev xs)
+    decPalindrome' xs rxs = Nothing (IsPalindrome xs).
+
+decPalindrome \(xs : List) : Maybe (IsPalindrome xs)
+    = decPalindrome' xs (rev xs).
 
 main \: B =
   let foreign inputSize : N = "(rts-arg-peano 'Z 'S 0)",
