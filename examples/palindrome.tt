@@ -1,0 +1,53 @@
+-- vim: ft=idris
+
+data N : Type where
+    Z : N,
+    S : N -> N.
+
+data B : Type where
+  T : B,
+  F : B.
+
+data List : Type where
+  Cons : B -> List -> List,
+  Nil : List.
+
+data Maybe : Type -> Type where
+  Nothing : (a : Type) -> Maybe a,
+  Just : (a : Type) -> (x : a) -> Maybe a.
+
+not : B -> B.
+not T = F,
+not F = T.
+
+genList : B -> N -> List.
+  (b : B)
+    genList b Z = Nil,
+  (b : B) (n : N)
+    genList b (S n) = Cons b (genList (not b) n).
+
+snoc : List -> B -> List.
+  (b : B)
+    snoc Nil b = Cons b Nil,
+  (b : B) (x : B) (xs : List)
+    snoc (Cons x xs) b = Cons x (snoc xs b).
+
+isJust : (a : Type) -> (x : Maybe a) -> B.
+  (a : Type) (x : a)
+    isJust a (Just [a] x) = T,
+  (a : Type)
+    isJust a (Nothing [a]) = F.
+
+data IsPalindrome : List -> Type where
+  PNil : IsPalindrome Nil,
+  POne : (b : B) -> IsPalindrome (Cons b Nil),
+  PTwo : (b : B) -> (xs : List) -> IsPalindrome (Cons b (snoc xs b)).
+
+postulate decPalindrome : (xs : List) -> Maybe (IsPalindrome xs).
+
+main \: B =
+  let foreign inputSize : N = "(rts-arg-peano 'Z 'S 0)",
+      inputList : List = genList T inputSize
+    in isJust
+          (IsPalindrome inputList)
+          (decPalindrome inputList).
