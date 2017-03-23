@@ -169,11 +169,31 @@ red form ctx t@(App r f x)
         NF   -> red NF ctx x
         WHNF -> x
 
+-- This function takes a disassembled pattern and a term application
+-- and tries to match them up, while ensuring that there are at least
+-- as many terms as there are patterns. Any superfluous terms are returned.
+matchUp :: Pat r -> [(r, Pat r)] -> TT r -> [(r, TT r)] -> Match (Pat r, TT r, [(r, TT r)])
+matchUp ph [] th tms = Yes (ph, th, tms)  -- `tms` are superfluous terms
+matchUp ph ((r,p):ps) th ((r',t):ts) = matchUp (PApp r ph p) ps (App r' th t) ts
+matchUp ph (_:_) th [] = No  -- not enough terms
+
 matchClause :: IsRelevance r => Ctx r -> TT r -> Clause r -> Match (TT r)
 matchClause ctx tm (Clause pvs lhs rhs) = do
-    pvSubst <- match pvs' ctx lhs tm
-    return $ safeSubst pvs [pvSubst M.! defName d | d <- pvs] rhs
+    -- first, match up patterns vs. terms, keeping superfluous terms
+    -- (if application is oversaturated)
+    (pattern, term, extraTerms) <- matchUp ph pargs h args
+
+    -- get the matching substitution
+    pvSubst <- match pvs' ctx pattern term
+
+    -- substitute in RHS, and then tack on the superfluous terms
+    return $
+        mkApp
+            (safeSubst pvs [pvSubst M.! defName d | d <- pvs] rhs)
+            extraTerms
   where
+    (ph, pargs) = unApplyPat lhs
+    (h,  args)  = unApply tm
     pvs' = M.fromList [(defName d, d) | d <- pvs]
 
 safeSubst :: [Def r] -> [TT r] -> TT r -> TT r
@@ -201,6 +221,7 @@ match pvs ctx (PApp r f x) (App r' f' x')
     = M.unionWith (\_ _ -> error "non-linear pattern")
         <$> match pvs ctx f f'
         <*> match pvs ctx x (red WHNF ctx x')
+
 match pvs ctx (PForced tm) tm' = Yes $ M.empty
 
 match pvs ctx pat (V n)
