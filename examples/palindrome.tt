@@ -142,33 +142,36 @@ toV \(xs : List) : V xs
 data IsPalindrome : List -> Type where
   PNil : IsPalindrome Nil,
   POne : (b : B) -> IsPalindrome (Cons b Nil),
-  PTwo : (b : B) -> (xs : List) -> IsPalindrome (Cons b (app xs (one b))).
+  PTwo : (b : B) -> (xs : List) -> (pf : IsPalindrome xs) -> IsPalindrome (Cons b (app xs (one b))).
 
 decEq : (x : B) -> (y : B) -> Maybe (Id B x y).
-decEq T T = Just (Id B T T) (Refl T),
-decEq F F = Just (Id B F F) (Refl F),
+decEq T T = Just (Id B T T) (Refl B T),
+decEq F F = Just (Id B F F) (Refl B F),
 decEq T F = Nothing (Id B T F),
 decEq F T = Nothing (Id B F T).
 
-isPalinV : (xs : List) -> (u : V xs) -> Maybe (Palindrome xs).
-isPalinV [Nil]        VNil     = Just (Palindrome Nil) PNil,
-isPalinV [Cons x Nil] (VOne x) = Just (Palindrome (Cons x Nil)) (POne x),
-isPalinV [Cons x (app xs (one y))] (VTwo x xs v y)
-  = let
-        isPalinV' : (x : B) -> (y : B) -> (xs : List) -> (u : V xs)
-            -> (pfB : Maybe (Id B x y))
-            -> (pfV : Maybe (IsPalindrome xs))
-            -> Maybe (IsPalindrome (Cons x (app xs (one y)))).
-          (x : B) (xs : List) (u : V xs)
-            isPalinV' x [x] xs u
-              (Just [Id B x x] [Refl B x])
-              (Just [IsPalindrome xs] pfV)
-              = PTwo x pfV,
-          (x : B) (y : B) (xs : List) (u : V xs)
-            (pfB : Maybe (Id B x y)) (pfV : Maybe (IsPalindrome xs))
-              isPalinV' x y xs v pfB pfV = Nothing.
-    in
-        isPalinV' x y xs v (decEq x y) (isPalinV xs u).
+isPalinV : (xs : List) -> (v : V xs) -> Maybe (IsPalindrome xs).
+isPalinV [Nil]        VNil     = Just (IsPalindrome Nil) PNil,
+(x : B)
+  isPalinV [Cons x Nil] (VOne x) = Just (IsPalindrome (Cons x Nil)) (POne x),
+(x : B) (xs : List) (y : B) (v : V xs)
+  isPalinV [Cons x (app xs (one y))] (VTwo x xs v y)
+    = let
+          isPalinV' : (x : B) -> (y : B) -> (xs : List) -> (v : V xs)
+              -> (pfB : Maybe (Id B x y))
+              -> (pfV : Maybe (IsPalindrome xs))
+              -> Maybe (IsPalindrome (Cons x (app xs (one y)))).
+            (x : B) (xs : List) (v : V xs) (pfV : IsPalindrome xs)
+              isPalinV' x [x] xs v
+                (Just [Id B x x] [Refl B x])
+                (Just [IsPalindrome xs] pfV)
+                = Just (IsPalindrome (Cons x (app xs (one x)))) (PTwo x xs pfV),
+            (x : B) (y : B) (xs : List) (v : V xs)
+              (pfB : Maybe (Id B x y)) (pfV : Maybe (IsPalindrome xs))
+                isPalinV' x y xs v pfB pfV
+                  = Nothing (IsPalindrome (Cons x (app xs (one y)))).
+      in
+          isPalinV' x y xs v (decEq x y) (isPalinV xs v).
 
 isPalindrome \(xs : List) : Maybe (IsPalindrome xs) = isPalinV xs (toV xs).
 
