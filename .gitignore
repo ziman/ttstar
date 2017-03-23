@@ -4,3 +4,5 @@ TAGS
 dist/
 cabal.sandbox.config
 examples/timelog.txt
+*.csv
+.ipynb_checkpoints/
