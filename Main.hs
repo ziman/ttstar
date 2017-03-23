@@ -12,6 +12,9 @@ import qualified Codegen.Scheme
 
 import Util.PrettyPrint
 
+import SExp
+import TTSExp
+
 import Erasure.Evar
 import Erasure.Infer
 import Erasure.Solve
@@ -191,6 +194,11 @@ main = do
 
             codegen Codegen.Scheme.codegen fname "-unerased" annotated
             codegen Codegen.Scheme.codegen fname ""          pruned
+
+			writeFile (fname ++ ".d.scm") (sexpTT desugared)
+			writeFile (fname ++ ".o.scm") (sexpTT evarified_1st)
+			writeFile (fname ++ ".u.scm") (sexpTT annotated)
+			writeFile (fname ++ ".e.scm") (sexpTT pruned)
 
   where
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
