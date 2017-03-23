@@ -151,6 +151,7 @@ cgProgram prog =
     $$ text "(define Type '(Type))"
     $$ text "(define (number->peano z s i) (if (= i 0) (list z) (list s (number->peano z s (- i 1)))))"
     $$ text "(define (rts-arg-peano z s i) (number->peano z s (string->number (list-ref (command-line-arguments) i))))"
+    $$ text "(define (rts-arg-read i) (read (open-input-string (list-ref (command-line-arguments) i))))"
     $$ parens (
         text "print" $+$ indent (cgTm prog)
     ) -- $+$ parens (text "newline")  -- newline for Racket

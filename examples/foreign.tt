@@ -16,7 +16,11 @@ not : B -> B.
 not T = F,
 not F = T.
 
+-- e.g.: csi -qs examples/foreign.scm 4
 foreign input : N = "(rts-arg-peano 'Z 'S 0)".
+
+-- e.g.: csi -qs examples/foreign.scm "(S (S (S (Z))))"
+--foreign input : N = "(rts-arg-read 0)".
 
 genList : B -> N -> List.
   (b : B)
