@@ -226,10 +226,10 @@ match pvs ctx (PForced tm) tm' = Yes $ M.empty
 
 match pvs ctx pat (V n)
     | Just d <- M.lookup n ctx
-	= case defBody d of
-		Abstract Var -> Stuck  -- variables may or may not match as we learn what they are
-		Abstract (Foreign _) -> Stuck  -- foreigns are variables, really
-		_ -> No
+    = case defBody d of
+        Abstract Var -> Stuck  -- variables may or may not match as we learn what they are
+        Abstract (Foreign _) -> Stuck  -- foreigns are variables, really
+        _ -> No
 
 match _ _ _ _ = No
 
