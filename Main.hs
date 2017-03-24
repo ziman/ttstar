@@ -195,10 +195,10 @@ main = do
             codegen Codegen.Scheme.codegen fname "-unerased" annotated
             codegen Codegen.Scheme.codegen fname ""          pruned
 
-			writeFile (fname ++ ".d.scm") (sexpTT desugared)
-			writeFile (fname ++ ".o.scm") (sexpTT evarified_1st)
-			writeFile (fname ++ ".u.scm") (sexpTT annotated)
-			writeFile (fname ++ ".e.scm") (sexpTT pruned)
+            writeFile (fname ++ ".d.scm") (dumpSExp $ sexpTT prog)
+            writeFile (fname ++ ".o.scm") (dumpSExp $ sexpTT evarified_1st)
+            writeFile (fname ++ ".u.scm") (dumpSExp $ sexpTT annotated)
+            writeFile (fname ++ ".e.scm") (dumpSExp $ sexpTT pruned)
 
   where
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)

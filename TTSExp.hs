@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances #-}
 module TTSExp where
 
 import SExp
@@ -25,7 +26,7 @@ instance SexpR Relevance where
     unsexpR (SV "E") = Right E
     unsexpR s = Left $ "not relevance: " ++ show s
 
-instance SexprR (Maybe Relevance) where
+instance SexpR (Maybe Relevance) where
     sexpR Nothing = SV "_"
     sexpR (Just r) = sexpR r
 
@@ -39,10 +40,16 @@ instance SexpR Evar where
     unsexpR (SI i) = Right $ EV i
     unsexpR r = Fixed <$> unsexpR r
 
+sexpName :: Name -> SExp
+sexpName (UN s) = SV s
+sexpName Blank = SV "_"
+sexpName (IN n ty) = SL [SV n, SL $ map sexpR ty]
+sexpName (MN n i) = SV (show n ++ "-" ++ show i)  -- hack for later parsing, this cannot be a UN
+
 sexpTT :: SexpR r => TT r -> SExp
-sexpTT (V n) = SL [SV "V", SV n]
-sexpTT (I n ty) = SL [SV "I", SV n, sexpTT ty]
-sexpTT (Bind b d tm) = SL [SV "B", sexpB b, sexpDef d, sexpTT tm]
+sexpTT (V n) = SL [SV "V", sexpName n]
+sexpTT (I n ty) = SL [SV "I", sexpName n, sexpTT ty]
+sexpTT (Bind b ds tm) = SL [SV "B", sexpB b, SL (map sexpDef ds), sexpTT tm]
 sexpTT (App r f x) = SL [SV "A", sexpR r, sexpTT f, sexpTT x]
 
 sexpB :: Binder -> SExp
@@ -52,7 +59,7 @@ sexpB Let = SV "let"
 
 sexpDef :: SexpR r => Def r -> SExp
 sexpDef (Def n r ty b cs) = SL [
-    SV n, sexpR r, sexpTT ty, sexpBody b, sexpCs cs
+    sexpName n, sexpR r, sexpTT ty, sexpBody b, sexpCs cs
   ]
 
 sexpBody :: SexpR r => Body r -> SExp
@@ -70,4 +77,9 @@ sexpRs rs = SL (map sexpR . S.toList $ rs)
 
 sexpClause :: SexpR r => Clause r -> SExp
 sexpClause (Clause pvs lhs rhs)
-    = SL [SL (map sexpDef pvs), sexpTm lhs, sexpTm rhs]
+    = SL [SL (map sexpDef pvs), sexpPat lhs, sexpTT rhs]
+
+sexpPat :: SexpR r => Pat r -> SExp
+sexpPat (PV n) = SL [SV "V", sexpName n]
+sexpPat (PApp r f x) = SL [SV "A", sexpR r, sexpPat f, sexpPat x]
+sexpPat (PForced tm) = SL [SV "F", sexpTT tm]

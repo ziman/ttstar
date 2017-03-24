@@ -5,6 +5,7 @@ module SExp
     , loadSExp, saveSExp
     ) where
 
+import Data.Char
 import Control.Monad
 import Text.Parsec
 import Util.PrettyPrint hiding ((<?>))
@@ -33,24 +34,25 @@ parseSExp content =
     sp :: Parser ()
     sp = many (satisfy isSpace) *> return () <?> "whitespace"
 
-    kwd :: Parser ()
+    kwd :: String -> Parser ()
     kwd s = (try (string s) *> sp) <?> s
 
     sv :: Parser SExp
     sv = SV <$> (
             (:)
-                (satisfy $ \x -> isIdent x && not (isDigit x))
-                (many $ satisfy isIdent)
-        ) *> sp <?> "atom"
+                <$> (satisfy $ \x -> isIdent x && not (isDigit x))
+                <*> (many $ satisfy isIdent)
+        ) <* sp <?> "atom"
 
     ss :: Parser SExp
     ss = SV <$> (kwd "\"" *> many charLit <* kwd "\"")
       where
+        charLit :: Parser Char
         charLit =
-            (kwd "\\\\" *> return "\\")
-            <|> (kwd "\\\"" *> return "\"")
-            <|> (kwd "\\n" *> return "\n")
-            <|> (return <$> satisfy (/= '"'))
+            (kwd "\\\\" *> return '\\')
+            <|> (kwd "\\\"" *> return '\"')
+            <|> (kwd "\\n" *> return '\n')
+            <|> (satisfy (/= '"'))
 
     si :: Parser SExp
     si = SI <$> (read <$> many1 digit) <* sp <?> "integer"
@@ -75,13 +77,13 @@ dumpSExpD (SV s)
     encodeChar c = [c]
 
 dumpSExpD (SI i) = text $ show i
-dumpSExpD (SL xs) = parens (indent . vcat $ map dumpSExpD xs)
+dumpSExpD (SL xs) = parens (nest 2 . vcat $ map dumpSExpD xs)
 
 dumpSExp :: SExp -> String
 dumpSExp = render "; " . dumpSExpD
 
 loadSExp :: SExpable a => FilePath -> IO (Either String a)
-loadSExp fname = (fromSExp =<< parseSExp) <$> readFile fname
+loadSExp fname = (fromSExp <=< parseSExp) <$> readFile fname
 
 saveSExp :: SExpable a => FilePath -> a -> IO ()
 saveSExp fname = writeFile fname . dumpSExp . toSExp
