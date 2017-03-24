@@ -44,7 +44,7 @@ sexpName :: Name -> SExp
 sexpName (UN s) = SV s
 sexpName Blank = SV "_"
 sexpName (IN n ty) = SL [SV n, SL $ map sexpR ty]
-sexpName (MN n i) = SV (show n ++ "-" ++ show i)  -- hack for later parsing, this cannot be a UN
+sexpName (MN n i) = SV (n ++ "-" ++ show i)  -- hack for later parsing, this cannot be a UN
 
 sexpTT :: SexpR r => TT r -> SExp
 sexpTT (V n) = SL [SV "V", sexpName n]

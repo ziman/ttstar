@@ -64,23 +64,40 @@ parseSExp content =
     sexp = si <|> ss <|> sv <|> slist <?> "s-expression"
 
 
-dumpSExpD :: SExp -> Doc
+-- returns:
+-- 1. the document
+-- 2. size of the document
+dumpSExpD :: SExp -> (Doc, Int)
 dumpSExpD (SV s)
     | any (\x -> isSpace x || x == '(' || x == ')' || x == '"') s
-    = text ("\"" ++ concatMap encodeChar s ++ "\"")
+    = 
+        let doc = text ("\"" ++ concatMap encodeChar s ++ "\"")
+          in (doc, size doc)
 
-    | otherwise = text s
+    | otherwise = (text s, length s)
   where
     encodeChar '"' = "\\\""
     encodeChar '\\' = "\\\\"
     encodeChar '\n' = "\\n"
     encodeChar c = [c]
 
-dumpSExpD (SI i) = text $ show i
-dumpSExpD (SL xs) = parens (nest 2 . vcat $ map dumpSExpD xs)
+dumpSExpD (SI i) = (text $ show i, length $ show i)
+
+dumpSExpD (SL xs)
+    | subSize >= 50 = (multiLine,  subSize)
+    | otherwise     = (singleLine, subSize)
+  where
+    subs = map dumpSExpD xs
+    subDocs = map fst subs
+    subSize = sum $ map snd subs
+
+    singleLine = parens (hsep subDocs)
+    multiLine = case subDocs of
+        []   -> parens empty
+        d:ds -> parens (d $$ nest 2 (vcat ds))
 
 dumpSExp :: SExp -> String
-dumpSExp = render "; " . dumpSExpD
+dumpSExp = render "; " . fst . dumpSExpD
 
 loadSExp :: SExpable a => FilePath -> IO (Either String a)
 loadSExp fname = (fromSExp <=< parseSExp) <$> readFile fname
