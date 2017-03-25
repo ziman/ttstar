@@ -43,13 +43,13 @@ for i in examples/*.tt; do
     n_src="${i%.tt}"
     n="${n_src/examples/examples\/outputs}"
 
-    rm -f "${n}"{,-unerased}.scm{,.out} "${n}-erased.tt"
+    rm -f "${n}"{,-unerased}.*
     echo $i \
         && ./ttstar -v "$i" --dump-pretty "${n}-erased.tt" &> "$n.out" \
         && ./ttstar "$i" --skip-inference --dump-pretty "${n}-unerased.tt" \
         \
         && ./ttstar "$i" --dump-scheme "${n}.scm" \
-        && scheme "${n}.scm" $(cat "${n}.args" 2>/dev/null) &> "${n}.scm.out" \
+        && scheme "${n}.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}.scm.out" \
         \
         && ./ttstar "$i" --skip-inference --dump-scheme "${n}-unerased.scm" \
         && scheme "${n}-unerased.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}-unerased.scm.out" \
