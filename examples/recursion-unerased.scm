@@ -28,7 +28,7 @@
           (match (list _e0 _e1 _e2)
             ((a _ ('VNil _))
               Z)
-            ((a ('S n) ('VCons _ _ x xs))
+            ((a (_ n) ('VCons _ _ x xs))
               (S (((vlen a) n) xs))))))))
     (testVec ((((VCons Bool) (S Z)) True) ((((VCons Bool) Z) False) (VNil Bool))))
     (main (((vlen Bool) (S (S Z))) testVec))

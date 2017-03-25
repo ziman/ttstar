@@ -12,13 +12,41 @@
 
 ### Constraints ###
 
-[] -> [E,R]
 [R] -> [1]
 
 ### Solution ###
 
-[1,E,R]
+[1,R]
 
-ttstar: !! inconsistent annotation
-CallStack (from HasCallStack):
-  error, called at Main.hs:142:26 in main:Main
+### Annotated ###
+
+  let main :R: Type = Type
+  in main
+
+### Specialised ###
+
+  let main :R: Type = Type
+  in main
+
+### Final annotation ###
+
+  let main :R: Type = Type
+  in main
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+  let main = Type
+  in main
+
+### Normal forms ###
+
+unerased:
+  Type
+
+erased:
+  Type
+

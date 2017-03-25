@@ -47,4 +47,4 @@ ttstar: Traceback:
 Error: NonlinearPattern (PApp 5 (PApp 6 (PForced f) (PV x)) (PV x))
 
 CallStack (from HasCallStack):
-  error, called at Main.hs:131:38 in main:Main
+  error, called at Main.hs:65:38 in main:Main

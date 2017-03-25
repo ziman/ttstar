@@ -24,7 +24,7 @@
         (match (list _e0 _e1)
           ((_ ('Nil _))
             Z)
-          ((('S m) ('Cons _ _ y ys))
+          (((_ m) ('Cons _ _ y ys))
             (S ((vlen m) ys)))))))
     (main ((vlen (S Z)) ((((Cons N) Z) (S (S (S Z)))) (Nil N))))
   )
