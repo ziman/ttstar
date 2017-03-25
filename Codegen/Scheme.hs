@@ -102,7 +102,9 @@ cgPat pvs pat@(PApp r f x)
     | (PForced (V cn), args) <- unApplyPat pat
     = cgPatApp cn args
   where
-    cgPatApp cn args = parens (hsep $ (text "'" <> cgName cn) : map (cgPat pvs . snd) args)
+    cgPatApp cn args = parens (hsep $ cgPName cn : map (cgPat pvs . snd) args)
+    cgPName Blank = text "_"
+    cgPName cn = text "'" <> cgName cn
 
 cgPat pvs pat@(PApp r f x) = error $ "can't compile pattern: " ++ show pat
 
