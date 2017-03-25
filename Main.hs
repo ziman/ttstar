@@ -26,8 +26,23 @@ import Control.Monad
 import qualified Data.Set as S
 import qualified Data.Map as M
 
-inferAnnotations :: Args -> Program (Maybe Relevance) -> IO (Program Relevance)
-inferAnnotations args prog = do
+import Lens.Family2
+
+pipeline :: Args -> IO ()
+pipeline args = do
+    when (Args.verbose args) $
+        putStrLn "-- vim: ft=idris"
+
+    let sourceFname = Args.sourceFile args
+    code <- readFile sourceFname
+    prog <- case parseProgram sourceFname code of
+        Left e -> do
+            print e
+            error "parse error"
+
+        Right prog ->
+            return prog
+
     -- evarify the program
     let evarified_1st = evar prog
 
@@ -42,21 +57,28 @@ inferAnnotations args prog = do
         putStrLn ""
 
     let iterSpecialisation evarified = do
-            let cs = either (error . show) id . infer $ evarified
-            when (Args.verbose args) $ do
-                putStrLn "### Constraints ###\n"
-                mapM_ (putStrLn . fmtCtr) $ M.toList cs
-                putStrLn ""
+            uses <- case Args.skipInference args of
+                True -> return $ S.fromList (
+                    evarified_1st ^.. (ttRelevance :: Traversal' (TT Evar) Evar)
+                  )
+                False -> do
+                    let cs = either (error . show) id . infer $ evarified
+                    when (Args.verbose args) $ do
+                        putStrLn "### Constraints ###\n"
+                        mapM_ (putStrLn . fmtCtr) $ M.toList cs
+                        putStrLn ""
 
-            let (uses, _residue) = solve cs
-            when (Args.verbose args) $ do
-                putStrLn "### Solution ###\n"
-                print $ S.toList uses
-                putStrLn ""
+                    let (uses, _residue) = solve cs
+                    when (Args.verbose args) $ do
+                        putStrLn "### Solution ###\n"
+                        print $ S.toList uses
+                        putStrLn ""
+
+                    return uses
 
             if Fixed E `S.member` uses
-            then error "!! inconsistent annotation"
-            else return ()
+                then error "!! inconsistent annotation"
+                else return ()
 
             let annotated = annotate uses $ evarified
             when (Args.verbose args) $ do
@@ -74,28 +96,7 @@ inferAnnotations args prog = do
                 then iterSpecialisation specialised
                 else return annotated  -- fixed point reached
 
-    iterSpecialisation evarified_1st
-  where
-    fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
-
-pipeline :: Args -> IO ()
-pipeline args = do
-    when (Args.verbose args) $
-        putStrLn "-- vim: ft=idris"
-
-    let sourceFname = Args.sourceFile args
-    code <- readFile sourceFname
-    prog <- case parseProgram sourceFname code of
-        Left e -> do
-            print e
-            error "parse error"
-
-        Right prog ->
-            return prog
-
-    annotated <- case Args.skipInference args of
-        True  -> ttRelevance (\_ -> return R) prog  -- make everything R
-        False -> inferAnnotations args prog  -- perform proper inference
+    annotated <- iterSpecialisation evarified_1st
 
     when (Args.verbose args) $ do
         putStrLn "### Final annotation ###"
@@ -137,6 +138,9 @@ pipeline args = do
         Just fname -> do
             let code = render "; " (cgRun Codegen.Scheme.codegen pruned) ++ "\n"
             writeFile fname code
+  where
+    fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
+
 
 main :: IO ()
 main = pipeline =<< Args.parse

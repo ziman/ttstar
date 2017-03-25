@@ -1,8 +1,6 @@
 #!/bin/bash
 
 set -o pipefail
-TIMELOG="examples/timelog.txt"
-export TIMEFORMAT="%3U"
 
 die() {
     echo "$@"
@@ -11,30 +9,20 @@ die() {
 
 # Racket
 scheme_racket() {
-    racket -r $1.scm $(cat "$1".args 2>/dev/null) > $1.scm.out
-    racket -r "$1"-unerased.scm $(cat "$1".args 2>/dev/null) > $1-unerased.scm.out
+    racket -r "$1" $2 2>&1
 }
 
 # Chicken Scheme, interpreter
 scheme_csi() {
-    printf '%-30s %6s\n' \
-        "$1" \
-        "$( (time csi -qs "$1".scm $(cat "$1".args 2>/dev/null) &> $1.scm.out) 2>&1 )" \
-        >> "$TIMELOG"
-
-    printf '%-30s %6s\n' \
-        "${1}-unerased" \
-        "$( (time csi -qs "$1"-unerased.scm $(cat "$1".args 2>/dev/null) &> $1-unerased.scm.out) 2>&1 )" \
-        >> "$TIMELOG"
+    csi -qs "$1" $2 2>&1
 }
 
 # Chicken Scheme, compiler
 scheme_csc() {
-    csc "$1".scm
-    csc "$1"-unerased.scm
-    "$1" $(cat "$1".args 2>/dev/null) &> "$1".scm.out
-    "$1"-unerased $(cat "$1".args 2>/dev/null) &> "$1"-unerased.scm.out
-    rm -f "$1" "$1"-unerased
+    exe="${1%.scm}"
+    csc "$1"
+    "$exe" $2 2>&1
+    rm "$exe"
 }
 
 # Here, select which compiler you want to use.
@@ -50,11 +38,15 @@ install() {
 cabal install -j1 \
     || die "could not install"
 
-> "$TIMELOG"
 for i in examples/*.tt; do
-    n=${i%.tt}
+    n="${i%.tt}"
 
-    echo $i
-    ./ttstar $i > $n.out 2>&1 \
-        && scheme $n
+    echo $i \
+        && ./ttstar -v "$i" &> "$n.out" \
+        \
+        && ./ttstar "$i" --dump-scheme "${n}.scm" \
+        && scheme "${n}.scm" $(cat "${n}.args" 2>/dev/null) > "${n}.scm.out" \
+        \
+        && ./ttstar "$i" --skip-inference --dump-scheme "${n}-unerased.scm" \
+        && scheme "${n}-unerased.scm" $(cat "${n}.args" 2>/dev/null) > "${n}-unerased.scm.out"
 done

@@ -7,6 +7,7 @@ data Args = Args
     { sourceFile :: String
     , verbose :: Bool
     , skipInference :: Bool
+    , skipSpecialisation :: Bool
     , skipVerification :: Bool
     , skipEvaluation :: Bool
     , dumpPretty :: Maybe String
@@ -27,6 +28,9 @@ args = Args
         ( long "skip-inference"
         <> help "Annotate everything as R")
     <*> switch
+        ( long "skip-specialisation"
+        <> help "Do not specialise erasure-polymorphic functions")
+    <*> switch
         ( long "skip-verification"
         <> help "Do not run the verification checker")
     <*> switch
@@ -38,7 +42,7 @@ args = Args
         <> help "Pretty-print final program"))
     <*> optional (strOption
         ( metavar "file.scm"
-        <> long "dump-scm"
+        <> long "dump-scheme"
         <> help "Generate Scheme source from final program"))
 
 parse :: IO Args
