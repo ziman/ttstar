@@ -1,0 +1,7 @@
+
+  let
+    postulate A : T
+    const_A = A
+    apply = (\f. f)
+    main = apply const_A
+  in main

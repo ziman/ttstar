@@ -1,0 +1,17 @@
+
+  let
+    postulate Q : Mool
+    postulate W : Mool
+    postulate T : Bool
+    postulate F : Bool
+    not 
+      [_] T = F
+      [_] F = T
+    mot 
+      [_] Q = W
+      [_] W = Q
+    invert 
+      [_] T = not
+      [_] F = mot
+    main = invert F Q
+  in main

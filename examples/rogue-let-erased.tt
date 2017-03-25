@@ -1,0 +1,9 @@
+
+  let
+    postulate T : Bool
+    postulate F : Bool
+    not 
+      [_] T = F
+      [_] F = T
+    main = not
+  in main

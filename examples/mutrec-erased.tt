@@ -1,0 +1,13 @@
+
+  let
+    postulate T : Bool
+    postulate F : Bool
+    g 
+      [_] T = 
+        let h 
+          [_] F = g F
+          [_] T = T
+        in h F
+      [_] F = T
+    main = g T
+  in main

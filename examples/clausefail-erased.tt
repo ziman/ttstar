@@ -1,0 +1,10 @@
+
+  let
+    postulate S : N
+    postulate T : B
+    postulate F : B
+    isSuc 
+      [_] S = T
+      [_] _ = F
+    main = (\x. isSuc x)
+  in main

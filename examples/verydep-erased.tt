@@ -1,0 +1,11 @@
+
+  let
+    postulate Just : (x) -> Maybe
+    postulate Nothing : Maybe
+    postulate Bool : Type
+    postulate False : Bool
+    f 
+      [_] (Just b) = b
+      [_] Nothing = Bool
+    main = f (Just False)
+  in main

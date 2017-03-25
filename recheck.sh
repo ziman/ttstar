@@ -42,7 +42,7 @@ for i in examples/*.tt; do
     n="${i%.tt}"
 
     echo $i \
-        && ./ttstar -v "$i" &> "$n.out" \
+        && ./ttstar -v "$i" --dump-pretty "${n}-erased.tt" &> "$n.out" \
         \
         && ./ttstar "$i" --dump-scheme "${n}.scm" \
         && scheme "${n}.scm" $(cat "${n}.args" 2>/dev/null) &> "${n}.scm.out" \

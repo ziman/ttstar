@@ -1,0 +1,7 @@
+
+  let
+    postulate P : K
+    f 
+      [_] c = c
+    main = f P
+  in main
