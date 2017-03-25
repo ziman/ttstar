@@ -9,6 +9,7 @@ data Args = Args
     , skipInference :: Bool
     , skipVerification :: Bool
     , skipEvaluation :: Bool
+    , dumpPretty :: Maybe String
     , dumpScheme :: Maybe String
     }
     deriving (Show)
@@ -32,9 +33,13 @@ args = Args
         ( long "skip-evaluation"
         <> help "Do not reduce program to NF")
     <*> optional (strOption
+        ( metavar "file.tt"
+        <> long "dump-pretty"
+        <> help "Pretty-print final program"))
+    <*> optional (strOption
         ( metavar "file.scm"
         <> long "dump-scm"
-        <> help "Generate Scheme source"))
+        <> help "Generate Scheme source from final program"))
 
 parse :: IO Args
 parse = execParser opts
