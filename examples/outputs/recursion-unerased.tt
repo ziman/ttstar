@@ -1,0 +1,17 @@
+-- vim: ft=idris
+  let
+    postulate Bool : Type
+    postulate True : Bool
+    postulate False : Bool
+    postulate Nat : Type
+    postulate Z : Nat
+    postulate S : (n) -> Nat
+    postulate Vec : (_x0) -> (_x1) -> Type
+    postulate VNil : (a) -> Vec Z a
+    postulate VCons : (a) -> (n) -> (x) -> (xs) -> Vec (S n) a
+    vlen 
+      [_] a [_] (VNil [_]) = Z
+      [_] a ([_] n) (VCons [_] [_] x xs) = S (vlen a n xs)
+    testVec = VCons Bool 1 True (VCons Bool Z False (VNil Bool))
+    main = vlen Bool 2 testVec
+  in main

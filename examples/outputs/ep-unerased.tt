@@ -1,0 +1,14 @@
+-- vim: ft=idris
+  let
+    postulate T : Type
+    postulate A : T
+    postulate B : T
+    postulate Op : (x) -> (y) -> T
+    id = (\y. y)
+    constA = (\x. A)
+    apply = (\f. (\x. f x))
+    apply_RRR = (\f. (\x. f x))
+    test1 = apply_RRR id B
+    test2 = apply_RRR constA B
+    main = Op test1 test2
+  in main

@@ -1,0 +1,20 @@
+-- vim: ft=idris
+  let
+    postulate Bool : Type
+    postulate True : Bool
+    postulate False : Bool
+    postulate Foo : (_x0) -> Type
+    postulate Yeah : Foo True
+    postulate Nope : Foo False
+    postulate Maybe : (_x1) -> Type
+    postulate Nothing : (a) -> Maybe a
+    postulate Just : (a) -> (x) -> Maybe a
+    f 
+      [_] (Just [_] b) = b
+      [_] (Nothing [_]) = False
+    g 
+      [_] (Just [_] True) = Yeah
+      [_] (Just [_] False) = Nope
+      [_] (Nothing [_]) = Nope
+    main = g (Just Bool True)
+  in main

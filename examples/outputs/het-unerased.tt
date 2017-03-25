@@ -1,0 +1,22 @@
+-- vim: ft=idris
+  let
+    postulate Tuple : (x) -> (y) -> (z) -> (w) -> Type
+    postulate Bool : Type
+    postulate T : Bool
+    postulate F : Bool
+    postulate Mool : Type
+    postulate Q : Mool
+    postulate W : Mool
+    postulate U : Type
+    postulate B : U
+    postulate M : U
+    ty 
+      [_] B = Bool
+      [_] M = Mool
+    f 
+      [_] [_] T = Bool
+      [_] [_] F = Mool
+      [_] [_] Q = Bool
+      [_] [_] W = Mool
+    main = Tuple (f B T) (f B F) (f M Q) (f M W)
+  in main

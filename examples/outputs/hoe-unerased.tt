@@ -1,0 +1,11 @@
+-- vim: ft=idris
+  let
+    postulate T : Type
+    postulate A : T
+    postulate B : T
+    postulate Op : (x) -> (y) -> T
+    id = (\x. x)
+    const_A = (\x. A)
+    f = (\g. (\z. (\h. (\w. Op (g z) (h w)))))
+    main = f id B const_A B
+  in main

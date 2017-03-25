@@ -1,0 +1,38 @@
+-- vim: ft=idris
+  let
+    postulate Id : (a) -> (x) -> (y) -> Type
+    postulate Refl : (a) -> (x) -> Id a x x
+    id = (\a. (\x. x))
+    subst 
+      [_] a P x [_] [_] = (\w. w)
+    cong 
+      [_] a b f x [_] [_] = Refl b (f x)
+    postulate Bool : Type
+    postulate T : Bool
+    postulate F : Bool
+    postulate List : Type
+    postulate Nil : List
+    postulate Cons : (x) -> (xs) -> List
+    one = (\x. Cons x Nil)
+    app 
+      [_] Nil ys = ys
+      [_] (Cons x xs) ys = Cons x (app xs ys)
+    appRightNeutral 
+      [_] Nil = Refl List Nil
+      [_] (Cons x xs) = cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs)
+    appAssoc 
+      [_] Nil ys zs = Refl List (app ys zs)
+      [_] (Cons x xs) ys zs = cong List List (Cons x) (app (app xs ys) zs) (app xs (app ys zs)) (appAssoc xs ys zs)
+    postulate Rev : (_x7) -> Type
+    postulate RNil : Rev Nil
+    postulate RSnoc : (xs) -> (x) -> (rxs) -> Rev (app xs (one x))
+    rev' 
+      [_] xs rxs Nil = subst List Rev xs (app xs Nil) (appRightNeutral xs) rxs
+      [_] xs rxs (Cons y ys) = subst List Rev (app (app xs (one y)) ys) (app xs (Cons y ys)) (appAssoc xs (one y) ys) (rev' (app xs (one y)) (RSnoc xs y rxs) ys)
+    rev = (\xs. rev' Nil RNil xs)
+    reverse' 
+      [_] [_] RNil = Nil
+      [_] [_] (RSnoc xs x rxs) = Cons x (reverse' xs rxs)
+    reverse = (\xs. reverse' xs (rev xs))
+    main = reverse (Cons T (Cons F (Cons T (Cons F Nil))))
+  in main

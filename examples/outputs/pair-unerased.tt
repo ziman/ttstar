@@ -1,0 +1,16 @@
+-- vim: ft=idris
+  let
+    postulate Bool : Type
+    postulate T : Bool
+    postulate F : Bool
+    postulate Pair : Type
+    postulate P : (x) -> (y) -> Pair
+    fst 
+      [_] (P l r) = l
+    snd 
+      [_] (P l r) = r
+    and 
+      [_] T y = y
+      [_] F y = F
+    main = and (fst (P T F)) (snd (P F T))
+  in main

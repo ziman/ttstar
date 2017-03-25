@@ -1,0 +1,30 @@
+-- vim: ft=idris
+  let
+    postulate Mool : Type
+    postulate Q : Mool
+    postulate W : Mool
+    postulate Bool : Type
+    postulate T : Bool
+    postulate F : Bool
+    postulate Id : (a) -> (x) -> (y) -> Type
+    postulate Refl : (a) -> (x) -> Id a x x
+    not 
+      [_] T = F
+      [_] F = T
+    notnot 
+      [_] T = Refl Bool T
+      [_] F = Refl Bool F
+    retTy 
+      [_] T = Bool
+      [_] F = Mool
+    mot 
+      [_] Q = W
+      [_] W = Q
+    invert 
+      [_] T = not
+      [_] F = mot
+    invert' 
+      [_] T x = not x
+      [_] F x = mot x
+    main = invert F Q
+  in main

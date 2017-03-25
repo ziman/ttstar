@@ -1,0 +1,13 @@
+-- vim: ft=idris
+  let
+    postulate N : Type
+    postulate Z : N
+    postulate S : (_x0) -> N
+    postulate B : Type
+    postulate T : B
+    postulate F : B
+    isSuc 
+      [_] (S n) = T
+      [_] n = F
+    main = (\x. isSuc x)
+  in main

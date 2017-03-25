@@ -1,0 +1,9 @@
+-- vim: ft=idris
+  let
+    postulate T : Type
+    postulate A : T
+    postulate B : T
+    const_A = (\x. A)
+    apply = (\f. (\x. f x))
+    main = apply const_A B
+  in main

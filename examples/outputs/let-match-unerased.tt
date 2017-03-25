@@ -1,0 +1,11 @@
+-- vim: ft=idris
+  let
+    postulate Bool : Type
+    postulate T : Bool
+    postulate F : Bool
+    main = 
+      let not 
+        [_] T = F
+        [_] F = T
+      in not F
+  in main

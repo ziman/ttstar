@@ -1,0 +1,34 @@
+-- vim: ft=idris
+  let
+    postulate Bool : Type
+    postulate True : Bool
+    postulate False : Bool
+    postulate Nat : Type
+    postulate Z : Nat
+    postulate S : (_x0) -> Nat
+    plus 
+      [_] Z n = n
+      [_] (S m) n = S (plus m n)
+    postulate Tag : Type
+    postulate Even : Tag
+    postulate Odd : Tag
+    funTy 
+      [_] Even = (_x4) -> Bool
+      [_] Odd = (_x5) -> (_x6) -> Bool
+    fun = 
+      let
+        even 
+          [_] Z = True
+          [_] (S n) = fun Odd n (plus n n)
+        odd 
+          [_] Z n = False
+          [_] (S m) n = fun Even m
+      in (\tag. 
+        let f 
+          [_] Even = even
+          [_] Odd = odd
+        in f tag)
+    even = fun Even
+    odd = fun Odd
+    main = even 8
+  in main

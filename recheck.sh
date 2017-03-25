@@ -46,6 +46,7 @@ for i in examples/*.tt; do
     rm -f "${n}"{,-unerased}.scm{,.out} "${n}-erased.tt"
     echo $i \
         && ./ttstar -v "$i" --dump-pretty "${n}-erased.tt" &> "$n.out" \
+        && ./ttstar "$i" --skip-inference --dump-pretty "${n}-unerased.tt" \
         \
         && ./ttstar "$i" --dump-scheme "${n}.scm" \
         && scheme "${n}.scm" $(cat "${n}.args" 2>/dev/null) &> "${n}.scm.out" \

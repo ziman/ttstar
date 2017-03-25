@@ -1,0 +1,17 @@
+-- vim: ft=idris
+  let
+    postulate Bool : Type
+    postulate T : Bool
+    postulate F : Bool
+    postulate TwoBools : Type
+    postulate TB : (x) -> (y) -> TwoBools
+    id = (\x. x)
+    constT = (\_0. T)
+    fty 
+      [_] T = (_x3) -> Bool
+      [_] F = (_x4) -> Bool
+    f 
+      [_] T = id
+      [_] F = constT
+    main = TB (f T F) (f F F)
+  in main

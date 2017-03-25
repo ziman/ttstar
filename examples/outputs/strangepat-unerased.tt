@@ -1,0 +1,11 @@
+-- vim: ft=idris
+  let
+    postulate Bool : Type
+    postulate T : Bool
+    postulate F : Bool
+    postulate Pair : Type
+    postulate P : (_x0) -> (_x1) -> Pair
+    fst 
+      [_] (P y) = y
+    main = fst (P T)
+  in main
