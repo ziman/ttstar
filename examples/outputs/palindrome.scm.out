@@ -1,0 +1,21 @@
+
+Error: (car) bad argument type: ()
+
+	Call history:
+
+	<eval>	  (##sys#list (##core#quote Z))
+	<eval>	  (##sys#list (##core#quote T))
+	<eval>	  (##sys#list (##core#quote F))
+	<eval>	  (##sys#list (##core#quote Nil))
+	<eval>	  (##sys#list (##core#quote Nothing))
+	<eval>	  (##sys#list (##core#quote Just))
+	<eval>	  (list)
+	<eval>	  (null?223 v206)
+	<eval>	  (##sys#list (##core#quote RNil))
+	<eval>	  (##sys#list (##core#quote VNil))
+	<eval>	  (##sys#list (##core#quote VOne))
+	<eval>	  (rts-arg-peano (quote Z) (quote S) 0)
+	<eval>	  [rts-arg-peano] (number->peano z s (string->number (list-ref (command-line-arguments) i)))
+	<eval>	  [rts-arg-peano] (string->number (list-ref (command-line-arguments) i))
+	<eval>	  [rts-arg-peano] (list-ref (command-line-arguments) i)
+	<eval>	  [rts-arg-peano] (command-line-arguments)	<--

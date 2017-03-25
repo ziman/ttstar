@@ -1,0 +1,19 @@
+-- vim: ft=idris
+  let
+    postulate Z : Nat
+    postulate S : (x) -> Nat
+    plus 
+      [_] Z m = m
+      [_] (S n) m = S (plus n m)
+    id = (\x. x)
+    const = (\x. (\y. x))
+    main = 
+      let apply 
+        [_] f Z = f Z
+        [_] f (S x) = f (S x)
+      in 
+        let
+          postulate Q : Nat
+          three = 3
+        in plus (apply id 2) (apply (const Q) three)
+  in main

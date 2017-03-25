@@ -123,7 +123,7 @@ pipeline args = do
 
     case Args.dumpPretty args of
         Nothing -> return ()
-        Just fname -> writeFile fname $ show pruned ++ "\n"
+        Just fname -> writeFile fname $ "-- vim: ft=idris" ++ show pruned ++ "\n"
 
     when (not $ Args.skipEvaluation args) $ do
         let unerasedNF = red NF (builtins $ Just relOfType) prog

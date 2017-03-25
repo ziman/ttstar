@@ -1,0 +1,12 @@
+-- vim: ft=idris
+  let
+    postulate T : Bool
+    postulate F : Bool
+    postulate Refl : Id
+    notnot 
+      [_] T = Refl
+      [_] F = Refl
+    subst 
+      [_] = (\w. w)
+    main = notnot (subst F)
+  in main

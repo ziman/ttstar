@@ -1,3 +1,0 @@
-
-  let main = (\x. x)
-  in main

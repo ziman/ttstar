@@ -1,0 +1,22 @@
+-- vim: ft=idris
+  let
+    postulate True : Bool
+    postulate False : Bool
+    postulate Z : Nat
+    postulate S : (_x0) -> Nat
+    postulate Even : Tag
+    postulate Odd : Tag
+    fun 
+      [_] Even = (\n. 
+        let f 
+          [_] Z = True
+          [_] (S m) = fun Odd m
+        in f n)
+      [_] Odd = (\n. 
+        let f 
+          [_] Z = False
+          [_] (S m) = fun Even m
+        in f n)
+    even = fun Even
+    main = even 8
+  in main

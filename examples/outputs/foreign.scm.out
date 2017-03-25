@@ -1,0 +1,21 @@
+
+Error: (car) bad argument type: ()
+
+	Call history:
+
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<eval>	  (print (letrec* ((Z (quasiquote (Z))) (S (lambda (x) (quasiquote (S (unquote x))))) (T (quasiquote (...
+	<eval>	  (##sys#list (##core#quote Z))
+	<eval>	  (##sys#list (##core#quote T))
+	<eval>	  (##sys#list (##core#quote F))
+	<eval>	  (##sys#list (##core#quote Nil))
+	<eval>	  (rts-arg-peano (quote Z) (quote S) 0)
+	<eval>	  [rts-arg-peano] (number->peano z s (string->number (list-ref (command-line-arguments) i)))
+	<eval>	  [rts-arg-peano] (string->number (list-ref (command-line-arguments) i))
+	<eval>	  [rts-arg-peano] (list-ref (command-line-arguments) i)
+	<eval>	  [rts-arg-peano] (command-line-arguments)	<--

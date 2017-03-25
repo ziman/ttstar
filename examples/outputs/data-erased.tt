@@ -1,0 +1,9 @@
+-- vim: ft=idris
+  let
+    postulate Z : N
+    postulate S : N
+    plus 
+      [_] Z m = m
+      [_] S _ = S
+    main = plus S S
+  in main

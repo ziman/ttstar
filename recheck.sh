@@ -38,9 +38,12 @@ install() {
 cabal install -j1 \
     || die "could not install"
 
+mkdir -p examples/outputs
 for i in examples/*.tt; do
-    n="${i%.tt}"
+    n_src="${i%.tt}"
+    n="${n_src/examples/examples\/outputs}"
 
+    rm -f "${n}"{,-unerased}.scm{,.out} "${n}-erased.tt"
     echo $i \
         && ./ttstar -v "$i" --dump-pretty "${n}-erased.tt" &> "$n.out" \
         \
@@ -48,5 +51,6 @@ for i in examples/*.tt; do
         && scheme "${n}.scm" $(cat "${n}.args" 2>/dev/null) &> "${n}.scm.out" \
         \
         && ./ttstar "$i" --skip-inference --dump-scheme "${n}-unerased.scm" \
-        && scheme "${n}-unerased.scm" $(cat "${n}.args" 2>/dev/null) &> "${n}-unerased.scm.out"
+        && scheme "${n}-unerased.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}-unerased.scm.out" \
+        || echo "  * failed"
 done

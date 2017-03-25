@@ -1,0 +1,3 @@
+-- vim: ft=idris
+  let main = Type
+  in main
