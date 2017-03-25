@@ -4,8 +4,10 @@ module Main where
 import TT
 import Pretty
 import Parser
--- import Explorer
 import Normalise
+
+import Args (Args)
+import qualified Args
 
 import Codegen.Common
 import qualified Codegen.Scheme
@@ -20,184 +22,106 @@ import Erasure.Specialise
 import Erasure.Prune
 import Erasure.Verify
 
-import System.Environment
+import Control.Monad
 import qualified Data.Set as S
 import qualified Data.Map as M
 
-{- Questions for Edwin:
- - * is evaluation per-clause okay with forced patterns?
- - * prune is no longer trivial. Is that okay?
- -}
+pipeline :: Args -> IO ()
+pipeline args = do
+    let sourceFname = Args.sourceFile args
+    code <- readFile sourceFname
+    prog <- case parseProgram sourceFname code of
+        Left e -> do
+            print e
+            error "parse error"
 
--- for every function f
---   for every argument i
---     if (Exists j. USED_f_i_j)
---       we can't erase the argument completely
---       but we can replace it with NULL whenever USED_f_i_j is False
---     otherwise
---       we can erase f_i completely
---
--- constraints are part of type signature
---
--- we copy a fresh set of constraints whenever the function is applied
---  unless it's recursive
---
--- how do we deal with self-referential functions? (probably don't copy the constraint set)
---   -> rules out erasure-polymorphic recursion (that's fair because the annotations are completely inferred)
---   -> maybe we could give the user a chance to explicitly annotate polymorphic recursion and then just check it
---
--- interactive constraint explorer
---
--- ***
---
--- this is too whole-program (because constructor usage can only be determined by whole-program analysis)
--- however, every function has 1. type, 2. erasure constraints
---  -> these are (of course) computed in isolation
--- so it's questionable whether we should call it whole-program analysis
--- (the information is usable on its own)
---
--- ***
---
--- A evar on a Pi is the upper bound of all Lambdas typed by that Pi.
--- We could add another evar to every Pi, which is the lower bound of all Lams typed by it.
--- Then we could tell whether *all* lambdas are relevant or whether some are irrelevant.
---
--- => therefore we can annotate every binder with the supremum and infimum of their variables
---    and erase accordingly
--- => lambdas imply pis (one pi might type multiple lambdas (case branches) but not vice versa)
---
--- Flow of relevance:
---  - variables always start as relevant at the tail of the term
---  - under an application, their relevance is and-ed with relevance of the lambda
---  - finally, they die in their binder
---
--- We probably should perform the duplication in (checkTerm $ V n) -- because only variables can be duplicated.
---
--- ***
---
--- ifl : python backend
--- pldi : erasure
--- meetings every other tuesday afternoon starting with 19.5.2015
---
--- ***
---
--- general rule:
--- we always assume we're in a completely relevant environment
--- the environment will insert conditions using "cond" if that's not the case but we mustn't care about this
---
---  ***
---
---  Relevance levels
---
---    E < N < R   |   < I ?
---
---  Constraints:
---
---    (r, E) --> (r, R)
---
---  Solver:
---
---    1. keep a map of assignments (r --> E)
---    2. initialise the map so that every `r` maps to `E` at first
---    3. go round'n'round the constraints and update the mapping
---
---  Tradeoff:
---
---    Smarter constraints:
---      -> more complicated solver
---      -> fewer constraints
+        Right prog ->
+            return prog
 
+    let evarified_1st = evar prog
 
-main :: IO ()
-main = do
-    [fname] <- getArgs
-    code <- readFile fname
-    case parseProgram fname code of
-        Left e -> print e
-        Right prog -> do
-            putStrLn "-- vim: ft=idris"
-            putStrLn ""
-            putStrLn "### Desugared ###"
-            print prog
-            putStrLn ""
+    when (Args.verbose args) $ do
+        putStrLn "-- vim: ft=idris"
+        putStrLn ""
+        putStrLn "### Desugared ###"
+        print prog
+        putStrLn ""
 
-            putStrLn "### Evarified ###"
-            let evarified_1st = evar prog
-            print evarified_1st
-            putStrLn ""
+        putStrLn "### Evarified ###"
+        print evarified_1st
+        putStrLn ""
 
-            let iterSpecialisation evarified = do
-                    putStrLn "### Constraints ###\n"
-                    let cs = either (error . show) id . infer $ evarified
-                    mapM_ (putStrLn . fmtCtr) $ M.toList cs
-                    putStrLn ""
+    let iterSpecialisation evarified = do
+            let cs = either (error . show) id . infer $ evarified
+            when (Args.verbose args) $ do
+                putStrLn "### Constraints ###\n"
+                mapM_ (putStrLn . fmtCtr) $ M.toList cs
+                putStrLn ""
 
-                    putStrLn "### Solution ###\n"
-                    let (uses, _residue) = solve cs
-                    print $ S.toList uses
-                    -- genHtml (fname ++ ".html") evarified cs uses
-                    putStrLn ""
+            let (uses, _residue) = solve cs
+            when (Args.verbose args) $ do
+                putStrLn "### Solution ###\n"
+                print $ S.toList uses
+                putStrLn ""
 
-                    if Fixed E `S.member` uses
-                    then error "!! inconsistent annotation"
-                    else return ()
+            if Fixed E `S.member` uses
+            then error "!! inconsistent annotation"
+            else return ()
 
+            let annotated = annotate uses $ evarified
+            when (Args.verbose args) $ do
+                putStrLn "### Annotated ###"
+                print annotated
+                putStrLn ""
 
-                    putStrLn "### Annotated ###"
-                    let annotated = annotate uses $ evarified
-                    print annotated
-                    putStrLn ""
+            let specialised = specialise evarified annotated
+            when (Args.verbose args) $ do
+                putStrLn "### Specialised ###"
+                print specialised
+                putStrLn ""
 
-                    putStrLn "### Specialised ###"
-                    let specialised = specialise evarified annotated
-                    print specialised
-                    putStrLn ""
+            if evarsOccurIn specialised
+                then iterSpecialisation specialised
+                else return annotated  -- fixed point reached
 
-                    -- TODO: check for useless pattern columns
-                    -- no vars bound, same ctor (could be nested inside other ctors)
-                    --
-                    -- separate pattern fragment?
-                    -- + separate typechecker for patterns?
-                    --
-                    -- + perhaps separate verification checker?
+    annotated <- iterSpecialisation evarified_1st
+    when (Args.verbose args) $ do
+        putStrLn "### Final annotation ###"
+        print annotated
+        putStrLn ""
 
-                    if evarsOccurIn specialised
-                        then iterSpecialisation specialised
-                        else return annotated  -- fixed point reached
+    when (Args.verbose args) $
+        putStrLn "### Verification ###\n"
+    case verify annotated of
+        Left err -> error $ "!! verification failed: " ++ show err
+        Right () -> when (Args.verbose args)
+                        $ putStrLn "Verification successful.\n"
 
-            annotated <- iterSpecialisation evarified_1st
+    let pruned = pruneTm annotated -- specialised
+    when (Args.verbose args) $ do
+        putStrLn "### Pruned ###"
+        print pruned
+        putStrLn ""
 
-            putStrLn "### Final annotation ###"
-            print annotated
-            putStrLn ""
-
-            putStrLn "### Verification ###\n"
-            case verify annotated of
-                Left err -> error $ "!! verification failed: " ++ show err
-                Right () -> putStrLn "Verification successful.\n"
-
-            putStrLn "### Pruned ###"
-            let pruned = pruneTm annotated -- specialised
-            print pruned
-            putStrLn ""
-
+    when (not $ Args.skipEvaluation args) $ do
+        let unerasedNF = red NF (builtins $ Just relOfType) prog
+        let erasedNF = red NF (builtins ()) pruned
+        when (Args.verbose args) $ do
             putStrLn "### Normal forms ###\n"
             putStrLn "unerased:"
-            putStrLn $ "  " ++ show (red NF (builtins $ Just relOfType) prog)
+            putStrLn $ "  " ++ show unerasedNF
             putStrLn ""
             putStrLn "erased:"
-            putStrLn $ "  " ++ show (red NF (builtins ()) pruned)
+            putStrLn $ "  " ++ show erasedNF
             putStrLn ""
 
-            codegen Codegen.Scheme.codegen fname "-unerased" annotated
-            codegen Codegen.Scheme.codegen fname ""          pruned
-
+    case Args.dumpScheme args of
+        Nothing -> return ()
+        Just fname -> do
+            let code = render "; " (cgRun Codegen.Scheme.codegen pruned) ++ "\n"
+            writeFile fname code
   where
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
 
-codegen :: PrettyR r => Codegen -> String -> String -> Program r -> IO ()
-codegen cg fname ext prog = writeFile fname' code
-  where
-    (baseFn, _oldext) = break (=='.') fname
-    fname' = baseFn ++ ext ++ "." ++ cgExt cg
-    code = render ";" (cgRun cg prog) ++ "\n"
+main :: IO ()
+main = pipeline =<< Args.parse
