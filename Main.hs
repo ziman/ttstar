@@ -96,7 +96,11 @@ pipeline args = do
                 then iterSpecialisation specialised
                 else return annotated  -- fixed point reached
 
-    annotated <- iterSpecialisation evarified_1st
+    annotated_raw <- iterSpecialisation evarified_1st
+    annotated <- case Args.skipInference args of
+        False -> return annotated_raw
+        True -> ttRelevance (const $ return R) annotated_raw
+                -- specialisation may have created evars which we want to set to R
 
     when (Args.verbose args) $ do
         putStrLn "### Final annotation ###"
