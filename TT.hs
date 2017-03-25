@@ -74,4 +74,4 @@ builtins r = M.fromList
     ]
 
 relOfType :: Relevance
-relOfType = E
+relOfType = R
