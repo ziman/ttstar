@@ -62,9 +62,9 @@ def bench_cmd(cmd):
 def bench_program(prog_name, prog):
     for inference in (True, False):
         if prog.is_epolymorphic:
-            specs = (False,)
-        else:
             specs = (True, False)
+        else:
+            specs = (False,)
 
         for specialisation in specs:
             for verification in (True, False):
