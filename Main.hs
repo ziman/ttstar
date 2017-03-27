@@ -3,6 +3,7 @@ module Main where
 
 import TT
 import TTLens
+import TTUtils
 import Parser
 import Normalise
 
@@ -99,7 +100,10 @@ pipeline args = do
                         then iterSpecialisation specialised
                         else return annotated  -- fixed point reached
 
-    annotated_raw <- iterSpecialisation evarified_1st
+    annotated_raw <- case Args.skipSpecialisation args of
+        False -> iterSpecialisation evarified_1st
+        True -> iterSpecialisation $ monomorphise evarified_1st
+
     annotated <- case Args.skipInference args of
         False -> return annotated_raw
         True -> ttRelevance (const $ return R) annotated_raw

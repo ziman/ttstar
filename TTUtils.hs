@@ -176,3 +176,25 @@ pat2term :: Pat r -> TT r
 pat2term (PV n) = V n
 pat2term (PApp r f x) = App r (pat2term f) (pat2term x)
 pat2term (PForced tm) = tm
+
+monomorphise :: TT r -> TT r
+monomorphise (V n) = V n
+monomorphise (I n ty) = V n
+monomorphise (App r f x) = App r (monomorphise f) (monomorphise x)
+monomorphise (Bind b d tm) = Bind b (map monoDef d) $ monomorphise tm
+  where
+    monoDef :: Def r -> Def r
+    monoDef (Def n r ty b cs) = Def n r (monomorphise ty) (monoBody b) cs
+
+    monoBody :: Body r -> Body r
+    monoBody (Abstract a) = Abstract a
+    monoBody (Term tm) = Term (monomorphise tm)
+    monoBody (Clauses cs) = Clauses $ map monoClause cs
+
+    monoClause :: Clause r -> Clause r
+    monoClause (Clause pvs lhs rhs) = Clause (map monoDef pvs) (monoPat lhs) (monomorphise rhs)
+
+    monoPat :: Pat r -> Pat r
+    monoPat (PV n) = PV n
+    monoPat (PForced tm) = PForced $ monomorphise tm
+    monoPat (PApp r f x) = PApp r (monoPat f) (monoPat x)
