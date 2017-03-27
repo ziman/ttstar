@@ -2,8 +2,12 @@
 
 import csv
 import time
+import logging
 import subprocess
 import collections
+
+logging.basicConfig(level=logging.DEBUG)
+log = logging.getLogger(__name__)
 
 Input = collections.namedtuple('Input', 'lo hi step')
 Program = collections.namedtuple('Program', 'inputs')
@@ -41,10 +45,16 @@ def time_cmd(cmd):
     return ts_end - ts_start
 
 def bench_cmd(cmd):
-    for _ in range(WARMUPS):
-        time_cmd(cmd)
+    try:
 
-    return [(i, time_cmd(cmd)) for i in range(SAMPLES)]
+        for _ in range(WARMUPS):
+            time_cmd(cmd)
+
+        for i in range(SAMPLES):
+            yield (i, time_cmd(cmd))
+
+    except subprocess.CalledProcessError:
+        yield (0, None)
 
 def bench_program(prog_name, prog):
     for inference in (True, False):
@@ -115,13 +125,11 @@ def main():
         'cabal', 'install', '-j1'
     ])
 
-
+    results = []
     for prog_name, prog in PROGRAMS.items():
         for result in bench_program(prog_name, prog):
             print(result)
             results.append(result)
-
-    print(results)
 
 if __name__ == '__main__':
     main()
