@@ -5,9 +5,9 @@ import time
 import subprocess
 import collections
 
-Input = collections.namedtuple('lo hi step')
-Program = collections.namedtuple('inputs')
-ProgramInputs = collections.namedtuple('baseline')
+Input = collections.namedtuple('Input', 'lo hi step')
+Program = collections.namedtuple('Program', 'inputs')
+ProgramInputs = collections.namedtuple('ProgramInputs', 'baseline')
 
 WARMUPS = 2
 SAMPLES = 8
@@ -46,14 +46,12 @@ def bench_cmd(cmd):
 
     return [(i, time_cmd(cmd)) for i in range(SAMPLES)]
 
-def run_program(prog_name, prog):
-    result = []
-
+def bench_program(prog_name, prog):
     for inference in (True, False):
         for specialisation in (True, False):
             for verification in (True, False):
                 for normalisation in (True, False):
-                    ttstar_cmd = ["./ttstar", "examples/%s.tt" % prog]
+                    ttstar_cmd = ["./ttstar", "examples/%s.tt" % prog_name]
                     if not inference:
                         ttstar_cmd += ["--skip-inference"]
                     if not specialisation:
@@ -77,50 +75,51 @@ def run_program(prog_name, prog):
                     }
 
                     for sample_no, runtime in bench_cmd(ttstar_cmd):
-                        result.append({
+                        yield {
                             'sample_no': sample_no,
                             'stage': 'ttstar',
                             'runtime': runtime,
                             **config
-                        })
+                        }
 
                     for compilation in (True, False):
                         config['compilation'] = compilation
 
                         if compilation:
                             for sample_no, runtime in bench_cmd(['csc', 'x.scm']):
-                                result.append({
+                                yield {
                                     'sample_no': sample_no,
                                     'stage': 'csc',
                                     'runtime': runtime,
                                     **config
-                                })
+                                }
 
                             exec_cmd = ["./x"]
                         else:
                             exec_cmd = ["csi", "-qs", "x.scm"]
 
-                        inp = prog.input.baseline
+                        inp = prog.inputs.baseline
                         for input_size in range(inp.lo, inp.hi, inp.step):
                             config['input_size'] = input_size
 
                             for sample_no, runtime in bench_cmd(exec_cmd):
-                                result.append({
+                                yield {
                                     'sample_no': sample_no,
                                     'runtime': runtime,
                                     'stage': 'execution',
                                     **config
-                                })
+                                }
 
 def main():
-    results = []
-
     subprocess.check_call([
         'cabal', 'install', '-j1'
     ])
 
+
     for prog_name, prog in PROGRAMS.items():
-        results += run_program(prog)
+        for result in bench_program(prog_name, prog):
+            print(result)
+            results.append(result)
 
     print(results)
 
