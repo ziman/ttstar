@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import sys
 import csv
 import time
 import logging
@@ -125,11 +126,14 @@ def main():
         'cabal', 'install', '-j1'
     ])
 
-    results = []
-    for prog_name, prog in PROGRAMS.items():
-        for result in bench_program(prog_name, prog):
-            print(result)
-            results.append(result)
+    with open('benchmark.csv', 'w') as f:
+        cw = csv.DictWriter(f, fieldnames=CSV_FIELDS)
+        cw.writeheader()
+
+        for prog_name, prog in PROGRAMS.items():
+            for result in bench_program(prog_name, prog):
+                cw.writerow(result)
+                log.debug(result)
 
 if __name__ == '__main__':
     main()
