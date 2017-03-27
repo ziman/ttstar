@@ -15,13 +15,13 @@ Program = collections.namedtuple('Program', 'inputs is_epolymorphic')
 ProgramInputs = collections.namedtuple('ProgramInputs', 'interpreted compiled')
 
 WARMUPS = 2
-SAMPLES = 8
+SAMPLES = 16
 
 PROGRAMS = {
     'palindrome': Program(
         inputs = ProgramInputs(
             interpreted = Input(lo=1, hi=128, step=2),
-            compiled = Input(lo=1, hi=256, step=4),
+            compiled = Input(lo=1, hi=4096, step=4),
         ),
         is_epolymorphic = False,
     ),
@@ -121,7 +121,7 @@ def bench_program(prog_name, prog):
                         for input_size in range(inp.lo, inp.hi, inp.step):
                             config['input_size'] = input_size
 
-                            for sample_no, runtime in bench_cmd(exec_cmd):
+                            for sample_no, runtime in bench_cmd(exec_cmd + [str(input_size)]):
                                 yield {
                                     'sample_no': sample_no,
                                     'runtime': runtime,
