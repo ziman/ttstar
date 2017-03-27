@@ -1,0 +1,6 @@
+-- vim: ft=idris
+  let
+    postulate Nat : Type
+    postulate Z : Nat
+    postulate S : (n) -> Nat
+  in 2

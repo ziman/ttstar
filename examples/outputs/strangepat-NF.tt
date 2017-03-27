@@ -1,0 +1,3 @@
+-- vim: ft=idris
+  let postulate T : Bool
+  in T

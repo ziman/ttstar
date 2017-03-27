@@ -12,8 +12,8 @@ data Args = Args
     , skipEvaluation :: Bool
     , dumpPretty :: Maybe String
     , dumpScheme :: Maybe String
-	, dumpNF :: Maybe String
-	, dumpNFScheme :: Maybe String
+    , dumpNF :: Maybe String
+    , dumpNFScheme :: Maybe String
     }
     deriving (Show)
 

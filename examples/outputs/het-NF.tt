@@ -1,0 +1,6 @@
+-- vim: ft=idris
+  let
+    postulate Tuple : (x) -> (y) -> (z) -> (w) -> Type
+    postulate Bool : Type
+    postulate Mool : Type
+  in Tuple Bool Mool Bool Mool

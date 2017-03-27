@@ -1,0 +1,5 @@
+-- vim: ft=idris
+  let
+    postulate K : Type
+    postulate P : (_x0) -> K
+  in P

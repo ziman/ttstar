@@ -1,0 +1,9 @@
+-- vim: ft=idris
+  let
+    postulate N : Type
+    postulate Z : N
+    postulate S : (x) -> N
+    postulate Vec : (_x0) -> (_x1) -> Type
+    postulate Nil : (a) -> Vec Z a
+    postulate Cons : (a) -> (n) -> (x) -> (xs) -> Vec (S n) a
+  in Cons N Z 4 (Nil N)

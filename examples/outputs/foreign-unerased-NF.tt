@@ -1,0 +1,42 @@
+-- vim: ft=idris
+  let
+    postulate N : Type
+    postulate Z : N
+    postulate S : (x) -> N
+    postulate B : Type
+    postulate T : B
+    postulate F : B
+    postulate List : Type
+    postulate Cons : (_x0) -> (_x1) -> List
+    postulate Nil : List
+    not 
+      [_] T = F
+      [_] F = T
+    foreign input
+    genList 
+      [_] b Z = Nil
+      [_] b (S n) = Cons b (genList (not b) n)
+    postulate Eq : (a) -> (_x5) -> (_x6) -> Type
+    postulate Refl : (a) -> (x) -> Eq a x x
+    postulate Maybe : (_x7) -> Type
+    postulate Nothing : (a) -> Maybe a
+    postulate Just : (a) -> (x) -> Maybe a
+    semiDecEqB 
+      [_] T T = Just (Eq B T T) (Refl B T)
+      [_] F F = Just (Eq B F F) (Refl B F)
+      [_] T F = Nothing (Eq B T F)
+      [_] F T = Nothing (Eq B F T)
+    semiDecEq 
+      [_] Nil (Cons b ys) = Nothing (Eq List Nil (Cons b ys))
+      [_] (Cons b xs) Nil = Nothing (Eq List (Cons b xs) Nil)
+      [_] Nil Nil = Just (Eq List Nil Nil) (Refl List Nil)
+      [_] (Cons x xs) (Cons y ys) = 
+        let semiDecEq' 
+          [_] x y xs ys (Nothing [_]) pfT = Nothing (Eq List (Cons x xs) (Cons y ys))
+          [_] x y xs ys pfH (Nothing [_]) = Nothing (Eq List (Cons x xs) (Cons y ys))
+          [_] x [_] xs [_] (Just [_] [_]) (Just [_] [_]) = Just (Eq List (Cons x xs) (Cons x xs)) (Refl List (Cons x xs))
+        in semiDecEq' x y xs ys (semiDecEqB x y) (semiDecEq xs ys)
+    sampleList = genList T input
+    main 
+      [_] = semiDecEq sampleList sampleList
+  in main

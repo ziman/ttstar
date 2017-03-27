@@ -1,0 +1,5 @@
+-- vim: ft=idris
+  let
+    postulate Mool : Type
+    postulate W : Mool
+  in W

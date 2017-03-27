@@ -1,0 +1,9 @@
+-- vim: ft=idris
+  let
+    postulate Bool : Type
+    postulate T : Bool
+    postulate F : Bool
+    postulate List : Type
+    postulate Nil : List
+    postulate Cons : (x) -> (xs) -> List
+  in Cons F (Cons T (Cons F (Cons T Nil)))

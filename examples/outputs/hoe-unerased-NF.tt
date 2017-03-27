@@ -1,0 +1,7 @@
+-- vim: ft=idris
+  let
+    postulate T : Type
+    postulate A : T
+    postulate B : T
+    postulate Op : (x) -> (y) -> T
+  in Op B A

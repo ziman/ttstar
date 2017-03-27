@@ -1,0 +1,6 @@
+-- vim: ft=idris
+  let
+    postulate N : Type
+    postulate Z : N
+    postulate S : (_x0) -> N
+  in 5

@@ -1,0 +1,5 @@
+-- vim: ft=idris
+  let
+    postulate Z : N
+    postulate S : (x) -> N
+  in 1

@@ -132,8 +132,8 @@ pipeline args = do
     let unerasedNF = red NF (builtins $ Just relOfType) prog
     let erasedNF = red NF (builtins ()) pruned
 
-    when (not $ Args.skipEvaluation args) $ do
-        when (Args.verbose args) $ do
+    when (Args.verbose args) $ do
+        when (not $ Args.skipEvaluation args) $ do
             putStrLn "### Normal forms ###\n"
             putStrLn "unerased:"
             putStrLn $ "  " ++ show unerasedNF

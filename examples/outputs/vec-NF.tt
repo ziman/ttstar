@@ -1,0 +1,7 @@
+-- vim: ft=idris
+  let
+    postulate Z : N
+    postulate S : (x) -> N
+    postulate Nil : Vec
+    postulate Cons : (x) -> (xs) -> Vec
+  in Cons 4 Nil

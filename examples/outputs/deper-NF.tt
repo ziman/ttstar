@@ -1,0 +1,6 @@
+-- vim: ft=idris
+  let
+    postulate T : Bool
+    postulate F : Bool
+    postulate TB : (x) -> (y) -> TwoBools
+  in TB F T

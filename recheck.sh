@@ -43,15 +43,25 @@ for i in examples/*.tt; do
     n_src="${i%.tt}"
     n="${n_src/examples/examples\/outputs}"
 
-    rm -f "${n}"{,-unerased}.*
+    rm -f "${n}"{,-unerased}{,-NF}.*
     echo $i \
-        && ./ttstar -v "$i" --dump-pretty "${n}-erased.tt" &> "$n.out" \
-        && ./ttstar "$i" --skip-inference --dump-pretty "${n}-unerased.tt" \
+        && ./ttstar -v "$i" &> "${n}.out" \
         \
-        && ./ttstar "$i" --dump-scheme "${n}.scm" \
-        && scheme "${n}.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}.scm.out" \
+        && ./ttstar "$i" --skip-inference \
+            --dump-pretty "${n}-unerased.tt" \
+            --dump-scheme "${n}-unerased.scm" \
+            --dump-nf     "${n}-unerased-NF.tt" \
+            --dump-nf-scheme "${n}-unerased-NF.scm" \
         \
-        && ./ttstar "$i" --skip-inference --dump-scheme "${n}-unerased.scm" \
+        && ./ttstar "$i" \
+            --dump-pretty "${n}-erased.tt" \
+            --dump-scheme "${n}.scm" \
+            --dump-nf     "${n}-NF.tt" \
+            --dump-nf-scheme "${n}-NF.scm" \
+        \
         && scheme "${n}-unerased.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}-unerased.scm.out" \
-        || echo "  * failed"
+        && scheme "${n}-unerased-NF.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}-unerased-NF.scm.out" \
+        && scheme "${n}.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}.scm.out" \
+        && scheme "${n}-NF.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}-NF.scm.out" \
+        || echo "  * test failed"
 done
