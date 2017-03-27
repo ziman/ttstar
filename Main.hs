@@ -123,11 +123,16 @@ pipeline args = do
 
     case Args.dumpPretty args of
         Nothing -> return ()
-        Just fname -> writeFile fname $ "-- vim: ft=idris" ++ show pruned ++ "\n"
+        Just fname -> dumpTT fname pruned
+
+    case Args.dumpScheme args of
+        Nothing -> return ()
+        Just fname -> dumpScheme fname pruned
+
+    let unerasedNF = red NF (builtins $ Just relOfType) prog
+    let erasedNF = red NF (builtins ()) pruned
 
     when (not $ Args.skipEvaluation args) $ do
-        let unerasedNF = red NF (builtins $ Just relOfType) prog
-        let erasedNF = red NF (builtins ()) pruned
         when (Args.verbose args) $ do
             putStrLn "### Normal forms ###\n"
             putStrLn "unerased:"
@@ -137,13 +142,17 @@ pipeline args = do
             putStrLn $ "  " ++ show erasedNF
             putStrLn ""
 
-    case Args.dumpScheme args of
+    case Args.dumpNF args of
         Nothing -> return ()
-        Just fname -> do
-            let code = render "; " (cgRun Codegen.Scheme.codegen pruned) ++ "\n"
-            writeFile fname code
+        Just fname -> dumpTT fname erasedNF
+
+    case Args.dumpNFScheme args of
+        Nothing -> return ()
+        Just fname -> dumpScheme fname erasedNF
   where
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
+    dumpTT fname prog = writeFile fname $ "-- vim: ft=idris" ++ show prog ++ "\n"
+    dumpScheme fname prog = writeFile fname $ render "; " (cgRun Codegen.Scheme.codegen prog) ++ "\n"
 
 
 main :: IO ()

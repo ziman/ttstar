@@ -12,6 +12,8 @@ data Args = Args
     , skipEvaluation :: Bool
     , dumpPretty :: Maybe String
     , dumpScheme :: Maybe String
+	, dumpNF :: Maybe String
+	, dumpNFScheme :: Maybe String
     }
     deriving (Show)
 
@@ -44,6 +46,14 @@ args = Args
         ( metavar "file.scm"
         <> long "dump-scheme"
         <> help "Generate Scheme source from final program"))
+    <*> optional (strOption
+        ( metavar "fileNF.tt"
+        <> long "dump-nf"
+        <> help "Pretty-print normal form"))
+    <*> optional (strOption
+        ( metavar "fileNF.scm"
+        <> long "dump-nf-scheme"
+        <> help "Generate Scheme source from normal form"))
 
 parse :: IO Args
 parse = execParser opts
