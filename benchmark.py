@@ -10,18 +10,20 @@ import collections
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
-Input = collections.namedtuple('Input', 'lo hi step')
+Input = collections.namedtuple('Input', 'lo hi steps')
 Program = collections.namedtuple('Program', 'inputs is_epolymorphic')
 ProgramInputs = collections.namedtuple('ProgramInputs', 'interpreted compiled')
 
-WARMUPS = 2
-SAMPLES = 16
+WARMUPS = 1
+SAMPLES = 4
 
 PROGRAMS = {
     'palindrome': Program(
         inputs = ProgramInputs(
-            interpreted = Input(lo=1, hi=128, step=2),
-            compiled = Input(lo=1, hi=4096, step=4),
+            unerased_interpreted = Input(lo=1, hi=64, step=1),
+            unerased_compiled = Input(lo=1, hi=256, step=4*1),
+            erased_interpreted = Input(lo=1, hi=64*1024, step=1024),
+            erased_compiled = Input(lo=1, hi=1024*1024, step=4*1024),
         ),
         is_epolymorphic = False,
     ),
@@ -113,10 +115,16 @@ def bench_program(prog_name, prog):
                                 }
 
                             exec_cmd = ["./x"]
-                            inp = prog.inputs.compiled
+                            if inference:
+                                inp = prog.inputs.erased_compiled
+                            else:
+                                inp = prog.inputs.unerased_compiled
                         else:
                             exec_cmd = ["csi", "-qs", "x.scm"]
-                            inp = prog.inputs.interpreted
+                            if inference:
+                                inp = prog.inputs.erased_interpreted
+                            else:
+                                inp = prog.inputs.unerased_interpreted
             
                         for input_size in range(inp.lo, inp.hi, inp.step):
                             config['input_size'] = input_size
