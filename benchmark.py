@@ -66,7 +66,7 @@ def bench_program(prog_name, prog):
         else:
             specs = (True, False)
 
-        for specialisation in (True, False):
+        for specialisation in specs:
             for verification in (True, False):
                 for normalisation in (True, False):
                     ttstar_cmd = ["./ttstar", "examples/%s.tt" % prog_name]
