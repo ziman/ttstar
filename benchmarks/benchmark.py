@@ -71,7 +71,7 @@ def bench_program(prog_name, prog):
         for specialisation in specs:
             for verification in (True, False):
                 for normalisation in (True, False):
-                    ttstar_cmd = ["./ttstar", "examples/%s.tt" % prog_name]
+                    ttstar_cmd = ["../ttstar", "../examples/%s.tt" % prog_name]
                     if not inference:
                         ttstar_cmd += ["--skip-inference"]
                     if not specialisation:
@@ -138,9 +138,7 @@ def bench_program(prog_name, prog):
                                 }
 
 def main():
-    subprocess.check_call([
-        'cabal', 'install', '-j1'
-    ])
+    subprocess.check_call('(cd ..; cabal install -j1)', shell=True)
 
     with open('benchmark.csv', 'w') as f:
         cw = csv.DictWriter(f, fieldnames=CSV_FIELDS)
