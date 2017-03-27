@@ -10,9 +10,9 @@ import collections
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
-Input = collections.namedtuple('Input', 'lo hi steps')
+Input = collections.namedtuple('Input', 'lo hi step')
 Program = collections.namedtuple('Program', 'inputs is_epolymorphic')
-ProgramInputs = collections.namedtuple('ProgramInputs', 'interpreted compiled')
+ProgramInputs = collections.namedtuple('ProgramInputs', 'erased_interpreted unerased_interpreted erased_compiled unerased_compiled')
 
 WARMUPS = 1
 SAMPLES = 4
