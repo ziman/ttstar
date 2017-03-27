@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 
 Input = collections.namedtuple('Input', 'lo hi step')
 Program = collections.namedtuple('Program', 'inputs')
-ProgramInputs = collections.namedtuple('ProgramInputs', 'baseline')
+ProgramInputs = collections.namedtuple('ProgramInputs', 'interpreted compiled')
 
 WARMUPS = 2
 SAMPLES = 8
@@ -20,7 +20,8 @@ SAMPLES = 8
 PROGRAMS = {
     'palindrome': Program(
         inputs = ProgramInputs(
-            baseline = Input(lo=1, hi=64, step=1),
+            interpreted = Input(lo=1, hi=128, step=2),
+            compiled = Input(lo=1, hi=256, step=4),
         ),
     ),
 }
@@ -106,10 +107,11 @@ def bench_program(prog_name, prog):
                                 }
 
                             exec_cmd = ["./x"]
+                            inp = prog.inputs.compiled
                         else:
                             exec_cmd = ["csi", "-qs", "x.scm"]
-
-                        inp = prog.inputs.baseline
+                            inp = prog.inputs.interpreted
+            
                         for input_size in range(inp.lo, inp.hi, inp.step):
                             config['input_size'] = input_size
 
