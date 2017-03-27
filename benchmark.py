@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 Input = collections.namedtuple('Input', 'lo hi step')
-Program = collections.namedtuple('Program', 'inputs')
+Program = collections.namedtuple('Program', 'inputs is_epolymorphic')
 ProgramInputs = collections.namedtuple('ProgramInputs', 'interpreted compiled')
 
 WARMUPS = 2
@@ -23,6 +23,7 @@ PROGRAMS = {
             interpreted = Input(lo=1, hi=128, step=2),
             compiled = Input(lo=1, hi=256, step=4),
         ),
+        is_epolymorphic = False,
     ),
 }
 
@@ -60,6 +61,11 @@ def bench_cmd(cmd):
 
 def bench_program(prog_name, prog):
     for inference in (True, False):
+        if prog.is_epolymorphic:
+            specs = (False,)
+        else:
+            specs = (True, False)
+
         for specialisation in (True, False):
             for verification in (True, False):
                 for normalisation in (True, False):

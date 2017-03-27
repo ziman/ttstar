@@ -86,15 +86,18 @@ pipeline args = do
                 print annotated
                 putStrLn ""
 
-            let specialised = specialise evarified annotated
-            when (Args.verbose args) $ do
-                putStrLn "### Specialised ###"
-                print specialised
-                putStrLn ""
+            case Args.skipSpecialisation args of
+                True -> return annotated
+                False -> do
+                    let specialised = specialise evarified annotated
+                    when (Args.verbose args) $ do
+                        putStrLn "### Specialised ###"
+                        print specialised
+                        putStrLn ""
 
-            if evarsOccurIn specialised
-                then iterSpecialisation specialised
-                else return annotated  -- fixed point reached
+                    if evarsOccurIn specialised
+                        then iterSpecialisation specialised
+                        else return annotated  -- fixed point reached
 
     annotated_raw <- iterSpecialisation evarified_1st
     annotated <- case Args.skipInference args of
