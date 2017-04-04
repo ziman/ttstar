@@ -20,7 +20,20 @@ scheme_csi() {
 # Chicken Scheme, compiler
 scheme_csc() {
     exe="${1%.scm}"
-    csc "$1"
+    csc "$1" \
+        -O5 \
+        -unsafe \
+        -strict-types \
+        -optimize-leaf-routines \
+        -specialize \
+        -inline \
+        -block \
+        -fixnum-arithmetic \
+        -no-argc-checks \
+        -no-bound-checks \
+        -no-procedure-checks \
+        -clustering \
+        -lfa2
     "$exe" $2 2>&1
     rm "$exe"
 }
