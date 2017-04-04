@@ -1,1 +1,1 @@
-(Cons (S (S (S (S (Z))))) (Nil))
+#(Cons #(S #(S #(S #(S #(Z))))) #(Nil))

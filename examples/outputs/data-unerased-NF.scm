@@ -1,13 +1,13 @@
 (require-extension matchable)
-(define Type '(Type))
-(define (number->peano z s i) (if (= i 0) (list z) (list s (number->peano z s (- i 1)))))
+(define Type #(Type))
+(define (number->peano z s i) (if (= i 0) (vector z) (vector s (number->peano z s (- i 1)))))
 (define (rts-arg-peano z s i) (number->peano z s (string->number (list-ref (command-line-arguments) i))))
 (define (rts-arg-read i) (read (open-input-string (list-ref (command-line-arguments) i))))
 (print
   (letrec* (
-    (N `(N))
-    (Z `(Z))
+    (N (vector 'N))
+    (Z (vector 'Z))
     (S (lambda (_x0)
-      `(S ,_x0)))
+      (vector 'S _x0)))
   )
     (S (S (S (S (S Z)))))))

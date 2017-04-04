@@ -4,18 +4,18 @@ Error: (match) no matching pattern
 	Call history:
 
 	<syntax>	  (##core#undefined)
-	<eval>	  (print (letrec* ((Bool (quasiquote (Bool))) (T (quasiquote (T))) (F (quasiquote (F))) (Pair (quasiqu...
-	<eval>	  (##sys#list (##core#quote Bool))
-	<eval>	  (##sys#list (##core#quote T))
-	<eval>	  (##sys#list (##core#quote F))
-	<eval>	  (##sys#list (##core#quote Pair))
+	<eval>	  (print (letrec* ((Bool (vector (quote Bool))) (T (vector (quote T))) (F (vector (quote F))) (Pair (v...
+	<eval>	  (vector (quote Bool))
+	<eval>	  (vector (quote T))
+	<eval>	  (vector (quote F))
+	<eval>	  (vector (quote Pair))
 	<eval>	  (fst (P T))
 	<eval>	  (P T)
 	<eval>	  [fst] (list _e0)
-	<eval>	  [fst] (pair?73 v47)
-	<eval>	  [fst] (null?74 (cdr75 v47))
-	<eval>	  [fst] (cdr75 v47)
-	<eval>	  [fst] (car78 v47)
-	<eval>	  [fst] (pair?104 w77)
-	<eval>	  [fst] (failure53)
-	<eval>	  [failure53] (error200 (quote201 match202) "no matching pattern")	<--
+	<eval>	  [fst] (pair?58 v32)
+	<eval>	  [fst] (null?59 (cdr60 v32))
+	<eval>	  [fst] (cdr60 v32)
+	<eval>	  [fst] (car63 v32)
+	<eval>	  [fst] (vector?80 w62)
+	<eval>	  [fst] (failure38)
+	<eval>	  [failure38] (error165 (quote166 match167) "no matching pattern")	<--

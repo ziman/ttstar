@@ -58,9 +58,10 @@ cgApp f x = parens (f <+> x)
 cgCtor :: Name -> TT r -> Doc
 cgCtor n ty
     = nestLambdas argNs $
-        text"`" <> parens (
-            cgName n
-            <+> hsep [text "," <> cgName n | n <- argNs]
+        parens (
+            text "vector"
+            <+> text "'" <> cgName n
+            <+> hsep (map cgName argNs)
         )
   where
     argNs = uniqNames $ argNames ty
@@ -93,7 +94,7 @@ cgPat :: PrettyR r => S.Set Name -> Pat r -> Doc
 cgPat pvs (PV Blank) = text "_"
 cgPat pvs (PV n)
     | n `S.member` pvs = cgName n
-    | otherwise = parens (text "'" <> cgName n)
+    | otherwise = text "#" <> parens (text "'" <> cgName n)  -- 0-ary constructor
 
 cgPat pvs pat@(PApp r f x)
     | (PV cn, args) <- unApplyPat pat
@@ -102,7 +103,7 @@ cgPat pvs pat@(PApp r f x)
     | (PForced (V cn), args) <- unApplyPat pat
     = cgPatApp cn args
   where
-    cgPatApp cn args = parens (hsep $ cgPName cn : map (cgPat pvs . snd) args)
+    cgPatApp cn args = text "#" <> parens (hsep $ cgPName cn : map (cgPat pvs . snd) args)
     cgPName Blank = text "_"
     cgPName cn = text "'" <> cgName cn
 
@@ -150,8 +151,8 @@ argNames _ = []
 cgProgram :: PrettyR r => Program r -> Doc
 cgProgram prog = 
     parens (text "require-extension" <+> text "matchable")
-    $$ text "(define Type '(Type))"
-    $$ text "(define (number->peano z s i) (if (= i 0) (list z) (list s (number->peano z s (- i 1)))))"
+    $$ text "(define Type #(Type))"
+    $$ text "(define (number->peano z s i) (if (= i 0) (vector z) (vector s (number->peano z s (- i 1)))))"
     $$ text "(define (rts-arg-peano z s i) (number->peano z s (string->number (list-ref (command-line-arguments) i))))"
     $$ text "(define (rts-arg-read i) (read (open-input-string (list-ref (command-line-arguments) i))))"
     $$ parens (
