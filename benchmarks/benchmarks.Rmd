@@ -1,0 +1,139 @@
+---
+title: "TTstar runtime"
+output: html_notebook
+---
+
+```{r,hidden}
+# libraries & setup
+
+library(ggplot2)
+library(reshape2)
+library(repr)
+
+options(repr.plot.width=4, repr.plot.height=3)
+```
+
+
+```{r}
+# load measured data
+xs <- read.csv('benchmark-1490607733.csv')
+#xs <- read.csv('benchmark-1491380156.csv')
+str(xs)
+```
+
+```{r}
+# convert strings "True"/"False" into proper R booleans
+bools <- c('inference', 'specialisation', 'verification', 'normalisation', 'compilation')
+nas <- xs[,bools] == ""
+xs[,bools] <- xs[,bools] == "True"
+xs[,bools][nas] <- NA
+```
+
+Next, we build configuration descriptors in the form `$stage-$features`.
+
+There are three stages:
+
+* `ttstar` -- takes TTstar source, emits Scheme source
+* `csc` -- compiles Scheme source to native code (via GCC); not present if intepreting
+* `execute` -- running the final program
+  * either compiled in the `csc` stage
+  * or interpreted using `csi` directly from the Scheme source
+  
+There are features that can be enabled or disabled:
+
+* `i`-nference -- erasure inference + erasure
+* `s`-pecialisation -- erasure polymorphism
+* `v`-erification -- final type check of the fully explicitly erasure-annotated program
+* `n`-ormalisation -- NF-reduction of the final program
+* `c`-ompilation -- running `csc`, the Scheme compiler
+
+If the flag `c` is not present, the Scheme program is interpreted using `csi`.
+
+```{r}
+# make config strings
+tr <- xs
+
+block <- xs[,bools]
+block[is.na(block)] <- F
+
+tr$config <- paste(as.character(tr$stage), "-", sep="")
+for (col in bools) {
+    tr$config[block[,col]] <- paste(tr$config[block[,col]], substr(col, 1, 1), sep="")
+}
+tr$config <- factor(tr$config)
+```
+
+## Stage: TTstar
+
+We can clearly see that while normalisation and verification take just a little bit of time, erasure inference takes the bulk of processing time.
+```{r}
+summary(tr$config)
+```
+
+```{r}
+# ttstar
+ttstar <- tr[tr$stage == "ttstar",]
+
+options(repr.plot.width=6, repr.plot.height=3)
+ggplot(ttstar, aes(x=config, y=runtime)) +
+    geom_boxplot() +
+    coord_flip() +
+    expand_limits(y=0) +
+    ggtitle("TTstar runtime")
+```
+
+If we run multivariate linear regression, we learn that in this program:
+
+* inference takes **100 ms**
+* verification takes **2.2 ms**
+* normalisation takes **1.6 ms**
+* other overheads (parsing, testing harness, ...) take **9.3 ms**
+
+```{r}
+m <- lm(runtime ~ inference + verification + normalisation, data=ttstar)
+summary(m)
+```
+
+## Stage: Chicken Scheme compiler
+
+Here we can see that while erasure inference takes **100 ms** itself, it shaves **2 seconds** off code generation.
+
+```{r}
+# ttstar
+csc <- tr[tr$stage == "csc",]
+
+options(repr.plot.width=6, repr.plot.height=3)
+ggplot(csc, aes(x=config, y=runtime)) +
+    geom_boxplot() +
+    coord_flip() +
+    expand_limits(y=0) +
+    ggtitle("Chicken Scheme compiler runtime")
+```
+
+```{r}
+m <- lm(runtime ~ inference + verification + normalisation, data=csc)
+summary(m)
+```
+
+```{r}
+# ttstar
+exec <- tr[tr$stage == "execution" & !tr$normalisation & !tr$verification,]
+
+options(repr.plot.width=7, repr.plot.height=5)
+ggplot(exec[exec$inference,], aes(x=input_size, y=runtime, color=config)) +
+    geom_point(alpha=0.3) +
+    ggtitle("TTstar runtime")
+```
+
+```{r}
+ggplot(exec[!exec$compilation,], aes(x=input_size, y=runtime, color=config)) +
+    geom_point(alpha=0.3) +
+    ggtitle("TTstar runtime")
+```
+
+```{r}
+ggplot(exec[!exec$inference,], aes(x=input_size, y=runtime, color=config)) +
+    geom_point(alpha=0.3) +
+    ggtitle("TTstar runtime")
+ggsave("unerased-runtime.pdf", width=3.3, height=2.6, units='in')
+```
