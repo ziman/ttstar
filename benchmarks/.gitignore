@@ -2,3 +2,5 @@ x
 x.c
 x.scm
 benchmark.csv
+*.pdf
+benchmarks.nb.html
