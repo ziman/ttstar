@@ -1,5 +1,6 @@
 -- vim: ft=idris
   let
-    postulate Z : Nat
-    postulate S : (x) -> Nat
-  in 4
+    foreign intS
+    foreign intZ
+    foreign printSchemeRepr
+  in printSchemeRepr (intS (intS (intS (intS intZ))))

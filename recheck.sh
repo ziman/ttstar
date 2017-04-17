@@ -57,24 +57,24 @@ for i in examples/*.tt; do
     n="${n_src/examples/examples\/outputs}"
 
     rm -f "${n}"{,-unerased}{,-NF}.*
-    echo $i \
-        && ./ttstar -v "$i" &> "${n}.out" \
-        \
-        && ./ttstar "$i" --skip-inference \
-            --dump-pretty "${n}-unerased.tt" \
-            --dump-scheme "${n}-unerased.scm" \
-            --dump-nf     "${n}-unerased-NF.tt" \
-            --dump-nf-scheme "${n}-unerased-NF.scm" \
-        \
-        && ./ttstar "$i" \
-            --dump-pretty "${n}-erased.tt" \
-            --dump-scheme "${n}.scm" \
-            --dump-nf     "${n}-NF.tt" \
-            --dump-nf-scheme "${n}-NF.scm" \
-        \
-        && scheme "${n}-unerased.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}-unerased.scm.out" \
-        && scheme "${n}-unerased-NF.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}-unerased-NF.scm.out" \
+    echo $i
+
+    ./ttstar -v "$i" &> "${n}.out" \
+        || continue  # skip if it doesn't typecheck
+
+    ./ttstar "$i" \
+        --dump-pretty "${n}-erased.tt" \
+        --dump-scheme "${n}.scm" \
+        --dump-nf     "${n}-NF.tt" \
+        --dump-nf-scheme "${n}-NF.scm" \
         && scheme "${n}.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}.scm.out" \
-        && scheme "${n}-NF.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}-NF.scm.out" \
-        || echo "  * test failed"
+        && scheme "${n}-NF.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}-NF.scm.out"
+
+    ./ttstar "$i" --skip-inference \
+        --dump-pretty "${n}-unerased.tt" \
+        --dump-scheme "${n}-unerased.scm" \
+        --dump-nf     "${n}-unerased-NF.tt" \
+        --dump-nf-scheme "${n}-unerased-NF.scm" \
+        && scheme "${n}-unerased.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}-unerased.scm.out" \
+        && scheme "${n}-unerased-NF.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}-unerased-NF.scm.out"
 done

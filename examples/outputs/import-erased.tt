@@ -2,5 +2,12 @@
   let
     postulate Z : Nat
     postulate S : (x) -> Nat
-    main = 4
+    foreign intS
+    foreign intZ
+    foreign printSchemeRepr
+    natToInt 
+      [_] Z = intZ
+      [_] (S n) = intS (natToInt n)
+    printNat = (\x. printSchemeRepr (natToInt x))
+    main = printNat 4
   in main

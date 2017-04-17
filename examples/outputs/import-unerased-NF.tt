@@ -1,6 +1,0 @@
--- vim: ft=idris
-  let
-    postulate Nat : Type
-    postulate Z : Nat
-    postulate S : (x) -> Nat
-  in 4

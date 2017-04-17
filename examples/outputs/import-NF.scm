@@ -5,8 +5,8 @@
 (define (rts-arg-read i) (read (open-input-string (list-ref (command-line-arguments) i))))
 (print
   (letrec* (
-    (Z `(Z))
-    (S (lambda (x)
-      `(S ,x)))
+    (intS (lambda (x) (+ x 1)))
+    (intZ 0)
+    (printSchemeRepr print)
   )
-    (S (S (S (S Z))))))
+    (printSchemeRepr (intS (intS (intS (intS intZ)))))))
