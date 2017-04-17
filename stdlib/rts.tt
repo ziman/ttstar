@@ -12,5 +12,23 @@ natToInt : Nat -> Int.
   (n : Nat)
     natToInt (S n) = intS (natToInt n).
 
+foreign intToNat : (x :R: Int) -> Nat = "(lambda (x) (number->peano 'Z 'S x))".
+
 printNat \(x : Nat) : IO Unspec
     = printSchemeRepr Int (natToInt x).
+
+-- runIO obviously breaks purity. IO as a concept in TTstar is used just to get
+-- the correct order of effects within a single IO action.
+
+foreign runIO_prim : (a :E: Type) -> (f :R: (w :R: RealWorld) -> IOResult a) -> IOResult a
+    = "(lambda (f) (f 'RealWorld))".
+
+runIO : (a : Type) -> (IO a) -> a.
+  (a : Type) (f : RealWorld -> IOResult a)
+    runIO a ([MkIO] [a] f) =
+      let
+        runIO2 : (a : Type) -> (IOResult a) -> a.
+          (a : Type) (x : a) (w : RealWorld)
+            runIO2 a ([MkIOR] [a] x w) = x.
+      in
+        runIO2 a (runIO_prim a f).

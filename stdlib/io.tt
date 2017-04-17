@@ -6,23 +6,25 @@ data IOResult : Type -> Type where
   MkIOR : (a : Type) -> (x : a) -> (w : RealWorld) -> IOResult a.
 
 data IO : Type -> Type where
-  MkIO : (a : Type) -> (f : RealWorld -> IOResult a) -> IO a.
+  MkIO : (a : Type) -> (f : (w : RealWorld) -> IOResult a) -> IO a.
 
 ioReturn : (a : Type) -> (x : a) -> IO a.
   (a : Type) (x : a)
     ioReturn a x = MkIO a (\w : RealWorld. MkIOR a x w).
 
-ioBind3 : (b : Type) -> RealWorld -> (IO b) -> IOResult b.
-  (b : Type) (w : RealWorld) (f : RealWorld -> IOResult b)
-    ioBind3 b w (MkIO [b] f) = f w.
-
-ioBind2 : (a : Type) -> (b : Type) -> (g : (x : a) -> IO b) -> (r : IOResult a) -> IOResult b.
-  (a : Type) (b : Type) (g : a -> IO b) (x : a) (w : RealWorld)
-    ioBind2 a b g (MkIOR [a] x w) = ioBind3 b w (g x).
-
 ioBind : (a : Type) -> (b : Type) -> (x : IO a) -> (y : a -> IO b) -> IO b.
   (a : Type) (b : Type) (f : RealWorld -> IOResult a) (g : a -> IO b)
-    ioBind a b (MkIO [a] f) g = MkIO b (\w : RealWorld. ioBind2 a b g (f w)).
+    ioBind a b ([MkIO] [a] f) g
+        = let
+          ioBind3 : (b : Type) -> RealWorld -> (IO b) -> IOResult b.
+            (b : Type) (w : RealWorld) (f : RealWorld -> IOResult b)
+              ioBind3 b w ([MkIO] [b] f) = f w.,
+
+          ioBind2 : (a : Type) -> (b : Type) -> (g : (x : a) -> IO b) -> (r : IOResult a) -> IOResult b.
+            (a : Type) (b : Type) (g : a -> IO b) (x : a) (w : RealWorld)
+              ioBind2 a b g ([MkIOR] [a] x w) = ioBind3 b w (g x).
+        in
+            MkIO b (\w : RealWorld. ioBind2 a b g (f w)).
 
 ioIgnore \(a : Type) (b : Type) (r : b) (x : IO a) : IO b
     = ioBind a b x (\v:a. ioReturn b r).

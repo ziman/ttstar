@@ -4,4 +4,7 @@ import "../stdlib/io.tt"
 import "../stdlib/prelude.tt"
 import "../stdlib/rts.tt"
 
-main \: IO Unspec = printNat 4.
+main \: Unspec =
+  runIO Unspec (
+    ioBind Unspec Unspec (printNat 4) (\_:Unspec.
+        printSchemeRepr Nat (intToNat (intS (intS (intS intZ))))))
