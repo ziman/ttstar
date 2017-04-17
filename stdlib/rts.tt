@@ -1,8 +1,5 @@
 -- vim: ft=idris
 
-import "io.tt"
-import "prelude.tt"
-
 postulate Int : Type.
 foreign intS : (x :R: Int) -> Int = "(lambda (x) (+ x 1))".
 foreign intZ : Int = "0".
