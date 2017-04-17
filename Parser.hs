@@ -1,10 +1,11 @@
-module Parser (parseProgram) where
+module Parser (readProgram) where
 
 import TT
 import TTUtils
 import Pretty ()
 import Data.Char
 import Text.Parsec
+import System.FilePath
 import qualified Data.Map as M
 import qualified Data.Set as S
 
@@ -16,8 +17,24 @@ data ParserState = PS
 type Parser = Parsec String ParserState
 type MRel = Maybe Relevance
 
-parseProgram :: String -> String -> Either ParseError (Program MRel)
-parseProgram fname body = runParser ttProgram initialParserState fname body
+readProgram :: String -> IO (Either ParseError (Program MRel))
+readProgram fname = do
+    ds' <- readDefs fname
+    case ds' of
+        Left err -> return . Left  $ err
+        Right ds -> return . Right $ Bind Let ds (V $ UN "main")
+
+readDefs :: String -> IO (Either ParseError [Def MRel])
+readDefs fname = do
+    body <- readFile fname
+    case runParser program initialParserState fname body of
+        Left err -> return $ Left err
+        Right (is, ds) -> do
+            let rootDir = takeDirectory fname
+            dss' <- sequence <$> mapM readDefs [rootDir </> i | i <- is]
+            case dss' of
+                Left  err -> return . Left  $ err
+                Right dss -> return . Right $ concat dss ++ ds
 
 initialParserState :: ParserState
 initialParserState = PS
@@ -263,13 +280,21 @@ foreignDef = (<?> "foreign definition") $ do
 simpleDef :: Parser (Def MRel)
 simpleDef = foreignDef <|> postulate <|> mlDef <|> clauseDef <?> "simple definition"
 
+imports :: Parser [String]
+imports = many (kwd "import" *> stringLiteral)
+
 definition :: Parser [Def MRel]
 definition = dataDef <|> (pure <$> simpleDef) <?> "definition"
 
-parseProg :: Parser (Program MRel)
-parseProg = do
-    ds <- concat <$> many (definition <* optional (kwd ".")) <?> "program"
-    return $ Bind Let ds (V $ UN "main")
+definitions :: Parser [Def MRel]
+definitions = concat <$> many (definition <* optional (kwd ".")) <?> "definitions"
 
-ttProgram :: Parser (Program MRel)
-ttProgram = sp *> parseProg <* eof
+program :: Parser ([String], [Def MRel])
+program = (<?> "program") $ do
+    sp
+    is <- imports
+    ds <- definitions
+    eof
+    return (is, ds)
+
+-- vim: set et

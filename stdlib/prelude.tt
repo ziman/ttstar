@@ -1,0 +1,19 @@
+-- vim: ft=idris
+
+data Nat : Type where
+  Z : Nat,
+  S : (x :R: Nat) -> Nat.
+
+plus : Nat -> Nat -> Nat.
+  (n : Nat)
+    plus Z n = n,
+  (m : Nat) (n : Nat)
+    plus (S m) n = S (plus m n).
+
+data Bool : Type where
+  T : Bool,
+  F : Bool.
+
+not : Bool -> Bool.
+not T = F,
+not F = T.

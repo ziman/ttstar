@@ -22,7 +22,7 @@ executable ttstar
   other-extensions:    FlexibleInstances, StandaloneDeriving
   build-depends:       base, parsec, containers, transformers >=0.4,
                        lens-family >=1.2, lens-family-core >=1.2,
-                       optparse-applicative
+                       optparse-applicative, filepath
   -- hs-source-dirs:      
   default-language:    Haskell2010
   ghc-options:         -Wall -fno-warn-name-shadowing

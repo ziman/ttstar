@@ -1,0 +1,6 @@
+-- vim: ft=idris
+  let
+    postulate Z : Nat
+    postulate S : (x) -> Nat
+    main = 4
+  in main

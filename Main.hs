@@ -35,10 +35,10 @@ pipeline args = do
         putStrLn "-- vim: ft=idris"
 
     let sourceFname = Args.sourceFile args
-    code <- readFile sourceFname
-    prog <- case parseProgram sourceFname code of
-        Left e -> do
-            print e
+    prog' <- readProgram sourceFname
+    prog <- case prog' of
+        Left err -> do
+            print err
             error "parse error"
 
         Right prog ->

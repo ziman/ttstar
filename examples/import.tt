@@ -1,0 +1,5 @@
+-- vim: ft=idris
+
+import "../stdlib/prelude.tt"
+
+main \: Nat = 4.

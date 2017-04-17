@@ -1,0 +1,16 @@
+-- vim: ft=idris
+  let
+    postulate Nat : Type
+    postulate Z : Nat
+    postulate S : (x) -> Nat
+    plus 
+      [_] Z n = n
+      [_] (S m) n = S (plus m n)
+    postulate Bool : Type
+    postulate T : Bool
+    postulate F : Bool
+    not 
+      [_] T = F
+      [_] F = T
+    main = 4
+  in main

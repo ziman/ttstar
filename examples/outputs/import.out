@@ -1,0 +1,140 @@
+-- vim: ft=idris
+
+### Desugared ###
+
+  let
+    postulate Nat : Type
+    postulate Z : Nat
+    postulate S : (x :R: Nat) -> Nat
+    plus : (_x0 : Nat) -> (_x1 : Nat) -> Nat 
+      n : Nat
+        [plus] Z n = n
+      m : Nat n : Nat
+        [plus] (S m) n = S (plus m n)
+    postulate Bool : Type
+    postulate T : Bool
+    postulate F : Bool
+    not : (_x2 : Bool) -> Bool 
+      [not] T = F
+      [not] F = T
+    main : Nat = 4
+  in main
+
+### Evarified ###
+
+  let
+    postulate Nat :1: Type
+    postulate Z :2: Nat
+    postulate S :3: (x :R: Nat) -> Nat
+    plus :4: (_x0 :5: Nat) -> (_x1 :6: Nat) -> Nat 
+      n :7: Nat
+        [plus] -9- Z -8- n = n
+      m :10: Nat n :11: Nat
+        [plus] -13- (S -14- m) -12- n = S -15- (plus -17- m -16- n)
+    postulate Bool :18: Type
+    postulate T :19: Bool
+    postulate F :20: Bool
+    not :21: (_x2 :22: Bool) -> Bool 
+      [not] -23- T = F
+      [not] -24- F = T
+    main :25: Nat = 4
+  in main
+
+### Constraints ###
+
+[] -> [2,3,26,27,28,29,R]
+[R] -> [25]
+
+### Solution ###
+
+[2,3,25,26,27,28,29,R]
+
+### Annotated ###
+
+  let
+    postulate Nat :E: Type
+    postulate Z :R: Nat
+    postulate S :R: (x :R: Nat) -> Nat
+    plus :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Nat 
+      n :E: Nat
+        [plus] -E- Z -E- n = n
+      m :E: Nat n :E: Nat
+        [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
+    postulate Bool :E: Type
+    postulate T :E: Bool
+    postulate F :E: Bool
+    not :E: (_x2 :E: Bool) -> Bool 
+      [not] -E- T = F
+      [not] -E- F = T
+    main :R: Nat = 4
+  in main
+
+### Specialised ###
+
+  let
+    postulate Nat :E: Type
+    postulate Z :R: Nat
+    postulate S :R: (x :R: Nat) -> Nat
+    plus :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Nat 
+      n :E: Nat
+        [plus] -E- Z -E- n = n
+      m :E: Nat n :E: Nat
+        [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
+    postulate Bool :E: Type
+    postulate T :E: Bool
+    postulate F :E: Bool
+    not :E: (_x2 :E: Bool) -> Bool 
+      [not] -E- T = F
+      [not] -E- F = T
+    main :R: Nat = 4
+  in main
+
+### Final annotation ###
+
+  let
+    postulate Nat :E: Type
+    postulate Z :R: Nat
+    postulate S :R: (x :R: Nat) -> Nat
+    plus :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Nat 
+      n :E: Nat
+        [plus] -E- Z -E- n = n
+      m :E: Nat n :E: Nat
+        [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
+    postulate Bool :E: Type
+    postulate T :E: Bool
+    postulate F :E: Bool
+    not :E: (_x2 :E: Bool) -> Bool 
+      [not] -E- T = F
+      [not] -E- F = T
+    main :R: Nat = 4
+  in main
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+  let
+    postulate Z : Nat
+    postulate S : (x) -> Nat
+    main = 4
+  in main
+
+### Normal forms ###
+
+unerased:
+  
+  let
+    postulate Nat : Type
+    postulate Z : Nat
+    postulate S : (x :R: Nat) -> Nat
+  in 4
+
+erased:
+  
+  let
+    postulate Z : Nat
+    postulate S : (x) -> Nat
+  in 4
+
