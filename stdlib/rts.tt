@@ -1,0 +1,19 @@
+-- vim: ft=idris
+
+import "io.tt"
+import "prelude.tt"
+
+postulate Int : Type.
+foreign intS : (x :R: Int) -> Int = "(lambda (x) (+ x 1))".
+foreign intZ : Int = "0".
+
+postulate Unspec : Type.
+foreign printSchemeRepr : (a :E: Type) -> (x :R: a) -> IO Unspec = "print".
+
+natToInt : Nat -> Int.
+  natToInt Z = intZ,
+  (n : Nat)
+    natToInt (S n) = intS (natToInt n).
+
+printNat \(x : Nat) : IO Unspec
+    = printSchemeRepr Int (natToInt x).

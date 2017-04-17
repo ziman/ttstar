@@ -17,3 +17,6 @@ data Bool : Type where
 not : Bool -> Bool.
 not T = F,
 not F = T.
+
+data Unit : Type where
+  tt : Unit.

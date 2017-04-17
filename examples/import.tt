@@ -1,5 +1,5 @@
 -- vim: ft=idris
 
-import "../stdlib/prelude.tt"
+import "../stdlib/rts.tt"
 
-main \: Nat = 4.
+main \: IO Unspec = printNat 4.
