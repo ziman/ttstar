@@ -5,7 +5,11 @@ foreign intS : (x :R: Int) -> Int = "(lambda (x) (+ x 1))".
 foreign intZ : Int = "0".
 
 postulate Unspec : Type.
-foreign printSchemeRepr : (a :E: Type) -> (x :R: a) -> IO Unspec = "print".
+printSchemeRepr \ (a : Type) (x : a) : IO Unspec
+    = let
+        foreign nativePrint : (a :E: Type) -> (x :R: a) -> Unspec = "print"
+      in 
+        MkIO Unspec (\w : RealWorld. MkIOR Unspec (nativePrint a x) w).
 
 natToInt : Nat -> Int.
   natToInt Z = intZ,
