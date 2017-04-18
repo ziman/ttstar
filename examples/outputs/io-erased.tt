@@ -16,17 +16,18 @@
     foreign intZ
     printSchemeRepr = (\x. 
       let foreign nativePrint
-      in MkIO (nativePrint x))
+      in MkIO (\w. MkIOR (nativePrint x) w))
     natToInt 
       [_] Z = intZ
       [_] (S n) = intS (natToInt n)
     foreign intToNat
     printNat = (\x. printSchemeRepr (natToInt x))
-    foreign runIO_prim
     runIO 
       [_] ([_] f) = 
-        let runIO2 
-          [_] ([_] x _) = x
-        in runIO2 (runIO_prim f)
+        let
+          runIO2 
+            [_] ([_] x _) = x
+          postulate TheWorld : RealWorld
+        in runIO2 (f TheWorld)
     main = runIO (ioBind (printNat 4) (\_0. printSchemeRepr (intToNat (intS (intS (intS intZ))))))
   in main

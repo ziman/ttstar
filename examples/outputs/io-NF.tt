@@ -1,5 +1,6 @@
 -- vim: ft=idris
   let
+    postulate MkIOR : (x) -> (w) -> IOResult
     postulate MkIO : (f) -> IO
     ioBind 
       [_] ([_] f) g = 
@@ -12,14 +13,15 @@
     foreign intS
     foreign intZ
     foreign intToNat
-    foreign runIO_prim
     runIO 
       [_] ([_] f) = 
-        let runIO2 
-          [_] ([_] x _) = x
-        in runIO2 (runIO_prim f)
+        let
+          runIO2 
+            [_] ([_] x _) = x
+          postulate TheWorld : RealWorld
+        in runIO2 (f TheWorld)
   in runIO (ioBind 
     let foreign nativePrint
-    in MkIO (nativePrint (intS (intS (intS (intS intZ))))) (\_0. 
+    in MkIO (\w. MkIOR (nativePrint (intS (intS (intS (intS intZ))))) w) (\_0. 
     let foreign nativePrint
-    in MkIO (nativePrint (intToNat (intS (intS (intS intZ)))))))
+    in MkIO (\w. MkIOR (nativePrint (intToNat (intS (intS (intS intZ))))) w)))
