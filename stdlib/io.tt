@@ -3,7 +3,7 @@
 postulate RealWorld : Type.
 
 data IOResult : Type -> Type where
-  MkIOR : (a : Type) -> (x : a) -> (w : RealWorld) -> IOResult a.
+  MkIOR : (a :E: Type) -> (x :R: a) -> (w :R: RealWorld) -> IOResult a.
 
 data IO : Type -> Type where
   MkIO : (a : Type) -> (f : (w : RealWorld) -> IOResult a) -> IO a.
@@ -12,7 +12,7 @@ ioReturn : (a : Type) -> (x : a) -> IO a.
   (a : Type) (x : a)
     ioReturn a x = MkIO a (\w : RealWorld. MkIOR a x w).
 
-ioBind : (a : Type) -> (b : Type) -> (x : IO a) -> (y : a -> IO b) -> IO b.
+ioBind : (a : Type) -> (b : Type) -> (x : IO a) -> (y : (z :R: a) -> IO b) -> IO b.
   (a : Type) (b : Type) (f : RealWorld -> IOResult a) (g : a -> IO b)
     ioBind a b ([MkIO] [a] f) g
         = let

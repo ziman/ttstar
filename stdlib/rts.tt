@@ -7,9 +7,10 @@ foreign intZ : Int = "0".
 postulate Unspec : Type.
 printSchemeRepr \ (a : Type) (x : a) : IO Unspec
     = let
-        foreign nativePrint : (a :E: Type) -> (x :R: a) -> Unspec = "print"
+        foreign nativePrint : (a :E: Type) -> (x :R: a) -> (w :R: RealWorld) -> IOResult Unspec
+            = "(lambda (x) (lambda (w) (list 'MkIOR (print x) w)))"
       in 
-        MkIO Unspec (\w : RealWorld. MkIOR Unspec (nativePrint a x) w).
+        MkIO Unspec (nativePrint a x).
 
 natToInt : Nat -> Int.
   natToInt Z = intZ,
@@ -21,8 +22,8 @@ foreign intToNat : (x :R: Int) -> Nat = "(lambda (x) (number->peano 'Z 'S x))".
 printNat \(x : Nat) : IO Unspec
     = printSchemeRepr Int (natToInt x).
 
--- runIO obviously breaks purity. IO as a concept in TTstar is used just to get
--- the correct order of effects within a single IO action.
+-- runIO obviously breaks purity. IO as a concept in TTstar is used just to
+-- guarantee the correct order of effects within a single IO action.
 
 foreign runIO_prim : (a :E: Type) -> (f :R: (w :R: RealWorld) -> IOResult a) -> IOResult a
     = "(lambda (f) (f 'RealWorld))".

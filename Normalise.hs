@@ -217,10 +217,24 @@ match pvs ctx (PV n) (V n')
     , Just (Def _ _ _ (Abstract Postulate) _) <- M.lookup n ctx
     = Yes M.empty
 
+match pvs ctx pat@(PApp r f x) tm@(App r' f' x')
+    | (pc, pargs) <- unApplyPat pat
+    , (tc, targs) <- unApply tm
+    , length pargs == length targs
+    = do
+        headMatch pvs ctx pc tc
+        M.unionsWith (\_ _ -> error "non-linear pattern")
+            <$> sequence [
+                    match pvs ctx x (red WHNF ctx x')
+                    | ((_r, x), (_r', x')) <- zip pargs targs
+                  ]
+
+{-
 match pvs ctx (PApp r f x) (App r' f' x')
     = M.unionWith (\_ _ -> error "non-linear pattern")
         <$> match pvs ctx f f'
         <*> match pvs ctx x (red WHNF ctx x')
+-}
 
 match pvs ctx (PForced tm) tm' = Yes $ M.empty
 
@@ -232,6 +246,24 @@ match pvs ctx pat (V n)
         _ -> No
 
 match _ _ _ _ = No
+
+headMatch :: IsRelevance r => Ctx r -> Ctx r -> Pat r -> TT r -> Match ()
+headMatch pvs ctx (PV n) (V n')
+    | n == n'
+    , Just (Def _ _ _ (Abstract Postulate) _) <- M.lookup n' ctx
+    = Yes ()
+
+    | n /= n'
+    , Just (Def _ _ _ (Abstract Postulate) _) <- M.lookup n' ctx
+    = No
+
+    | otherwise = Stuck
+
+headMatch pvs ctx (PForced (V n)) (V n')
+    = headMatch pvs ctx (PV n) (V n')
+
+headMatch pvs ctx pat tm
+    = error $ "can't match pattern head: " ++ show (pat, tm)
 
 firstMatch :: Alternative f => [f a] -> f a
 firstMatch = foldr (<|>) empty
