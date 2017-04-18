@@ -1,4 +1,4 @@
-{-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE ConstraintKinds, ViewPatterns #-}
 module Normalise (IsRelevance, Form(..), red, whnf, nf) where
 
 import TT
@@ -155,7 +155,7 @@ red form ctx t@(App r f x)
 
     -- pattern-matching definitions
     | (V fn, args) <- unApply t
-    , Just (Def _ _ _ (Clauses cs) _) <- M.lookup fn ctx
+    , Just (defBody -> Clauses cs) <- M.lookup fn ctx
     , Yes rhs <- firstMatch $ map (matchClause ctx t) cs
     = red form ctx rhs
 
@@ -172,19 +172,27 @@ red form ctx t@(App r f x)
 -- This function takes a disassembled pattern and a term application
 -- and tries to match them up, while ensuring that there are at least
 -- as many terms as there are patterns. Any superfluous terms are returned.
-matchUp :: Pat r -> [(r, Pat r)] -> TT r -> [(r, TT r)] -> Match (Pat r, TT r, [(r, TT r)])
-matchUp ph [] th tms = Yes (ph, th, tms)  -- `tms` are superfluous terms
-matchUp ph ((r,p):ps) th ((r',t):ts) = matchUp (PApp r ph p) ps (App r' th t) ts
-matchUp ph (_:_) th [] = No  -- not enough terms
+matchUp :: [(r, Pat r)] -> [(r, TT r)]
+    -> Match ([(Pat r, TT r)], [(r, TT r)])
+
+matchUp ((_pr, pat):ps) ((_tr, tm):ts)
+    = do
+        (pts, rest) <- matchUp ps ts
+        return ((pat,tm):pts, rest)
+
+matchUp [] ts = Yes ([], ts)
+
+matchUp ps [] = No
 
 matchClause :: IsRelevance r => Ctx r -> TT r -> Clause r -> Match (TT r)
 matchClause ctx tm (Clause pvs lhs rhs) = do
     -- first, match up patterns vs. terms, keeping superfluous terms
     -- (if application is oversaturated)
-    (pattern, term, extraTerms) <- matchUp ph pargs h args
+    (pts, extraTerms) <- matchUp pargs args
 
     -- get the matching substitution
-    pvSubst <- match pvs' ctx pattern term
+    pvSubst <- M.unionsWith (\_ _ -> error "nonlinear pattern")
+        <$> sequence [match pvs' ctx p $ red WHNF ctx tm | (p,tm) <- pts]
 
     -- substitute in RHS, and then tack on the superfluous terms
     return $
@@ -192,8 +200,8 @@ matchClause ctx tm (Clause pvs lhs rhs) = do
             (safeSubst pvs [pvSubst M.! defName d | d <- pvs] rhs)
             extraTerms
   where
-    (ph, pargs) = unApplyPat lhs
-    (h,  args)  = unApply tm
+    (_ph, pargs) = unApplyPat lhs
+    (_h,  args)  = unApply tm
     pvs' = M.fromList [(defName d, d) | d <- pvs]
 
 safeSubst :: [Def r] -> [TT r] -> TT r -> TT r
@@ -209,34 +217,22 @@ match pvs ctx (PV Blank) tm'
     = Yes M.empty
 
 match pvs ctx (PV n) tm'
-    | Just (Def _ _ _ (Abstract Var) _) <- M.lookup n pvs
+    | Just (defBody -> Abstract Var) <- M.lookup n pvs
     = Yes $ M.singleton n tm'
 
 match pvs ctx (PV n) (V n')
     | n == n'
-    , Just (Def _ _ _ (Abstract Postulate) _) <- M.lookup n ctx
+    , Just (defBody -> Abstract Postulate) <- M.lookup n ctx
     = Yes M.empty
 
-match pvs ctx pat@(PApp r f x) tm@(App r' f' x')
-    | (pc, pargs) <- unApplyPat pat
-    , (tc, targs) <- unApply tm
-    , length pargs == length targs
-    = do
-        headMatch pvs ctx pc tc
-        M.unionsWith (\_ _ -> error "non-linear pattern")
-            <$> sequence [
-                    match pvs ctx x (red WHNF ctx x')
-                    | ((_r, x), (_r', x')) <- zip pargs targs
-                  ]
-
-{-
 match pvs ctx (PApp r f x) (App r' f' x')
     = M.unionWith (\_ _ -> error "non-linear pattern")
         <$> match pvs ctx f f'
         <*> match pvs ctx x (red WHNF ctx x')
--}
 
-match pvs ctx (PForced tm) tm' = Yes $ M.empty
+match pvs ctx (PForced tm) tm'
+    | isWhnfValue ctx tm' = Yes $ M.empty
+    | otherwise           = Stuck
 
 match pvs ctx pat (V n)
     | Just d <- M.lookup n ctx
@@ -247,23 +243,14 @@ match pvs ctx pat (V n)
 
 match _ _ _ _ = No
 
-headMatch :: IsRelevance r => Ctx r -> Ctx r -> Pat r -> TT r -> Match ()
-headMatch pvs ctx (PV n) (V n')
-    | n == n'
-    , Just (Def _ _ _ (Abstract Postulate) _) <- M.lookup n' ctx
-    = Yes ()
+isWhnfValue :: Ctx r -> TT r -> Bool
+isWhnfValue ctx tm
+    | (V n, _args) <- unApply tm
+    , Just (defBody -> Abstract Postulate) <- M.lookup n ctx
+    = True
 
-    | n /= n'
-    , Just (Def _ _ _ (Abstract Postulate) _) <- M.lookup n' ctx
-    = No
-
-    | otherwise = Stuck
-
-headMatch pvs ctx (PForced (V n)) (V n')
-    = headMatch pvs ctx (PV n) (V n')
-
-headMatch pvs ctx pat tm
-    = error $ "can't match pattern head: " ++ show (pat, tm)
+    | otherwise
+    = False
 
 firstMatch :: Alternative f => [f a] -> f a
 firstMatch = foldr (<|>) empty

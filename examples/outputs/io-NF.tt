@@ -1,0 +1,25 @@
+-- vim: ft=idris
+  let
+    postulate MkIO : (f) -> IO
+    ioBind 
+      [_] ([_] f) g = 
+        let
+          ioBind3 
+            [_] w ([_] f) = f w
+          ioBind2 
+            [_] g ([_] x w) = ioBind3 w (g x)
+        in MkIO (\w. ioBind2 g (f w))
+    foreign intS
+    foreign intZ
+    foreign intToNat
+    foreign runIO_prim
+    runIO 
+      [_] ([_] f) = 
+        let runIO2 
+          [_] ([_] x _) = x
+        in runIO2 (runIO_prim f)
+  in runIO (ioBind 
+    let foreign nativePrint
+    in MkIO (nativePrint (intS (intS (intS (intS intZ))))) (\_0. 
+    let foreign nativePrint
+    in MkIO (nativePrint (intToNat (intS (intS (intS intZ)))))))
