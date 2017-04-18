@@ -5,12 +5,17 @@ foreign intS : (x :R: Int) -> Int = "(lambda (x) (+ x 1))".
 foreign intZ : Int = "0".
 
 postulate Unspec : Type.
+
 printSchemeRepr \ (a : Type) (x : a) : IO Unspec
     = let
-        foreign nativePrint : (a :E: Type) -> (x :R: a) -> (w :R: RealWorld) -> IOResult Unspec
-            = "(lambda (x) (lambda (w) (list 'MkIOR (print x) w)))"
+        foreign nativePrint : (a :E: Type) -> (x :R: a) -> Unspec = "print"
       in 
-        MkIO Unspec (nativePrint a x).
+        -- `w` is taken relevantly here because we just pass it on without
+        -- actually having it go through the RTS (which we could do as well).
+        -- TTstar sees that it's passed unchanged so it allows erasure on it.
+        -- However, we want to simulate going through the RTS so we just explicitly
+        -- label it as used.
+        MkIO Unspec (\w:R:RealWorld. MkIOR Unspec (nativePrint a x) w).
 
 natToInt : Nat -> Int.
   natToInt Z = intZ,
@@ -25,15 +30,14 @@ printNat \(x : Nat) : IO Unspec
 -- runIO obviously breaks purity. IO as a concept in TTstar is used just to
 -- guarantee the correct order of effects within a single IO action.
 
-foreign runIO_prim : (a :E: Type) -> (f :R: (w :R: RealWorld) -> IOResult a) -> IOResult a
-    = "(lambda (f) (f 'RealWorld))".
-
 runIO : (a : Type) -> (IO a) -> a.
   (a : Type) (f : RealWorld -> IOResult a)
     runIO a ([MkIO] [a] f) =
       let
         runIO2 : (a : Type) -> (IOResult a) -> a.
           (a : Type) (x : a) (w : RealWorld)
-            runIO2 a ([MkIOR] [a] x w) = x.
+            runIO2 a ([MkIOR] [a] x w) = x.,
+
+        postulate TheWorld : RealWorld
       in
-        runIO2 a (runIO_prim a f).
+        runIO2 a (f TheWorld).

@@ -2,9 +2,11 @@
 
 postulate RealWorld : Type.
 
+-- IOResult is just a pair (return value, updated world).
 data IOResult : Type -> Type where
-  MkIOR : (a :E: Type) -> (x :R: a) -> (w :R: RealWorld) -> IOResult a.
+  MkIOR : (a : Type) -> (x : a) -> (w : RealWorld) -> IOResult a.
 
+-- IO is just a state monad, where the state is RealWorld.
 data IO : Type -> Type where
   MkIO : (a : Type) -> (f : (w : RealWorld) -> IOResult a) -> IO a.
 

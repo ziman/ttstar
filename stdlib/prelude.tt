@@ -19,4 +19,4 @@ not T = F,
 not F = T.
 
 data Unit : Type where
-  tt : Unit.
+  MkUnit : Unit.
