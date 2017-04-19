@@ -30,3 +30,17 @@ ioBind : (a : Type) -> (b : Type) -> (x : IO a) -> (y : (z :R: a) -> IO b) -> IO
 
 ioIgnore \(a : Type) (b : Type) (r : b) (x : IO a) : IO b
     = ioBind a b x (\v:a. ioReturn b r).
+
+-- runIO obviously breaks purity. IO as a concept in TTstar is used just to
+-- guarantee the correct order of effects within a single IO action.
+runIO : (a : Type) -> (IO a) -> a.
+  (a : Type) (f : RealWorld -> IOResult a)
+    runIO a ([MkIO] [a] f) =
+      let
+        runIO2 : (a : Type) -> (IOResult a) -> a.
+          (a : Type) (x : a) (w : RealWorld)
+            runIO2 a ([MkIOR] [a] x w) = x.,
+
+        postulate TheWorld : RealWorld
+      in
+        runIO2 a (f TheWorld).
