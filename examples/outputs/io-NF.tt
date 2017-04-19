@@ -18,9 +18,9 @@
     foreign intZ
     foreign intToNat
   in 
-    let postulate w : RealWorld
+    let postulate TheWorld : RealWorld
     in snd (runState (stBind 
       let foreign nativePrint
       in MkSt (\w. MkPair w (nativePrint (intS (intS (intS (intS intZ)))))) (\_0. 
       let foreign nativePrint
-      in MkSt (\w. MkPair w (nativePrint (intToNat (intS (intS (intS intZ)))))))) w)
+      in MkSt (\w. MkPair w (nativePrint (intToNat (intS (intS (intS intZ)))))))) TheWorld)

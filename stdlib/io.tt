@@ -20,10 +20,8 @@ ioWrapImpure \(a : Type) (impureF : (delayToken :R: Unit) -> a) : IO a
     -- so we just explicitly label it as used.
     = MkSt RealWorld a (\w:R:RealWorld. MkPair RealWorld a w (impureF MkUnit)).
 
--- runIO obviously breaks purity. IO as a concept in TTstar is used just to
--- guarantee the correct order of effects within a single IO action.
-runIO \(a : Type) (x : IO a) : a
+unsafePerformIO \(a : Type) (x : IO a) : a
     = let
-        postulate w : RealWorld
+        postulate TheWorld : RealWorld
       in
-        execState RealWorld a x w.
+        execState RealWorld a x TheWorld.

@@ -20,9 +20,9 @@
         in MkSt (\s. stBind2 g (f s))
     ioBind = (\x. (\y. stBind x y))
     ioWrapImpure = (\impureF. MkSt (\w. MkPair w (impureF MkUnit)))
-    runIO = (\x. 
-      let postulate w : RealWorld
-      in execState x w)
+    unsafePerformIO = (\x. 
+      let postulate TheWorld : RealWorld
+      in execState x TheWorld)
     foreign intS
     foreign intZ
     printSchemeRepr = (\x. 
@@ -33,5 +33,5 @@
       [_] (S n) = intS (natToInt n)
     foreign intToNat
     printNat = (\x. printSchemeRepr (natToInt x))
-    main = runIO (ioBind (printNat 4) (\_0. printSchemeRepr (intToNat (intS (intS (intS intZ))))))
+    main = unsafePerformIO (ioBind (printNat 4) (\_0. printSchemeRepr (intToNat (intS (intS (intS intZ))))))
   in main

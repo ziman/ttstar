@@ -53,9 +53,9 @@
     ioReturn : (a : Type) -> (x : a) -> IO a = (\a : Type. (\x : a. stReturn RealWorld a x))
     ioBind : (a : Type) -> (b : Type) -> (x : IO a) -> (y : (_x1 : a) -> IO b) -> IO b = (\a : Type. (\b : Type. (\x : IO a. (\y : (_x1 : a) -> IO b. stBind RealWorld a b x y))))
     ioWrapImpure : (a : Type) -> (impureF : (delayToken :R: Unit) -> a) -> IO a = (\a : Type. (\impureF : (delayToken :R: Unit) -> a. MkSt RealWorld a (\w :R: RealWorld. MkPair RealWorld a w (impureF MkUnit))))
-    runIO : (a : Type) -> (x : IO a) -> a = (\a : Type. (\x : IO a. 
-      let postulate w : RealWorld
-      in execState RealWorld a x w))
+    unsafePerformIO : (a : Type) -> (x : IO a) -> a = (\a : Type. (\x : IO a. 
+      let postulate TheWorld : RealWorld
+      in execState RealWorld a x TheWorld))
     postulate Int : Type
     foreign intS : (x :R: Int) -> Int
     foreign intZ : Int
@@ -69,7 +69,7 @@
         [natToInt] (S n) = intS (natToInt n)
     foreign intToNat : (x :R: Int) -> Nat
     printNat : (x : Nat) -> IO Unspec = (\x : Nat. printSchemeRepr Int (natToInt x))
-    main : Unspec = runIO Unspec (ioBind Unspec Unspec (printNat 4) (\_0 :R: Unspec. printSchemeRepr Nat (intToNat (intS (intS (intS intZ))))))
+    main : Unspec = unsafePerformIO Unspec (ioBind Unspec Unspec (printNat 4) (\_0 :R: Unspec. printSchemeRepr Nat (intToNat (intS (intS (intS intZ))))))
   in main
 
 ### Evarified ###
@@ -125,9 +125,9 @@
     ioReturn :262: (a :263: Type) -> (x :264: a) -> IO -265- a = (\a :266: Type. (\x :267: a. stReturn -270- RealWorld -269- a -268- x))
     ioBind :271: (a :272: Type) -> (b :273: Type) -> (x :274: IO -275- a) -> (y :276: (_x1 :277: a) -> IO -278- b) -> IO -279- b = (\a :280: Type. (\b :281: Type. (\x :282: IO -283- a. (\y :284: (_x1 :285: a) -> IO -286- b. stBind -291- RealWorld -290- a -289- b -288- x -287- y))))
     ioWrapImpure :292: (a :293: Type) -> (impureF :294: (delayToken :R: Unit) -> a) -> IO -295- a = (\a :296: Type. (\impureF :297: (delayToken :R: Unit) -> a. MkSt -300- RealWorld -299- a -298- (\w :R: RealWorld. MkPair -304- RealWorld -303- a -302- w -301- (impureF -305- MkUnit))))
-    runIO :306: (a :307: Type) -> (x :308: IO -309- a) -> a = (\a :310: Type. (\x :311: IO -312- a. 
-      let postulate w :313: RealWorld
-      in execState -317- RealWorld -316- a -315- x -314- w))
+    unsafePerformIO :306: (a :307: Type) -> (x :308: IO -309- a) -> a = (\a :310: Type. (\x :311: IO -312- a. 
+      let postulate TheWorld :313: RealWorld
+      in execState -317- RealWorld -316- a -315- x -314- TheWorld))
     postulate Int :318: Type
     foreign intS :319: (x :R: Int) -> Int
     foreign intZ :320: Int
@@ -141,7 +141,7 @@
         [natToInt] -338- (S -339- n) = intS -340- (natToInt -341- n)
     foreign intToNat :342: (x :R: Int) -> Nat
     printNat :343: (x :344: Nat) -> IO -345- Unspec = (\x :346: Nat. printSchemeRepr -348- Int -347- (natToInt -349- x))
-    main :350: Unspec = runIO -352- Unspec -351- (ioBind -356- Unspec -355- Unspec -354- (printNat -357- 4) -353- (\_0 :R: Unspec. printSchemeRepr -363- Nat -362- (intToNat -364- (intS -365- (intS -366- (intS -367- intZ))))))
+    main :350: Unspec = unsafePerformIO -352- Unspec -351- (ioBind -356- Unspec -355- Unspec -354- (printNat -357- 4) -353- (\_0 :R: Unspec. printSchemeRepr -363- Nat -362- (intToNat -364- (intS -365- (intS -366- (intS -367- intZ))))))
   in main
 
 ### Constraints ###
@@ -351,9 +351,9 @@
     ioReturn :E: (a :E: Type) -> (x :E: a) -> IO -E- a = (\a :E: Type. (\x :E: a. stReturn -E- RealWorld -E- a -E- x))
     ioBind :R: (a :E: Type) -> (b :E: Type) -> (x :R: IO -E- a) -> (y :R: (_x1 :R: a) -> IO -E- b) -> IO -E- b = (\a :E: Type. (\b :E: Type. (\x :R: IO -E- a. (\y :R: (_x1 :R: a) -> IO -E- b. stBind -E- RealWorld -E- a -E- b -R- x -R- y))))
     ioWrapImpure :R: (a :E: Type) -> (impureF :R: (delayToken :R: Unit) -> a) -> IO -E- a = (\a :E: Type. (\impureF :R: (delayToken :R: Unit) -> a. MkSt -E- RealWorld -E- a -R- (\w :R: RealWorld. MkPair -E- RealWorld -E- a -R- w -R- (impureF -R- MkUnit))))
-    runIO :R: (a :E: Type) -> (x :R: IO -E- a) -> a = (\a :E: Type. (\x :R: IO -E- a. 
-      let postulate w :R: RealWorld
-      in execState -E- RealWorld -E- a -R- x -R- w))
+    unsafePerformIO :R: (a :E: Type) -> (x :R: IO -E- a) -> a = (\a :E: Type. (\x :R: IO -E- a. 
+      let postulate TheWorld :R: RealWorld
+      in execState -E- RealWorld -E- a -R- x -R- TheWorld))
     postulate Int :E: Type
     foreign intS :R: (x :R: Int) -> Int
     foreign intZ :R: Int
@@ -367,7 +367,7 @@
         [natToInt] -R- (S -R- n) = intS -R- (natToInt -R- n)
     foreign intToNat :R: (x :R: Int) -> Nat
     printNat :R: (x :R: Nat) -> IO -E- Unspec = (\x :R: Nat. printSchemeRepr -E- Int -R- (natToInt -R- x))
-    main :R: Unspec = runIO -E- Unspec -R- (ioBind -E- Unspec -E- Unspec -R- (printNat -R- 4) -R- (\_0 :R: Unspec. printSchemeRepr -E- Nat -R- (intToNat -R- (intS -R- (intS -R- (intS -R- intZ))))))
+    main :R: Unspec = unsafePerformIO -E- Unspec -R- (ioBind -E- Unspec -E- Unspec -R- (printNat -R- 4) -R- (\_0 :R: Unspec. printSchemeRepr -E- Nat -R- (intToNat -R- (intS -R- (intS -R- (intS -R- intZ))))))
   in main
 
 ### Specialised ###
@@ -423,9 +423,9 @@
     ioReturn :E: (a :E: Type) -> (x :E: a) -> IO -E- a = (\a :E: Type. (\x :E: a. stReturn -E- RealWorld -E- a -E- x))
     ioBind :R: (a :E: Type) -> (b :E: Type) -> (x :R: IO -E- a) -> (y :R: (_x1 :R: a) -> IO -E- b) -> IO -E- b = (\a :E: Type. (\b :E: Type. (\x :R: IO -E- a. (\y :R: (_x1 :R: a) -> IO -E- b. stBind -E- RealWorld -E- a -E- b -R- x -R- y))))
     ioWrapImpure :R: (a :E: Type) -> (impureF :R: (delayToken :R: Unit) -> a) -> IO -E- a = (\a :E: Type. (\impureF :R: (delayToken :R: Unit) -> a. MkSt -E- RealWorld -E- a -R- (\w :R: RealWorld. MkPair -E- RealWorld -E- a -R- w -R- (impureF -R- MkUnit))))
-    runIO :R: (a :E: Type) -> (x :R: IO -E- a) -> a = (\a :E: Type. (\x :R: IO -E- a. 
-      let postulate w :R: RealWorld
-      in execState -E- RealWorld -E- a -R- x -R- w))
+    unsafePerformIO :R: (a :E: Type) -> (x :R: IO -E- a) -> a = (\a :E: Type. (\x :R: IO -E- a. 
+      let postulate TheWorld :R: RealWorld
+      in execState -E- RealWorld -E- a -R- x -R- TheWorld))
     postulate Int :E: Type
     foreign intS :R: (x :R: Int) -> Int
     foreign intZ :R: Int
@@ -439,7 +439,7 @@
         [natToInt] -R- (S -R- n) = intS -R- (natToInt -R- n)
     foreign intToNat :R: (x :R: Int) -> Nat
     printNat :R: (x :R: Nat) -> IO -E- Unspec = (\x :R: Nat. printSchemeRepr -E- Int -R- (natToInt -R- x))
-    main :R: Unspec = runIO -E- Unspec -R- (ioBind -E- Unspec -E- Unspec -R- (printNat -R- 4) -R- (\_0 :R: Unspec. printSchemeRepr -E- Nat -R- (intToNat -R- (intS -R- (intS -R- (intS -R- intZ))))))
+    main :R: Unspec = unsafePerformIO -E- Unspec -R- (ioBind -E- Unspec -E- Unspec -R- (printNat -R- 4) -R- (\_0 :R: Unspec. printSchemeRepr -E- Nat -R- (intToNat -R- (intS -R- (intS -R- (intS -R- intZ))))))
   in main
 
 ### Final annotation ###
@@ -495,9 +495,9 @@
     ioReturn :E: (a :E: Type) -> (x :E: a) -> IO -E- a = (\a :E: Type. (\x :E: a. stReturn -E- RealWorld -E- a -E- x))
     ioBind :R: (a :E: Type) -> (b :E: Type) -> (x :R: IO -E- a) -> (y :R: (_x1 :R: a) -> IO -E- b) -> IO -E- b = (\a :E: Type. (\b :E: Type. (\x :R: IO -E- a. (\y :R: (_x1 :R: a) -> IO -E- b. stBind -E- RealWorld -E- a -E- b -R- x -R- y))))
     ioWrapImpure :R: (a :E: Type) -> (impureF :R: (delayToken :R: Unit) -> a) -> IO -E- a = (\a :E: Type. (\impureF :R: (delayToken :R: Unit) -> a. MkSt -E- RealWorld -E- a -R- (\w :R: RealWorld. MkPair -E- RealWorld -E- a -R- w -R- (impureF -R- MkUnit))))
-    runIO :R: (a :E: Type) -> (x :R: IO -E- a) -> a = (\a :E: Type. (\x :R: IO -E- a. 
-      let postulate w :R: RealWorld
-      in execState -E- RealWorld -E- a -R- x -R- w))
+    unsafePerformIO :R: (a :E: Type) -> (x :R: IO -E- a) -> a = (\a :E: Type. (\x :R: IO -E- a. 
+      let postulate TheWorld :R: RealWorld
+      in execState -E- RealWorld -E- a -R- x -R- TheWorld))
     postulate Int :E: Type
     foreign intS :R: (x :R: Int) -> Int
     foreign intZ :R: Int
@@ -511,7 +511,7 @@
         [natToInt] -R- (S -R- n) = intS -R- (natToInt -R- n)
     foreign intToNat :R: (x :R: Int) -> Nat
     printNat :R: (x :R: Nat) -> IO -E- Unspec = (\x :R: Nat. printSchemeRepr -E- Int -R- (natToInt -R- x))
-    main :R: Unspec = runIO -E- Unspec -R- (ioBind -E- Unspec -E- Unspec -R- (printNat -R- 4) -R- (\_0 :R: Unspec. printSchemeRepr -E- Nat -R- (intToNat -R- (intS -R- (intS -R- (intS -R- intZ))))))
+    main :R: Unspec = unsafePerformIO -E- Unspec -R- (ioBind -E- Unspec -E- Unspec -R- (printNat -R- 4) -R- (\_0 :R: Unspec. printSchemeRepr -E- Nat -R- (intToNat -R- (intS -R- (intS -R- (intS -R- intZ))))))
   in main
 
 ### Verification ###
@@ -541,9 +541,9 @@ Verification successful.
         in MkSt (\s. stBind2 g (f s))
     ioBind = (\x. (\y. stBind x y))
     ioWrapImpure = (\impureF. MkSt (\w. MkPair w (impureF MkUnit)))
-    runIO = (\x. 
-      let postulate w : RealWorld
-      in execState x w)
+    unsafePerformIO = (\x. 
+      let postulate TheWorld : RealWorld
+      in execState x TheWorld)
     foreign intS
     foreign intZ
     printSchemeRepr = (\x. 
@@ -554,7 +554,7 @@ Verification successful.
       [_] (S n) = intS (natToInt n)
     foreign intToNat
     printNat = (\x. printSchemeRepr (natToInt x))
-    main = runIO (ioBind (printNat 4) (\_0. printSchemeRepr (intToNat (intS (intS (intS intZ))))))
+    main = unsafePerformIO (ioBind (printNat 4) (\_0. printSchemeRepr (intToNat (intS (intS (intS intZ))))))
   in main
 
 ### Normal forms ###
@@ -591,12 +591,12 @@ unerased:
     postulate Unspec : Type
     foreign intToNat : (x :R: Int) -> Nat
   in 
-    let postulate w : RealWorld
+    let postulate TheWorld : RealWorld
     in snd RealWorld Unspec (runState RealWorld Unspec (stBind RealWorld Unspec Unspec 
       let foreign nativePrint : (a :E: Type) -> (x :R: a) -> Unspec
       in MkSt RealWorld Unspec (\w :R: RealWorld. MkPair RealWorld Unspec w (nativePrint Int (intS (intS (intS (intS intZ)))))) (\_0 :R: Unspec. 
       let foreign nativePrint : (a :E: Type) -> (x :R: a) -> Unspec
-      in MkSt RealWorld Unspec (\w :R: RealWorld. MkPair RealWorld Unspec w (nativePrint Nat (intToNat (intS (intS (intS intZ)))))))) w)
+      in MkSt RealWorld Unspec (\w :R: RealWorld. MkPair RealWorld Unspec w (nativePrint Nat (intToNat (intS (intS (intS intZ)))))))) TheWorld)
 
 erased:
   
@@ -619,10 +619,10 @@ erased:
     foreign intZ
     foreign intToNat
   in 
-    let postulate w : RealWorld
+    let postulate TheWorld : RealWorld
     in snd (runState (stBind 
       let foreign nativePrint
       in MkSt (\w. MkPair w (nativePrint (intS (intS (intS (intS intZ)))))) (\_0. 
       let foreign nativePrint
-      in MkSt (\w. MkPair w (nativePrint (intToNat (intS (intS (intS intZ)))))))) w)
+      in MkSt (\w. MkPair w (nativePrint (intToNat (intS (intS (intS intZ)))))))) TheWorld)
 
