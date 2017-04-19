@@ -1,27 +1,26 @@
 -- vim: ft=idris
   let
-    postulate MkIOR : (x) -> (w) -> IOResult
-    postulate MkIO : (f) -> IO
-    ioBind 
+    postulate MkPair : (_x5) -> (_x6) -> Pair
+    snd 
+      [_] ([_] _ y) = y
+    postulate MkSt : (run) -> State
+    runState 
+      [_] ([_] run) = run
+    stBind 
       [_] ([_] f) g = 
         let
-          ioBind3 
-            [_] w ([_] f) = f w
-          ioBind2 
-            [_] g ([_] x w) = ioBind3 w (g x)
-        in MkIO (\w. ioBind2 g (f w))
+          stBind3 
+            [_] s ([_] f) = f s
+          stBind2 
+            [_] g ([_] s x) = stBind3 s (g x)
+        in MkSt (\s. stBind2 g (f s))
     foreign intS
     foreign intZ
     foreign intToNat
-    runIO 
-      [_] ([_] f) = 
-        let
-          runIO2 
-            [_] ([_] x _) = x
-          postulate TheWorld : RealWorld
-        in runIO2 (f TheWorld)
-  in runIO (ioBind 
-    let foreign nativePrint
-    in MkIO (\w. MkIOR (nativePrint (intS (intS (intS (intS intZ))))) w) (\_0. 
-    let foreign nativePrint
-    in MkIO (\w. MkIOR (nativePrint (intToNat (intS (intS (intS intZ))))) w)))
+  in 
+    let postulate w : RealWorld
+    in snd (runState (stBind 
+      let foreign nativePrint
+      in MkSt (\w. MkPair w (nativePrint (intS (intS (intS (intS intZ)))))) (\_0. 
+      let foreign nativePrint
+      in MkSt (\w. MkPair w (nativePrint (intToNat (intS (intS (intS intZ)))))))) w)
