@@ -6,6 +6,7 @@ foreign intZ : Int = "0".
 
 postulate Unspec : Type.
 
+-- `nativePrint` has side effects so we wrap it in an IO action.
 printSchemeRepr \ (a : Type) (x : a) : IO Unspec =
     let
         -- The only places where we assert usage are foreign functions.
