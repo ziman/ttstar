@@ -1,10 +1,11 @@
 -- vim: ft=idris
 
-import "../stdlib/io.tt"
 import "../stdlib/prelude.tt"
+import "../stdlib/state.tt"
+import "../stdlib/io.tt"
 import "../stdlib/rts.tt"
 
 main \: Unspec =
   runIO Unspec (
-    ioBind Unspec Unspec (printNat 4) (\_:Unspec.
+    ioBind Unspec Unspec (printNat 4) (\_:R:Unspec.
         printSchemeRepr Nat (intToNat (intS (intS (intS intZ))))))

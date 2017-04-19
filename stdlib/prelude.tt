@@ -20,3 +20,18 @@ not F = T.
 
 data Unit : Type where
   MkUnit : Unit.
+
+data Pair : Type -> Type -> Type where
+  MkPair : (a : Type) -> (b : Type) -> a -> b -> Pair a b.
+
+fst : (a : Type) -> (b : Type) -> (Pair a b) -> a.
+  (a : Type) (b : Type) (x : a) (y : b)
+    fst a b ([MkPair] [a] [b] x y) = x.
+
+snd : (a : Type) -> (b : Type) -> (Pair a b) -> b.
+  (a : Type) (b : Type) (x : a) (y : b)
+    snd a b ([MkPair] [a] [b] x y) = y.
+
+data Either : Type -> Type -> Type where
+  Left : (a : Type) -> (b : Type) -> a -> Either a b,
+  Right : (a : Type) -> (b : Type) -> b -> Either a b.

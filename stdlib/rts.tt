@@ -6,18 +6,12 @@ foreign intZ : Int = "0".
 
 postulate Unspec : Type.
 
--- `nativePrint` is an impure foreign function.
--- Here, we export/wrap it as an IO action, which simulates passing RealWorld around.
-printSchemeRepr \ (a : Type) (x : a) : IO Unspec
-    = let
+printSchemeRepr \ (a : Type) (x : a) : IO Unspec =
+    let
+        -- we assert usage on the foreign function
         foreign nativePrint : (a :E: Type) -> (x :R: a) -> Unspec = "print"
-      in 
-        -- `w` is taken relevantly here because we just pass it on without
-        -- actually having it go through the RTS (which we could do as well).
-        -- TTstar sees that it's passed unchanged so it allows erasure on it.
-        -- However, we want to simulate going through the RTS so we just explicitly
-        -- label it as used.
-        MkIO Unspec (\w:R:RealWorld. MkIOR Unspec (nativePrint a x) w).
+    in
+        ioWrapImpure Unspec (\w:RealWorld. nativePrint a x).
 
 natToInt : Nat -> Int.
   natToInt Z = intZ,
