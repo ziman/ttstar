@@ -10,6 +10,7 @@
     runState 
       [_] ([_] run) = run
     execState = (\x. (\s. snd (runState x s)))
+    stReturn = (\x. MkSt (\s. MkPair s x))
     stBind 
       [_] ([_] f) g = 
         let
@@ -18,6 +19,7 @@
           stBind2 
             [_] g ([_] s x) = stBind3 s (g x)
         in MkSt (\s. stBind2 g (f s))
+    ioReturn = (\x. stReturn x)
     ioBind = (\x. (\y. stBind x y))
     ioWrapImpure = (\impureF. MkSt (\w. MkPair w (impureF MkUnit)))
     unsafePerformIO = (\x. 
@@ -33,5 +35,5 @@
       [_] (S n) = intS (natToInt n)
     foreign intToNat
     printNat = (\x. printSchemeRepr (natToInt x))
-    main = unsafePerformIO (ioBind (printNat 4) (\_0. printSchemeRepr (intToNat (intS (intS (intS intZ))))))
+    main = unsafePerformIO (ioBind (ioReturn 4) (\v. ioBind (printNat v) (\_0. printSchemeRepr (intToNat (intS (intS (intS intZ)))))))
   in main

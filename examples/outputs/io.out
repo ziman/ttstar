@@ -69,7 +69,7 @@
         [natToInt] (S n) = intS (natToInt n)
     foreign intToNat : (x :R: Int) -> Nat
     printNat : (x : Nat) -> IO Unspec = (\x : Nat. printSchemeRepr Int (natToInt x))
-    main : Unspec = unsafePerformIO Unspec (ioBind Unspec Unspec (printNat 4) (\_0 :R: Unspec. printSchemeRepr Nat (intToNat (intS (intS (intS intZ))))))
+    main : Unspec = unsafePerformIO Unspec (ioBind Nat Unspec (ioReturn Nat 4) (\v : Nat. ioBind Unspec Unspec (printNat v) (\_0 : Unspec. printSchemeRepr Nat (intToNat (intS (intS (intS intZ)))))))
   in main
 
 ### Evarified ###
@@ -141,14 +141,14 @@
         [natToInt] -338- (S -339- n) = intS -340- (natToInt -341- n)
     foreign intToNat :342: (x :R: Int) -> Nat
     printNat :343: (x :344: Nat) -> IO -345- Unspec = (\x :346: Nat. printSchemeRepr -348- Int -347- (natToInt -349- x))
-    main :350: Unspec = unsafePerformIO -352- Unspec -351- (ioBind -356- Unspec -355- Unspec -354- (printNat -357- 4) -353- (\_0 :R: Unspec. printSchemeRepr -363- Nat -362- (intToNat -364- (intS -365- (intS -366- (intS -367- intZ))))))
+    main :350: Unspec = unsafePerformIO -352- Unspec -351- (ioBind -356- Nat -355- Unspec -354- (ioReturn -358- Nat -357- 4) -353- (\v :363: Nat. ioBind -367- Unspec -366- Unspec -365- (printNat -368- v) -364- (\_0 :369: Unspec. printSchemeRepr -371- Nat -370- (intToNat -372- (intS -373- (intS -374- (intS -375- intZ)))))))
   in main
 
 ### Constraints ###
 
-[] -> [2,3,26,30,33,34,54,57,63,64,67,68,89,92,93,98,101,104,109,110,113,116,119,122,125,128,131,132,135,136,156,160,163,164,172,173,176,177,180,181,185,188,191,192,199,200,201,204,205,208,211,212,216,217,220,228,229,232,233,234,235,239,240,243,244,247,248,251,252,253,257,271,274,276,277,282,284,285,287,288,292,294,297,298,301,302,305,306,308,311,313,314,315,319,320,322,324,327,328,329,331,332,334,335,336,337,338,339,340,341,342,343,344,346,347,349,351,353,354,357,358,359,360,361,362,364,365,366,367,R]
-[31] -> [70,242,258,304]
-[32] -> [69,241,296,303]
+[] -> [2,3,26,30,33,34,54,57,63,64,67,68,89,92,93,98,101,104,109,110,113,116,119,122,125,128,131,132,135,136,139,142,147,148,151,152,153,156,160,163,164,172,173,176,177,180,181,185,188,191,192,199,200,201,204,205,208,211,212,216,217,220,228,229,232,233,234,235,239,240,243,244,247,248,251,252,253,257,262,264,267,268,271,274,276,277,282,284,285,287,288,292,294,297,298,301,302,305,306,308,311,313,314,315,319,320,322,324,327,328,329,331,332,334,335,336,337,338,339,340,341,342,343,344,346,347,349,351,353,354,357,359,360,361,362,363,364,365,368,369,370,372,373,374,375,R]
+[31] -> [70,145,155,242,258,304]
+[32] -> [69,146,154,241,296,303]
 [35] -> [58,94,221]
 [36] -> [59,95,222]
 [55] -> [66,126,134]
@@ -161,12 +161,12 @@
 [66] -> [55]
 [69] -> [32,61]
 [70] -> [31,60]
-[90] -> [118,169,187,210,250,258,300]
-[91] -> [117,171,186,209,249,296,299]
+[90] -> [118,145,150,169,187,210,250,258,300]
+[91] -> [117,146,149,171,186,209,249,296,299]
 [94] -> [35,111,174,202,223]
 [95] -> [36,112,175,203,224]
-[96] -> [102,161,167,193,295]
-[97] -> [103,162,168,194,261]
+[96] -> [102,143,161,167,193,295]
+[97] -> [103,144,162,168,194,261]
 [99] -> [115,126,138]
 [100] -> [114,127,137]
 [102] -> [96,129]
@@ -193,6 +193,16 @@
 [134] -> [55]
 [137] -> [100]
 [138] -> [99]
+[140] -> [145,258,270]
+[141] -> [146,266,269]
+[143] -> [96,265]
+[144] -> [97,261]
+[145] -> [140]
+[146] -> [141]
+[149] -> [91]
+[150] -> [90]
+[154] -> [32]
+[155] -> [31]
 [157] -> [184,258,291]
 [158] -> [183,280,290]
 [159] -> [182,281,289]
@@ -254,12 +264,17 @@
 [254] -> [215]
 [255] -> [214]
 [256] -> [213]
-[261] -> [97,124,162,166,168,261]
-[272] -> [280,321,356]
-[273] -> [281,321,355]
-[275] -> [283,345]
-[278] -> [286,325]
-[279] -> [167,309]
+[261] -> [97,124,144,162,166,168,261]
+[263] -> [1,266,358]
+[265] -> [143,275]
+[266] -> [263]
+[269] -> [141]
+[270] -> [140]
+[272] -> [1,280,321,356,367]
+[273] -> [281,321,355,366]
+[275] -> [265,283,345]
+[278] -> [279,286,325]
+[279] -> [167,278,309]
 [280] -> [272]
 [281] -> [273]
 [283] -> [161,275]
@@ -280,7 +295,7 @@
 [312] -> [123,309]
 [316] -> [121]
 [317] -> [120]
-[323] -> [1,318,326,348,363]
+[323] -> [1,318,326,348,371]
 [325] -> [278,295,345]
 [326] -> [323]
 [330] -> [293]
@@ -290,13 +305,16 @@
 [352] -> [307]
 [355] -> [273]
 [356] -> [272]
-[363] -> [323]
+[358] -> [263]
+[366] -> [273]
+[367] -> [272]
+[371] -> [323]
 [E] -> [326,333]
 [R] -> [350]
 
 ### Solution ###
 
-[2,3,26,30,33,34,54,57,63,64,67,68,89,92,93,98,101,104,109,110,113,116,119,122,125,128,131,132,135,136,156,160,163,164,172,173,176,177,180,181,185,188,191,192,199,200,201,204,205,208,211,212,216,217,220,228,229,232,233,234,235,239,240,243,244,247,248,251,252,253,257,271,274,276,277,282,284,285,287,288,292,294,297,298,301,302,305,306,308,311,313,314,315,319,320,322,324,327,328,329,331,332,334,335,336,337,338,339,340,341,342,343,344,346,347,349,350,351,353,354,357,358,359,360,361,362,364,365,366,367,R]
+[2,3,26,30,33,34,54,57,63,64,67,68,89,92,93,98,101,104,109,110,113,116,119,122,125,128,131,132,135,136,139,142,147,148,151,152,153,156,160,163,164,172,173,176,177,180,181,185,188,191,192,199,200,201,204,205,208,211,212,216,217,220,228,229,232,233,234,235,239,240,243,244,247,248,251,252,253,257,262,264,267,268,271,274,276,277,282,284,285,287,288,292,294,297,298,301,302,305,306,308,311,313,314,315,319,320,322,324,327,328,329,331,332,334,335,336,337,338,339,340,341,342,343,344,346,347,349,350,351,353,354,357,359,360,361,362,363,364,365,368,369,370,372,373,374,375,R]
 
 ### Annotated ###
 
@@ -334,7 +352,7 @@
       st :E: Type a :E: Type run :R: (_x5 :R: st) -> Pair -E- st -E- a
         [runState] -E- st -E- a -R- ([MkSt] -E- [st] -E- [a] -R- run) = run
     execState :R: (st :E: Type) -> (a :E: Type) -> (x :R: State -E- st -E- a) -> (s :R: st) -> a = (\st :E: Type. (\a :E: Type. (\x :R: State -E- st -E- a. (\s :R: st. snd -E- st -E- a -R- (runState -E- st -E- a -R- x -R- s)))))
-    stReturn :E: (st :E: Type) -> (a :E: Type) -> (x :E: a) -> State -E- st -E- a = (\st :E: Type. (\a :E: Type. (\x :E: a. MkSt -E- st -E- a -E- (\s :E: st. MkPair -E- st -E- a -E- s -E- x))))
+    stReturn :R: (st :E: Type) -> (a :E: Type) -> (x :R: a) -> State -E- st -E- a = (\st :E: Type. (\a :E: Type. (\x :R: a. MkSt -E- st -E- a -R- (\s :R: st. MkPair -E- st -E- a -R- s -R- x))))
     stBind :R: (st :E: Type) -> (a :E: Type) -> (b :E: Type) -> (x :R: State -E- st -E- a) -> (y :R: (z :R: a) -> State -E- st -E- b) -> State -E- st -E- b 
       st :E: Type a :E: Type b :E: Type f :R: (_x6 :R: st) -> Pair -E- st -E- a g :R: (_x7 :R: a) -> State -E- st -E- b
         [stBind] -E- st -E- a -E- b -R- ([MkSt] -E- [st] -E- [a] -R- f) -R- g = 
@@ -348,7 +366,7 @@
           in MkSt -E- st -E- b -R- (\s :R: st. stBind2 -E- st -E- a -E- b -R- g -R- (f -R- s))
     postulate RealWorld :E: Type
     IO :E: (_x0 :E: Type) -> Type = State -E- RealWorld
-    ioReturn :E: (a :E: Type) -> (x :E: a) -> IO -E- a = (\a :E: Type. (\x :E: a. stReturn -E- RealWorld -E- a -E- x))
+    ioReturn :R: (a :E: Type) -> (x :R: a) -> IO -E- a = (\a :E: Type. (\x :R: a. stReturn -E- RealWorld -E- a -R- x))
     ioBind :R: (a :E: Type) -> (b :E: Type) -> (x :R: IO -E- a) -> (y :R: (_x1 :R: a) -> IO -E- b) -> IO -E- b = (\a :E: Type. (\b :E: Type. (\x :R: IO -E- a. (\y :R: (_x1 :R: a) -> IO -E- b. stBind -E- RealWorld -E- a -E- b -R- x -R- y))))
     ioWrapImpure :R: (a :E: Type) -> (impureF :R: (delayToken :R: Unit) -> a) -> IO -E- a = (\a :E: Type. (\impureF :R: (delayToken :R: Unit) -> a. MkSt -E- RealWorld -E- a -R- (\w :R: RealWorld. MkPair -E- RealWorld -E- a -R- w -R- (impureF -R- MkUnit))))
     unsafePerformIO :R: (a :E: Type) -> (x :R: IO -E- a) -> a = (\a :E: Type. (\x :R: IO -E- a. 
@@ -367,7 +385,7 @@
         [natToInt] -R- (S -R- n) = intS -R- (natToInt -R- n)
     foreign intToNat :R: (x :R: Int) -> Nat
     printNat :R: (x :R: Nat) -> IO -E- Unspec = (\x :R: Nat. printSchemeRepr -E- Int -R- (natToInt -R- x))
-    main :R: Unspec = unsafePerformIO -E- Unspec -R- (ioBind -E- Unspec -E- Unspec -R- (printNat -R- 4) -R- (\_0 :R: Unspec. printSchemeRepr -E- Nat -R- (intToNat -R- (intS -R- (intS -R- (intS -R- intZ))))))
+    main :R: Unspec = unsafePerformIO -E- Unspec -R- (ioBind -E- Nat -E- Unspec -R- (ioReturn -E- Nat -R- 4) -R- (\v :R: Nat. ioBind -E- Unspec -E- Unspec -R- (printNat -R- v) -R- (\_0 :R: Unspec. printSchemeRepr -E- Nat -R- (intToNat -R- (intS -R- (intS -R- (intS -R- intZ)))))))
   in main
 
 ### Specialised ###
@@ -406,7 +424,7 @@
       st :E: Type a :E: Type run :R: (_x5 :R: st) -> Pair -E- st -E- a
         [runState] -E- st -E- a -R- ([MkSt] -E- [st] -E- [a] -R- run) = run
     execState :R: (st :E: Type) -> (a :E: Type) -> (x :R: State -E- st -E- a) -> (s :R: st) -> a = (\st :E: Type. (\a :E: Type. (\x :R: State -E- st -E- a. (\s :R: st. snd -E- st -E- a -R- (runState -E- st -E- a -R- x -R- s)))))
-    stReturn :E: (st :E: Type) -> (a :E: Type) -> (x :E: a) -> State -E- st -E- a = (\st :E: Type. (\a :E: Type. (\x :E: a. MkSt -E- st -E- a -E- (\s :E: st. MkPair -E- st -E- a -E- s -E- x))))
+    stReturn :R: (st :E: Type) -> (a :E: Type) -> (x :R: a) -> State -E- st -E- a = (\st :E: Type. (\a :E: Type. (\x :R: a. MkSt -E- st -E- a -R- (\s :R: st. MkPair -E- st -E- a -R- s -R- x))))
     stBind :R: (st :E: Type) -> (a :E: Type) -> (b :E: Type) -> (x :R: State -E- st -E- a) -> (y :R: (z :R: a) -> State -E- st -E- b) -> State -E- st -E- b 
       st :E: Type a :E: Type b :E: Type f :R: (_x6 :R: st) -> Pair -E- st -E- a g :R: (_x7 :R: a) -> State -E- st -E- b
         [stBind] -E- st -E- a -E- b -R- ([MkSt] -E- [st] -E- [a] -R- f) -R- g = 
@@ -420,7 +438,7 @@
           in MkSt -E- st -E- b -R- (\s :R: st. stBind2 -E- st -E- a -E- b -R- g -R- (f -R- s))
     postulate RealWorld :E: Type
     IO :E: (_x0 :E: Type) -> Type = State -E- RealWorld
-    ioReturn :E: (a :E: Type) -> (x :E: a) -> IO -E- a = (\a :E: Type. (\x :E: a. stReturn -E- RealWorld -E- a -E- x))
+    ioReturn :R: (a :E: Type) -> (x :R: a) -> IO -E- a = (\a :E: Type. (\x :R: a. stReturn -E- RealWorld -E- a -R- x))
     ioBind :R: (a :E: Type) -> (b :E: Type) -> (x :R: IO -E- a) -> (y :R: (_x1 :R: a) -> IO -E- b) -> IO -E- b = (\a :E: Type. (\b :E: Type. (\x :R: IO -E- a. (\y :R: (_x1 :R: a) -> IO -E- b. stBind -E- RealWorld -E- a -E- b -R- x -R- y))))
     ioWrapImpure :R: (a :E: Type) -> (impureF :R: (delayToken :R: Unit) -> a) -> IO -E- a = (\a :E: Type. (\impureF :R: (delayToken :R: Unit) -> a. MkSt -E- RealWorld -E- a -R- (\w :R: RealWorld. MkPair -E- RealWorld -E- a -R- w -R- (impureF -R- MkUnit))))
     unsafePerformIO :R: (a :E: Type) -> (x :R: IO -E- a) -> a = (\a :E: Type. (\x :R: IO -E- a. 
@@ -439,7 +457,7 @@
         [natToInt] -R- (S -R- n) = intS -R- (natToInt -R- n)
     foreign intToNat :R: (x :R: Int) -> Nat
     printNat :R: (x :R: Nat) -> IO -E- Unspec = (\x :R: Nat. printSchemeRepr -E- Int -R- (natToInt -R- x))
-    main :R: Unspec = unsafePerformIO -E- Unspec -R- (ioBind -E- Unspec -E- Unspec -R- (printNat -R- 4) -R- (\_0 :R: Unspec. printSchemeRepr -E- Nat -R- (intToNat -R- (intS -R- (intS -R- (intS -R- intZ))))))
+    main :R: Unspec = unsafePerformIO -E- Unspec -R- (ioBind -E- Nat -E- Unspec -R- (ioReturn -E- Nat -R- 4) -R- (\v :R: Nat. ioBind -E- Unspec -E- Unspec -R- (printNat -R- v) -R- (\_0 :R: Unspec. printSchemeRepr -E- Nat -R- (intToNat -R- (intS -R- (intS -R- (intS -R- intZ)))))))
   in main
 
 ### Final annotation ###
@@ -478,7 +496,7 @@
       st :E: Type a :E: Type run :R: (_x5 :R: st) -> Pair -E- st -E- a
         [runState] -E- st -E- a -R- ([MkSt] -E- [st] -E- [a] -R- run) = run
     execState :R: (st :E: Type) -> (a :E: Type) -> (x :R: State -E- st -E- a) -> (s :R: st) -> a = (\st :E: Type. (\a :E: Type. (\x :R: State -E- st -E- a. (\s :R: st. snd -E- st -E- a -R- (runState -E- st -E- a -R- x -R- s)))))
-    stReturn :E: (st :E: Type) -> (a :E: Type) -> (x :E: a) -> State -E- st -E- a = (\st :E: Type. (\a :E: Type. (\x :E: a. MkSt -E- st -E- a -E- (\s :E: st. MkPair -E- st -E- a -E- s -E- x))))
+    stReturn :R: (st :E: Type) -> (a :E: Type) -> (x :R: a) -> State -E- st -E- a = (\st :E: Type. (\a :E: Type. (\x :R: a. MkSt -E- st -E- a -R- (\s :R: st. MkPair -E- st -E- a -R- s -R- x))))
     stBind :R: (st :E: Type) -> (a :E: Type) -> (b :E: Type) -> (x :R: State -E- st -E- a) -> (y :R: (z :R: a) -> State -E- st -E- b) -> State -E- st -E- b 
       st :E: Type a :E: Type b :E: Type f :R: (_x6 :R: st) -> Pair -E- st -E- a g :R: (_x7 :R: a) -> State -E- st -E- b
         [stBind] -E- st -E- a -E- b -R- ([MkSt] -E- [st] -E- [a] -R- f) -R- g = 
@@ -492,7 +510,7 @@
           in MkSt -E- st -E- b -R- (\s :R: st. stBind2 -E- st -E- a -E- b -R- g -R- (f -R- s))
     postulate RealWorld :E: Type
     IO :E: (_x0 :E: Type) -> Type = State -E- RealWorld
-    ioReturn :E: (a :E: Type) -> (x :E: a) -> IO -E- a = (\a :E: Type. (\x :E: a. stReturn -E- RealWorld -E- a -E- x))
+    ioReturn :R: (a :E: Type) -> (x :R: a) -> IO -E- a = (\a :E: Type. (\x :R: a. stReturn -E- RealWorld -E- a -R- x))
     ioBind :R: (a :E: Type) -> (b :E: Type) -> (x :R: IO -E- a) -> (y :R: (_x1 :R: a) -> IO -E- b) -> IO -E- b = (\a :E: Type. (\b :E: Type. (\x :R: IO -E- a. (\y :R: (_x1 :R: a) -> IO -E- b. stBind -E- RealWorld -E- a -E- b -R- x -R- y))))
     ioWrapImpure :R: (a :E: Type) -> (impureF :R: (delayToken :R: Unit) -> a) -> IO -E- a = (\a :E: Type. (\impureF :R: (delayToken :R: Unit) -> a. MkSt -E- RealWorld -E- a -R- (\w :R: RealWorld. MkPair -E- RealWorld -E- a -R- w -R- (impureF -R- MkUnit))))
     unsafePerformIO :R: (a :E: Type) -> (x :R: IO -E- a) -> a = (\a :E: Type. (\x :R: IO -E- a. 
@@ -511,7 +529,7 @@
         [natToInt] -R- (S -R- n) = intS -R- (natToInt -R- n)
     foreign intToNat :R: (x :R: Int) -> Nat
     printNat :R: (x :R: Nat) -> IO -E- Unspec = (\x :R: Nat. printSchemeRepr -E- Int -R- (natToInt -R- x))
-    main :R: Unspec = unsafePerformIO -E- Unspec -R- (ioBind -E- Unspec -E- Unspec -R- (printNat -R- 4) -R- (\_0 :R: Unspec. printSchemeRepr -E- Nat -R- (intToNat -R- (intS -R- (intS -R- (intS -R- intZ))))))
+    main :R: Unspec = unsafePerformIO -E- Unspec -R- (ioBind -E- Nat -E- Unspec -R- (ioReturn -E- Nat -R- 4) -R- (\v :R: Nat. ioBind -E- Unspec -E- Unspec -R- (printNat -R- v) -R- (\_0 :R: Unspec. printSchemeRepr -E- Nat -R- (intToNat -R- (intS -R- (intS -R- (intS -R- intZ)))))))
   in main
 
 ### Verification ###
@@ -531,6 +549,7 @@ Verification successful.
     runState 
       [_] ([_] run) = run
     execState = (\x. (\s. snd (runState x s)))
+    stReturn = (\x. MkSt (\s. MkPair s x))
     stBind 
       [_] ([_] f) g = 
         let
@@ -539,6 +558,7 @@ Verification successful.
           stBind2 
             [_] g ([_] s x) = stBind3 s (g x)
         in MkSt (\s. stBind2 g (f s))
+    ioReturn = (\x. stReturn x)
     ioBind = (\x. (\y. stBind x y))
     ioWrapImpure = (\impureF. MkSt (\w. MkPair w (impureF MkUnit)))
     unsafePerformIO = (\x. 
@@ -554,7 +574,7 @@ Verification successful.
       [_] (S n) = intS (natToInt n)
     foreign intToNat
     printNat = (\x. printSchemeRepr (natToInt x))
-    main = unsafePerformIO (ioBind (printNat 4) (\_0. printSchemeRepr (intToNat (intS (intS (intS intZ))))))
+    main = unsafePerformIO (ioBind (ioReturn 4) (\v. ioBind (printNat v) (\_0. printSchemeRepr (intToNat (intS (intS (intS intZ)))))))
   in main
 
 ### Normal forms ###
@@ -592,11 +612,15 @@ unerased:
     foreign intToNat : (x :R: Int) -> Nat
   in 
     let postulate TheWorld : RealWorld
-    in snd RealWorld Unspec (runState RealWorld Unspec (stBind RealWorld Unspec Unspec 
-      let foreign nativePrint : (a :E: Type) -> (x :R: a) -> Unspec
-      in MkSt RealWorld Unspec (\w :R: RealWorld. MkPair RealWorld Unspec w (nativePrint Int (intS (intS (intS (intS intZ)))))) (\_0 :R: Unspec. 
-      let foreign nativePrint : (a :E: Type) -> (x :R: a) -> Unspec
-      in MkSt RealWorld Unspec (\w :R: RealWorld. MkPair RealWorld Unspec w (nativePrint Nat (intToNat (intS (intS (intS intZ)))))))) TheWorld)
+    in snd RealWorld Unspec (runState RealWorld Unspec 
+      let stBind3 : (st : Type) -> (b : Type) -> (_x8 : st) -> (_x9 : State st b) -> Pair st b 
+        st : Type b : Type s : st f : (_x10 : st) -> Pair st b
+          [stBind3] st b s ([MkSt] [st] [b] f) = f s
+      in MkSt RealWorld Unspec (\s : RealWorld. stBind3 RealWorld Unspec s (stBind RealWorld Unspec Unspec 
+        let foreign nativePrint : (a :E: Type) -> (x :R: a) -> Unspec
+        in MkSt RealWorld Unspec (\w :R: RealWorld. MkPair RealWorld Unspec w (nativePrint Int (intS (intS (intS (intS intZ)))))) (\_0 : Unspec. 
+        let foreign nativePrint : (a :E: Type) -> (x :R: a) -> Unspec
+        in MkSt RealWorld Unspec (\w :R: RealWorld. MkPair RealWorld Unspec w (nativePrint Nat (intToNat (intS (intS (intS intZ))))))))) TheWorld)
 
 erased:
   
@@ -620,9 +644,12 @@ erased:
     foreign intToNat
   in 
     let postulate TheWorld : RealWorld
-    in snd (runState (stBind 
-      let foreign nativePrint
-      in MkSt (\w. MkPair w (nativePrint (intS (intS (intS (intS intZ)))))) (\_0. 
-      let foreign nativePrint
-      in MkSt (\w. MkPair w (nativePrint (intToNat (intS (intS (intS intZ)))))))) TheWorld)
+    in snd (runState 
+      let stBind3 
+        [_] s ([_] f) = f s
+      in MkSt (\s. stBind3 s (stBind 
+        let foreign nativePrint
+        in MkSt (\w. MkPair w (nativePrint (intS (intS (intS (intS intZ)))))) (\_0. 
+        let foreign nativePrint
+        in MkSt (\w. MkPair w (nativePrint (intToNat (intS (intS (intS intZ))))))))) TheWorld)
 
