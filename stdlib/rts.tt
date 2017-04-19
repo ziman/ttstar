@@ -8,10 +8,10 @@ postulate Unspec : Type.
 
 printSchemeRepr \ (a : Type) (x : a) : IO Unspec =
     let
-        -- we assert usage on the foreign function
+        -- The only places where we assert usage are foreign functions.
         foreign nativePrint : (a :E: Type) -> (x :R: a) -> Unspec = "print"
     in
-        ioWrapImpure Unspec (\w:RealWorld. nativePrint a x).
+        ioWrapImpure Unspec (\delayToken:Unit. nativePrint a x).
 
 natToInt : Nat -> Int.
   natToInt Z = intZ,
