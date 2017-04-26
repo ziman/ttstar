@@ -41,12 +41,24 @@ adb [1] [0] [1] I O I = TB  1 0 1  1 0  (Refl Nat 2),
 adb [0] [1] [1] O I I = TB  0 1 1  1 0  (Refl Nat 2),
 adb [1] [1] [1] I I I = TB  1 1 1  1 1  (Refl Nat 3).
 
+postulate HOLE : (a : Type) -> a.
+
 add' : (w : Nat)
     -> (c : Nat) -> (x : Nat) -> (y : Nat)
     -> (Bit c)  -> (Bin w x) -> (Bin w y)
     -> Bin (S w) (plus c (plus x y)).
 
-(c : Nat) (cb : Bit c)
-  add' [Z] c [Z] [Z] cb N N = C Z c cb Z N.
+  (c : Nat) (cb : Bit c)
+    add' [Z] c [Z] [Z] cb N N = C Z c cb Z N,
+
+  (w : Nat)
+  (c : Nat) (cb : Bit c)
+  (xb' : Nat) (xb : Bit xb')
+  (xn' : Nat) (xn : Bin w xn')
+  (yb' : Nat) (yb : Bit yb')
+  (yn' : Nat) (yn : Bin w yn')
+    add' ([S] w) c [plus xb' (double xn')] [plus yb' (double yn')] cb
+      (C [w] xb' xb xn' xn) (C [w] yb' yb yn' yn)
+        = HOLE (Bin (S (S w)) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn'))))).
 
 main \: Nat = double 4.
