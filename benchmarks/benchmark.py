@@ -29,6 +29,18 @@ PROGRAMS = {
     ),
 }
 
+PROGRAMS = {
+    'bin': Program(
+        inputs = ProgramInputs(
+            unerased_interpreted = Input(lo=0, hi=16, step=1),
+            unerased_compiled = Input(lo=0, hi=19, step=1),
+            erased_interpreted = Input(lo=0, hi=64*1024, step=1024),
+            erased_compiled = Input(lo=0, hi=1024*1024, step=16*1024),
+        ),
+        is_epolymorphic = False,
+    ),
+}
+
 CSV_FIELDS = (
     'program',
     'inference',
@@ -44,7 +56,7 @@ CSV_FIELDS = (
 
 def time_cmd(cmd):
     ts_start = time.perf_counter()
-    subprocess.check_call(cmd)
+    subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
     ts_end = time.perf_counter()
 
     return ts_end - ts_start
