@@ -39,4 +39,9 @@ adb [1] [0] [1] I O I = TB  1 0 1  1 0  (Refl Nat 2),
 adb [0] [1] [1] O I I = TB  0 1 1  1 0  (Refl Nat 2),
 adb [1] [1] [1] I I I = TB  1 1 1  1 1  (Refl Nat 3).
 
+add : (c : Nat) -> (x : Nat) -> (y : Nat)
+    -> (Bit c) -> (Bin x) -> (Bin y) -> Bin (plus c (plus x y)).
+  (c : Nat) (cb : Bit c)
+    add c [Z] [Z] cb N N = C c cb Z N.
+
 main \: Nat = double 4.
