@@ -133,8 +133,6 @@
                     ((((((((TB Z) (S Z)) (S Z)) (S Z)) I) Z) O) ((Refl Nat) (S (S Z)))))
                   ((_ _ _ ('I) ('I) ('I))
                     ((((((((TB (S Z)) (S Z)) (S Z)) (S Z)) I) (S Z)) I) ((Refl Nat) (S (S (S Z))))))))))))))
-    (HOLE (lambda (a)
-      `(HOLE ,a)))
     (add_ (lambda (_e0)
       (lambda (_e1)
         (lambda (_e2)

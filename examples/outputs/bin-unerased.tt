@@ -48,7 +48,6 @@
       [_] [_] [_] [_] I O I = TB 1 Z 1 1 I Z O (Refl Nat 2)
       [_] [_] [_] [_] O I I = TB Z 1 1 1 I Z O (Refl Nat 2)
       [_] [_] [_] [_] I I I = TB 1 1 1 1 I 1 I (Refl Nat 3)
-    postulate HOLE : (a) -> a
     add' 
       [_] [_] c [_] [_] cb N N = C Z c cb Z N
       [_] ([_] w) c [_] [_] cb (C [_] xb' xb xn' xn) (C [_] yb' yb yn' yn) = 
