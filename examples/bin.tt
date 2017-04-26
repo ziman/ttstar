@@ -12,11 +12,12 @@ double : Nat -> Nat.
   (n : Nat)
     double (S n) = S (S (double n)).
 
-data Bin : Nat -> Type where
-  N : Bin Z,
-  C : (bit' : Nat) -> (bit : Bit bit')
-    -> (num' : Nat) -> (num : Bin num')
-    -> Bin (plus bit' (double num')).
+data Bin : (width : Nat) -> (value : Nat) -> Type where
+  N : Bin Z Z,
+  C : (width : Nat)
+    -> (lsbVal : Nat) -> (lsb : Bit lsbVal)
+    -> (restVal : Nat) -> (rest : Bin width restVal)
+    -> Bin (S width) (plus lsbVal (double restVal)).
 
 -- TwoBits is a pair of bits (highBit, lowBit)
 -- which is provably equivalent to the sum (c + x + y).
@@ -29,7 +30,8 @@ data TwoBits : Nat -> Nat -> Nat -> Type where
     -> (pf : Id Nat (plus c (plus x y)) (plus lowBit (double highBit)))
     -> TwoBits c x y.
 
-adb : (c : Nat) -> (x : Nat) -> (y : Nat) -> (Bit c) -> (Bit x) -> (Bit y) -> TwoBits c x y.
+adb : (c : Nat) -> (x : Nat) -> (y : Nat)
+    -> (Bit c) -> (Bit x) -> (Bit y) -> TwoBits c x y.
 adb [0] [0] [0] O O O = TB  0 0 0  0 0  (Refl Nat 0),
 adb [1] [0] [0] I O O = TB  1 0 0  0 1  (Refl Nat 1),
 adb [0] [1] [0] O I O = TB  0 1 0  0 1  (Refl Nat 1),
@@ -39,9 +41,12 @@ adb [1] [0] [1] I O I = TB  1 0 1  1 0  (Refl Nat 2),
 adb [0] [1] [1] O I I = TB  0 1 1  1 0  (Refl Nat 2),
 adb [1] [1] [1] I I I = TB  1 1 1  1 1  (Refl Nat 3).
 
-add : (c : Nat) -> (x : Nat) -> (y : Nat)
-    -> (Bit c) -> (Bin x) -> (Bin y) -> Bin (plus c (plus x y)).
-  (c : Nat) (cb : Bit c)
-    add c [Z] [Z] cb N N = C c cb Z N.
+add' : (w : Nat)
+    -> (c : Nat) -> (x : Nat) -> (y : Nat)
+    -> (Bit c)  -> (Bin w x) -> (Bin w y)
+    -> Bin (S w) (plus c (plus x y)).
+
+(c : Nat) (cb : Bit c)
+  add' [Z] c [Z] [Z] cb N N = C Z c cb Z N.
 
 main \: Nat = double 4.
