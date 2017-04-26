@@ -30,6 +30,13 @@ data TwoBits : Nat -> Nat -> Nat -> Type where
     -> TwoBits c x y.
 
 adb : (c : Nat) -> (x : Nat) -> (y : Nat) -> (Bit c) -> (Bit x) -> (Bit y) -> TwoBits c x y.
-adb [0] [0] [0] O O O = TB 0 0 0 0 0 (Refl Nat 0).
+adb [0] [0] [0] O O O = TB  0 0 0  0 0  (Refl Nat 0),
+adb [1] [0] [0] I O O = TB  1 0 0  0 1  (Refl Nat 1),
+adb [0] [1] [0] O I O = TB  0 1 0  0 1  (Refl Nat 1),
+adb [0] [0] [1] O O I = TB  0 0 1  0 1  (Refl Nat 1),
+adb [1] [1] [0] I I O = TB  1 1 0  1 0  (Refl Nat 2),
+adb [1] [0] [1] I O I = TB  1 0 1  1 0  (Refl Nat 2),
+adb [0] [1] [1] O I I = TB  0 1 1  1 0  (Refl Nat 2),
+adb [1] [1] [1] I I I = TB  1 1 1  1 1  (Refl Nat 3).
 
 main \: Nat = double 4.
