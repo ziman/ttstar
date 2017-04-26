@@ -1,0 +1,1132 @@
+-- vim: ft=idris
+
+### Desugared ###
+
+  let
+    postulate Nat : Type
+    postulate Z : Nat
+    postulate S : (x :R: Nat) -> Nat
+    plus : (_x0 : Nat) -> (_x1 : Nat) -> Nat 
+      n : Nat
+        [plus] Z n = n
+      m : Nat n : Nat
+        [plus] (S m) n = S (plus m n)
+    postulate Bool : Type
+    postulate True : Bool
+    postulate False : Bool
+    not : (_x2 : Bool) -> Bool 
+      [not] True = False
+      [not] False = True
+    postulate Unit : Type
+    postulate MkUnit : Unit
+    postulate Pair : (_x3 : Type) -> (_x4 : Type) -> Type
+    postulate MkPair : (a : Type) -> (b : Type) -> (_x5 : a) -> (_x6 : b) -> Pair a b
+    fst : (a : Type) -> (b : Type) -> (_x7 : Pair a b) -> a 
+      a : Type b : Type x : a y : b
+        [fst] a b ([MkPair] [a] [b] x y) = x
+    snd : (a : Type) -> (b : Type) -> (_x8 : Pair a b) -> b 
+      a : Type b : Type x : a y : b
+        [snd] a b ([MkPair] [a] [b] x y) = y
+    postulate Either : (_x9 : Type) -> (_x10 : Type) -> Type
+    postulate Left : (a : Type) -> (b : Type) -> (_x11 : a) -> Either a b
+    postulate Right : (a : Type) -> (b : Type) -> (_x12 : b) -> Either a b
+    id : (a : Type) -> (x : a) -> a = (\a : Type. (\x : a. x))
+    postulate Id : (a : Type) -> (x : a) -> (y : a) -> Type
+    postulate Refl : (a : Type) -> (x : a) -> Id a x x
+    subst : (a : Type) -> (P : (_x0 : a) -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -> (_x1 : P x) -> P y 
+      a : Type P : (_x2 : a) -> Type x : a
+        [subst] a P x [x] [Refl a x] = (\z : P x. z)
+    postulate Bit : (_x0 : Nat) -> Type
+    postulate I : Bit 1
+    postulate O : Bit Z
+    double : (_x1 : Nat) -> Nat 
+      [double] Z = Z
+      n : Nat
+        [double] (S n) = S (S (double n))
+    postulate Bin : (width : Nat) -> (value : Nat) -> Type
+    postulate N : Bin Z Z
+    postulate C : (width : Nat) -> (lsbVal : Nat) -> (lsb : Bit lsbVal) -> (restVal : Nat) -> (rest :R: Bin width restVal) -> Bin (S width) (plus lsbVal (double restVal))
+    postulate TwoBits : (_x2 : Nat) -> (_x3 : Nat) -> (_x4 : Nat) -> Type
+    postulate TB : (c : Nat) -> (x : Nat) -> (y : Nat) -> (hi' : Nat) -> (hi : Bit hi') -> (lo' : Nat) -> (lo : Bit lo') -> (pf : Id Nat (plus c (plus x y)) (plus lo' (double hi'))) -> TwoBits c x y
+    adb : (c : Nat) -> (x : Nat) -> (y : Nat) -> (_x5 : Bit c) -> (_x6 : Bit x) -> (_x7 : Bit y) -> TwoBits c x y 
+      [adb] [Z] [Z] [Z] O O O = TB Z Z Z Z O Z O (Refl Nat Z)
+      [adb] [1] [Z] [Z] I O O = TB 1 Z Z Z O 1 I (Refl Nat 1)
+      [adb] [Z] [1] [Z] O I O = TB Z 1 Z Z O 1 I (Refl Nat 1)
+      [adb] [Z] [Z] [1] O O I = TB Z Z 1 Z O 1 I (Refl Nat 1)
+      [adb] [1] [1] [Z] I I O = TB 1 1 Z 1 I Z O (Refl Nat 2)
+      [adb] [1] [Z] [1] I O I = TB 1 Z 1 1 I Z O (Refl Nat 2)
+      [adb] [Z] [1] [1] O I I = TB Z 1 1 1 I Z O (Refl Nat 2)
+      [adb] [1] [1] [1] I I I = TB 1 1 1 1 I 1 I (Refl Nat 3)
+    postulate HOLE : (a : Type) -> a
+    add' : (w : Nat) -> (c : Nat) -> (x : Nat) -> (y : Nat) -> (_x8 : Bit c) -> (_x9 : Bin w x) -> (_x10 : Bin w y) -> Bin (S w) (plus c (plus x y)) 
+      c : Nat cb : Bit c
+        [add'] [Z] c [Z] [Z] cb N N = C Z c cb Z N
+      w : Nat c : Nat cb : Bit c xb' : Nat xb : Bit xb' xn' : Nat xn : Bin w xn' yb' : Nat yb : Bit yb' yn' : Nat yn : Bin w yn'
+        [add'] ([S] w) c [plus xb' (double xn')] [plus yb' (double yn')] cb (C [w] xb' xb xn' xn) (C [w] yb' yb yn' yn) = 
+          let f : (_x11 : TwoBits c xb' yb') -> Bin (S (S w)) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn')))) 
+            hi' : Nat hi : Bit hi' lo' : Nat lo : Bit lo' pf : Id Nat (plus c (plus xb' yb')) (plus lo' (double hi'))
+              [f] (TB [c] [xb'] [yb'] hi' hi lo' lo pf) = 
+                let postulate eq : Id Nat (plus lo' (double (plus hi' (plus xn' yn')))) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn'))))
+                in subst Nat (Bin (S (S w))) (plus lo' (double (plus hi' (plus xn' yn')))) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn')))) eq (C (S w) lo' lo (plus hi' (plus xn' yn')) (add' w hi' xn' yn' hi xn yn))
+          in f (adb c xb' yb' cb xb yb)
+    add : (w : Nat) -> (x : Nat) -> (y : Nat) -> (bx : Bin w x) -> (by : Bin w y) -> Bin (S w) (plus x y) = (\w : Nat. (\x : Nat. (\y : Nat. (\bx : Bin w x. (\by : Bin w y. add' w Z x y O bx by)))))
+    foreign inputSize : Nat
+    binVal : (_x12 : Bool) -> (_x13 : Nat) -> Nat 
+      b : Bool
+        [binVal] b Z = Z
+      n : Nat
+        [binVal] True (S n) = S (double (binVal False n))
+      n : Nat
+        [binVal] False (S n) = double (binVal True n)
+    mkBin : (b : Bool) -> (w : Nat) -> Bin w (binVal b w) 
+      b : Bool
+        [mkBin] b Z = N
+      n : Nat
+        [mkBin] True (S n) = C n 1 I (binVal False n) (mkBin False n)
+      n : Nat
+        [mkBin] False (S n) = C n Z O (binVal True n) (mkBin True n)
+    main : Bin (S inputSize) (plus (binVal True inputSize) (binVal False inputSize)) = 
+      let
+        x : Bin inputSize (binVal True inputSize) = mkBin True inputSize
+        y : Bin inputSize (binVal False inputSize) = mkBin False inputSize
+      in add inputSize (binVal True inputSize) (binVal False inputSize) x y
+  in main
+
+### Evarified ###
+
+  let
+    postulate Nat :1: Type
+    postulate Z :2: Nat
+    postulate S :3: (x :R: Nat) -> Nat
+    plus :4: (_x0 :5: Nat) -> (_x1 :6: Nat) -> Nat 
+      n :7: Nat
+        [plus] -9- Z -8- n = n
+      m :10: Nat n :11: Nat
+        [plus] -13- (S -14- m) -12- n = S -15- (plus -17- m -16- n)
+    postulate Bool :18: Type
+    postulate True :19: Bool
+    postulate False :20: Bool
+    not :21: (_x2 :22: Bool) -> Bool 
+      [not] -23- True = False
+      [not] -24- False = True
+    postulate Unit :25: Type
+    postulate MkUnit :26: Unit
+    postulate Pair :27: (_x3 :28: Type) -> (_x4 :29: Type) -> Type
+    postulate MkPair :30: (a :31: Type) -> (b :32: Type) -> (_x5 :33: a) -> (_x6 :34: b) -> Pair -36- a -35- b
+    fst :37: (a :38: Type) -> (b :39: Type) -> (_x7 :40: Pair -42- a -41- b) -> a 
+      a :43: Type b :44: Type x :45: a y :46: b
+        [fst] -49- a -48- b -47- ([MkPair] -53- [a] -52- [b] -51- x -50- y) = x
+    snd :54: (a :55: Type) -> (b :56: Type) -> (_x8 :57: Pair -59- a -58- b) -> b 
+      a :60: Type b :61: Type x :62: a y :63: b
+        [snd] -66- a -65- b -64- ([MkPair] -70- [a] -69- [b] -68- x -67- y) = y
+    postulate Either :71: (_x9 :72: Type) -> (_x10 :73: Type) -> Type
+    postulate Left :74: (a :75: Type) -> (b :76: Type) -> (_x11 :77: a) -> Either -79- a -78- b
+    postulate Right :80: (a :81: Type) -> (b :82: Type) -> (_x12 :83: b) -> Either -85- a -84- b
+    id :86: (a :87: Type) -> (x :88: a) -> a = (\a :89: Type. (\x :90: a. x))
+    postulate Id :91: (a :92: Type) -> (x :93: a) -> (y :94: a) -> Type
+    postulate Refl :95: (a :96: Type) -> (x :97: a) -> Id -100- a -99- x -98- x
+    subst :101: (a :102: Type) -> (P :103: (_x0 :104: a) -> Type) -> (x :105: a) -> (y :106: a) -> (eq :107: Id -110- a -109- x -108- y) -> (_x1 :111: P -112- x) -> P -113- y 
+      a :114: Type P :115: (_x2 :116: a) -> Type x :117: a
+        [subst] -122- a -121- P -120- x -119- [x] -118- [Refl -124- a -123- x] = (\z :125: P -126- x. z)
+    postulate Bit :127: (_x0 :128: Nat) -> Type
+    postulate I :129: Bit -130- 1
+    postulate O :132: Bit -133- Z
+    double :134: (_x1 :135: Nat) -> Nat 
+      [double] -136- Z = Z
+      n :137: Nat
+        [double] -138- (S -139- n) = S -140- (S -141- (double -142- n))
+    postulate Bin :143: (width :144: Nat) -> (value :145: Nat) -> Type
+    postulate N :146: Bin -148- Z -147- Z
+    postulate C :149: (width :150: Nat) -> (lsbVal :151: Nat) -> (lsb :152: Bit -153- lsbVal) -> (restVal :154: Nat) -> (rest :R: Bin -156- width -155- restVal) -> Bin -158- (S -159- width) -157- (plus -161- lsbVal -160- (double -162- restVal))
+    postulate TwoBits :163: (_x2 :164: Nat) -> (_x3 :165: Nat) -> (_x4 :166: Nat) -> Type
+    postulate TB :167: (c :168: Nat) -> (x :169: Nat) -> (y :170: Nat) -> (hi' :171: Nat) -> (hi :172: Bit -173- hi') -> (lo' :174: Nat) -> (lo :175: Bit -176- lo') -> (pf :177: Id -180- Nat -179- (plus -182- c -181- (plus -184- x -183- y)) -178- (plus -186- lo' -185- (double -187- hi'))) -> TwoBits -190- c -189- x -188- y
+    adb :191: (c :192: Nat) -> (x :193: Nat) -> (y :194: Nat) -> (_x5 :195: Bit -196- c) -> (_x6 :197: Bit -198- x) -> (_x7 :199: Bit -200- y) -> TwoBits -203- c -202- x -201- y 
+      [adb] -209- [Z] -208- [Z] -207- [Z] -206- O -205- O -204- O = TB -217- Z -216- Z -215- Z -214- Z -213- O -212- Z -211- O -210- (Refl -219- Nat -218- Z)
+      [adb] -225- [1] -224- [Z] -223- [Z] -222- I -221- O -220- O = TB -234- 1 -233- Z -232- Z -231- Z -230- O -229- 1 -228- I -227- (Refl -238- Nat -237- 1)
+      [adb] -245- [Z] -244- [1] -243- [Z] -242- O -241- I -240- O = TB -254- Z -253- 1 -252- Z -251- Z -250- O -249- 1 -248- I -247- (Refl -258- Nat -257- 1)
+      [adb] -265- [Z] -264- [Z] -263- [1] -262- O -261- O -260- I = TB -274- Z -273- Z -272- 1 -271- Z -270- O -269- 1 -268- I -267- (Refl -278- Nat -277- 1)
+      [adb] -285- [1] -284- [1] -283- [Z] -282- I -281- I -280- O = TB -295- 1 -294- 1 -293- Z -292- 1 -291- I -290- Z -289- O -288- (Refl -300- Nat -299- 2)
+      [adb] -308- [1] -307- [Z] -306- [1] -305- I -304- O -303- I = TB -318- 1 -317- Z -316- 1 -315- 1 -314- I -313- Z -312- O -311- (Refl -323- Nat -322- 2)
+      [adb] -331- [Z] -330- [1] -329- [1] -328- O -327- I -326- I = TB -341- Z -340- 1 -339- 1 -338- 1 -337- I -336- Z -335- O -334- (Refl -346- Nat -345- 2)
+      [adb] -354- [1] -353- [1] -352- [1] -351- I -350- I -349- I = TB -365- 1 -364- 1 -363- 1 -362- 1 -361- I -360- 1 -359- I -358- (Refl -372- Nat -371- 3)
+    postulate HOLE :376: (a :377: Type) -> a
+    add' :378: (w :379: Nat) -> (c :380: Nat) -> (x :381: Nat) -> (y :382: Nat) -> (_x8 :383: Bit -384- c) -> (_x9 :385: Bin -387- w -386- x) -> (_x10 :388: Bin -390- w -389- y) -> Bin -392- (S -393- w) -391- (plus -395- c -394- (plus -397- x -396- y)) 
+      c :398: Nat cb :399: Bit -400- c
+        [add'] -407- [Z] -406- c -405- [Z] -404- [Z] -403- cb -402- N -401- N = C -412- Z -411- c -410- cb -409- Z -408- N
+      w :413: Nat c :414: Nat cb :415: Bit -416- c xb' :417: Nat xb :418: Bit -419- xb' xn' :420: Nat xn :421: Bin -423- w -422- xn' yb' :424: Nat yb :425: Bit -426- yb' yn' :427: Nat yn :428: Bin -430- w -429- yn'
+        [add'] -437- ([S] -438- w) -436- c -435- [plus -440- xb' -439- (double -441- xn')] -434- [plus -443- yb' -442- (double -444- yn')] -433- cb -432- (C -449- [w] -448- xb' -447- xb -446- xn' -445- xn) -431- (C -454- [w] -453- yb' -452- yb -451- yn' -450- yn) = 
+          let f :455: (_x11 :456: TwoBits -459- c -458- xb' -457- yb') -> Bin -461- (S -462- (S -463- w)) -460- (plus -465- c -464- (plus -467- (plus -469- xb' -468- (double -470- xn')) -466- (plus -472- yb' -471- (double -473- yn')))) 
+            hi' :474: Nat hi :475: Bit -476- hi' lo' :477: Nat lo :478: Bit -479- lo' pf :480: Id -483- Nat -482- (plus -485- c -484- (plus -487- xb' -486- yb')) -481- (plus -489- lo' -488- (double -490- hi'))
+              [f] -491- (TB -499- [c] -498- [xb'] -497- [yb'] -496- hi' -495- hi -494- lo' -493- lo -492- pf) = 
+                let postulate eq :500: Id -503- Nat -502- (plus -505- lo' -504- (double -506- (plus -508- hi' -507- (plus -510- xn' -509- yn')))) -501- (plus -512- c -511- (plus -514- (plus -516- xb' -515- (double -517- xn')) -513- (plus -519- yb' -518- (double -520- yn'))))
+                in subst -526- Nat -525- (Bin -527- (S -528- (S -529- w))) -524- (plus -531- lo' -530- (double -532- (plus -534- hi' -533- (plus -536- xn' -535- yn')))) -523- (plus -538- c -537- (plus -540- (plus -542- xb' -541- (double -543- xn')) -539- (plus -545- yb' -544- (double -546- yn')))) -522- eq -521- (C -551- (S -552- w) -550- lo' -549- lo -548- (plus -554- hi' -553- (plus -556- xn' -555- yn')) -547- (add' -563- w -562- hi' -561- xn' -560- yn' -559- hi -558- xn -557- yn))
+          in f -564- (adb -570- c -569- xb' -568- yb' -567- cb -566- xb -565- yb)
+    add :571: (w :572: Nat) -> (x :573: Nat) -> (y :574: Nat) -> (bx :575: Bin -577- w -576- x) -> (by :578: Bin -580- w -579- y) -> Bin -582- (S -583- w) -581- (plus -585- x -584- y) = (\w :586: Nat. (\x :587: Nat. (\y :588: Nat. (\bx :589: Bin -591- w -590- x. (\by :592: Bin -594- w -593- y. add' -601- w -600- Z -599- x -598- y -597- O -596- bx -595- by)))))
+    foreign inputSize :602: Nat
+    binVal :603: (_x12 :604: Bool) -> (_x13 :605: Nat) -> Nat 
+      b :606: Bool
+        [binVal] -608- b -607- Z = Z
+      n :609: Nat
+        [binVal] -611- True -610- (S -612- n) = S -613- (double -614- (binVal -616- False -615- n))
+      n :617: Nat
+        [binVal] -619- False -618- (S -620- n) = double -621- (binVal -623- True -622- n)
+    mkBin :624: (b :625: Bool) -> (w :626: Nat) -> Bin -628- w -627- (binVal -630- b -629- w) 
+      b :631: Bool
+        [mkBin] -633- b -632- Z = N
+      n :634: Nat
+        [mkBin] -636- True -635- (S -637- n) = C -642- n -641- 1 -640- I -639- (binVal -645- False -644- n) -638- (mkBin -647- False -646- n)
+      n :648: Nat
+        [mkBin] -650- False -649- (S -651- n) = C -656- n -655- Z -654- O -653- (binVal -658- True -657- n) -652- (mkBin -660- True -659- n)
+    main :661: Bin -663- (S -664- inputSize) -662- (plus -666- (binVal -668- True -667- inputSize) -665- (binVal -670- False -669- inputSize)) = 
+      let
+        x :671: Bin -673- inputSize -672- (binVal -675- True -674- inputSize) = mkBin -677- True -676- inputSize
+        y :678: Bin -680- inputSize -679- (binVal -682- False -681- inputSize) = mkBin -684- False -683- inputSize
+      in add -689- inputSize -688- (binVal -691- True -690- inputSize) -687- (binVal -693- False -692- inputSize) -686- x -685- y
+  in main
+
+### Constraints ###
+
+[] -> [2,3,19,20,101,111,125,129,132,146,149,152,159,167,172,175,191,195,197,199,204,205,206,211,213,220,221,222,228,230,240,241,242,248,250,260,261,262,268,270,280,281,282,289,291,303,304,305,312,314,326,327,328,335,337,349,350,351,359,361,378,379,383,385,388,393,399,401,402,403,407,408,410,413,415,418,421,425,428,431,432,433,437,438,445,447,450,452,455,456,462,463,475,478,491,493,495,521,528,529,547,549,552,557,558,559,563,564,565,566,567,571,572,575,578,583,586,589,592,595,596,597,601,602,624,625,626,632,633,634,635,636,637,638,640,646,647,648,649,650,651,652,654,659,660,664,671,676,677,678,683,684,685,686,689,R]
+[5,6,105,135] -> [420,474,534,536]
+[5,6,106] -> [4,5,6,7,8,9,10,11,12,13,14,15,16,17,134,135,136,137,138,139,140,141,142,417,424,540,541,542,545]
+[5,6,106,135] -> [420,543]
+[5,6,106,541] -> [6]
+[5,6,106,542] -> [5]
+[5,6,106,543] -> [135]
+[5,6,154] -> [420,556]
+[5,105] -> [477,531]
+[5,106] -> [414,538]
+[5,154] -> [474,554]
+[5,434] -> [424,443]
+[5,435] -> [417,440]
+[6,105] -> [134,135,136,137,138,139,140,141,142,530]
+[6,105,135] -> [4,5,6,7,8,9,10,11,12,13,14,15,16,17,427,532,533,535]
+[6,105,135,533] -> [6]
+[6,105,135,534] -> [5]
+[6,105,135,535] -> [6]
+[6,105,135,536] -> [5]
+[6,105,532] -> [135]
+[6,106] -> [4,5,6,7,8,9,10,11,12,13,14,15,16,17,134,135,136,137,138,139,140,141,142,537,539,544]
+[6,106,135] -> [427,546]
+[6,106,539] -> [6]
+[6,106,540] -> [5]
+[6,106,544] -> [6]
+[6,106,545] -> [5]
+[6,106,546] -> [135]
+[6,135,434] -> [427,444]
+[6,135,435] -> [420,441]
+[6,154] -> [4,5,6,7,8,9,10,11,12,13,14,15,16,17,427,553,555]
+[6,154,555] -> [6]
+[6,154,556] -> [5]
+[6,434] -> [134,135,136,137,138,139,140,141,142,442]
+[6,434,444] -> [135]
+[6,435] -> [134,135,136,137,138,139,140,141,142,439]
+[6,435,441] -> [135]
+[15] -> [613]
+[15,177] -> [239,259,279,301,302,324,347,373,374]
+[96,118] -> [114,124]
+[96,177] -> [1,219,238,258,278,300,323,346,372]
+[97,118] -> [117,123]
+[97,177] -> [218,237,239,257,259,277,279,299,301,302,322,324,325,345,347,348,371,373,374,375]
+[98] -> [108]
+[98,177] -> [178]
+[99] -> [109]
+[99,177] -> [179]
+[100] -> [110]
+[100,177] -> [180]
+[102] -> [1,122,526]
+[103] -> [121,143,525]
+[103,104] -> [145]
+[103,144] -> [527]
+[103,145] -> [104]
+[103,527] -> [144]
+[104] -> [116]
+[105] -> [4,5,6,7,8,9,10,11,12,13,14,15,16,17,120,524]
+[105,530] -> [6]
+[105,531] -> [5]
+[106] -> [4,5,6,7,8,9,10,11,12,13,14,15,16,17,119,523]
+[106,537] -> [6]
+[106,538] -> [5]
+[107] -> [118,500,522]
+[107,108] -> [501]
+[107,109] -> [502]
+[107,110] -> [503]
+[107,501] -> [108]
+[107,502] -> [109]
+[107,503] -> [110]
+[107,504] -> [530]
+[107,505] -> [531]
+[107,506] -> [532]
+[107,507] -> [533]
+[107,508] -> [534]
+[107,509] -> [535]
+[107,510] -> [536]
+[107,511] -> [537]
+[107,512] -> [538]
+[107,513] -> [539]
+[107,514] -> [540]
+[107,515] -> [541]
+[107,516] -> [542]
+[107,517] -> [543]
+[107,518] -> [544]
+[107,519] -> [545]
+[107,520] -> [546]
+[107,530] -> [504]
+[107,531] -> [505]
+[107,532] -> [506]
+[107,533] -> [507]
+[107,534] -> [508]
+[107,535] -> [509]
+[107,536] -> [510]
+[107,537] -> [511]
+[107,538] -> [512]
+[107,539] -> [513]
+[107,540] -> [514]
+[107,541] -> [515]
+[107,542] -> [516]
+[107,543] -> [517]
+[107,544] -> [518]
+[107,545] -> [519]
+[107,546] -> [520]
+[108] -> [98]
+[109] -> [99]
+[110] -> [100]
+[112] -> [126,157]
+[113] -> [126,460]
+[114] -> [122]
+[115] -> [121]
+[116] -> [104]
+[117] -> [120]
+[118] -> [95,107]
+[118,123] -> [97]
+[118,124] -> [96]
+[119] -> [106,117]
+[120] -> [105]
+[121] -> [103]
+[122] -> [102]
+[126] -> [112,113]
+[130] -> [153,173,176,196,198,200]
+[131] -> [226,236,246,256,266,276,286,287,298,309,310,321,332,333,344,355,356,357,369,370,643]
+[133] -> [153,173,176,196,198,200,384]
+[140,177] -> [301,324,347,374]
+[141,177] -> [302,325,348,375]
+[147] -> [155,386,389,627]
+[148] -> [156,387,390,628]
+[150] -> [412,449,454,551,642,656]
+[151] -> [398,411,448,453,477,550,641,643,655]
+[153] -> [130,133,400,419,426,479]
+[154] -> [4,5,6,7,8,9,10,11,12,13,14,15,16,17,134,135,136,137,138,139,140,141,142,409,446,451,548,603,604,605,607,608,609,610,611,612,613,614,615,616,617,618,619,620,621,622,623,639,653]
+[154,553] -> [6]
+[154,554] -> [5]
+[154,604] -> [645,658]
+[154,605] -> [644,657]
+[154,644] -> [605]
+[154,645] -> [604]
+[154,657] -> [605]
+[154,658] -> [604]
+[155] -> [147,391,422,429,627]
+[156] -> [148,392,423,430,628]
+[157] -> [112,386,389,391,627]
+[158] -> [387,390,392,527,628]
+[160] -> [394,439,442,530]
+[161] -> [395,440,443,531]
+[162] -> [441,444,532,614,621]
+[168] -> [217,234,235,254,274,295,296,318,319,341,365,366,499]
+[169] -> [216,233,253,255,273,294,297,317,340,342,364,367,498]
+[170] -> [215,232,252,272,275,293,316,320,339,343,363,368,497]
+[171] -> [214,231,251,271,292,298,315,321,338,344,362,369,496]
+[173] -> [130,133,476]
+[174] -> [212,229,236,249,256,269,276,290,313,336,360,370,494]
+[176] -> [130,133,479]
+[177] -> [95,210,227,247,267,288,311,334,358,492]
+[177,178] -> [98]
+[177,179] -> [99]
+[177,180] -> [100]
+[177,218] -> [97]
+[177,219] -> [96]
+[177,237] -> [97]
+[177,238] -> [96]
+[177,239] -> [15]
+[177,257] -> [97]
+[177,258] -> [96]
+[177,259] -> [15]
+[177,275] -> [279]
+[177,277] -> [97]
+[177,278] -> [96]
+[177,279] -> [15,275]
+[177,299] -> [97]
+[177,300] -> [96]
+[177,301] -> [15,140]
+[177,302] -> [15,141]
+[177,320] -> [325]
+[177,322] -> [97]
+[177,323] -> [96]
+[177,324] -> [15,140]
+[177,325] -> [141,320]
+[177,343] -> [348]
+[177,345] -> [97]
+[177,346] -> [96]
+[177,347] -> [15,140]
+[177,348] -> [141,343]
+[177,368] -> [375]
+[177,371] -> [97]
+[177,372] -> [96]
+[177,373] -> [15]
+[177,374] -> [15,140]
+[177,375] -> [141,368]
+[178] -> [481]
+[179] -> [482]
+[180] -> [483]
+[181] -> [484]
+[182] -> [485]
+[183] -> [486]
+[184] -> [487]
+[185] -> [488]
+[186] -> [489]
+[187] -> [490]
+[188] -> [201,457]
+[189] -> [202,458]
+[190] -> [203,459]
+[192] -> [209,225,245,265,285,308,331,354,414,570]
+[193] -> [208,224,244,264,284,307,330,353,417,569]
+[194] -> [207,223,243,263,283,306,329,352,424,568]
+[196] -> [130,133,416]
+[198] -> [130,133,419]
+[200] -> [130,133,426]
+[201] -> [188,457]
+[202] -> [189,458]
+[203] -> [190,459]
+[207] -> [194]
+[208] -> [193]
+[209] -> [192]
+[210] -> [177]
+[212] -> [174]
+[214] -> [171]
+[215] -> [170]
+[216] -> [169]
+[217] -> [168]
+[223] -> [194]
+[224] -> [193]
+[225] -> [192,226]
+[226] -> [131,235]
+[227] -> [177]
+[229] -> [174]
+[231] -> [171]
+[232] -> [170]
+[233] -> [169]
+[234] -> [168]
+[235] -> [226]
+[236] -> [131]
+[243] -> [194]
+[244] -> [193,246]
+[245] -> [192]
+[246] -> [131,255]
+[247] -> [177]
+[249] -> [174]
+[251] -> [171]
+[252] -> [170]
+[253] -> [169]
+[254] -> [168]
+[255] -> [246]
+[256] -> [131]
+[263] -> [194,266]
+[264] -> [193]
+[265] -> [192]
+[266] -> [131,275]
+[267] -> [177]
+[269] -> [174]
+[271] -> [171]
+[272] -> [170]
+[273] -> [169]
+[274] -> [168]
+[275] -> [266]
+[276] -> [131]
+[283] -> [194]
+[284] -> [193,287]
+[285] -> [192,286]
+[286] -> [131,296]
+[287] -> [131,297]
+[288] -> [177]
+[290] -> [174]
+[292] -> [171]
+[293] -> [170]
+[294] -> [169]
+[295] -> [168]
+[296] -> [286]
+[297] -> [287]
+[298] -> [131]
+[306] -> [194,310]
+[307] -> [193]
+[308] -> [192,309]
+[309] -> [131,319]
+[310] -> [131,320]
+[311] -> [177]
+[313] -> [174]
+[315] -> [171]
+[316] -> [170]
+[317] -> [169]
+[318] -> [168]
+[319] -> [309]
+[320] -> [310]
+[321] -> [131]
+[329] -> [194,333]
+[330] -> [193,332]
+[331] -> [192]
+[332] -> [131,342]
+[333] -> [131,343]
+[334] -> [177]
+[336] -> [174]
+[338] -> [171]
+[339] -> [170]
+[340] -> [169]
+[341] -> [168]
+[342] -> [332]
+[343] -> [333]
+[344] -> [131]
+[352] -> [194,357]
+[353] -> [193,356]
+[354] -> [192,355]
+[355] -> [131,366]
+[356] -> [131,367]
+[357] -> [131,368]
+[358] -> [177]
+[360] -> [174]
+[362] -> [171]
+[363] -> [170]
+[364] -> [169]
+[365] -> [168]
+[366] -> [355]
+[367] -> [356]
+[368] -> [357]
+[369] -> [131]
+[370] -> [131]
+[380] -> [406,436,474,562,600]
+[381] -> [405,420,435,561,587,599]
+[382] -> [404,427,434,560,588,598]
+[384] -> [133,400,416,476]
+[386] -> [147,157,422,590]
+[387] -> [148,158,423,591]
+[389] -> [147,157,429,593]
+[390] -> [148,158,430,594]
+[391] -> [155,157,460,581]
+[392] -> [156,158,461,582]
+[394] -> [160,464,553]
+[395] -> [161,465,554]
+[396] -> [466,555,584]
+[397] -> [467,556,585]
+[398] -> [406]
+[400] -> [153,384]
+[404] -> [382]
+[405] -> [381]
+[406] -> [380]
+[409] -> [154]
+[411] -> [151]
+[412] -> [150]
+[414] -> [436]
+[416] -> [196,384]
+[417] -> [448]
+[419] -> [153,198]
+[420] -> [446]
+[422] -> [155,386]
+[423] -> [156,387]
+[424] -> [453]
+[426] -> [153,200]
+[427] -> [451]
+[429] -> [155,389]
+[430] -> [156,390]
+[434] -> [4,5,6,7,8,9,10,11,12,13,14,15,16,17,382]
+[434,442] -> [6]
+[434,443] -> [5]
+[435] -> [4,5,6,7,8,9,10,11,12,13,14,15,16,17,381]
+[435,439] -> [6]
+[435,440] -> [5]
+[436] -> [380]
+[439] -> [160,468]
+[440] -> [161,469]
+[441] -> [162,470]
+[442] -> [160,471]
+[443] -> [161,472]
+[444] -> [162,473]
+[446] -> [154]
+[448] -> [151]
+[449] -> [150]
+[451] -> [154]
+[453] -> [151]
+[454] -> [150]
+[457] -> [188,201]
+[458] -> [189,202]
+[459] -> [190,203]
+[460] -> [113,391]
+[461] -> [392,527]
+[464] -> [394,537]
+[465] -> [395,538]
+[466] -> [396,539]
+[467] -> [397,540]
+[468] -> [439,541]
+[469] -> [440,542]
+[470] -> [441,543]
+[471] -> [442,544]
+[472] -> [443,545]
+[473] -> [444,546]
+[474] -> [496]
+[476] -> [173,384]
+[477] -> [494]
+[479] -> [153,176]
+[480] -> [492]
+[481] -> [178]
+[482] -> [179]
+[483] -> [180]
+[484] -> [181]
+[485] -> [182]
+[486] -> [183]
+[487] -> [184]
+[488] -> [185]
+[489] -> [186]
+[490] -> [187]
+[492] -> [177]
+[494] -> [174]
+[496] -> [171]
+[497] -> [170,424]
+[498] -> [169,417]
+[499] -> [168,414]
+[522] -> [107]
+[523] -> [106]
+[524] -> [105]
+[525] -> [103]
+[526] -> [102]
+[527] -> [158,461]
+[530] -> [160]
+[531] -> [161]
+[532] -> [162]
+[533] -> [553]
+[534] -> [554]
+[535] -> [555]
+[536] -> [556]
+[537] -> [464]
+[538] -> [465]
+[539] -> [466]
+[540] -> [467]
+[541] -> [468]
+[542] -> [469]
+[543] -> [470]
+[544] -> [471]
+[545] -> [472]
+[546] -> [473]
+[548] -> [154]
+[550] -> [151]
+[551] -> [150]
+[553] -> [394,533]
+[554] -> [395,534]
+[555] -> [396,535]
+[556] -> [397,536]
+[560] -> [382]
+[561] -> [381]
+[562] -> [380]
+[568] -> [194]
+[569] -> [193]
+[570] -> [192]
+[573] -> [134,135,136,137,138,139,140,141,142,587,603,604,605,607,608,609,610,611,612,613,614,615,616,617,618,619,620,621,622,623,688]
+[573,604] -> [691]
+[573,605] -> [690]
+[573,690] -> [605]
+[573,691] -> [604]
+[574] -> [134,135,136,137,138,139,140,141,142,588,603,604,605,607,608,609,610,611,612,613,614,615,616,617,618,619,620,621,622,623,687]
+[574,604] -> [693]
+[574,605] -> [692]
+[574,692] -> [605]
+[574,693] -> [604]
+[576] -> [590,672]
+[577] -> [591,673]
+[579] -> [593,679]
+[580] -> [594,680]
+[581] -> [391,662]
+[582] -> [392,663]
+[584] -> [396,665]
+[585] -> [397,666]
+[587] -> [573]
+[588] -> [574]
+[590] -> [386,576]
+[591] -> [387,577]
+[593] -> [389,579]
+[594] -> [390,580]
+[598] -> [382]
+[599] -> [381]
+[600] -> [380]
+[613] -> [15]
+[614] -> [162]
+[615] -> [644]
+[616] -> [645]
+[621] -> [162]
+[622] -> [657]
+[623] -> [658]
+[627] -> [147,155,157,672,679]
+[628] -> [148,156,158,673,680]
+[629] -> [644,657,674,681]
+[630] -> [645,658,675,682]
+[639] -> [154]
+[641] -> [151]
+[642] -> [150]
+[643] -> [131]
+[644] -> [615,629]
+[645] -> [616,630]
+[653] -> [154]
+[655] -> [151]
+[656] -> [150]
+[657] -> [622,629]
+[658] -> [623,630]
+[662] -> [581]
+[663] -> [582]
+[665] -> [584]
+[666] -> [585]
+[667] -> [690]
+[668] -> [691]
+[669] -> [692]
+[670] -> [693]
+[672] -> [576,627]
+[673] -> [577,628]
+[674] -> [629,690]
+[675] -> [630,691]
+[679] -> [579,627]
+[680] -> [580,628]
+[681] -> [629,692]
+[682] -> [630,693]
+[687] -> [574]
+[688] -> [573]
+[690] -> [667,674]
+[691] -> [668,675]
+[692] -> [669,681]
+[693] -> [670,682]
+[R] -> [661]
+
+### Solution ###
+
+[2,3,19,20,101,111,125,129,132,146,149,152,159,167,172,175,191,195,197,199,204,205,206,211,213,220,221,222,228,230,240,241,242,248,250,260,261,262,268,270,280,281,282,289,291,303,304,305,312,314,326,327,328,335,337,349,350,351,359,361,378,379,383,385,388,393,399,401,402,403,407,408,410,413,415,418,421,425,428,431,432,433,437,438,445,447,450,452,455,456,462,463,475,478,491,493,495,521,528,529,547,549,552,557,558,559,563,564,565,566,567,571,572,575,578,583,586,589,592,595,596,597,601,602,624,625,626,632,633,634,635,636,637,638,640,646,647,648,649,650,651,652,654,659,660,661,664,671,676,677,678,683,684,685,686,689,R]
+
+### Annotated ###
+
+  let
+    postulate Nat :E: Type
+    postulate Z :R: Nat
+    postulate S :R: (x :R: Nat) -> Nat
+    plus :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Nat 
+      n :E: Nat
+        [plus] -E- Z -E- n = n
+      m :E: Nat n :E: Nat
+        [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
+    postulate Bool :E: Type
+    postulate True :R: Bool
+    postulate False :R: Bool
+    not :E: (_x2 :E: Bool) -> Bool 
+      [not] -E- True = False
+      [not] -E- False = True
+    postulate Unit :E: Type
+    postulate MkUnit :E: Unit
+    postulate Pair :E: (_x3 :E: Type) -> (_x4 :E: Type) -> Type
+    postulate MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x5 :E: a) -> (_x6 :E: b) -> Pair -E- a -E- b
+    fst :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: Pair -E- a -E- b) -> a 
+      a :E: Type b :E: Type x :E: a y :E: b
+        [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
+    snd :E: (a :E: Type) -> (b :E: Type) -> (_x8 :E: Pair -E- a -E- b) -> b 
+      a :E: Type b :E: Type x :E: a y :E: b
+        [snd] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = y
+    postulate Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
+    postulate Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
+    postulate Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
+    id :E: (a :E: Type) -> (x :E: a) -> a = (\a :E: Type. (\x :E: a. x))
+    postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
+    postulate Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+    subst :R: (a :E: Type) -> (P :E: (_x0 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (_x1 :R: P -E- x) -> P -E- y 
+      a :E: Type P :E: (_x2 :E: a) -> Type x :E: a
+        [subst] -E- a -E- P -E- x -E- [x] -E- [Refl -E- a -E- x] = (\z :R: P -E- x. z)
+    postulate Bit :E: (_x0 :E: Nat) -> Type
+    postulate I :R: Bit -E- 1
+    postulate O :R: Bit -E- Z
+    double :E: (_x1 :E: Nat) -> Nat 
+      [double] -E- Z = Z
+      n :E: Nat
+        [double] -E- (S -E- n) = S -E- (S -E- (double -E- n))
+    postulate Bin :E: (width :E: Nat) -> (value :E: Nat) -> Type
+    postulate N :R: Bin -E- Z -E- Z
+    postulate C :R: (width :E: Nat) -> (lsbVal :E: Nat) -> (lsb :R: Bit -E- lsbVal) -> (restVal :E: Nat) -> (rest :R: Bin -E- width -E- restVal) -> Bin -E- (S -R- width) -E- (plus -E- lsbVal -E- (double -E- restVal))
+    postulate TwoBits :E: (_x2 :E: Nat) -> (_x3 :E: Nat) -> (_x4 :E: Nat) -> Type
+    postulate TB :R: (c :E: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (hi' :E: Nat) -> (hi :R: Bit -E- hi') -> (lo' :E: Nat) -> (lo :R: Bit -E- lo') -> (pf :E: Id -E- Nat -E- (plus -E- c -E- (plus -E- x -E- y)) -E- (plus -E- lo' -E- (double -E- hi'))) -> TwoBits -E- c -E- x -E- y
+    adb :R: (c :E: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (_x5 :R: Bit -E- c) -> (_x6 :R: Bit -E- x) -> (_x7 :R: Bit -E- y) -> TwoBits -E- c -E- x -E- y 
+      [adb] -E- [Z] -E- [Z] -E- [Z] -R- O -R- O -R- O = TB -E- Z -E- Z -E- Z -E- Z -R- O -E- Z -R- O -E- (Refl -E- Nat -E- Z)
+      [adb] -E- [1] -E- [Z] -E- [Z] -R- I -R- O -R- O = TB -E- 1 -E- Z -E- Z -E- Z -R- O -E- 1 -R- I -E- (Refl -E- Nat -E- 1)
+      [adb] -E- [Z] -E- [1] -E- [Z] -R- O -R- I -R- O = TB -E- Z -E- 1 -E- Z -E- Z -R- O -E- 1 -R- I -E- (Refl -E- Nat -E- 1)
+      [adb] -E- [Z] -E- [Z] -E- [1] -R- O -R- O -R- I = TB -E- Z -E- Z -E- 1 -E- Z -R- O -E- 1 -R- I -E- (Refl -E- Nat -E- 1)
+      [adb] -E- [1] -E- [1] -E- [Z] -R- I -R- I -R- O = TB -E- 1 -E- 1 -E- Z -E- 1 -R- I -E- Z -R- O -E- (Refl -E- Nat -E- 2)
+      [adb] -E- [1] -E- [Z] -E- [1] -R- I -R- O -R- I = TB -E- 1 -E- Z -E- 1 -E- 1 -R- I -E- Z -R- O -E- (Refl -E- Nat -E- 2)
+      [adb] -E- [Z] -E- [1] -E- [1] -R- O -R- I -R- I = TB -E- Z -E- 1 -E- 1 -E- 1 -R- I -E- Z -R- O -E- (Refl -E- Nat -E- 2)
+      [adb] -E- [1] -E- [1] -E- [1] -R- I -R- I -R- I = TB -E- 1 -E- 1 -E- 1 -E- 1 -R- I -E- 1 -R- I -E- (Refl -E- Nat -E- 3)
+    postulate HOLE :E: (a :E: Type) -> a
+    add' :R: (w :R: Nat) -> (c :E: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (_x8 :R: Bit -E- c) -> (_x9 :R: Bin -E- w -E- x) -> (_x10 :R: Bin -E- w -E- y) -> Bin -E- (S -R- w) -E- (plus -E- c -E- (plus -E- x -E- y)) 
+      c :E: Nat cb :R: Bit -E- c
+        [add'] -R- [Z] -E- c -E- [Z] -E- [Z] -R- cb -R- N -R- N = C -E- Z -E- c -R- cb -E- Z -R- N
+      w :R: Nat c :E: Nat cb :R: Bit -E- c xb' :E: Nat xb :R: Bit -E- xb' xn' :E: Nat xn :R: Bin -E- w -E- xn' yb' :E: Nat yb :R: Bit -E- yb' yn' :E: Nat yn :R: Bin -E- w -E- yn'
+        [add'] -R- ([S] -R- w) -E- c -E- [plus -E- xb' -E- (double -E- xn')] -E- [plus -E- yb' -E- (double -E- yn')] -R- cb -R- (C -E- [w] -E- xb' -R- xb -E- xn' -R- xn) -R- (C -E- [w] -E- yb' -R- yb -E- yn' -R- yn) = 
+          let f :R: (_x11 :R: TwoBits -E- c -E- xb' -E- yb') -> Bin -E- (S -R- (S -R- w)) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn')))) 
+            hi' :E: Nat hi :R: Bit -E- hi' lo' :E: Nat lo :R: Bit -E- lo' pf :E: Id -E- Nat -E- (plus -E- c -E- (plus -E- xb' -E- yb')) -E- (plus -E- lo' -E- (double -E- hi'))
+              [f] -R- (TB -E- [c] -E- [xb'] -E- [yb'] -E- hi' -R- hi -E- lo' -R- lo -E- pf) = 
+                let postulate eq :E: Id -E- Nat -E- (plus -E- lo' -E- (double -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')))) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn'))))
+                in subst -E- Nat -E- (Bin -E- (S -R- (S -R- w))) -E- (plus -E- lo' -E- (double -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')))) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn')))) -E- eq -R- (C -E- (S -R- w) -E- lo' -R- lo -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')) -R- (add' -R- w -E- hi' -E- xn' -E- yn' -R- hi -R- xn -R- yn))
+          in f -R- (adb -E- c -E- xb' -E- yb' -R- cb -R- xb -R- yb)
+    add :R: (w :R: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (bx :R: Bin -E- w -E- x) -> (by :R: Bin -E- w -E- y) -> Bin -E- (S -R- w) -E- (plus -E- x -E- y) = (\w :R: Nat. (\x :E: Nat. (\y :E: Nat. (\bx :R: Bin -E- w -E- x. (\by :R: Bin -E- w -E- y. add' -R- w -E- Z -E- x -E- y -R- O -R- bx -R- by)))))
+    foreign inputSize :R: Nat
+    binVal :E: (_x12 :E: Bool) -> (_x13 :E: Nat) -> Nat 
+      b :E: Bool
+        [binVal] -E- b -E- Z = Z
+      n :E: Nat
+        [binVal] -E- True -E- (S -E- n) = S -E- (double -E- (binVal -E- False -E- n))
+      n :E: Nat
+        [binVal] -E- False -E- (S -E- n) = double -E- (binVal -E- True -E- n)
+    mkBin :R: (b :R: Bool) -> (w :R: Nat) -> Bin -E- w -E- (binVal -E- b -E- w) 
+      b :E: Bool
+        [mkBin] -R- b -R- Z = N
+      n :R: Nat
+        [mkBin] -R- True -R- (S -R- n) = C -E- n -E- 1 -R- I -E- (binVal -E- False -E- n) -R- (mkBin -R- False -R- n)
+      n :R: Nat
+        [mkBin] -R- False -R- (S -R- n) = C -E- n -E- Z -R- O -E- (binVal -E- True -E- n) -R- (mkBin -R- True -R- n)
+    main :R: Bin -E- (S -R- inputSize) -E- (plus -E- (binVal -E- True -E- inputSize) -E- (binVal -E- False -E- inputSize)) = 
+      let
+        x :R: Bin -E- inputSize -E- (binVal -E- True -E- inputSize) = mkBin -R- True -R- inputSize
+        y :R: Bin -E- inputSize -E- (binVal -E- False -E- inputSize) = mkBin -R- False -R- inputSize
+      in add -R- inputSize -E- (binVal -E- True -E- inputSize) -E- (binVal -E- False -E- inputSize) -R- x -R- y
+  in main
+
+### Specialised ###
+
+  let
+    postulate Nat :E: Type
+    postulate Z :R: Nat
+    postulate S :R: (x :R: Nat) -> Nat
+    plus :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Nat 
+      n :E: Nat
+        [plus] -E- Z -E- n = n
+      m :E: Nat n :E: Nat
+        [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
+    postulate Bool :E: Type
+    postulate True :R: Bool
+    postulate False :R: Bool
+    not :E: (_x2 :E: Bool) -> Bool 
+      [not] -E- True = False
+      [not] -E- False = True
+    postulate Unit :E: Type
+    postulate MkUnit :E: Unit
+    postulate Pair :E: (_x3 :E: Type) -> (_x4 :E: Type) -> Type
+    postulate MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x5 :E: a) -> (_x6 :E: b) -> Pair -E- a -E- b
+    fst :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: Pair -E- a -E- b) -> a 
+      a :E: Type b :E: Type x :E: a y :E: b
+        [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
+    snd :E: (a :E: Type) -> (b :E: Type) -> (_x8 :E: Pair -E- a -E- b) -> b 
+      a :E: Type b :E: Type x :E: a y :E: b
+        [snd] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = y
+    postulate Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
+    postulate Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
+    postulate Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
+    id :E: (a :E: Type) -> (x :E: a) -> a = (\a :E: Type. (\x :E: a. x))
+    postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
+    postulate Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+    subst :R: (a :E: Type) -> (P :E: (_x0 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (_x1 :R: P -E- x) -> P -E- y 
+      a :E: Type P :E: (_x2 :E: a) -> Type x :E: a
+        [subst] -E- a -E- P -E- x -E- [x] -E- [Refl -E- a -E- x] = (\z :R: P -E- x. z)
+    postulate Bit :E: (_x0 :E: Nat) -> Type
+    postulate I :R: Bit -E- 1
+    postulate O :R: Bit -E- Z
+    double :E: (_x1 :E: Nat) -> Nat 
+      [double] -E- Z = Z
+      n :E: Nat
+        [double] -E- (S -E- n) = S -E- (S -E- (double -E- n))
+    postulate Bin :E: (width :E: Nat) -> (value :E: Nat) -> Type
+    postulate N :R: Bin -E- Z -E- Z
+    postulate C :R: (width :E: Nat) -> (lsbVal :E: Nat) -> (lsb :R: Bit -E- lsbVal) -> (restVal :E: Nat) -> (rest :R: Bin -E- width -E- restVal) -> Bin -E- (S -R- width) -E- (plus -E- lsbVal -E- (double -E- restVal))
+    postulate TwoBits :E: (_x2 :E: Nat) -> (_x3 :E: Nat) -> (_x4 :E: Nat) -> Type
+    postulate TB :R: (c :E: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (hi' :E: Nat) -> (hi :R: Bit -E- hi') -> (lo' :E: Nat) -> (lo :R: Bit -E- lo') -> (pf :E: Id -E- Nat -E- (plus -E- c -E- (plus -E- x -E- y)) -E- (plus -E- lo' -E- (double -E- hi'))) -> TwoBits -E- c -E- x -E- y
+    adb :R: (c :E: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (_x5 :R: Bit -E- c) -> (_x6 :R: Bit -E- x) -> (_x7 :R: Bit -E- y) -> TwoBits -E- c -E- x -E- y 
+      [adb] -E- [Z] -E- [Z] -E- [Z] -R- O -R- O -R- O = TB -E- Z -E- Z -E- Z -E- Z -R- O -E- Z -R- O -E- (Refl -E- Nat -E- Z)
+      [adb] -E- [1] -E- [Z] -E- [Z] -R- I -R- O -R- O = TB -E- 1 -E- Z -E- Z -E- Z -R- O -E- 1 -R- I -E- (Refl -E- Nat -E- 1)
+      [adb] -E- [Z] -E- [1] -E- [Z] -R- O -R- I -R- O = TB -E- Z -E- 1 -E- Z -E- Z -R- O -E- 1 -R- I -E- (Refl -E- Nat -E- 1)
+      [adb] -E- [Z] -E- [Z] -E- [1] -R- O -R- O -R- I = TB -E- Z -E- Z -E- 1 -E- Z -R- O -E- 1 -R- I -E- (Refl -E- Nat -E- 1)
+      [adb] -E- [1] -E- [1] -E- [Z] -R- I -R- I -R- O = TB -E- 1 -E- 1 -E- Z -E- 1 -R- I -E- Z -R- O -E- (Refl -E- Nat -E- 2)
+      [adb] -E- [1] -E- [Z] -E- [1] -R- I -R- O -R- I = TB -E- 1 -E- Z -E- 1 -E- 1 -R- I -E- Z -R- O -E- (Refl -E- Nat -E- 2)
+      [adb] -E- [Z] -E- [1] -E- [1] -R- O -R- I -R- I = TB -E- Z -E- 1 -E- 1 -E- 1 -R- I -E- Z -R- O -E- (Refl -E- Nat -E- 2)
+      [adb] -E- [1] -E- [1] -E- [1] -R- I -R- I -R- I = TB -E- 1 -E- 1 -E- 1 -E- 1 -R- I -E- 1 -R- I -E- (Refl -E- Nat -E- 3)
+    postulate HOLE :E: (a :E: Type) -> a
+    add' :R: (w :R: Nat) -> (c :E: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (_x8 :R: Bit -E- c) -> (_x9 :R: Bin -E- w -E- x) -> (_x10 :R: Bin -E- w -E- y) -> Bin -E- (S -R- w) -E- (plus -E- c -E- (plus -E- x -E- y)) 
+      c :E: Nat cb :R: Bit -E- c
+        [add'] -R- [Z] -E- c -E- [Z] -E- [Z] -R- cb -R- N -R- N = C -E- Z -E- c -R- cb -E- Z -R- N
+      w :R: Nat c :E: Nat cb :R: Bit -E- c xb' :E: Nat xb :R: Bit -E- xb' xn' :E: Nat xn :R: Bin -E- w -E- xn' yb' :E: Nat yb :R: Bit -E- yb' yn' :E: Nat yn :R: Bin -E- w -E- yn'
+        [add'] -R- ([S] -R- w) -E- c -E- [plus -E- xb' -E- (double -E- xn')] -E- [plus -E- yb' -E- (double -E- yn')] -R- cb -R- (C -E- [w] -E- xb' -R- xb -E- xn' -R- xn) -R- (C -E- [w] -E- yb' -R- yb -E- yn' -R- yn) = 
+          let f :R: (_x11 :R: TwoBits -E- c -E- xb' -E- yb') -> Bin -E- (S -R- (S -R- w)) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn')))) 
+            hi' :E: Nat hi :R: Bit -E- hi' lo' :E: Nat lo :R: Bit -E- lo' pf :E: Id -E- Nat -E- (plus -E- c -E- (plus -E- xb' -E- yb')) -E- (plus -E- lo' -E- (double -E- hi'))
+              [f] -R- (TB -E- [c] -E- [xb'] -E- [yb'] -E- hi' -R- hi -E- lo' -R- lo -E- pf) = 
+                let postulate eq :E: Id -E- Nat -E- (plus -E- lo' -E- (double -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')))) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn'))))
+                in subst -E- Nat -E- (Bin -E- (S -R- (S -R- w))) -E- (plus -E- lo' -E- (double -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')))) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn')))) -E- eq -R- (C -E- (S -R- w) -E- lo' -R- lo -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')) -R- (add' -R- w -E- hi' -E- xn' -E- yn' -R- hi -R- xn -R- yn))
+          in f -R- (adb -E- c -E- xb' -E- yb' -R- cb -R- xb -R- yb)
+    add :R: (w :R: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (bx :R: Bin -E- w -E- x) -> (by :R: Bin -E- w -E- y) -> Bin -E- (S -R- w) -E- (plus -E- x -E- y) = (\w :R: Nat. (\x :E: Nat. (\y :E: Nat. (\bx :R: Bin -E- w -E- x. (\by :R: Bin -E- w -E- y. add' -R- w -E- Z -E- x -E- y -R- O -R- bx -R- by)))))
+    foreign inputSize :R: Nat
+    binVal :E: (_x12 :E: Bool) -> (_x13 :E: Nat) -> Nat 
+      b :E: Bool
+        [binVal] -E- b -E- Z = Z
+      n :E: Nat
+        [binVal] -E- True -E- (S -E- n) = S -E- (double -E- (binVal -E- False -E- n))
+      n :E: Nat
+        [binVal] -E- False -E- (S -E- n) = double -E- (binVal -E- True -E- n)
+    mkBin :R: (b :R: Bool) -> (w :R: Nat) -> Bin -E- w -E- (binVal -E- b -E- w) 
+      b :E: Bool
+        [mkBin] -R- b -R- Z = N
+      n :R: Nat
+        [mkBin] -R- True -R- (S -R- n) = C -E- n -E- 1 -R- I -E- (binVal -E- False -E- n) -R- (mkBin -R- False -R- n)
+      n :R: Nat
+        [mkBin] -R- False -R- (S -R- n) = C -E- n -E- Z -R- O -E- (binVal -E- True -E- n) -R- (mkBin -R- True -R- n)
+    main :R: Bin -E- (S -R- inputSize) -E- (plus -E- (binVal -E- True -E- inputSize) -E- (binVal -E- False -E- inputSize)) = 
+      let
+        x :R: Bin -E- inputSize -E- (binVal -E- True -E- inputSize) = mkBin -R- True -R- inputSize
+        y :R: Bin -E- inputSize -E- (binVal -E- False -E- inputSize) = mkBin -R- False -R- inputSize
+      in add -R- inputSize -E- (binVal -E- True -E- inputSize) -E- (binVal -E- False -E- inputSize) -R- x -R- y
+  in main
+
+### Final annotation ###
+
+  let
+    postulate Nat :E: Type
+    postulate Z :R: Nat
+    postulate S :R: (x :R: Nat) -> Nat
+    plus :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Nat 
+      n :E: Nat
+        [plus] -E- Z -E- n = n
+      m :E: Nat n :E: Nat
+        [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
+    postulate Bool :E: Type
+    postulate True :R: Bool
+    postulate False :R: Bool
+    not :E: (_x2 :E: Bool) -> Bool 
+      [not] -E- True = False
+      [not] -E- False = True
+    postulate Unit :E: Type
+    postulate MkUnit :E: Unit
+    postulate Pair :E: (_x3 :E: Type) -> (_x4 :E: Type) -> Type
+    postulate MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x5 :E: a) -> (_x6 :E: b) -> Pair -E- a -E- b
+    fst :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: Pair -E- a -E- b) -> a 
+      a :E: Type b :E: Type x :E: a y :E: b
+        [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
+    snd :E: (a :E: Type) -> (b :E: Type) -> (_x8 :E: Pair -E- a -E- b) -> b 
+      a :E: Type b :E: Type x :E: a y :E: b
+        [snd] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = y
+    postulate Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
+    postulate Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
+    postulate Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
+    id :E: (a :E: Type) -> (x :E: a) -> a = (\a :E: Type. (\x :E: a. x))
+    postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
+    postulate Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+    subst :R: (a :E: Type) -> (P :E: (_x0 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (_x1 :R: P -E- x) -> P -E- y 
+      a :E: Type P :E: (_x2 :E: a) -> Type x :E: a
+        [subst] -E- a -E- P -E- x -E- [x] -E- [Refl -E- a -E- x] = (\z :R: P -E- x. z)
+    postulate Bit :E: (_x0 :E: Nat) -> Type
+    postulate I :R: Bit -E- 1
+    postulate O :R: Bit -E- Z
+    double :E: (_x1 :E: Nat) -> Nat 
+      [double] -E- Z = Z
+      n :E: Nat
+        [double] -E- (S -E- n) = S -E- (S -E- (double -E- n))
+    postulate Bin :E: (width :E: Nat) -> (value :E: Nat) -> Type
+    postulate N :R: Bin -E- Z -E- Z
+    postulate C :R: (width :E: Nat) -> (lsbVal :E: Nat) -> (lsb :R: Bit -E- lsbVal) -> (restVal :E: Nat) -> (rest :R: Bin -E- width -E- restVal) -> Bin -E- (S -R- width) -E- (plus -E- lsbVal -E- (double -E- restVal))
+    postulate TwoBits :E: (_x2 :E: Nat) -> (_x3 :E: Nat) -> (_x4 :E: Nat) -> Type
+    postulate TB :R: (c :E: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (hi' :E: Nat) -> (hi :R: Bit -E- hi') -> (lo' :E: Nat) -> (lo :R: Bit -E- lo') -> (pf :E: Id -E- Nat -E- (plus -E- c -E- (plus -E- x -E- y)) -E- (plus -E- lo' -E- (double -E- hi'))) -> TwoBits -E- c -E- x -E- y
+    adb :R: (c :E: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (_x5 :R: Bit -E- c) -> (_x6 :R: Bit -E- x) -> (_x7 :R: Bit -E- y) -> TwoBits -E- c -E- x -E- y 
+      [adb] -E- [Z] -E- [Z] -E- [Z] -R- O -R- O -R- O = TB -E- Z -E- Z -E- Z -E- Z -R- O -E- Z -R- O -E- (Refl -E- Nat -E- Z)
+      [adb] -E- [1] -E- [Z] -E- [Z] -R- I -R- O -R- O = TB -E- 1 -E- Z -E- Z -E- Z -R- O -E- 1 -R- I -E- (Refl -E- Nat -E- 1)
+      [adb] -E- [Z] -E- [1] -E- [Z] -R- O -R- I -R- O = TB -E- Z -E- 1 -E- Z -E- Z -R- O -E- 1 -R- I -E- (Refl -E- Nat -E- 1)
+      [adb] -E- [Z] -E- [Z] -E- [1] -R- O -R- O -R- I = TB -E- Z -E- Z -E- 1 -E- Z -R- O -E- 1 -R- I -E- (Refl -E- Nat -E- 1)
+      [adb] -E- [1] -E- [1] -E- [Z] -R- I -R- I -R- O = TB -E- 1 -E- 1 -E- Z -E- 1 -R- I -E- Z -R- O -E- (Refl -E- Nat -E- 2)
+      [adb] -E- [1] -E- [Z] -E- [1] -R- I -R- O -R- I = TB -E- 1 -E- Z -E- 1 -E- 1 -R- I -E- Z -R- O -E- (Refl -E- Nat -E- 2)
+      [adb] -E- [Z] -E- [1] -E- [1] -R- O -R- I -R- I = TB -E- Z -E- 1 -E- 1 -E- 1 -R- I -E- Z -R- O -E- (Refl -E- Nat -E- 2)
+      [adb] -E- [1] -E- [1] -E- [1] -R- I -R- I -R- I = TB -E- 1 -E- 1 -E- 1 -E- 1 -R- I -E- 1 -R- I -E- (Refl -E- Nat -E- 3)
+    postulate HOLE :E: (a :E: Type) -> a
+    add' :R: (w :R: Nat) -> (c :E: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (_x8 :R: Bit -E- c) -> (_x9 :R: Bin -E- w -E- x) -> (_x10 :R: Bin -E- w -E- y) -> Bin -E- (S -R- w) -E- (plus -E- c -E- (plus -E- x -E- y)) 
+      c :E: Nat cb :R: Bit -E- c
+        [add'] -R- [Z] -E- c -E- [Z] -E- [Z] -R- cb -R- N -R- N = C -E- Z -E- c -R- cb -E- Z -R- N
+      w :R: Nat c :E: Nat cb :R: Bit -E- c xb' :E: Nat xb :R: Bit -E- xb' xn' :E: Nat xn :R: Bin -E- w -E- xn' yb' :E: Nat yb :R: Bit -E- yb' yn' :E: Nat yn :R: Bin -E- w -E- yn'
+        [add'] -R- ([S] -R- w) -E- c -E- [plus -E- xb' -E- (double -E- xn')] -E- [plus -E- yb' -E- (double -E- yn')] -R- cb -R- (C -E- [w] -E- xb' -R- xb -E- xn' -R- xn) -R- (C -E- [w] -E- yb' -R- yb -E- yn' -R- yn) = 
+          let f :R: (_x11 :R: TwoBits -E- c -E- xb' -E- yb') -> Bin -E- (S -R- (S -R- w)) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn')))) 
+            hi' :E: Nat hi :R: Bit -E- hi' lo' :E: Nat lo :R: Bit -E- lo' pf :E: Id -E- Nat -E- (plus -E- c -E- (plus -E- xb' -E- yb')) -E- (plus -E- lo' -E- (double -E- hi'))
+              [f] -R- (TB -E- [c] -E- [xb'] -E- [yb'] -E- hi' -R- hi -E- lo' -R- lo -E- pf) = 
+                let postulate eq :E: Id -E- Nat -E- (plus -E- lo' -E- (double -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')))) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn'))))
+                in subst -E- Nat -E- (Bin -E- (S -R- (S -R- w))) -E- (plus -E- lo' -E- (double -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')))) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn')))) -E- eq -R- (C -E- (S -R- w) -E- lo' -R- lo -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')) -R- (add' -R- w -E- hi' -E- xn' -E- yn' -R- hi -R- xn -R- yn))
+          in f -R- (adb -E- c -E- xb' -E- yb' -R- cb -R- xb -R- yb)
+    add :R: (w :R: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (bx :R: Bin -E- w -E- x) -> (by :R: Bin -E- w -E- y) -> Bin -E- (S -R- w) -E- (plus -E- x -E- y) = (\w :R: Nat. (\x :E: Nat. (\y :E: Nat. (\bx :R: Bin -E- w -E- x. (\by :R: Bin -E- w -E- y. add' -R- w -E- Z -E- x -E- y -R- O -R- bx -R- by)))))
+    foreign inputSize :R: Nat
+    binVal :E: (_x12 :E: Bool) -> (_x13 :E: Nat) -> Nat 
+      b :E: Bool
+        [binVal] -E- b -E- Z = Z
+      n :E: Nat
+        [binVal] -E- True -E- (S -E- n) = S -E- (double -E- (binVal -E- False -E- n))
+      n :E: Nat
+        [binVal] -E- False -E- (S -E- n) = double -E- (binVal -E- True -E- n)
+    mkBin :R: (b :R: Bool) -> (w :R: Nat) -> Bin -E- w -E- (binVal -E- b -E- w) 
+      b :E: Bool
+        [mkBin] -R- b -R- Z = N
+      n :R: Nat
+        [mkBin] -R- True -R- (S -R- n) = C -E- n -E- 1 -R- I -E- (binVal -E- False -E- n) -R- (mkBin -R- False -R- n)
+      n :R: Nat
+        [mkBin] -R- False -R- (S -R- n) = C -E- n -E- Z -R- O -E- (binVal -E- True -E- n) -R- (mkBin -R- True -R- n)
+    main :R: Bin -E- (S -R- inputSize) -E- (plus -E- (binVal -E- True -E- inputSize) -E- (binVal -E- False -E- inputSize)) = 
+      let
+        x :R: Bin -E- inputSize -E- (binVal -E- True -E- inputSize) = mkBin -R- True -R- inputSize
+        y :R: Bin -E- inputSize -E- (binVal -E- False -E- inputSize) = mkBin -R- False -R- inputSize
+      in add -R- inputSize -E- (binVal -E- True -E- inputSize) -E- (binVal -E- False -E- inputSize) -R- x -R- y
+  in main
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+  let
+    postulate Z : Nat
+    postulate S : (x) -> Nat
+    postulate True : Bool
+    postulate False : Bool
+    subst 
+      [_] = (\z. z)
+    postulate I : Bit
+    postulate O : Bit
+    postulate N : Bin
+    postulate C : (lsb) -> (rest) -> Bin
+    postulate TB : (hi) -> (lo) -> TwoBits
+    adb 
+      [_] O O O = TB O O
+      [_] I O O = TB O I
+      [_] O I O = TB O I
+      [_] O O I = TB O I
+      [_] I I O = TB I O
+      [_] I O I = TB I O
+      [_] O I I = TB I O
+      [_] I I I = TB I I
+    add' 
+      [_] [_] cb N N = C cb N
+      [_] ([_] w) cb (C xb xn) (C yb yn) = 
+        let f 
+          [_] (TB hi lo) = subst (C lo (add' w hi xn yn))
+        in f (adb cb xb yb)
+    add = (\w. (\bx. (\by. add' w O bx by)))
+    foreign inputSize
+    mkBin 
+      [_] _ Z = N
+      [_] True (S n) = C I (mkBin False n)
+      [_] False (S n) = C O (mkBin True n)
+    main = 
+      let
+        x = mkBin True inputSize
+        y = mkBin False inputSize
+      in add inputSize x y
+  in main
+
+### Normal forms ###
+
+unerased:
+  
+  let
+    postulate Nat : Type
+    postulate Z : Nat
+    postulate S : (x :R: Nat) -> Nat
+    plus : (_x0 : Nat) -> (_x1 : Nat) -> Nat 
+      n : Nat
+        [plus] Z n = n
+      m : Nat n : Nat
+        [plus] (S m) n = S (plus m n)
+    postulate Bool : Type
+    postulate True : Bool
+    postulate False : Bool
+    postulate Id : (a : Type) -> (x : a) -> (y : a) -> Type
+    postulate Refl : (a : Type) -> (x : a) -> Id a x x
+    subst : (a : Type) -> (P : (_x0 : a) -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -> (_x1 : P x) -> P y 
+      a : Type P : (_x2 : a) -> Type x : a
+        [subst] a P x [x] [Refl a x] = (\z : P x. z)
+    postulate Bit : (_x0 : Nat) -> Type
+    postulate I : Bit 1
+    postulate O : Bit Z
+    double : (_x1 : Nat) -> Nat 
+      [double] Z = Z
+      n : Nat
+        [double] (S n) = S (S (double n))
+    postulate Bin : (width : Nat) -> (value : Nat) -> Type
+    postulate N : Bin Z Z
+    postulate C : (width : Nat) -> (lsbVal : Nat) -> (lsb : Bit lsbVal) -> (restVal : Nat) -> (rest :R: Bin width restVal) -> Bin (S width) (plus lsbVal (double restVal))
+    postulate TwoBits : (_x2 : Nat) -> (_x3 : Nat) -> (_x4 : Nat) -> Type
+    postulate TB : (c : Nat) -> (x : Nat) -> (y : Nat) -> (hi' : Nat) -> (hi : Bit hi') -> (lo' : Nat) -> (lo : Bit lo') -> (pf : Id Nat (plus c (plus x y)) (plus lo' (double hi'))) -> TwoBits c x y
+    adb : (c : Nat) -> (x : Nat) -> (y : Nat) -> (_x5 : Bit c) -> (_x6 : Bit x) -> (_x7 : Bit y) -> TwoBits c x y 
+      [adb] [Z] [Z] [Z] O O O = TB Z Z Z Z O Z O (Refl Nat Z)
+      [adb] [1] [Z] [Z] I O O = TB 1 Z Z Z O 1 I (Refl Nat 1)
+      [adb] [Z] [1] [Z] O I O = TB Z 1 Z Z O 1 I (Refl Nat 1)
+      [adb] [Z] [Z] [1] O O I = TB Z Z 1 Z O 1 I (Refl Nat 1)
+      [adb] [1] [1] [Z] I I O = TB 1 1 Z 1 I Z O (Refl Nat 2)
+      [adb] [1] [Z] [1] I O I = TB 1 Z 1 1 I Z O (Refl Nat 2)
+      [adb] [Z] [1] [1] O I I = TB Z 1 1 1 I Z O (Refl Nat 2)
+      [adb] [1] [1] [1] I I I = TB 1 1 1 1 I 1 I (Refl Nat 3)
+    add' : (w : Nat) -> (c : Nat) -> (x : Nat) -> (y : Nat) -> (_x8 : Bit c) -> (_x9 : Bin w x) -> (_x10 : Bin w y) -> Bin (S w) (plus c (plus x y)) 
+      c : Nat cb : Bit c
+        [add'] [Z] c [Z] [Z] cb N N = C Z c cb Z N
+      w : Nat c : Nat cb : Bit c xb' : Nat xb : Bit xb' xn' : Nat xn : Bin w xn' yb' : Nat yb : Bit yb' yn' : Nat yn : Bin w yn'
+        [add'] ([S] w) c [plus xb' (double xn')] [plus yb' (double yn')] cb (C [w] xb' xb xn' xn) (C [w] yb' yb yn' yn) = 
+          let f : (_x11 : TwoBits c xb' yb') -> Bin (S (S w)) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn')))) 
+            hi' : Nat hi : Bit hi' lo' : Nat lo : Bit lo' pf : Id Nat (plus c (plus xb' yb')) (plus lo' (double hi'))
+              [f] (TB [c] [xb'] [yb'] hi' hi lo' lo pf) = 
+                let postulate eq : Id Nat (plus lo' (double (plus hi' (plus xn' yn')))) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn'))))
+                in subst Nat (Bin (S (S w))) (plus lo' (double (plus hi' (plus xn' yn')))) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn')))) eq (C (S w) lo' lo (plus hi' (plus xn' yn')) (add' w hi' xn' yn' hi xn yn))
+          in f (adb c xb' yb' cb xb yb)
+    foreign inputSize : Nat
+    binVal : (_x12 : Bool) -> (_x13 : Nat) -> Nat 
+      b : Bool
+        [binVal] b Z = Z
+      n : Nat
+        [binVal] True (S n) = S (double (binVal False n))
+      n : Nat
+        [binVal] False (S n) = double (binVal True n)
+    mkBin : (b : Bool) -> (w : Nat) -> Bin w (binVal b w) 
+      b : Bool
+        [mkBin] b Z = N
+      n : Nat
+        [mkBin] True (S n) = C n 1 I (binVal False n) (mkBin False n)
+      n : Nat
+        [mkBin] False (S n) = C n Z O (binVal True n) (mkBin True n)
+  in add' inputSize Z (binVal True inputSize) (binVal False inputSize) O (mkBin True inputSize) (mkBin False inputSize)
+
+erased:
+  
+  let
+    postulate Z : Nat
+    postulate S : (x) -> Nat
+    postulate True : Bool
+    postulate False : Bool
+    subst 
+      [_] = (\z. z)
+    postulate I : Bit
+    postulate O : Bit
+    postulate N : Bin
+    postulate C : (lsb) -> (rest) -> Bin
+    postulate TB : (hi) -> (lo) -> TwoBits
+    adb 
+      [_] O O O = TB O O
+      [_] I O O = TB O I
+      [_] O I O = TB O I
+      [_] O O I = TB O I
+      [_] I I O = TB I O
+      [_] I O I = TB I O
+      [_] O I I = TB I O
+      [_] I I I = TB I I
+    add' 
+      [_] [_] cb N N = C cb N
+      [_] ([_] w) cb (C xb xn) (C yb yn) = 
+        let f 
+          [_] (TB hi lo) = subst (C lo (add' w hi xn yn))
+        in f (adb cb xb yb)
+    foreign inputSize
+    mkBin 
+      [_] _ Z = N
+      [_] True (S n) = C I (mkBin False n)
+      [_] False (S n) = C O (mkBin True n)
+  in add' inputSize O (mkBin True inputSize) (mkBin False inputSize)
+

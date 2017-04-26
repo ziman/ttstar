@@ -16,7 +16,7 @@ data Bin : (width : Nat) -> (value : Nat) -> Type where
   N : Bin Z Z,
   C : (width : Nat)
     -> (lsbVal : Nat) -> (lsb : Bit lsbVal)
-    -> (restVal : Nat) -> (rest : Bin width restVal)
+    -> (restVal : Nat) -> (rest :R: Bin width restVal)
     -> Bin (S width) (plus lsbVal (double restVal)).
 
 -- TwoBits is a pair of bits (highBit, lowBit)
@@ -102,4 +102,9 @@ mkBin : (b : Bool) -> (w : Nat) -> Bin w (binVal b w).
   (n : Nat)
     mkBin False (S n) = C n 0 O (binVal True n) (mkBin True n).
 
-main \: Nat = double 4.
+main \: Bin (S inputSize) (plus (binVal True inputSize) (binVal False inputSize))
+  = let
+      x \: Bin inputSize (binVal True inputSize) = mkBin True inputSize,
+      y \: Bin inputSize (binVal False inputSize) = mkBin False inputSize
+    in
+      add inputSize (binVal True inputSize) (binVal False inputSize) x y.
