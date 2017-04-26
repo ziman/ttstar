@@ -59,6 +59,11 @@ add' : (w : Nat)
   (yn' : Nat) (yn : Bin w yn')
     add' ([S] w) c [plus xb' (double xn')] [plus yb' (double yn')] cb
       (C [w] xb' xb xn' xn) (C [w] yb' yb yn' yn)
-        = HOLE (Bin (S (S w)) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn'))))).
+        = case adb c xb' yb' cb xb yb with
+            f : (TwoBits c xb' yb')
+              -> Bin (S (S w)) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn')))).
+            (hi : Nat) (lo : Nat) (pf : Id Nat (plus c (plus xb' yb')) (plus lo (double hi)))
+              f (TB [c] [xb'] [yb'] hi lo pf)
+                = HOLE (Bin (S (S w)) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn')))))..
 
 main \: Nat = double 4.
