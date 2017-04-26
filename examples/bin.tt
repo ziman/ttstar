@@ -69,6 +69,7 @@ add' : (w : Nat)
               f (TB [c] [xb'] [yb'] hi' hi lo' lo pf)
                 = let
                     -- cheat our way out of the boring proof stuff
+                    -- this should be normally proven as a consequence of `pf`
                     postulate eq : Id Nat
                       (plus lo' (double (plus hi' (plus xn' yn'))))
                       (plus c (plus (plus xb' (double xn')) (plus yb' (double yn'))))
