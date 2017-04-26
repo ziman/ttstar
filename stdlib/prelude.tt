@@ -35,3 +35,5 @@ snd : (a : Type) -> (b : Type) -> (Pair a b) -> b.
 data Either : Type -> Type -> Type where
   Left : (a : Type) -> (b : Type) -> a -> Either a b,
   Right : (a : Type) -> (b : Type) -> b -> Either a b.
+
+id \(a : Type) (x : a) : a = x.

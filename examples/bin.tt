@@ -26,20 +26,21 @@ data Bin : (width : Nat) -> (value : Nat) -> Type where
 data TwoBits : Nat -> Nat -> Nat -> Type where
   TB :
     (c : Nat) -> (x : Nat) -> (y : Nat)
-    -> (highBit : Nat) -> (lowBit : Nat)
-    -> (pf : Id Nat (plus c (plus x y)) (plus lowBit (double highBit)))
+    -> (hi' : Nat) -> (hi : Bit hi')
+    -> (lo' : Nat) -> (lo : Bit lo')
+    -> (pf : Id Nat (plus c (plus x y)) (plus lo' (double hi')))
     -> TwoBits c x y.
 
 adb : (c : Nat) -> (x : Nat) -> (y : Nat)
     -> (Bit c) -> (Bit x) -> (Bit y) -> TwoBits c x y.
-adb [0] [0] [0] O O O = TB  0 0 0  0 0  (Refl Nat 0),
-adb [1] [0] [0] I O O = TB  1 0 0  0 1  (Refl Nat 1),
-adb [0] [1] [0] O I O = TB  0 1 0  0 1  (Refl Nat 1),
-adb [0] [0] [1] O O I = TB  0 0 1  0 1  (Refl Nat 1),
-adb [1] [1] [0] I I O = TB  1 1 0  1 0  (Refl Nat 2),
-adb [1] [0] [1] I O I = TB  1 0 1  1 0  (Refl Nat 2),
-adb [0] [1] [1] O I I = TB  0 1 1  1 0  (Refl Nat 2),
-adb [1] [1] [1] I I I = TB  1 1 1  1 1  (Refl Nat 3).
+adb [0] [0] [0] O O O = TB  0 0 0  0 O 0 O  (Refl Nat 0),
+adb [1] [0] [0] I O O = TB  1 0 0  0 O 1 I  (Refl Nat 1),
+adb [0] [1] [0] O I O = TB  0 1 0  0 O 1 I  (Refl Nat 1),
+adb [0] [0] [1] O O I = TB  0 0 1  0 O 1 I  (Refl Nat 1),
+adb [1] [1] [0] I I O = TB  1 1 0  1 I 0 O  (Refl Nat 2),
+adb [1] [0] [1] I O I = TB  1 0 1  1 I 0 O  (Refl Nat 2),
+adb [0] [1] [1] O I I = TB  0 1 1  1 I 0 O  (Refl Nat 2),
+adb [1] [1] [1] I I I = TB  1 1 1  1 I 1 I  (Refl Nat 3).
 
 postulate HOLE : (a : Type) -> a.
 
@@ -62,8 +63,21 @@ add' : (w : Nat)
         = case adb c xb' yb' cb xb yb with
             f : (TwoBits c xb' yb')
               -> Bin (S (S w)) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn')))).
-            (hi : Nat) (lo : Nat) (pf : Id Nat (plus c (plus xb' yb')) (plus lo (double hi)))
-              f (TB [c] [xb'] [yb'] hi lo pf)
-                = HOLE (Bin (S (S w)) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn')))))..
+            (hi' : Nat) (hi : Bit hi')
+            (lo' : Nat) (lo : Bit lo')
+            (pf : Id Nat (plus c (plus xb' yb')) (plus lo' (double hi')))
+              f (TB [c] [xb'] [yb'] hi' hi lo' lo pf)
+                = let
+                    -- cheat our way out of the boring proof stuff
+                    postulate eq : Id Nat
+                      (plus lo' (double (plus hi' (plus xn' yn'))))
+                      (plus c (plus (plus xb' (double xn')) (plus yb' (double yn'))))
+                  in
+                    subst Nat
+                      (Bin (S (S w)))
+                      (plus lo' (double (plus hi' (plus xn' yn'))))
+                      (plus c (plus (plus xb' (double xn')) (plus yb' (double yn'))))
+                      eq
+                      (C (S w) lo' lo (plus hi' (plus xn' yn')) (add' w hi' xn' yn' hi xn yn))..
 
 main \: Nat = double 4.
