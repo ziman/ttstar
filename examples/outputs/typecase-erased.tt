@@ -1,0 +1,20 @@
+-- vim: ft=idris
+  let
+    postulate Nat : Type
+    postulate Z : Nat
+    postulate S : (x) -> Nat
+    postulate Bool : Type
+    postulate True : Bool
+    postulate False : Bool
+    not 
+      [_] True = False
+      [_] False = True
+    isZero 
+      [_] Z = True
+      [_] (S _) = False
+    f 
+      [_] Bool = not
+      [_] Nat = isZero
+      [_] _ = (\x. False)
+    main = f Bool False
+  in main

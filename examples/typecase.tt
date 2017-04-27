@@ -1,0 +1,16 @@
+-- vim: ft=idris
+
+import "../stdlib/prelude.tt"
+
+isZero : Nat -> Bool.
+  isZero Z = True,
+  (n : Nat)
+    isZero (S n) = False.
+
+f : (a : Type) -> (x : a) -> Bool.
+  f Bool = not,
+  f Nat  = isZero,
+  (a : Type)
+    f a  = \x:a. False.
+
+main \: Bool = f Bool False.
