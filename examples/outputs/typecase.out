@@ -35,7 +35,7 @@
       [isZero] Z = True
       n : Nat
         [isZero] (S n) = False
-    f : (a : Type) -> (x : a) -> Bool 
+    f : (a : Type) -> (_x1 : a) -> Bool 
       [f] Bool = not
       [f] Nat = isZero
       a : Type
@@ -78,7 +78,7 @@
       [isZero] -93- Z = True
       n :94: Nat
         [isZero] -95- (S -96- n) = False
-    f :97: (a :98: Type) -> (x :99: a) -> Bool 
+    f :97: (a :98: Type) -> (_x1 :99: a) -> Bool 
       [f] -100- Bool = not
       [f] -101- Nat = isZero
       a :102: Type
@@ -130,7 +130,7 @@
       [isZero] -R- Z = True
       n :E: Nat
         [isZero] -R- (S -R- n) = False
-    f :R: (a :R: Type) -> (x :R: a) -> Bool 
+    f :R: (a :R: Type) -> (_x1 :R: a) -> Bool 
       [f] -R- Bool = not
       [f] -R- Nat = isZero
       a :E: Type
@@ -173,7 +173,7 @@
       [isZero] -R- Z = True
       n :E: Nat
         [isZero] -R- (S -R- n) = False
-    f :R: (a :R: Type) -> (x :R: a) -> Bool 
+    f :R: (a :R: Type) -> (_x1 :R: a) -> Bool 
       [f] -R- Bool = not
       [f] -R- Nat = isZero
       a :E: Type
@@ -216,7 +216,7 @@
       [isZero] -R- Z = True
       n :E: Nat
         [isZero] -R- (S -R- n) = False
-    f :R: (a :R: Type) -> (x :R: a) -> Bool 
+    f :R: (a :R: Type) -> (_x1 :R: a) -> Bool 
       [f] -R- Bool = not
       [f] -R- Nat = isZero
       a :E: Type

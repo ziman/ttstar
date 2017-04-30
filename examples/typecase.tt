@@ -7,7 +7,7 @@ isZero : Nat -> Bool.
   (n : Nat)
     isZero (S n) = False.
 
-f : (a : Type) -> (x : a) -> Bool.
+f : (a : Type) -> (a -> Bool).
   f Bool = not,
   f Nat  = isZero,
   (a : Type)
