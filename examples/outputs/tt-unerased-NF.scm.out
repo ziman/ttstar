@@ -1,0 +1,1 @@
+(R (App (Z) (Lam (Z) (App (S (Z)) (V (S (Z)) (FZ (Z))) (Lam (S (Z)) (V (S (S (Z))) (FZ (S (Z))))))) (Lam (Z) (App (S (Z)) (Lam (S (Z)) (V (S (S (Z))) (FZ (S (Z))))) (V (S (Z)) (FZ (Z)))))) (App (S (Z)) (V (S (Z)) (FZ (Z))) (V (S (Z)) (FZ (Z)))))

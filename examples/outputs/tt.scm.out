@@ -1,0 +1,1 @@
+(R (App (Lam (App (V (FZ)) (Lam (V (FZ))))) (Lam (App (Lam (V (FZ))) (V (FZ))))) (App (V (FZ)) (V (FZ))))

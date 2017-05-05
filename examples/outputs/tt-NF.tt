@@ -1,0 +1,8 @@
+-- vim: ft=idris
+  let
+    postulate FZ : Fin
+    postulate V : (_x1) -> TT
+    postulate Lam : (_x2) -> TT
+    postulate App : (_x3) -> (_x4) -> TT
+    postulate R : (x) -> (y) -> Result
+  in R (App (Lam (App (V FZ) (Lam (V FZ)))) (Lam (App (Lam (V FZ)) (V FZ)))) (App (V FZ) (V FZ))
