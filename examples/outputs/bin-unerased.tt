@@ -24,6 +24,12 @@
     postulate Left : (a) -> (b) -> (_x11) -> Either a b
     postulate Right : (a) -> (b) -> (_x12) -> Either a b
     id = (\a. (\x. x))
+    postulate Fin : (_x13) -> Type
+    postulate FZ : (n) -> Fin (S n)
+    postulate FS : (n) -> (_x14) -> Fin (S n)
+    postulate Vect : (_x15) -> (_x16) -> Type
+    postulate VN : (a) -> Vect Z a
+    postulate VC : (n) -> (a) -> (x) -> (xs) -> Vect (S n) a
     postulate Id : (a) -> (x) -> (y) -> Type
     postulate Refl : (a) -> (x) -> Id a x x
     subst 

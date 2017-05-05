@@ -31,6 +31,12 @@
     postulate Left : (a : Type) -> (b : Type) -> (_x11 : a) -> Either a b
     postulate Right : (a : Type) -> (b : Type) -> (_x12 : b) -> Either a b
     id : (a : Type) -> (x : a) -> a = (\a : Type. (\x : a. x))
+    postulate Fin : (_x13 : Nat) -> Type
+    postulate FZ : (n : Nat) -> Fin (S n)
+    postulate FS : (n : Nat) -> (_x14 : Fin n) -> Fin (S n)
+    postulate Vect : (_x15 : Nat) -> (_x16 : Type) -> Type
+    postulate VN : (a : Type) -> Vect Z a
+    postulate VC : (n : Nat) -> (a : Type) -> (x : a) -> (xs : Vect n a) -> Vect (S n) a
     isZero : (_x0 : Nat) -> Bool 
       [isZero] Z = True
       n : Nat
@@ -74,26 +80,32 @@
     postulate Left :74: (a :75: Type) -> (b :76: Type) -> (_x11 :77: a) -> Either -79- a -78- b
     postulate Right :80: (a :81: Type) -> (b :82: Type) -> (_x12 :83: b) -> Either -85- a -84- b
     id :86: (a :87: Type) -> (x :88: a) -> a = (\a :89: Type. (\x :90: a. x))
-    isZero :91: (_x0 :92: Nat) -> Bool 
-      [isZero] -93- Z = True
-      n :94: Nat
-        [isZero] -95- (S -96- n) = False
-    f :97: (a :98: Type) -> (_x1 :99: a) -> Bool 
-      [f] -100- Bool = not
-      [f] -101- Nat = isZero
-      a :102: Type
-        [f] -103- a = (\x :104: a. False)
-    main :105: Bool = f -107- Bool -106- False
+    postulate Fin :91: (_x13 :92: Nat) -> Type
+    postulate FZ :93: (n :94: Nat) -> Fin -95- (S -96- n)
+    postulate FS :97: (n :98: Nat) -> (_x14 :99: Fin -100- n) -> Fin -101- (S -102- n)
+    postulate Vect :103: (_x15 :104: Nat) -> (_x16 :105: Type) -> Type
+    postulate VN :106: (a :107: Type) -> Vect -109- Z -108- a
+    postulate VC :110: (n :111: Nat) -> (a :112: Type) -> (x :113: a) -> (xs :114: Vect -116- n -115- a) -> Vect -118- (S -119- n) -117- a
+    isZero :120: (_x0 :121: Nat) -> Bool 
+      [isZero] -122- Z = True
+      n :123: Nat
+        [isZero] -124- (S -125- n) = False
+    f :126: (a :127: Type) -> (_x1 :128: a) -> Bool 
+      [f] -129- Bool = not
+      [f] -130- Nat = isZero
+      a :131: Type
+        [f] -132- a = (\x :133: a. False)
+    main :134: Bool = f -136- Bool -135- False
   in main
 
 ### Constraints ###
 
-[] -> [1,2,3,18,19,20,21,22,23,24,91,92,93,95,96,97,98,99,100,101,103,104,106,107,R]
-[R] -> [105]
+[] -> [1,2,3,18,19,20,21,22,23,24,120,121,122,124,125,126,127,128,129,130,132,133,135,136,R]
+[R] -> [134]
 
 ### Solution ###
 
-[1,2,3,18,19,20,21,22,23,24,91,92,93,95,96,97,98,99,100,101,103,104,105,106,107,R]
+[1,2,3,18,19,20,21,22,23,24,120,121,122,124,125,126,127,128,129,130,132,133,134,135,136,R]
 
 ### Annotated ###
 
@@ -126,6 +138,12 @@
     postulate Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
     postulate Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
     id :E: (a :E: Type) -> (x :E: a) -> a = (\a :E: Type. (\x :E: a. x))
+    postulate Fin :E: (_x13 :E: Nat) -> Type
+    postulate FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
+    postulate FS :E: (n :E: Nat) -> (_x14 :E: Fin -E- n) -> Fin -E- (S -E- n)
+    postulate Vect :E: (_x15 :E: Nat) -> (_x16 :E: Type) -> Type
+    postulate VN :E: (a :E: Type) -> Vect -E- Z -E- a
+    postulate VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
     isZero :R: (_x0 :R: Nat) -> Bool 
       [isZero] -R- Z = True
       n :E: Nat
@@ -169,6 +187,12 @@
     postulate Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
     postulate Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
     id :E: (a :E: Type) -> (x :E: a) -> a = (\a :E: Type. (\x :E: a. x))
+    postulate Fin :E: (_x13 :E: Nat) -> Type
+    postulate FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
+    postulate FS :E: (n :E: Nat) -> (_x14 :E: Fin -E- n) -> Fin -E- (S -E- n)
+    postulate Vect :E: (_x15 :E: Nat) -> (_x16 :E: Type) -> Type
+    postulate VN :E: (a :E: Type) -> Vect -E- Z -E- a
+    postulate VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
     isZero :R: (_x0 :R: Nat) -> Bool 
       [isZero] -R- Z = True
       n :E: Nat
@@ -212,6 +236,12 @@
     postulate Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
     postulate Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
     id :E: (a :E: Type) -> (x :E: a) -> a = (\a :E: Type. (\x :E: a. x))
+    postulate Fin :E: (_x13 :E: Nat) -> Type
+    postulate FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
+    postulate FS :E: (n :E: Nat) -> (_x14 :E: Fin -E- n) -> Fin -E- (S -E- n)
+    postulate Vect :E: (_x15 :E: Nat) -> (_x16 :E: Type) -> Type
+    postulate VN :E: (a :E: Type) -> Vect -E- Z -E- a
+    postulate VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
     isZero :R: (_x0 :R: Nat) -> Bool 
       [isZero] -R- Z = True
       n :E: Nat
