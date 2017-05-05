@@ -37,3 +37,11 @@ data Either : Type -> Type -> Type where
   Right : (a : Type) -> (b : Type) -> b -> Either a b.
 
 id \(a : Type) (x : a) : a = x.
+
+data Fin : Nat -> Type where
+  FZ : (n : Nat) -> Fin (S n),
+  FS : (n : Nat) -> (Fin n) -> Fin (S n).
+
+data Vect : Nat -> Type -> Type where
+  VN : (a : Type) -> Vect Z a,
+  VC : (n : Nat) -> (a : Type) -> (x : a) -> (xs : Vect n a) -> Vect (S n) a.
