@@ -1,0 +1,15 @@
+-- vim: ft=idris
+  let
+    postulate Z : Nat
+    postulate S : (x) -> Nat
+    postulate True : Bool
+    postulate False : Bool
+    even 
+      [_] Z = True
+      [_] (S n) = 
+        let odd 
+          [_] Z = False
+          [_] (S n) = even n
+        in odd n
+    main = even 5
+  in main

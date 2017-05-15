@@ -1,0 +1,16 @@
+-- vim: ft=idris
+
+import "../stdlib/prelude.tt"
+
+even : Nat -> Bool.
+even Z = True,
+(n : Nat)
+  even (S n) =
+    let odd : Nat -> Bool.
+        odd Z = False,
+        (n : Nat)
+          odd (S n) = even n
+    in
+        odd n.
+
+main : Bool = even 5.
