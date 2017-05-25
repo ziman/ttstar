@@ -1,0 +1,14 @@
+-- vim: ft=idris
+data Bool : Type where
+  T : Bool,
+  F : Bool.
+
+not : Bool -> Bool.
+not T = F,
+not F = T.
+
+f : Bool -> Bool.
+f ([not] T) = F,
+f ([not] F) = T.
+
+main : Bool = f T.
