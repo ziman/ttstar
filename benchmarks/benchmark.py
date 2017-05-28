@@ -15,7 +15,7 @@ Program = collections.namedtuple('Program', 'inputs is_epolymorphic')
 ProgramInputs = collections.namedtuple('ProgramInputs', 'erased_interpreted unerased_interpreted erased_compiled unerased_compiled')
 
 WARMUPS = 1
-SAMPLES = 4
+SAMPLES = 2
 
 PROGRAMS = {
     'palindrome': Program(
@@ -32,10 +32,10 @@ PROGRAMS = {
 PROGRAMS = {
     'bin': Program(
         inputs = ProgramInputs(
-            unerased_interpreted = Input(lo=0, hi=16, step=1),
-            unerased_compiled = Input(lo=0, hi=19, step=1),
-            erased_interpreted = Input(lo=0, hi=64*1024, step=1024),
-            erased_compiled = Input(lo=0, hi=1024*1024, step=16*1024),
+            unerased_interpreted = Input(lo=1, hi=18, step=1),
+            unerased_compiled = Input(lo=1, hi=21, step=1),
+            erased_interpreted = Input(lo=1, hi=64*1024, step=2*1024),
+            erased_compiled = Input(lo=1, hi=1024*1024, step=32*1024),
         ),
         is_epolymorphic = False,
     ),
