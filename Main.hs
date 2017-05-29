@@ -134,7 +134,7 @@ pipeline args = do
             | Args.optIdentity args = Optimisation.Identity.optimise pruned
             | otherwise = pruned
 
-    when (Args.verbose args) $ do
+    when (Args.verbose args && Args.optIdentity args) $ do
         putStrLn "### Optimised ###"
         print optimised
         putStrLn ""
