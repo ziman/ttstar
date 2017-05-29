@@ -125,7 +125,7 @@ pipeline args = do
                             $ putStrLn "Verification successful.\n"
 
     let pruned = pruneTm annotated -- specialised
-    when (Args.verbose args) $ do
+    when (Args.verbose args && not (Args.optIdentity args)) $ do
         putStrLn "### Pruned ###"
         print pruned
         putStrLn ""
