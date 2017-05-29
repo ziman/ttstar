@@ -1,3 +1,1 @@
--- vim: ft=idris
-  let main = (\x. x)
-  in main
+-- vim: ft=idris(\x. x)

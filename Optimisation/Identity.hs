@@ -46,16 +46,16 @@ rmIdBody ids b = b
 rmIdDef :: S.Set Name -> Def () -> Def ()
 rmIdDef ids (Def n () ty body _noConstrs) = Def n () ty (rmIdBody ids body) noConstrs
 
-rmBind :: S.Set Name -> Binder -> [Def ()] -> TT () -> TT ()
-rmBind ids b [] rhs = rmId ids rhs
-rmBind ids b (d:ds) rhs
-    | isIdentity ids d = rmBind (S.insert (defName d) ids) b ds rhs
+rmLet :: S.Set Name -> [Def ()] -> TT () -> TT ()
+rmLet ids [] rhs = rmId ids rhs
+rmLet ids (d:ds) rhs
+    | isIdentity ids d = rmLet (S.insert (defName d) ids) ds rhs
     | otherwise =
         let d' = rmIdDef ids d
           -- S.delete in case there's a conflicting identity in the enclosing scope
-          in case rmBind (S.delete (defName d) ids) b ds rhs of
-                Bind b' ds' rhs' | b' == b -> Bind b (d':ds') rhs'
-                rhs' -> Bind b [d'] rhs'
+          in case rmLet (S.delete (defName d) ids) ds rhs of
+                Bind Let ds' rhs' -> Bind Let (d':ds') rhs'
+                rhs' -> Bind Let [d'] rhs'
 
 rmId :: S.Set Name -> TT () -> TT ()
 rmId ids tm@(V n)
@@ -70,7 +70,8 @@ rmId ids (App () (V f) x)
 
 rmId ids (App () f x) = App () (rmId ids f) (rmId ids x)
 rmId ids tm@(I _ _) = error $ "rmId: instance found: " ++ show tm
-rmId ids (Bind b ds rhs) = rmBind ids b ds rhs
+rmId ids (Bind Let ds rhs) = rmLet ids ds rhs
+rmId ids (Bind b ds rhs) = Bind b ds $ rmId ids rhs
 
 optimise :: TT () -> TT ()
 optimise = rmId S.empty

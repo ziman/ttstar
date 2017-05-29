@@ -6,7 +6,5 @@
     notnot 
       [_] T = Refl
       [_] F = Refl
-    subst 
-      [_] = (\w. w)
-    main = notnot (subst F)
+    main = notnot F
   in main

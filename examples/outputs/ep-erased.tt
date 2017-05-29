@@ -3,11 +3,9 @@
     postulate A : T
     postulate B : T
     postulate Op : (x) -> (y) -> T
-    id = (\y. y)
     constA = A
-    apply_REE = (\f. f)
     apply_RRR = (\f. (\x. f x))
-    test1 = apply_RRR id B
-    test2 = apply_REE constA
+    test1 = apply_RRR (\x. x) B
+    test2 = constA
     main = Op test1 test2
   in main

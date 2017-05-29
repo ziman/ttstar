@@ -126,7 +126,7 @@ instance PrettyR r => Pretty (TT r) where
             ps = if pp then parens else id
             show' r (App r' f' x') x = show' r' f' x' <> prettyApp r <> pretty' True x
             show' r f x = pretty f <> prettyApp r <> pretty' True x
-        pretty' pp tm = text "[???" <+> text (show tm) <+> text "???]"
+        pretty' pp tm = text "[???]"
 
 instance PrettyR r => Pretty (Pat r) where
     pretty pat = pretty' False pat

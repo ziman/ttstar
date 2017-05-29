@@ -4,8 +4,6 @@
     postulate S : (x) -> Nat
     postulate True : Bool
     postulate False : Bool
-    subst 
-      [_] = (\z. z)
     postulate I : Bit
     postulate O : Bit
     postulate N : Bin
@@ -24,7 +22,7 @@
       [_] [_] cb N N = C cb N
       [_] ([_] w) cb (C xb xn) (C yb yn) = 
         let f 
-          [_] (TB hi lo) = subst (C lo (add' w hi xn yn))
+          [_] (TB hi lo) = C lo (add' w hi xn yn)
         in f (adb cb xb yb)
     add = (\w. (\bx. (\by. add' w O bx by)))
     foreign inputSize

@@ -1,7 +1,5 @@
 -- vim: ft=idris
   let
-    subst 
-      [_] = (\w. w)
     postulate T : Bool
     postulate F : Bool
     postulate Nil : List
@@ -9,8 +7,8 @@
     postulate RNil : Rev
     postulate RSnoc : (x) -> (rxs) -> Rev
     rev' 
-      [_] rxs Nil = subst rxs
-      [_] rxs (Cons y ys) = subst (rev' (RSnoc y rxs) ys)
+      [_] rxs Nil = rxs
+      [_] rxs (Cons y ys) = rev' (RSnoc y rxs) ys
     rev = (\xs. rev' RNil xs)
     reverse' 
       [_] RNil = Nil

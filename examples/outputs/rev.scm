@@ -5,10 +5,6 @@
 (define (rts-arg-read i) (read (open-input-string (list-ref (command-line-arguments) i))))
 (print
   (letrec* (
-    (subst (match (list)
-      (()
-        (lambda (w)
-          w))))
     (T `(T))
     (F `(F))
     (Nil `(Nil))
@@ -23,9 +19,9 @@
       (lambda (_e1)
         (match (list _e0 _e1)
           ((rxs ('Nil))
-            (subst rxs))
+            rxs)
           ((rxs ('Cons y ys))
-            (subst ((rev_ ((RSnoc y) rxs)) ys)))))))
+            ((rev_ ((RSnoc y) rxs)) ys))))))
     (rev (lambda (xs)
       ((rev_ RNil) xs)))
     (reverse_ (lambda (_e0)

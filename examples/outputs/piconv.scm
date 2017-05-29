@@ -7,8 +7,6 @@
   (letrec* (
     (A `(A))
     (const_A A)
-    (apply_TT (lambda (f)
-      f))
-    (main (apply_TT const_A))
+    (main const_A)
   )
     main))

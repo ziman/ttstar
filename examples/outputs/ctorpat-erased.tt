@@ -1,7 +1,5 @@
 -- vim: ft=idris
   let
     postulate P : K
-    f 
-      [_] c = c
-    main = f P
+    main = P
   in main

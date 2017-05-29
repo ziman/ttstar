@@ -63,6 +63,7 @@ for i in examples/*.tt; do
         || continue  # skip if it doesn't typecheck
 
     ./ttstar "$i" \
+        --opt-identity \
         --dump-pretty "${n}-erased.tt" \
         --dump-scheme "${n}.scm" \
         --dump-nf     "${n}-NF.tt" \
