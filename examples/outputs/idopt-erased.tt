@@ -1,0 +1,8 @@
+-- vim: ft=idris
+  let
+    postulate FZ : Fin
+    postulate FS : (x) -> Fin
+    fsuc = FS
+    postulate P : (x) -> (y) -> Pair
+    main = P (fsuc (FS FZ)) (FS (FS FZ))
+  in main

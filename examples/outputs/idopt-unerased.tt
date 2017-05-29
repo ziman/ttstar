@@ -1,0 +1,16 @@
+-- vim: ft=idris
+  let
+    postulate N : Type
+    postulate Z : N
+    postulate S : (_x0) -> N
+    postulate Fin : (_x1) -> Type
+    postulate FZ : (n) -> Fin (S n)
+    postulate FS : (n) -> (x) -> Fin (S n)
+    embed 
+      [_] [_] (FZ n) = FZ (S n)
+      [_] [_] (FS n x) = FS (S n) (embed n x)
+    fsuc = FS
+    postulate Pair : Type
+    postulate P : (x) -> (y) -> Pair
+    main = P (fsuc 2 (FS 1 (FZ Z))) (embed 3 (FS 2 (FS 1 (FZ Z))))
+  in main

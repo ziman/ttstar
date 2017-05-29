@@ -1,0 +1,11 @@
+-- vim: ft=idris
+  let
+    postulate N : Type
+    postulate Z : N
+    postulate S : (_x0) -> N
+    postulate Fin : (_x1) -> Type
+    postulate FZ : (n) -> Fin (S n)
+    postulate FS : (n) -> (x) -> Fin (S n)
+    postulate Pair : Type
+    postulate P : (x) -> (y) -> Pair
+  in P (FS 2 (FS 1 (FZ Z))) (FS 3 (FS 2 (FZ 1)))

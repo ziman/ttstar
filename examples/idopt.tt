@@ -1,0 +1,25 @@
+-- vim: ft=idris
+
+data N : Type where
+  Z : N,
+  S : N -> N.
+
+data Fin : N -> Type where
+  FZ : (n : N) -> Fin (S n),
+  FS : (n : N) -> (x :R: Fin n) -> Fin (S n).
+
+embed : (n : N) -> (Fin n) -> Fin (S n).
+  (n : N)
+    embed [S n] (FZ n) = FZ (S n),
+  (n : N) (x : Fin n)
+    embed [S n] (FS n x) = FS (S n) (embed n x).
+
+fsuc \: (n : N) -> (x : Fin n) -> Fin (S n) = FS.
+
+data Pair : Type where
+  P : (x :R: Fin 3) -> (y :R: Fin 4) -> Pair.
+
+main : Pair =
+  P
+    (fsuc 2 (FS 1 (FZ 0)))
+    (embed 3 (FS 2 (FS 1 (FZ 0)))).

@@ -49,13 +49,15 @@ rmIdDef ids (Def n () ty body _noConstrs) = Def n () ty (rmIdBody ids body) noCo
 rmLet :: S.Set Name -> [Def ()] -> TT () -> TT ()
 rmLet ids [] rhs = rmId ids rhs
 rmLet ids (d:ds) rhs
-    | isIdentity ids d = rmLet (S.insert (defName d) ids) ds rhs
-    | otherwise =
-        let d' = rmIdDef ids d
-          -- S.delete in case there's a conflicting identity in the enclosing scope
-          in case rmLet (S.delete (defName d) ids) ds rhs of
-                Bind Let ds' rhs' -> Bind Let (d':ds') rhs'
-                rhs' -> Bind Let [d'] rhs'
+    | isIdentity (S.insert (defName d) ids) d
+    = rmLet (S.insert (defName d) ids) ds rhs
+
+    | otherwise
+    = let d' = rmIdDef ids d
+        -- S.delete in case there's a conflicting identity in the enclosing scope
+        in case rmLet (S.delete (defName d) ids) ds rhs of
+            Bind Let ds' rhs' -> Bind Let (d':ds') rhs'
+            rhs' -> Bind Let [d'] rhs'
 
 rmId :: S.Set Name -> TT () -> TT ()
 rmId ids tm@(V n)
