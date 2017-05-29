@@ -4,6 +4,5 @@
 (define (rts-arg-peano z s i) (number->peano z s (string->number (list-ref (command-line-arguments) i))))
 (define (rts-arg-read i) (read (open-input-string (list-ref (command-line-arguments) i))))
 (print
-  (letrec* ((main (lambda (x)
-    x)))
-    main))
+  (lambda (x)
+    x))

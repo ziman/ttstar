@@ -3,8 +3,7 @@
     postulate A : T
     postulate B : T
     postulate Op : (x) -> (y) -> T
-    id = (\x. x)
     const_A = A
     f = (\g. (\z. (\h. Op (g z) h)))
-    main = f id B const_A
+    main = f (\x. x) B const_A
   in main

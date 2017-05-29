@@ -23,6 +23,8 @@ import Erasure.Specialise
 import Erasure.Prune
 import Erasure.Verify
 
+import qualified Optimisation.Identity
+
 import Control.Monad
 import qualified Data.Set as S
 import qualified Data.Map as M
@@ -123,21 +125,30 @@ pipeline args = do
                             $ putStrLn "Verification successful.\n"
 
     let pruned = pruneTm annotated -- specialised
-    when (Args.verbose args) $ do
+    when (Args.verbose args && not (Args.optIdentity args)) $ do
         putStrLn "### Pruned ###"
         print pruned
         putStrLn ""
 
+    let optimised
+            | Args.optIdentity args = Optimisation.Identity.optimise pruned
+            | otherwise = pruned
+
+    when (Args.verbose args && Args.optIdentity args) $ do
+        putStrLn "### Optimised ###"
+        print optimised
+        putStrLn ""
+
     case Args.dumpPretty args of
         Nothing -> return ()
-        Just fname -> dumpTT fname pruned
+        Just fname -> dumpTT fname optimised
 
     case Args.dumpScheme args of
         Nothing -> return ()
-        Just fname -> dumpScheme fname pruned
+        Just fname -> dumpScheme fname optimised
 
     let unerasedNF = red NF (builtins $ Just relOfType) prog
-    let erasedNF = red NF (builtins ()) pruned
+    let erasedNF = red NF (builtins ()) optimised
 
     when (Args.verbose args) $ do
         when (not $ Args.skipEvaluation args) $ do

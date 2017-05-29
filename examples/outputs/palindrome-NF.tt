@@ -11,13 +11,11 @@
     not 
       [_] T = F
       [_] F = T
-    subst 
-      [_] = (\w. w)
     postulate RNil : Rev
     postulate RSnoc : (x) -> (rxs) -> Rev
     rev' 
-      [_] rxs Nil = subst rxs
-      [_] rxs (Cons y ys) = subst (rev' (RSnoc y rxs) ys)
+      [_] rxs Nil = rxs
+      [_] rxs (Cons y ys) = rev' (RSnoc y rxs) ys
     reverse' 
       [_] RNil = Nil
       [_] (RSnoc x rxs) = Cons x (reverse' rxs)
