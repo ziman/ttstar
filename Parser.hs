@@ -119,7 +119,7 @@ atomic = parens expr
 arrow :: Parser (TT MRel)
 arrow = (<?> "arrow type") $ do
     n <- freshMN "x"
-    ty <- try (atomic <* kwd "->")
+    ty <- try (app <* kwd "->")  -- app includes nullary applications (atoms)
     Bind Pi [Def n Nothing ty (Abstract Var) noConstrs] <$> expr
 
 lambda :: Parser (TT MRel)
