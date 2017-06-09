@@ -243,7 +243,12 @@ match pvs ctx (PApp r f x) (App r' f' x')
         <$> match pvs ctx f f'
         <*> match pvs ctx x (red WHNF ctx x')
 
-match pvs ctx (PForced tm) tm' = Yes $ M.empty
+match pvs ctx (PForced tm) tm'
+    = Yes M.empty
+
+match pvs ctx (PForcedCtor n) (V n')
+    | Just (defBody -> Abstract Postulate) <- M.lookup n' ctx  -- check n' is /some/ constructor
+    = Yes M.empty
 
 match pvs ctx pat (V n)
     | Just d <- M.lookup n ctx
