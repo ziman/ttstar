@@ -8,7 +8,7 @@ data Fin : N -> Type where
   FZ : (n : N) -> Fin (S n),
   FS : (n : N) -> (x :R: Fin n) -> Fin (S n).
 
-embed : (n : N) -> (Fin n) -> Fin (S n).
+embed : (n : N) -> Fin n -> Fin (S n).
   (n : N)
     embed [S n] (FZ n) = FZ (S n),
   (n : N) (x : Fin n)
