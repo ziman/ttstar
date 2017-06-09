@@ -2,6 +2,10 @@
 
 import "prelude.tt"
 
+{-
+14:44 < edwinb> Ulf called it "magic with"
+-}
+
 {- how to simulate rewrite, part I.
 
 pf3 : (x : Bool) -> Id Bool (not x) True -> Id Bool (not (not x)) False.
