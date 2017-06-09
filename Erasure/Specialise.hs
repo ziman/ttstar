@@ -87,6 +87,7 @@ specDef (Def nm rm tym bodym _csm) (Def nr rr tyr bodyr csr) = do
 
 specPat :: Pat Evar -> Pat Relevance -> Spec (Pat Evar)
 specPat pm (PV n) = return (M.empty, PV n)
+specPat pm (PForcedCtor n) = return (M.empty, PForcedCtor n)
 specPat (PApp rm fm xm) (PApp rr fr xr) = do
     (isf, fr') <- specPat fm fr
     (isx, xr') <- specPat xm xr

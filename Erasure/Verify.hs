@@ -151,7 +151,7 @@ verClause r (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
         else return ()
 
     verDefs pvs
-    lhsTy <- verPat r (M.fromList [(defName d, d) | d <- pvs]) lhs
+    lhsTy <- verPat True r (M.fromList [(defName d, d) | d <- pvs]) lhs
     withs pvs $ do
         rhsTy <- verTm r rhs
         conv r lhsTy rhsTy
@@ -198,14 +198,16 @@ verTm r (App s f x) = bt ("APP", r, f, s, x) $ do
 verTm r tm = bt ("UNKNOWN-TERM", tm) $ do
     verFail NotImplemented
 
-verPat :: Relevance -> Ctx Relevance -> Pat Relevance -> Ver Type
-verPat r pvs (PV n)
+-- The Bool says whether an applied [forced pattern] is allowed to occur.
+-- The only case where it is allowed is the name of the function.
+verPat :: Bool -> Relevance -> Ctx Relevance -> Pat Relevance -> Ver Type
+verPat fapp r pvs (PV n)
     | Just d <- M.lookup n pvs
     = bt ("PAT-VAR", n) $ do
         defR d --> r
         return $ defType d
 
-verPat r pvs (PV n) = bt ("PAT-REF", n) $ do
+verPat fapp r pvs (PV n) = bt ("PAT-REF", n) $ do
     d <- lookupName n
     r --> defR d
     case defBody d of
@@ -213,29 +215,29 @@ verPat r pvs (PV n) = bt ("PAT-REF", n) $ do
         _ -> verFail $ NotConstructor n
     return $ defType d
 
-verPat r pvs (PForcedCtor n) = bt ("PAT-FORCED-CTOR", n) $ do
+verPat fapp r pvs (PForcedCtor n) = bt ("PAT-FORCED-CTOR", n) $ do
     d <- lookupName n
     case defBody d of
         Abstract Postulate -> return $ defType d
         _ -> verFail $ NotConstructor n
 
-verPat r pvs tm@(PApp s (PForced _) _) =
+verPat False r pvs tm@(PApp s (PForced _) _) =
     verFail $ AppliedForcedPattern tm
 
-verPat r pvs (PApp s f x) = bt ("PAT-APP", r, s, f, x) $ do
+verPat fapp r pvs (PApp s f x) = bt ("PAT-APP", r, s, f, x) $ do
     ctx <- getCtx
-    fty <- verPat r pvs f
+    fty <- verPat fapp r pvs f
     case whnf ctx fty of
         Bind Pi [Def n piR piTy (Abstract Var) _] piRhs -> do
             (r /\ piR) <-> (r /\ s)
-            xty <- verPat (r /\ s) pvs x
+            xty <- verPat False (r /\ s) pvs x
             with' (M.union pvs) $
                 conv (r /\ s) xty piTy
             return $ subst n (pat2term x) piRhs
 
         _ -> verFail $ NotPi fty
 
-verPat r pvs (PForced tm) = bt ("PAT-FORCED", tm) $ do
+verPat fapp r pvs (PForced tm) = bt ("PAT-FORCED", tm) $ do
     with' (M.union pvs) $ do
         verTm r tm
 
