@@ -1,4 +1,4 @@
--- vim: ft=idris
+-- vim: ft=ttstar
   let
     postulate Nat : Type
     postulate Z : Nat

@@ -1,4 +1,4 @@
--- vim: ft=idris
+-- vim: ft=ttstar
   let
     postulate K : Type
     postulate P : (_x0) -> K

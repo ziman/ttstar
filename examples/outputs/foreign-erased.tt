@@ -1,4 +1,4 @@
--- vim: ft=idris
+-- vim: ft=ttstar
   let
     postulate Z : N
     postulate S : (x) -> N

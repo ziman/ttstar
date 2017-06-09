@@ -1,4 +1,4 @@
--- vim: ft=idris
+-- vim: ft=ttstar
   let
     postulate FZ : Fin
     postulate V : (_x1) -> TT
