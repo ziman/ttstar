@@ -1,5 +1,3 @@
--- vim: ft=ttstar
-
 data N : Type where
   Z : N,
   S : (x :R: N) -> N.
