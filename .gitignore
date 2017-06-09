@@ -6,3 +6,4 @@ cabal.sandbox.config
 examples/timelog.txt
 .ipynb_checkpoints/
 /*.csv
+benchmarks/*.csv
