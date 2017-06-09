@@ -256,3 +256,5 @@ match _ _ _ _ = No
 
 firstMatch :: Alternative f => [f a] -> f a
 firstMatch = foldr (<|>) empty
+
+-- vim: et ts=4 sts=4 sw=4

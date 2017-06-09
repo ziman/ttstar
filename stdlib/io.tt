@@ -19,9 +19,3 @@ ioWrapImpure \(a : Type) (impureF : (delayToken :R: Unit) -> a) : IO a
     -- However, in IO, we pretend that the world is transformed via the RTS
     -- so we just explicitly label it as used.
     = MkSt RealWorld a (\w:R:RealWorld. MkPair RealWorld a w (impureF MkUnit)).
-
-unsafePerformIO \(a : Type) (x : IO a) : a
-    = let
-        postulate TheWorld : RealWorld
-      in
-        execState RealWorld a x TheWorld.

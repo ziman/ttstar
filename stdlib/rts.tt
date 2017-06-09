@@ -23,3 +23,18 @@ foreign intToNat : (x :R: Int) -> Nat = "(lambda (x) (number->peano 'Z 'S x))".
 
 printNat \(x : Nat) : IO Unspec
     = printSchemeRepr Int (natToInt x).
+
+-- this applies any given continuation to a RealWorld
+foreign prim__applyToWorld
+    : (a :E: Type)
+    -> (f :R: (w :R: RealWorld) -> a)
+    -> a
+    = "(lambda (f) (f 'RealWorld))".
+
+-- This must be a foreign function because otherwise,
+-- TTstar's reduction would see through this and substitute
+-- RealWorld in programs, "optimising" side effects away.
+unsafePerformIO : (a :E: Type) -> (io :R: IO a) -> a.
+  (a : Type) (run : RealWorld -> Pair RealWorld a)
+    unsafePerformIO a ([MkSt] [RealWorld] [a] run)
+      = snd RealWorld a (prim__applyToWorld (Pair RealWorld a) run).
