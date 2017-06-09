@@ -23,10 +23,10 @@
     postulate MkPair : (a : Type) -> (b : Type) -> (_x5 : a) -> (_x6 : b) -> Pair a b
     fst : (a : Type) -> (b : Type) -> (_x7 : Pair a b) -> a 
       a : Type b : Type x : a y : b
-        [fst] a b ([MkPair] [a] [b] x y) = x
+        [fst] a b ({MkPair} [a] [b] x y) = x
     snd : (a : Type) -> (b : Type) -> (_x8 : Pair a b) -> b 
       a : Type b : Type x : a y : b
-        [snd] a b ([MkPair] [a] [b] x y) = y
+        [snd] a b ({MkPair} [a] [b] x y) = y
     postulate Either : (_x9 : Type) -> (_x10 : Type) -> Type
     postulate Left : (a : Type) -> (b : Type) -> (_x11 : a) -> Either a b
     postulate Right : (a : Type) -> (b : Type) -> (_x12 : b) -> Either a b
@@ -41,19 +41,19 @@
     postulate MkSt : (st : Type) -> (a : Type) -> (run : (_x2 : st) -> Pair st a) -> State st a
     runState : (st : Type) -> (a : Type) -> (_x3 : State st a) -> (_x4 : st) -> Pair st a 
       st : Type a : Type run : (_x5 : st) -> Pair st a
-        [runState] st a ([MkSt] [st] [a] run) = run
+        [runState] st a ({MkSt} [st] [a] run) = run
     execState : (st : Type) -> (a : Type) -> (x : State st a) -> (s : st) -> a = (\st : Type. (\a : Type. (\x : State st a. (\s : st. snd st a (runState st a x s)))))
     stReturn : (st : Type) -> (a : Type) -> (x : a) -> State st a = (\st : Type. (\a : Type. (\x : a. MkSt st a (\s : st. MkPair st a s x))))
     stBind : (st : Type) -> (a : Type) -> (b : Type) -> (x : State st a) -> (y : (z : a) -> State st b) -> State st b 
       st : Type a : Type b : Type f : (_x6 : st) -> Pair st a g : (_x7 : a) -> State st b
-        [stBind] st a b ([MkSt] [st] [a] f) g = 
+        [stBind] st a b ({MkSt} [st] [a] f) g = 
           let
             stBind3 : (st : Type) -> (b : Type) -> (_x8 : st) -> (_x9 : State st b) -> Pair st b 
               st : Type b : Type s : st f : (_x10 : st) -> Pair st b
-                [stBind3] st b s ([MkSt] [st] [b] f) = f s
+                [stBind3] st b s ({MkSt} [st] [b] f) = f s
             stBind2 : (st : Type) -> (a : Type) -> (b : Type) -> (g : (_x11 : a) -> State st b) -> (r : Pair st a) -> Pair st b 
               st : Type a : Type b : Type g : (_x12 : a) -> State st b x : a s : st
-                [stBind2] st a b g ([MkPair] [st] [a] s x) = stBind3 st b s (g x)
+                [stBind2] st a b g ({MkPair} [st] [a] s x) = stBind3 st b s (g x)
           in MkSt st b (\s : st. stBind2 st a b g (f s))
     postulate RealWorld : Type
     IO : (_x0 : Type) -> Type = State RealWorld
@@ -102,10 +102,10 @@
     postulate MkPair :30: (a :31: Type) -> (b :32: Type) -> (_x5 :33: a) -> (_x6 :34: b) -> Pair -36- a -35- b
     fst :37: (a :38: Type) -> (b :39: Type) -> (_x7 :40: Pair -42- a -41- b) -> a 
       a :43: Type b :44: Type x :45: a y :46: b
-        [fst] -49- a -48- b -47- ([MkPair] -53- [a] -52- [b] -51- x -50- y) = x
+        [fst] -49- a -48- b -47- ({MkPair} -53- [a] -52- [b] -51- x -50- y) = x
     snd :54: (a :55: Type) -> (b :56: Type) -> (_x8 :57: Pair -59- a -58- b) -> b 
       a :60: Type b :61: Type x :62: a y :63: b
-        [snd] -66- a -65- b -64- ([MkPair] -70- [a] -69- [b] -68- x -67- y) = y
+        [snd] -66- a -65- b -64- ({MkPair} -70- [a] -69- [b] -68- x -67- y) = y
     postulate Either :71: (_x9 :72: Type) -> (_x10 :73: Type) -> Type
     postulate Left :74: (a :75: Type) -> (b :76: Type) -> (_x11 :77: a) -> Either -79- a -78- b
     postulate Right :80: (a :81: Type) -> (b :82: Type) -> (_x12 :83: b) -> Either -85- a -84- b
@@ -120,19 +120,19 @@
     postulate MkSt :123: (st :124: Type) -> (a :125: Type) -> (run :126: (_x2 :127: st) -> Pair -129- st -128- a) -> State -131- st -130- a
     runState :132: (st :133: Type) -> (a :134: Type) -> (_x3 :135: State -137- st -136- a) -> (_x4 :138: st) -> Pair -140- st -139- a 
       st :141: Type a :142: Type run :143: (_x5 :144: st) -> Pair -146- st -145- a
-        [runState] -149- st -148- a -147- ([MkSt] -152- [st] -151- [a] -150- run) = run
+        [runState] -149- st -148- a -147- ({MkSt} -152- [st] -151- [a] -150- run) = run
     execState :153: (st :154: Type) -> (a :155: Type) -> (x :156: State -158- st -157- a) -> (s :159: st) -> a = (\st :160: Type. (\a :161: Type. (\x :162: State -164- st -163- a. (\s :165: st. snd -168- st -167- a -166- (runState -172- st -171- a -170- x -169- s)))))
     stReturn :173: (st :174: Type) -> (a :175: Type) -> (x :176: a) -> State -178- st -177- a = (\st :179: Type. (\a :180: Type. (\x :181: a. MkSt -184- st -183- a -182- (\s :185: st. MkPair -189- st -188- a -187- s -186- x))))
     stBind :190: (st :191: Type) -> (a :192: Type) -> (b :193: Type) -> (x :194: State -196- st -195- a) -> (y :197: (z :198: a) -> State -200- st -199- b) -> State -202- st -201- b 
       st :203: Type a :204: Type b :205: Type f :206: (_x6 :207: st) -> Pair -209- st -208- a g :210: (_x7 :211: a) -> State -213- st -212- b
-        [stBind] -218- st -217- a -216- b -215- ([MkSt] -221- [st] -220- [a] -219- f) -214- g = 
+        [stBind] -218- st -217- a -216- b -215- ({MkSt} -221- [st] -220- [a] -219- f) -214- g = 
           let
             stBind3 :222: (st :223: Type) -> (b :224: Type) -> (_x8 :225: st) -> (_x9 :226: State -228- st -227- b) -> Pair -230- st -229- b 
               st :231: Type b :232: Type s :233: st f :234: (_x10 :235: st) -> Pair -237- st -236- b
-                [stBind3] -241- st -240- b -239- s -238- ([MkSt] -244- [st] -243- [b] -242- f) = f -245- s
+                [stBind3] -241- st -240- b -239- s -238- ({MkSt} -244- [st] -243- [b] -242- f) = f -245- s
             stBind2 :246: (st :247: Type) -> (a :248: Type) -> (b :249: Type) -> (g :250: (_x11 :251: a) -> State -253- st -252- b) -> (r :254: Pair -256- st -255- a) -> Pair -258- st -257- b 
               st :259: Type a :260: Type b :261: Type g :262: (_x12 :263: a) -> State -265- st -264- b x :266: a s :267: st
-                [stBind2] -272- st -271- a -270- b -269- g -268- ([MkPair] -276- [st] -275- [a] -274- s -273- x) = stBind3 -280- st -279- b -278- s -277- (g -281- x)
+                [stBind2] -272- st -271- a -270- b -269- g -268- ({MkPair} -276- [st] -275- [a] -274- s -273- x) = stBind3 -280- st -279- b -278- s -277- (g -281- x)
           in MkSt -284- st -283- b -282- (\s :285: st. stBind2 -290- st -289- a -288- b -287- g -286- (f -291- s))
     postulate RealWorld :292: Type
     IO :293: (_x0 :294: Type) -> Type = State -295- RealWorld
@@ -353,10 +353,10 @@
     postulate MkPair :R: (a :E: Type) -> (b :E: Type) -> (_x5 :R: a) -> (_x6 :R: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: Pair -E- a -E- b) -> a 
       a :E: Type b :E: Type x :E: a y :E: b
-        [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
+        [fst] -E- a -E- b -E- ({MkPair} -E- [a] -E- [b] -E- x -E- y) = x
     snd :R: (a :E: Type) -> (b :E: Type) -> (_x8 :R: Pair -E- a -E- b) -> b 
       a :E: Type b :E: Type x :E: a y :R: b
-        [snd] -E- a -E- b -R- ([MkPair] -E- [a] -E- [b] -R- x -R- y) = y
+        [snd] -E- a -E- b -R- ({MkPair} -E- [a] -E- [b] -R- x -R- y) = y
     postulate Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
     postulate Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
     postulate Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
@@ -371,19 +371,19 @@
     postulate MkSt :R: (st :E: Type) -> (a :E: Type) -> (run :R: (_x2 :R: st) -> Pair -E- st -E- a) -> State -E- st -E- a
     runState :R: (st :E: Type) -> (a :E: Type) -> (_x3 :R: State -E- st -E- a) -> (_x4 :R: st) -> Pair -E- st -E- a 
       st :E: Type a :E: Type run :R: (_x5 :R: st) -> Pair -E- st -E- a
-        [runState] -E- st -E- a -R- ([MkSt] -E- [st] -E- [a] -R- run) = run
+        [runState] -E- st -E- a -R- ({MkSt} -E- [st] -E- [a] -R- run) = run
     execState :R: (st :E: Type) -> (a :E: Type) -> (x :R: State -E- st -E- a) -> (s :R: st) -> a = (\st :E: Type. (\a :E: Type. (\x :R: State -E- st -E- a. (\s :R: st. snd -E- st -E- a -R- (runState -E- st -E- a -R- x -R- s)))))
     stReturn :R: (st :E: Type) -> (a :E: Type) -> (x :R: a) -> State -E- st -E- a = (\st :E: Type. (\a :E: Type. (\x :R: a. MkSt -E- st -E- a -R- (\s :R: st. MkPair -E- st -E- a -R- s -R- x))))
     stBind :R: (st :E: Type) -> (a :E: Type) -> (b :E: Type) -> (x :R: State -E- st -E- a) -> (y :R: (z :R: a) -> State -E- st -E- b) -> State -E- st -E- b 
       st :E: Type a :E: Type b :E: Type f :R: (_x6 :R: st) -> Pair -E- st -E- a g :R: (_x7 :R: a) -> State -E- st -E- b
-        [stBind] -E- st -E- a -E- b -R- ([MkSt] -E- [st] -E- [a] -R- f) -R- g = 
+        [stBind] -E- st -E- a -E- b -R- ({MkSt} -E- [st] -E- [a] -R- f) -R- g = 
           let
             stBind3 :R: (st :E: Type) -> (b :E: Type) -> (_x8 :R: st) -> (_x9 :R: State -E- st -E- b) -> Pair -E- st -E- b 
               st :E: Type b :E: Type s :R: st f :R: (_x10 :R: st) -> Pair -E- st -E- b
-                [stBind3] -E- st -E- b -R- s -R- ([MkSt] -E- [st] -E- [b] -R- f) = f -R- s
+                [stBind3] -E- st -E- b -R- s -R- ({MkSt} -E- [st] -E- [b] -R- f) = f -R- s
             stBind2 :R: (st :E: Type) -> (a :E: Type) -> (b :E: Type) -> (g :R: (_x11 :R: a) -> State -E- st -E- b) -> (r :R: Pair -E- st -E- a) -> Pair -E- st -E- b 
               st :E: Type a :E: Type b :E: Type g :R: (_x12 :R: a) -> State -E- st -E- b x :R: a s :R: st
-                [stBind2] -E- st -E- a -E- b -R- g -R- ([MkPair] -E- [st] -E- [a] -R- s -R- x) = stBind3 -E- st -E- b -R- s -R- (g -R- x)
+                [stBind2] -E- st -E- a -E- b -R- g -R- ({MkPair} -E- [st] -E- [a] -R- s -R- x) = stBind3 -E- st -E- b -R- s -R- (g -R- x)
           in MkSt -E- st -E- b -R- (\s :R: st. stBind2 -E- st -E- a -E- b -R- g -R- (f -R- s))
     postulate RealWorld :E: Type
     IO :E: (_x0 :E: Type) -> Type = State -E- RealWorld
@@ -432,10 +432,10 @@
     postulate MkPair :R: (a :E: Type) -> (b :E: Type) -> (_x5 :R: a) -> (_x6 :R: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: Pair -E- a -E- b) -> a 
       a :E: Type b :E: Type x :E: a y :E: b
-        [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
+        [fst] -E- a -E- b -E- ({MkPair} -E- [a] -E- [b] -E- x -E- y) = x
     snd :R: (a :E: Type) -> (b :E: Type) -> (_x8 :R: Pair -E- a -E- b) -> b 
       a :E: Type b :E: Type x :E: a y :R: b
-        [snd] -E- a -E- b -R- ([MkPair] -E- [a] -E- [b] -R- x -R- y) = y
+        [snd] -E- a -E- b -R- ({MkPair} -E- [a] -E- [b] -R- x -R- y) = y
     postulate Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
     postulate Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
     postulate Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
@@ -450,19 +450,19 @@
     postulate MkSt :R: (st :E: Type) -> (a :E: Type) -> (run :R: (_x2 :R: st) -> Pair -E- st -E- a) -> State -E- st -E- a
     runState :R: (st :E: Type) -> (a :E: Type) -> (_x3 :R: State -E- st -E- a) -> (_x4 :R: st) -> Pair -E- st -E- a 
       st :E: Type a :E: Type run :R: (_x5 :R: st) -> Pair -E- st -E- a
-        [runState] -E- st -E- a -R- ([MkSt] -E- [st] -E- [a] -R- run) = run
+        [runState] -E- st -E- a -R- ({MkSt} -E- [st] -E- [a] -R- run) = run
     execState :R: (st :E: Type) -> (a :E: Type) -> (x :R: State -E- st -E- a) -> (s :R: st) -> a = (\st :E: Type. (\a :E: Type. (\x :R: State -E- st -E- a. (\s :R: st. snd -E- st -E- a -R- (runState -E- st -E- a -R- x -R- s)))))
     stReturn :R: (st :E: Type) -> (a :E: Type) -> (x :R: a) -> State -E- st -E- a = (\st :E: Type. (\a :E: Type. (\x :R: a. MkSt -E- st -E- a -R- (\s :R: st. MkPair -E- st -E- a -R- s -R- x))))
     stBind :R: (st :E: Type) -> (a :E: Type) -> (b :E: Type) -> (x :R: State -E- st -E- a) -> (y :R: (z :R: a) -> State -E- st -E- b) -> State -E- st -E- b 
       st :E: Type a :E: Type b :E: Type f :R: (_x6 :R: st) -> Pair -E- st -E- a g :R: (_x7 :R: a) -> State -E- st -E- b
-        [stBind] -E- st -E- a -E- b -R- ([MkSt] -E- [st] -E- [a] -R- f) -R- g = 
+        [stBind] -E- st -E- a -E- b -R- ({MkSt} -E- [st] -E- [a] -R- f) -R- g = 
           let
             stBind3 :R: (st :E: Type) -> (b :E: Type) -> (_x8 :R: st) -> (_x9 :R: State -E- st -E- b) -> Pair -E- st -E- b 
               st :E: Type b :E: Type s :R: st f :R: (_x10 :R: st) -> Pair -E- st -E- b
-                [stBind3] -E- st -E- b -R- s -R- ([MkSt] -E- [st] -E- [b] -R- f) = f -R- s
+                [stBind3] -E- st -E- b -R- s -R- ({MkSt} -E- [st] -E- [b] -R- f) = f -R- s
             stBind2 :R: (st :E: Type) -> (a :E: Type) -> (b :E: Type) -> (g :R: (_x11 :R: a) -> State -E- st -E- b) -> (r :R: Pair -E- st -E- a) -> Pair -E- st -E- b 
               st :E: Type a :E: Type b :E: Type g :R: (_x12 :R: a) -> State -E- st -E- b x :R: a s :R: st
-                [stBind2] -E- st -E- a -E- b -R- g -R- ([MkPair] -E- [st] -E- [a] -R- s -R- x) = stBind3 -E- st -E- b -R- s -R- (g -R- x)
+                [stBind2] -E- st -E- a -E- b -R- g -R- ({MkPair} -E- [st] -E- [a] -R- s -R- x) = stBind3 -E- st -E- b -R- s -R- (g -R- x)
           in MkSt -E- st -E- b -R- (\s :R: st. stBind2 -E- st -E- a -E- b -R- g -R- (f -R- s))
     postulate RealWorld :E: Type
     IO :E: (_x0 :E: Type) -> Type = State -E- RealWorld
@@ -511,10 +511,10 @@
     postulate MkPair :R: (a :E: Type) -> (b :E: Type) -> (_x5 :R: a) -> (_x6 :R: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: Pair -E- a -E- b) -> a 
       a :E: Type b :E: Type x :E: a y :E: b
-        [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
+        [fst] -E- a -E- b -E- ({MkPair} -E- [a] -E- [b] -E- x -E- y) = x
     snd :R: (a :E: Type) -> (b :E: Type) -> (_x8 :R: Pair -E- a -E- b) -> b 
       a :E: Type b :E: Type x :E: a y :R: b
-        [snd] -E- a -E- b -R- ([MkPair] -E- [a] -E- [b] -R- x -R- y) = y
+        [snd] -E- a -E- b -R- ({MkPair} -E- [a] -E- [b] -R- x -R- y) = y
     postulate Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
     postulate Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
     postulate Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
@@ -529,19 +529,19 @@
     postulate MkSt :R: (st :E: Type) -> (a :E: Type) -> (run :R: (_x2 :R: st) -> Pair -E- st -E- a) -> State -E- st -E- a
     runState :R: (st :E: Type) -> (a :E: Type) -> (_x3 :R: State -E- st -E- a) -> (_x4 :R: st) -> Pair -E- st -E- a 
       st :E: Type a :E: Type run :R: (_x5 :R: st) -> Pair -E- st -E- a
-        [runState] -E- st -E- a -R- ([MkSt] -E- [st] -E- [a] -R- run) = run
+        [runState] -E- st -E- a -R- ({MkSt} -E- [st] -E- [a] -R- run) = run
     execState :R: (st :E: Type) -> (a :E: Type) -> (x :R: State -E- st -E- a) -> (s :R: st) -> a = (\st :E: Type. (\a :E: Type. (\x :R: State -E- st -E- a. (\s :R: st. snd -E- st -E- a -R- (runState -E- st -E- a -R- x -R- s)))))
     stReturn :R: (st :E: Type) -> (a :E: Type) -> (x :R: a) -> State -E- st -E- a = (\st :E: Type. (\a :E: Type. (\x :R: a. MkSt -E- st -E- a -R- (\s :R: st. MkPair -E- st -E- a -R- s -R- x))))
     stBind :R: (st :E: Type) -> (a :E: Type) -> (b :E: Type) -> (x :R: State -E- st -E- a) -> (y :R: (z :R: a) -> State -E- st -E- b) -> State -E- st -E- b 
       st :E: Type a :E: Type b :E: Type f :R: (_x6 :R: st) -> Pair -E- st -E- a g :R: (_x7 :R: a) -> State -E- st -E- b
-        [stBind] -E- st -E- a -E- b -R- ([MkSt] -E- [st] -E- [a] -R- f) -R- g = 
+        [stBind] -E- st -E- a -E- b -R- ({MkSt} -E- [st] -E- [a] -R- f) -R- g = 
           let
             stBind3 :R: (st :E: Type) -> (b :E: Type) -> (_x8 :R: st) -> (_x9 :R: State -E- st -E- b) -> Pair -E- st -E- b 
               st :E: Type b :E: Type s :R: st f :R: (_x10 :R: st) -> Pair -E- st -E- b
-                [stBind3] -E- st -E- b -R- s -R- ([MkSt] -E- [st] -E- [b] -R- f) = f -R- s
+                [stBind3] -E- st -E- b -R- s -R- ({MkSt} -E- [st] -E- [b] -R- f) = f -R- s
             stBind2 :R: (st :E: Type) -> (a :E: Type) -> (b :E: Type) -> (g :R: (_x11 :R: a) -> State -E- st -E- b) -> (r :R: Pair -E- st -E- a) -> Pair -E- st -E- b 
               st :E: Type a :E: Type b :E: Type g :R: (_x12 :R: a) -> State -E- st -E- b x :R: a s :R: st
-                [stBind2] -E- st -E- a -E- b -R- g -R- ([MkPair] -E- [st] -E- [a] -R- s -R- x) = stBind3 -E- st -E- b -R- s -R- (g -R- x)
+                [stBind2] -E- st -E- a -E- b -R- g -R- ({MkPair} -E- [st] -E- [a] -R- s -R- x) = stBind3 -E- st -E- b -R- s -R- (g -R- x)
           in MkSt -E- st -E- b -R- (\s :R: st. stBind2 -E- st -E- a -E- b -R- g -R- (f -R- s))
     postulate RealWorld :E: Type
     IO :E: (_x0 :E: Type) -> Type = State -E- RealWorld
@@ -579,19 +579,19 @@ Verification successful.
     postulate MkUnit : Unit
     postulate MkPair : (_x5) -> (_x6) -> Pair
     snd 
-      [_] ([_] _ y) = y
+      [_] ({_} _ y) = y
     postulate MkSt : (run) -> State
     runState 
-      [_] ([_] run) = run
+      [_] ({_} run) = run
     execState = (\x. (\s. snd (runState x s)))
     stReturn = (\x. MkSt (\s. MkPair s x))
     stBind 
-      [_] ([_] f) g = 
+      [_] ({_} f) g = 
         let
           stBind3 
-            [_] s ([_] f) = f s
+            [_] s ({_} f) = f s
           stBind2 
-            [_] g ([_] s x) = stBind3 s (g x)
+            [_] g ({_} s x) = stBind3 s (g x)
         in MkSt (\s. stBind2 g (f s))
     ioReturn = (\x. stReturn x)
     ioBind = (\x. (\y. stBind x y))
@@ -616,13 +616,24 @@ Verification successful.
 
 unerased:
   
-  let postulate RealWorld : Type
+  let
+    postulate Nat : Type
+    postulate Int : Type
+    foreign intS : (x :R: Int) -> Int
+    foreign intZ : Int
+    postulate Unspec : Type
+    foreign intToNat : (x :R: Int) -> Nat
   in 
-    let postulate TheWorld : RealWorld
-    in TheWorld
+    let foreign nativePrint0 : (a :E: Type) -> (x :R: a) -> Unspec
+    in nativePrint0 Nat (intToNat (intS (intS (intS intZ))))
 
 erased:
   
-  let postulate TheWorld : RealWorld
-  in TheWorld
+  let
+    foreign intS
+    foreign intZ
+    foreign intToNat
+  in 
+    let foreign nativePrint0
+    in nativePrint0 (intToNat (intS (intS (intS intZ))))
 

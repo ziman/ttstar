@@ -1,5 +1,3 @@
--- vim: ft=idris
-
 data N : Type where
   Z : N,
   S : (x :R: N) -> N.
@@ -16,9 +14,9 @@ plus : N -> N -> N.
 
 append : (a : Type) -> (m : N) -> (n : N) -> (xs : Vec m a) -> (ys : Vec n a) -> Vec (plus m n) a.
   (a : Type) (n : N) (ys : Vec n a)
-    append a [Z] n (Nil [a]) ys = ys,
+    append a {Z} n (Nil [a]) ys = ys,
   (a : Type) (m : N) (n : N) (x : a) (xs : Vec m a) (ys : Vec n a)
-    append a ([S] m) n (Cons [a] [m] x xs) ys = Cons a (plus m n) x (append a m n xs ys).
+    append a ({S} m) n (Cons [a] [m] x xs) ys = Cons a (plus m n) x (append a m n xs ys).
 
 main : Vec 1 N
     = append N 0 1 (Nil N) (Cons N Z 4 (Nil N)).

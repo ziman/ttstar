@@ -23,10 +23,10 @@
     postulate MkPair : (a : Type) -> (b : Type) -> (_x5 : a) -> (_x6 : b) -> Pair a b
     fst : (a : Type) -> (b : Type) -> (_x7 : Pair a b) -> a 
       a : Type b : Type x : a y : b
-        [fst] a b ([MkPair] [a] [b] x y) = x
+        [fst] a b ({MkPair} [a] [b] x y) = x
     snd : (a : Type) -> (b : Type) -> (_x8 : Pair a b) -> b 
       a : Type b : Type x : a y : b
-        [snd] a b ([MkPair] [a] [b] x y) = y
+        [snd] a b ({MkPair} [a] [b] x y) = y
     postulate Either : (_x9 : Type) -> (_x10 : Type) -> Type
     postulate Left : (a : Type) -> (b : Type) -> (_x11 : a) -> Either a b
     postulate Right : (a : Type) -> (b : Type) -> (_x12 : b) -> Either a b
@@ -119,10 +119,10 @@
     postulate MkPair :30: (a :31: Type) -> (b :32: Type) -> (_x5 :33: a) -> (_x6 :34: b) -> Pair -36- a -35- b
     fst :37: (a :38: Type) -> (b :39: Type) -> (_x7 :40: Pair -42- a -41- b) -> a 
       a :43: Type b :44: Type x :45: a y :46: b
-        [fst] -49- a -48- b -47- ([MkPair] -53- [a] -52- [b] -51- x -50- y) = x
+        [fst] -49- a -48- b -47- ({MkPair} -53- [a] -52- [b] -51- x -50- y) = x
     snd :54: (a :55: Type) -> (b :56: Type) -> (_x8 :57: Pair -59- a -58- b) -> b 
       a :60: Type b :61: Type x :62: a y :63: b
-        [snd] -66- a -65- b -64- ([MkPair] -70- [a] -69- [b] -68- x -67- y) = y
+        [snd] -66- a -65- b -64- ({MkPair} -70- [a] -69- [b] -68- x -67- y) = y
     postulate Either :71: (_x9 :72: Type) -> (_x10 :73: Type) -> Type
     postulate Left :74: (a :75: Type) -> (b :76: Type) -> (_x11 :77: a) -> Either -79- a -78- b
     postulate Right :80: (a :81: Type) -> (b :82: Type) -> (_x12 :83: b) -> Either -85- a -84- b
@@ -550,10 +550,10 @@
     postulate MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x5 :E: a) -> (_x6 :E: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: Pair -E- a -E- b) -> a 
       a :E: Type b :E: Type x :E: a y :E: b
-        [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
+        [fst] -E- a -E- b -E- ({MkPair} -E- [a] -E- [b] -E- x -E- y) = x
     snd :E: (a :E: Type) -> (b :E: Type) -> (_x8 :E: Pair -E- a -E- b) -> b 
       a :E: Type b :E: Type x :E: a y :E: b
-        [snd] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = y
+        [snd] -E- a -E- b -E- ({MkPair} -E- [a] -E- [b] -E- x -E- y) = y
     postulate Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
     postulate Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
     postulate Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
@@ -646,10 +646,10 @@
     postulate MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x5 :E: a) -> (_x6 :E: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: Pair -E- a -E- b) -> a 
       a :E: Type b :E: Type x :E: a y :E: b
-        [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
+        [fst] -E- a -E- b -E- ({MkPair} -E- [a] -E- [b] -E- x -E- y) = x
     snd :E: (a :E: Type) -> (b :E: Type) -> (_x8 :E: Pair -E- a -E- b) -> b 
       a :E: Type b :E: Type x :E: a y :E: b
-        [snd] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = y
+        [snd] -E- a -E- b -E- ({MkPair} -E- [a] -E- [b] -E- x -E- y) = y
     postulate Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
     postulate Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
     postulate Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
@@ -742,10 +742,10 @@
     postulate MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x5 :E: a) -> (_x6 :E: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: Pair -E- a -E- b) -> a 
       a :E: Type b :E: Type x :E: a y :E: b
-        [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
+        [fst] -E- a -E- b -E- ({MkPair} -E- [a] -E- [b] -E- x -E- y) = x
     snd :E: (a :E: Type) -> (b :E: Type) -> (_x8 :E: Pair -E- a -E- b) -> b 
       a :E: Type b :E: Type x :E: a y :E: b
-        [snd] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = y
+        [snd] -E- a -E- b -E- ({MkPair} -E- [a] -E- [b] -E- x -E- y) = y
     postulate Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
     postulate Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
     postulate Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b

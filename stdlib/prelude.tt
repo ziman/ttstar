@@ -1,5 +1,3 @@
--- vim: ft=idris
-
 data Nat : Type where
   Z : Nat,
   S : (x :R: Nat) -> Nat.
@@ -26,11 +24,11 @@ data Pair : Type -> Type -> Type where
 
 fst : (a : Type) -> (b : Type) -> (Pair a b) -> a.
   (a : Type) (b : Type) (x : a) (y : b)
-    fst a b ([MkPair] [a] [b] x y) = x.
+    fst a b ({MkPair} [a] [b] x y) = x.
 
 snd : (a : Type) -> (b : Type) -> (Pair a b) -> b.
   (a : Type) (b : Type) (x : a) (y : b)
-    snd a b ([MkPair] [a] [b] x y) = y.
+    snd a b ({MkPair} [a] [b] x y) = y.
 
 data Either : Type -> Type -> Type where
   Left : (a : Type) -> (b : Type) -> a -> Either a b,

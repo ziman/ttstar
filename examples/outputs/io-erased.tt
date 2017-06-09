@@ -5,19 +5,19 @@
     postulate MkUnit : Unit
     postulate MkPair : (_x5) -> (_x6) -> Pair
     snd 
-      [_] ([_] _ y) = y
+      [_] ({_} _ y) = y
     postulate MkSt : (run) -> State
     runState 
-      [_] ([_] run) = run
+      [_] ({_} run) = run
     execState = (\x. (\s. snd (runState x s)))
     stReturn = (\x. MkSt (\s. MkPair s x))
     stBind 
-      [_] ([_] f) g = 
+      [_] ({_} f) g = 
         let
           stBind3 
-            [_] s ([_] f) = f s
+            [_] s ({_} f) = f s
           stBind2 
-            [_] g ([_] s x) = stBind3 s (g x)
+            [_] g ({_} s x) = stBind3 s (g x)
         in MkSt (\s. stBind2 g (f s))
     ioReturn = (\x. stReturn x)
     ioBind = (\x. (\y. stBind x y))

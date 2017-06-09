@@ -10,9 +10,9 @@
     postulate Nil : (a : Type) -> Vec Z a
     postulate Cons : (a : Type) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a
     vlen : (n : N) -> (xs : Vec n N) -> N 
-      [vlen] [Z] (Nil [N]) = Z
+      [vlen] {Z} (Nil [N]) = Z
       m : N y : N ys : Vec m N
-        [vlen] ([S] m) (Cons [N] [m] y ys) = S (vlen m ys)
+        [vlen] ({S} m) (Cons [N] [m] y ys) = S (vlen m ys)
     main : N = vlen 1 (Cons N Z 3 (Nil N))
   in main
 
@@ -26,9 +26,9 @@
     postulate Nil :7: (a :8: Type) -> Vec -10- Z -9- a
     postulate Cons :11: (a :12: Type) -> (n :13: N) -> (x :R: a) -> (xs :R: Vec -15- n -14- a) -> Vec -17- (S -18- n) -16- a
     vlen :19: (n :20: N) -> (xs :21: Vec -23- n -22- N) -> N 
-      [vlen] -25- [Z] -24- (Nil -26- [N]) = Z
+      [vlen] -25- {Z} -24- (Nil -26- [N]) = Z
       m :27: N y :28: N ys :29: Vec -31- m -30- N
-        [vlen] -33- ([S] -34- m) -32- (Cons -38- [N] -37- [m] -36- y -35- ys) = S -39- (vlen -41- m -40- ys)
+        [vlen] -33- ({S} -34- m) -32- (Cons -38- [N] -37- [m] -36- y -35- ys) = S -39- (vlen -41- m -40- ys)
     main :42: N = vlen -44- 1 -43- (Cons -49- N -48- Z -47- 3 -46- (Nil -53- N))
   in main
 
@@ -79,9 +79,9 @@
     postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a
     postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N 
-      [vlen] -E- [Z] -R- (Nil -E- [N]) = Z
+      [vlen] -E- {Z} -R- (Nil -E- [N]) = Z
       m :E: N y :E: N ys :R: Vec -E- m -E- N
-        [vlen] -E- ([S] -E- m) -R- (Cons -E- [N] -E- [m] -R- y -R- ys) = S -R- (vlen -E- m -R- ys)
+        [vlen] -E- ({S} -E- m) -R- (Cons -E- [N] -E- [m] -R- y -R- ys) = S -R- (vlen -E- m -R- ys)
     main :R: N = vlen -E- 1 -R- (Cons -E- N -E- Z -R- 3 -R- (Nil -E- N))
   in main
 
@@ -95,9 +95,9 @@
     postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a
     postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N 
-      [vlen] -E- [Z] -R- (Nil -E- [N]) = Z
+      [vlen] -E- {Z} -R- (Nil -E- [N]) = Z
       m :E: N y :E: N ys :R: Vec -E- m -E- N
-        [vlen] -E- ([S] -E- m) -R- (Cons -E- [N] -E- [m] -R- y -R- ys) = S -R- (vlen -E- m -R- ys)
+        [vlen] -E- ({S} -E- m) -R- (Cons -E- [N] -E- [m] -R- y -R- ys) = S -R- (vlen -E- m -R- ys)
     main :R: N = vlen -E- 1 -R- (Cons -E- N -E- Z -R- 3 -R- (Nil -E- N))
   in main
 
@@ -111,9 +111,9 @@
     postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a
     postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N 
-      [vlen] -E- [Z] -R- (Nil -E- [N]) = Z
+      [vlen] -E- {Z} -R- (Nil -E- [N]) = Z
       m :E: N y :E: N ys :R: Vec -E- m -E- N
-        [vlen] -E- ([S] -E- m) -R- (Cons -E- [N] -E- [m] -R- y -R- ys) = S -R- (vlen -E- m -R- ys)
+        [vlen] -E- ({S} -E- m) -R- (Cons -E- [N] -E- [m] -R- y -R- ys) = S -R- (vlen -E- m -R- ys)
     main :R: N = vlen -E- 1 -R- (Cons -E- N -E- Z -R- 3 -R- (Nil -E- N))
   in main
 

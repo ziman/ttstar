@@ -104,7 +104,7 @@
                     (((_ w) c _ _ cb ('C _ xb_ xb xn_ xn) ('C _ yb_ yb yn_ yn))
                       (letrec* ((f (lambda (_e0)
                         (match (list _e0)
-                          ((('TB _ _ _ hi_ hi lo_ lo pf))
+                          (((_ _ _ _ hi_ hi lo_ lo pf))
                             (letrec* ((eq `(eq)))
                               ((((((subst Nat) (Bin (S (S w)))) ((plus lo_) (double ((plus hi_) ((plus xn_) yn_))))) ((plus c) ((plus ((plus xb_) (double xn_))) ((plus yb_) (double yn_))))) eq) (((((C (S w)) lo_) lo) ((plus hi_) ((plus xn_) yn_))) (((((((add_ w) hi_) xn_) yn_) hi) xn) yn)))))))))
                         (f ((((((adb c) xb_) yb_) cb) xb) yb)))))))))))))

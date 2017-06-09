@@ -1,4 +1,4 @@
--- vim: ft=idris
+-- vim: ft=ttstar
 
 import "../stdlib/prelude.tt"
 import "../stdlib/equality.tt"
@@ -48,7 +48,7 @@ add' : (w : Nat)
     -> Bin (S w) (plus c (plus x y)).
 
   (c : Nat) (cb : Bit c)
-    add' [Z] c [Z] [Z] cb N N = C Z c cb Z N,
+    add' {Z} c {Z} {Z} cb N N = C Z c cb Z N,
 
   (w : Nat)
   (c : Nat) (cb : Bit c)
@@ -56,7 +56,7 @@ add' : (w : Nat)
   (xn' : Nat) (xn : Bin w xn')
   (yb' : Nat) (yb : Bit yb')
   (yn' : Nat) (yn : Bin w yn')
-    add' ([S] w) c [plus xb' (double xn')] [plus yb' (double yn')] cb
+    add' ({S} w) c [plus xb' (double xn')] [plus yb' (double yn')] cb
       (C [w] xb' xb xn' xn) (C [w] yb' yb yn' yn)
         = case adb c xb' yb' cb xb yb with
             f : (TwoBits c xb' yb')
@@ -64,7 +64,7 @@ add' : (w : Nat)
             (hi' : Nat) (hi : Bit hi')
             (lo' : Nat) (lo : Bit lo')
             (pf : Id Nat (plus c (plus xb' yb')) (plus lo' (double hi')))
-              f (TB [c] [xb'] [yb'] hi' hi lo' lo pf)
+              f ({TB} [c] [xb'] [yb'] hi' hi lo' lo pf)
                 = let
                     -- cheat our way out of the boring proof stuff
                     -- this should be normally proven as a consequence of `pf`

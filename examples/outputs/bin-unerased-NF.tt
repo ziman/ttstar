@@ -34,10 +34,10 @@
       [_] [_] [_] [_] O I I = TB Z 1 1 1 I Z O (Refl Nat 2)
       [_] [_] [_] [_] I I I = TB 1 1 1 1 I 1 I (Refl Nat 3)
     add' 
-      [_] [_] c [_] [_] cb N N = C Z c cb Z N
-      [_] ([_] w) c [_] [_] cb (C [_] xb' xb xn' xn) (C [_] yb' yb yn' yn) = 
+      [_] {_} c {_} {_} cb N N = C Z c cb Z N
+      [_] ({_} w) c [_] [_] cb (C [_] xb' xb xn' xn) (C [_] yb' yb yn' yn) = 
         let f 
-          [_] (TB [_] [_] [_] hi' hi lo' lo pf) = 
+          [_] ({_} [_] [_] [_] hi' hi lo' lo pf) = 
             let postulate eq : Id Nat (plus lo' (double (plus hi' (plus xn' yn')))) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn'))))
             in subst Nat (Bin (S (S w))) (plus lo' (double (plus hi' (plus xn' yn')))) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn')))) eq (C (S w) lo' lo (plus hi' (plus xn' yn')) (add' w hi' xn' yn' hi xn yn))
         in f (adb c xb' yb' cb xb yb)

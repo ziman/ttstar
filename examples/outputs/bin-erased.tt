@@ -4,32 +4,20 @@
     postulate S : (x) -> Nat
     postulate True : Bool
     postulate False : Bool
-    postulate I : Bit
-    postulate O : Bit
     postulate N : Bin
-    postulate C : (lsb) -> (rest) -> Bin
-    postulate TB : (hi) -> (lo) -> TwoBits
-    adb 
-      [_] O O O = TB O O
-      [_] I O O = TB O I
-      [_] O I O = TB O I
-      [_] O O I = TB O I
-      [_] I I O = TB I O
-      [_] I O I = TB I O
-      [_] O I I = TB I O
-      [_] I I I = TB I I
+    postulate C : (rest) -> Bin
     add' 
-      [_] [_] cb N N = C cb N
-      [_] ([_] w) cb (C xb xn) (C yb yn) = 
+      [_] {_} N N = C N
+      [_] ({_} w) (C xn) (C yn) = 
         let f 
-          [_] (TB hi lo) = C lo (add' w hi xn yn)
-        in f (adb cb xb yb)
-    add = (\w. (\bx. (\by. add' w O bx by)))
+          [_] = C (add' w xn yn)
+        in f
+    add = (\w. (\bx. (\by. add' w bx by)))
     foreign inputSize
     mkBin 
       [_] _ Z = N
-      [_] True (S n) = C I (mkBin False n)
-      [_] False (S n) = C O (mkBin True n)
+      [_] True (S n) = C (mkBin False n)
+      [_] False (S n) = C (mkBin True n)
     main = 
       let
         x = mkBin True inputSize

@@ -1,3 +1,8 @@
 -- vim: ft=idris
-  let postulate TheWorld : RealWorld
-  in TheWorld
+  let
+    foreign intS
+    foreign intZ
+    foreign intToNat
+  in 
+    let foreign nativePrint0
+    in nativePrint0 (intToNat (intS (intS (intS intZ))))
