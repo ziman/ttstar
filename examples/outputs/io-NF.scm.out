@@ -1,1 +1,21 @@
-(TheWorld)
+
+Error: call of non-procedure: (S (S (S (S (Z)))))
+
+	Call history:
+
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<eval>	  (print (letrec* ((Z (quasiquote (Z))) (S (lambda (x) (quasiquote (S (unquote x))))) (snd (lambda (_e...
+	<eval>	  (##sys#list (##core#quote Z))
+	<eval>	  (snd (prim__appWorld (lambda (s) ((S (S (S (S Z)))) s))))
+	<eval>	  (prim__appWorld (lambda (s) ((S (S (S (S Z)))) s)))
+	<eval>	  [prim__appWorld] (f (quote RealWorld))
+	<eval>	  ((S (S (S (S Z)))) s)
+	<eval>	  (S (S (S (S Z))))
+	<eval>	  (S (S (S Z)))
+	<eval>	  (S (S Z))
+	<eval>	  (S Z)
+	<eval>	  [S] (##sys#list (##core#quote S) x)
+	<eval>	  [S] (##sys#list (##core#quote S) x)
+	<eval>	  [S] (##sys#list (##core#quote S) x)
+	<eval>	  [S] (##sys#list (##core#quote S) x)	<--

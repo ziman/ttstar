@@ -4,5 +4,15 @@
 (define (rts-arg-peano z s i) (number->peano z s (string->number (list-ref (command-line-arguments) i))))
 (define (rts-arg-read i) (read (open-input-string (list-ref (command-line-arguments) i))))
 (print
-  (letrec* ((TheWorld `(TheWorld)))
-    TheWorld))
+  (letrec* (
+    (Z `(Z))
+    (S (lambda (x)
+      `(S ,x)))
+    (snd (lambda (_e0)
+      (match (list _e0)
+        (((_ _ y))
+          y))))
+    (prim__appWorld (lambda (f) (f 'RealWorld)))
+  )
+    (snd (prim__appWorld (lambda (s)
+      ((S (S (S (S Z)))) s))))))

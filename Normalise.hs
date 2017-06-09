@@ -162,7 +162,7 @@ red form ctx t@(App r f x)
     -- pattern-matching definitions
     | (V fn, args) <- unApply t
     , Just (defBody -> Clauses cs) <- M.lookup fn ctx
-    , Yes rhs <- firstMatch $ map (matchClause ctx fn t) cs
+    , Yes rhs <- firstMatch $ map (matchClause ctx t) cs
     = red form ctx rhs
 
     -- everything else
@@ -190,15 +190,8 @@ matchUp [] ts = Yes ([], ts)
 
 matchUp ps [] = No
 
-matchClause :: IsRelevance r => Ctx r -> Name -> TT r -> Clause r -> Match (TT r)
-matchClause ctx fn tm (Clause pvs lhs rhs) = do
-    -- check that the matched term is actually an invocation of the given function
-    () <- case tmH of
-            V fn' | fn' == fn
-                -> Yes ()
-            _
-                -> Stuck
-
+matchClause :: IsRelevance r => Ctx r -> TT r -> Clause r -> Match (TT r)
+matchClause ctx tm (Clause pvs lhs rhs) = do
     -- first, match up patterns vs. terms, keeping superfluous terms
     -- (if application is oversaturated)
     (pts, extraTerms) <- matchUp pargs args
@@ -214,7 +207,7 @@ matchClause ctx fn tm (Clause pvs lhs rhs) = do
             extraTerms
   where
     (_patH, pargs) = unApplyPat lhs
-    ( tmH,  args)  = unApply tm
+    (_tmH,  args)  = unApply tm
     pvs' = M.fromList [(defName d, d) | d <- pvs]
 
 safeSubst :: [Def r] -> [TT r] -> TT r -> TT r
@@ -243,6 +236,18 @@ match pvs ctx (PApp r f x) (App r' f' x')
         <$> match pvs ctx f f'
         <*> match pvs ctx x (red WHNF ctx x')
 
+-- Consider the following match:
+--   pattern: [S] n
+--   term:    add2 5
+-- This should certainly not get through because if we match here,
+-- we would get n=5, but the correct answer is n=6.
+--
+-- In general, the problem occurs whenever we apply a forced pattern to something else:
+-- it is impossible to tell where to start matching.
+-- Therefore, the plan is:
+--   1. to disallow PApp with PForced on the LHS
+--   2. only allow PForced for constructors (maybe as different syntax altogether)
+-- This would remedy some other problems, too, such as patterns like (f ([plus 2] n) = n), which are allowed atm.
 match pvs ctx (PForced tm) tm' = Yes $ M.empty
 
 match pvs ctx pat (V n)

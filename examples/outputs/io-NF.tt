@@ -1,3 +1,8 @@
 -- vim: ft=idris
-  let postulate TheWorld : RealWorld
-  in TheWorld
+  let
+    postulate Z : Nat
+    postulate S : (x) -> Nat
+    snd 
+      [_] ([_] _ y) = y
+    foreign prim__appWorld
+  in snd (prim__appWorld (\s. S 3 s))

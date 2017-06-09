@@ -25,7 +25,7 @@ printNat \(x : Nat) : IO Unspec
     = printSchemeRepr Int (natToInt x).
 
 -- this applies any given continuation to a RealWorld
-foreign prim__applyToWorld
+foreign prim__appWorld
     : (a :E: Type)
     -> (f :R: (w :R: RealWorld) -> a)
     -> a
@@ -37,4 +37,4 @@ foreign prim__applyToWorld
 unsafePerformIO : (a :E: Type) -> (io :R: IO a) -> a.
   (a : Type) (run : RealWorld -> Pair RealWorld a)
     unsafePerformIO a ([MkSt] [RealWorld] [a] run)
-      = snd RealWorld a (prim__applyToWorld (Pair RealWorld a) run).
+      = snd RealWorld a (prim__appWorld (Pair RealWorld a) run).

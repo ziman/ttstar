@@ -7,9 +7,6 @@
     snd 
       [_] ([_] _ y) = y
     postulate MkSt : (run) -> State
-    runState 
-      [_] ([_] run) = run
-    execState = (\x. (\s. snd (runState x s)))
     stReturn = (\x. MkSt (\s. MkPair s x))
     stBind 
       [_] ([_] f) g = 
@@ -22,9 +19,6 @@
     ioReturn = (\x. stReturn x)
     ioBind = (\x. (\y. stBind x y))
     ioWrapImpure = (\impureF. MkSt (\w. MkPair w (impureF MkUnit)))
-    unsafePerformIO = (\x. 
-      let postulate TheWorld : RealWorld
-      in execState x TheWorld)
     foreign intS
     foreign intZ
     printSchemeRepr = (\x. 
@@ -35,5 +29,8 @@
       [_] (S n) = intS (natToInt n)
     foreign intToNat
     printNat = (\x. printSchemeRepr (natToInt x))
+    foreign prim__appWorld
+    unsafePerformIO 
+      [_] ([_] run) = snd (prim__appWorld run)
     main = unsafePerformIO (ioBind (ioReturn 4) (\v. ioBind (printNat v) (\_0. printSchemeRepr (intToNat (intS (intS (intS intZ)))))))
   in main
