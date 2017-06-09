@@ -618,73 +618,22 @@ unerased:
   
   let
     postulate Nat : Type
-    postulate Pair : (_x3 : Type) -> (_x4 : Type) -> Type
-    postulate MkPair : (a : Type) -> (b : Type) -> (_x5 : a) -> (_x6 : b) -> Pair a b
-    snd : (a : Type) -> (b : Type) -> (_x8 : Pair a b) -> b 
-      a : Type b : Type x : a y : b
-        [snd] a b ([MkPair] [a] [b] x y) = y
-    postulate State : (_x0 : Type) -> (_x1 : Type) -> Type
-    postulate MkSt : (st : Type) -> (a : Type) -> (run : (_x2 : st) -> Pair st a) -> State st a
-    runState : (st : Type) -> (a : Type) -> (_x3 : State st a) -> (_x4 : st) -> Pair st a 
-      st : Type a : Type run : (_x5 : st) -> Pair st a
-        [runState] st a ([MkSt] [st] [a] run) = run
-    stBind : (st : Type) -> (a : Type) -> (b : Type) -> (x : State st a) -> (y : (z : a) -> State st b) -> State st b 
-      st : Type a : Type b : Type f : (_x6 : st) -> Pair st a g : (_x7 : a) -> State st b
-        [stBind] st a b ([MkSt] [st] [a] f) g = 
-          let
-            stBind3 : (st : Type) -> (b : Type) -> (_x8 : st) -> (_x9 : State st b) -> Pair st b 
-              st : Type b : Type s : st f : (_x10 : st) -> Pair st b
-                [stBind3] st b s ([MkSt] [st] [b] f) = f s
-            stBind2 : (st : Type) -> (a : Type) -> (b : Type) -> (g : (_x11 : a) -> State st b) -> (r : Pair st a) -> Pair st b 
-              st : Type a : Type b : Type g : (_x12 : a) -> State st b x : a s : st
-                [stBind2] st a b g ([MkPair] [st] [a] s x) = stBind3 st b s (g x)
-          in MkSt st b (\s : st. stBind2 st a b g (f s))
-    postulate RealWorld : Type
     postulate Int : Type
     foreign intS : (x :R: Int) -> Int
     foreign intZ : Int
     postulate Unspec : Type
     foreign intToNat : (x :R: Int) -> Nat
   in 
-    let postulate TheWorld : RealWorld
-    in snd RealWorld Unspec (runState RealWorld Unspec 
-      let stBind3 : (st : Type) -> (b : Type) -> (_x8 : st) -> (_x9 : State st b) -> Pair st b 
-        st : Type b : Type s : st f : (_x10 : st) -> Pair st b
-          [stBind3] st b s ([MkSt] [st] [b] f) = f s
-      in MkSt RealWorld Unspec (\s : RealWorld. stBind3 RealWorld Unspec s (stBind RealWorld Unspec Unspec 
-        let foreign nativePrint : (a :E: Type) -> (x :R: a) -> Unspec
-        in MkSt RealWorld Unspec (\w :R: RealWorld. MkPair RealWorld Unspec w (nativePrint Int (intS (intS (intS (intS intZ)))))) (\_0 : Unspec. 
-        let foreign nativePrint : (a :E: Type) -> (x :R: a) -> Unspec
-        in MkSt RealWorld Unspec (\w :R: RealWorld. MkPair RealWorld Unspec w (nativePrint Nat (intToNat (intS (intS (intS intZ))))))))) TheWorld)
+    let foreign nativePrint0 : (a :E: Type) -> (x :R: a) -> Unspec
+    in nativePrint0 Nat (intToNat (intS (intS (intS intZ))))
 
 erased:
   
   let
-    postulate MkPair : (_x5) -> (_x6) -> Pair
-    snd 
-      [_] ([_] _ y) = y
-    postulate MkSt : (run) -> State
-    runState 
-      [_] ([_] run) = run
-    stBind 
-      [_] ([_] f) g = 
-        let
-          stBind3 
-            [_] s ([_] f) = f s
-          stBind2 
-            [_] g ([_] s x) = stBind3 s (g x)
-        in MkSt (\s. stBind2 g (f s))
     foreign intS
     foreign intZ
     foreign intToNat
   in 
-    let postulate TheWorld : RealWorld
-    in snd (runState 
-      let stBind3 
-        [_] s ([_] f) = f s
-      in MkSt (\s. stBind3 s (stBind 
-        let foreign nativePrint
-        in MkSt (\w. MkPair w (nativePrint (intS (intS (intS (intS intZ)))))) (\_0. 
-        let foreign nativePrint
-        in MkSt (\w. MkPair w (nativePrint (intToNat (intS (intS (intS intZ))))))))) TheWorld)
+    let foreign nativePrint0
+    in nativePrint0 (intToNat (intS (intS (intS intZ))))
 
