@@ -1,0 +1,31 @@
+import "prelude.tt"
+
+filterLen : (p : Nat -> Bool) -> (xs : NList) -> LE (length (filter p xs)) (length xs).
+  (p : Nat -> Bool)
+    filterLen p Nil = LEZ Z,
+  (p : Nat -> Bool) (x : Nat) (xs : NList)
+    filterLen p (Cons x xs)
+      = case p x with
+          -- in case expressions like this, you just need to name the parameter
+          -- and replace (p x) with (px) everywhere in the goal (don't forget to reduce it)
+          -- and that's all you need!
+          f : (px : Bool) -> LE (length (condCons px x (filter p xs))) (length (Cons x xs)).
+          f True  = LES (length (filter p xs)) (length xs) (filterLen p xs),
+          f False = leS (length (filter p xs)) (length xs) (filterLen p xs).
+    .
+
+qsort' : (xs : NList) -> Acc NList Shorter xs -> NList.
+  (acc : Acc NList Shorter Nil)
+    qsort' Nil acc = Nil,
+  (x : Nat) (xs : NList) (acc : (ys : NList) -> Shorter ys (Cons x xs) -> Acc NList Shorter ys)
+    qsort' (Cons x xs) ({MkAcc} [NList] [Shorter] [Cons x xs] acc)
+        = append
+            (qsort' (filter (qel x) xs) (acc (filter (qel x) xs)
+                (LES (length (filter (qel x) xs)) (length xs) (filterLen (qel x) xs))))
+            (Cons x
+            (qsort' (filter (gt x) xs) (acc (filter (gt x) xs)
+                (LES (length (filter (gt x) xs)) (length xs) (filterLen (gt x) xs))))).
+
+qsort \(xs : NList) : NList = qsort' xs (wfShorter xs).
+
+main \: NList = qsort someList.

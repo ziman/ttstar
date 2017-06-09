@@ -1,0 +1,171 @@
+data Nat : Type where
+  Z : Nat,
+  S : (n :R: Nat) -> Nat.
+
+data Bool : Type where
+  True : Bool,
+  False : Bool.
+
+data NList : Type where
+  Nil : NList,
+  Cons : (x :R: Nat) -> (xs :R: NList) -> NList.
+
+someList \: NList
+  = Cons 9 (Cons 5 (Cons 1 (Cons 3 (Cons 1 (Cons 5 (Cons 2 Nil)))))).
+
+Rel2 \(a : Type) : Type = (x : a) -> (y : a) -> Type.
+
+data Acc : (a : Type) -> (lt : Rel2 a) -> (x : a) -> Type where
+  MkAcc :
+    (a : Type) -> (lt : Rel2 a) -> (x : a)
+    -> (acc : (y : a) -> (pf : lt y x) -> Acc a lt y)
+    -> Acc a lt x.
+
+-- this is a difference and all indices are meant to be erased
+data LE : Nat -> Nat -> Type where
+  LEZ : (n : Nat) -> LE Z n,
+  LES : (m : Nat) -> (n : Nat) -> LE m n -> LE (S m) (S n).
+
+LT \(x : Nat) (y : Nat) : Type = LE (S x) y.
+
+leRefl : (x : Nat) -> LE x x.
+  leRefl Z = LEZ Z,
+  (x : Nat)
+    leRefl (S x) = LES x x (leRefl x).
+
+leTrans : (x : Nat) -> (y : Nat) -> (z : Nat)
+  -> LE x y -> LE y z -> LE x z.
+
+  (y : Nat) (z : Nat) (pf : LE y z)
+    leTrans Z y z ({LEZ} [y]) pf = LEZ z,
+
+  (x : Nat) (y : Nat) (z : Nat) (xLEy : LE x y) (yLEz : LE y z)
+    leTrans (S x) (S y) (S z) ({LES} [x] [y] xLEy) ({LES} [y] [z] yLEz)
+      = LES x z (leTrans x y z xLEy yLEz).
+
+leS : (x : Nat) -> (y : Nat) -> LE x y -> LE x (S y).
+  (y : Nat)
+    leS Z y ({LEZ} [y]) = LEZ (S y),
+  (x : Nat) (y : Nat) (xLEy : LE x y)
+    leS (S x) (S y) ({LES} [x] [y] xLEy) = LES x (S y) (leS x y xLEy).
+
+lemmaLTZ : (a : Type) -> (n : Nat) -> LT n Z -> a.
+  -- this is a void eliminator
+.
+
+wfLT \(x : Nat) : Acc Nat LT x
+  = let
+      -- recurse on x
+      f : (x : Nat) -> (y : Nat) -> LT y x -> Acc Nat LT y.
+        (y : Nat) (pf : LT y Z)
+          f Z y pf = lemmaLTZ (Acc Nat LT y) y pf,
+        (x : Nat) (y : Nat) (yLEx : LE y x)
+          f (S x) y ({LES} [y] [x] yLEx)
+            = MkAcc Nat LT y (
+              \z : Nat. \zLTy : LT z y.
+                f x z (leTrans (S z) y x zLTy yLEx)
+            ).
+    in 
+      MkAcc Nat LT x (f x).
+
+length : NList -> Nat.
+length Nil = Z,
+(x : Nat) (xs : NList)
+  length (Cons x xs) = S (length xs).
+
+Shorter \(xs : NList) (ys : NList) : Type
+  = LT (length xs) (length ys).
+
+wfShorter \(xs : NList) : Acc NList Shorter xs
+  = let
+      -- recurse on xs
+      f : (xs : NList) -> (ys : NList) -> Shorter ys xs -> Acc NList Shorter ys.
+        (ys : NList) (pf : Shorter ys Nil)
+          f Nil ys pf = lemmaLTZ (Acc NList Shorter ys) (length ys) pf,
+        (x : Nat) (xs : NList) (ys : NList) (yLEx : LE (length ys) (length xs))
+          f (Cons x xs) ys ({LES} [length ys] [length xs] yLEx)
+            = MkAcc NList Shorter ys (
+              \zs : NList. \zLTy : LT (length zs) (length ys).
+                f xs zs (leTrans (S (length zs)) (length ys) (length xs) zLTy yLEx)
+            ).
+    in
+      MkAcc NList Shorter xs (f xs).
+
+leq : Nat -> Nat -> Bool.
+  (y : Nat)
+    leq Z y = True,
+  (x : Nat)
+    leq (S x) Z = False,
+  (x : Nat) (y : Nat)
+    leq (S x) (S y) = leq x y.
+
+not : Bool -> Bool.
+not True = False,
+not False = True.
+
+qel \(y : Nat) (x : Nat) : Bool = leq x y.
+gt \(x : Nat) (y : Nat) : Bool = not (leq y x).
+
+condCons : Bool -> Nat -> NList -> NList.
+condCons True = Cons,
+condCons False = \x : Nat. \xs : NList. xs.
+
+filter : (Nat -> Bool) -> NList -> NList.
+  (p : Nat -> Bool)
+    filter p Nil = Nil,
+  (p : Nat -> Bool) (x : Nat) (xs : NList)
+    filter p (Cons x xs) = condCons (p x) x (filter p xs).
+
+append : NList -> NList -> NList.
+  (ys : NList)
+    append Nil ys = ys,
+  (x : Nat) (xs : NList) (ys : NList)
+    append (Cons x xs) ys = Cons x (append xs ys).
+
+data Id : (a : Type) -> a -> a -> Type where
+  Refl : (a : Type) -> (x : a) -> Id a x x.
+
+data Split : NList -> Type where
+  SNil : Split Nil,
+  SOne : (x : Nat) -> Split (Cons x Nil),
+  SMore :
+    (x : Nat) -> (xs : NList)
+    -> (y : Nat) -> (ys : NList)
+    -> Split (append (Cons x xs) (Cons y ys)).
+
+pushL : (x : Nat) -> (xs : NList) -> Split xs -> Split (Cons x xs).
+  (x : Nat)
+    pushL x [Nil] SNil = SOne x,
+  (x : Nat) (y : Nat)
+    pushL x [Cons y Nil] (SOne y) = SMore x Nil y Nil,
+  (x : Nat) (y : Nat) (ys : NList) (z : Nat) (zs : NList)
+    pushL x [append (Cons y ys) (Cons z zs)] (SMore y ys z zs) = SMore x (Cons y ys) z zs.
+
+split : (xs : NList) -> Split xs.
+  split Nil = SNil,
+  (x : Nat)
+    split (Cons x Nil) = SOne x,
+  (x : Nat) (y : Nat) (xs : NList)
+    split (Cons x (Cons y xs)) = let
+        step : (counter : Nat) -> (x : Nat) -> (y : Nat) -> (xs : NList) -> Split (Cons x (Cons y xs)).
+          (x : Nat) (y : Nat) (xs : NList)
+            step Z x y xs = SMore x Nil y xs,
+          (x : Nat) (y : Nat) (xs : NList)
+            step (S Z) x y xs = SMore x Nil y xs,
+          (c : Nat) (x : Nat) (y : Nat)
+            step (S (S c)) x y Nil = SMore x Nil y Nil,
+          (c : Nat) (x : Nat) (y : Nat) (z : Nat) (xs : NList)
+            step (S (S c)) x y (Cons z xs) = pushL x (Cons y (Cons z xs)) (step c y z xs)
+      in step (S (length xs)) x y xs.
+
+merge : NList -> NList -> NList.
+  (ys : NList)
+    merge Nil ys = ys,
+  (xs : NList)
+    merge xs Nil = xs,
+  (x : Nat) (xs : NList) (y : Nat) (ys : NList)
+    merge (Cons x xs) (Cons y ys)
+      = case leq x y with
+          f : Bool -> NList.
+          f True  = Cons x (merge xs (Cons y ys)),
+          f False = Cons y (merge (Cons x xs) ys).

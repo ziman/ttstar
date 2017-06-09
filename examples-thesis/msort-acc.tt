@@ -1,0 +1,37 @@
+import "prelude.tt"
+
+shorterL : (xs : NList) -> (y : Nat) -> (ys : NList)
+  -> Shorter xs (append xs (Cons y ys)).
+  (y : Nat) (ys : NList)
+    shorterL Nil y ys = LES Z (length ys) (LEZ (length ys)),
+  (x : Nat) (xs : NList) (y : Nat) (ys : NList)
+    shorterL (Cons x xs) y ys = LES (S (length xs)) (length (append xs (Cons y ys))) (shorterL xs y ys).
+
+shorterR : (x : Nat) -> (xs : NList) -> (ys : NList) -> Shorter ys (Cons x (append xs ys)).
+  (x : Nat) (ys : NList)
+    shorterR x Nil ys = LES (length ys) (length ys) (leRefl (length ys)),
+  (x : Nat) (z : Nat) (xs : NList) (ys : NList)
+    shorterR x (Cons z xs) ys = leS (S (length ys)) (length (Cons z (append xs ys))) (shorterR z xs ys).
+
+msort' \(xs : NList) (acc : Acc NList Shorter xs) : NList
+  = let
+      fx : (xs : NList) -> (acc : Acc NList Shorter xs) -> Split xs -> NList.
+        (acc : Acc NList Shorter Nil)
+          fx [Nil] acc SNil = Nil,
+        (x : Nat) (acc : Acc NList Shorter (Cons x Nil))
+          fx [Cons x Nil] acc (SOne x) = Cons x Nil,
+        (y : Nat) (ys : NList) (z : Nat) (zs : NList)
+        (acc : (qs : NList) -> Shorter qs (append (Cons y ys) (Cons z zs)) -> Acc NList Shorter qs)
+          fx [append (Cons y ys) (Cons z zs)]
+              ({MkAcc} [NList] [Shorter] [append (Cons y ys) (Cons z zs)] acc)
+              (SMore y ys z zs)
+            = merge
+                (msort' (Cons y ys) (acc (Cons y ys) (shorterL (Cons y ys) z zs)))
+                (msort' (Cons z zs) (acc (Cons z zs) (shorterR y ys (Cons z zs))))
+    in
+      fx xs acc (split xs).
+
+msort \(xs : NList) : NList
+  = msort' xs (wfShorter xs).
+
+main \: NList = msort someList.

@@ -1,0 +1,1238 @@
+-- vim: ft=ttstar
+
+### Desugared ###
+
+  let
+    postulate Nat : Type
+    postulate Z : Nat
+    postulate S : (n :R: Nat) -> Nat
+    postulate Bool : Type
+    postulate True : Bool
+    postulate False : Bool
+    postulate NList : Type
+    postulate Nil : NList
+    postulate Cons : (x :R: Nat) -> (xs :R: NList) -> NList
+    someList : NList = Cons 9 (Cons 5 (Cons 1 (Cons 3 (Cons 1 (Cons 5 (Cons 2 Nil))))))
+    Rel2 : (a : Type) -> Type = (\a : Type. (x : a) -> (y : a) -> Type)
+    postulate Acc : (a : Type) -> (lt : Rel2 a) -> (x : a) -> Type
+    postulate MkAcc : (a : Type) -> (lt : Rel2 a) -> (x : a) -> (acc : (y : a) -> (pf : lt y x) -> Acc a lt y) -> Acc a lt x
+    postulate LE : (_x0 : Nat) -> (_x1 : Nat) -> Type
+    postulate LEZ : (n : Nat) -> LE Z n
+    postulate LES : (m : Nat) -> (n : Nat) -> (_x2 : LE m n) -> LE (S m) (S n)
+    LT : (x : Nat) -> (y : Nat) -> Type = (\x : Nat. (\y : Nat. LE (S x) y))
+    leRefl : (x : Nat) -> LE x x 
+      [leRefl] Z = LEZ Z
+      x : Nat
+        [leRefl] (S x) = LES x x (leRefl x)
+    leTrans : (x : Nat) -> (y : Nat) -> (z : Nat) -> (_x3 : LE x y) -> (_x4 : LE y z) -> LE x z 
+      y : Nat z : Nat pf : LE y z
+        [leTrans] Z y z ({LEZ} [y]) pf = LEZ z
+      x : Nat y : Nat z : Nat xLEy : LE x y yLEz : LE y z
+        [leTrans] (S x) (S y) (S z) ({LES} [x] [y] xLEy) ({LES} [y] [z] yLEz) = LES x z (leTrans x y z xLEy yLEz)
+    leS : (x : Nat) -> (y : Nat) -> (_x5 : LE x y) -> LE x (S y) 
+      y : Nat
+        [leS] Z y ({LEZ} [y]) = LEZ (S y)
+      x : Nat y : Nat xLEy : LE x y
+        [leS] (S x) (S y) ({LES} [x] [y] xLEy) = LES x (S y) (leS x y xLEy)
+    lemmaLTZ : (a : Type) -> (n : Nat) -> (_x6 : LT n Z) -> a 
+    wfLT : (x : Nat) -> Acc Nat LT x = (\x : Nat. 
+      let f : (x : Nat) -> (y : Nat) -> (_x7 : LT y x) -> Acc Nat LT y 
+        y : Nat pf : LT y Z
+          [f] Z y pf = lemmaLTZ (Acc Nat LT y) y pf
+        x : Nat y : Nat yLEx : LE y x
+          [f] (S x) y ({LES} [y] [x] yLEx) = MkAcc Nat LT y (\z : Nat. (\zLTy : LT z y. f x z (leTrans (S z) y x zLTy yLEx)))
+      in MkAcc Nat LT x (f x))
+    length : (_x8 : NList) -> Nat 
+      [length] Nil = Z
+      x : Nat xs : NList
+        [length] (Cons x xs) = S (length xs)
+    Shorter : (xs : NList) -> (ys : NList) -> Type = (\xs : NList. (\ys : NList. LT (length xs) (length ys)))
+    wfShorter : (xs : NList) -> Acc NList Shorter xs = (\xs : NList. 
+      let f : (xs : NList) -> (ys : NList) -> (_x9 : Shorter ys xs) -> Acc NList Shorter ys 
+        ys : NList pf : Shorter ys Nil
+          [f] Nil ys pf = lemmaLTZ (Acc NList Shorter ys) (length ys) pf
+        x : Nat xs : NList ys : NList yLEx : LE (length ys) (length xs)
+          [f] (Cons x xs) ys ({LES} [length ys] [length xs] yLEx) = MkAcc NList Shorter ys (\zs : NList. (\zLTy : LT (length zs) (length ys). f xs zs (leTrans (S (length zs)) (length ys) (length xs) zLTy yLEx)))
+      in MkAcc NList Shorter xs (f xs))
+    leq : (_x10 : Nat) -> (_x11 : Nat) -> Bool 
+      y : Nat
+        [leq] Z y = True
+      x : Nat
+        [leq] (S x) Z = False
+      x : Nat y : Nat
+        [leq] (S x) (S y) = leq x y
+    not : (_x12 : Bool) -> Bool 
+      [not] True = False
+      [not] False = True
+    qel : (y : Nat) -> (x : Nat) -> Bool = (\y : Nat. (\x : Nat. leq x y))
+    gt : (x : Nat) -> (y : Nat) -> Bool = (\x : Nat. (\y : Nat. not (leq y x)))
+    condCons : (_x13 : Bool) -> (_x14 : Nat) -> (_x15 : NList) -> NList 
+      [condCons] True = Cons
+      [condCons] False = (\x : Nat. (\xs : NList. xs))
+    filter : (_x16 : (_x17 : Nat) -> Bool) -> (_x18 : NList) -> NList 
+      p : (_x19 : Nat) -> Bool
+        [filter] p Nil = Nil
+      p : (_x20 : Nat) -> Bool x : Nat xs : NList
+        [filter] p (Cons x xs) = condCons (p x) x (filter p xs)
+    append : (_x21 : NList) -> (_x22 : NList) -> NList 
+      ys : NList
+        [append] Nil ys = ys
+      x : Nat xs : NList ys : NList
+        [append] (Cons x xs) ys = Cons x (append xs ys)
+    postulate Id : (a : Type) -> (_x23 : a) -> (_x24 : a) -> Type
+    postulate Refl : (a : Type) -> (x : a) -> Id a x x
+    postulate Split : (_x25 : NList) -> Type
+    postulate SNil : Split Nil
+    postulate SOne : (x : Nat) -> Split (Cons x Nil)
+    postulate SMore : (x : Nat) -> (xs : NList) -> (y : Nat) -> (ys : NList) -> Split (append (Cons x xs) (Cons y ys))
+    pushL : (x : Nat) -> (xs : NList) -> (_x26 : Split xs) -> Split (Cons x xs) 
+      x : Nat
+        [pushL] x [Nil] SNil = SOne x
+      x : Nat y : Nat
+        [pushL] x [Cons y Nil] (SOne y) = SMore x Nil y Nil
+      x : Nat y : Nat ys : NList z : Nat zs : NList
+        [pushL] x [append (Cons y ys) (Cons z zs)] (SMore y ys z zs) = SMore x (Cons y ys) z zs
+    split : (xs : NList) -> Split xs 
+      [split] Nil = SNil
+      x : Nat
+        [split] (Cons x Nil) = SOne x
+      x : Nat y : Nat xs : NList
+        [split] (Cons x (Cons y xs)) = 
+          let step : (counter : Nat) -> (x : Nat) -> (y : Nat) -> (xs : NList) -> Split (Cons x (Cons y xs)) 
+            x : Nat y : Nat xs : NList
+              [step] Z x y xs = SMore x Nil y xs
+            x : Nat y : Nat xs : NList
+              [step] (S Z) x y xs = SMore x Nil y xs
+            c : Nat x : Nat y : Nat
+              [step] (S (S c)) x y Nil = SMore x Nil y Nil
+            c : Nat x : Nat y : Nat z : Nat xs : NList
+              [step] (S (S c)) x y (Cons z xs) = pushL x (Cons y (Cons z xs)) (step c y z xs)
+          in step (S (length xs)) x y xs
+    merge : (_x27 : NList) -> (_x28 : NList) -> NList 
+      ys : NList
+        [merge] Nil ys = ys
+      xs : NList
+        [merge] xs Nil = xs
+      x : Nat xs : NList y : Nat ys : NList
+        [merge] (Cons x xs) (Cons y ys) = 
+          let f : (_x29 : Bool) -> NList 
+            [f] True = Cons x (merge xs (Cons y ys))
+            [f] False = Cons y (merge (Cons x xs) ys)
+          in f (leq x y)
+    filterLen : (p : (_x0 : Nat) -> Bool) -> (xs : NList) -> LE (length (filter p xs)) (length xs) 
+      p : (_x1 : Nat) -> Bool
+        [filterLen] p Nil = LEZ Z
+      p : (_x2 : Nat) -> Bool x : Nat xs : NList
+        [filterLen] p (Cons x xs) = 
+          let f : (px : Bool) -> LE (length (condCons px x (filter p xs))) (length (Cons x xs)) 
+            [f] True = LES (length (filter p xs)) (length xs) (filterLen p xs)
+            [f] False = leS (length (filter p xs)) (length xs) (filterLen p xs)
+          in f (p x)
+    qsort' : (xs : NList) -> (_x3 : Acc NList Shorter xs) -> NList 
+      acc : Acc NList Shorter Nil
+        [qsort'] Nil acc = Nil
+      x : Nat xs : NList acc : (ys : NList) -> (_x4 : Shorter ys (Cons x xs)) -> Acc NList Shorter ys
+        [qsort'] (Cons x xs) ({MkAcc} [NList] [Shorter] [Cons x xs] acc) = append (qsort' (filter (qel x) xs) (acc (filter (qel x) xs) (LES (length (filter (qel x) xs)) (length xs) (filterLen (qel x) xs)))) (Cons x (qsort' (filter (gt x) xs) (acc (filter (gt x) xs) (LES (length (filter (gt x) xs)) (length xs) (filterLen (gt x) xs)))))
+    qsort : (xs : NList) -> NList = (\xs : NList. qsort' xs (wfShorter xs))
+    main : NList = qsort someList
+  in main
+
+### Evarified ###
+
+  let
+    postulate Nat :1: Type
+    postulate Z :2: Nat
+    postulate S :3: (n :R: Nat) -> Nat
+    postulate Bool :4: Type
+    postulate True :5: Bool
+    postulate False :6: Bool
+    postulate NList :7: Type
+    postulate Nil :8: NList
+    postulate Cons :9: (x :R: Nat) -> (xs :R: NList) -> NList
+    someList :10: NList = Cons -12- 9 -11- (Cons -23- 5 -22- (Cons -30- 1 -29- (Cons -33- 3 -32- (Cons -38- 1 -37- (Cons -41- 5 -40- (Cons -48- 2 -47- Nil))))))
+    Rel2 :51: (a :52: Type) -> Type = (\a :53: Type. (x :54: a) -> (y :55: a) -> Type)
+    postulate Acc :56: (a :57: Type) -> (lt :58: Rel2 -59- a) -> (x :60: a) -> Type
+    postulate MkAcc :61: (a :62: Type) -> (lt :63: Rel2 -64- a) -> (x :65: a) -> (acc :66: (y :67: a) -> (pf :68: lt -70- y -69- x) -> Acc -73- a -72- lt -71- y) -> Acc -76- a -75- lt -74- x
+    postulate LE :77: (_x0 :78: Nat) -> (_x1 :79: Nat) -> Type
+    postulate LEZ :80: (n :81: Nat) -> LE -83- Z -82- n
+    postulate LES :84: (m :85: Nat) -> (n :86: Nat) -> (_x2 :87: LE -89- m -88- n) -> LE -91- (S -92- m) -90- (S -93- n)
+    LT :94: (x :95: Nat) -> (y :96: Nat) -> Type = (\x :97: Nat. (\y :98: Nat. LE -100- (S -101- x) -99- y))
+    leRefl :102: (x :103: Nat) -> LE -105- x -104- x 
+      [leRefl] -106- Z = LEZ -107- Z
+      x :108: Nat
+        [leRefl] -109- (S -110- x) = LES -113- x -112- x -111- (leRefl -114- x)
+    leTrans :115: (x :116: Nat) -> (y :117: Nat) -> (z :118: Nat) -> (_x3 :119: LE -121- x -120- y) -> (_x4 :122: LE -124- y -123- z) -> LE -126- x -125- z 
+      y :127: Nat z :128: Nat pf :129: LE -131- y -130- z
+        [leTrans] -136- Z -135- y -134- z -133- ({LEZ} -137- [y]) -132- pf = LEZ -138- z
+      x :139: Nat y :140: Nat z :141: Nat xLEy :142: LE -144- x -143- y yLEz :145: LE -147- y -146- z
+        [leTrans] -152- (S -153- x) -151- (S -154- y) -150- (S -155- z) -149- ({LES} -158- [x] -157- [y] -156- xLEy) -148- ({LES} -161- [y] -160- [z] -159- yLEz) = LES -164- x -163- z -162- (leTrans -169- x -168- y -167- z -166- xLEy -165- yLEz)
+    leS :170: (x :171: Nat) -> (y :172: Nat) -> (_x5 :173: LE -175- x -174- y) -> LE -177- x -176- (S -178- y) 
+      y :179: Nat
+        [leS] -182- Z -181- y -180- ({LEZ} -183- [y]) = LEZ -184- (S -185- y)
+      x :186: Nat y :187: Nat xLEy :188: LE -190- x -189- y
+        [leS] -193- (S -194- x) -192- (S -195- y) -191- ({LES} -198- [x] -197- [y] -196- xLEy) = LES -201- x -200- (S -202- y) -199- (leS -205- x -204- y -203- xLEy)
+    lemmaLTZ :206: (a :207: Type) -> (n :208: Nat) -> (_x6 :209: LT -211- n -210- Z) -> a 
+    wfLT :212: (x :213: Nat) -> Acc -216- Nat -215- LT -214- x = (\x :217: Nat. 
+      let f :218: (x :219: Nat) -> (y :220: Nat) -> (_x7 :221: LT -223- y -222- x) -> Acc -226- Nat -225- LT -224- y 
+        y :227: Nat pf :228: LT -230- y -229- Z
+          [f] -233- Z -232- y -231- pf = lemmaLTZ -236- (Acc -239- Nat -238- LT -237- y) -235- y -234- pf
+        x :240: Nat y :241: Nat yLEx :242: LE -244- y -243- x
+          [f] -247- (S -248- x) -246- y -245- ({LES} -251- [y] -250- [x] -249- yLEx) = MkAcc -255- Nat -254- LT -253- y -252- (\z :256: Nat. (\zLTy :257: LT -259- z -258- y. f -262- x -261- z -260- (leTrans -267- (S -268- z) -266- y -265- x -264- zLTy -263- yLEx)))
+      in MkAcc -272- Nat -271- LT -270- x -269- (f -273- x))
+    length :274: (_x8 :275: NList) -> Nat 
+      [length] -276- Nil = Z
+      x :277: Nat xs :278: NList
+        [length] -279- (Cons -281- x -280- xs) = S -282- (length -283- xs)
+    Shorter :284: (xs :285: NList) -> (ys :286: NList) -> Type = (\xs :287: NList. (\ys :288: NList. LT -290- (length -291- xs) -289- (length -292- ys)))
+    wfShorter :293: (xs :294: NList) -> Acc -297- NList -296- Shorter -295- xs = (\xs :298: NList. 
+      let f :299: (xs :300: NList) -> (ys :301: NList) -> (_x9 :302: Shorter -304- ys -303- xs) -> Acc -307- NList -306- Shorter -305- ys 
+        ys :308: NList pf :309: Shorter -311- ys -310- Nil
+          [f] -314- Nil -313- ys -312- pf = lemmaLTZ -317- (Acc -320- NList -319- Shorter -318- ys) -316- (length -321- ys) -315- pf
+        x :322: Nat xs :323: NList ys :324: NList yLEx :325: LE -327- (length -328- ys) -326- (length -329- xs)
+          [f] -332- (Cons -334- x -333- xs) -331- ys -330- ({LES} -337- [length -338- ys] -336- [length -339- xs] -335- yLEx) = MkAcc -343- NList -342- Shorter -341- ys -340- (\zs :344: NList. (\zLTy :345: LT -347- (length -348- zs) -346- (length -349- ys). f -352- xs -351- zs -350- (leTrans -357- (S -358- (length -359- zs)) -356- (length -360- ys) -355- (length -361- xs) -354- zLTy -353- yLEx)))
+      in MkAcc -365- NList -364- Shorter -363- xs -362- (f -366- xs))
+    leq :367: (_x10 :368: Nat) -> (_x11 :369: Nat) -> Bool 
+      y :370: Nat
+        [leq] -372- Z -371- y = True
+      x :373: Nat
+        [leq] -375- (S -376- x) -374- Z = False
+      x :377: Nat y :378: Nat
+        [leq] -380- (S -381- x) -379- (S -382- y) = leq -384- x -383- y
+    not :385: (_x12 :386: Bool) -> Bool 
+      [not] -387- True = False
+      [not] -388- False = True
+    qel :389: (y :390: Nat) -> (x :391: Nat) -> Bool = (\y :392: Nat. (\x :393: Nat. leq -395- x -394- y))
+    gt :396: (x :397: Nat) -> (y :398: Nat) -> Bool = (\x :399: Nat. (\y :400: Nat. not -401- (leq -403- y -402- x)))
+    condCons :404: (_x13 :405: Bool) -> (_x14 :406: Nat) -> (_x15 :407: NList) -> NList 
+      [condCons] -408- True = Cons
+      [condCons] -409- False = (\x :410: Nat. (\xs :411: NList. xs))
+    filter :412: (_x16 :413: (_x17 :414: Nat) -> Bool) -> (_x18 :415: NList) -> NList 
+      p :416: (_x19 :417: Nat) -> Bool
+        [filter] -419- p -418- Nil = Nil
+      p :420: (_x20 :421: Nat) -> Bool x :422: Nat xs :423: NList
+        [filter] -425- p -424- (Cons -427- x -426- xs) = condCons -430- (p -431- x) -429- x -428- (filter -433- p -432- xs)
+    append :434: (_x21 :435: NList) -> (_x22 :436: NList) -> NList 
+      ys :437: NList
+        [append] -439- Nil -438- ys = ys
+      x :440: Nat xs :441: NList ys :442: NList
+        [append] -444- (Cons -446- x -445- xs) -443- ys = Cons -448- x -447- (append -450- xs -449- ys)
+    postulate Id :451: (a :452: Type) -> (_x23 :453: a) -> (_x24 :454: a) -> Type
+    postulate Refl :455: (a :456: Type) -> (x :457: a) -> Id -460- a -459- x -458- x
+    postulate Split :461: (_x25 :462: NList) -> Type
+    postulate SNil :463: Split -464- Nil
+    postulate SOne :465: (x :466: Nat) -> Split -467- (Cons -469- x -468- Nil)
+    postulate SMore :470: (x :471: Nat) -> (xs :472: NList) -> (y :473: Nat) -> (ys :474: NList) -> Split -475- (append -477- (Cons -479- x -478- xs) -476- (Cons -481- y -480- ys))
+    pushL :482: (x :483: Nat) -> (xs :484: NList) -> (_x26 :485: Split -486- xs) -> Split -487- (Cons -489- x -488- xs) 
+      x :490: Nat
+        [pushL] -493- x -492- [Nil] -491- SNil = SOne -494- x
+      x :495: Nat y :496: Nat
+        [pushL] -499- x -498- [Cons -501- y -500- Nil] -497- (SOne -502- y) = SMore -506- x -505- Nil -504- y -503- Nil
+      x :507: Nat y :508: Nat ys :509: NList z :510: Nat zs :511: NList
+        [pushL] -514- x -513- [append -516- (Cons -518- y -517- ys) -515- (Cons -520- z -519- zs)] -512- (SMore -524- y -523- ys -522- z -521- zs) = SMore -528- x -527- (Cons -530- y -529- ys) -526- z -525- zs
+    split :531: (xs :532: NList) -> Split -533- xs 
+      [split] -534- Nil = SNil
+      x :535: Nat
+        [split] -536- (Cons -538- x -537- Nil) = SOne -539- x
+      x :540: Nat y :541: Nat xs :542: NList
+        [split] -543- (Cons -545- x -544- (Cons -547- y -546- xs)) = 
+          let step :548: (counter :549: Nat) -> (x :550: Nat) -> (y :551: Nat) -> (xs :552: NList) -> Split -553- (Cons -555- x -554- (Cons -557- y -556- xs)) 
+            x :558: Nat y :559: Nat xs :560: NList
+              [step] -564- Z -563- x -562- y -561- xs = SMore -568- x -567- Nil -566- y -565- xs
+            x :569: Nat y :570: Nat xs :571: NList
+              [step] -575- (S -576- Z) -574- x -573- y -572- xs = SMore -580- x -579- Nil -578- y -577- xs
+            c :581: Nat x :582: Nat y :583: Nat
+              [step] -587- (S -588- (S -589- c)) -586- x -585- y -584- Nil = SMore -593- x -592- Nil -591- y -590- Nil
+            c :594: Nat x :595: Nat y :596: Nat z :597: Nat xs :598: NList
+              [step] -602- (S -603- (S -604- c)) -601- x -600- y -599- (Cons -606- z -605- xs) = pushL -609- x -608- (Cons -611- y -610- (Cons -613- z -612- xs)) -607- (step -617- c -616- y -615- z -614- xs)
+          in step -621- (S -622- (length -623- xs)) -620- x -619- y -618- xs
+    merge :624: (_x27 :625: NList) -> (_x28 :626: NList) -> NList 
+      ys :627: NList
+        [merge] -629- Nil -628- ys = ys
+      xs :630: NList
+        [merge] -632- xs -631- Nil = xs
+      x :633: Nat xs :634: NList y :635: Nat ys :636: NList
+        [merge] -638- (Cons -640- x -639- xs) -637- (Cons -642- y -641- ys) = 
+          let f :643: (_x29 :644: Bool) -> NList 
+            [f] -645- True = Cons -647- x -646- (merge -649- xs -648- (Cons -651- y -650- ys))
+            [f] -652- False = Cons -654- y -653- (merge -656- (Cons -658- x -657- xs) -655- ys)
+          in f -659- (leq -661- x -660- y)
+    filterLen :662: (p :663: (_x0 :664: Nat) -> Bool) -> (xs :665: NList) -> LE -667- (length -668- (filter -670- p -669- xs)) -666- (length -671- xs) 
+      p :672: (_x1 :673: Nat) -> Bool
+        [filterLen] -675- p -674- Nil = LEZ -676- Z
+      p :677: (_x2 :678: Nat) -> Bool x :679: Nat xs :680: NList
+        [filterLen] -682- p -681- (Cons -684- x -683- xs) = 
+          let f :685: (px :686: Bool) -> LE -688- (length -689- (condCons -692- px -691- x -690- (filter -694- p -693- xs))) -687- (length -695- (Cons -697- x -696- xs)) 
+            [f] -698- True = LES -701- (length -702- (filter -704- p -703- xs)) -700- (length -705- xs) -699- (filterLen -707- p -706- xs)
+            [f] -708- False = leS -711- (length -712- (filter -714- p -713- xs)) -710- (length -715- xs) -709- (filterLen -717- p -716- xs)
+          in f -718- (p -719- x)
+    qsort' :720: (xs :721: NList) -> (_x3 :722: Acc -725- NList -724- Shorter -723- xs) -> NList 
+      acc :726: Acc -729- NList -728- Shorter -727- Nil
+        [qsort'] -731- Nil -730- acc = Nil
+      x :732: Nat xs :733: NList acc :734: (ys :735: NList) -> (_x4 :736: Shorter -738- ys -737- (Cons -740- x -739- xs)) -> Acc -743- NList -742- Shorter -741- ys
+        [qsort'] -745- (Cons -747- x -746- xs) -744- ({MkAcc} -751- [NList] -750- [Shorter] -749- [Cons -753- x -752- xs] -748- acc) = append -755- (qsort' -757- (filter -759- (qel -760- x) -758- xs) -756- (acc -762- (filter -764- (qel -765- x) -763- xs) -761- (LES -768- (length -769- (filter -771- (qel -772- x) -770- xs)) -767- (length -773- xs) -766- (filterLen -775- (qel -776- x) -774- xs)))) -754- (Cons -778- x -777- (qsort' -780- (filter -782- (gt -783- x) -781- xs) -779- (acc -785- (filter -787- (gt -788- x) -786- xs) -784- (LES -791- (length -792- (filter -794- (gt -795- x) -793- xs)) -790- (length -796- xs) -789- (filterLen -798- (gt -799- x) -797- xs)))))
+    qsort :800: (xs :801: NList) -> NList = (\xs :802: NList. qsort' -804- xs -803- (wfShorter -805- xs))
+    main :806: NList = qsort -807- someList
+  in main
+
+### Constraints ###
+
+[] -> [2,3,5,6,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,367,368,369,371,372,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400,401,402,403,404,405,406,407,408,409,410,411,412,413,414,415,417,418,419,420,421,422,423,424,425,426,427,428,429,430,431,432,433,434,435,436,437,438,439,440,441,442,443,444,445,446,447,448,449,450,720,721,731,732,733,745,746,747,752,753,754,755,757,758,759,760,777,778,780,781,782,783,800,801,802,804,807,R]
+[54] -> [285]
+[54,58,66,207,722] -> [285]
+[54,63,66,722] -> [285]
+[54,63,722] -> [285]
+[55] -> [286]
+[55,58,66,207,722] -> [286]
+[55,63,66,722] -> [286]
+[55,63,722] -> [286]
+[57,66,207,722] -> [7,320]
+[58,66,78,207,722] -> [97,100,101]
+[58,66,79,207,722] -> [98,99]
+[58,66,95,207,275,722] -> [287,291]
+[58,66,95,207,291,722] -> [275]
+[58,66,95,207,722] -> [97,274,275,276,278,279,280,281,282,283,290]
+[58,66,96,207,275,722] -> [288,292]
+[58,66,96,207,292,722] -> [275]
+[58,66,96,207,722] -> [98,274,275,276,278,279,280,281,282,283,289]
+[58,66,97,207,722] -> [95]
+[58,66,98,207,722] -> [96]
+[58,66,99,207,722] -> [79]
+[58,66,100,207,722] -> [78]
+[58,66,207,285,722] -> [54,287]
+[58,66,207,286,722] -> [55,288]
+[58,66,207,287,722] -> [285]
+[58,66,207,288,722] -> [286]
+[58,66,207,289,722] -> [96]
+[58,66,207,290,722] -> [95]
+[58,66,207,722] -> [77,94,284,319]
+[60,66,207,722] -> [308,318]
+[62,66,722] -> [7,343]
+[62,722] -> [7,365]
+[62,744] -> [751]
+[63,66,78,722] -> [97,100,101]
+[63,66,79,722] -> [98,99]
+[63,66,95,275,722] -> [287,291]
+[63,66,95,291,722] -> [275]
+[63,66,95,722] -> [97,274,275,276,278,279,280,281,282,283,290]
+[63,66,96,275,722] -> [288,292]
+[63,66,96,292,722] -> [275]
+[63,66,96,722] -> [98,274,275,276,278,279,280,281,282,283,289]
+[63,66,97,722] -> [95]
+[63,66,98,722] -> [96]
+[63,66,99,722] -> [79]
+[63,66,100,722] -> [78]
+[63,66,285,722] -> [54,287]
+[63,66,286,722] -> [55,288]
+[63,66,287,722] -> [285]
+[63,66,288,722] -> [286]
+[63,66,289,722] -> [96]
+[63,66,290,722] -> [95]
+[63,66,722] -> [77,94,284,342]
+[63,78,722] -> [97,100,101]
+[63,79,722] -> [98,99]
+[63,95,275,722] -> [287,291]
+[63,95,291,722] -> [275]
+[63,95,722] -> [97,274,275,276,278,279,280,281,282,283,290]
+[63,96,275,722] -> [288,292]
+[63,96,292,722] -> [275]
+[63,96,722] -> [98,274,275,276,278,279,280,281,282,283,289]
+[63,97,722] -> [95]
+[63,98,722] -> [96]
+[63,99,722] -> [79]
+[63,100,722] -> [78]
+[63,285,722] -> [54,287]
+[63,286,722] -> [55,288]
+[63,287,722] -> [285]
+[63,288,722] -> [286]
+[63,289,722] -> [96]
+[63,290,722] -> [95]
+[63,722] -> [77,94,284,364]
+[63,744] -> [750]
+[65,66,722] -> [324,341]
+[65,722] -> [298,363]
+[65,744] -> [749]
+[66,67,722] -> [301,344]
+[66,68,722] -> [302,345]
+[66,71,722] -> [305]
+[66,72,722] -> [306]
+[66,73,722] -> [307]
+[66,74,722] -> [305]
+[66,75,722] -> [306]
+[66,76,722] -> [307]
+[66,81,133,302,722] -> [137]
+[66,81,302,722] -> [128,138]
+[66,82,302,722] -> [120,125]
+[66,83,302,722] -> [121,126]
+[66,85,148,302,722] -> [161]
+[66,85,149,302,722] -> [158]
+[66,85,302,722] -> [139,164]
+[66,85,330,722] -> [337]
+[66,86,148,302,722] -> [160]
+[66,86,149,302,722] -> [157]
+[66,86,302,722] -> [141,163]
+[66,86,330,722] -> [336]
+[66,87,88,302,722] -> [125]
+[66,87,89,302,722] -> [126]
+[66,87,119,120,302,722] -> [143]
+[66,87,119,121,302,722] -> [144]
+[66,87,119,143,302,722] -> [120]
+[66,87,119,144,302,722] -> [121]
+[66,87,119,302,722] -> [142,166]
+[66,87,122,123,302,722] -> [146]
+[66,87,122,124,302,722] -> [147]
+[66,87,122,146,302,722] -> [123]
+[66,87,122,147,302,722] -> [124]
+[66,87,122,302,722] -> [145,165]
+[66,87,125,302,722] -> [88]
+[66,87,126,302,722] -> [89]
+[66,87,148,302,722] -> [159]
+[66,87,149,302,722] -> [156]
+[66,87,165,302,722] -> [122]
+[66,87,166,302,722] -> [119]
+[66,87,302,722] -> [139,140,141,162,167,168,169]
+[66,87,330,722] -> [335]
+[66,88,302,722] -> [143,146]
+[66,88,722] -> [326]
+[66,89,302,722] -> [144,147]
+[66,89,722] -> [327]
+[66,90,302,722] -> [120,123,125]
+[66,90,722] -> [99]
+[66,91,302,722] -> [121,124,126]
+[66,91,722] -> [100]
+[66,92,722] -> [101]
+[66,93,722] -> [282]
+[66,99,119,302,722] -> [120]
+[66,99,209,722] -> [99]
+[66,99,302,722] -> [125]
+[66,99,722] -> [90,99]
+[66,100,119,302,722] -> [121]
+[66,100,209,722] -> [100]
+[66,100,302,722] -> [126]
+[66,100,722] -> [91,100]
+[66,101,119,302,722] -> [358]
+[66,101,209,722] -> [101]
+[66,101,302,722] -> [358]
+[66,101,722] -> [92,101]
+[66,116,275,302,722] -> [344,359]
+[66,116,302,359,722] -> [275]
+[66,116,302,722] -> [274,275,276,278,279,280,281,282,283,357,358]
+[66,117,275,302,722] -> [324,360]
+[66,117,302,360,722] -> [275]
+[66,117,302,722] -> [274,275,276,278,279,280,281,282,283,356]
+[66,118,275,302,722] -> [323,361]
+[66,118,302,361,722] -> [275]
+[66,118,302,722] -> [274,275,276,278,279,280,281,282,283,355]
+[66,119,120,302,722] -> [99]
+[66,119,121,302,722] -> [100]
+[66,119,302,348,722] -> [359]
+[66,119,302,349,722] -> [360]
+[66,119,302,358,722] -> [101]
+[66,119,302,359,722] -> [348]
+[66,119,302,360,722] -> [349]
+[66,119,302,722] -> [133,149,345,354]
+[66,120,302,722] -> [82,90]
+[66,121,302,722] -> [83,91]
+[66,122,123,302,722] -> [326]
+[66,122,124,302,722] -> [327]
+[66,122,302,326,722] -> [123]
+[66,122,302,327,722] -> [124]
+[66,122,302,328,722] -> [360]
+[66,122,302,329,722] -> [361]
+[66,122,302,360,722] -> [328]
+[66,122,302,361,722] -> [329]
+[66,122,302,722] -> [132,148,325,353]
+[66,123,302,722] -> [90,130]
+[66,124,302,722] -> [91,131]
+[66,125,302,722] -> [82,90,99]
+[66,126,302,722] -> [83,91,100]
+[66,129,302,722] -> [132]
+[66,130,302,722] -> [123]
+[66,131,302,722] -> [124]
+[66,132,302,722] -> [122]
+[66,133,137,302,722] -> [81]
+[66,133,302,722] -> [119]
+[66,137,302,722] -> [127,133]
+[66,138,302,722] -> [81]
+[66,142,302,722] -> [156]
+[66,143,302,722] -> [88]
+[66,144,302,722] -> [89]
+[66,145,302,722] -> [159]
+[66,146,302,722] -> [88]
+[66,147,302,722] -> [89]
+[66,148,159,302,722] -> [87]
+[66,148,160,302,722] -> [86]
+[66,148,161,302,722] -> [85]
+[66,148,302,722] -> [122]
+[66,149,156,302,722] -> [87]
+[66,149,157,302,722] -> [86]
+[66,149,158,302,722] -> [85]
+[66,149,302,722] -> [119]
+[66,156,302,722] -> [149]
+[66,157,302,722] -> [140,149]
+[66,158,302,722] -> [139,149]
+[66,159,302,722] -> [148]
+[66,160,302,722] -> [141,148]
+[66,161,302,722] -> [140,148]
+[66,162,302,722] -> [87]
+[66,163,302,722] -> [86]
+[66,164,302,722] -> [85]
+[66,207,318,722] -> [60]
+[66,207,319,722] -> [58]
+[66,207,320,722] -> [57]
+[66,207,722] -> [56,317]
+[66,208,275,722] -> [308,321]
+[66,208,321,722] -> [275]
+[66,208,722] -> [274,275,276,278,279,280,281,282,283,316]
+[66,209,291,722] -> [321]
+[66,209,321,722] -> [291]
+[66,209,722] -> [309,315]
+[66,275,336,722] -> [323,339]
+[66,275,337,722] -> [324,338]
+[66,282,722] -> [93]
+[66,283,722] -> [339]
+[66,287,722] -> [287]
+[66,288,722] -> [288]
+[66,291,302,722] -> [359]
+[66,291,722] -> [291,338,348]
+[66,292,302,722] -> [361]
+[66,292,722] -> [292,349]
+[66,300,722] -> [298,366]
+[66,301,722] -> [67,313,331,344,351]
+[66,302,353,722] -> [122]
+[66,302,354,722] -> [119]
+[66,302,355,722] -> [118]
+[66,302,356,722] -> [117]
+[66,302,357,722] -> [116]
+[66,302,358,722] -> [101]
+[66,302,359,722] -> [291]
+[66,302,361,722] -> [292]
+[66,302,722] -> [68,80,84,92,93,115,116,117,118,134,135,136,150,151,152,153,154,155,312,330,350]
+[66,305,722] -> [71,74,318]
+[66,306,722] -> [72,75,319]
+[66,307,722] -> [73,76,320]
+[66,308,722] -> [313]
+[66,309,722] -> [312]
+[66,312,722] -> [302]
+[66,313,722] -> [301]
+[66,315,722] -> [209]
+[66,316,722] -> [208]
+[66,317,722] -> [207]
+[66,318,722] -> [305]
+[66,319,722] -> [306]
+[66,320,722] -> [307]
+[66,324,722] -> [331]
+[66,325,722] -> [335]
+[66,326,722] -> [88]
+[66,327,722] -> [89]
+[66,328,722] -> [338]
+[66,329,722] -> [339]
+[66,330,335,722] -> [87]
+[66,330,336,722] -> [86]
+[66,330,337,722] -> [85]
+[66,330,722] -> [302]
+[66,331,722] -> [301]
+[66,335,722] -> [330]
+[66,336,339,722] -> [275]
+[66,336,722] -> [274,275,276,278,279,280,281,282,283,330]
+[66,337,338,722] -> [275]
+[66,337,722] -> [274,275,276,278,279,280,281,282,283,330]
+[66,338,722] -> [291,328]
+[66,339,722] -> [283,329]
+[66,340,722] -> [66]
+[66,341,722] -> [65]
+[66,342,722] -> [63]
+[66,343,722] -> [62]
+[66,344,722] -> [67]
+[66,345,722] -> [68]
+[66,348,722] -> [291]
+[66,349,722] -> [292]
+[66,350,722] -> [302]
+[66,351,722] -> [301]
+[66,366,722] -> [300]
+[66,722] -> [206,299,300,314,323,332,333,334,340,352,362]
+[66,744] -> [748]
+[67] -> [735]
+[68] -> [736]
+[71] -> [741]
+[72] -> [742]
+[73] -> [743]
+[74] -> [723]
+[74,722] -> [295]
+[75] -> [724]
+[75,722] -> [296]
+[76] -> [725]
+[76,722] -> [297]
+[78,750] -> [97,100,101]
+[79,750] -> [98,99]
+[81,87,180,722,736] -> [183]
+[81,87,722,736] -> [179,184,676]
+[82,87,722,736] -> [174,176,666]
+[83,87,722,736] -> [175,177,667]
+[85,87,191,722,736] -> [198]
+[85,87,722,736] -> [186,201,678,701]
+[85,275,722,736] -> [769,770,771,772,792,793,794,795]
+[85,722,736] -> [274,275,276,278,279,280,281,282,283,768,791]
+[85,722,736,769] -> [275]
+[85,722,736,792] -> [275]
+[86,87,191,722,736] -> [197]
+[86,87,722,736] -> [187,200,700]
+[86,275,722,736] -> [773,796]
+[86,722,736] -> [274,275,276,278,279,280,281,282,283,767,790]
+[86,722,736,773] -> [275]
+[86,722,736,796] -> [275]
+[87,88,722,736] -> [176,189,666]
+[87,89,722,736] -> [177,190,667]
+[87,90,722,736] -> [174,176,687]
+[87,91,722,736] -> [175,177,688]
+[87,173,174,722,736] -> [189,666]
+[87,173,175,722,736] -> [190,667]
+[87,173,189,722,736] -> [174]
+[87,173,190,722,736] -> [175]
+[87,173,664,722,736] -> [678]
+[87,173,666,722,736] -> [174]
+[87,173,667,722,736] -> [175]
+[87,173,678,722,736] -> [664]
+[87,173,722,736] -> [180,188,191,203,669,670,671,709,716,717]
+[87,174,722,736] -> [82,90]
+[87,175,722,736] -> [83,91]
+[87,176,722,736] -> [82,88,90,687]
+[87,177,722,736] -> [83,89,91,688]
+[87,180,183,722,736] -> [81]
+[87,180,722,736] -> [173]
+[87,183,722,736] -> [179,180]
+[87,184,722,736] -> [81]
+[87,188,722,736] -> [196]
+[87,189,722,736] -> [88]
+[87,190,722,736] -> [89]
+[87,191,196,722,736] -> [87]
+[87,191,197,722,736] -> [86]
+[87,191,198,722,736] -> [85]
+[87,191,722,736] -> [173,196]
+[87,196,722,736] -> [191]
+[87,197,722,736] -> [187,191]
+[87,198,722,736] -> [186,191]
+[87,199,722,736] -> [87]
+[87,200,722,736] -> [86]
+[87,201,722,736] -> [85]
+[87,203,722,736] -> [173]
+[87,663,722,736] -> [664,775,776,798,799]
+[87,664,722,736] -> [673,678]
+[87,665,722,736] -> [774,797]
+[87,666,722,736] -> [82,88,687]
+[87,667,722,736] -> [83,89,688]
+[87,668,722,736] -> [769,792]
+[87,669,722,736] -> [770,793]
+[87,670,722,736] -> [771,794]
+[87,671,722,736] -> [773,796]
+[87,673,722,736] -> [664]
+[87,676,722,736] -> [81]
+[87,678,722,736] -> [664,679,719]
+[87,687,722,736] -> [90,176,666]
+[87,688,722,736] -> [91,177,667]
+[87,699,722,736] -> [87]
+[87,700,722,736] -> [86]
+[87,701,722,736] -> [85]
+[87,709,722,736] -> [173]
+[87,719,722,736] -> [678]
+[87,722,736] -> [80,84,92,93,170,171,172,178,181,182,185,186,187,192,193,194,195,199,202,204,205,274,275,276,278,279,280,281,282,283,662,663,665,668,669,670,671,674,675,677,678,680,681,682,683,684,685,686,689,690,691,692,693,694,698,699,702,703,704,705,706,707,708,710,711,712,713,714,715,718,719,766,789]
+[87,722,736,769] -> [668]
+[87,722,736,770] -> [669]
+[87,722,736,771] -> [670]
+[87,722,736,773] -> [671]
+[87,722,736,774] -> [665]
+[87,722,736,775] -> [663]
+[87,722,736,792] -> [668]
+[87,722,736,793] -> [669]
+[87,722,736,794] -> [670]
+[87,722,736,796] -> [671]
+[87,722,736,797] -> [665]
+[87,722,736,798] -> [663]
+[90,722,736] -> [99]
+[91,722,736] -> [100]
+[92,722,736] -> [101]
+[93,722,736] -> [282]
+[95,275,750] -> [287,291]
+[95,291,750] -> [275]
+[95,750] -> [97,274,275,276,278,279,280,281,282,283,290]
+[96,275,750] -> [288,292]
+[96,292,750] -> [275]
+[96,750] -> [98,274,275,276,278,279,280,281,282,283,289]
+[97,750] -> [95]
+[98,750] -> [96]
+[99] -> [99]
+[99,722] -> [99]
+[99,722,736] -> [90]
+[99,750] -> [79]
+[100] -> [100]
+[100,722] -> [100]
+[100,722,736] -> [91]
+[100,750] -> [78]
+[101] -> [101]
+[101,722] -> [101]
+[101,722,736] -> [92]
+[282] -> [282]
+[282,722,736] -> [93]
+[283] -> [283]
+[283,722,736] -> [773,796]
+[285] -> [54]
+[285,750] -> [287]
+[286] -> [55]
+[286,750] -> [288]
+[287] -> [287]
+[287,722] -> [287]
+[287,750] -> [285]
+[288] -> [288]
+[288,722] -> [288]
+[288,750] -> [286]
+[289,750] -> [96]
+[290,750] -> [95]
+[291] -> [291]
+[291,722] -> [291]
+[291,722,736] -> [769,792]
+[292] -> [292]
+[292,722] -> [292]
+[294,722] -> [298,805]
+[295,722] -> [74,723]
+[296,722] -> [75,724]
+[297,722] -> [76,725]
+[298,722] -> [294]
+[362,722] -> [66]
+[363,722] -> [65]
+[364,722] -> [63]
+[365,722] -> [62]
+[722] -> [61,293,730,734,744,756,763,764,779,786,787,803]
+[722,723] -> [295,741]
+[722,724] -> [296,742]
+[722,725] -> [297,743]
+[722,735] -> [762,763,764,765,785,786,787,788]
+[722,736] -> [84,761,784]
+[722,736,763] -> [770]
+[722,736,764] -> [771]
+[722,736,766] -> [87]
+[722,736,767] -> [86]
+[722,736,768] -> [85]
+[722,736,769] -> [291]
+[722,736,770] -> [763]
+[722,736,771] -> [764]
+[722,736,773] -> [283]
+[722,736,786] -> [793]
+[722,736,787] -> [794]
+[722,736,789] -> [87]
+[722,736,790] -> [86]
+[722,736,791] -> [85]
+[722,736,792] -> [291]
+[722,736,793] -> [786]
+[722,736,794] -> [787]
+[722,736,796] -> [283]
+[722,741] -> [723]
+[722,742] -> [724]
+[722,743] -> [725]
+[722,761] -> [736]
+[722,762] -> [735]
+[722,784] -> [736]
+[722,785] -> [735]
+[722,805] -> [294]
+[723] -> [74,727]
+[724] -> [75,728]
+[725] -> [76,729]
+[726] -> [730]
+[727] -> [723]
+[728] -> [724]
+[729] -> [725]
+[730] -> [722]
+[734] -> [748]
+[735] -> [67]
+[736] -> [68]
+[741] -> [71]
+[742] -> [72]
+[743] -> [73]
+[744] -> [722]
+[744,748] -> [66]
+[744,749] -> [65]
+[744,750] -> [63]
+[744,751] -> [62]
+[748] -> [744]
+[749] -> [744]
+[750] -> [77,94,284,744]
+[751] -> [7,744]
+[756] -> [722]
+[779] -> [722]
+[803] -> [722]
+[R] -> [806]
+
+### Solution ###
+
+[2,3,5,6,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,367,368,369,371,372,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400,401,402,403,404,405,406,407,408,409,410,411,412,413,414,415,417,418,419,420,421,422,423,424,425,426,427,428,429,430,431,432,433,434,435,436,437,438,439,440,441,442,443,444,445,446,447,448,449,450,720,721,731,732,733,745,746,747,752,753,754,755,757,758,759,760,777,778,780,781,782,783,800,801,802,804,806,807,R]
+
+### Annotated ###
+
+  let
+    postulate Nat :E: Type
+    postulate Z :R: Nat
+    postulate S :R: (n :R: Nat) -> Nat
+    postulate Bool :E: Type
+    postulate True :R: Bool
+    postulate False :R: Bool
+    postulate NList :E: Type
+    postulate Nil :R: NList
+    postulate Cons :R: (x :R: Nat) -> (xs :R: NList) -> NList
+    someList :R: NList = Cons -R- 9 -R- (Cons -R- 5 -R- (Cons -R- 1 -R- (Cons -R- 3 -R- (Cons -R- 1 -R- (Cons -R- 5 -R- (Cons -R- 2 -R- Nil))))))
+    Rel2 :E: (a :E: Type) -> Type = (\a :E: Type. (x :E: a) -> (y :E: a) -> Type)
+    postulate Acc :E: (a :E: Type) -> (lt :E: Rel2 -E- a) -> (x :E: a) -> Type
+    postulate MkAcc :E: (a :E: Type) -> (lt :E: Rel2 -E- a) -> (x :E: a) -> (acc :E: (y :E: a) -> (pf :E: lt -E- y -E- x) -> Acc -E- a -E- lt -E- y) -> Acc -E- a -E- lt -E- x
+    postulate LE :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Type
+    postulate LEZ :E: (n :E: Nat) -> LE -E- Z -E- n
+    postulate LES :E: (m :E: Nat) -> (n :E: Nat) -> (_x2 :E: LE -E- m -E- n) -> LE -E- (S -E- m) -E- (S -E- n)
+    LT :E: (x :E: Nat) -> (y :E: Nat) -> Type = (\x :E: Nat. (\y :E: Nat. LE -E- (S -E- x) -E- y))
+    leRefl :E: (x :E: Nat) -> LE -E- x -E- x 
+      [leRefl] -E- Z = LEZ -E- Z
+      x :E: Nat
+        [leRefl] -E- (S -E- x) = LES -E- x -E- x -E- (leRefl -E- x)
+    leTrans :E: (x :E: Nat) -> (y :E: Nat) -> (z :E: Nat) -> (_x3 :E: LE -E- x -E- y) -> (_x4 :E: LE -E- y -E- z) -> LE -E- x -E- z 
+      y :E: Nat z :E: Nat pf :E: LE -E- y -E- z
+        [leTrans] -E- Z -E- y -E- z -E- ({LEZ} -E- [y]) -E- pf = LEZ -E- z
+      x :E: Nat y :E: Nat z :E: Nat xLEy :E: LE -E- x -E- y yLEz :E: LE -E- y -E- z
+        [leTrans] -E- (S -E- x) -E- (S -E- y) -E- (S -E- z) -E- ({LES} -E- [x] -E- [y] -E- xLEy) -E- ({LES} -E- [y] -E- [z] -E- yLEz) = LES -E- x -E- z -E- (leTrans -E- x -E- y -E- z -E- xLEy -E- yLEz)
+    leS :E: (x :E: Nat) -> (y :E: Nat) -> (_x5 :E: LE -E- x -E- y) -> LE -E- x -E- (S -E- y) 
+      y :E: Nat
+        [leS] -E- Z -E- y -E- ({LEZ} -E- [y]) = LEZ -E- (S -E- y)
+      x :E: Nat y :E: Nat xLEy :E: LE -E- x -E- y
+        [leS] -E- (S -E- x) -E- (S -E- y) -E- ({LES} -E- [x] -E- [y] -E- xLEy) = LES -E- x -E- (S -E- y) -E- (leS -E- x -E- y -E- xLEy)
+    lemmaLTZ :E: (a :E: Type) -> (n :E: Nat) -> (_x6 :E: LT -E- n -E- Z) -> a 
+    wfLT :E: (x :E: Nat) -> Acc -E- Nat -E- LT -E- x = (\x :E: Nat. 
+      let f :E: (x :E: Nat) -> (y :E: Nat) -> (_x7 :E: LT -E- y -E- x) -> Acc -E- Nat -E- LT -E- y 
+        y :E: Nat pf :E: LT -E- y -E- Z
+          [f] -E- Z -E- y -E- pf = lemmaLTZ -E- (Acc -E- Nat -E- LT -E- y) -E- y -E- pf
+        x :E: Nat y :E: Nat yLEx :E: LE -E- y -E- x
+          [f] -E- (S -E- x) -E- y -E- ({LES} -E- [y] -E- [x] -E- yLEx) = MkAcc -E- Nat -E- LT -E- y -E- (\z :E: Nat. (\zLTy :E: LT -E- z -E- y. f -E- x -E- z -E- (leTrans -E- (S -E- z) -E- y -E- x -E- zLTy -E- yLEx)))
+      in MkAcc -E- Nat -E- LT -E- x -E- (f -E- x))
+    length :E: (_x8 :E: NList) -> Nat 
+      [length] -E- Nil = Z
+      x :E: Nat xs :E: NList
+        [length] -E- (Cons -E- x -E- xs) = S -E- (length -E- xs)
+    Shorter :E: (xs :E: NList) -> (ys :E: NList) -> Type = (\xs :E: NList. (\ys :E: NList. LT -E- (length -E- xs) -E- (length -E- ys)))
+    wfShorter :E: (xs :E: NList) -> Acc -E- NList -E- Shorter -E- xs = (\xs :E: NList. 
+      let f :E: (xs :E: NList) -> (ys :E: NList) -> (_x9 :E: Shorter -E- ys -E- xs) -> Acc -E- NList -E- Shorter -E- ys 
+        ys :E: NList pf :E: Shorter -E- ys -E- Nil
+          [f] -E- Nil -E- ys -E- pf = lemmaLTZ -E- (Acc -E- NList -E- Shorter -E- ys) -E- (length -E- ys) -E- pf
+        x :E: Nat xs :E: NList ys :E: NList yLEx :E: LE -E- (length -E- ys) -E- (length -E- xs)
+          [f] -E- (Cons -E- x -E- xs) -E- ys -E- ({LES} -E- [length -E- ys] -E- [length -E- xs] -E- yLEx) = MkAcc -E- NList -E- Shorter -E- ys -E- (\zs :E: NList. (\zLTy :E: LT -E- (length -E- zs) -E- (length -E- ys). f -E- xs -E- zs -E- (leTrans -E- (S -E- (length -E- zs)) -E- (length -E- ys) -E- (length -E- xs) -E- zLTy -E- yLEx)))
+      in MkAcc -E- NList -E- Shorter -E- xs -E- (f -E- xs))
+    leq :R: (_x10 :R: Nat) -> (_x11 :R: Nat) -> Bool 
+      y :E: Nat
+        [leq] -R- Z -R- y = True
+      x :E: Nat
+        [leq] -R- (S -R- x) -R- Z = False
+      x :R: Nat y :R: Nat
+        [leq] -R- (S -R- x) -R- (S -R- y) = leq -R- x -R- y
+    not :R: (_x12 :R: Bool) -> Bool 
+      [not] -R- True = False
+      [not] -R- False = True
+    qel :R: (y :R: Nat) -> (x :R: Nat) -> Bool = (\y :R: Nat. (\x :R: Nat. leq -R- x -R- y))
+    gt :R: (x :R: Nat) -> (y :R: Nat) -> Bool = (\x :R: Nat. (\y :R: Nat. not -R- (leq -R- y -R- x)))
+    condCons :R: (_x13 :R: Bool) -> (_x14 :R: Nat) -> (_x15 :R: NList) -> NList 
+      [condCons] -R- True = Cons
+      [condCons] -R- False = (\x :R: Nat. (\xs :R: NList. xs))
+    filter :R: (_x16 :R: (_x17 :R: Nat) -> Bool) -> (_x18 :R: NList) -> NList 
+      p :E: (_x19 :R: Nat) -> Bool
+        [filter] -R- p -R- Nil = Nil
+      p :R: (_x20 :R: Nat) -> Bool x :R: Nat xs :R: NList
+        [filter] -R- p -R- (Cons -R- x -R- xs) = condCons -R- (p -R- x) -R- x -R- (filter -R- p -R- xs)
+    append :R: (_x21 :R: NList) -> (_x22 :R: NList) -> NList 
+      ys :R: NList
+        [append] -R- Nil -R- ys = ys
+      x :R: Nat xs :R: NList ys :R: NList
+        [append] -R- (Cons -R- x -R- xs) -R- ys = Cons -R- x -R- (append -R- xs -R- ys)
+    postulate Id :E: (a :E: Type) -> (_x23 :E: a) -> (_x24 :E: a) -> Type
+    postulate Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+    postulate Split :E: (_x25 :E: NList) -> Type
+    postulate SNil :E: Split -E- Nil
+    postulate SOne :E: (x :E: Nat) -> Split -E- (Cons -E- x -E- Nil)
+    postulate SMore :E: (x :E: Nat) -> (xs :E: NList) -> (y :E: Nat) -> (ys :E: NList) -> Split -E- (append -E- (Cons -E- x -E- xs) -E- (Cons -E- y -E- ys))
+    pushL :E: (x :E: Nat) -> (xs :E: NList) -> (_x26 :E: Split -E- xs) -> Split -E- (Cons -E- x -E- xs) 
+      x :E: Nat
+        [pushL] -E- x -E- [Nil] -E- SNil = SOne -E- x
+      x :E: Nat y :E: Nat
+        [pushL] -E- x -E- [Cons -E- y -E- Nil] -E- (SOne -E- y) = SMore -E- x -E- Nil -E- y -E- Nil
+      x :E: Nat y :E: Nat ys :E: NList z :E: Nat zs :E: NList
+        [pushL] -E- x -E- [append -E- (Cons -E- y -E- ys) -E- (Cons -E- z -E- zs)] -E- (SMore -E- y -E- ys -E- z -E- zs) = SMore -E- x -E- (Cons -E- y -E- ys) -E- z -E- zs
+    split :E: (xs :E: NList) -> Split -E- xs 
+      [split] -E- Nil = SNil
+      x :E: Nat
+        [split] -E- (Cons -E- x -E- Nil) = SOne -E- x
+      x :E: Nat y :E: Nat xs :E: NList
+        [split] -E- (Cons -E- x -E- (Cons -E- y -E- xs)) = 
+          let step :E: (counter :E: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (xs :E: NList) -> Split -E- (Cons -E- x -E- (Cons -E- y -E- xs)) 
+            x :E: Nat y :E: Nat xs :E: NList
+              [step] -E- Z -E- x -E- y -E- xs = SMore -E- x -E- Nil -E- y -E- xs
+            x :E: Nat y :E: Nat xs :E: NList
+              [step] -E- (S -E- Z) -E- x -E- y -E- xs = SMore -E- x -E- Nil -E- y -E- xs
+            c :E: Nat x :E: Nat y :E: Nat
+              [step] -E- (S -E- (S -E- c)) -E- x -E- y -E- Nil = SMore -E- x -E- Nil -E- y -E- Nil
+            c :E: Nat x :E: Nat y :E: Nat z :E: Nat xs :E: NList
+              [step] -E- (S -E- (S -E- c)) -E- x -E- y -E- (Cons -E- z -E- xs) = pushL -E- x -E- (Cons -E- y -E- (Cons -E- z -E- xs)) -E- (step -E- c -E- y -E- z -E- xs)
+          in step -E- (S -E- (length -E- xs)) -E- x -E- y -E- xs
+    merge :E: (_x27 :E: NList) -> (_x28 :E: NList) -> NList 
+      ys :E: NList
+        [merge] -E- Nil -E- ys = ys
+      xs :E: NList
+        [merge] -E- xs -E- Nil = xs
+      x :E: Nat xs :E: NList y :E: Nat ys :E: NList
+        [merge] -E- (Cons -E- x -E- xs) -E- (Cons -E- y -E- ys) = 
+          let f :E: (_x29 :E: Bool) -> NList 
+            [f] -E- True = Cons -E- x -E- (merge -E- xs -E- (Cons -E- y -E- ys))
+            [f] -E- False = Cons -E- y -E- (merge -E- (Cons -E- x -E- xs) -E- ys)
+          in f -E- (leq -E- x -E- y)
+    filterLen :E: (p :E: (_x0 :E: Nat) -> Bool) -> (xs :E: NList) -> LE -E- (length -E- (filter -E- p -E- xs)) -E- (length -E- xs) 
+      p :E: (_x1 :E: Nat) -> Bool
+        [filterLen] -E- p -E- Nil = LEZ -E- Z
+      p :E: (_x2 :E: Nat) -> Bool x :E: Nat xs :E: NList
+        [filterLen] -E- p -E- (Cons -E- x -E- xs) = 
+          let f :E: (px :E: Bool) -> LE -E- (length -E- (condCons -E- px -E- x -E- (filter -E- p -E- xs))) -E- (length -E- (Cons -E- x -E- xs)) 
+            [f] -E- True = LES -E- (length -E- (filter -E- p -E- xs)) -E- (length -E- xs) -E- (filterLen -E- p -E- xs)
+            [f] -E- False = leS -E- (length -E- (filter -E- p -E- xs)) -E- (length -E- xs) -E- (filterLen -E- p -E- xs)
+          in f -E- (p -E- x)
+    qsort' :R: (xs :R: NList) -> (_x3 :E: Acc -E- NList -E- Shorter -E- xs) -> NList 
+      acc :E: Acc -E- NList -E- Shorter -E- Nil
+        [qsort'] -R- Nil -E- acc = Nil
+      x :R: Nat xs :R: NList acc :E: (ys :E: NList) -> (_x4 :E: Shorter -E- ys -E- (Cons -E- x -E- xs)) -> Acc -E- NList -E- Shorter -E- ys
+        [qsort'] -R- (Cons -R- x -R- xs) -E- ({MkAcc} -E- [NList] -E- [Shorter] -E- [Cons -R- x -R- xs] -E- acc) = append -R- (qsort' -R- (filter -R- (qel -R- x) -R- xs) -E- (acc -E- (filter -E- (qel -E- x) -E- xs) -E- (LES -E- (length -E- (filter -E- (qel -E- x) -E- xs)) -E- (length -E- xs) -E- (filterLen -E- (qel -E- x) -E- xs)))) -R- (Cons -R- x -R- (qsort' -R- (filter -R- (gt -R- x) -R- xs) -E- (acc -E- (filter -E- (gt -E- x) -E- xs) -E- (LES -E- (length -E- (filter -E- (gt -E- x) -E- xs)) -E- (length -E- xs) -E- (filterLen -E- (gt -E- x) -E- xs)))))
+    qsort :R: (xs :R: NList) -> NList = (\xs :R: NList. qsort' -R- xs -E- (wfShorter -E- xs))
+    main :R: NList = qsort -R- someList
+  in main
+
+### Specialised ###
+
+  let
+    postulate Nat :E: Type
+    postulate Z :R: Nat
+    postulate S :R: (n :R: Nat) -> Nat
+    postulate Bool :E: Type
+    postulate True :R: Bool
+    postulate False :R: Bool
+    postulate NList :E: Type
+    postulate Nil :R: NList
+    postulate Cons :R: (x :R: Nat) -> (xs :R: NList) -> NList
+    someList :R: NList = Cons -R- 9 -R- (Cons -R- 5 -R- (Cons -R- 1 -R- (Cons -R- 3 -R- (Cons -R- 1 -R- (Cons -R- 5 -R- (Cons -R- 2 -R- Nil))))))
+    Rel2 :E: (a :E: Type) -> Type = (\a :E: Type. (x :E: a) -> (y :E: a) -> Type)
+    postulate Acc :E: (a :E: Type) -> (lt :E: Rel2 -E- a) -> (x :E: a) -> Type
+    postulate MkAcc :E: (a :E: Type) -> (lt :E: Rel2 -E- a) -> (x :E: a) -> (acc :E: (y :E: a) -> (pf :E: lt -E- y -E- x) -> Acc -E- a -E- lt -E- y) -> Acc -E- a -E- lt -E- x
+    postulate LE :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Type
+    postulate LEZ :E: (n :E: Nat) -> LE -E- Z -E- n
+    postulate LES :E: (m :E: Nat) -> (n :E: Nat) -> (_x2 :E: LE -E- m -E- n) -> LE -E- (S -E- m) -E- (S -E- n)
+    LT :E: (x :E: Nat) -> (y :E: Nat) -> Type = (\x :E: Nat. (\y :E: Nat. LE -E- (S -E- x) -E- y))
+    leRefl :E: (x :E: Nat) -> LE -E- x -E- x 
+      [leRefl] -E- Z = LEZ -E- Z
+      x :E: Nat
+        [leRefl] -E- (S -E- x) = LES -E- x -E- x -E- (leRefl -E- x)
+    leTrans :E: (x :E: Nat) -> (y :E: Nat) -> (z :E: Nat) -> (_x3 :E: LE -E- x -E- y) -> (_x4 :E: LE -E- y -E- z) -> LE -E- x -E- z 
+      y :E: Nat z :E: Nat pf :E: LE -E- y -E- z
+        [leTrans] -E- Z -E- y -E- z -E- ({LEZ} -E- [y]) -E- pf = LEZ -E- z
+      x :E: Nat y :E: Nat z :E: Nat xLEy :E: LE -E- x -E- y yLEz :E: LE -E- y -E- z
+        [leTrans] -E- (S -E- x) -E- (S -E- y) -E- (S -E- z) -E- ({LES} -E- [x] -E- [y] -E- xLEy) -E- ({LES} -E- [y] -E- [z] -E- yLEz) = LES -E- x -E- z -E- (leTrans -E- x -E- y -E- z -E- xLEy -E- yLEz)
+    leS :E: (x :E: Nat) -> (y :E: Nat) -> (_x5 :E: LE -E- x -E- y) -> LE -E- x -E- (S -E- y) 
+      y :E: Nat
+        [leS] -E- Z -E- y -E- ({LEZ} -E- [y]) = LEZ -E- (S -E- y)
+      x :E: Nat y :E: Nat xLEy :E: LE -E- x -E- y
+        [leS] -E- (S -E- x) -E- (S -E- y) -E- ({LES} -E- [x] -E- [y] -E- xLEy) = LES -E- x -E- (S -E- y) -E- (leS -E- x -E- y -E- xLEy)
+    lemmaLTZ :E: (a :E: Type) -> (n :E: Nat) -> (_x6 :E: LT -E- n -E- Z) -> a 
+    wfLT :E: (x :E: Nat) -> Acc -E- Nat -E- LT -E- x = (\x :E: Nat. 
+      let f :E: (x :E: Nat) -> (y :E: Nat) -> (_x7 :E: LT -E- y -E- x) -> Acc -E- Nat -E- LT -E- y 
+        y :E: Nat pf :E: LT -E- y -E- Z
+          [f] -E- Z -E- y -E- pf = lemmaLTZ -E- (Acc -E- Nat -E- LT -E- y) -E- y -E- pf
+        x :E: Nat y :E: Nat yLEx :E: LE -E- y -E- x
+          [f] -E- (S -E- x) -E- y -E- ({LES} -E- [y] -E- [x] -E- yLEx) = MkAcc -E- Nat -E- LT -E- y -E- (\z :E: Nat. (\zLTy :E: LT -E- z -E- y. f -E- x -E- z -E- (leTrans -E- (S -E- z) -E- y -E- x -E- zLTy -E- yLEx)))
+      in MkAcc -E- Nat -E- LT -E- x -E- (f -E- x))
+    length :E: (_x8 :E: NList) -> Nat 
+      [length] -E- Nil = Z
+      x :E: Nat xs :E: NList
+        [length] -E- (Cons -E- x -E- xs) = S -E- (length -E- xs)
+    Shorter :E: (xs :E: NList) -> (ys :E: NList) -> Type = (\xs :E: NList. (\ys :E: NList. LT -E- (length -E- xs) -E- (length -E- ys)))
+    wfShorter :E: (xs :E: NList) -> Acc -E- NList -E- Shorter -E- xs = (\xs :E: NList. 
+      let f :E: (xs :E: NList) -> (ys :E: NList) -> (_x9 :E: Shorter -E- ys -E- xs) -> Acc -E- NList -E- Shorter -E- ys 
+        ys :E: NList pf :E: Shorter -E- ys -E- Nil
+          [f] -E- Nil -E- ys -E- pf = lemmaLTZ -E- (Acc -E- NList -E- Shorter -E- ys) -E- (length -E- ys) -E- pf
+        x :E: Nat xs :E: NList ys :E: NList yLEx :E: LE -E- (length -E- ys) -E- (length -E- xs)
+          [f] -E- (Cons -E- x -E- xs) -E- ys -E- ({LES} -E- [length -E- ys] -E- [length -E- xs] -E- yLEx) = MkAcc -E- NList -E- Shorter -E- ys -E- (\zs :E: NList. (\zLTy :E: LT -E- (length -E- zs) -E- (length -E- ys). f -E- xs -E- zs -E- (leTrans -E- (S -E- (length -E- zs)) -E- (length -E- ys) -E- (length -E- xs) -E- zLTy -E- yLEx)))
+      in MkAcc -E- NList -E- Shorter -E- xs -E- (f -E- xs))
+    leq :R: (_x10 :R: Nat) -> (_x11 :R: Nat) -> Bool 
+      y :E: Nat
+        [leq] -R- Z -R- y = True
+      x :E: Nat
+        [leq] -R- (S -R- x) -R- Z = False
+      x :R: Nat y :R: Nat
+        [leq] -R- (S -R- x) -R- (S -R- y) = leq -R- x -R- y
+    not :R: (_x12 :R: Bool) -> Bool 
+      [not] -R- True = False
+      [not] -R- False = True
+    qel :R: (y :R: Nat) -> (x :R: Nat) -> Bool = (\y :R: Nat. (\x :R: Nat. leq -R- x -R- y))
+    gt :R: (x :R: Nat) -> (y :R: Nat) -> Bool = (\x :R: Nat. (\y :R: Nat. not -R- (leq -R- y -R- x)))
+    condCons :R: (_x13 :R: Bool) -> (_x14 :R: Nat) -> (_x15 :R: NList) -> NList 
+      [condCons] -R- True = Cons
+      [condCons] -R- False = (\x :R: Nat. (\xs :R: NList. xs))
+    filter :R: (_x16 :R: (_x17 :R: Nat) -> Bool) -> (_x18 :R: NList) -> NList 
+      p :E: (_x19 :R: Nat) -> Bool
+        [filter] -R- p -R- Nil = Nil
+      p :R: (_x20 :R: Nat) -> Bool x :R: Nat xs :R: NList
+        [filter] -R- p -R- (Cons -R- x -R- xs) = condCons -R- (p -R- x) -R- x -R- (filter -R- p -R- xs)
+    append :R: (_x21 :R: NList) -> (_x22 :R: NList) -> NList 
+      ys :R: NList
+        [append] -R- Nil -R- ys = ys
+      x :R: Nat xs :R: NList ys :R: NList
+        [append] -R- (Cons -R- x -R- xs) -R- ys = Cons -R- x -R- (append -R- xs -R- ys)
+    postulate Id :E: (a :E: Type) -> (_x23 :E: a) -> (_x24 :E: a) -> Type
+    postulate Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+    postulate Split :E: (_x25 :E: NList) -> Type
+    postulate SNil :E: Split -E- Nil
+    postulate SOne :E: (x :E: Nat) -> Split -E- (Cons -E- x -E- Nil)
+    postulate SMore :E: (x :E: Nat) -> (xs :E: NList) -> (y :E: Nat) -> (ys :E: NList) -> Split -E- (append -E- (Cons -E- x -E- xs) -E- (Cons -E- y -E- ys))
+    pushL :E: (x :E: Nat) -> (xs :E: NList) -> (_x26 :E: Split -E- xs) -> Split -E- (Cons -E- x -E- xs) 
+      x :E: Nat
+        [pushL] -E- x -E- [Nil] -E- SNil = SOne -E- x
+      x :E: Nat y :E: Nat
+        [pushL] -E- x -E- [Cons -E- y -E- Nil] -E- (SOne -E- y) = SMore -E- x -E- Nil -E- y -E- Nil
+      x :E: Nat y :E: Nat ys :E: NList z :E: Nat zs :E: NList
+        [pushL] -E- x -E- [append -E- (Cons -E- y -E- ys) -E- (Cons -E- z -E- zs)] -E- (SMore -E- y -E- ys -E- z -E- zs) = SMore -E- x -E- (Cons -E- y -E- ys) -E- z -E- zs
+    split :E: (xs :E: NList) -> Split -E- xs 
+      [split] -E- Nil = SNil
+      x :E: Nat
+        [split] -E- (Cons -E- x -E- Nil) = SOne -E- x
+      x :E: Nat y :E: Nat xs :E: NList
+        [split] -E- (Cons -E- x -E- (Cons -E- y -E- xs)) = 
+          let step :E: (counter :E: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (xs :E: NList) -> Split -E- (Cons -E- x -E- (Cons -E- y -E- xs)) 
+            x :E: Nat y :E: Nat xs :E: NList
+              [step] -E- Z -E- x -E- y -E- xs = SMore -E- x -E- Nil -E- y -E- xs
+            x :E: Nat y :E: Nat xs :E: NList
+              [step] -E- (S -E- Z) -E- x -E- y -E- xs = SMore -E- x -E- Nil -E- y -E- xs
+            c :E: Nat x :E: Nat y :E: Nat
+              [step] -E- (S -E- (S -E- c)) -E- x -E- y -E- Nil = SMore -E- x -E- Nil -E- y -E- Nil
+            c :E: Nat x :E: Nat y :E: Nat z :E: Nat xs :E: NList
+              [step] -E- (S -E- (S -E- c)) -E- x -E- y -E- (Cons -E- z -E- xs) = pushL -E- x -E- (Cons -E- y -E- (Cons -E- z -E- xs)) -E- (step -E- c -E- y -E- z -E- xs)
+          in step -E- (S -E- (length -E- xs)) -E- x -E- y -E- xs
+    merge :E: (_x27 :E: NList) -> (_x28 :E: NList) -> NList 
+      ys :E: NList
+        [merge] -E- Nil -E- ys = ys
+      xs :E: NList
+        [merge] -E- xs -E- Nil = xs
+      x :E: Nat xs :E: NList y :E: Nat ys :E: NList
+        [merge] -E- (Cons -E- x -E- xs) -E- (Cons -E- y -E- ys) = 
+          let f :E: (_x29 :E: Bool) -> NList 
+            [f] -E- True = Cons -E- x -E- (merge -E- xs -E- (Cons -E- y -E- ys))
+            [f] -E- False = Cons -E- y -E- (merge -E- (Cons -E- x -E- xs) -E- ys)
+          in f -E- (leq -E- x -E- y)
+    filterLen :E: (p :E: (_x0 :E: Nat) -> Bool) -> (xs :E: NList) -> LE -E- (length -E- (filter -E- p -E- xs)) -E- (length -E- xs) 
+      p :E: (_x1 :E: Nat) -> Bool
+        [filterLen] -E- p -E- Nil = LEZ -E- Z
+      p :E: (_x2 :E: Nat) -> Bool x :E: Nat xs :E: NList
+        [filterLen] -E- p -E- (Cons -E- x -E- xs) = 
+          let f :E: (px :E: Bool) -> LE -E- (length -E- (condCons -E- px -E- x -E- (filter -E- p -E- xs))) -E- (length -E- (Cons -E- x -E- xs)) 
+            [f] -E- True = LES -E- (length -E- (filter -E- p -E- xs)) -E- (length -E- xs) -E- (filterLen -E- p -E- xs)
+            [f] -E- False = leS -E- (length -E- (filter -E- p -E- xs)) -E- (length -E- xs) -E- (filterLen -E- p -E- xs)
+          in f -E- (p -E- x)
+    qsort' :R: (xs :R: NList) -> (_x3 :E: Acc -E- NList -E- Shorter -E- xs) -> NList 
+      acc :E: Acc -E- NList -E- Shorter -E- Nil
+        [qsort'] -R- Nil -E- acc = Nil
+      x :R: Nat xs :R: NList acc :E: (ys :E: NList) -> (_x4 :E: Shorter -E- ys -E- (Cons -E- x -E- xs)) -> Acc -E- NList -E- Shorter -E- ys
+        [qsort'] -R- (Cons -R- x -R- xs) -E- ({MkAcc} -E- [NList] -E- [Shorter] -E- [Cons -R- x -R- xs] -E- acc) = append -R- (qsort' -R- (filter -R- (qel -R- x) -R- xs) -E- (acc -E- (filter -E- (qel -E- x) -E- xs) -E- (LES -E- (length -E- (filter -E- (qel -E- x) -E- xs)) -E- (length -E- xs) -E- (filterLen -E- (qel -E- x) -E- xs)))) -R- (Cons -R- x -R- (qsort' -R- (filter -R- (gt -R- x) -R- xs) -E- (acc -E- (filter -E- (gt -E- x) -E- xs) -E- (LES -E- (length -E- (filter -E- (gt -E- x) -E- xs)) -E- (length -E- xs) -E- (filterLen -E- (gt -E- x) -E- xs)))))
+    qsort :R: (xs :R: NList) -> NList = (\xs :R: NList. qsort' -R- xs -E- (wfShorter -E- xs))
+    main :R: NList = qsort -R- someList
+  in main
+
+### Final annotation ###
+
+  let
+    postulate Nat :E: Type
+    postulate Z :R: Nat
+    postulate S :R: (n :R: Nat) -> Nat
+    postulate Bool :E: Type
+    postulate True :R: Bool
+    postulate False :R: Bool
+    postulate NList :E: Type
+    postulate Nil :R: NList
+    postulate Cons :R: (x :R: Nat) -> (xs :R: NList) -> NList
+    someList :R: NList = Cons -R- 9 -R- (Cons -R- 5 -R- (Cons -R- 1 -R- (Cons -R- 3 -R- (Cons -R- 1 -R- (Cons -R- 5 -R- (Cons -R- 2 -R- Nil))))))
+    Rel2 :E: (a :E: Type) -> Type = (\a :E: Type. (x :E: a) -> (y :E: a) -> Type)
+    postulate Acc :E: (a :E: Type) -> (lt :E: Rel2 -E- a) -> (x :E: a) -> Type
+    postulate MkAcc :E: (a :E: Type) -> (lt :E: Rel2 -E- a) -> (x :E: a) -> (acc :E: (y :E: a) -> (pf :E: lt -E- y -E- x) -> Acc -E- a -E- lt -E- y) -> Acc -E- a -E- lt -E- x
+    postulate LE :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Type
+    postulate LEZ :E: (n :E: Nat) -> LE -E- Z -E- n
+    postulate LES :E: (m :E: Nat) -> (n :E: Nat) -> (_x2 :E: LE -E- m -E- n) -> LE -E- (S -E- m) -E- (S -E- n)
+    LT :E: (x :E: Nat) -> (y :E: Nat) -> Type = (\x :E: Nat. (\y :E: Nat. LE -E- (S -E- x) -E- y))
+    leRefl :E: (x :E: Nat) -> LE -E- x -E- x 
+      [leRefl] -E- Z = LEZ -E- Z
+      x :E: Nat
+        [leRefl] -E- (S -E- x) = LES -E- x -E- x -E- (leRefl -E- x)
+    leTrans :E: (x :E: Nat) -> (y :E: Nat) -> (z :E: Nat) -> (_x3 :E: LE -E- x -E- y) -> (_x4 :E: LE -E- y -E- z) -> LE -E- x -E- z 
+      y :E: Nat z :E: Nat pf :E: LE -E- y -E- z
+        [leTrans] -E- Z -E- y -E- z -E- ({LEZ} -E- [y]) -E- pf = LEZ -E- z
+      x :E: Nat y :E: Nat z :E: Nat xLEy :E: LE -E- x -E- y yLEz :E: LE -E- y -E- z
+        [leTrans] -E- (S -E- x) -E- (S -E- y) -E- (S -E- z) -E- ({LES} -E- [x] -E- [y] -E- xLEy) -E- ({LES} -E- [y] -E- [z] -E- yLEz) = LES -E- x -E- z -E- (leTrans -E- x -E- y -E- z -E- xLEy -E- yLEz)
+    leS :E: (x :E: Nat) -> (y :E: Nat) -> (_x5 :E: LE -E- x -E- y) -> LE -E- x -E- (S -E- y) 
+      y :E: Nat
+        [leS] -E- Z -E- y -E- ({LEZ} -E- [y]) = LEZ -E- (S -E- y)
+      x :E: Nat y :E: Nat xLEy :E: LE -E- x -E- y
+        [leS] -E- (S -E- x) -E- (S -E- y) -E- ({LES} -E- [x] -E- [y] -E- xLEy) = LES -E- x -E- (S -E- y) -E- (leS -E- x -E- y -E- xLEy)
+    lemmaLTZ :E: (a :E: Type) -> (n :E: Nat) -> (_x6 :E: LT -E- n -E- Z) -> a 
+    wfLT :E: (x :E: Nat) -> Acc -E- Nat -E- LT -E- x = (\x :E: Nat. 
+      let f :E: (x :E: Nat) -> (y :E: Nat) -> (_x7 :E: LT -E- y -E- x) -> Acc -E- Nat -E- LT -E- y 
+        y :E: Nat pf :E: LT -E- y -E- Z
+          [f] -E- Z -E- y -E- pf = lemmaLTZ -E- (Acc -E- Nat -E- LT -E- y) -E- y -E- pf
+        x :E: Nat y :E: Nat yLEx :E: LE -E- y -E- x
+          [f] -E- (S -E- x) -E- y -E- ({LES} -E- [y] -E- [x] -E- yLEx) = MkAcc -E- Nat -E- LT -E- y -E- (\z :E: Nat. (\zLTy :E: LT -E- z -E- y. f -E- x -E- z -E- (leTrans -E- (S -E- z) -E- y -E- x -E- zLTy -E- yLEx)))
+      in MkAcc -E- Nat -E- LT -E- x -E- (f -E- x))
+    length :E: (_x8 :E: NList) -> Nat 
+      [length] -E- Nil = Z
+      x :E: Nat xs :E: NList
+        [length] -E- (Cons -E- x -E- xs) = S -E- (length -E- xs)
+    Shorter :E: (xs :E: NList) -> (ys :E: NList) -> Type = (\xs :E: NList. (\ys :E: NList. LT -E- (length -E- xs) -E- (length -E- ys)))
+    wfShorter :E: (xs :E: NList) -> Acc -E- NList -E- Shorter -E- xs = (\xs :E: NList. 
+      let f :E: (xs :E: NList) -> (ys :E: NList) -> (_x9 :E: Shorter -E- ys -E- xs) -> Acc -E- NList -E- Shorter -E- ys 
+        ys :E: NList pf :E: Shorter -E- ys -E- Nil
+          [f] -E- Nil -E- ys -E- pf = lemmaLTZ -E- (Acc -E- NList -E- Shorter -E- ys) -E- (length -E- ys) -E- pf
+        x :E: Nat xs :E: NList ys :E: NList yLEx :E: LE -E- (length -E- ys) -E- (length -E- xs)
+          [f] -E- (Cons -E- x -E- xs) -E- ys -E- ({LES} -E- [length -E- ys] -E- [length -E- xs] -E- yLEx) = MkAcc -E- NList -E- Shorter -E- ys -E- (\zs :E: NList. (\zLTy :E: LT -E- (length -E- zs) -E- (length -E- ys). f -E- xs -E- zs -E- (leTrans -E- (S -E- (length -E- zs)) -E- (length -E- ys) -E- (length -E- xs) -E- zLTy -E- yLEx)))
+      in MkAcc -E- NList -E- Shorter -E- xs -E- (f -E- xs))
+    leq :R: (_x10 :R: Nat) -> (_x11 :R: Nat) -> Bool 
+      y :E: Nat
+        [leq] -R- Z -R- y = True
+      x :E: Nat
+        [leq] -R- (S -R- x) -R- Z = False
+      x :R: Nat y :R: Nat
+        [leq] -R- (S -R- x) -R- (S -R- y) = leq -R- x -R- y
+    not :R: (_x12 :R: Bool) -> Bool 
+      [not] -R- True = False
+      [not] -R- False = True
+    qel :R: (y :R: Nat) -> (x :R: Nat) -> Bool = (\y :R: Nat. (\x :R: Nat. leq -R- x -R- y))
+    gt :R: (x :R: Nat) -> (y :R: Nat) -> Bool = (\x :R: Nat. (\y :R: Nat. not -R- (leq -R- y -R- x)))
+    condCons :R: (_x13 :R: Bool) -> (_x14 :R: Nat) -> (_x15 :R: NList) -> NList 
+      [condCons] -R- True = Cons
+      [condCons] -R- False = (\x :R: Nat. (\xs :R: NList. xs))
+    filter :R: (_x16 :R: (_x17 :R: Nat) -> Bool) -> (_x18 :R: NList) -> NList 
+      p :E: (_x19 :R: Nat) -> Bool
+        [filter] -R- p -R- Nil = Nil
+      p :R: (_x20 :R: Nat) -> Bool x :R: Nat xs :R: NList
+        [filter] -R- p -R- (Cons -R- x -R- xs) = condCons -R- (p -R- x) -R- x -R- (filter -R- p -R- xs)
+    append :R: (_x21 :R: NList) -> (_x22 :R: NList) -> NList 
+      ys :R: NList
+        [append] -R- Nil -R- ys = ys
+      x :R: Nat xs :R: NList ys :R: NList
+        [append] -R- (Cons -R- x -R- xs) -R- ys = Cons -R- x -R- (append -R- xs -R- ys)
+    postulate Id :E: (a :E: Type) -> (_x23 :E: a) -> (_x24 :E: a) -> Type
+    postulate Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+    postulate Split :E: (_x25 :E: NList) -> Type
+    postulate SNil :E: Split -E- Nil
+    postulate SOne :E: (x :E: Nat) -> Split -E- (Cons -E- x -E- Nil)
+    postulate SMore :E: (x :E: Nat) -> (xs :E: NList) -> (y :E: Nat) -> (ys :E: NList) -> Split -E- (append -E- (Cons -E- x -E- xs) -E- (Cons -E- y -E- ys))
+    pushL :E: (x :E: Nat) -> (xs :E: NList) -> (_x26 :E: Split -E- xs) -> Split -E- (Cons -E- x -E- xs) 
+      x :E: Nat
+        [pushL] -E- x -E- [Nil] -E- SNil = SOne -E- x
+      x :E: Nat y :E: Nat
+        [pushL] -E- x -E- [Cons -E- y -E- Nil] -E- (SOne -E- y) = SMore -E- x -E- Nil -E- y -E- Nil
+      x :E: Nat y :E: Nat ys :E: NList z :E: Nat zs :E: NList
+        [pushL] -E- x -E- [append -E- (Cons -E- y -E- ys) -E- (Cons -E- z -E- zs)] -E- (SMore -E- y -E- ys -E- z -E- zs) = SMore -E- x -E- (Cons -E- y -E- ys) -E- z -E- zs
+    split :E: (xs :E: NList) -> Split -E- xs 
+      [split] -E- Nil = SNil
+      x :E: Nat
+        [split] -E- (Cons -E- x -E- Nil) = SOne -E- x
+      x :E: Nat y :E: Nat xs :E: NList
+        [split] -E- (Cons -E- x -E- (Cons -E- y -E- xs)) = 
+          let step :E: (counter :E: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (xs :E: NList) -> Split -E- (Cons -E- x -E- (Cons -E- y -E- xs)) 
+            x :E: Nat y :E: Nat xs :E: NList
+              [step] -E- Z -E- x -E- y -E- xs = SMore -E- x -E- Nil -E- y -E- xs
+            x :E: Nat y :E: Nat xs :E: NList
+              [step] -E- (S -E- Z) -E- x -E- y -E- xs = SMore -E- x -E- Nil -E- y -E- xs
+            c :E: Nat x :E: Nat y :E: Nat
+              [step] -E- (S -E- (S -E- c)) -E- x -E- y -E- Nil = SMore -E- x -E- Nil -E- y -E- Nil
+            c :E: Nat x :E: Nat y :E: Nat z :E: Nat xs :E: NList
+              [step] -E- (S -E- (S -E- c)) -E- x -E- y -E- (Cons -E- z -E- xs) = pushL -E- x -E- (Cons -E- y -E- (Cons -E- z -E- xs)) -E- (step -E- c -E- y -E- z -E- xs)
+          in step -E- (S -E- (length -E- xs)) -E- x -E- y -E- xs
+    merge :E: (_x27 :E: NList) -> (_x28 :E: NList) -> NList 
+      ys :E: NList
+        [merge] -E- Nil -E- ys = ys
+      xs :E: NList
+        [merge] -E- xs -E- Nil = xs
+      x :E: Nat xs :E: NList y :E: Nat ys :E: NList
+        [merge] -E- (Cons -E- x -E- xs) -E- (Cons -E- y -E- ys) = 
+          let f :E: (_x29 :E: Bool) -> NList 
+            [f] -E- True = Cons -E- x -E- (merge -E- xs -E- (Cons -E- y -E- ys))
+            [f] -E- False = Cons -E- y -E- (merge -E- (Cons -E- x -E- xs) -E- ys)
+          in f -E- (leq -E- x -E- y)
+    filterLen :E: (p :E: (_x0 :E: Nat) -> Bool) -> (xs :E: NList) -> LE -E- (length -E- (filter -E- p -E- xs)) -E- (length -E- xs) 
+      p :E: (_x1 :E: Nat) -> Bool
+        [filterLen] -E- p -E- Nil = LEZ -E- Z
+      p :E: (_x2 :E: Nat) -> Bool x :E: Nat xs :E: NList
+        [filterLen] -E- p -E- (Cons -E- x -E- xs) = 
+          let f :E: (px :E: Bool) -> LE -E- (length -E- (condCons -E- px -E- x -E- (filter -E- p -E- xs))) -E- (length -E- (Cons -E- x -E- xs)) 
+            [f] -E- True = LES -E- (length -E- (filter -E- p -E- xs)) -E- (length -E- xs) -E- (filterLen -E- p -E- xs)
+            [f] -E- False = leS -E- (length -E- (filter -E- p -E- xs)) -E- (length -E- xs) -E- (filterLen -E- p -E- xs)
+          in f -E- (p -E- x)
+    qsort' :R: (xs :R: NList) -> (_x3 :E: Acc -E- NList -E- Shorter -E- xs) -> NList 
+      acc :E: Acc -E- NList -E- Shorter -E- Nil
+        [qsort'] -R- Nil -E- acc = Nil
+      x :R: Nat xs :R: NList acc :E: (ys :E: NList) -> (_x4 :E: Shorter -E- ys -E- (Cons -E- x -E- xs)) -> Acc -E- NList -E- Shorter -E- ys
+        [qsort'] -R- (Cons -R- x -R- xs) -E- ({MkAcc} -E- [NList] -E- [Shorter] -E- [Cons -R- x -R- xs] -E- acc) = append -R- (qsort' -R- (filter -R- (qel -R- x) -R- xs) -E- (acc -E- (filter -E- (qel -E- x) -E- xs) -E- (LES -E- (length -E- (filter -E- (qel -E- x) -E- xs)) -E- (length -E- xs) -E- (filterLen -E- (qel -E- x) -E- xs)))) -R- (Cons -R- x -R- (qsort' -R- (filter -R- (gt -R- x) -R- xs) -E- (acc -E- (filter -E- (gt -E- x) -E- xs) -E- (LES -E- (length -E- (filter -E- (gt -E- x) -E- xs)) -E- (length -E- xs) -E- (filterLen -E- (gt -E- x) -E- xs)))))
+    qsort :R: (xs :R: NList) -> NList = (\xs :R: NList. qsort' -R- xs -E- (wfShorter -E- xs))
+    main :R: NList = qsort -R- someList
+  in main
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+  let
+    postulate Z : Nat
+    postulate S : (n) -> Nat
+    postulate True : Bool
+    postulate False : Bool
+    postulate Nil : NList
+    postulate Cons : (x) -> (xs) -> NList
+    someList = Cons 9 (Cons 5 (Cons 1 (Cons 3 (Cons 1 (Cons 5 (Cons 2 Nil))))))
+    leq 
+      [_] Z _ = True
+      [_] (S _) Z = False
+      [_] (S x) (S y) = leq x y
+    not 
+      [_] True = False
+      [_] False = True
+    qel = (\y. (\x. leq x y))
+    gt = (\x. (\y. not (leq y x)))
+    condCons 
+      [_] True = Cons
+      [_] False = (\x. (\xs. xs))
+    filter 
+      [_] _ Nil = Nil
+      [_] p (Cons x xs) = condCons (p x) x (filter p xs)
+    append 
+      [_] Nil ys = ys
+      [_] (Cons x xs) ys = Cons x (append xs ys)
+    qsort' 
+      [_] Nil = Nil
+      [_] (Cons x xs) = append (qsort' (filter (qel x) xs)) (Cons x (qsort' (filter (gt x) xs)))
+    qsort = (\xs. qsort' xs)
+    main = qsort someList
+  in main
+
+### Normal forms ###
+
+unerased:
+  
+  let
+    postulate Nat : Type
+    postulate Z : Nat
+    postulate S : (n :R: Nat) -> Nat
+    postulate NList : Type
+    postulate Nil : NList
+    postulate Cons : (x :R: Nat) -> (xs :R: NList) -> NList
+  in Cons 1 (Cons 1 (Cons 2 (Cons 3 (Cons 5 (Cons 5 (Cons 9 Nil))))))
+
+erased:
+  
+  let
+    postulate Z : Nat
+    postulate S : (n) -> Nat
+    postulate Nil : NList
+    postulate Cons : (x) -> (xs) -> NList
+  in Cons 1 (Cons 1 (Cons 2 (Cons 3 (Cons 5 (Cons 5 (Cons 9 Nil))))))
+

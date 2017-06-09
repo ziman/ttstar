@@ -1,0 +1,52 @@
+-- vim: ft=idris
+
+import "prelude.tt"
+
+{- how to simulate rewrite, part I.
+
+pf3 : (x : Bool) -> Id Bool (not x) True -> Id Bool (not (not x)) False.
+  (x : Bool) (eq : Id Bool (not x) True)
+    pf3 x eq = let
+        pf4 : (notx : Bool) -> (eq : Id Bool notx True) -> Id Bool (not notx) False.
+        pf4 [True] [Refl Bool True] = Refl Bool False
+      in pf4 (not x) eq.
+
+-}
+
+{-
+-- the internal function has two parameters:
+-- 1. rewritten expression
+-- 2. the associated equality
+-- returns the desired type with the rewritten expression replaced with the corresponding variable
+-- the desired type may be reduced/specialised if necessary (this should always be possible)
+-}
+
+{-
+pf : (p : Nat -> Bool) -> (x : Nat) -> (xs : NList) -> Id Bool (p x) False
+  -> Id NList (filter p (Cons x xs)) (filter p xs).
+  (p : Nat -> Bool) (x : Nat) (xs : NList) (eq : Id Bool (p x) False)
+    pf p x xs eq = let
+        f : (px : Bool) -> (eq : Id Bool px False) -> Id NList (condCons px x (filter p xs)) (filter p xs).
+        f [False] [Refl Bool False] = Refl NList (filter p xs)
+    in f (p x) eq.
+-}
+
+{-
+pf2 : (p : Nat -> Bool) -> (x : Nat) -> (xs : NList) -> (px : Bool) -> Id Bool px (p x) 
+  -> I
+  -- you need to pass in the whole expression with the source subexpression replaced by a variable
+  -- and that variable with the value of the source subexpression to the child call
+  -- plus perhaps an explicit equality
+  -- so they are both equivalent from the POV of the caller
+  -- and then you can get rewriting in the child
+  --
+  -- in agda, there's (filter p a | p a)
+  -- there's also: https://agda.readthedocs.io/en/v2.5.2/language/with-abstraction.html#rewrite
+
+pf : (p : Nat -> Bool) -> (x : Nat) -> (xs : NList) -> Id Bool (p x) False
+  -> Id NList (filter p (Cons x xs)) (filter p xs).
+  (p : Nat -> Bool) (x : Nat) (xs : NList)
+    pf p x xs eq = pf2 p x xs eq (p x) Refl.
+
+-- pf : (p x = False) -> filter p (x :: xs) = filter p xs
+-}

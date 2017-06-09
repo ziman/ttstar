@@ -1,0 +1,50 @@
+-- vim: ft=ttstar
+  let
+    postulate Z : Nat
+    postulate S : (n) -> Nat
+    postulate True : Bool
+    postulate False : Bool
+    postulate Nil : NList
+    postulate Cons : (x) -> (xs) -> NList
+    someList = Cons 9 (Cons 5 (Cons 1 (Cons 3 (Cons 1 (Cons 5 (Cons 2 Nil))))))
+    length 
+      [_] Nil = Z
+      [_] (Cons _ xs) = S (length xs)
+    leq 
+      [_] Z _ = True
+      [_] (S _) Z = False
+      [_] (S x) (S y) = leq x y
+    postulate SNil : Split
+    postulate SOne : (x) -> Split
+    postulate SMore : (x) -> (xs) -> (y) -> (ys) -> Split
+    pushL 
+      [_] x SNil = SOne x
+      [_] x (SOne y) = SMore x Nil y Nil
+      [_] x (SMore y ys z zs) = SMore x (Cons y ys) z zs
+    split 
+      [_] Nil = SNil
+      [_] (Cons x Nil) = SOne x
+      [_] (Cons x (Cons y xs)) = 
+        let step 
+          [_] Z x y xs = SMore x Nil y xs
+          [_] (S Z) x y xs = SMore x Nil y xs
+          [_] (S (S _)) x y Nil = SMore x Nil y Nil
+          [_] (S (S c)) x y (Cons z xs) = pushL x (step c y z xs)
+        in step (S (length xs)) x y xs
+    merge 
+      [_] Nil ys = ys
+      [_] xs Nil = xs
+      [_] (Cons x xs) (Cons y ys) = 
+        let f 
+          [_] True = Cons x (merge xs (Cons y ys))
+          [_] False = Cons y (merge (Cons x xs) ys)
+        in f (leq x y)
+    msort' = (\xs. 
+      let fx 
+        [_] SNil = Nil
+        [_] (SOne x) = Cons x Nil
+        [_] (SMore y ys z zs) = merge (msort' (Cons y ys)) (msort' (Cons z zs))
+      in fx (split xs))
+    msort = (\xs. msort' xs)
+    main = msort someList
+  in main

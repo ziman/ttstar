@@ -1,0 +1,104 @@
+-- vim: ft=ttstar
+  let
+    postulate Nat : Type
+    postulate Z : Nat
+    postulate S : (n) -> Nat
+    postulate Bool : Type
+    postulate True : Bool
+    postulate False : Bool
+    postulate NList : Type
+    postulate Nil : NList
+    postulate Cons : (x) -> (xs) -> NList
+    someList = Cons 9 (Cons 5 (Cons 1 (Cons 3 (Cons 1 (Cons 5 (Cons 2 Nil))))))
+    Rel2 = (\a. (x) -> (y) -> Type)
+    postulate Acc : (a) -> (lt) -> (x) -> Type
+    postulate MkAcc : (a) -> (lt) -> (x) -> (acc) -> Acc a lt x
+    postulate LE : (_x0) -> (_x1) -> Type
+    postulate LEZ : (n) -> LE Z n
+    postulate LES : (m) -> (n) -> (_x2) -> LE (S m) (S n)
+    LT = (\x. (\y. LE (S x) y))
+    leRefl 
+      [_] Z = LEZ Z
+      [_] (S x) = LES x x (leRefl x)
+    leTrans 
+      [_] Z y z ({_} [_]) pf = LEZ z
+      [_] (S x) (S y) (S z) ({_} [_] [_] xLEy) ({_} [_] [_] yLEz) = LES x z (leTrans x y z xLEy yLEz)
+    leS 
+      [_] Z y ({_} [_]) = LEZ (S y)
+      [_] (S x) (S y) ({_} [_] [_] xLEy) = LES x (S y) (leS x y xLEy)
+    lemmaLTZ 
+    wfLT = (\x. 
+      let f 
+        [_] Z y pf = lemmaLTZ (Acc Nat LT y) y pf
+        [_] (S x) y ({_} [_] [_] yLEx) = MkAcc Nat LT y (\z. (\zLTy. f x z (leTrans (S z) y x zLTy yLEx)))
+      in MkAcc Nat LT x (f x))
+    length 
+      [_] Nil = Z
+      [_] (Cons x xs) = S (length xs)
+    Shorter = (\xs. (\ys. LT (length xs) (length ys)))
+    wfShorter = (\xs. 
+      let f 
+        [_] Nil ys pf = lemmaLTZ (Acc NList Shorter ys) (length ys) pf
+        [_] (Cons x xs) ys ({_} [_] [_] yLEx) = MkAcc NList Shorter ys (\zs. (\zLTy. f xs zs (leTrans (S (length zs)) (length ys) (length xs) zLTy yLEx)))
+      in MkAcc NList Shorter xs (f xs))
+    leq 
+      [_] Z y = True
+      [_] (S x) Z = False
+      [_] (S x) (S y) = leq x y
+    not 
+      [_] True = False
+      [_] False = True
+    qel = (\y. (\x. leq x y))
+    gt = (\x. (\y. not (leq y x)))
+    condCons 
+      [_] True = Cons
+      [_] False = (\x. (\xs. xs))
+    filter 
+      [_] p Nil = Nil
+      [_] p (Cons x xs) = condCons (p x) x (filter p xs)
+    append 
+      [_] Nil ys = ys
+      [_] (Cons x xs) ys = Cons x (append xs ys)
+    postulate Id : (a) -> (_x23) -> (_x24) -> Type
+    postulate Refl : (a) -> (x) -> Id a x x
+    postulate Split : (_x25) -> Type
+    postulate SNil : Split Nil
+    postulate SOne : (x) -> Split (Cons x Nil)
+    postulate SMore : (x) -> (xs) -> (y) -> (ys) -> Split (append (Cons x xs) (Cons y ys))
+    pushL 
+      [_] x [_] SNil = SOne x
+      [_] x [_] (SOne y) = SMore x Nil y Nil
+      [_] x [_] (SMore y ys z zs) = SMore x (Cons y ys) z zs
+    split 
+      [_] Nil = SNil
+      [_] (Cons x Nil) = SOne x
+      [_] (Cons x (Cons y xs)) = 
+        let step 
+          [_] Z x y xs = SMore x Nil y xs
+          [_] (S Z) x y xs = SMore x Nil y xs
+          [_] (S (S c)) x y Nil = SMore x Nil y Nil
+          [_] (S (S c)) x y (Cons z xs) = pushL x (Cons y (Cons z xs)) (step c y z xs)
+        in step (S (length xs)) x y xs
+    merge 
+      [_] Nil ys = ys
+      [_] xs Nil = xs
+      [_] (Cons x xs) (Cons y ys) = 
+        let f 
+          [_] True = Cons x (merge xs (Cons y ys))
+          [_] False = Cons y (merge (Cons x xs) ys)
+        in f (leq x y)
+    shorterL 
+      [_] Nil y ys = LES Z (length ys) (LEZ (length ys))
+      [_] (Cons x xs) y ys = LES (S (length xs)) (length (append xs (Cons y ys))) (shorterL xs y ys)
+    shorterR 
+      [_] x Nil ys = LES (length ys) (length ys) (leRefl (length ys))
+      [_] x (Cons z xs) ys = leS (S (length ys)) (length (Cons z (append xs ys))) (shorterR z xs ys)
+    msort' = (\xs. (\acc. 
+      let fx 
+        [_] [_] acc SNil = Nil
+        [_] [_] acc (SOne x) = Cons x Nil
+        [_] [_] ({_} [_] [_] [_] acc) (SMore y ys z zs) = merge (msort' (Cons y ys) (acc (Cons y ys) (shorterL (Cons y ys) z zs))) (msort' (Cons z zs) (acc (Cons z zs) (shorterR y ys (Cons z zs))))
+      in fx xs acc (split xs)))
+    msort = (\xs. msort' xs (wfShorter xs))
+    main = msort someList
+  in main

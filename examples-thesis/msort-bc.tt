@@ -1,0 +1,67 @@
+import "prelude.tt"
+
+data MSAcc : (xs : NList) -> Split xs -> Type where
+  MSNil : MSAcc Nil SNil,
+  MSOne : (x : Nat) -> MSAcc (Cons x Nil) (SOne x),
+  MSMore :
+    (x : Nat) -> (xs : NList)
+    -> (y : Nat) -> (ys : NList)
+    -> MSAcc (Cons x xs) (split (Cons x xs))
+    -> MSAcc (Cons y ys) (split (Cons y ys))
+    -> MSAcc (append (Cons x xs) (Cons y ys)) (SMore x xs y ys).
+
+lemmaL : (x : Nat) -> (xs : NList) -> (y : Nat) -> (ys : NList) -> Shorter (Cons x xs) (append (Cons x xs) (Cons y ys)).
+  (x : Nat) (y : Nat) (ys : NList)
+    lemmaL x Nil y ys = LES (S Z) (S (length ys)) (LES Z (length ys) (LEZ (length ys))),
+  (x : Nat) (z : Nat) (xs : NList) (y : Nat) (ys : NList)
+    lemmaL x (Cons z xs) y ys = LES (S (length (Cons x xs))) (length (append (Cons x xs) (Cons y ys))) (lemmaL x xs y ys).
+
+lemmaR : (x : Nat) -> (xs : NList) -> (y : Nat) -> (ys : NList) -> Shorter (Cons y ys) (append (Cons x xs) (Cons y ys)).
+  (x : Nat) (y : Nat) (ys : NList)
+    lemmaR x Nil y ys =
+      LES (S (length ys)) (S (length ys)) (
+        LES (length ys) (length ys) (
+          leRefl (length ys))),
+  (x : Nat) (z : Nat) (xs : NList) (y : Nat) (ys : NList)
+    lemmaR x (Cons z xs) y ys =
+      leS (S (S (length ys))) (length (append (Cons x xs) (Cons y ys))) (lemmaR x xs y ys).
+
+msAcc \(xs : NList) (acc : Acc NList Shorter xs) : MSAcc xs (split xs)
+  = let
+      -- the "sxs" in the target instead of (split xs) is the key!
+      -- otherwise the structure is identical to direct mergesort
+      -- (I even copy-paste the LHSs of clauses, including patvars)
+      fx : (xs : NList) -> (acc : Acc NList Shorter xs) -> (sxs : Split xs) -> MSAcc xs sxs.
+        (acc : Acc NList Shorter Nil)
+          fx [Nil] acc SNil = MSNil,
+        (x : Nat) (acc : Acc NList Shorter (Cons x Nil))
+          fx [Cons x Nil] acc (SOne x) = MSOne x,
+        (y : Nat) (ys : NList) (z : Nat) (zs : NList)
+        (acc : (qs : NList) -> Shorter qs (append (Cons y ys) (Cons z zs)) -> Acc NList Shorter qs)
+          fx [append (Cons y ys) (Cons z zs)]
+              ({MkAcc} [NList] [Shorter] [append (Cons y ys) (Cons z zs)] acc)
+              (SMore y ys z zs)
+            = MSMore y ys z zs
+                (msAcc (Cons y ys) (acc (Cons y ys) (lemmaL y ys z zs)))
+                (msAcc (Cons z zs) (acc (Cons z zs) (lemmaR y ys z zs)))
+    in
+      fx xs acc (split xs).
+
+msort' \(xs : NList) (acc : MSAcc xs (split xs)) : NList
+  = let
+      gx : (xs : NList) -> (sxs : Split xs) -> (acc : MSAcc xs sxs) -> NList.
+        gx [Nil] SNil [MSNil] = Nil,
+        (x : Nat)
+          gx [Cons x Nil] (SOne x) [MSOne x] = Cons x Nil,
+        (y : Nat) (ys : NList) (z : Nat) (zs : NList)
+        (accL : MSAcc (Cons y ys) (split (Cons y ys)))
+        (accR : MSAcc (Cons z zs) (split (Cons z zs)))
+          gx [append (Cons y ys) (Cons z zs)] (SMore y ys z zs) ({MSMore} [y] [ys] [z] [zs] accL accR)
+            = merge (msort' (Cons y ys) accL) (msort' (Cons z zs) accR)
+    in
+      gx xs (split xs) acc.
+
+msort \(xs : NList) : NList
+  = msort' xs (msAcc xs (wfShorter xs)).
+
+main \: NList = msort someList.

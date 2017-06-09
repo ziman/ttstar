@@ -1,0 +1,9 @@
+-- vim: ft=ttstar
+  let
+    postulate Nat : Type
+    postulate Z : Nat
+    postulate S : (n) -> Nat
+    postulate NList : Type
+    postulate Nil : NList
+    postulate Cons : (x) -> (xs) -> NList
+  in Cons 1 (Cons 1 (Cons 2 (Cons 3 (Cons 5 (Cons 5 (Cons 9 Nil))))))

@@ -1,0 +1,33 @@
+-- vim: ft=ttstar
+  let
+    postulate Z : Nat
+    postulate S : (n) -> Nat
+    postulate True : Bool
+    postulate False : Bool
+    postulate Nil : NList
+    postulate Cons : (x) -> (xs) -> NList
+    someList = Cons 9 (Cons 5 (Cons 1 (Cons 3 (Cons 1 (Cons 5 (Cons 2 Nil))))))
+    leq 
+      [_] Z _ = True
+      [_] (S _) Z = False
+      [_] (S x) (S y) = leq x y
+    not 
+      [_] True = False
+      [_] False = True
+    qel = (\y. (\x. leq x y))
+    gt = (\x. (\y. not (leq y x)))
+    condCons 
+      [_] True = Cons
+      [_] False = (\x. (\xs. xs))
+    filter 
+      [_] _ Nil = Nil
+      [_] p (Cons x xs) = condCons (p x) x (filter p xs)
+    append 
+      [_] Nil ys = ys
+      [_] (Cons x xs) ys = Cons x (append xs ys)
+    qsort' 
+      [_] Nil = Nil
+      [_] (Cons x xs) = append (qsort' (filter (qel x) xs)) (Cons x (qsort' (filter (gt x) xs)))
+    qsort = (\xs. qsort' xs)
+    main = qsort someList
+  in main

@@ -1,0 +1,1 @@
+(Cons (S (Z)) (Cons (S (Z)) (Cons (S (S (Z))) (Cons (S (S (S (Z)))) (Cons (S (S (S (S (S (Z)))))) (Cons (S (S (S (S (S (Z)))))) (Cons (S (S (S (S (S (S (S (S (S (Z)))))))))) (Nil))))))))

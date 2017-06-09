@@ -1,0 +1,42 @@
+import "prelude.tt"
+
+data QSortAcc : NList -> Type where
+  QNil : QSortAcc Nil,
+  QCons : (x : Nat) -> (xs : NList)
+    -> QSortAcc (filter (qel x) xs)
+    -> QSortAcc (filter (gt x) xs)
+    -> QSortAcc (Cons x xs).
+
+flemma : (x : Nat) -> (p : Nat -> Bool) -> (xs : NList) -> Shorter (filter p xs) (Cons x xs).
+  (x : Nat) (p : Nat -> Bool)
+    flemma x p Nil = LES Z Z (LEZ Z),
+  (x : Nat) (p : Nat -> Bool) (y : Nat) (ys : NList)
+    flemma x p (Cons y ys) = 
+      case p y with
+        f : (py : Bool) -> Shorter (condCons py y (filter p ys)) (Cons x (Cons y ys)).
+        f True  = LES (S (length (filter p ys))) (S (length ys)) (flemma x p ys),
+        f False = leS (S (length (filter p ys))) (S (length ys)) (flemma x p ys).
+      .
+
+qsortAcc : (xs : NList) -> Acc NList Shorter xs -> QSortAcc xs.
+  (acc : Acc NList Shorter Nil)
+    qsortAcc Nil acc = QNil,
+  (x : Nat) (xs : NList) (acc : (ys : NList) -> Shorter ys (Cons x xs) -> Acc NList Shorter ys)
+    qsortAcc (Cons x xs) ({MkAcc} [NList] [Shorter] [Cons x xs] acc)
+      = QCons x xs
+          (qsortAcc (filter (qel x) xs) (acc (filter (qel x) xs) (flemma x (qel x) xs)))
+          (qsortAcc (filter (gt  x) xs) (acc (filter (gt  x) xs) (flemma x (gt  x) xs))).
+
+qsort' : (xs : NList) -> QSortAcc xs -> NList.
+  qsort' Nil {QNil} = Nil,
+  (x : Nat) (xs : NList) (lo : QSortAcc (filter (qel x) xs)) (hi : QSortAcc (filter (gt x) xs))
+    qsort' (Cons x xs) ({QCons} [x] [xs] lo hi)
+      = append
+          (qsort' (filter (qel x) xs) lo)
+          (Cons x
+            (qsort' (filter (gt x) xs) hi)).
+
+qsort \(xs : NList) : NList
+  = qsort' xs (qsortAcc xs (wfShorter xs)).
+
+main \: NList = qsort someList.
