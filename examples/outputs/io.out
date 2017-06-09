@@ -616,24 +616,13 @@ Verification successful.
 
 unerased:
   
-  let
-    postulate Nat : Type
-    postulate Int : Type
-    foreign intS : (x :R: Int) -> Int
-    foreign intZ : Int
-    postulate Unspec : Type
-    foreign intToNat : (x :R: Int) -> Nat
+  let postulate RealWorld : Type
   in 
-    let foreign nativePrint0 : (a :E: Type) -> (x :R: a) -> Unspec
-    in nativePrint0 Nat (intToNat (intS (intS (intS intZ))))
+    let postulate TheWorld : RealWorld
+    in TheWorld
 
 erased:
   
-  let
-    foreign intS
-    foreign intZ
-    foreign intToNat
-  in 
-    let foreign nativePrint0
-    in nativePrint0 (intToNat (intS (intS (intS intZ))))
+  let postulate TheWorld : RealWorld
+  in TheWorld
 

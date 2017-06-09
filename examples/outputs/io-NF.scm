@@ -4,10 +4,5 @@
 (define (rts-arg-peano z s i) (number->peano z s (string->number (list-ref (command-line-arguments) i))))
 (define (rts-arg-read i) (read (open-input-string (list-ref (command-line-arguments) i))))
 (print
-  (letrec* (
-    (intS (lambda (x) (+ x 1)))
-    (intZ 0)
-    (intToNat (lambda (x) (number->peano 'Z 'S x)))
-  )
-    (letrec* ((nativePrint0 print))
-      (nativePrint0 (intToNat (intS (intS (intS intZ))))))))
+  (letrec* ((TheWorld `(TheWorld)))
+    TheWorld))

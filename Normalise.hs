@@ -162,7 +162,7 @@ red form ctx t@(App r f x)
     -- pattern-matching definitions
     | (V fn, args) <- unApply t
     , Just (defBody -> Clauses cs) <- M.lookup fn ctx
-    , Yes rhs <- firstMatch $ map (matchClause ctx t) cs
+    , Yes rhs <- firstMatch $ map (matchClause ctx fn t) cs
     = red form ctx rhs
 
     -- everything else
@@ -190,8 +190,15 @@ matchUp [] ts = Yes ([], ts)
 
 matchUp ps [] = No
 
-matchClause :: IsRelevance r => Ctx r -> TT r -> Clause r -> Match (TT r)
-matchClause ctx tm (Clause pvs lhs rhs) = do
+matchClause :: IsRelevance r => Ctx r -> Name -> TT r -> Clause r -> Match (TT r)
+matchClause ctx fn tm (Clause pvs lhs rhs) = do
+    -- check that the matched term is actually an invocation of the given function
+    () <- case tmH of
+            V fn' | fn' == fn
+                -> Yes ()
+            _
+                -> Stuck
+
     -- first, match up patterns vs. terms, keeping superfluous terms
     -- (if application is oversaturated)
     (pts, extraTerms) <- matchUp pargs args
@@ -206,8 +213,8 @@ matchClause ctx tm (Clause pvs lhs rhs) = do
             (safeSubst pvs [pvSubst M.! defName d | d <- pvs] rhs)
             extraTerms
   where
-    (_ph, pargs) = unApplyPat lhs
-    (_h,  args)  = unApply tm
+    (_patH, pargs) = unApplyPat lhs
+    ( tmH,  args)  = unApply tm
     pvs' = M.fromList [(defName d, d) | d <- pvs]
 
 safeSubst :: [Def r] -> [TT r] -> TT r -> TT r
@@ -236,9 +243,7 @@ match pvs ctx (PApp r f x) (App r' f' x')
         <$> match pvs ctx f f'
         <*> match pvs ctx x (red WHNF ctx x')
 
-match pvs ctx (PForced tm) tm'
-    | isWhnfValue ctx tm' = Yes $ M.empty
-    | otherwise           = Stuck
+match pvs ctx (PForced tm) tm' = Yes $ M.empty
 
 match pvs ctx pat (V n)
     | Just d <- M.lookup n ctx
@@ -248,15 +253,6 @@ match pvs ctx pat (V n)
         _ -> No
 
 match _ _ _ _ = No
-
-isWhnfValue :: Ctx r -> TT r -> Bool
-isWhnfValue ctx tm
-    | (V n, _args) <- unApply tm
-    , Just (defBody -> Abstract Postulate) <- M.lookup n ctx
-    = True
-
-    | otherwise
-    = False
 
 firstMatch :: Alternative f => [f a] -> f a
 firstMatch = foldr (<|>) empty

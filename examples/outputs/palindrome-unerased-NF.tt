@@ -37,11 +37,9 @@
     rev' 
       [_] xs rxs Nil = subst List Rev xs (app xs Nil) (appRightNeutral xs) rxs
       [_] xs rxs (Cons y ys) = subst List Rev (app (app xs (one y)) ys) (app xs (Cons y ys)) (appAssoc xs (one y) ys) (rev' (app xs (one y)) (RSnoc xs y rxs) ys)
-    rev = (\xs. rev' Nil RNil xs)
     reverse' 
       [_] [_] RNil = Nil
       [_] [_] (RSnoc xs x rxs) = Cons x (reverse' xs rxs)
-    reverse = (\xs. reverse' xs (rev xs))
     postulate V : (_x13) -> Type
     postulate VNil : V Nil
     postulate VOne : (x) -> V (Cons x Nil)
@@ -59,7 +57,6 @@
       [_] (S Z) (Cons x xs) (Cons y ys) = VOne x
       [_] (S (S n)) (Cons x xs) (Cons y ys) = VTwo x (index n xs ys) (build n xs ys) y
       [_] (S n) Nil Nil = VNil
-    postulate eq : (xs) -> Id List (index (length xs) xs (reverse xs)) xs
     postulate IsPalindrome : (_x18) -> Type
     postulate PNil : IsPalindrome Nil
     postulate POne : (b) -> IsPalindrome (Cons b Nil)
@@ -85,4 +82,4 @@
       [_] a (Nothing [_]) = F
   in 
     let foreign inputSize
-    in isJust (IsPalindrome (genList T inputSize)) (isPalinV (genList T inputSize) (subst List V (index (length (genList T inputSize)) (genList T inputSize) (reverse' (genList T inputSize) (rev' Nil RNil (genList T inputSize)))) (genList T inputSize) (eq (genList T inputSize)) (build (length (genList T inputSize)) (genList T inputSize) (reverse' (genList T inputSize) (rev' Nil RNil (genList T inputSize))))))
+    in isJust (IsPalindrome (genList T inputSize)) (isPalinV (genList T inputSize) (build (length (genList T inputSize)) (genList T inputSize) (reverse' (genList T inputSize) (rev' Nil RNil (genList T inputSize)))))
