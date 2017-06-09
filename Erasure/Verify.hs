@@ -24,6 +24,7 @@ data VerError
     | CantConvert Term Term
     | PatvarsPatternMismatch [Name] [Name]
     | NonLinearPattern (Pat Relevance)
+    | AppliedForcedPattern (Pat Relevance)
     deriving Show
 
 data VerFailure = VerFailure VerError [String]
@@ -211,6 +212,15 @@ verPat r pvs (PV n) = bt ("PAT-REF", n) $ do
         Abstract Postulate -> return ()
         _ -> verFail $ NotConstructor n
     return $ defType d
+
+verPat r pvs (PForcedCtor n) = bt ("PAT-FORCED-CTOR", n) $ do
+    d <- lookupName n
+    case defBody d of
+        Abstract Postulate -> return $ defType d
+        _ -> verFail $ NotConstructor n
+
+verPat r pvs tm@(PApp s (PForced _) _) =
+    verFail $ AppliedForcedPattern tm
 
 verPat r pvs (PApp s f x) = bt ("PAT-APP", r, s, f, x) $ do
     ctx <- getCtx

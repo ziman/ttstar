@@ -29,6 +29,8 @@ patRelevance f = g
             -> PApp <$> f r <*> g fun <*> g arg
         PForced tm
             -> PForced <$> ttRelevance f tm
+        PForcedCtor n
+            -> pure $ PForcedCtor n
 
 defRelevance :: Ord r' => Traversal (Def r) (Def r') r r'
 defRelevance f (Def n r ty body mcs)

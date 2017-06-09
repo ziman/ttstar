@@ -161,14 +161,20 @@ app = foldl (App Nothing) <$> atomic <*> many atomic <?> "application"
 brackets :: Parser a -> Parser a
 brackets p = kwd "[" *> p <* kwd "]"
 
+braces :: Parser a -> Parser a
+braces p = kwd "{" *> p <* kwd "}"
+
 patVar :: Parser (Pat MRel)
 patVar = PV <$> name <?> "pattern variable"
 
 patForced :: Parser (Pat MRel)
 patForced = PForced <$> brackets expr <?> "forced pattern"
 
+patForcedCtor :: Parser (Pat MRel)
+patForcedCtor = PForcedCtor <$> braces name <?> "forced constructor"
+
 patAtom :: Parser (Pat MRel)
-patAtom = parens pattern <|> patForced <|> patVar <?> "pattern atom"
+patAtom = parens pattern <|> patForced <|> patVar <|> patForcedCtor <?> "pattern atom"
 
 patApp :: Parser (Pat MRel)
 patApp = foldl (PApp Nothing) <$> patAtom <*> many patAtom <?> "pattern application"

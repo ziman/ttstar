@@ -91,16 +91,19 @@ cgClauseLHS pvs pat =
 
 cgPat :: PrettyR r => S.Set Name -> Pat r -> Doc
 cgPat pvs (PV Blank) = text "_"
+
 cgPat pvs (PV n)
     | n `S.member` pvs = cgName n
     | otherwise = parens (text "'" <> cgName n)
+
+cgPat pvs (PForcedCtor n) = cgName Blank
 
 cgPat pvs pat@(PApp r f x)
     | (PV cn, args) <- unApplyPat pat
     = cgPatApp cn args
 
-    | (PForced (V cn), args) <- unApplyPat pat
-    = cgPatApp cn args
+    | (PForcedCtor cn, args) <- unApplyPat pat
+    = cgPatApp Blank args
   where
     cgPatApp cn args = parens (hsep $ cgPName cn : map (cgPat pvs . snd) args)
     cgPName Blank = text "_"
