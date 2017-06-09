@@ -1,4 +1,4 @@
--- vim: ft=idris
+-- vim: ft=ttstar
 
 data State : Type -> Type -> Type where
   MkSt : (st : Type) -> (a : Type)

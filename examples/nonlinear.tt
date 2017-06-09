@@ -1,4 +1,4 @@
--- vim: ft=idris
+-- vim: ft=ttstar
 f : Type -> Type -> Type.
   (x : Type)
     f x x = x.

@@ -1,4 +1,4 @@
--- vim: ft=idris
+-- vim: ft=ttstar
 
 data Id : (a : Type) -> (x : a) -> (y : a) -> Type where
   Refl : (a : Type) -> (x : a) -> Id a x x.

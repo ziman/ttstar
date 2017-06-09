@@ -1,4 +1,4 @@
--- vim: ft=idris
+-- vim: ft=ttstar
 
 data Bool : Type where
   True : Bool,

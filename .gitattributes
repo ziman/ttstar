@@ -1,3 +1,4 @@
 examples/*.out   -diff
 examples/*.html  -diff
 *.tt	linguist-language=Idris
+*.out	linguist-language=Idris

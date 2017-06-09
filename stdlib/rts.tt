@@ -1,4 +1,4 @@
--- vim: ft=idris
+-- vim: ft=ttstar
 
 postulate Int : Type.
 foreign intS : (x :R: Int) -> Int = "(lambda (x) (+ x 1))".

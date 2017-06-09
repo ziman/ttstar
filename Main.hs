@@ -34,7 +34,7 @@ import Lens.Family2
 pipeline :: Args -> IO ()
 pipeline args = do
     when (Args.verbose args) $
-        putStrLn "-- vim: ft=idris"
+        putStrLn "-- vim: ft=ttstar"
 
     let sourceFname = Args.sourceFile args
     prog' <- readProgram sourceFname
@@ -169,7 +169,7 @@ pipeline args = do
         Just fname -> dumpScheme fname erasedNF
   where
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
-    dumpTT fname prog = writeFile fname $ "-- vim: ft=idris" ++ show prog ++ "\n"
+    dumpTT fname prog = writeFile fname $ "-- vim: ft=ttstar" ++ show prog ++ "\n"
     dumpScheme fname prog = writeFile fname $ render "; " (cgRun Codegen.Scheme.codegen prog) ++ "\n"
 
 

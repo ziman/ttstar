@@ -1,4 +1,4 @@
--- vim: ft=idris
+-- vim: ft=ttstar
 
 postulate Tuple : (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type.
 
