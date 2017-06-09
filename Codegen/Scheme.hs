@@ -35,7 +35,11 @@ cgBody n ty (Abstract (Foreign code)) = text code
 cgBody n ty (Abstract Postulate) = cgCtor n ty
 cgBody n ty (Abstract Var) = error $ "let-bound variable: " ++ show n
 cgBody n ty (Term tm) = cgTm tm
+cgBody n ty (Clauses []) = symbol "CannotBeCalled"
 cgBody n ty (Clauses cs) = cgMatchLambda cs
+
+symbol :: String -> Doc
+symbol s = text "'" <> text s
 
 cgOmitted :: Doc
 cgOmitted = text "'_"
