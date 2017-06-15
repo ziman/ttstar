@@ -28,4 +28,16 @@ qsort' : (xs : NList) -> Acc NList Shorter xs -> NList.
 
 qsort \(xs : NList) : NList = qsort' xs (wfShorter xs).
 
-main \: NList = qsort someList.
+qsort_srec : NList -> NList
+  = srecList NList (
+      \x : Nat. \xs : NList. \qs : (ys : NList) -> Shorter ys (Cons x xs) -> NList.
+        append
+          (qs (filter (qel x) xs)
+              (LES (length (filter (qel x) xs)) (length xs) (filterLen (qel x) xs)))
+          (Cons x
+          (qs (filter (gt x) xs)
+              (LES (length (filter (gt x) xs)) (length xs) (filterLen (gt x) xs))))
+    ) Nil.
+
+
+main \: NList = append (qsort someList) (qsort_srec someList).
