@@ -136,16 +136,18 @@ red  NF  ctx t@(Bind b (d:ds) tm)
     Bind _b ds' tm' = red NF (M.insert (defName d) d ctx) $ Bind b ds tm
 
 red form ctx t@(App r f (Bind Let ds tm))
-    | or [defName d `occursIn` f | d <- ds]
-        = error $ "app+let reduction: capture avoidance not implemented yet"
-    | otherwise
-        = red form ctx $ Bind Let ds (App r f tm)
+    = case clashingNames of
+        [] -> red form ctx $ Bind Let ds (App r f tm)
+        _  -> error $ "app+let reduction R: capture avoidance not implemented yet: " ++ show clashingNames
+  where
+    clashingNames = [defName d | d <- ds, defName d `occursIn` f]
 
 red form ctx t@(App r (Bind Let ds tm) x)
-    | or [defName d `occursIn` x | d <- ds]
-        = error $ "app+let reduction: capture avoidance not implemented yet"
-    | otherwise
-        = red form ctx $ Bind Let ds (App r tm x)
+    = case clashingNames of
+        [] -> red form ctx $ Bind Let ds (App r tm x)
+        _  -> error $ "app+let reduction L: capture avoidance not implemented yet: " ++ show clashingNames
+  where
+    clashingNames = [defName d | d <- ds, defName d `occursIn` x]
 
 red form ctx t@(App r f x)
     -- simple lambda
