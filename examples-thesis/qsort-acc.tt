@@ -9,9 +9,9 @@ filterLen : (p : Nat -> Bool) -> (xs : NList) -> LE (length (filter p xs)) (leng
           -- in case expressions like this, you just need to name the parameter
           -- and replace (p x) with (px) everywhere in the goal (don't forget to reduce it)
           -- and that's all you need!
-          f : (px : Bool) -> LE (length (condCons px x (filter p xs))) (length (Cons x xs)).
-          f True  = LES (length (filter p xs)) (length xs) (filterLen p xs),
-          f False = leS (length (filter p xs)) (length xs) (filterLen p xs).
+          flemma : (px : Bool) -> LE (length (condCons px x (filter p xs))) (length (Cons x xs)).
+          flemma True  = LES (length (filter p xs)) (length xs) (filterLen p xs),
+          flemma False = leS (length (filter p xs)) (length xs) (filterLen p xs).
     .
 
 qsort' : (xs : NList) -> Acc NList Shorter xs -> NList.

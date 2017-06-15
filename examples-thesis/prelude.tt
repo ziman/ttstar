@@ -56,17 +56,17 @@ lemmaLTZ : (a : Type) -> (n : Nat) -> LT n Z -> a.
 wfLT \(x : Nat) : Acc Nat LT x
   = let
       -- recurse on x
-      f : (x : Nat) -> (y : Nat) -> LT y x -> Acc Nat LT y.
+      wfLTLemma : (x : Nat) -> (y : Nat) -> LT y x -> Acc Nat LT y.
         (y : Nat) (pf : LT y Z)
-          f Z y pf = lemmaLTZ (Acc Nat LT y) y pf,
+          wfLTLemma Z y pf = lemmaLTZ (Acc Nat LT y) y pf,
         (x : Nat) (y : Nat) (yLEx : LE y x)
-          f (S x) y ({LES} [y] [x] yLEx)
+          wfLTLemma (S x) y ({LES} [y] [x] yLEx)
             = MkAcc Nat LT y (
               \z : Nat. \zLTy : LT z y.
-                f x z (leTrans (S z) y x zLTy yLEx)
+                wfLTLemma x z (leTrans (S z) y x zLTy yLEx)
             ).
     in 
-      MkAcc Nat LT x (f x).
+      MkAcc Nat LT x (wfLTLemma x).
 
 length : NList -> Nat.
 length Nil = Z,
@@ -79,17 +79,17 @@ Shorter \(xs : NList) (ys : NList) : Type
 wfShorter \(xs : NList) : Acc NList Shorter xs
   = let
       -- recurse on xs
-      f : (xs : NList) -> (ys : NList) -> Shorter ys xs -> Acc NList Shorter ys.
+      wfSLemma : (xs : NList) -> (ys : NList) -> Shorter ys xs -> Acc NList Shorter ys.
         (ys : NList) (pf : Shorter ys Nil)
-          f Nil ys pf = lemmaLTZ (Acc NList Shorter ys) (length ys) pf,
+          wfSLemma Nil ys pf = lemmaLTZ (Acc NList Shorter ys) (length ys) pf,
         (x : Nat) (xs : NList) (ys : NList) (yLEx : LE (length ys) (length xs))
-          f (Cons x xs) ys ({LES} [length ys] [length xs] yLEx)
+          wfSLemma (Cons x xs) ys ({LES} [length ys] [length xs] yLEx)
             = MkAcc NList Shorter ys (
               \zs : NList. \zLTy : LT (length zs) (length ys).
-                f xs zs (leTrans (S (length zs)) (length ys) (length xs) zLTy yLEx)
+                wfSLemma xs zs (leTrans (S (length zs)) (length ys) (length xs) zLTy yLEx)
             ).
     in
-      MkAcc NList Shorter xs (f xs).
+      MkAcc NList Shorter xs (wfSLemma xs).
 
 leq : Nat -> Nat -> Bool.
   (y : Nat)
