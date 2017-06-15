@@ -169,3 +169,40 @@ merge : NList -> NList -> NList.
           f : Bool -> NList.
           f True  = Cons x (merge xs (Cons y ys)),
           f False = Cons y (merge (Cons x xs) ys).
+    .
+
+srecList' :
+  (b : Type)
+  -> (
+    (x : Nat)
+    -> (xs : NList)
+    -> (rec : (ys : NList) -> Shorter ys (Cons x xs) -> b)
+    -> b
+  )
+  -> b
+  -> (xs : NList)
+  -> Acc NList Shorter xs
+  -> b.
+
+(b : Type) (f : (x : Nat) -> (xs : NList) -> ((ys : NList) -> Shorter ys (Cons x xs) -> b) -> b)
+(acc : Acc NList Shorter Nil) (z : b)
+  srecList' b f z Nil acc = z,
+
+(b : Type) (f : (x : Nat) -> (xs : NList) -> ((ys : NList) -> Shorter ys (Cons x xs) -> b) -> b)
+(x : Nat) (xs : NList) (acc : (ys : NList) -> Shorter ys (Cons x xs) -> Acc NList Shorter ys) (z : b)
+  srecList' b f z (Cons x xs) ({MkAcc} [NList] [Shorter] [Cons x xs] acc)
+    = f x xs (
+        \ys : NList. \pf : Shorter ys (Cons x xs).
+          srecList' b f z ys (acc ys pf)).
+
+srecList \(b : Type)
+  (f :
+    (x : Nat)
+    -> (xs : NList)
+    -> (rec : (ys : NList) -> Shorter ys (Cons x xs) -> b)
+    -> b
+  )
+  (z : b)
+  (xs : NList)
+  : b
+  = srecList' b f z xs (wfShorter xs).
