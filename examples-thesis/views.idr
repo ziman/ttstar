@@ -30,6 +30,10 @@ data LE : Nat -> Nat -> Type where
 LT : Nat -> Nat -> Type
 LT m n = LE (S m) n
 
+leRefl : x `LE` x
+leRefl {x = Z} = LEZ
+leRefl {x = (S x)} = LES leRefl
+
 leTrans : (x `LE` y) -> (y `LE` z) -> (x `LE` z)
 leTrans  LEZ _ = LEZ
 leTrans (LES xLEy) (LES yLEz) = LES $ leTrans xLEy yLEz
@@ -82,6 +86,40 @@ wfShorter xs = MkAcc (f xs)
     f : (xs, ys : List a) -> (ys `Main.shorter` xs) -> Acc Main.shorter ys
     f [] ys pf = lemmaLTZ pf
     f (x :: xs) ys (LES ysLExs) = MkAcc (\zs, zsLTys => f xs zs $ leTrans zsLTys ysLExs)
+
+-----------------------------------------
+
+interface Sized a where
+  size : a -> Nat
+
+Smaller : Sized a => a -> a -> Type
+Smaller x y = size x `LT` size y
+
+wfSmaller : Sized a => (x : a) -> Acc Smaller x
+wfSmaller x = MkAcc $ f (size x) (wfLT $ size x)
+  where
+    f : (sizeX : Nat) -> (acc : Acc LT sizeX)
+      -> (y : a) -> (size y `LT` sizeX) -> Acc Smaller y
+    f Z acc y pf = lemmaLTZ pf
+    f (S n) (MkAcc acc) y (LES yLEx)
+      = MkAcc (\z, zLTy =>
+          f n (acc n $ LES leRefl) z (leTrans zLTy yLEx)
+        )
+
+implementation Sized (List a) where
+  size = length
+
+{-
+wfSmaller : Sized a => (x : a) -> Acc Smaller x
+wfSmaller x = MkAcc (f x)
+  where
+    f : (x, y : a) -> (y `Smaller` x) -> Acc Smaller y
+    f x y pf with (size x) proof xSize
+      f x y pf | Z = lemmaLTZ pf
+      f x y (LES yLEx) | S n = MkAcc (\z, zLTy => f x z $ leTrans zLTy ?rhs)
+      -- we cannot do this because for the inductive step, we need a subterm of x
+      -- but we have no way to obtain it
+-}
 
 -----------------------------------------
 
@@ -190,10 +228,6 @@ data Split : List a -> Type where
 shorterL : xs `shorter` (xs ++ y :: ys)
 shorterL {xs = []} = LES LEZ
 shorterL {xs = (x :: xs)} = LES shorterL
-
-leRefl : x `LE` x
-leRefl {x = Z} = LEZ
-leRefl {x = (S x)} = LES leRefl
 
 shorterR : ys `shorter` (x :: xs ++ ys)
 shorterR {xs = []} = LES leRefl

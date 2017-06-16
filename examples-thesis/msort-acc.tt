@@ -34,4 +34,15 @@ msort' \(xs : NList) (acc : Acc NList Shorter xs) : NList
 msort \(xs : NList) : NList
   = msort' xs (wfShorter xs).
 
+{- ??? TODO.
+msort_srec : NList -> NList
+  = srecList NList (
+      \x : Nat. \xs : NList. \qs : (ys : NList) -> Shorter ys (Cons x xs) -> NList.
+        case xs with
+          msortF : NList -> NList.
+          msortF Nil = Cons x Nil,
+          msortF (Cons y ys)
+    ) Nil.
+-}
+
 main \: NList = msort someList.
