@@ -1,11 +1,29 @@
 ## TTstar
 
+Dependently typed core calculus with erasure inference.
+
 ### Features
 
+* erasure inference (fills in erasure annotations)
+* separate erasure checker (verifies consistency of erasure annotations)
+* erasure from higher-order functions
+* complete removal of unused arguments (rather than passing in `NULL`)
+* full dependent pattern matching
+* erasure polymorphism for functions
+* pattern matching local `let` definitions
+    * very handy for emulating `with` clauses, `case` expressions, mutual recursion
+* type errors come with backtraces
+* native codegen via Scheme (Chicken Scheme or Racket)
+
+### Interesting consequences
+
+* dependent erasure (if `x == 3` then `erased` else `not_erased`)
+    * useful for emulating mutual recursion
+* unused functions are removed entirely
+* `Refl` is always erased
+
+<!--
 Besides what the original paper had, we have:
-* [P] higher-order erasure
-* [P] changing arities of functions
-* [P] dependent erasure (if `x == True` then erased else not erased)
 * [M] support of inductive families and full dependent pattern matching
     * M-L avoids this entirely
 * [MP] erasure polymorphism for let-bound names (includes top-level)
@@ -52,3 +70,4 @@ mutually recursive. Fix that.
 * recursion
 * every binder is a `Def`
 * `Refl` is erased
+-->
