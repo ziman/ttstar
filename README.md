@@ -1,8 +1,8 @@
-## TTstar
+# TTstar
 
-Dependently typed core calculus (no type inference) with erasure inference.
+Dependently typed core calculus with erasure inference.
 
-### Features
+## Features
 
 * erasure inference (fills in erasure annotations)
 * separate erasure checker (verifies consistency of erasure annotations)
@@ -18,12 +18,18 @@ Dependently typed core calculus (no type inference) with erasure inference.
 * rudimentary FFI via `foreign` postulates
 * native codegen via Scheme (Chicken Scheme or Racket)
 
-### Interesting consequences
+## Interesting consequences
 
 * dependent erasure (if `x == 3` then `erased` else `not_erased`)
     * useful for emulating mutual recursion
 * unused functions are removed entirely
 * `Refl` is always erased
+
+## Does not feature
+
+* type inference
+* mutual recursion
+* much syntax sugar
 
 <!--
 Besides what the original paper had, we have:
