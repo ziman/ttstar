@@ -1,7 +1,7 @@
 module Erasure.Prune where
 
-import TT
-import Pretty ()
+import TT.Core  
+import TT.Pretty ()
 import qualified Data.Map as M
 
 pruneDef :: Def Relevance -> [Def ()]

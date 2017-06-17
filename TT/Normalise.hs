@@ -1,9 +1,9 @@
 {-# LANGUAGE ConstraintKinds, ViewPatterns #-}
-module Normalise (IsRelevance, Form(..), red, whnf, nf) where
+module TT.Normalise (IsRelevance, Form(..), red, whnf, nf) where
 
-import TT
-import TTUtils
-import Pretty
+import TT.Core
+import TT.Utils
+import TT.Pretty
 
 import Control.Applicative
 import qualified Data.Set as S

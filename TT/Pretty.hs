@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleContexts, FlexibleInstances, StandaloneDeriving, ConstraintKinds #-}
-module Pretty (useUnicode, PrettyR(..), ShowUnicode (..), sup) where
+module TT.Pretty (useUnicode, PrettyR(..), ShowUnicode (..), sup) where
 
-import TT
+import TT.Core
 import Util.PrettyPrint
 import qualified Data.Map as M
 

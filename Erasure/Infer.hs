@@ -2,10 +2,10 @@
 
 module Erasure.Infer (infer, instantiate, unions, TCFailure) where
 
-import TT
-import TTLens
-import TTUtils
-import Normalise
+import TT.Core
+import TT.Lens
+import TT.Utils
+import TT.Normalise
 import Erasure.Evar
 import Erasure.Solve
 

@@ -1,7 +1,7 @@
 module Erasure.Specialise (specialise) where
 
-import TT
-import TTLens
+import TT.Core
+import TT.Lens
 
 import Erasure.Evar
 import Erasure.Infer

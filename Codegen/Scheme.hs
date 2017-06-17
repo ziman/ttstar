@@ -1,8 +1,8 @@
 module Codegen.Scheme (codegen) where
 
-import TT
-import TTUtils
-import Pretty
+import TT.Core
+import TT.Utils
+import TT.Pretty
 import Util.PrettyPrint
 import Codegen.Common
 import qualified Data.Set as S

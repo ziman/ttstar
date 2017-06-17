@@ -1,12 +1,12 @@
 {-# LANGUAGE Rank2Types #-}
-module TTLens where
+module TT.Lens where
 
 import qualified Data.Map as M
 import qualified Data.Set as S
 
 import Lens.Family2.Unchecked
 
-import TT
+import TT.Core
 
 ttRelevance :: Ord r' => Traversal (TT r) (TT r') r r'
 ttRelevance f = g

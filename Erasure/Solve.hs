@@ -1,7 +1,7 @@
 {-# LANGUAGE TypeSynonymInstances, FlexibleInstances #-}
 module Erasure.Solve where
 
-import TT
+import TT.Core
 import Erasure.Evar
 
 import qualified Data.Map as M

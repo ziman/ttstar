@@ -1,8 +1,9 @@
-module Parser (readProgram) where
+module TT.Parser (readProgram) where
 
-import TT
-import TTUtils
-import Pretty ()
+import TT.Core
+import TT.Utils
+import TT.Pretty ()
+
 import Data.Char
 import Text.Parsec
 import System.FilePath

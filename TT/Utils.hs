@@ -1,7 +1,7 @@
 {-# LANGUAGE KindSignatures, FlexibleContexts #-}
-module TTUtils where
+module TT.Utils where
 
-import TT
+import TT.Core
 
 import Control.Monad
 import qualified Data.Map as M

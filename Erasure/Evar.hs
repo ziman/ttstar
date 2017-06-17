@@ -1,8 +1,8 @@
 module Erasure.Evar where
 
-import TT
-import TTLens
-import Pretty
+import TT.Core
+import TT.Lens
+import TT.Pretty
 import Util.PrettyPrint
 
 import Lens.Family2

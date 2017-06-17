@@ -1,14 +1,14 @@
 {-# LANGUAGE FlexibleContexts #-}
 module Main where
 
-import TT
-import TTLens
-import TTUtils
-import Parser
-import Normalise
-
 import Args (Args)
 import qualified Args
+
+import TT.Core
+import TT.Lens
+import TT.Utils
+import TT.Parser
+import TT.Normalise
 
 import Codegen.Common
 import qualified Codegen.Scheme

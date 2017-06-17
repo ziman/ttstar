@@ -2,8 +2,8 @@
 
 module Codegen.Common (Codegen(..)) where
 
-import TT
-import Pretty
+import TT.Core
+import TT.Pretty
 import Util.PrettyPrint
 
 data Codegen = Codegen

@@ -3,10 +3,10 @@ module Erasure.Verify
     , VerError(..)
     ) where
 
-import TT
-import TTUtils
-import Normalise (whnf)
-import Pretty ()
+import TT.Core
+import TT.Utils
+import TT.Normalise (whnf)
+import TT.Pretty ()
 
 import qualified Data.Set as S
 import qualified Data.Map as M

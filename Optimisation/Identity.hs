@@ -1,9 +1,9 @@
 {-# LANGUAGE ViewPatterns #-}
 module Optimisation.Identity (optimise) where
 
-import TT
-import TTUtils
-import Pretty ()
+import TT.Core
+import TT.Utils
+import TT.Pretty ()
 
 import qualified Data.Set as S
 
