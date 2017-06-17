@@ -8,7 +8,7 @@ Dependently typed core calculus with erasure inference.
 * separate erasure checker (verifies consistency of erasure annotations)
 * erasure from higher-order functions
 * complete removal of unused arguments (rather than passing in `NULL`)
-* full dependent pattern matching
+* full dependent pattern matching clauses
 * erasure polymorphism for functions
 * pattern matching local `let` definitions are useful for emulating
     * `case` expressions
@@ -21,7 +21,6 @@ Dependently typed core calculus with erasure inference.
 ## Interesting consequences
 
 * dependent erasure (if `x == 3` then `erased` else `not_erased`)
-    * useful for emulating mutual recursion
 * unused functions are removed entirely
 * `Refl` is always erased
 
@@ -29,6 +28,8 @@ Dependently typed core calculus with erasure inference.
 
 * type inference
 * mutual recursion
+	* a restricted form is easy to achieve using local let bindings
+	* sufficient in all cases I've come across
 * much syntax sugar
 
 <!--
