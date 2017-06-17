@@ -1,6 +1,6 @@
 ## TTstar
 
-Dependently typed core calculus with erasure inference.
+Dependently typed core calculus (no type inference) with erasure inference.
 
 ### Features
 
@@ -10,9 +10,12 @@ Dependently typed core calculus with erasure inference.
 * complete removal of unused arguments (rather than passing in `NULL`)
 * full dependent pattern matching
 * erasure polymorphism for functions
-* pattern matching local `let` definitions
-    * very handy for emulating `with` clauses, `case` expressions, mutual recursion
+* pattern matching local `let` definitions are useful for emulating
+    * `case` expressions
+    * `with` clauses
+    * mutual recursion
 * type errors come with backtraces
+* rudimentary FFI via `foreign` postulates
 * native codegen via Scheme (Chicken Scheme or Racket)
 
 ### Interesting consequences
