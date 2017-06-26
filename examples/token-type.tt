@@ -12,7 +12,8 @@ sym : (a : Type) -> (b : Type) -> TyEq a b -> TyEq b a.
 loopy : (a : Type) -> (b : Type) -> TyEq a (a -> b) -> b.
   (a : Type) (b : Type) (pf : TyEq a (a -> b))
     loopy a b pf
-      = let w \: a -> b = \x:a. coerce a (a -> b) pf x x
+--      = let w \: a -> b = \x:a. coerce a ((y :R: a) -> b) pf x x    --<---- causes infinite loop
+      = let w \: a -> b = \x:a. coerce a ((y : a) -> b) pf x x
           in w (coerce (a -> b) a (sym a (a -> b) pf) w).
 
 main \: TyEq Type (Type -> Type) -> Type = loopy Type Type.
