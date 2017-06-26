@@ -36,7 +36,4 @@
           [_] x y xs ys pfH (Nothing [_]) = Nothing (Eq List (Cons x xs) (Cons y ys))
           [_] x [_] xs [_] (Just [_] [_]) (Just [_] [_]) = Just (Eq List (Cons x xs) (Cons x xs)) (Refl List (Cons x xs))
         in semiDecEq' x y xs ys (semiDecEqB x y) (semiDecEq xs ys)
-    sampleList = genList T input
-    main 
-      [_] = semiDecEq sampleList sampleList
-  in main
+  in semiDecEq (genList T input) (genList T input)

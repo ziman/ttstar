@@ -105,7 +105,7 @@ red form ctx t@(V n)
     = case body of
         Abstract _  -> t
         Term     tm -> red form ctx tm
-        Clauses [Clause [] (PV _) rhs] -> red form ctx rhs  -- constant function
+        Clauses [Clause [] (PForced _) rhs] -> red form ctx rhs  -- constant function
         Clauses  cs -> t
 
     | otherwise = error $ "unknown variable: " ++ show n  -- unknown variable

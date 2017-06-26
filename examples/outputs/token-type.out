@@ -217,13 +217,5 @@ unerased:
   in loopy Type Type
 
 erased:
-  
-  let
-    coerce 
-      [_] = (\x. x)
-    loopy 
-      [_] = 
-        let w = (\x. coerce x)
-        in w (coerce w)
-  in loopy
+  (\x. x)
 

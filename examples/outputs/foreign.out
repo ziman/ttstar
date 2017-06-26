@@ -585,10 +585,7 @@ unerased:
             x : B xs : List
               [semiDecEq'] x [x] xs [xs] (Just [Eq B x x] [Refl B x]) (Just [Eq List xs xs] [Refl List xs]) = Just (Eq List (Cons x xs) (Cons x xs)) (Refl List (Cons x xs))
           in semiDecEq' x y xs ys (semiDecEqB x y) (semiDecEq xs ys)
-    sampleList : List = genList T input
-    main : Maybe (Eq List sampleList sampleList) 
-      [main] = semiDecEq sampleList sampleList
-  in main
+  in semiDecEq (genList T input) (genList T input)
 
 erased:
   
@@ -623,8 +620,5 @@ erased:
           [_] _ Nothing = Nothing
           [_] Just Just = Just
         in semiDecEq' (semiDecEqB x y) (semiDecEq xs ys)
-    sampleList = genList T input
-    main 
-      [_] = semiDecEq sampleList sampleList
-  in main
+  in semiDecEq (genList T input) (genList T input)
 
