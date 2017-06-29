@@ -6,6 +6,8 @@
 %hide Prelude.Interfaces.(>)
 %hide Prelude.List.filter
 %hide Prelude.List.merge
+%hide Prelude.List.splitAt
+%hide Prelude.WellFounded.Smaller
 
 someList : List Nat
 someList = [9,1,5,5,0,2,3,7,6,11,1]
@@ -89,13 +91,18 @@ wfShorter xs = MkAcc (f xs)
 
 -----------------------------------------
 
+{- Comes from Prelude now
 interface Sized a where
   size : a -> Nat
+-}
 
 Smaller : Sized a => a -> a -> Type
 Smaller x y = size x `LT` size y
 
-wfSmaller : Sized a => (x : a) -> Acc Smaller x
+SizeAcc : Sized a => a -> Type
+SizeAcc x = Acc Smaller x
+
+wfSmaller : Sized a => (x : a) -> SizeAcc x
 wfSmaller x = MkAcc $ f (size x) (wfLT $ size x)
   where
     f : (sizeX : Nat) -> (acc : Acc LT sizeX)
@@ -106,8 +113,10 @@ wfSmaller x = MkAcc $ f (size x) (wfLT $ size x)
           f n (acc n $ LES leRefl) z (leTrans zLTy yLEx)
         )
 
+{- comes from Prelude now
 implementation Sized (List a) where
   size = length
+-}
 
 {-
 wfSmaller : Sized a => (x : a) -> Acc Smaller x
@@ -317,3 +326,46 @@ msort2 xs = msort2' xs $ msAcc xs (wfShorter xs)
   -- and proving the inductive step may be easier (actually feasible at all)
 
 -- end up with views
+
+-----------------------------------------------
+
+%default total
+
+data SplitG : (List a -> Type) -> List a -> Type where
+  SG : (rxs : srg xs) -> (rys : srg ys) -> SplitG srg (xs ++ ys)
+
+data SplitRecG : List a -> Type where
+  SRG : ((n : Nat) -> (S n `LT` length xs) -> SplitG SplitRecG xs) -> SplitRecG xs
+
+splitAt : (n : Nat) -> (xs : List a) -> (List a, List a)
+splitAt Z [] = ([], [])
+splitAt (S k) [] = ([], [])
+splitAt Z (x :: xs) = ([x], xs)
+splitAt (S k) (x :: xs) with (splitAt k xs)
+  | (ys, zs) = (x :: ys, zs)
+
+{-
+lemmaFst : (n : Nat) -> (xs : List a) -> (S n `LT` length xs) -> Smaller (fst (splitAt n xs)) xs
+lemmaFst Z [] pf impossible
+lemmaFst (S k) [] pf impossible
+lemmaFst Z (x :: xs) pf = pf
+lemmaFst (S k) (x :: xs) (LES pf) with (splitAt k xs)
+  | (ys, zs) = leS ?rhs
+-}
+
+lemmaFst : (n : Nat) -> (xs : List a) -> (S n `LT` length xs) -> S n = length (fst (splitAt n xs))
+lemmaFst n [] pf impossible
+lemmaFst (S k) [] pf impossible
+lemmaFst Z (x :: xs) pf = Refl
+lemmaFst (S k) (x :: xs) (LES pf) = let pf' = lemmaFst k xs pf in ?rhs -- cong {f = S} $ lemmaFst k xs pf
+
+splitRecG : (xs : List a) -> SplitRecG xs
+splitRecG xs = SRG (splitG xs $ wfSmaller xs)
+  where
+    splitG : (xs : List a) -> SizeAcc xs -> (n : Nat) -> (S n `LT` length xs) -> SplitG SplitRecG xs
+    splitG []  n acc  pf      impossible
+    splitG [x] n acc (LES pf) impossible
+    splitG (x :: y :: xs) (MkAcc acc) n pf =
+      let (ys, zs) = splitAt n (x :: y :: xs)
+        in ?rhs
+
