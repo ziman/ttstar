@@ -17,7 +17,7 @@ data Acc : (lessThan : a -> a -> Type) -> (x : a) -> Type where
     -- potentially infinite tuple
     -- potentially infinite number of children in the tree
     -- but each subtree has a finite depth
-    (acc : (y : a) -> (y `lessThan` x) -> Acc lessThan y)
+    (acc : {y : a} -> (y `lessThan` x) -> Acc lessThan y)
       -> Acc lessThan x
 
 interface WF (lt : a -> a -> Type) where
@@ -47,9 +47,9 @@ lemmaLTZ (LES _) impossible
 wfLT : (x : Nat) -> Acc LT x
 wfLT x = MkAcc (f x)
   where
-    f : (x, y : Nat) -> (y `LT` x) -> Acc LT y
-    f  Z y pf = lemmaLTZ pf
-    f (S x) y (LES yLEx) = MkAcc (\z, zLTy => f x z $ leTrans zLTy yLEx)
+    f : (x : Nat) -> (y `LT` x) -> Acc LT y
+    f  Z     pf        = lemmaLTZ pf
+    f (S x) (LES yLEx) = MkAcc (\zLTy => f x $ leTrans zLTy yLEx)
 
 {-
 decLE : (m, n : Nat) -> Dec (m `LE` n)
@@ -85,9 +85,9 @@ shorter xs ys = length xs `LT` length ys
 wfShorter : (xs : List a) -> Acc Main.shorter xs
 wfShorter xs = MkAcc (f xs)
   where
-    f : (xs, ys : List a) -> (ys `Main.shorter` xs) -> Acc Main.shorter ys
-    f [] ys pf = lemmaLTZ pf
-    f (x :: xs) ys (LES ysLExs) = MkAcc (\zs, zsLTys => f xs zs $ leTrans zsLTys ysLExs)
+    f : (xs : List a) -> (ys `Main.shorter` xs) -> Acc Main.shorter ys
+    f [] pf = lemmaLTZ pf
+    f (x :: xs) (LES ysLExs) = MkAcc (\zsLTys => f xs $ leTrans zsLTys ysLExs)
 
 -----------------------------------------
 
@@ -106,11 +106,11 @@ wfSmaller : Sized a => (x : a) -> SizeAcc x
 wfSmaller x = MkAcc $ f (size x) (wfLT $ size x)
   where
     f : (sizeX : Nat) -> (acc : Acc LT sizeX)
-      -> (y : a) -> (size y `LT` sizeX) -> Acc Smaller y
-    f Z acc y pf = lemmaLTZ pf
-    f (S n) (MkAcc acc) y (LES yLEx)
-      = MkAcc (\z, zLTy =>
-          f n (acc n $ LES leRefl) z (leTrans zLTy yLEx)
+      -> {y : a} -> (size y `LT` sizeX) -> Acc Smaller y
+    f Z acc pf = lemmaLTZ pf
+    f (S n) (MkAcc acc) (LES yLEx)
+      = MkAcc (\zLTy =>
+          f n (acc $ LES leRefl) (leTrans zLTy yLEx)
         )
 
 {- comes from Prelude now
@@ -147,9 +147,9 @@ filterLen p (x :: xs) with (p x)
 qsort' : (xs : List Nat) -> (Acc Main.shorter xs) -> List Nat
 qsort' [] acc = []
 qsort' (x :: xs) (MkAcc acc) =
-  qsort' (filter (<= x) xs) (acc (filter (<= x) xs) (LES $ filterLen (<= x) xs))
+  qsort' (filter (<= x) xs) (acc $ LES (filterLen (<= x) xs))
   ++ [x]
-  ++ qsort' (filter (> x) xs) (acc (filter (> x) xs) (LES $ filterLen (> x) xs))
+  ++ qsort' (filter (> x) xs) (acc $ LES (filterLen (> x) xs))
 
 qsort : List Nat -> List Nat
 qsort xs = qsort' xs (wfShorter xs)
@@ -218,8 +218,8 @@ qsortAcc' : (xs : List Nat) -> Acc Main.shorter xs -> QSortAcc xs
 qsortAcc' [] acc = QNil
 qsortAcc' (x :: xs) (MkAcc acc)
     = QCons
-      (qsortAcc' (filter (<= x) xs) (acc (filter (<= x) xs) (flemma x (<= x) xs)))
-      (qsortAcc' (filter (>  x) xs) (acc (filter (>  x) xs) (flemma x (>  x) xs)))
+        (qsortAcc' _ (acc $ flemma x (<= x) xs))
+        (qsortAcc' _ (acc $ flemma x (>  x) xs))
 
 qsort2 : List Nat -> List Nat
 qsort2 xs = qsortA' xs $ qsortAcc' xs (wfShorter xs)
@@ -271,8 +271,8 @@ msort1' xs acc with (split xs)
   msort1' [x] acc | SOne x = [x]
   msort1' (y :: ys ++ z :: zs) (MkAcc acc) | SMore y ys z zs
     = merge
-        (msort1' (y :: ys) (acc (y :: ys) $ shorterL {xs = y::ys}))
-        (msort1' (z :: zs) (acc (z :: zs) $ shorterR))
+        (msort1' (y :: ys) (acc $ shorterL {xs = y::ys}))
+        (msort1' (z :: zs) (acc $ shorterR))
 
 msort1 : List Nat -> List Nat
 msort1 xs = msort1' xs (wfShorter xs)
@@ -301,8 +301,8 @@ msAcc xs acc with (split xs)
   msAcc [x] acc | SOne x = MSOne x
   msAcc (y :: ys ++ z :: zs) (MkAcc acc) | SMore y ys z zs
     = MSMore
-      (msAcc (y :: ys) $ acc (y :: ys) (lemmaL y ys z zs))
-      (msAcc (z :: zs) $ acc (z :: zs) (lemmaR y ys z zs))
+      (msAcc (y :: ys) $ acc (lemmaL y ys z zs))
+      (msAcc (z :: zs) $ acc (lemmaR y ys z zs))
 
 msort2' : (xs : List Nat) -> MSAcc (split xs) -> List Nat
 msort2' xs acc with (split xs)
@@ -331,41 +331,33 @@ msort2 xs = msort2' xs $ msAcc xs (wfShorter xs)
 
 %default total
 
+data SimpleSplit : List a -> Type where
+  SS : (ls : List a) -> (rs : List a) -> SimpleSplit (ls ++ rs)
+
+data ValidSplit : Nat -> List a -> Type where
+  VSZ : ValidSplit (S Z) (x :: y :: xs)
+  VSS : ValidSplit n xs -> ValidSplit (S n) (x :: xs)
+
 data SplitG : (List a -> Type) -> List a -> Type where
   SG : (rxs : srg xs) -> (rys : srg ys) -> SplitG srg (xs ++ ys)
 
 data SplitRecG : List a -> Type where
-  SRG : ((n : Nat) -> (S n `LT` length xs) -> SplitG SplitRecG xs) -> SplitRecG xs
+  SRG : ((n : Nat) -> ValidSplit n xs -> SplitG SplitRecG xs) -> SplitRecG xs
 
-splitAt : (n : Nat) -> (xs : List a) -> (List a, List a)
-splitAt Z [] = ([], [])
-splitAt (S k) [] = ([], [])
-splitAt Z (x :: xs) = ([x], xs)
+splitAt : (n : Nat) -> (xs : List a) -> SimpleSplit xs
+splitAt n [] = SS [] []
+splitAt Z xs = SS [] xs
 splitAt (S k) (x :: xs) with (splitAt k xs)
-  | (ys, zs) = (x :: ys, zs)
-
-{-
-lemmaFst : (n : Nat) -> (xs : List a) -> (S n `LT` length xs) -> Smaller (fst (splitAt n xs)) xs
-lemmaFst Z [] pf impossible
-lemmaFst (S k) [] pf impossible
-lemmaFst Z (x :: xs) pf = pf
-lemmaFst (S k) (x :: xs) (LES pf) with (splitAt k xs)
-  | (ys, zs) = leS ?rhs
--}
-
-lemmaFst : (n : Nat) -> (xs : List a) -> (S n `LT` length xs) -> S n = length (fst (splitAt n xs))
-lemmaFst n [] pf impossible
-lemmaFst (S k) [] pf impossible
-lemmaFst Z (x :: xs) pf = Refl
-lemmaFst (S k) (x :: xs) (LES pf) = let pf' = lemmaFst k xs pf in ?rhs -- cong {f = S} $ lemmaFst k xs pf
+  splitAt (S k) (x :: ys ++ zs) | SS ys zs = SS (x :: ys) zs
 
 splitRecG : (xs : List a) -> SplitRecG xs
-splitRecG xs = SRG (splitG xs $ wfSmaller xs)
+splitRecG xs = SRG (splitG xs (wfSmaller xs))
   where
-    splitG : (xs : List a) -> SizeAcc xs -> (n : Nat) -> (S n `LT` length xs) -> SplitG SplitRecG xs
-    splitG []  n acc  pf      impossible
-    splitG [x] n acc (LES pf) impossible
-    splitG (x :: y :: xs) (MkAcc acc) n pf =
-      let (ys, zs) = splitAt n (x :: y :: xs)
-        in ?rhs
-
+    splitG : (xs : List a) -> SizeAcc xs -> (n : Nat) -> ValidSplit n xs -> SplitG SplitRecG xs
+    splitG xs acc Z vs impossible
+    splitG [] acc (S k) vs impossible
+    splitG [x] acc (S k) (VSS vs) impossible
+    splitG (x :: y :: xs) (MkAcc acc) (S k) vs = f (x :: y :: xs) (splitAt (S k) (x :: y :: xs))
+      where
+        f : (xs : List a) -> SimpleSplit xs -> SplitG SplitRecG xs
+        f (ys ++ zs) (SS ys zs) = SG (SRG $ splitG ys (acc $ ?rys)) (SRG $ splitG zs (acc ?rzs))
