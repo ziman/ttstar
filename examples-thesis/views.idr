@@ -331,6 +331,9 @@ msort2 xs = msort2' xs $ msAcc xs (wfShorter xs)
 
 %default total
 
+subst : (f : a -> Type) -> x = y -> f x -> f y
+subst f Refl = \x => x
+
 data SimpleSplit : List a -> Type where
   SS : (ls : List a) -> (rs : List a) -> SimpleSplit (ls ++ rs)
 
@@ -350,14 +353,30 @@ splitAt Z xs = SS [] xs
 splitAt (S k) (x :: xs) with (splitAt k xs)
   splitAt (S k) (x :: ys ++ zs) | SS ys zs = SS (x :: ys) zs
 
-splitRecG : (xs : List a) -> SplitRecG xs
-splitRecG xs = SRG (splitG xs (wfSmaller xs))
+data SplitLemma : (xs : List a) -> SimpleSplit xs -> Type where
+  SL : (l : length ys `LT` length (ys ++ zs))
+    -> (r : length zs `LT` length (ys ++ zs))
+    -> SplitLemma (ys ++ zs) (SS ys zs)
+
+splitLemma : (n : Nat) -> (xs : List a) -> ValidSplit n xs -> SplitLemma xs (splitAt n xs)
+splitLemma (S Z) (x :: y :: ys) VSZ = SL (LES (LES LEZ)) (LES (LES leRefl))
+splitLemma (S k) (x :: ys) (VSS vs) with (splitLemma k ys vs)
+  splitLemma (S k) (x :: ys) (VSS vs) | sl with (splitAt k ys)
+    splitLemma (S k) (x :: ls ++ rs) (VSS vs) | SL lsx rsx | (SS ls rs)
+      = SL (LES lsx) (leS rsx)
+
+splitG : (xs : List a) -> SizeAcc xs -> (n : Nat) -> ValidSplit n xs -> SplitG SplitRecG xs
+splitG xs acc Z vs impossible
+splitG [] acc (S k) vs impossible
+splitG [x] acc (S k) (VSS vs) impossible
+splitG {a} (x :: y :: ws) (MkAcc acc) (S k) vs
+    = f (x :: y :: ws) Refl (splitAt (S k) (x :: y :: ws)) (splitLemma (S k) (x :: y :: ws) vs)
   where
-    splitG : (xs : List a) -> SizeAcc xs -> (n : Nat) -> ValidSplit n xs -> SplitG SplitRecG xs
-    splitG xs acc Z vs impossible
-    splitG [] acc (S k) vs impossible
-    splitG [x] acc (S k) (VSS vs) impossible
-    splitG (x :: y :: xs) (MkAcc acc) (S k) vs = f (x :: y :: xs) (splitAt (S k) (x :: y :: xs))
-      where
-        f : (xs : List a) -> SimpleSplit xs -> SplitG SplitRecG xs
-        f (ys ++ zs) (SS ys zs) = SG (SRG $ splitG ys (acc $ ?rys)) (SRG $ splitG zs (acc ?rzs))
+    f : (qs : List a) -> length qs = S (S (length ws)) -> (sqs : SimpleSplit qs) -> SplitLemma qs sqs -> SplitG SplitRecG qs
+    f (ys ++ zs) eq (SS ys zs) (SL lx rx)
+        = SG
+            (SRG $ splitG ys (acc $ subst (LT $ length ys) eq lx))
+            (SRG $ splitG zs (acc $ subst (LT $ length zs) eq rx))
+
+splitRecG : (xs : List a) -> SplitRecG xs
+splitRecG xs = SRG (splitG xs $ wfSmaller xs)
