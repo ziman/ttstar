@@ -376,9 +376,16 @@ mutual
   splitG' : (ws : List a) -> (qs : List a) -> ({ys : List a} -> Smaller ys qs -> SizeAcc ys)
       -> (sqs : SimpleSplit qs) -> SplitLemma qs sqs -> SplitG SplitRecG qs
   splitG' ws (ys ++ zs) acc (SS ys zs) (SL lx rx)
-      = SG
+      = assert_total $ SG
           (SRG $ splitG ys (acc lx))
           (SRG $ splitG zs (acc rx))
 
 splitRecG : (xs : List a) -> SplitRecG xs
 splitRecG xs = SRG (splitG xs $ wfSmaller xs)
+
+recG : (xs : List Nat) -> Nat
+recG xs with (splitRecG xs)
+  recG []  | SRG rec = 0
+  recG [x] | SRG rec = x
+  recG (x :: y :: xs) | SRG rec with (rec 1 VSZ)
+    rec (x :: y :: xs ++ ys) | SRG rec | SG rxs rys = ?rhs_4
