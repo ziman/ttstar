@@ -8,6 +8,7 @@
 %hide Prelude.List.merge
 %hide Prelude.List.splitAt
 %hide Prelude.WellFounded.Smaller
+%hide Prelude.WellFounded.SizeAcc
 
 someList : List Nat
 someList = [9,1,5,5,0,2,3,7,6,11,1]
@@ -233,6 +234,7 @@ pushL x  SNil = SOne x
 pushL x (SOne y) = SMore x [] y []
 pushL x (SMore y ys z zs) = SMore x (y :: ys) z zs
 
+{-
 split : (xs : List a) -> Split xs
 split [] = SNil
 split [x] = SOne x
@@ -243,6 +245,16 @@ split (x :: y :: xs) = step (1 + length xs) x y xs
     step (S Z) x y xs = SMore x [] y xs
     step (S (S k)) x y [] = SMore x [] y []
     step (S (S k)) x y (z :: xs) = pushL x $ step k y z xs
+-}
+
+halve : (xs : List a) -> Split xs
+halve []  = SNil
+halve [x] = SOne x
+halve (x :: y :: xs) with (1 + length xs)
+  halve (x :: y :: xs) |      Z  = SMore x [] y xs
+  halve (x :: y :: xs) |    S Z  = SMore x [] y xs
+  halve (x :: y :: []) | S (S k) = SMore x [] y []
+  halve (x :: y :: z :: zs) | S (S k) = pushL x (halve (y :: z :: zs) | k)
 
 shorterL : xs `shorter` (xs ++ y :: ys)
 shorterL {xs = []} = LES LEZ
@@ -260,7 +272,7 @@ merge [] ys = ys
 merge xs [] = xs
 
 msort1' : (xs : List Nat) -> (Acc Main.shorter xs) -> List Nat
-msort1' xs acc with (split xs)
+msort1' xs acc with (halve xs)
   msort1' []  acc | SNil = []
   msort1' [x] acc | SOne x = [x]
   msort1' (y :: ys ++ z :: zs) (MkAcc acc) | SMore y ys z zs
@@ -277,8 +289,8 @@ data MSAcc : Split xs -> Type where
   MSNil : MSAcc SNil
   MSOne : (x : a) -> MSAcc (SOne x)
   MSMore :
-    MSAcc (split (x :: xs))
-    -> MSAcc (split (y :: ys))
+    MSAcc (halve (x :: xs))
+    -> MSAcc (halve (y :: ys))
     -> MSAcc (SMore x xs y ys)
 
 lemmaL : (x : a) -> (xs : List a) -> (y : a) -> (ys : List a) -> (x :: xs) `shorter` (x :: xs ++ y :: ys)
@@ -289,8 +301,8 @@ lemmaR : (x : a) -> (xs : List a) -> (y : a) -> (ys : List a) -> (y :: ys) `shor
 lemmaR x [] y ys = LES $ LES leRefl
 lemmaR x (z :: xs) y ys = leS $ lemmaR x xs y ys
 
-msAcc : (xs : List Nat) -> Acc Main.shorter xs -> MSAcc (split xs)
-msAcc xs acc with (split xs)
+msAcc : (xs : List Nat) -> Acc Main.shorter xs -> MSAcc (halve xs)
+msAcc xs acc with (halve xs)
   msAcc [] acc | SNil = MSNil
   msAcc [x] acc | SOne x = MSOne x
   msAcc (y :: ys ++ z :: zs) (MkAcc acc) | SMore y ys z zs
@@ -298,8 +310,8 @@ msAcc xs acc with (split xs)
       (msAcc (y :: ys) $ acc _ (lemmaL y ys z zs))
       (msAcc (z :: zs) $ acc _ (lemmaR y ys z zs))
 
-msort2' : (xs : List Nat) -> MSAcc (split xs) -> List Nat
-msort2' xs acc with (split xs)
+msort2' : (xs : List Nat) -> MSAcc (halve xs) -> List Nat
+msort2' xs acc with (halve xs)
   msort2' [] MSNil | SNil = []
   msort2' [x] (MSOne x) | SOne x = [x]
   msort2' (y :: ys ++ z :: zs) (MSMore accL accR) | SMore y ys z zs
