@@ -365,18 +365,20 @@ splitLemma (S k) (x :: ys) (VSS vs) with (splitLemma k ys vs)
     splitLemma (S k) (x :: ls ++ rs) (VSS vs) | SL lsx rsx | (SS ls rs)
       = SL (LES lsx) (leS rsx)
 
-splitG : (xs : List a) -> SizeAcc xs -> (n : Nat) -> ValidSplit n xs -> SplitG SplitRecG xs
-splitG xs acc Z vs impossible
-splitG [] acc (S k) vs impossible
-splitG [x] acc (S k) (VSS vs) impossible
-splitG {a} (x :: y :: ws) (MkAcc acc) (S k) vs
-    = f (x :: y :: ws) Refl (splitAt (S k) (x :: y :: ws)) (splitLemma (S k) (x :: y :: ws) vs)
-  where
-    f : (qs : List a) -> length qs = S (S (length ws)) -> (sqs : SimpleSplit qs) -> SplitLemma qs sqs -> SplitG SplitRecG qs
-    f (ys ++ zs) eq (SS ys zs) (SL lx rx)
-        = SG
-            (SRG $ splitG ys (acc $ subst (LT $ length ys) eq lx))
-            (SRG $ splitG zs (acc $ subst (LT $ length zs) eq rx))
+mutual
+  splitG : (xs : List a) -> SizeAcc xs -> (n : Nat) -> ValidSplit n xs -> SplitG SplitRecG xs
+  splitG xs acc Z vs impossible
+  splitG [] acc (S k) vs impossible
+  splitG [x] acc (S k) (VSS vs) impossible
+  splitG {a} (x :: y :: ws) (MkAcc acc) (S k) vs
+      = splitG' ws (x :: y :: ws) acc (splitAt (S k) (x :: y :: ws)) (splitLemma (S k) (x :: y :: ws) vs)
+  
+  splitG' : (ws : List a) -> (qs : List a) -> ({ys : List a} -> Smaller ys qs -> SizeAcc ys)
+      -> (sqs : SimpleSplit qs) -> SplitLemma qs sqs -> SplitG SplitRecG qs
+  splitG' ws (ys ++ zs) acc (SS ys zs) (SL lx rx)
+      = SG
+          (SRG $ splitG ys (acc lx))
+          (SRG $ splitG zs (acc rx))
 
 splitRecG : (xs : List a) -> SplitRecG xs
 splitRecG xs = SRG (splitG xs $ wfSmaller xs)
