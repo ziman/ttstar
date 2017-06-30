@@ -40,16 +40,13 @@ leTrans : (x `LE` y) -> (y `LE` z) -> (x `LE` z)
 leTrans  LEZ _ = LEZ
 leTrans (LES xLEy) (LES yLEz) = LES $ leTrans xLEy yLEz
 
-lemmaLTZ : (n `LT` Z) -> a
-lemmaLTZ  LEZ    impossible
-lemmaLTZ (LES _) impossible
-
 wfLT : (x : Nat) -> Acc LT x
 wfLT x = MkAcc (f x)
   where
     f : (x : Nat) -> (y : Nat) -> (y `LT` x) -> Acc LT y
-    f  Z    y  pf        = lemmaLTZ pf
     f (S x) y (LES yLEx) = MkAcc (\z, zLTy => f x z $ leTrans zLTy yLEx)
+    -- LEZ cannot prove "strictly smaller than" because LT has (S _) on the LHS
+    -- and LEZ has Z on the LHS
 
 {-
 decLE : (m, n : Nat) -> Dec (m `LE` n)
@@ -86,7 +83,6 @@ wfShorter : (xs : List a) -> Acc Main.shorter xs
 wfShorter xs = MkAcc (f xs)
   where
     f : (xs : List a) -> (ys : List a) -> (ys `Main.shorter` xs) -> Acc Main.shorter ys
-    f [] ys pf = lemmaLTZ pf
     f (x :: xs) ys (LES ysLExs) = MkAcc (\zs, zsLTys => f xs zs $ leTrans zsLTys ysLExs)
 
 -----------------------------------------
@@ -103,14 +99,12 @@ SizeAcc : Sized a => a -> Type
 SizeAcc x = Acc Smaller x
 
 wfSmaller : Sized a => (x : a) -> SizeAcc x
-wfSmaller x = MkAcc $ f (size x) (wfLT $ size x)
+wfSmaller x = MkAcc $ f (size x)
   where
-    f : (sizeX : Nat) -> (acc : Acc LT sizeX)
-      -> (y : a) -> (size y `LT` sizeX) -> Acc Smaller y
-    f Z acc y pf = lemmaLTZ pf
-    f (S n) (MkAcc acc) y (LES yLEx)
+    f : (sizeX : Nat) -> (y : a) -> (size y `LT` sizeX) -> SizeAcc y
+    f (S n) y (LES yLEx)
       = MkAcc (\z, zLTy =>
-          f n (acc n $ LES leRefl) z (leTrans zLTy yLEx)
+          f n z (leTrans zLTy yLEx)
         )
 
 {- comes from Prelude now
@@ -138,18 +132,18 @@ leS : (m `LE` n) -> (m `LE` S n)
 leS  LEZ    = LEZ
 leS (LES x) = LES (leS x)
 
-filterLen : (p : a -> Bool) -> (xs : List a) -> length (filter p xs) `LE` length xs
-filterLen p [] = LEZ
-filterLen p (x :: xs) with (p x)
-  | True = LES $ filterLen p xs
-  | False = leS $ filterLen p xs
+filterLen : {p : a -> Bool} -> {xs : List a} -> length (filter p xs) `LE` length xs
+filterLen {xs = []} = LEZ
+filterLen {p} {xs = x :: xs} with (p x)
+  | True = LES $ filterLen
+  | False = leS $ filterLen
 
 qsort' : (xs : List Nat) -> (Acc Main.shorter xs) -> List Nat
 qsort' [] acc = []
 qsort' (x :: xs) (MkAcc acc) =
-  qsort' (filter (<= x) xs) (acc _ $ LES (filterLen (<= x) xs))
+  qsort' (filter (<= x) xs) (acc _ $ LES filterLen)
   ++ [x]
-  ++ qsort' (filter (> x) xs) (acc _ $ LES (filterLen (> x) xs))
+  ++ qsort' (filter (> x) xs) (acc _ $ LES filterLen)
 
 qsort : List Nat -> List Nat
 qsort xs = qsort' xs (wfShorter xs)
@@ -234,14 +228,6 @@ data Split : List a -> Type where
     -> (y : a) -> (ys : List a)
     -> Split (x :: xs ++ y :: ys)
 
-shorterL : xs `shorter` (xs ++ y :: ys)
-shorterL {xs = []} = LES LEZ
-shorterL {xs = (x :: xs)} = LES shorterL
-
-shorterR : ys `shorter` (x :: xs ++ ys)
-shorterR {xs = []} = LES leRefl
-shorterR {xs = x :: xs} = leS $ shorterR {x=x}
-
 pushL : (x : a) -> Split xs -> Split (x :: xs)
 pushL x  SNil = SOne x
 pushL x (SOne y) = SMore x [] y []
@@ -257,6 +243,14 @@ split (x :: y :: xs) = step (1 + length xs) x y xs
     step (S Z) x y xs = SMore x [] y xs
     step (S (S k)) x y [] = SMore x [] y []
     step (S (S k)) x y (z :: xs) = pushL x $ step k y z xs
+
+shorterL : xs `shorter` (xs ++ y :: ys)
+shorterL {xs = []} = LES LEZ
+shorterL {xs = (x :: xs)} = LES shorterL
+
+shorterR : ys `shorter` (x :: xs ++ ys)
+shorterR {xs = []} = LES leRefl
+shorterR {xs = x :: xs} = leS $ shorterR {x=x}
 
 merge : List Nat -> List Nat -> List Nat
 merge (x :: xs) (y :: ys) with (x <= y)
@@ -375,6 +369,7 @@ splitLemma (S k) (x :: ys) (VSS vs) with (splitLemma k ys vs)
     splitLemma (S k) (x :: ls ++ rs) (VSS vs) | SL lsx rsx | (SS ls rs)
       = SL (LES lsx) (leS rsx)
 
+{-
 mutual
   splitG : (xs : List a) -> SizeAcc xs -> (n : Nat) -> ValidSplit n xs -> SplitG SplitRecG xs
   splitG xs acc Z vs impossible
@@ -392,6 +387,7 @@ mutual
 
 splitRecG : (xs : List a) -> SplitRecG xs
 splitRecG xs = SRG (splitG xs $ wfSmaller xs)
+-}
 
 {-
 recG : (xs : List Nat) -> Nat
@@ -400,4 +396,16 @@ recG xs with (splitRecG xs)
   recG [x] | SRG rec = x
   recG (x :: y :: xs) | SRG rec with (rec 1 VSZ)
     rec (x :: y :: xs ++ ys) | SRG rec | SG rxs rys = ?rhs_4
+-}
+
+{-
+sub : Nat -> Nat -> Nat
+sub (S m) (S n) = sub m n
+sub _ n = n
+
+mc91 : Nat -> Nat
+mc91 n =
+  case n > 100 of
+    True  => sub 10 n
+    False => mc91 (mc91 (11 + n))
 -}
