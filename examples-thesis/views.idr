@@ -203,18 +203,12 @@ qsortA xs = qsortA' xs (qsortAcc xs)
 
 -- via Acc
 
-flemma : (x : a) -> (p : a -> Bool) -> (xs : List a) -> (filter p xs `shorter` (x :: xs))
-flemma x p [] = LES LEZ
-flemma x p (y :: xs) with (p y)
-  | True = LES $ flemma x p xs
-  | False = leS $ flemma x p xs
-
 qsortAcc' : (xs : List Nat) -> Acc Main.shorter xs -> QSortAcc xs
 qsortAcc' [] acc = QNil
 qsortAcc' (x :: xs) (MkAcc acc)
     = QCons
-        (qsortAcc' _ (acc _ $ flemma x (<= x) xs))
-        (qsortAcc' _ (acc _ $ flemma x (>  x) xs))
+        (qsortAcc' _ (acc _ $ LES filterLen))
+        (qsortAcc' _ (acc _ $ LES filterLen))
 
 qsort2 : List Nat -> List Nat
 qsort2 xs = qsortA' xs $ qsortAcc' xs (wfShorter xs)
@@ -278,49 +272,46 @@ msort1' xs acc with (halve xs)
   msort1' (y :: ys ++ z :: zs) (MkAcc acc) | SMore y ys z zs
     = merge
         (msort1' (y :: ys) (acc _ $ shorterL {xs = y::ys}))
-        (msort1' (z :: zs) (acc _ $ shorterR))
+        (msort1' (z :: zs) (acc _ $ shorterR {ys = z::zs}))
 
 msort1 : List Nat -> List Nat
 msort1 xs = msort1' xs (wfShorter xs)
 
 ---------------------------
 
-data MSAcc : Split xs -> Type where
-  MSNil : MSAcc SNil
-  MSOne : (x : a) -> MSAcc (SOne x)
-  MSMore :
-    MSAcc (halve (x :: xs))
-    -> MSAcc (halve (y :: ys))
-    -> MSAcc (SMore x xs y ys)
+mutual
+  data MSAcc' : Split xs -> Type where
+    MSNil : MSAcc' SNil
+    MSOne : MSAcc' (SOne x)
+    MSMore :
+      MSAcc (x :: xs)
+      -> MSAcc (y :: ys)
+      -> MSAcc' (SMore x xs y ys)
 
-lemmaL : (x : a) -> (xs : List a) -> (y : a) -> (ys : List a) -> (x :: xs) `shorter` (x :: xs ++ y :: ys)
-lemmaL x [] y ys = LES (LES LEZ)
-lemmaL x (z :: xs) y ys = LES $ lemmaL x xs y ys
+  MSAcc : List a -> Type
+  MSAcc xs = MSAcc' (halve xs)
 
-lemmaR : (x : a) -> (xs : List a) -> (y : a) -> (ys : List a) -> (y :: ys) `shorter` (x :: xs ++ y :: ys)
-lemmaR x [] y ys = LES $ LES leRefl
-lemmaR x (z :: xs) y ys = leS $ lemmaR x xs y ys
+msAcc : (xs : List Nat) -> MSAcc xs
+msAcc xs with (wfShorter xs)
+  msAcc xs | acc with (halve xs)
+    msAcc []  | acc | SNil   = MSNil
+    msAcc [x] | acc | SOne x = MSOne
+    msAcc (y :: ys ++ z :: zs) | MkAcc acc | SMore y ys z zs
+      = MSMore
+        (msAcc _ | acc _ (shorterL {xs = y :: ys}))
+        (msAcc _ | acc _ (shorterR {ys = z :: zs}))
 
-msAcc : (xs : List Nat) -> Acc Main.shorter xs -> MSAcc (halve xs)
-msAcc xs acc with (halve xs)
-  msAcc [] acc | SNil = MSNil
-  msAcc [x] acc | SOne x = MSOne x
-  msAcc (y :: ys ++ z :: zs) (MkAcc acc) | SMore y ys z zs
-    = MSMore
-      (msAcc (y :: ys) $ acc _ (lemmaL y ys z zs))
-      (msAcc (z :: zs) $ acc _ (lemmaR y ys z zs))
-
-msort2' : (xs : List Nat) -> MSAcc (halve xs) -> List Nat
+msort2' : (xs : List Nat) -> MSAcc xs -> List Nat
 msort2' xs acc with (halve xs)
-  msort2' [] MSNil | SNil = []
-  msort2' [x] (MSOne x) | SOne x = [x]
+  msort2' []  MSNil | SNil   = []
+  msort2' [x] MSOne | SOne x = [x]
   msort2' (y :: ys ++ z :: zs) (MSMore accL accR) | SMore y ys z zs
     = merge
         (msort2' (y :: ys) accL)
         (msort2' (z :: zs) accR)
 
 msort2 : List Nat -> List Nat
-msort2 xs = msort2' xs $ msAcc xs (wfShorter xs)
+msort2 xs = msort2' xs (msAcc xs)
 
 -- views for convenience
 -- views for termination
@@ -420,4 +411,22 @@ mc91 n =
   case n > 100 of
     True  => sub 10 n
     False => mc91 (mc91 (11 + n))
+-}
+
+---------------------------------------------------------
+
+{-
+data ModView : Nat -> Nat -> Type where
+  Base : ModView x y
+  Step : ModView x y -> ModView x (x + y)
+
+modView : (x', y : Nat) -> ModView (S x') y
+modView  x'    Z = Base
+modView  Z    (S y') = ?rhs_1  -- dividing by 1
+modView (S k) (S y') = ?rhs_3
+-}
+
+{-
+mod : (x : Nat) -> (y : Nat) -> Nat
+mod x y acc with
 -}
