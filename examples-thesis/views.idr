@@ -430,3 +430,32 @@ modView (S k) (S y') = ?rhs_3
 mod : (x : Nat) -> (y : Nat) -> Nat
 mod x y acc with
 -}
+
+data SplitRec : List a -> Type where
+  SRNil : SplitRec []
+  SROne : (x : a) -> SplitRec [x]
+  SRMore :
+    (x : a) -> (xs : List a)    
+    -> (y : a) -> (ys : List a)
+    -> (sxs : SplitRec (x :: xs))
+    -> (sys : SplitRec (y :: ys))
+    -> SplitRec (x :: xs ++ y :: ys)
+
+splitRec : (xs : List a) -> SplitRec xs
+splitRec xs with (wfSmaller xs)
+  splitRec xs | acc with (halve xs)
+    splitRec []  | acc | SNil   = SRNil
+    splitRec [x] | acc | SOne x = SROne x
+    splitRec (y :: ys ++ z :: zs) | MkAcc acc | SMore y ys z zs
+      = SRMore y ys z zs
+          (splitRec _ | acc _ (shorterL {xs = y::ys}))
+          (splitRec _ | acc _ (shorterR {x=z} {ys = z::zs}))
+
+msortR : List Nat -> List Nat
+msortR xs with (splitRec xs)
+  msortR []  | SRNil   = []
+  msortR [x] | SROne x = [x]
+  msortR (y :: ys ++ z :: zs) | SRMore y ys z zs sys szs
+    = merge
+        (msortR (y :: ys) | sys)
+        (msortR (z :: zs) | szs)
