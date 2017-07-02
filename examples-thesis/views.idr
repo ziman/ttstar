@@ -8,7 +8,6 @@
 %hide Prelude.List.merge
 %hide Prelude.List.splitAt
 %hide Prelude.WellFounded.Smaller
-%hide Prelude.WellFounded.SizeAcc
 
 someList : List Nat
 someList = [9,1,5,5,0,2,3,7,6,11,1]
@@ -331,23 +330,46 @@ msort2 xs = msort2' xs (msAcc xs)
 subst : (f : a -> Type) -> x = y -> f x -> f y
 subst f Refl = \x => x
 
-data SimpleSplit : List a -> Type where
-  SS : (ls : List a) -> (rs : List a) -> SimpleSplit (ls ++ rs)
-
-data ValidSplit : Nat -> List a -> Type where
-  VSZ : ValidSplit (S Z) (x :: y :: xs)
-  VSS : ValidSplit n xs -> ValidSplit (S n) (x :: xs)
-{-
-  VS : (x : a) -> (xs : List a) -> (y : a) -> (ys : List a)
-    -> ValidSplit (length xs) (x :: xs ++ y :: ys)
--}
-
 data SplitG : (List a -> Type) -> List a -> Type where
-  SG : (rxs : srg xs) -> (rys : srg ys) -> SplitG srg (xs ++ ys)
+  SGNil : SplitG srg []
+  SGOne : (x : a) -> SplitG srg [x]
+  SGMore :
+    (rxs : srg (x :: xs))
+    -> (rys : srg (y :: ys))
+    -> SplitG srg (x :: xs ++ y :: ys)
 
 data SplitRecG : List a -> Type where
-  SRG : ((n : Nat) -> ValidSplit n xs -> SplitG SplitRecG xs) -> SplitRecG xs
+  SRG : ((n : Nat) -> SplitG SplitRecG xs) -> SplitRecG xs
 
+pushSG : (x : a) -> SplitG (const ()) xs -> SplitG (const ()) (x :: xs)
+pushSG x  SGNil = SGOne x
+pushSG x (SGOne y) = SGMore {xs=[]} () ()
+pushSG x (SGMore {x=y} {xs=ys} () ()) = SGMore {x=x} {xs=y::ys} () ()
+
+splitAt : (n : Nat) -> (xs : List a) -> SplitG (const ()) xs
+splitAt n [] = SGNil
+splitAt n [x] = SGOne x
+splitAt Z (x :: y :: xs) = SGMore {xs = []} () ()
+splitAt (S k) (x :: y :: xs) = pushSG x $ splitAt k (y :: xs)
+
+lemmaApp : (xs : List a) -> (ys : List a) -> length ys `LE` length (xs ++ ys)
+lemmaApp []      ys = leRefl
+lemmaApp (x::xs) ys = leS $ lemmaApp xs ys
+
+splitG : (xs : List a) -> (n : Nat) -> SplitG SplitRecG xs
+splitG xs n with (wfSmaller xs)
+  splitG xs n | acc with (splitAt n xs)
+    splitG []  n | acc | SGNil = SGNil
+    splitG [x] n | acc | SGOne x = SGOne x
+    splitG (y :: ys ++ z :: zs) n | MkAcc acc | SGMore () ()
+        = SGMore
+            (SRG $ \n' => splitG (y :: ys) n' | acc (y :: ys) (LES shorterL))
+            (SRG $ \n' => splitG (z :: zs) n' | acc (z :: zs) (LES $ lemmaApp ys (z::zs)))
+
+splitRecG : (xs : List a) -> SplitRecG xs
+splitRecG xs = SRG $ splitG xs
+
+{-
 splitAt : (n : Nat) -> (xs : List a) -> SimpleSplit xs
 splitAt n [] = SS [] []
 splitAt Z xs = SS [] xs
@@ -359,11 +381,9 @@ data SplitLemma : (xs : List a) -> SimpleSplit xs -> Type where
     -> (r : length zs `LT` length (ys ++ zs))
     -> SplitLemma (ys ++ zs) (SS ys zs)
 
-{-
 splitLemma : ValidSplit n xs -> SplitLemma xs (splitAt n xs)
 splitLemma (VS x xs y ys) with (splitAt (length xs) (x :: xs ++ y :: ys))
   splitLemma (VS x xs y ys) | sa = ?rhs
--}
 
 splitLemma : (n : Nat) -> (xs : List a) -> ValidSplit n xs -> SplitLemma xs (splitAt n xs)
 splitLemma (S Z) (x :: y :: ys) VSZ = SL (LES (LES LEZ)) (LES (LES leRefl))
@@ -372,7 +392,6 @@ splitLemma (S k) (x :: ys) (VSS vs) with (splitLemma k ys vs)
     splitLemma (S k) (x :: ls ++ rs) (VSS vs) | SL lsx rsx | (SS ls rs)
       = SL (LES lsx) (leS rsx)
 
-{-
 mutual
   splitG : (xs : List a) -> SizeAcc xs -> (n : Nat) -> ValidSplit n xs -> SplitG SplitRecG xs
   splitG xs acc Z vs impossible
