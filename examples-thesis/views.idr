@@ -373,9 +373,8 @@ splitRecC xs = SRC $ splitC xs
 
 unpack' : Nat -> List Nat -> List (List Nat)
 unpack' x xs with (splitRecC (x :: xs))
-  unpack' Z xs | SRC splitAt = []
-  unpack' x xs | SRC splitAt with (splitAt x)
-    unpack' x [] | SRC splitAt | SCOne x = []  -- dangling length tag
+  unpack' x    xs   | SRC splitAt with (splitAt x)
+    unpack' x  []   | SRC splitAt | SCOne x = []  -- dangling length tag
     unpack' x (ys ++ z :: zs) | SRC splitAt | SCMore x ys z zs rys rzs
         = ys :: unpack' z zs | rzs
 
@@ -388,7 +387,7 @@ packL [] = [0]
 packL (xs :: xss) = length xs :: xs ++ packL xss
 
 {-
-*views> unpackL [1,3,3,1,2,3,2,0,1,4,1,2,3,4,0]
+*views> unpackL [1,3,0,3,1,2,3,2,0,1,4,1,2,3,4,0]
 [[3], [1, 2, 3], [0, 1], [1, 2, 3, 4]] : List (List Nat)
 -}
 
