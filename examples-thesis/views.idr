@@ -334,7 +334,9 @@ data SplitG : (List a -> Type) -> List a -> Type where
   SGNil : SplitG srg []
   SGOne : (x : a) -> SplitG srg [x]
   SGMore :
-    (rxs : srg (x :: xs))
+    (x : a) -> (xs : List a)
+    -> (y : a) -> (ys : List a)
+    -> (rxs : srg (x :: xs))
     -> (rys : srg (y :: ys))
     -> SplitG srg (x :: xs ++ y :: ys)
 
@@ -343,14 +345,14 @@ data SplitRecG : List a -> Type where
 
 pushSG : (x : a) -> SplitG (const ()) xs -> SplitG (const ()) (x :: xs)
 pushSG x  SGNil = SGOne x
-pushSG x (SGOne y) = SGMore {xs=[]} () ()
-pushSG x (SGMore {x=y} {xs=ys} () ()) = SGMore {x=x} {xs=y::ys} () ()
+pushSG x (SGOne y) = SGMore x [] y [] () ()
+pushSG x (SGMore y ys z zs () ()) = SGMore x (y::ys) z zs () ()
 
 splitAt : (n : Nat) -> (xs : List a) -> SplitG (const ()) xs
 splitAt n [] = SGNil
 splitAt n [x] = SGOne x
-splitAt Z (x :: y :: xs) = SGMore {xs = []} () ()
-splitAt (S k) (x :: y :: xs) = pushSG x $ splitAt k (y :: xs)
+splitAt Z (x :: y :: ys) = SGMore x [] y ys () ()
+splitAt (S k) (x :: y :: ys) = pushSG x $ splitAt k (y :: ys)
 
 lemmaApp : (xs : List a) -> (ys : List a) -> length ys `LE` length (xs ++ ys)
 lemmaApp []      ys = leRefl
@@ -361,10 +363,10 @@ splitG xs n with (wfSmaller xs)
   splitG xs n | acc with (splitAt n xs)
     splitG []  n | acc | SGNil = SGNil
     splitG [x] n | acc | SGOne x = SGOne x
-    splitG (y :: ys ++ z :: zs) n | MkAcc acc | SGMore () ()
-        = SGMore
-            (SRG $ \n' => splitG (y :: ys) n' | acc (y :: ys) (LES shorterL))
-            (SRG $ \n' => splitG (z :: zs) n' | acc (z :: zs) (LES $ lemmaApp ys (z::zs)))
+    splitG (y :: ys ++ z :: zs) n | MkAcc acc | SGMore y ys z zs () ()
+        = SGMore y ys z zs
+            (SRG $ \n' => splitG (y :: ys) n' | acc _ (LES shorterL))
+            (SRG $ \n' => splitG (z :: zs) n' | acc _ (LES $ lemmaApp ys (z::zs)))
 
 splitRecG : (xs : List a) -> SplitRecG xs
 splitRecG xs = SRG $ splitG xs
@@ -378,7 +380,7 @@ chunk' n xs with (splitRecG xs)
   chunk' n xs | SRG splitAt with (splitAt n)
     chunk' n []  | SRG splitAt | SGNil   = []
     chunk' n [x] | SRG splitAt | SGOne x = [[x]]
-    chunk' n (y :: ys ++ z :: zs) | SRG splitAt | SGMore rys rzs
+    chunk' n (y :: ys ++ z :: zs) | SRG splitAt | SGMore y ys z zs rys rzs
         = ys :: chunk' (S z) (z :: zs) | rzs
 
 chunk : List Nat -> List (List Nat)
