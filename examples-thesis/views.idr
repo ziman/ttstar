@@ -438,3 +438,50 @@ msortR xs with (splitRec xs)
     = merge
         (msortR (y :: ys) | sys)
         (msortR (z :: zs) | szs)
+
+------------------------
+
+data SnocViewRec : List a -> Type where
+  SVRNil : SnocViewRec (Nil {elem=a})
+  SVRSnoc : (sxs : SnocViewRec xs)
+    -> (x : a)
+    -> SnocViewRec (xs ++ [x])
+
+%hide Prelude.Basics.cong
+
+cong : {f : a -> b} -> x = y -> f x = f y
+cong Refl = Refl
+  
+appNil : (xs : List a) -> xs ++ [] = xs
+appNil [] = Refl
+appNil (x :: xs) = cong $ appNil xs
+
+appAssoc : (xs : List a) -> (ys : List a) -> (zs : List a) -> xs ++ (ys ++ zs) = (xs ++ ys) ++ zs 
+appAssoc [] ys zs = Refl
+appAssoc (x :: xs) ys zs = cong $ appAssoc xs ys zs
+
+sr : (sxs : SnocViewRec xs) -> (ys : List a) -> SnocViewRec (xs ++ ys)
+sr {xs} sxs [] = rewrite appNil xs in sxs
+sr {xs} sxs (y :: ys) = rewrite appAssoc xs [y] ys in sr (SVRSnoc sxs y) ys
+
+snocViewRec : (xs : List a) -> SnocViewRec xs
+snocViewRec = sr SVRNil
+
+--------------------
+
+data VList : List a -> Type where
+  VNil : VList []
+  VOne : (x : a) -> VList [x]
+  VMore : (x : a) -> VList xs -> (y : a) -> VList (x :: xs ++ [y])
+
+pushV : (x : a) -> VList xs -> VList (x :: xs)
+pushV x  VNil = VOne x
+pushV x (VOne y) = VMore x VNil y
+pushV x (VMore y ys z) = VMore x (pushV y ys) z
+
+vList : (xs : List a) -> VList xs
+vList [] = VNil
+vList (x :: xs) = pushV x (vList xs)
+
+vStep : SnocViewRec (x :: xs ++ [y]) -> SnocViewRec (x :: xs)
+vStep {x} {xs} {y} (SVRSnoc {xs = x :: xs} sxs y) = sxs
