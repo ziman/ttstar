@@ -369,67 +369,25 @@ splitG xs n with (wfSmaller xs)
 splitRecG : (xs : List a) -> SplitRecG xs
 splitRecG xs = SRG $ splitG xs
 
-{-
-splitAt : (n : Nat) -> (xs : List a) -> SimpleSplit xs
-splitAt n [] = SS [] []
-splitAt Z xs = SS [] xs
-splitAt (S k) (x :: xs) with (splitAt k xs)
-  splitAt (S k) (x :: ys ++ zs) | SS ys zs = SS (x :: ys) zs
+sum : List Nat -> Nat
+sum [] = 0
+sum (x :: xs) = x + sum xs
 
-data SplitLemma : (xs : List a) -> SimpleSplit xs -> Type where
-  SL : (l : length ys `LT` length (ys ++ zs))
-    -> (r : length zs `LT` length (ys ++ zs))
-    -> SplitLemma (ys ++ zs) (SS ys zs)
+chunk' : (n : Nat) -> List Nat -> List (List Nat)
+chunk' n xs with (splitRecG xs)
+  chunk' n xs | SRG splitAt with (splitAt n)
+    chunk' n []  | SRG splitAt | SGNil   = []
+    chunk' n [x] | SRG splitAt | SGOne x = [[x]]
+    chunk' n (y :: ys ++ z :: zs) | SRG splitAt | SGMore rys rzs
+        = ys :: chunk' (S z) (z :: zs) | rzs
 
-splitLemma : ValidSplit n xs -> SplitLemma xs (splitAt n xs)
-splitLemma (VS x xs y ys) with (splitAt (length xs) (x :: xs ++ y :: ys))
-  splitLemma (VS x xs y ys) | sa = ?rhs
-
-splitLemma : (n : Nat) -> (xs : List a) -> ValidSplit n xs -> SplitLemma xs (splitAt n xs)
-splitLemma (S Z) (x :: y :: ys) VSZ = SL (LES (LES LEZ)) (LES (LES leRefl))
-splitLemma (S k) (x :: ys) (VSS vs) with (splitLemma k ys vs)
-  splitLemma (S k) (x :: ys) (VSS vs) | sl with (splitAt k ys)
-    splitLemma (S k) (x :: ls ++ rs) (VSS vs) | SL lsx rsx | (SS ls rs)
-      = SL (LES lsx) (leS rsx)
-
-mutual
-  splitG : (xs : List a) -> SizeAcc xs -> (n : Nat) -> ValidSplit n xs -> SplitG SplitRecG xs
-  splitG xs acc Z vs impossible
-  splitG [] acc (S k) vs impossible
-  splitG [x] acc (S k) (VSS vs) impossible
-  splitG {a} (x :: y :: ws) (MkAcc acc) (S k) vs
-      = splitG' ws (x :: y :: ws) acc (splitAt (S k) (x :: y :: ws)) (splitLemma (S k) (x :: y :: ws) vs)
-  
-  splitG' : (ws : List a) -> (qs : List a) -> ((ys : List a) -> Smaller ys qs -> SizeAcc ys)
-      -> (sqs : SimpleSplit qs) -> SplitLemma qs sqs -> SplitG SplitRecG qs
-  splitG' ws (ys ++ zs) acc (SS ys zs) (SL lx rx)
-      = SG
-          (SRG $ splitG ys (acc _ lx))
-          (SRG $ splitG zs (acc _ rx))
-
-splitRecG : (xs : List a) -> SplitRecG xs
-splitRecG xs = SRG (splitG xs $ wfSmaller xs)
--}
+chunk : List Nat -> List (List Nat)
+chunk []        = []
+chunk (n :: xs) = chunk' n xs
 
 {-
-recG : (xs : List Nat) -> Nat
-recG xs with (splitRecG xs)
-  recG []  | SRG rec = 0
-  recG [x] | SRG rec = x
-  recG (x :: y :: xs) | SRG rec with (rec 1 VSZ)
-    rec (x :: y :: xs ++ ys) | SRG rec | SG rxs rys = ?rhs_4
--}
-
-{-
-sub : Nat -> Nat -> Nat
-sub (S m) (S n) = sub m n
-sub _ n = n
-
-mc91 : Nat -> Nat
-mc91 n =
-  case n > 100 of
-    True  => sub 10 n
-    False => mc91 (mc91 (11 + n))
+*views> chunk [1,3,3,1,2,3,2,0,1,4,5]
+[[3], [2, 3], [0, 1, 4], [5]] : List (List Nat)
 -}
 
 ---------------------------------------------------------
