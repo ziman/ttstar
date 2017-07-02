@@ -330,53 +330,53 @@ msort2 xs = msort2' xs (msAcc xs)
 subst : (f : a -> Type) -> x = y -> f x -> f y
 subst f Refl = \x => x
 
-data SplitG : (List a -> Type) -> List a -> Type where
-  SGNil : SplitG srg []
-  SGOne : (x : a) -> SplitG srg [x]
-  SGMore :
+data SplitC : (List a -> Type) -> List a -> Type where
+  SCNil : SplitC srg []
+  SCOne : (x : a) -> SplitC srg [x]
+  SCMore :
     (x : a) -> (xs : List a)
     -> (y : a) -> (ys : List a)
     -> (rxs : srg (x :: xs))
     -> (rys : srg (y :: ys))
-    -> SplitG srg (x :: xs ++ y :: ys)
+    -> SplitC srg (x :: xs ++ y :: ys)
 
-data SplitRecG : List a -> Type where
-  SRG : ((n : Nat) -> SplitG SplitRecG xs) -> SplitRecG xs
+data SplitRecC : List a -> Type where
+  SRC : ((n : Nat) -> SplitC SplitRecC xs) -> SplitRecC xs
 
-pushSG : (x : a) -> SplitG (const ()) xs -> SplitG (const ()) (x :: xs)
-pushSG x  SGNil = SGOne x
-pushSG x (SGOne y) = SGMore x [] y [] () ()
-pushSG x (SGMore y ys z zs () ()) = SGMore x (y::ys) z zs () ()
+pushSC : (x : a) -> SplitC (const ()) xs -> SplitC (const ()) (x :: xs)
+pushSC x  SCNil = SCOne x
+pushSC x (SCOne y) = SCMore x [] y [] () ()
+pushSC x (SCMore y ys z zs () ()) = SCMore x (y::ys) z zs () ()
 
-splitAt : (n : Nat) -> (xs : List a) -> SplitG (const ()) xs
-splitAt n [] = SGNil
-splitAt n [x] = SGOne x
-splitAt Z (x :: y :: ys) = SGMore x [] y ys () ()
-splitAt (S k) (x :: y :: ys) = pushSG x $ splitAt k (y :: ys)
+splitAt : (n : Nat) -> (xs : List a) -> SplitC (const ()) xs
+splitAt n [] = SCNil
+splitAt n [x] = SCOne x
+splitAt Z (x :: y :: ys) = SCMore x [] y ys () ()
+splitAt (S k) (x :: y :: ys) = pushSC x $ splitAt k (y :: ys)
 
 lemmaApp : (xs : List a) -> (ys : List a) -> length ys `LE` length (xs ++ ys)
 lemmaApp []      ys = leRefl
 lemmaApp (x::xs) ys = leS $ lemmaApp xs ys
 
-splitG : (xs : List a) -> (n : Nat) -> SplitG SplitRecG xs
-splitG xs n with (wfSmaller xs)
-  splitG xs n | acc with (splitAt n xs)
-    splitG []  n | acc | SGNil = SGNil
-    splitG [x] n | acc | SGOne x = SGOne x
-    splitG (y :: ys ++ z :: zs) n | MkAcc acc | SGMore y ys z zs () ()
-        = SGMore y ys z zs
-            (SRG $ \n' => splitG (y :: ys) n' | acc _ (LES shorterL))
-            (SRG $ \n' => splitG (z :: zs) n' | acc _ (LES $ lemmaApp ys (z::zs)))
+splitC : (xs : List a) -> (n : Nat) -> SplitC SplitRecC xs
+splitC xs n with (wfSmaller xs)
+  splitC xs n | acc with (splitAt n xs)
+    splitC []  n | acc | SCNil = SCNil
+    splitC [x] n | acc | SCOne x = SCOne x
+    splitC (y :: ys ++ z :: zs) n | MkAcc acc | SCMore y ys z zs () ()
+        = SCMore y ys z zs
+            (SRC $ \n' => splitC (y :: ys) n' | acc _ (LES shorterL))
+            (SRC $ \n' => splitC (z :: zs) n' | acc _ (LES $ lemmaApp ys (z::zs)))
 
-splitRecG : (xs : List a) -> SplitRecG xs
-splitRecG xs = SRG $ splitG xs
+splitRecC : (xs : List a) -> SplitRecC xs
+splitRecC xs = SRC $ splitC xs
 
 unpack' : Nat -> List Nat -> List (List Nat)
-unpack' x xs with (splitRecG (x :: xs))
-  unpack' Z xs | SRG splitAt = []
-  unpack' x xs | SRG splitAt with (splitAt x)
-    unpack' x [] | SRG splitAt | SGOne x = []  -- dangling length tag
-    unpack' x (ys ++ z :: zs) | SRG splitAt | SGMore x ys z zs rys rzs
+unpack' x xs with (splitRecC (x :: xs))
+  unpack' Z xs | SRC splitAt = []
+  unpack' x xs | SRC splitAt with (splitAt x)
+    unpack' x [] | SRC splitAt | SCOne x = []  -- dangling length tag
+    unpack' x (ys ++ z :: zs) | SRC splitAt | SCMore x ys z zs rys rzs
         = ys :: unpack' z zs | rzs
 
 unpackL : List Nat -> List (List Nat)
