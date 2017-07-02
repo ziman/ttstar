@@ -371,25 +371,25 @@ splitG xs n with (wfSmaller xs)
 splitRecG : (xs : List a) -> SplitRecG xs
 splitRecG xs = SRG $ splitG xs
 
-sum : List Nat -> Nat
-sum [] = 0
-sum (x :: xs) = x + sum xs
+unpack' : Nat -> List Nat -> List (List Nat)
+unpack' x xs with (splitRecG (x :: xs))
+  unpack' Z xs | SRG splitAt = []
+  unpack' x xs | SRG splitAt with (splitAt x)
+    unpack' x [] | SRG splitAt | SGOne x = []  -- dangling length tag
+    unpack' x (ys ++ z :: zs) | SRG splitAt | SGMore x ys z zs rys rzs
+        = ys :: unpack' z zs | rzs
 
-chunk' : (n : Nat) -> List Nat -> List (List Nat)
-chunk' n xs with (splitRecG xs)
-  chunk' n xs | SRG splitAt with (splitAt n)
-    chunk' n []  | SRG splitAt | SGNil   = []
-    chunk' n [x] | SRG splitAt | SGOne x = [[x]]
-    chunk' n (y :: ys ++ z :: zs) | SRG splitAt | SGMore y ys z zs rys rzs
-        = ys :: chunk' (S z) (z :: zs) | rzs
+unpackL : List Nat -> List (List Nat)
+unpackL []        = []
+unpackL (x :: xs) = unpack' x xs
 
-chunk : List Nat -> List (List Nat)
-chunk []        = []
-chunk (n :: xs) = chunk' n xs
+packL : List (List Nat) -> List Nat
+packL [] = [0]
+packL (xs :: xss) = length xs :: xs ++ packL xss
 
 {-
-*views> chunk [1,3,3,1,2,3,2,0,1,4,5]
-[[3], [2, 3], [0, 1, 4], [5]] : List (List Nat)
+*views> unpackL [1,3,3,1,2,3,2,0,1,4,1,2,3,4,0]
+[[3], [1, 2, 3], [0, 1], [1, 2, 3, 4]] : List (List Nat)
 -}
 
 ---------------------------------------------------------
@@ -483,5 +483,7 @@ vList : (xs : List a) -> VList xs
 vList [] = VNil
 vList (x :: xs) = pushV x (vList xs)
 
+{-
 vStep : SnocViewRec (x :: xs ++ [y]) -> SnocViewRec (x :: xs)
 vStep {x} {xs} {y} (SVRSnoc {xs = x :: xs} sxs y) = sxs
+-}
