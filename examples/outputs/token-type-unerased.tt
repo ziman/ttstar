@@ -8,7 +8,7 @@
       [_] a [_] ({_} [_]) = Refl a
     loopy 
       [_] a b pf = 
-        let w = (\x. coerce a (_x9) -> b pf x x)
-        in w (coerce (_x10) -> b a (sym a (_x11) -> b pf) w)
+        let w = (\x. coerce a (y) -> b pf x x)
+        in w (coerce (_x9) -> b a (sym a (_x10) -> b pf) w)
     main = loopy Type Type
   in main

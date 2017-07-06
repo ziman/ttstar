@@ -14,9 +14,9 @@
     loopy : (a : Type) -> (b : Type) -> (_x5 : TyEq a (_x6 : a) -> b) -> b 
       a : Type b : Type pf : TyEq a (_x7 : a) -> b
         [loopy] a b pf = 
-          let w : (_x8 : a) -> b = (\x : a. coerce a (_x9 : a) -> b pf x x)
-          in w (coerce (_x10 : a) -> b a (sym a (_x11 : a) -> b pf) w)
-    main : (_x12 : TyEq Type (_x13 : Type) -> Type) -> Type = loopy Type Type
+          let w : (_x8 : a) -> b = (\x : a. coerce a (y : a) -> b pf x x)
+          in w (coerce (_x9 : a) -> b a (sym a (_x10 : a) -> b pf) w)
+    main : (_x11 : TyEq Type (_x12 : Type) -> Type) -> Type = loopy Type Type
   in main
 
 ### Evarified ###
@@ -33,9 +33,9 @@
     loopy :35: (a :36: Type) -> (b :37: Type) -> (_x5 :38: TyEq -40- a -39- (_x6 :41: a) -> b) -> b 
       a :42: Type b :43: Type pf :44: TyEq -46- a -45- (_x7 :47: a) -> b
         [loopy] -50- a -49- b -48- pf = 
-          let w :51: (_x8 :52: a) -> b = (\x :53: a. coerce -58- a -57- (_x9 :59: a) -> b -56- pf -55- x -54- x)
-          in w -60- (coerce -64- (_x10 :65: a) -> b -63- a -62- (sym -68- a -67- (_x11 :69: a) -> b -66- pf) -61- w)
-    main :70: (_x12 :71: TyEq -73- Type -72- (_x13 :74: Type) -> Type) -> Type = loopy -76- Type -75- Type
+          let w :51: (_x8 :52: a) -> b = (\x :53: a. coerce -58- a -57- (y :59: a) -> b -56- pf -55- x -54- x)
+          in w -60- (coerce -64- (_x9 :65: a) -> b -63- a -62- (sym -68- a -67- (_x10 :69: a) -> b -66- pf) -61- w)
+    main :70: (_x11 :71: TyEq -73- Type -72- (_x12 :74: Type) -> Type) -> Type = loopy -76- Type -75- Type
   in main
 
 ### Constraints ###
@@ -137,9 +137,9 @@
     loopy :R: (a :E: Type) -> (b :E: Type) -> (_x5 :E: TyEq -E- a -E- (_x6 :E: a) -> b) -> b 
       a :E: Type b :E: Type pf :E: TyEq -E- a -E- (_x7 :E: a) -> b
         [loopy] -E- a -E- b -E- pf = 
-          let w :R: (_x8 :R: a) -> b = (\x :R: a. coerce -E- a -E- (_x9 :E: a) -> b -E- pf -R- x -E- x)
-          in w -R- (coerce -E- (_x10 :R: a) -> b -E- a -E- (sym -E- a -E- (_x11 :E: a) -> b -E- pf) -R- w)
-    main :R: (_x12 :E: TyEq -E- Type -E- (_x13 :E: Type) -> Type) -> Type = loopy -E- Type -E- Type
+          let w :R: (_x8 :R: a) -> b = (\x :R: a. coerce -E- a -E- (y :E: a) -> b -E- pf -R- x -E- x)
+          in w -R- (coerce -E- (_x9 :R: a) -> b -E- a -E- (sym -E- a -E- (_x10 :E: a) -> b -E- pf) -R- w)
+    main :R: (_x11 :E: TyEq -E- Type -E- (_x12 :E: Type) -> Type) -> Type = loopy -E- Type -E- Type
   in main
 
 ### Specialised ###
@@ -156,9 +156,9 @@
     loopy :R: (a :E: Type) -> (b :E: Type) -> (_x5 :E: TyEq -E- a -E- (_x6 :E: a) -> b) -> b 
       a :E: Type b :E: Type pf :E: TyEq -E- a -E- (_x7 :E: a) -> b
         [loopy] -E- a -E- b -E- pf = 
-          let w :R: (_x8 :R: a) -> b = (\x :R: a. coerce -E- a -E- (_x9 :E: a) -> b -E- pf -R- x -E- x)
-          in w -R- (coerce -E- (_x10 :R: a) -> b -E- a -E- (sym -E- a -E- (_x11 :E: a) -> b -E- pf) -R- w)
-    main :R: (_x12 :E: TyEq -E- Type -E- (_x13 :E: Type) -> Type) -> Type = loopy -E- Type -E- Type
+          let w :R: (_x8 :R: a) -> b = (\x :R: a. coerce -E- a -E- (y :E: a) -> b -E- pf -R- x -E- x)
+          in w -R- (coerce -E- (_x9 :R: a) -> b -E- a -E- (sym -E- a -E- (_x10 :E: a) -> b -E- pf) -R- w)
+    main :R: (_x11 :E: TyEq -E- Type -E- (_x12 :E: Type) -> Type) -> Type = loopy -E- Type -E- Type
   in main
 
 ### Final annotation ###
@@ -175,9 +175,9 @@
     loopy :R: (a :E: Type) -> (b :E: Type) -> (_x5 :E: TyEq -E- a -E- (_x6 :E: a) -> b) -> b 
       a :E: Type b :E: Type pf :E: TyEq -E- a -E- (_x7 :E: a) -> b
         [loopy] -E- a -E- b -E- pf = 
-          let w :R: (_x8 :R: a) -> b = (\x :R: a. coerce -E- a -E- (_x9 :E: a) -> b -E- pf -R- x -E- x)
-          in w -R- (coerce -E- (_x10 :R: a) -> b -E- a -E- (sym -E- a -E- (_x11 :E: a) -> b -E- pf) -R- w)
-    main :R: (_x12 :E: TyEq -E- Type -E- (_x13 :E: Type) -> Type) -> Type = loopy -E- Type -E- Type
+          let w :R: (_x8 :R: a) -> b = (\x :R: a. coerce -E- a -E- (y :E: a) -> b -E- pf -R- x -E- x)
+          in w -R- (coerce -E- (_x9 :R: a) -> b -E- a -E- (sym -E- a -E- (_x10 :E: a) -> b -E- pf) -R- w)
+    main :R: (_x11 :E: TyEq -E- Type -E- (_x12 :E: Type) -> Type) -> Type = loopy -E- Type -E- Type
   in main
 
 ### Verification ###
@@ -212,8 +212,8 @@ unerased:
     loopy : (a : Type) -> (b : Type) -> (_x5 : TyEq a (_x6 : a) -> b) -> b 
       a : Type b : Type pf : TyEq a (_x7 : a) -> b
         [loopy] a b pf = 
-          let w : (_x8 : a) -> b = (\x : a. coerce a (_x9 : a) -> b pf x x)
-          in w (coerce (_x10 : a) -> b a (sym a (_x11 : a) -> b pf) w)
+          let w : (_x8 : a) -> b = (\x : a. coerce a (y : a) -> b pf x x)
+          in w (coerce (_x9 : a) -> b a (sym a (_x10 : a) -> b pf) w)
   in loopy Type Type
 
 erased:
