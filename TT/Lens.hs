@@ -19,18 +19,19 @@ ttRelevance f = g
         App r fun arg
             -> App <$> f r <*> g fun <*> g arg
 
+argRelevance :: Ord r' => Traversal (r, TT r) (r', TT r') r r'
+argRelevance f (r, tm) = (,) <$> f r <*> ttRelevance f tm
+
 patRelevance :: Ord r' => Traversal (Pat r) (Pat r') r r'
 patRelevance f = g
   where
     g pat = case pat of
         PV n
             -> pure $ PV n
-        PApp r fun arg
-            -> PApp <$> f r <*> g fun <*> g arg
+        PCtor forced name args
+            -> PCtor forced name <$> traverse (argRelevance f) args
         PForced tm
             -> PForced <$> ttRelevance f tm
-        PForcedCtor n
-            -> pure $ PForcedCtor n
 
 defRelevance :: Ord r' => Traversal (Def r) (Def r') r r'
 defRelevance f (Def n r ty body mcs)

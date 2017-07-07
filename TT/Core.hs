@@ -33,14 +33,13 @@ data TT r
 
 data Pat r
     = PV Name
-    | PApp r (Pat r) (Pat r)
+    | PCtor Bool Name [(r, Pat r)]  -- bool says whether the constructor is forced
     | PForced (TT r)
-    | PForcedCtor Name
     deriving (Eq, Ord)
 
 data Clause r = Clause
     { cPatVars :: [Def r]
-    , cLHS :: Pat r
+    , cLHS :: [Pat r]
     , cRHS :: TT r
     } deriving (Eq, Ord)
 

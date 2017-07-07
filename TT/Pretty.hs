@@ -129,16 +129,14 @@ instance PrettyR r => Pretty (TT r) where
         pretty' pp tm = text "[???]"
 
 instance PrettyR r => Pretty (Pat r) where
-    pretty pat = pretty' False pat
-      where
-        pretty' pp (PV n) = pretty n
-        pretty' pp (PApp r f x) = ps $ show' r f x
-          where
-            ps = if pp then parens else id
-            show' r (PApp r' f' x') x = show' r' f' x' <> prettyApp r <> pretty' True x
-            show' r f x = pretty f <> prettyApp r <> pretty' True x
-        pretty' pp (PForced tm) = brackets (pretty tm) 
-        pretty' pp (PForcedCtor n) = braces (pretty n)
+    pretty (PV n) = pretty n
+    pretty (PCtor f cn []) = prettyCtor f cn
+    pretty (PCtor f cn args) = parens $ prettyCtor f cn <+> hsep (map (pretty . snd) args))
+    pretty (PForced tm) = brackets $ pretty tm
+
+prettyCtor :: Bool -> Name -> Doc
+prettyCtor True  = braces . pretty
+prettyCtor False = pretty
 
 instance PrettyR r => Show (TT r) where
     show = prettyShow
