@@ -50,7 +50,7 @@ clauseRelevance :: Ord r' => Traversal (Clause r) (Clause r') r r'
 clauseRelevance f (Clause pvs lhs rhs)
     = Clause
         <$> traverse (defRelevance f) pvs
-        <*> traverse (patRelevance f) lhs
+        <*> traverse (argRelevance f) lhs
         <*> ttRelevance f rhs
 
 csRelevance :: Ord r' => Traversal (Constrs r) (Constrs r') r r'

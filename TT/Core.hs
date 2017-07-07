@@ -39,7 +39,7 @@ data Pat r
 
 data Clause r = Clause
     { cPatVars :: [Def r]
-    , cLHS :: [Pat r]
+    , cLHS :: [(r, Pat r)]
     , cRHS :: TT r
     } deriving (Eq, Ord)
 

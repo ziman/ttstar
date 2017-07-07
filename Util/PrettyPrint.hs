@@ -13,7 +13,7 @@ module Util.PrettyPrint
     , parens, brackets, braces
     , empty
     , render
-    , vcat, hsep
+    , vcat, hsep, hcat
     , punctuate
     , size, width
     , Pretty (..)
@@ -126,6 +126,9 @@ vcat = foldr ($+$) empty
 
 hsep :: [Doc] -> Doc
 hsep = foldr (<+>) empty
+
+hcat :: [Doc] -> Doc
+hcat = foldr (<>) empty
 
 punctuate :: Doc -> [Doc] -> [Doc]
 punctuate sep [] = []

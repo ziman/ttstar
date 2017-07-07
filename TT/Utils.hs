@@ -3,6 +3,7 @@ module TT.Utils where
 
 import TT.Core
 
+import Control.Arrow
 import Control.Monad
 import qualified Data.Map as M
 import qualified Data.Set as S
@@ -79,10 +80,10 @@ instance Termy Body where
 instance Termy Clause where
     subst n tm c@(Clause pvs lhs rhs)
         | n `elem` map defName pvs = c
-        | otherwise = Clause (map (subst n tm) pvs) (map (subst n tm) lhs) (subst n tm rhs)
+        | otherwise = Clause (map (subst n tm) pvs) [(r, subst n tm p) | (r,p) <- lhs] (subst n tm rhs)
 
     freeVars (Clause pvs lhs rhs)
-        = (S.unions (map freeVars lhs) `S.union` freeVars rhs)
+        = (S.unions (map (freeVars . snd) lhs) `S.union` freeVars rhs)
             `S.difference` S.fromList (map defName pvs)
 
 freeVarsBinder :: Termy a => [Def r] -> a r -> S.Set Name
@@ -145,7 +146,8 @@ freePatVars ctx (PV n)
 
     | otherwise = Just $ S.singleton n
 freePatVars ctx (PForced tm) = Just S.empty
-freePatVars ctx (PCtor f cn args) = foldM linUnion S.empty $ traverse (freePatVars ctx . snd) args
+freePatVars ctx (PCtor f cn args) =
+    foldM linUnion S.empty =<< traverse (freePatVars ctx . snd) args
   where
     linUnion x y
         | S.null (S.intersection x y) = Just $ S.union x y
@@ -181,7 +183,7 @@ monomorphise (Bind b d tm) = Bind b (map monoDef d) $ monomorphise tm
     monoBody (Clauses cs) = Clauses $ map monoClause cs
 
     monoClause :: Clause r -> Clause r
-    monoClause (Clause pvs lhs rhs) = Clause (map monoDef pvs) (monoPat lhs) (monomorphise rhs)
+    monoClause (Clause pvs lhs rhs) = Clause (map monoDef pvs) (map (second monoPat) lhs) (monomorphise rhs)
 
     monoPat :: Pat r -> Pat r
     monoPat (PV n) = PV n
