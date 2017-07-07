@@ -3,11 +3,11 @@
     postulate T : Bool
     postulate F : Bool
     g 
-      [_] T = 
+       T = 
         let h 
-          [_] F = g F
-          [_] T = T
+           F = g F
+           T = T
         in h F
-      [_] F = T
+       F = T
     main = g T
   in main

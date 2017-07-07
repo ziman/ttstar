@@ -8,34 +8,34 @@
     postulate Lam : (_x2) -> TT
     postulate App : (_x3) -> (_x4) -> TT
     env 
-      [_] (VC x _) FZ = x
-      [_] (VC _ xs) (FS i) = env xs i
+       (VC x _) FZ = x
+       (VC _ xs) (FS i) = env xs i
     extendMap 
-      [_] _ FZ = FZ
-      [_] f (FS i) = FS (f i)
+       _ FZ = FZ
+       f (FS i) = FS (f i)
     mapVars 
-      [_] f (V i) = V (f i)
-      [_] f (Lam x) = Lam (mapVars (extendMap f) x)
-      [_] f (App g x) = App (mapVars f g) (mapVars f x)
+       f (V i) = V (f i)
+       f (Lam x) = Lam (mapVars (extendMap f) x)
+       f (App g x) = App (mapVars f g) (mapVars f x)
     extendSubst 
-      [_] _ FZ = V FZ
-      [_] f (FS i) = mapVars FS (f i)
+       _ FZ = V FZ
+       f (FS i) = mapVars FS (f i)
     substVars 
-      [_] f (V i) = f i
-      [_] f (Lam x) = Lam (substVars (extendSubst f) x)
-      [_] f (App g x) = App (substVars f g) (substVars f x)
+       f (V i) = f i
+       f (Lam x) = Lam (substVars (extendSubst f) x)
+       f (App g x) = App (substVars f g) (substVars f x)
     testTm = App (Lam (App (V FZ) (V (FS FZ)))) (Lam (App (V (FS FZ)) (V FZ)))
     example1 = substVars (env (VC (Lam (V FZ)) VN)) testTm
     substTop 
-      [_] tm FZ = tm
-      [_] _ (FS i) = V i
+       tm FZ = tm
+       _ (FS i) = V i
     nf 
-      [_] (V i) = V i
-      [_] (Lam x) = Lam (nf x)
-      [_] (App f x) = 
+       (V i) = V i
+       (Lam x) = Lam (nf x)
+       (App f x) = 
         let g 
-          [_] (Lam y) = nf (substVars (substTop (nf x)) y)
-          [_] f' = App f' (nf x)
+           (Lam y) = nf (substVars (substTop (nf x)) y)
+           f' = App f' (nf x)
         in g (nf f)
     example2 = nf testTm
     postulate R : (x) -> (y) -> Result

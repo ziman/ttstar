@@ -5,7 +5,7 @@
     postulate Nil : Vec
     postulate Cons : (x) -> (xs) -> Vec
     vlen 
-      [_] Nil = Z
-      [_] (Cons _ ys) = S (vlen ys)
+       Nil = Z
+       (Cons _ ys) = S (vlen ys)
     main = vlen (Cons 3 Nil)
   in main

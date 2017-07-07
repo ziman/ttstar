@@ -7,8 +7,8 @@
     postulate FZ : (n) -> Fin (S n)
     postulate FS : (n) -> (x) -> Fin (S n)
     embed 
-      [_] [_] (FZ n) = FZ (S n)
-      [_] [_] (FS n x) = FS (S n) (embed n x)
+       [_] (FZ n) = FZ (S n)
+       [_] (FS n x) = FS (S n) (embed n x)
     fsuc = FS
     postulate Pair : Type
     postulate P : (x) -> (y) -> Pair

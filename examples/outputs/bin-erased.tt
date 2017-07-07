@@ -7,17 +7,17 @@
     postulate N : Bin
     postulate C : (rest) -> Bin
     add' 
-      [_] {_} N N = C N
-      [_] ({_} w) (C xn) (C yn) = 
+       {_} N N = C N
+       ({_} w) (C xn) (C yn) = 
         let f 
-          [_] = C (add' w xn yn)
+          = C (add' w xn yn)
         in f
     add = (\w. (\bx. (\by. add' w bx by)))
     foreign inputSize
     mkBin 
-      [_] _ Z = N
-      [_] True (S n) = C (mkBin False n)
-      [_] False (S n) = C (mkBin True n)
+       _ Z = N
+       True (S n) = C (mkBin False n)
+       False (S n) = C (mkBin True n)
     main = 
       let
         x = mkBin True inputSize

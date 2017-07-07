@@ -7,8 +7,8 @@
     postulate Nothing : Maybe
     postulate Just : (x) -> Maybe
     g 
-      [_] (Just True) = Yeah
-      [_] (Just False) = Nope
-      [_] Nothing = Nope
+       (Just True) = Yeah
+       (Just False) = Nope
+       Nothing = Nope
     main = g (Just True)
   in main

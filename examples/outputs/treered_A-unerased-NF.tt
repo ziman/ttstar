@@ -3,4 +3,10 @@
     postulate N : Type
     postulate Z : N
     postulate S : (x) -> N
-  in 1
+    postulate Vec : (_x0) -> (_x1) -> Type
+    postulate Nil : (a) -> Vec Z a
+    postulate Cons : (a) -> (n) -> (x) -> (xs) -> Vec (S n) a
+    vlen 
+       {_} (Nil [_]) = Z
+       ({_} m) (Cons [_] [_] y ys) = S (vlen m ys)
+  in vlen 1 (Cons N Z 3 (Nil N))

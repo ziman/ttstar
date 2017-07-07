@@ -7,12 +7,12 @@
     postulate T : Bool
     postulate F : Bool
     g : (_x0 : Bool) -> Bool 
-      [g] T = 
+       T = 
         let h : (_x1 : Bool) -> Bool 
-          [h] F = g F
-          [h] T = T
+           F = g F
+           T = T
         in h F
-      [g] F = T
+       F = T
     main : Bool = g T
   in main
 
@@ -23,12 +23,12 @@
     postulate T :2: Bool
     postulate F :3: Bool
     g :4: (_x0 :5: Bool) -> Bool 
-      [g] -6- T = 
+       -6- T = 
         let h :7: (_x1 :8: Bool) -> Bool 
-          [h] -9- F = g -10- F
-          [h] -11- T = T
+           -9- F = g -10- F
+           -11- T = T
         in h -12- F
-      [g] -13- F = T
+       -13- F = T
     main :14: Bool = g -15- T
   in main
 
@@ -48,12 +48,12 @@
     postulate T :R: Bool
     postulate F :R: Bool
     g :R: (_x0 :R: Bool) -> Bool 
-      [g] -R- T = 
+       -R- T = 
         let h :R: (_x1 :R: Bool) -> Bool 
-          [h] -R- F = g -R- F
-          [h] -R- T = T
+           -R- F = g -R- F
+           -R- T = T
         in h -R- F
-      [g] -R- F = T
+       -R- F = T
     main :R: Bool = g -R- T
   in main
 
@@ -64,12 +64,12 @@
     postulate T :R: Bool
     postulate F :R: Bool
     g :R: (_x0 :R: Bool) -> Bool 
-      [g] -R- T = 
+       -R- T = 
         let h :R: (_x1 :R: Bool) -> Bool 
-          [h] -R- F = g -R- F
-          [h] -R- T = T
+           -R- F = g -R- F
+           -R- T = T
         in h -R- F
-      [g] -R- F = T
+       -R- F = T
     main :R: Bool = g -R- T
   in main
 
@@ -80,12 +80,12 @@
     postulate T :R: Bool
     postulate F :R: Bool
     g :R: (_x0 :R: Bool) -> Bool 
-      [g] -R- T = 
+       -R- T = 
         let h :R: (_x1 :R: Bool) -> Bool 
-          [h] -R- F = g -R- F
-          [h] -R- T = T
+           -R- F = g -R- F
+           -R- T = T
         in h -R- F
-      [g] -R- F = T
+       -R- F = T
     main :R: Bool = g -R- T
   in main
 
@@ -99,12 +99,12 @@ Verification successful.
     postulate T : Bool
     postulate F : Bool
     g 
-      [_] T = 
+       T = 
         let h 
-          [_] F = g F
-          [_] T = T
+           F = g F
+           T = T
         in h F
-      [_] F = T
+       F = T
     main = g T
   in main
 

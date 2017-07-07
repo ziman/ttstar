@@ -8,8 +8,8 @@
     postulate S : (n) -> Nat
     postulate Plus : (x) -> (y) -> Nat
     id 
-      [_] Z = Z
-      [_] (S y) = 
+       Z = Z
+       (S y) = 
         let result = S y
         in result
     const_3 = (\x. 3)

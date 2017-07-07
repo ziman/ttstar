@@ -5,7 +5,7 @@
     postulate F : Bool
     main = 
       let not 
-        [_] T = F
-        [_] F = T
+         T = F
+         F = T
       in not F
   in main

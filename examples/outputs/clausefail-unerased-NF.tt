@@ -6,6 +6,6 @@
     postulate T : B
     postulate F : B
     isSuc 
-      [_] (S n) = T
-      [_] n = F
+       (S n) = T
+       n = F
   in (\x. isSuc x)

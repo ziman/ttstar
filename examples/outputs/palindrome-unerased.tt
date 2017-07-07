@@ -13,53 +13,53 @@
     postulate Nothing : (a) -> Maybe a
     postulate Just : (a) -> (x) -> Maybe a
     not 
-      [_] T = F
-      [_] F = T
+       T = F
+       F = T
     postulate Id : (a) -> (x) -> (y) -> Type
     postulate Refl : (a) -> (x) -> Id a x x
     id = (\a. (\x. x))
     subst 
-      [_] a P x [_] [_] = (\w. w)
+       a p x [_] [_] = (\w. w)
     cong 
-      [_] a b f x [_] [_] = Refl b (f x)
+       a b f x [_] [_] = Refl b (f x)
     one = (\x. Cons x Nil)
     app 
-      [_] Nil ys = ys
-      [_] (Cons x xs) ys = Cons x (app xs ys)
+       Nil ys = ys
+       (Cons x xs) ys = Cons x (app xs ys)
     appRightNeutral 
-      [_] Nil = Refl List Nil
-      [_] (Cons x xs) = cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs)
+       Nil = Refl List Nil
+       (Cons x xs) = cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs)
     appAssoc 
-      [_] Nil ys zs = Refl List (app ys zs)
-      [_] (Cons x xs) ys zs = cong List List (Cons x) (app (app xs ys) zs) (app xs (app ys zs)) (appAssoc xs ys zs)
+       Nil ys zs = Refl List (app ys zs)
+       (Cons x xs) ys zs = cong List List (Cons x) (app (app xs ys) zs) (app xs (app ys zs)) (appAssoc xs ys zs)
     postulate Rev : (_x12) -> Type
     postulate RNil : Rev Nil
     postulate RSnoc : (xs) -> (x) -> (rxs) -> Rev (app xs (one x))
     rev' 
-      [_] xs rxs Nil = subst List Rev xs (app xs Nil) (appRightNeutral xs) rxs
-      [_] xs rxs (Cons y ys) = subst List Rev (app (app xs (one y)) ys) (app xs (Cons y ys)) (appAssoc xs (one y) ys) (rev' (app xs (one y)) (RSnoc xs y rxs) ys)
+       xs rxs Nil = subst List Rev xs (app xs Nil) (appRightNeutral xs) rxs
+       xs rxs (Cons y ys) = subst List Rev (app (app xs (one y)) ys) (app xs (Cons y ys)) (appAssoc xs (one y) ys) (rev' (app xs (one y)) (RSnoc xs y rxs) ys)
     rev = (\xs. rev' Nil RNil xs)
     reverse' 
-      [_] [_] RNil = Nil
-      [_] [_] (RSnoc xs x rxs) = Cons x (reverse' xs rxs)
+       [_] RNil = Nil
+       [_] (RSnoc xs x rxs) = Cons x (reverse' xs rxs)
     reverse = (\xs. reverse' xs (rev xs))
     postulate V : (_x13) -> Type
     postulate VNil : V Nil
     postulate VOne : (x) -> V (Cons x Nil)
     postulate VTwo : (x) -> (xs) -> (u) -> (y) -> V (Cons x (app xs (one y)))
     length 
-      [_] Nil = Z
-      [_] (Cons x xs) = S (length xs)
+       Nil = Z
+       (Cons x xs) = S (length xs)
     index 
-      [_] Z xs ys = Nil
-      [_] (S Z) (Cons x xs) (Cons y ys) = Cons x Nil
-      [_] (S (S n)) (Cons x xs) (Cons y ys) = Cons x (app (index n xs ys) (one y))
-      [_] (S n) Nil Nil = Nil
+       Z xs ys = Nil
+       (S Z) (Cons x xs) (Cons y ys) = Cons x Nil
+       (S (S n)) (Cons x xs) (Cons y ys) = Cons x (app (index n xs ys) (one y))
+       (S n) Nil Nil = Nil
     build 
-      [_] Z xs ys = VNil
-      [_] (S Z) (Cons x xs) (Cons y ys) = VOne x
-      [_] (S (S n)) (Cons x xs) (Cons y ys) = VTwo x (index n xs ys) (build n xs ys) y
-      [_] (S n) Nil Nil = VNil
+       Z xs ys = VNil
+       (S Z) (Cons x xs) (Cons y ys) = VOne x
+       (S (S n)) (Cons x xs) (Cons y ys) = VTwo x (index n xs ys) (build n xs ys) y
+       (S n) Nil Nil = VNil
     postulate eq : (xs) -> Id List (index (length xs) xs (reverse xs)) xs
     toV = (\xs. subst List V (index (length xs) xs (reverse xs)) xs (eq xs) (build (length xs) xs (reverse xs)))
     postulate IsPalindrome : (_x18) -> Type
@@ -67,25 +67,25 @@
     postulate POne : (b) -> IsPalindrome (Cons b Nil)
     postulate PTwo : (b) -> (xs) -> (pf) -> IsPalindrome (Cons b (app xs (one b)))
     decEq 
-      [_] T T = Just (Id B T T) (Refl B T)
-      [_] F F = Just (Id B F F) (Refl B F)
-      [_] T F = Nothing (Id B T F)
-      [_] F T = Nothing (Id B F T)
+       T T = Just (Id B T T) (Refl B T)
+       F F = Just (Id B F F) (Refl B F)
+       T F = Nothing (Id B T F)
+       F T = Nothing (Id B F T)
     isPalinV 
-      [_] [_] VNil = Just (IsPalindrome Nil) PNil
-      [_] [_] (VOne x) = Just (IsPalindrome (Cons x Nil)) (POne x)
-      [_] [_] (VTwo x xs v y) = 
+       [_] VNil = Just (IsPalindrome Nil) PNil
+       [_] (VOne x) = Just (IsPalindrome (Cons x Nil)) (POne x)
+       [_] (VTwo x xs v y) = 
         let isPalinV' 
-          [_] x [_] xs v (Just [_] [_]) (Just [_] pfV) = Just (IsPalindrome (Cons x (app xs (one x)))) (PTwo x xs pfV)
-          [_] x y xs v pfB pfV = Nothing (IsPalindrome (Cons x (app xs (one y))))
+           x [_] xs v (Just [_] [_]) (Just [_] pfV) = Just (IsPalindrome (Cons x (app xs (one x)))) (PTwo x xs pfV)
+           x y xs v pfB pfV = Nothing (IsPalindrome (Cons x (app xs (one y))))
         in isPalinV' x y xs v (decEq x y) (isPalinV xs v)
     isPalindrome = (\xs. isPalinV xs (toV xs))
     genList 
-      [_] b Z = Nil
-      [_] b (S n) = Cons b (genList (not b) n)
+       b Z = Nil
+       b (S n) = Cons b (genList (not b) n)
     isJust 
-      [_] a (Just [_] x) = T
-      [_] a (Nothing [_]) = F
+       a (Just [_] x) = T
+       a (Nothing [_]) = F
     main = 
       let
         foreign inputSize

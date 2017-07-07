@@ -10,15 +10,15 @@
     postulate Nil : (a : Type) -> Vec Z a
     postulate Cons : (a : Type) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a
     plus : (_x2 : N) -> (_x3 : N) -> N 
-      n : N
-        [plus] Z n = n
-      m : N n : N
-        [plus] (S m) n = S (plus m n)
+      (n : N)
+         Z n = n
+      (m : N) (n : N)
+         (S m) n = S (plus m n)
     append : (a : Type) -> (m : N) -> (n : N) -> (xs : Vec m a) -> (ys : Vec n a) -> Vec (plus m n) a 
-      a : Type n : N ys : Vec n a
-        [append] a {Z} n (Nil [a]) ys = ys
-      a : Type m : N n : N x : a xs : Vec m a ys : Vec n a
-        [append] a ({S} m) n (Cons [a] [m] x xs) ys = Cons a (plus m n) x (append a m n xs ys)
+      (a : Type) (n : N) (ys : Vec n a)
+         a {Z} n (Nil [a]) ys = ys
+      (a : Type) (m : N) (n : N) (x : a) (xs : Vec m a) (ys : Vec n a)
+         a ({S} m) n (Cons [a] [m] x xs) ys = Cons a (plus m n) x (append a m n xs ys)
     main : Vec 1 N = append N Z 1 (Nil N) (Cons N Z 4 (Nil N))
   in main
 
@@ -32,26 +32,26 @@
     postulate Nil :7: (a :8: Type) -> Vec -10- Z -9- a
     postulate Cons :11: (a :12: Type) -> (n :13: N) -> (x :R: a) -> (xs :R: Vec -15- n -14- a) -> Vec -17- (S -18- n) -16- a
     plus :19: (_x2 :20: N) -> (_x3 :21: N) -> N 
-      n :22: N
-        [plus] -24- Z -23- n = n
-      m :25: N n :26: N
-        [plus] -28- (S -29- m) -27- n = S -30- (plus -32- m -31- n)
+      (n :22: N)
+         -23- Z -24- n = n
+      (m :25: N) (n :26: N)
+         -27- (S -28- m) -29- n = S -30- (plus -32- m -31- n)
     append :33: (a :34: Type) -> (m :35: N) -> (n :36: N) -> (xs :37: Vec -39- m -38- a) -> (ys :40: Vec -42- n -41- a) -> Vec -44- (plus -46- m -45- n) -43- a 
-      a :47: Type n :48: N ys :49: Vec -51- n -50- a
-        [append] -56- a -55- {Z} -54- n -53- (Nil -57- [a]) -52- ys = ys
-      a :58: Type m :59: N n :60: N x :61: a xs :62: Vec -64- m -63- a ys :65: Vec -67- n -66- a
-        [append] -72- a -71- ({S} -73- m) -70- n -69- (Cons -77- [a] -76- [m] -75- x -74- xs) -68- ys = Cons -81- a -80- (plus -83- m -82- n) -79- x -78- (append -88- a -87- m -86- n -85- xs -84- ys)
+      (a :47: Type) (n :48: N) (ys :49: Vec -51- n -50- a)
+         -52- a -53- {Z} -54- n -55- (Nil -56- [a]) -57- ys = ys
+      (a :58: Type) (m :59: N) (n :60: N) (x :61: a) (xs :62: Vec -64- m -63- a) (ys :65: Vec -67- n -66- a)
+         -68- a -69- ({S} -70- m) -71- n -72- (Cons -73- [a] -74- [m] -75- x -76- xs) -77- ys = Cons -81- a -80- (plus -83- m -82- n) -79- x -78- (append -88- a -87- m -86- n -85- xs -84- ys)
     main :89: Vec -91- 1 -90- N = append -97- N -96- Z -95- 1 -94- (Nil -99- N) -93- (Cons -103- N -102- Z -101- 4 -100- (Nil -108- N))
   in main
 
 ### Constraints ###
 
-[] -> [2,3,7,11,33,37,40,49,52,53,61,62,65,68,69,74,75,78,79,84,85,93,94,100,101,104,105,106,107,R]
-[8] -> [1,57,99,108]
+[] -> [2,3,7,11,33,37,40,49,55,57,61,62,65,72,75,76,77,78,79,84,85,93,94,100,101,104,105,106,107,R]
+[8] -> [1,56,99,108]
 [9] -> [14,38]
 [10] -> [15,39]
-[12] -> [1,58,77,81,103]
-[13] -> [19,20,21,22,23,24,25,26,27,28,29,30,31,32,76,80,102]
+[12] -> [1,58,73,81,103]
+[13] -> [19,20,21,22,23,24,25,26,27,28,29,30,31,32,74,80,102]
 [13,20] -> [59,83]
 [13,21] -> [60,82]
 [13,82] -> [21]
@@ -60,13 +60,13 @@
 [15] -> [10,44,64]
 [16] -> [38,41,43]
 [17] -> [39,42,44]
-[18] -> [30,73,98]
+[18] -> [30,70,98]
 [30] -> [18]
 [31] -> [82]
 [32] -> [83]
-[34] -> [1,56,58,72,88,97]
-[35] -> [55,59,71,87,96]
-[36] -> [54,60,70,86,95,98]
+[34] -> [1,52,58,68,88,97]
+[35] -> [53,59,69,87,96]
+[36] -> [54,60,71,86,95,98]
 [38] -> [9,16,63]
 [39] -> [10,17,64]
 [41] -> [16,50,66]
@@ -75,27 +75,27 @@
 [44] -> [15,17,51,91]
 [45] -> [82]
 [46] -> [83]
-[47] -> [56]
+[47] -> [52]
 [48] -> [54]
 [50] -> [41,43]
 [51] -> [42,44]
+[52] -> [34]
+[53] -> [35]
 [54] -> [36]
-[55] -> [35]
-[56] -> [34]
-[57] -> [8,47]
-[58] -> [72]
-[59] -> [73]
-[60] -> [70]
+[56] -> [8,47]
+[58] -> [68]
+[59] -> [70]
+[60] -> [71]
 [63] -> [14,38]
 [64] -> [15,39]
 [66] -> [41]
 [67] -> [42]
-[70] -> [36]
-[71] -> [35,73]
-[72] -> [34]
-[73] -> [18,71]
-[76] -> [13,59]
-[77] -> [12,58]
+[68] -> [34]
+[69] -> [35,70]
+[70] -> [18,69]
+[71] -> [36]
+[73] -> [12,58]
+[74] -> [13,59]
 [80] -> [13]
 [81] -> [12]
 [82] -> [31,45]
@@ -118,7 +118,7 @@
 
 ### Solution ###
 
-[2,3,7,11,33,37,40,49,52,53,61,62,65,68,69,74,75,78,79,84,85,89,93,94,100,101,104,105,106,107,R]
+[2,3,7,11,33,37,40,49,55,57,61,62,65,72,75,76,77,78,79,84,85,89,93,94,100,101,104,105,106,107,R]
 
 ### Annotated ###
 
@@ -130,15 +130,15 @@
     postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a
     postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     plus :E: (_x2 :E: N) -> (_x3 :E: N) -> N 
-      n :E: N
-        [plus] -E- Z -E- n = n
-      m :E: N n :E: N
-        [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
+      (n :E: N)
+         -E- Z -E- n = n
+      (m :E: N) (n :E: N)
+         -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
     append :R: (a :E: Type) -> (m :E: N) -> (n :E: N) -> (xs :R: Vec -E- m -E- a) -> (ys :R: Vec -E- n -E- a) -> Vec -E- (plus -E- m -E- n) -E- a 
-      a :E: Type n :E: N ys :R: Vec -E- n -E- a
-        [append] -E- a -E- {Z} -E- n -R- (Nil -E- [a]) -R- ys = ys
-      a :E: Type m :E: N n :E: N x :R: a xs :R: Vec -E- m -E- a ys :R: Vec -E- n -E- a
-        [append] -E- a -E- ({S} -E- m) -E- n -R- (Cons -E- [a] -E- [m] -R- x -R- xs) -R- ys = Cons -E- a -E- (plus -E- m -E- n) -R- x -R- (append -E- a -E- m -E- n -R- xs -R- ys)
+      (a :E: Type) (n :E: N) (ys :R: Vec -E- n -E- a)
+         -E- a -E- {Z} -E- n -R- (Nil -E- [a]) -R- ys = ys
+      (a :E: Type) (m :E: N) (n :E: N) (x :R: a) (xs :R: Vec -E- m -E- a) (ys :R: Vec -E- n -E- a)
+         -E- a -E- ({S} -E- m) -E- n -R- (Cons -E- [a] -E- [m] -R- x -R- xs) -R- ys = Cons -E- a -E- (plus -E- m -E- n) -R- x -R- (append -E- a -E- m -E- n -R- xs -R- ys)
     main :R: Vec -E- 1 -E- N = append -E- N -E- Z -E- 1 -R- (Nil -E- N) -R- (Cons -E- N -E- Z -R- 4 -R- (Nil -E- N))
   in main
 
@@ -152,15 +152,15 @@
     postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a
     postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     plus :E: (_x2 :E: N) -> (_x3 :E: N) -> N 
-      n :E: N
-        [plus] -E- Z -E- n = n
-      m :E: N n :E: N
-        [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
+      (n :E: N)
+         -E- Z -E- n = n
+      (m :E: N) (n :E: N)
+         -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
     append :R: (a :E: Type) -> (m :E: N) -> (n :E: N) -> (xs :R: Vec -E- m -E- a) -> (ys :R: Vec -E- n -E- a) -> Vec -E- (plus -E- m -E- n) -E- a 
-      a :E: Type n :E: N ys :R: Vec -E- n -E- a
-        [append] -E- a -E- {Z} -E- n -R- (Nil -E- [a]) -R- ys = ys
-      a :E: Type m :E: N n :E: N x :R: a xs :R: Vec -E- m -E- a ys :R: Vec -E- n -E- a
-        [append] -E- a -E- ({S} -E- m) -E- n -R- (Cons -E- [a] -E- [m] -R- x -R- xs) -R- ys = Cons -E- a -E- (plus -E- m -E- n) -R- x -R- (append -E- a -E- m -E- n -R- xs -R- ys)
+      (a :E: Type) (n :E: N) (ys :R: Vec -E- n -E- a)
+         -E- a -E- {Z} -E- n -R- (Nil -E- [a]) -R- ys = ys
+      (a :E: Type) (m :E: N) (n :E: N) (x :R: a) (xs :R: Vec -E- m -E- a) (ys :R: Vec -E- n -E- a)
+         -E- a -E- ({S} -E- m) -E- n -R- (Cons -E- [a] -E- [m] -R- x -R- xs) -R- ys = Cons -E- a -E- (plus -E- m -E- n) -R- x -R- (append -E- a -E- m -E- n -R- xs -R- ys)
     main :R: Vec -E- 1 -E- N = append -E- N -E- Z -E- 1 -R- (Nil -E- N) -R- (Cons -E- N -E- Z -R- 4 -R- (Nil -E- N))
   in main
 
@@ -174,15 +174,15 @@
     postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a
     postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     plus :E: (_x2 :E: N) -> (_x3 :E: N) -> N 
-      n :E: N
-        [plus] -E- Z -E- n = n
-      m :E: N n :E: N
-        [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
+      (n :E: N)
+         -E- Z -E- n = n
+      (m :E: N) (n :E: N)
+         -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
     append :R: (a :E: Type) -> (m :E: N) -> (n :E: N) -> (xs :R: Vec -E- m -E- a) -> (ys :R: Vec -E- n -E- a) -> Vec -E- (plus -E- m -E- n) -E- a 
-      a :E: Type n :E: N ys :R: Vec -E- n -E- a
-        [append] -E- a -E- {Z} -E- n -R- (Nil -E- [a]) -R- ys = ys
-      a :E: Type m :E: N n :E: N x :R: a xs :R: Vec -E- m -E- a ys :R: Vec -E- n -E- a
-        [append] -E- a -E- ({S} -E- m) -E- n -R- (Cons -E- [a] -E- [m] -R- x -R- xs) -R- ys = Cons -E- a -E- (plus -E- m -E- n) -R- x -R- (append -E- a -E- m -E- n -R- xs -R- ys)
+      (a :E: Type) (n :E: N) (ys :R: Vec -E- n -E- a)
+         -E- a -E- {Z} -E- n -R- (Nil -E- [a]) -R- ys = ys
+      (a :E: Type) (m :E: N) (n :E: N) (x :R: a) (xs :R: Vec -E- m -E- a) (ys :R: Vec -E- n -E- a)
+         -E- a -E- ({S} -E- m) -E- n -R- (Cons -E- [a] -E- [m] -R- x -R- xs) -R- ys = Cons -E- a -E- (plus -E- m -E- n) -R- x -R- (append -E- a -E- m -E- n -R- xs -R- ys)
     main :R: Vec -E- 1 -E- N = append -E- N -E- Z -E- 1 -R- (Nil -E- N) -R- (Cons -E- N -E- Z -R- 4 -R- (Nil -E- N))
   in main
 
@@ -198,8 +198,8 @@ Verification successful.
     postulate Nil : Vec
     postulate Cons : (x) -> (xs) -> Vec
     append 
-      [_] Nil ys = ys
-      [_] (Cons x xs) ys = Cons x (append xs ys)
+       Nil ys = ys
+       (Cons x xs) ys = Cons x (append xs ys)
     main = append Nil (Cons 4 Nil)
   in main
 

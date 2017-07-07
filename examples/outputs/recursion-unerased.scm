@@ -26,7 +26,7 @@
       (lambda (_e1)
         (lambda (_e2)
           (match (list _e0 _e1 _e2)
-            ((a _ ('VNil _))
+            ((a (_) ('VNil _))
               Z)
             ((a (_ n) ('VCons _ _ x xs))
               (S (((vlen a) n) xs))))))))

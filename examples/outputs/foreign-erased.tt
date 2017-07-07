@@ -7,30 +7,30 @@
     postulate Cons : (_x0) -> (_x1) -> List
     postulate Nil : List
     not 
-      [_] T = F
-      [_] F = T
+       T = F
+       F = T
     foreign input
     genList 
-      [_] _ Z = Nil
-      [_] b (S n) = Cons b (genList (not b) n)
+       _ Z = Nil
+       b (S n) = Cons b (genList (not b) n)
     postulate Nothing : Maybe
     postulate Just : Maybe
     semiDecEqB 
-      [_] T T = Just
-      [_] F F = Just
-      [_] T F = Nothing
-      [_] F T = Nothing
+       T T = Just
+       F F = Just
+       T F = Nothing
+       F T = Nothing
     semiDecEq 
-      [_] Nil (Cons _ _) = Nothing
-      [_] (Cons _ _) Nil = Nothing
-      [_] Nil Nil = Just
-      [_] (Cons x xs) (Cons y ys) = 
+       Nil (Cons _ _) = Nothing
+       (Cons _ _) Nil = Nothing
+       Nil Nil = Just
+       (Cons x xs) (Cons y ys) = 
         let semiDecEq' 
-          [_] Nothing _ = Nothing
-          [_] _ Nothing = Nothing
-          [_] Just Just = Just
+           Nothing _ = Nothing
+           _ Nothing = Nothing
+           Just Just = Just
         in semiDecEq' (semiDecEqB x y) (semiDecEq xs ys)
     sampleList = genList T input
     main 
-      [_] = semiDecEq sampleList sampleList
+      = semiDecEq sampleList sampleList
   in main

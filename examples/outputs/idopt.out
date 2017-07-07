@@ -10,10 +10,10 @@
     postulate FZ : (n : N) -> Fin (S n)
     postulate FS : (n : N) -> (x :R: Fin n) -> Fin (S n)
     embed : (n : N) -> (_x2 : Fin n) -> Fin (S n) 
-      n : N
-        [embed] [S n] (FZ n) = FZ (S n)
-      n : N x : Fin n
-        [embed] [S n] (FS n x) = FS (S n) (embed n x)
+      (n : N)
+         [S n] (FZ n) = FZ (S n)
+      (n : N) (x : Fin n)
+         [S n] (FS n x) = FS (S n) (embed n x)
     fsuc : (n : N) -> (x : Fin n) -> Fin (S n) = FS
     postulate Pair : Type
     postulate P : (x :R: Fin 3) -> (y :R: Fin 4) -> Pair
@@ -30,10 +30,10 @@
     postulate FZ :7: (n :8: N) -> Fin -9- (S -10- n)
     postulate FS :11: (n :12: N) -> (x :R: Fin -13- n) -> Fin -14- (S -15- n)
     embed :16: (n :17: N) -> (_x2 :18: Fin -19- n) -> Fin -20- (S -21- n) 
-      n :22: N
-        [embed] -24- [S -25- n] -23- (FZ -26- n) = FZ -27- (S -28- n)
-      n :29: N x :30: Fin -31- n
-        [embed] -33- [S -34- n] -32- (FS -36- n -35- x) = FS -38- (S -39- n) -37- (embed -41- n -40- x)
+      (n :22: N)
+         -23- [S -24- n] -25- (FZ -26- n) = FZ -27- (S -28- n)
+      (n :29: N) (x :30: Fin -31- n)
+         -32- [S -33- n] -34- (FS -35- n -36- x) = FS -38- (S -39- n) -37- (embed -41- n -40- x)
     fsuc :42: (n :43: N) -> (x :44: Fin -45- n) -> Fin -46- (S -47- n) = FS
     postulate Pair :48: Type
     postulate P :49: (x :R: Fin -50- 3) -> (y :R: Fin -54- 4) -> Pair
@@ -42,49 +42,49 @@
 
 ### Constraints ###
 
-[] -> [7,11,16,18,23,30,32,35,37,40,42,44,49,60,61,62,66,70,75,79,R]
+[] -> [7,11,16,18,25,30,34,36,37,40,42,44,49,60,61,62,66,70,75,79,R]
 [4,8] -> [22,28]
 [4,12] -> [2,3,29,39,68,77,78,81]
 [4,12,78] -> [4]
 [4,17] -> [2,3,72,73,74]
 [4,17,73] -> [4]
 [4,17,74] -> [4]
-[4,24] -> [22,25]
-[4,33] -> [29,34]
+[4,23] -> [22,24]
+[4,32] -> [29,33]
 [4,43] -> [2,3,64,65]
 [4,43,65] -> [4]
 [8] -> [2,3,26,27,69,82]
 [8,28] -> [4]
 [9] -> [13,19,20]
-[10] -> [21,25,68,81]
-[12] -> [3,36,38,43,67,76,80]
+[10] -> [21,24,68,81]
+[12] -> [3,35,38,43,67,76,80]
 [12,39] -> [4]
 [12,68] -> [4]
 [12,77] -> [4]
 [12,81] -> [4]
 [13] -> [9,14,20,31,45]
 [14] -> [13,19,20,45,46]
-[15] -> [21,34,47,64,72,77]
-[17] -> [3,24,29,33,41,71]
+[15] -> [21,33,47,64,72,77]
+[17] -> [3,23,29,32,41,71]
 [17,72] -> [4]
 [19] -> [9,14,31]
 [20] -> [9,13,14,54]
 [21] -> [10,15,39,55]
 [22] -> [26]
-[24] -> [3,17]
-[24,25] -> [4]
-[25] -> [10,28]
+[23] -> [3,17]
+[23,24] -> [4]
+[24] -> [10,28]
 [26] -> [8]
 [27] -> [8]
-[28] -> [25]
-[29] -> [36]
+[28] -> [24]
+[29] -> [35]
 [31] -> [13,19]
-[33] -> [3,17]
-[33,34] -> [4]
-[34] -> [15,39]
-[36] -> [12]
+[32] -> [3,17]
+[32,33] -> [4]
+[33] -> [15,39]
+[35] -> [12]
 [38] -> [12]
-[39] -> [21,34]
+[39] -> [21,33]
 [41] -> [17]
 [43] -> [3,12,63]
 [43,64] -> [4]
@@ -120,7 +120,7 @@
 
 ### Solution ###
 
-[7,11,16,18,23,30,32,35,37,40,42,44,49,59,60,61,62,66,70,75,79,R]
+[7,11,16,18,25,30,34,36,37,40,42,44,49,59,60,61,62,66,70,75,79,R]
 
 ### Annotated ###
 
@@ -132,10 +132,10 @@
     postulate FZ :R: (n :E: N) -> Fin -E- (S -E- n)
     postulate FS :R: (n :E: N) -> (x :R: Fin -E- n) -> Fin -E- (S -E- n)
     embed :R: (n :E: N) -> (_x2 :R: Fin -E- n) -> Fin -E- (S -E- n) 
-      n :E: N
-        [embed] -E- [S -E- n] -R- (FZ -E- n) = FZ -E- (S -E- n)
-      n :E: N x :R: Fin -E- n
-        [embed] -E- [S -E- n] -R- (FS -E- n -R- x) = FS -E- (S -E- n) -R- (embed -E- n -R- x)
+      (n :E: N)
+         -E- [S -E- n] -R- (FZ -E- n) = FZ -E- (S -E- n)
+      (n :E: N) (x :R: Fin -E- n)
+         -E- [S -E- n] -R- (FS -E- n -R- x) = FS -E- (S -E- n) -R- (embed -E- n -R- x)
     fsuc :R: (n :E: N) -> (x :R: Fin -E- n) -> Fin -E- (S -E- n) = FS
     postulate Pair :E: Type
     postulate P :R: (x :R: Fin -E- 3) -> (y :R: Fin -E- 4) -> Pair
@@ -152,10 +152,10 @@
     postulate FZ :R: (n :E: N) -> Fin -E- (S -E- n)
     postulate FS :R: (n :E: N) -> (x :R: Fin -E- n) -> Fin -E- (S -E- n)
     embed :R: (n :E: N) -> (_x2 :R: Fin -E- n) -> Fin -E- (S -E- n) 
-      n :E: N
-        [embed] -E- [S -E- n] -R- (FZ -E- n) = FZ -E- (S -E- n)
-      n :E: N x :R: Fin -E- n
-        [embed] -E- [S -E- n] -R- (FS -E- n -R- x) = FS -E- (S -E- n) -R- (embed -E- n -R- x)
+      (n :E: N)
+         -E- [S -E- n] -R- (FZ -E- n) = FZ -E- (S -E- n)
+      (n :E: N) (x :R: Fin -E- n)
+         -E- [S -E- n] -R- (FS -E- n -R- x) = FS -E- (S -E- n) -R- (embed -E- n -R- x)
     fsuc :R: (n :E: N) -> (x :R: Fin -E- n) -> Fin -E- (S -E- n) = FS
     postulate Pair :E: Type
     postulate P :R: (x :R: Fin -E- 3) -> (y :R: Fin -E- 4) -> Pair
@@ -172,10 +172,10 @@
     postulate FZ :R: (n :E: N) -> Fin -E- (S -E- n)
     postulate FS :R: (n :E: N) -> (x :R: Fin -E- n) -> Fin -E- (S -E- n)
     embed :R: (n :E: N) -> (_x2 :R: Fin -E- n) -> Fin -E- (S -E- n) 
-      n :E: N
-        [embed] -E- [S -E- n] -R- (FZ -E- n) = FZ -E- (S -E- n)
-      n :E: N x :R: Fin -E- n
-        [embed] -E- [S -E- n] -R- (FS -E- n -R- x) = FS -E- (S -E- n) -R- (embed -E- n -R- x)
+      (n :E: N)
+         -E- [S -E- n] -R- (FZ -E- n) = FZ -E- (S -E- n)
+      (n :E: N) (x :R: Fin -E- n)
+         -E- [S -E- n] -R- (FS -E- n -R- x) = FS -E- (S -E- n) -R- (embed -E- n -R- x)
     fsuc :R: (n :E: N) -> (x :R: Fin -E- n) -> Fin -E- (S -E- n) = FS
     postulate Pair :E: Type
     postulate P :R: (x :R: Fin -E- 3) -> (y :R: Fin -E- 4) -> Pair
@@ -192,8 +192,8 @@ Verification successful.
     postulate FZ : Fin
     postulate FS : (x) -> Fin
     embed 
-      [_] FZ = FZ
-      [_] (FS x) = FS (embed x)
+       FZ = FZ
+       (FS x) = FS (embed x)
     fsuc = FS
     postulate P : (x) -> (y) -> Pair
     main = P (fsuc (FS FZ)) (embed (FS (FS FZ)))

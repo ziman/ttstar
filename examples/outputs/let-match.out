@@ -8,8 +8,8 @@
     postulate F : Bool
     main : Bool = 
       let not : (_x0 : Bool) -> Bool 
-        [not] T = F
-        [not] F = T
+         T = F
+         F = T
       in not F
   in main
 
@@ -21,8 +21,8 @@
     postulate F :3: Bool
     main :4: Bool = 
       let not :6: (_x0 :7: Bool) -> Bool 
-        [not] -8- T = F
-        [not] -9- F = T
+         -8- T = F
+         -9- F = T
       in not -5- F
   in main
 
@@ -43,8 +43,8 @@
     postulate F :R: Bool
     main :R: Bool = 
       let not :R: (_x0 :R: Bool) -> Bool 
-        [not] -R- T = F
-        [not] -R- F = T
+         -R- T = F
+         -R- F = T
       in not -R- F
   in main
 
@@ -56,8 +56,8 @@
     postulate F :R: Bool
     main :R: Bool = 
       let not :R: (_x0 :R: Bool) -> Bool 
-        [not] -R- T = F
-        [not] -R- F = T
+         -R- T = F
+         -R- F = T
       in not -R- F
   in main
 
@@ -69,8 +69,8 @@
     postulate F :R: Bool
     main :R: Bool = 
       let not :R: (_x0 :R: Bool) -> Bool 
-        [not] -R- T = F
-        [not] -R- F = T
+         -R- T = F
+         -R- F = T
       in not -R- F
   in main
 
@@ -85,8 +85,8 @@ Verification successful.
     postulate F : Bool
     main = 
       let not 
-        [_] T = F
-        [_] F = T
+         T = F
+         F = T
       in not F
   in main
 

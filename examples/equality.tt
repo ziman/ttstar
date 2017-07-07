@@ -23,8 +23,8 @@ subst : (a : Type)
   -> (eq : Id a x y)
   -> (w : P x)
   -> P y.
-(a : Type) (P : a -> Type) (x : a)
-subst a P x [x] [Refl a x] = \w : P x. w.
+(a : Type) (p : a -> Type) (x : a)
+subst a p x [x] [Refl a x] = \w : p x. w.
 
 main : Id Bool F (not (not F))
   = notnot (

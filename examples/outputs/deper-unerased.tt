@@ -8,10 +8,10 @@
     id = (\x. x)
     constT = (\_0. T)
     fty 
-      [_] T = (_x3) -> Bool
-      [_] F = (_x4) -> Bool
+       T = (_x3) -> Bool
+       F = (_x4) -> Bool
     f 
-      [_] T = id
-      [_] F = constT
+       T = id
+       F = constT
     main = TB (f T F) (f F F)
   in main

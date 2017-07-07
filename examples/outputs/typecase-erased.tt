@@ -7,14 +7,14 @@
     postulate True : Bool
     postulate False : Bool
     not 
-      [_] True = False
-      [_] False = True
+       True = False
+       False = True
     isZero 
-      [_] Z = True
-      [_] (S _) = False
+       Z = True
+       (S _) = False
     f 
-      [_] Bool = not
-      [_] Nat = isZero
-      [_] _ = (\x. False)
+       Bool = not
+       Nat = isZero
+       _ = (\x. False)
     main = f Bool False
   in main

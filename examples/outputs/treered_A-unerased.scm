@@ -22,7 +22,7 @@
     (vlen (lambda (_e0)
       (lambda (_e1)
         (match (list _e0 _e1)
-          ((_ ('Nil _))
+          (((_) ('Nil _))
             Z)
           (((_ m) ('Cons _ _ y ys))
             (S ((vlen m) ys)))))))

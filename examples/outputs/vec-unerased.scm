@@ -32,7 +32,7 @@
           (lambda (_e3)
             (lambda (_e4)
               (match (list _e0 _e1 _e2 _e3 _e4)
-                ((a _ n ('Nil _) ys)
+                ((a (_) n ('Nil _) ys)
                   ys)
                 ((a (_ m) n ('Cons _ _ x xs) ys)
                   ((((Cons a) ((plus m) n)) x) (((((append_TT a) m) n) xs) ys))))))))))

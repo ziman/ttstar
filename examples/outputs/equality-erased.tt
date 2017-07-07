@@ -4,7 +4,7 @@
     postulate F : Bool
     postulate Refl : Id
     notnot 
-      [_] T = Refl
-      [_] F = Refl
+       T = Refl
+       F = Refl
     main = notnot F
   in main

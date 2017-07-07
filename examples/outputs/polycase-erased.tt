@@ -5,13 +5,13 @@
     postulate T : Bool
     postulate F : Bool
     not 
-      [_] T = F
-      [_] F = T
+       T = F
+       F = T
     mot 
-      [_] Q = W
-      [_] W = Q
+       Q = W
+       W = Q
     invert 
-      [_] T = not
-      [_] F = mot
+       T = not
+       F = mot
     main = invert F Q
   in main

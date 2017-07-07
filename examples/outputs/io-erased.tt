@@ -5,19 +5,19 @@
     postulate MkUnit : Unit
     postulate MkPair : (_x5) -> (_x6) -> Pair
     snd 
-      [_] ({_} _ y) = y
+       ({_} _ y) = y
     postulate MkSt : (run) -> State
     runState 
-      [_] ({_} run) = run
+       ({_} run) = run
     execState = (\x. (\s. snd (runState x s)))
     stReturn = (\x. MkSt (\s. MkPair s x))
     stBind 
-      [_] ({_} f) g = 
+       ({_} f) g = 
         let
           stBind3 
-            [_] s ({_} f) = f s
+             s ({_} f) = f s
           stBind2 
-            [_] g ({_} s x) = stBind3 s (g x)
+             g ({_} s x) = stBind3 s (g x)
         in MkSt (\s. stBind2 g (f s))
     ioReturn = (\x. stReturn x)
     ioBind = (\x. (\y. stBind x y))
@@ -31,8 +31,8 @@
       let foreign nativePrint
       in ioWrapImpure (\delayToken. nativePrint x))
     natToInt 
-      [_] Z = intZ
-      [_] (S n) = intS (natToInt n)
+       Z = intZ
+       (S n) = intS (natToInt n)
     foreign intToNat
     printNat = (\x. printSchemeRepr (natToInt x))
     main = unsafePerformIO (ioBind (ioReturn 4) (\v. ioBind (printNat v) (\_0. printSchemeRepr (intToNat (intS (intS (intS intZ)))))))

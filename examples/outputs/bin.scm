@@ -17,7 +17,7 @@
       (lambda (_e1)
         (lambda (_e2)
           (match (list _e0 _e1 _e2)
-            ((_ ('N) ('N))
+            (((_) ('N) ('N))
               (C N))
             (((_ w) ('C xn) ('C yn))
               (letrec* ((f (match (list)

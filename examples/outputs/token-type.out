@@ -6,14 +6,14 @@
     postulate TyEq : (_x0 : Type) -> (_x1 : Type) -> Type
     postulate Refl : (a : Type) -> TyEq a a
     coerce : (a : Type) -> (b : Type) -> (_x2 : TyEq a b) -> (_x3 : a) -> b 
-      a : Type
-        [coerce] a [a] ({Refl} [a]) = (\x : a. x)
+      (a : Type)
+         a [a] ({Refl} [a]) = (\x : a. x)
     sym : (a : Type) -> (b : Type) -> (_x4 : TyEq a b) -> TyEq b a 
-      a : Type
-        [sym] a [a] ({Refl} [a]) = Refl a
+      (a : Type)
+         a [a] ({Refl} [a]) = Refl a
     loopy : (a : Type) -> (b : Type) -> (_x5 : TyEq a (_x6 : a) -> b) -> b 
-      a : Type b : Type pf : TyEq a (_x7 : a) -> b
-        [loopy] a b pf = 
+      (a : Type) (b : Type) (pf : TyEq a (_x7 : a) -> b)
+         a b pf = 
           let w : (_x8 : a) -> b = (\x : a. coerce a (y : a) -> b pf x x)
           in w (coerce (_x9 : a) -> b a (sym a (_x10 : a) -> b pf) w)
     main : (_x11 : TyEq Type (_x12 : Type) -> Type) -> Type = loopy Type Type
@@ -25,14 +25,14 @@
     postulate TyEq :1: (_x0 :2: Type) -> (_x1 :3: Type) -> Type
     postulate Refl :4: (a :5: Type) -> TyEq -7- a -6- a
     coerce :8: (a :9: Type) -> (b :10: Type) -> (_x2 :11: TyEq -13- a -12- b) -> (_x3 :14: a) -> b 
-      a :15: Type
-        [coerce] -18- a -17- [a] -16- ({Refl} -19- [a]) = (\x :20: a. x)
+      (a :15: Type)
+         -16- a -17- [a] -18- ({Refl} -19- [a]) = (\x :20: a. x)
     sym :21: (a :22: Type) -> (b :23: Type) -> (_x4 :24: TyEq -26- a -25- b) -> TyEq -28- b -27- a 
-      a :29: Type
-        [sym] -32- a -31- [a] -30- ({Refl} -33- [a]) = Refl -34- a
+      (a :29: Type)
+         -30- a -31- [a] -32- ({Refl} -33- [a]) = Refl -34- a
     loopy :35: (a :36: Type) -> (b :37: Type) -> (_x5 :38: TyEq -40- a -39- (_x6 :41: a) -> b) -> b 
-      a :42: Type b :43: Type pf :44: TyEq -46- a -45- (_x7 :47: a) -> b
-        [loopy] -50- a -49- b -48- pf = 
+      (a :42: Type) (b :43: Type) (pf :44: TyEq -46- a -45- (_x7 :47: a) -> b)
+         -48- a -49- b -50- pf = 
           let w :51: (_x8 :52: a) -> b = (\x :53: a. coerce -58- a -57- (y :59: a) -> b -56- pf -55- x -54- x)
           in w -60- (coerce -64- (_x9 :65: a) -> b -63- a -62- (sym -68- a -67- (_x10 :69: a) -> b -66- pf) -61- w)
     main :70: (_x11 :71: TyEq -73- Type -72- (_x12 :74: Type) -> Type) -> Type = loopy -76- Type -75- Type
@@ -42,36 +42,38 @@
 
 [] -> [8,14,20,35,51,52,53,55,60,61,65,R]
 [5,11] -> [29,34]
-[5,11,30] -> [33]
-[5,16] -> [19]
-[6] -> [12]
-[6,11] -> [25,27]
-[7] -> [13]
-[7,11] -> [26,28]
-[9] -> [18,42,43,58,64]
+[5,11,32] -> [33]
+[5,18] -> [19]
+[6,11] -> [27]
+[6,11,32] -> [25]
+[6,18] -> [12]
+[7,11] -> [28]
+[7,11,32] -> [26]
+[7,18] -> [13]
+[9] -> [16,42,43,58,64]
 [10] -> [17,42,43,57,63]
-[11] -> [4,16,21,44,56,62,69]
+[11] -> [4,18,21,44,56,62,69]
 [11,12] -> [27,45]
 [11,13] -> [28,46]
-[11,22] -> [32,42,68]
+[11,22] -> [30,42,68]
 [11,23] -> [31,43,67]
-[11,24] -> [30,44,66]
+[11,24] -> [32,44,66]
 [11,24,25] -> [45]
 [11,24,26] -> [46]
 [11,24,45] -> [25]
 [11,24,46] -> [26]
 [11,24,47] -> [69]
 [11,24,69] -> [47]
-[11,25] -> [6]
-[11,26] -> [7]
+[11,25,32] -> [6]
+[11,26,32] -> [7]
 [11,27] -> [6,12]
 [11,28] -> [7,13]
-[11,29] -> [32]
-[11,30] -> [24]
-[11,30,33] -> [5]
+[11,29] -> [30]
+[11,30] -> [22]
 [11,31] -> [23,29]
-[11,32] -> [22]
-[11,33] -> [29,30]
+[11,32] -> [24]
+[11,32,33] -> [5]
+[11,33] -> [29,32]
 [11,34] -> [5]
 [11,45] -> [12]
 [11,46] -> [13]
@@ -80,29 +82,32 @@
 [11,66] -> [24]
 [11,67] -> [23]
 [11,68] -> [22]
-[12] -> [6]
-[13] -> [7]
-[15] -> [18]
-[16] -> [11]
-[16,19] -> [5]
+[12,18] -> [6]
+[13,18] -> [7]
+[15] -> [16]
+[16] -> [9]
 [17] -> [10,15]
-[18] -> [9]
-[19] -> [15,16]
-[36] -> [50,76]
+[18] -> [11]
+[18,19] -> [5]
+[19] -> [15,18]
+[36] -> [48,76]
 [37] -> [49,75]
-[38] -> [48,71]
-[39] -> [45,72]
-[40] -> [46,73]
-[41] -> [47,74]
-[42] -> [50]
+[38] -> [50,71]
+[39] -> [72]
+[39,50] -> [45]
+[40] -> [73]
+[40,50] -> [46]
+[41] -> [74]
+[41,50] -> [47]
+[42] -> [48]
 [43] -> [49]
-[44] -> [48]
-[45] -> [39]
-[46] -> [40]
-[47] -> [41]
-[48] -> [38]
+[44] -> [50]
+[45,50] -> [39]
+[46,50] -> [40]
+[47,50] -> [41]
+[48] -> [36]
 [49] -> [37]
-[50] -> [36]
+[50] -> [38]
 [54] -> [59]
 [56] -> [11]
 [57] -> [10]
@@ -129,14 +134,14 @@
     postulate TyEq :E: (_x0 :E: Type) -> (_x1 :E: Type) -> Type
     postulate Refl :E: (a :E: Type) -> TyEq -E- a -E- a
     coerce :R: (a :E: Type) -> (b :E: Type) -> (_x2 :E: TyEq -E- a -E- b) -> (_x3 :R: a) -> b 
-      a :E: Type
-        [coerce] -E- a -E- [a] -E- ({Refl} -E- [a]) = (\x :R: a. x)
+      (a :E: Type)
+         -E- a -E- [a] -E- ({Refl} -E- [a]) = (\x :R: a. x)
     sym :E: (a :E: Type) -> (b :E: Type) -> (_x4 :E: TyEq -E- a -E- b) -> TyEq -E- b -E- a 
-      a :E: Type
-        [sym] -E- a -E- [a] -E- ({Refl} -E- [a]) = Refl -E- a
+      (a :E: Type)
+         -E- a -E- [a] -E- ({Refl} -E- [a]) = Refl -E- a
     loopy :R: (a :E: Type) -> (b :E: Type) -> (_x5 :E: TyEq -E- a -E- (_x6 :E: a) -> b) -> b 
-      a :E: Type b :E: Type pf :E: TyEq -E- a -E- (_x7 :E: a) -> b
-        [loopy] -E- a -E- b -E- pf = 
+      (a :E: Type) (b :E: Type) (pf :E: TyEq -E- a -E- (_x7 :E: a) -> b)
+         -E- a -E- b -E- pf = 
           let w :R: (_x8 :R: a) -> b = (\x :R: a. coerce -E- a -E- (y :E: a) -> b -E- pf -R- x -E- x)
           in w -R- (coerce -E- (_x9 :R: a) -> b -E- a -E- (sym -E- a -E- (_x10 :E: a) -> b -E- pf) -R- w)
     main :R: (_x11 :E: TyEq -E- Type -E- (_x12 :E: Type) -> Type) -> Type = loopy -E- Type -E- Type
@@ -148,14 +153,14 @@
     postulate TyEq :E: (_x0 :E: Type) -> (_x1 :E: Type) -> Type
     postulate Refl :E: (a :E: Type) -> TyEq -E- a -E- a
     coerce :R: (a :E: Type) -> (b :E: Type) -> (_x2 :E: TyEq -E- a -E- b) -> (_x3 :R: a) -> b 
-      a :E: Type
-        [coerce] -E- a -E- [a] -E- ({Refl} -E- [a]) = (\x :R: a. x)
+      (a :E: Type)
+         -E- a -E- [a] -E- ({Refl} -E- [a]) = (\x :R: a. x)
     sym :E: (a :E: Type) -> (b :E: Type) -> (_x4 :E: TyEq -E- a -E- b) -> TyEq -E- b -E- a 
-      a :E: Type
-        [sym] -E- a -E- [a] -E- ({Refl} -E- [a]) = Refl -E- a
+      (a :E: Type)
+         -E- a -E- [a] -E- ({Refl} -E- [a]) = Refl -E- a
     loopy :R: (a :E: Type) -> (b :E: Type) -> (_x5 :E: TyEq -E- a -E- (_x6 :E: a) -> b) -> b 
-      a :E: Type b :E: Type pf :E: TyEq -E- a -E- (_x7 :E: a) -> b
-        [loopy] -E- a -E- b -E- pf = 
+      (a :E: Type) (b :E: Type) (pf :E: TyEq -E- a -E- (_x7 :E: a) -> b)
+         -E- a -E- b -E- pf = 
           let w :R: (_x8 :R: a) -> b = (\x :R: a. coerce -E- a -E- (y :E: a) -> b -E- pf -R- x -E- x)
           in w -R- (coerce -E- (_x9 :R: a) -> b -E- a -E- (sym -E- a -E- (_x10 :E: a) -> b -E- pf) -R- w)
     main :R: (_x11 :E: TyEq -E- Type -E- (_x12 :E: Type) -> Type) -> Type = loopy -E- Type -E- Type
@@ -167,14 +172,14 @@
     postulate TyEq :E: (_x0 :E: Type) -> (_x1 :E: Type) -> Type
     postulate Refl :E: (a :E: Type) -> TyEq -E- a -E- a
     coerce :R: (a :E: Type) -> (b :E: Type) -> (_x2 :E: TyEq -E- a -E- b) -> (_x3 :R: a) -> b 
-      a :E: Type
-        [coerce] -E- a -E- [a] -E- ({Refl} -E- [a]) = (\x :R: a. x)
+      (a :E: Type)
+         -E- a -E- [a] -E- ({Refl} -E- [a]) = (\x :R: a. x)
     sym :E: (a :E: Type) -> (b :E: Type) -> (_x4 :E: TyEq -E- a -E- b) -> TyEq -E- b -E- a 
-      a :E: Type
-        [sym] -E- a -E- [a] -E- ({Refl} -E- [a]) = Refl -E- a
+      (a :E: Type)
+         -E- a -E- [a] -E- ({Refl} -E- [a]) = Refl -E- a
     loopy :R: (a :E: Type) -> (b :E: Type) -> (_x5 :E: TyEq -E- a -E- (_x6 :E: a) -> b) -> b 
-      a :E: Type b :E: Type pf :E: TyEq -E- a -E- (_x7 :E: a) -> b
-        [loopy] -E- a -E- b -E- pf = 
+      (a :E: Type) (b :E: Type) (pf :E: TyEq -E- a -E- (_x7 :E: a) -> b)
+         -E- a -E- b -E- pf = 
           let w :R: (_x8 :R: a) -> b = (\x :R: a. coerce -E- a -E- (y :E: a) -> b -E- pf -R- x -E- x)
           in w -R- (coerce -E- (_x9 :R: a) -> b -E- a -E- (sym -E- a -E- (_x10 :E: a) -> b -E- pf) -R- w)
     main :R: (_x11 :E: TyEq -E- Type -E- (_x12 :E: Type) -> Type) -> Type = loopy -E- Type -E- Type
@@ -188,9 +193,9 @@ Verification successful.
 
   let
     coerce 
-      [_] = (\x. x)
+      = (\x. x)
     loopy 
-      [_] = 
+      = 
         let w = (\x. coerce x)
         in w (coerce w)
     main = loopy
@@ -204,14 +209,14 @@ unerased:
     postulate TyEq : (_x0 : Type) -> (_x1 : Type) -> Type
     postulate Refl : (a : Type) -> TyEq a a
     coerce : (a : Type) -> (b : Type) -> (_x2 : TyEq a b) -> (_x3 : a) -> b 
-      a : Type
-        [coerce] a [a] ({Refl} [a]) = (\x : a. x)
+      (a : Type)
+         a [a] ({Refl} [a]) = (\x : a. x)
     sym : (a : Type) -> (b : Type) -> (_x4 : TyEq a b) -> TyEq b a 
-      a : Type
-        [sym] a [a] ({Refl} [a]) = Refl a
+      (a : Type)
+         a [a] ({Refl} [a]) = Refl a
     loopy : (a : Type) -> (b : Type) -> (_x5 : TyEq a (_x6 : a) -> b) -> b 
-      a : Type b : Type pf : TyEq a (_x7 : a) -> b
-        [loopy] a b pf = 
+      (a : Type) (b : Type) (pf : TyEq a (_x7 : a) -> b)
+         a b pf = 
           let w : (_x8 : a) -> b = (\x : a. coerce a (y : a) -> b pf x x)
           in w (coerce (_x9 : a) -> b a (sym a (_x10 : a) -> b pf) w)
   in loopy Type Type

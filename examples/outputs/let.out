@@ -7,18 +7,18 @@
     postulate Z : Nat
     postulate S : (x :R: Nat) -> Nat
     plus : (_x0 : Nat) -> (_x1 : Nat) -> Nat 
-      m : Nat
-        [plus] Z m = m
-      n : Nat m : Nat
-        [plus] (S n) m = S (plus n m)
+      (m : Nat)
+         Z m = m
+      (n : Nat) (m : Nat)
+         (S n) m = S (plus n m)
     id : (x : Nat) -> Nat = (\x : Nat. x)
     const : (x : Nat) -> (y : Nat) -> Nat = (\x : Nat. (\y : Nat. x))
     main : Nat = 
       let apply : (_x2 : (_x3 : Nat) -> Nat) -> (_x4 : Nat) -> Nat 
-        f : (_x5 : Nat) -> Nat
-          [apply] f Z = f Z
-        f : (_x6 : Nat) -> Nat x : Nat
-          [apply] f (S x) = f (S x)
+        (f : (_x5 : Nat) -> Nat)
+           f Z = f Z
+        (f : (_x6 : Nat) -> Nat) (x : Nat)
+           f (S x) = f (S x)
       in 
         let
           postulate Q : Nat
@@ -33,18 +33,18 @@
     postulate Z :2: Nat
     postulate S :3: (x :R: Nat) -> Nat
     plus :4: (_x0 :5: Nat) -> (_x1 :6: Nat) -> Nat 
-      m :7: Nat
-        [plus] -9- Z -8- m = m
-      n :10: Nat m :11: Nat
-        [plus] -13- (S -14- n) -12- m = S -15- (plus -17- n -16- m)
+      (m :7: Nat)
+         -8- Z -9- m = m
+      (n :10: Nat) (m :11: Nat)
+         -12- (S -13- n) -14- m = S -15- (plus -17- n -16- m)
     id :18: (x :19: Nat) -> Nat = (\x :20: Nat. x)
     const :21: (x :22: Nat) -> (y :23: Nat) -> Nat = (\x :24: Nat. (\y :25: Nat. x))
     main :26: Nat = 
       let apply :27: (_x2 :28: (_x3 :29: Nat) -> Nat) -> (_x4 :30: Nat) -> Nat 
-        f :31: (_x5 :32: Nat) -> Nat
-          [apply] -34- f -33- Z = f -35- Z
-        f :36: (_x6 :37: Nat) -> Nat x :38: Nat
-          [apply] -40- f -39- (S -41- x) = f -42- (S -43- x)
+        (f :31: (_x5 :32: Nat) -> Nat)
+           -33- f -34- Z = f -35- Z
+        (f :36: (_x6 :37: Nat) -> Nat) (x :38: Nat)
+           -39- f -40- (S -41- x) = f -42- (S -43- x)
       in 
         let
           postulate Q :44: Nat
@@ -68,18 +68,18 @@
     postulate Z :R: Nat
     postulate S :R: (x :R: Nat) -> Nat
     plus :R: (_x0 :R: Nat) -> (_x1 :R: Nat) -> Nat 
-      m :R: Nat
-        [plus] -R- Z -R- m = m
-      n :R: Nat m :R: Nat
-        [plus] -R- (S -R- n) -R- m = S -R- (plus -R- n -R- m)
+      (m :R: Nat)
+         -R- Z -R- m = m
+      (n :R: Nat) (m :R: Nat)
+         -R- (S -R- n) -R- m = S -R- (plus -R- n -R- m)
     id :R: (x :R: Nat) -> Nat = (\x :R: Nat. x)
     const :R: (x :R: Nat) -> (y :R: Nat) -> Nat = (\x :R: Nat. (\y :R: Nat. x))
     main :R: Nat = 
       let apply :R: (_x2 :R: (_x3 :R: Nat) -> Nat) -> (_x4 :R: Nat) -> Nat 
-        f :R: (_x5 :R: Nat) -> Nat
-          [apply] -R- f -R- Z = f -R- Z
-        f :R: (_x6 :R: Nat) -> Nat x :R: Nat
-          [apply] -R- f -R- (S -R- x) = f -R- (S -R- x)
+        (f :R: (_x5 :R: Nat) -> Nat)
+           -R- f -R- Z = f -R- Z
+        (f :R: (_x6 :R: Nat) -> Nat) (x :R: Nat)
+           -R- f -R- (S -R- x) = f -R- (S -R- x)
       in 
         let
           postulate Q :R: Nat
@@ -94,18 +94,18 @@
     postulate Z :R: Nat
     postulate S :R: (x :R: Nat) -> Nat
     plus :R: (_x0 :R: Nat) -> (_x1 :R: Nat) -> Nat 
-      m :R: Nat
-        [plus] -R- Z -R- m = m
-      n :R: Nat m :R: Nat
-        [plus] -R- (S -R- n) -R- m = S -R- (plus -R- n -R- m)
+      (m :R: Nat)
+         -R- Z -R- m = m
+      (n :R: Nat) (m :R: Nat)
+         -R- (S -R- n) -R- m = S -R- (plus -R- n -R- m)
     id :R: (x :R: Nat) -> Nat = (\x :R: Nat. x)
     const :R: (x :R: Nat) -> (y :R: Nat) -> Nat = (\x :R: Nat. (\y :R: Nat. x))
     main :R: Nat = 
       let apply :R: (_x2 :R: (_x3 :R: Nat) -> Nat) -> (_x4 :R: Nat) -> Nat 
-        f :R: (_x5 :R: Nat) -> Nat
-          [apply] -R- f -R- Z = f -R- Z
-        f :R: (_x6 :R: Nat) -> Nat x :R: Nat
-          [apply] -R- f -R- (S -R- x) = f -R- (S -R- x)
+        (f :R: (_x5 :R: Nat) -> Nat)
+           -R- f -R- Z = f -R- Z
+        (f :R: (_x6 :R: Nat) -> Nat) (x :R: Nat)
+           -R- f -R- (S -R- x) = f -R- (S -R- x)
       in 
         let
           postulate Q :R: Nat
@@ -120,18 +120,18 @@
     postulate Z :R: Nat
     postulate S :R: (x :R: Nat) -> Nat
     plus :R: (_x0 :R: Nat) -> (_x1 :R: Nat) -> Nat 
-      m :R: Nat
-        [plus] -R- Z -R- m = m
-      n :R: Nat m :R: Nat
-        [plus] -R- (S -R- n) -R- m = S -R- (plus -R- n -R- m)
+      (m :R: Nat)
+         -R- Z -R- m = m
+      (n :R: Nat) (m :R: Nat)
+         -R- (S -R- n) -R- m = S -R- (plus -R- n -R- m)
     id :R: (x :R: Nat) -> Nat = (\x :R: Nat. x)
     const :R: (x :R: Nat) -> (y :R: Nat) -> Nat = (\x :R: Nat. (\y :R: Nat. x))
     main :R: Nat = 
       let apply :R: (_x2 :R: (_x3 :R: Nat) -> Nat) -> (_x4 :R: Nat) -> Nat 
-        f :R: (_x5 :R: Nat) -> Nat
-          [apply] -R- f -R- Z = f -R- Z
-        f :R: (_x6 :R: Nat) -> Nat x :R: Nat
-          [apply] -R- f -R- (S -R- x) = f -R- (S -R- x)
+        (f :R: (_x5 :R: Nat) -> Nat)
+           -R- f -R- Z = f -R- Z
+        (f :R: (_x6 :R: Nat) -> Nat) (x :R: Nat)
+           -R- f -R- (S -R- x) = f -R- (S -R- x)
       in 
         let
           postulate Q :R: Nat
@@ -149,14 +149,14 @@ Verification successful.
     postulate Z : Nat
     postulate S : (x) -> Nat
     plus 
-      [_] Z m = m
-      [_] (S n) m = S (plus n m)
+       Z m = m
+       (S n) m = S (plus n m)
     id = (\x. x)
     const = (\x. (\y. x))
     main = 
       let apply 
-        [_] f Z = f Z
-        [_] f (S x) = f (S x)
+         f Z = f Z
+         f (S x) = f (S x)
       in 
         let
           postulate Q : Nat

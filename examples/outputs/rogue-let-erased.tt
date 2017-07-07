@@ -3,7 +3,7 @@
     postulate T : Bool
     postulate F : Bool
     not 
-      [_] T = F
-      [_] F = T
+       T = F
+       F = T
     main = not
   in main

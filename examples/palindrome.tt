@@ -32,13 +32,13 @@ data Id : (a : Type) -> (x : a) -> (y : a) -> Type where
 id : (a : Type) -> a -> a
   = \a:Type. \x:a. x.
 
-subst : (a : Type) -> (P : a -> Type)
+subst : (a : Type) -> (p : a -> Type)
   -> (x : a) -> (y : a)
   -> (eq : Id a x y)
-  -> (w : P x) -> P y.
+  -> (w : p x) -> p y.
 
-(a : Type) (P : a -> Type) (x : a)
-  subst a P x [x] [Refl a x] = \w : P x. w.
+(a : Type) (p : a -> Type) (x : a)
+  subst a p x [x] [Refl a x] = \w : p x. w.
 
 cong : (a : Type) -> (b : Type) -> (f : a -> b)
   -> (x : a) -> (y : a) -> (eq : Id a x y)

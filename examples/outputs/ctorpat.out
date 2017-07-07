@@ -10,8 +10,8 @@
     postulate P : (_x0 : B) -> K
     postulate Q : (_x1 : B) -> K
     f : (_x2 : K) -> (_x3 : B) -> K 
-      c : (_x4 : B) -> K x : B
-        [f] (c x) = c
+      (c : (_x4 : B) -> K) (x : B)
+         (c x) = c
     main : (_x5 : B) -> K = f (P T)
   in main
 
@@ -25,97 +25,56 @@
     postulate P :5: (_x0 :6: B) -> K
     postulate Q :7: (_x1 :8: B) -> K
     f :9: (_x2 :10: K) -> (_x3 :11: B) -> K 
-      c :12: (_x4 :13: B) -> K x :14: B
-        [f] -15- (c -16- x) = c
+      (c :12: (_x4 :13: B) -> K) (x :14: B)
+         -15- (c -16- x) = c
     main :17: (_x5 :18: B) -> K = f -19- (P -20- T)
   in main
 
 ### Constraints ###
 
-[] -> [5,9,10,12,15,19,R]
-[6] -> [2,20]
-[11] -> [13,18]
-[13] -> [11,16]
-[14] -> [16]
-[16] -> [13]
-[18] -> [11]
-[20] -> [6]
-[R] -> [17]
+ttstar: Traceback:
+1. In context:
+  Type : Type
 
-### Solution ###
-
-[5,9,10,12,15,17,19,R]
-
-### Annotated ###
-
+("LET",
   let
-    postulate B :E: Type
-    postulate T :E: B
-    postulate F :E: B
-    postulate K :E: Type
-    postulate P :R: (_x0 :E: B) -> K
-    postulate Q :E: (_x1 :E: B) -> K
-    f :R: (_x2 :R: K) -> (_x3 :E: B) -> K 
-      c :R: (_x4 :E: B) -> K x :E: B
-        [f] -R- (c -E- x) = c
-    main :R: (_x5 :E: B) -> K = f -R- (P -E- T)
-  in main
+    postulate B :1: Type
+    postulate T :2: B
+    postulate F :3: B
+    postulate K :4: Type
+    postulate P :5: (_x0 :6: B) -> K
+    postulate Q :7: (_x1 :8: B) -> K
+    f :9: (_x2 :10: K) -> (_x3 :11: B) -> K 
+      (c :12: (_x4 :13: B) -> K) (x :14: B)
+         -15- (c -16- x) = c
+    main :17: (_x5 :18: B) -> K = f -19- (P -20- T)
+  in main)
 
-### Specialised ###
+2. In context:
+  B : Type
+  F : B
+  K : Type
+  P : (_x0 :6: B) -> K
+  Q : (_x1 :8: B) -> K
+  T : B
+  Type : Type
+  f : (_x2 :10: K) -> (_x3 :11: B) -> K
 
-  let
-    postulate B :E: Type
-    postulate T :E: B
-    postulate F :E: B
-    postulate K :E: Type
-    postulate P :R: (_x0 :E: B) -> K
-    postulate Q :E: (_x1 :E: B) -> K
-    f :R: (_x2 :R: K) -> (_x3 :E: B) -> K 
-      c :R: (_x4 :E: B) -> K x :E: B
-        [f] -R- (c -E- x) = c
-    main :R: (_x5 :E: B) -> K = f -R- (P -E- T)
-  in main
+("DEF-CLAUSES",f)
 
-### Final annotation ###
+3. In context:
+  B : Type
+  F : B
+  K : Type
+  P : (_x0 :6: B) -> K
+  Q : (_x1 :8: B) -> K
+  T : B
+  Type : Type
+  f : (_x2 :10: K) -> (_x3 :11: B) -> K
 
-  let
-    postulate B :E: Type
-    postulate T :E: B
-    postulate F :E: B
-    postulate K :E: Type
-    postulate P :R: (_x0 :E: B) -> K
-    postulate Q :E: (_x1 :E: B) -> K
-    f :R: (_x2 :R: K) -> (_x3 :E: B) -> K 
-      c :R: (_x4 :E: B) -> K x :E: B
-        [f] -R- (c -E- x) = c
-    main :R: (_x5 :E: B) -> K = f -R- (P -E- T)
-  in main
+("CLAUSE",[(15,PCtor False c [(16,PV x)])])
 
-### Verification ###
+Error: PatvarsPatternMismatch [c,x] [x]
 
-Verification successful.
-
-### Pruned ###
-
-  let
-    postulate P : K
-    f 
-      [_] c = c
-    main = f P
-  in main
-
-### Normal forms ###
-
-unerased:
-  
-  let
-    postulate B : Type
-    postulate K : Type
-    postulate P : (_x0 : B) -> K
-  in P
-
-erased:
-  
-  let postulate P : K
-  in P
-
+CallStack (from HasCallStack):
+  error, called at Main.hs:68:38 in main:Main

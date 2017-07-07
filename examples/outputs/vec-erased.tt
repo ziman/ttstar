@@ -5,7 +5,7 @@
     postulate Nil : Vec
     postulate Cons : (x) -> (xs) -> Vec
     append 
-      [_] Nil ys = ys
-      [_] (Cons x xs) ys = Cons x (append xs ys)
+       Nil ys = ys
+       (Cons x xs) ys = Cons x (append xs ys)
     main = append Nil (Cons 4 Nil)
   in main

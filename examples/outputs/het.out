@@ -14,13 +14,13 @@
     postulate B : U
     postulate M : U
     ty : (_x0 : U) -> Type 
-      [ty] B = Bool
-      [ty] M = Mool
+       B = Bool
+       M = Mool
     f : (u : U) -> (x : ty u) -> Type 
-      [f] [B] T = Bool
-      [f] [B] F = Mool
-      [f] [M] Q = Bool
-      [f] [M] W = Mool
+       [B] T = Bool
+       [B] F = Mool
+       [M] Q = Bool
+       [M] W = Mool
     main : Type = Tuple (f B T) (f B F) (f M Q) (f M W)
   in main
 
@@ -38,24 +38,24 @@
     postulate B :9: U
     postulate M :10: U
     ty :11: (_x0 :12: U) -> Type 
-      [ty] -13- B = Bool
-      [ty] -14- M = Mool
+       -13- B = Bool
+       -14- M = Mool
     f :15: (u :16: U) -> (x :17: ty -18- u) -> Type 
-      [f] -20- [B] -19- T = Bool
-      [f] -22- [B] -21- F = Mool
-      [f] -24- [M] -23- Q = Bool
-      [f] -26- [M] -25- W = Mool
+       -19- [B] -20- T = Bool
+       -21- [B] -22- F = Mool
+       -23- [M] -24- Q = Bool
+       -25- [M] -26- W = Mool
     main :27: Type = Tuple -31- (f -33- B -32- T) -30- (f -35- B -34- F) -29- (f -37- M -36- Q) -28- (f -39- M -38- W)
   in main
 
 ### Constraints ###
 
-[] -> [1,2,3,4,5,6,7,15,17,19,21,23,25,28,29,30,31,32,34,36,38,R]
-[16] -> [9,10,20,22,24,26,33,35,37,39]
-[20] -> [9,16]
-[22] -> [9,16]
-[24] -> [10,16]
-[26] -> [10,16]
+[] -> [1,2,3,4,5,6,7,15,17,20,22,24,26,28,29,30,31,32,34,36,38,R]
+[16] -> [9,10,19,21,23,25,33,35,37,39]
+[19] -> [9,16]
+[21] -> [9,16]
+[23] -> [10,16]
+[25] -> [10,16]
 [33] -> [16]
 [35] -> [16]
 [37] -> [16]
@@ -64,7 +64,7 @@
 
 ### Solution ###
 
-[1,2,3,4,5,6,7,15,17,19,21,23,25,27,28,29,30,31,32,34,36,38,R]
+[1,2,3,4,5,6,7,15,17,20,22,24,26,27,28,29,30,31,32,34,36,38,R]
 
 ### Annotated ###
 
@@ -80,13 +80,13 @@
     postulate B :E: U
     postulate M :E: U
     ty :E: (_x0 :E: U) -> Type 
-      [ty] -E- B = Bool
-      [ty] -E- M = Mool
+       -E- B = Bool
+       -E- M = Mool
     f :R: (u :E: U) -> (x :R: ty -E- u) -> Type 
-      [f] -E- [B] -R- T = Bool
-      [f] -E- [B] -R- F = Mool
-      [f] -E- [M] -R- Q = Bool
-      [f] -E- [M] -R- W = Mool
+       -E- [B] -R- T = Bool
+       -E- [B] -R- F = Mool
+       -E- [M] -R- Q = Bool
+       -E- [M] -R- W = Mool
     main :R: Type = Tuple -R- (f -E- B -R- T) -R- (f -E- B -R- F) -R- (f -E- M -R- Q) -R- (f -E- M -R- W)
   in main
 
@@ -104,13 +104,13 @@
     postulate B :E: U
     postulate M :E: U
     ty :E: (_x0 :E: U) -> Type 
-      [ty] -E- B = Bool
-      [ty] -E- M = Mool
+       -E- B = Bool
+       -E- M = Mool
     f :R: (u :E: U) -> (x :R: ty -E- u) -> Type 
-      [f] -E- [B] -R- T = Bool
-      [f] -E- [B] -R- F = Mool
-      [f] -E- [M] -R- Q = Bool
-      [f] -E- [M] -R- W = Mool
+       -E- [B] -R- T = Bool
+       -E- [B] -R- F = Mool
+       -E- [M] -R- Q = Bool
+       -E- [M] -R- W = Mool
     main :R: Type = Tuple -R- (f -E- B -R- T) -R- (f -E- B -R- F) -R- (f -E- M -R- Q) -R- (f -E- M -R- W)
   in main
 
@@ -128,13 +128,13 @@
     postulate B :E: U
     postulate M :E: U
     ty :E: (_x0 :E: U) -> Type 
-      [ty] -E- B = Bool
-      [ty] -E- M = Mool
+       -E- B = Bool
+       -E- M = Mool
     f :R: (u :E: U) -> (x :R: ty -E- u) -> Type 
-      [f] -E- [B] -R- T = Bool
-      [f] -E- [B] -R- F = Mool
-      [f] -E- [M] -R- Q = Bool
-      [f] -E- [M] -R- W = Mool
+       -E- [B] -R- T = Bool
+       -E- [B] -R- F = Mool
+       -E- [M] -R- Q = Bool
+       -E- [M] -R- W = Mool
     main :R: Type = Tuple -R- (f -E- B -R- T) -R- (f -E- B -R- F) -R- (f -E- M -R- Q) -R- (f -E- M -R- W)
   in main
 
@@ -153,10 +153,10 @@ Verification successful.
     postulate Q : Mool
     postulate W : Mool
     f 
-      [_] T = Bool
-      [_] F = Mool
-      [_] Q = Bool
-      [_] W = Mool
+       T = Bool
+       F = Mool
+       Q = Bool
+       W = Mool
     main = Tuple (f T) (f F) (f Q) (f W)
   in main
 

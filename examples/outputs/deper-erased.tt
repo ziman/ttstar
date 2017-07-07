@@ -5,7 +5,7 @@
     postulate TB : (x) -> (y) -> TwoBools
     constT = T
     f 
-      [_] T = (\x. x)
-      [_] F = constT
+       T = (\x. x)
+       F = constT
     main = TB (f T F) (f F)
   in main

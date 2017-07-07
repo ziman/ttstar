@@ -4,8 +4,8 @@
 
   let
     f : (_x0 : Type) -> (_x1 : Type) -> Type 
-      x : Type
-        [f] x x = x
+      (x : Type)
+         x x = x
     main : Type = f Type Type
   in main
 
@@ -13,38 +13,62 @@
 
   let
     f :1: (_x0 :2: Type) -> (_x1 :3: Type) -> Type 
-      x :4: Type
-        [f] -6- x -5- x = x
+      (x :4: Type)
+         -5- x -6- x = x
     main :7: Type = f -9- Type -8- Type
   in main
 
 ### Constraints ###
 
-ttstar: Traceback:
-1. In context:
-  Type : Type
+[] -> [1,2,3,4,5,6,8,9,R]
+[R] -> [7]
 
-("LET",
+### Solution ###
+
+[1,2,3,4,5,6,7,8,9,R]
+
+### Annotated ###
+
   let
-    f :1: (_x0 :2: Type) -> (_x1 :3: Type) -> Type 
-      x :4: Type
-        [f] -6- x -5- x = x
-    main :7: Type = f -9- Type -8- Type
-  in main)
+    f :R: (_x0 :R: Type) -> (_x1 :R: Type) -> Type 
+      (x :R: Type)
+         -R- x -R- x = x
+    main :R: Type = f -R- Type -R- Type
+  in main
 
-2. In context:
-  Type : Type
-  f : (_x0 :2: Type) -> (_x1 :3: Type) -> Type
+### Specialised ###
 
-("DEF-CLAUSES",f)
+  let
+    f :R: (_x0 :R: Type) -> (_x1 :R: Type) -> Type 
+      (x :R: Type)
+         -R- x -R- x = x
+    main :R: Type = f -R- Type -R- Type
+  in main
 
-3. In context:
-  Type : Type
-  f : (_x0 :2: Type) -> (_x1 :3: Type) -> Type
+### Final annotation ###
 
-("CLAUSE",PApp 5 (PApp 6 (PForced f) (PV x)) (PV x))
+  let
+    f :R: (_x0 :R: Type) -> (_x1 :R: Type) -> Type 
+      (x :R: Type)
+         -R- x -R- x = x
+    main :R: Type = f -R- Type -R- Type
+  in main
 
-Error: NonlinearPattern (PApp 5 (PApp 6 (PForced f) (PV x)) (PV x))
+### Verification ###
 
+Verification successful.
+
+### Pruned ###
+
+  let
+    f 
+       x x = x
+    main = f Type Type
+  in main
+
+### Normal forms ###
+
+unerased:
+ttstar: nonlinear pattern
 CallStack (from HasCallStack):
-  error, called at Main.hs:68:38 in main:Main
+  error, called at ./TT/Normalise.hs:210:38 in main:TT.Normalise

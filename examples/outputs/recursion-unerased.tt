@@ -10,8 +10,8 @@
     postulate VNil : (a) -> Vec Z a
     postulate VCons : (a) -> (n) -> (x) -> (xs) -> Vec (S n) a
     vlen 
-      [_] a {_} (VNil [_]) = Z
-      [_] a ({_} n) (VCons [_] [_] x xs) = S (vlen a n xs)
+       a {_} (VNil [_]) = Z
+       a ({_} n) (VCons [_] [_] x xs) = S (vlen a n xs)
     testVec = VCons Bool 1 True (VCons Bool Z False (VNil Bool))
     main = vlen Bool 2 testVec
   in main

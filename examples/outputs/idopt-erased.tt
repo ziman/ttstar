@@ -2,7 +2,10 @@
   let
     postulate FZ : Fin
     postulate FS : (x) -> Fin
+    embed 
+       FZ = FZ
+       (FS x) = FS (embed x)
     fsuc = FS
     postulate P : (x) -> (y) -> Pair
-    main = P (fsuc (FS FZ)) (FS (FS FZ))
+    main = P (fsuc (FS FZ)) (embed (FS (FS FZ)))
   in main

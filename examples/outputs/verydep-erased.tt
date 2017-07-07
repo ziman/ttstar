@@ -5,7 +5,7 @@
     postulate Bool : Type
     postulate False : Bool
     f 
-      [_] (Just b) = b
-      [_] Nothing = Bool
+       (Just b) = b
+       Nothing = Bool
     main = f (Just False)
   in main

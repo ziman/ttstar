@@ -5,11 +5,11 @@
     postulate True : Bool
     postulate False : Bool
     even 
-      [_] Z = True
-      [_] (S n) = 
+       Z = True
+       (S n) = 
         let odd 
-          [_] Z = False
-          [_] (S n) = even n
+           Z = False
+           (S n) = even n
         in odd n
     main = even 5
   in main

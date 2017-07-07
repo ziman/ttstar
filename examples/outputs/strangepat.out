@@ -9,8 +9,8 @@
     postulate Pair : Type
     postulate P : (_x0 : Bool) -> (_x1 : Bool) -> Pair
     fst : (_x2 : (_x3 : Bool) -> Pair) -> Bool 
-      y : Bool
-        [fst] (P y) = y
+      (y : Bool)
+         (P y) = y
     main : Bool = fst (P T)
   in main
 
@@ -23,8 +23,8 @@
     postulate Pair :4: Type
     postulate P :5: (_x0 :6: Bool) -> (_x1 :7: Bool) -> Pair
     fst :8: (_x2 :9: (_x3 :10: Bool) -> Pair) -> Bool 
-      y :11: Bool
-        [fst] -12- (P -13- y) = y
+      (y :11: Bool)
+         -12- (P -13- y) = y
     main :14: Bool = fst -15- (P -16- T)
   in main
 
@@ -48,8 +48,8 @@
     postulate Pair :E: Type
     postulate P :R: (_x0 :R: Bool) -> (_x1 :E: Bool) -> Pair
     fst :R: (_x2 :R: (_x3 :E: Bool) -> Pair) -> Bool 
-      y :R: Bool
-        [fst] -R- (P -R- y) = y
+      (y :R: Bool)
+         -R- (P -R- y) = y
     main :R: Bool = fst -R- (P -R- T)
   in main
 
@@ -62,8 +62,8 @@
     postulate Pair :E: Type
     postulate P :R: (_x0 :R: Bool) -> (_x1 :E: Bool) -> Pair
     fst :R: (_x2 :R: (_x3 :E: Bool) -> Pair) -> Bool 
-      y :R: Bool
-        [fst] -R- (P -R- y) = y
+      (y :R: Bool)
+         -R- (P -R- y) = y
     main :R: Bool = fst -R- (P -R- T)
   in main
 
@@ -76,8 +76,8 @@
     postulate Pair :E: Type
     postulate P :R: (_x0 :R: Bool) -> (_x1 :E: Bool) -> Pair
     fst :R: (_x2 :R: (_x3 :E: Bool) -> Pair) -> Bool 
-      y :R: Bool
-        [fst] -R- (P -R- y) = y
+      (y :R: Bool)
+         -R- (P -R- y) = y
     main :R: Bool = fst -R- (P -R- T)
   in main
 
@@ -91,7 +91,7 @@ Verification successful.
     postulate T : Bool
     postulate P : (_x0) -> Pair
     fst 
-      [_] (P y) = y
+       (P y) = y
     main = fst (P T)
   in main
 

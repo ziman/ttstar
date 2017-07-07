@@ -3,11 +3,11 @@
     postulate TyEq : (_x0) -> (_x1) -> Type
     postulate Refl : (a) -> TyEq a a
     coerce 
-      [_] a [_] ({_} [_]) = (\x. x)
+       a [_] ({_} [_]) = (\x. x)
     sym 
-      [_] a [_] ({_} [_]) = Refl a
+       a [_] ({_} [_]) = Refl a
     loopy 
-      [_] a b pf = 
+       a b pf = 
         let w = (\x. coerce a (y) -> b pf x x)
         in w (coerce (_x9) -> b a (sym a (_x10) -> b pf) w)
     main = loopy Type Type

@@ -4,7 +4,7 @@
     postulate F : Bool
     postulate MkUnit : Unit
     not 
-      [_] T = MkUnit
-      [_] F = MkUnit
+       T = MkUnit
+       F = MkUnit
     main = not T
   in main

@@ -6,12 +6,12 @@
     postulate Id : (a) -> (x) -> (y) -> Type
     postulate Refl : (a) -> (x) -> Id a x x
     not 
-      [_] T = F
-      [_] F = T
+       T = F
+       F = T
     notnot 
-      [_] T = Refl Bool T
-      [_] F = Refl Bool F
+       T = Refl Bool T
+       F = Refl Bool F
     subst 
-      [_] a P x [_] [_] = (\w. w)
+       a p x [_] [_] = (\w. w)
     main = notnot (subst Type (\a. a) Bool Bool (Refl Type Bool) F)
   in main

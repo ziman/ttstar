@@ -8,10 +8,10 @@
     postulate True : Bool
     postulate False : Bool
     retTy 
-      [_] (Just [_] t) = Bool
-      [_] (Nothing [_]) = Type
+       (Just [_] t) = Bool
+       (Nothing [_]) = Type
     f 
-      [_] (Just [_] b) = b
-      [_] (Nothing [_]) = Bool
+       (Just [_] b) = b
+       (Nothing [_]) = Bool
     main = f (Just Bool False)
   in main

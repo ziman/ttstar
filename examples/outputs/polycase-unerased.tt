@@ -9,22 +9,22 @@
     postulate Id : (a) -> (x) -> (y) -> Type
     postulate Refl : (a) -> (x) -> Id a x x
     not 
-      [_] T = F
-      [_] F = T
+       T = F
+       F = T
     notnot 
-      [_] T = Refl Bool T
-      [_] F = Refl Bool F
+       T = Refl Bool T
+       F = Refl Bool F
     retTy 
-      [_] T = Bool
-      [_] F = Mool
+       T = Bool
+       F = Mool
     mot 
-      [_] Q = W
-      [_] W = Q
+       Q = W
+       W = Q
     invert 
-      [_] T = not
-      [_] F = mot
+       T = not
+       F = mot
     invert' 
-      [_] T x = not x
-      [_] F x = mot x
+       T x = not x
+       F x = mot x
     main = invert F Q
   in main

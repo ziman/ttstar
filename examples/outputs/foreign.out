@@ -13,43 +13,43 @@
     postulate Cons : (_x0 : B) -> (_x1 : List) -> List
     postulate Nil : List
     not : (_x2 : B) -> B 
-      [not] T = F
-      [not] F = T
+       T = F
+       F = T
     foreign input : N
     genList : (_x3 : B) -> (_x4 : N) -> List 
-      b : B
-        [genList] b Z = Nil
-      b : B n : N
-        [genList] b (S n) = Cons b (genList (not b) n)
+      (b : B)
+         b Z = Nil
+      (b : B) (n : N)
+         b (S n) = Cons b (genList (not b) n)
     postulate Eq : (a : Type) -> (_x5 : a) -> (_x6 : a) -> Type
     postulate Refl : (a : Type) -> (x : a) -> Eq a x x
     postulate Maybe : (_x7 : Type) -> Type
     postulate Nothing : (a : Type) -> Maybe a
     postulate Just : (a : Type) -> (x : a) -> Maybe a
     semiDecEqB : (x : B) -> (y : B) -> Maybe (Eq B x y) 
-      [semiDecEqB] T T = Just (Eq B T T) (Refl B T)
-      [semiDecEqB] F F = Just (Eq B F F) (Refl B F)
-      [semiDecEqB] T F = Nothing (Eq B T F)
-      [semiDecEqB] F T = Nothing (Eq B F T)
+       T T = Just (Eq B T T) (Refl B T)
+       F F = Just (Eq B F F) (Refl B F)
+       T F = Nothing (Eq B T F)
+       F T = Nothing (Eq B F T)
     semiDecEq : (xs : List) -> (ys : List) -> Maybe (Eq List xs ys) 
-      b : B ys : List
-        [semiDecEq] Nil (Cons b ys) = Nothing (Eq List Nil (Cons b ys))
-      b : B xs : List
-        [semiDecEq] (Cons b xs) Nil = Nothing (Eq List (Cons b xs) Nil)
-      [semiDecEq] Nil Nil = Just (Eq List Nil Nil) (Refl List Nil)
-      x : B y : B xs : List ys : List
-        [semiDecEq] (Cons x xs) (Cons y ys) = 
+      (b : B) (ys : List)
+         Nil (Cons b ys) = Nothing (Eq List Nil (Cons b ys))
+      (b : B) (xs : List)
+         (Cons b xs) Nil = Nothing (Eq List (Cons b xs) Nil)
+       Nil Nil = Just (Eq List Nil Nil) (Refl List Nil)
+      (x : B) (y : B) (xs : List) (ys : List)
+         (Cons x xs) (Cons y ys) = 
           let semiDecEq' : (x : B) -> (y : B) -> (xs : List) -> (ys : List) -> (pfH : Maybe (Eq B x y)) -> (pfT : Maybe (Eq List xs ys)) -> Maybe (Eq List (Cons x xs) (Cons y ys)) 
-            x : B y : B xs : List ys : List pfT : Maybe (Eq List xs ys)
-              [semiDecEq'] x y xs ys (Nothing [Eq B x y]) pfT = Nothing (Eq List (Cons x xs) (Cons y ys))
-            x : B y : B xs : List ys : List pfH : Maybe (Eq B x y)
-              [semiDecEq'] x y xs ys pfH (Nothing [Eq List xs ys]) = Nothing (Eq List (Cons x xs) (Cons y ys))
-            x : B xs : List
-              [semiDecEq'] x [x] xs [xs] (Just [Eq B x x] [Refl B x]) (Just [Eq List xs xs] [Refl List xs]) = Just (Eq List (Cons x xs) (Cons x xs)) (Refl List (Cons x xs))
+            (x : B) (y : B) (xs : List) (ys : List) (pfT : Maybe (Eq List xs ys))
+               x y xs ys (Nothing [Eq B x y]) pfT = Nothing (Eq List (Cons x xs) (Cons y ys))
+            (x : B) (y : B) (xs : List) (ys : List) (pfH : Maybe (Eq B x y))
+               x y xs ys pfH (Nothing [Eq List xs ys]) = Nothing (Eq List (Cons x xs) (Cons y ys))
+            (x : B) (xs : List)
+               x [x] xs [xs] (Just [Eq B x x] [Refl B x]) (Just [Eq List xs xs] [Refl List xs]) = Just (Eq List (Cons x xs) (Cons x xs)) (Refl List (Cons x xs))
           in semiDecEq' x y xs ys (semiDecEqB x y) (semiDecEq xs ys)
     sampleList : List = genList T input
     main : Maybe (Eq List sampleList sampleList) 
-      [main] = semiDecEq sampleList sampleList
+      = semiDecEq sampleList sampleList
   in main
 
 ### Evarified ###
@@ -65,79 +65,82 @@
     postulate Cons :8: (_x0 :9: B) -> (_x1 :10: List) -> List
     postulate Nil :11: List
     not :12: (_x2 :13: B) -> B 
-      [not] -14- T = F
-      [not] -15- F = T
+       -14- T = F
+       -15- F = T
     foreign input :16: N
     genList :17: (_x3 :18: B) -> (_x4 :19: N) -> List 
-      b :20: B
-        [genList] -22- b -21- Z = Nil
-      b :23: B n :24: N
-        [genList] -26- b -25- (S -27- n) = Cons -29- b -28- (genList -31- (not -32- b) -30- n)
+      (b :20: B)
+         -21- b -22- Z = Nil
+      (b :23: B) (n :24: N)
+         -25- b -26- (S -27- n) = Cons -29- b -28- (genList -31- (not -32- b) -30- n)
     postulate Eq :33: (a :34: Type) -> (_x5 :35: a) -> (_x6 :36: a) -> Type
     postulate Refl :37: (a :38: Type) -> (x :39: a) -> Eq -42- a -41- x -40- x
     postulate Maybe :43: (_x7 :44: Type) -> Type
     postulate Nothing :45: (a :46: Type) -> Maybe -47- a
     postulate Just :48: (a :49: Type) -> (x :50: a) -> Maybe -51- a
     semiDecEqB :52: (x :53: B) -> (y :54: B) -> Maybe -55- (Eq -58- B -57- x -56- y) 
-      [semiDecEqB] -60- T -59- T = Just -62- (Eq -65- B -64- T -63- T) -61- (Refl -67- B -66- T)
-      [semiDecEqB] -69- F -68- F = Just -71- (Eq -74- B -73- F -72- F) -70- (Refl -76- B -75- F)
-      [semiDecEqB] -78- T -77- F = Nothing -79- (Eq -82- B -81- T -80- F)
-      [semiDecEqB] -84- F -83- T = Nothing -85- (Eq -88- B -87- F -86- T)
+       -59- T -60- T = Just -62- (Eq -65- B -64- T -63- T) -61- (Refl -67- B -66- T)
+       -68- F -69- F = Just -71- (Eq -74- B -73- F -72- F) -70- (Refl -76- B -75- F)
+       -77- T -78- F = Nothing -79- (Eq -82- B -81- T -80- F)
+       -83- F -84- T = Nothing -85- (Eq -88- B -87- F -86- T)
     semiDecEq :89: (xs :90: List) -> (ys :91: List) -> Maybe -92- (Eq -95- List -94- xs -93- ys) 
-      b :96: B ys :97: List
-        [semiDecEq] -99- Nil -98- (Cons -101- b -100- ys) = Nothing -102- (Eq -105- List -104- Nil -103- (Cons -107- b -106- ys))
-      b :108: B xs :109: List
-        [semiDecEq] -111- (Cons -113- b -112- xs) -110- Nil = Nothing -114- (Eq -117- List -116- (Cons -119- b -118- xs) -115- Nil)
-      [semiDecEq] -121- Nil -120- Nil = Just -123- (Eq -126- List -125- Nil -124- Nil) -122- (Refl -128- List -127- Nil)
-      x :129: B y :130: B xs :131: List ys :132: List
-        [semiDecEq] -134- (Cons -136- x -135- xs) -133- (Cons -138- y -137- ys) = 
+      (b :96: B) (ys :97: List)
+         -98- Nil -99- (Cons -100- b -101- ys) = Nothing -102- (Eq -105- List -104- Nil -103- (Cons -107- b -106- ys))
+      (b :108: B) (xs :109: List)
+         -110- (Cons -111- b -112- xs) -113- Nil = Nothing -114- (Eq -117- List -116- (Cons -119- b -118- xs) -115- Nil)
+       -120- Nil -121- Nil = Just -123- (Eq -126- List -125- Nil -124- Nil) -122- (Refl -128- List -127- Nil)
+      (x :129: B) (y :130: B) (xs :131: List) (ys :132: List)
+         -133- (Cons -134- x -135- xs) -136- (Cons -137- y -138- ys) = 
           let semiDecEq' :139: (x :140: B) -> (y :141: B) -> (xs :142: List) -> (ys :143: List) -> (pfH :144: Maybe -145- (Eq -148- B -147- x -146- y)) -> (pfT :149: Maybe -150- (Eq -153- List -152- xs -151- ys)) -> Maybe -154- (Eq -157- List -156- (Cons -159- x -158- xs) -155- (Cons -161- y -160- ys)) 
-            x :162: B y :163: B xs :164: List ys :165: List pfT :166: Maybe -167- (Eq -170- List -169- xs -168- ys)
-              [semiDecEq'] -176- x -175- y -174- xs -173- ys -172- (Nothing -177- [Eq -180- B -179- x -178- y]) -171- pfT = Nothing -181- (Eq -184- List -183- (Cons -186- x -185- xs) -182- (Cons -188- y -187- ys))
-            x :189: B y :190: B xs :191: List ys :192: List pfH :193: Maybe -194- (Eq -197- B -196- x -195- y)
-              [semiDecEq'] -203- x -202- y -201- xs -200- ys -199- pfH -198- (Nothing -204- [Eq -207- List -206- xs -205- ys]) = Nothing -208- (Eq -211- List -210- (Cons -213- x -212- xs) -209- (Cons -215- y -214- ys))
-            x :216: B xs :217: List
-              [semiDecEq'] -223- x -222- [x] -221- xs -220- [xs] -219- (Just -225- [Eq -228- B -227- x -226- x] -224- [Refl -230- B -229- x]) -218- (Just -232- [Eq -235- List -234- xs -233- xs] -231- [Refl -237- List -236- xs]) = Just -239- (Eq -242- List -241- (Cons -244- x -243- xs) -240- (Cons -246- x -245- xs)) -238- (Refl -248- List -247- (Cons -250- x -249- xs))
+            (x :162: B) (y :163: B) (xs :164: List) (ys :165: List) (pfT :166: Maybe -167- (Eq -170- List -169- xs -168- ys))
+               -171- x -172- y -173- xs -174- ys -175- (Nothing -176- [Eq -179- B -178- x -177- y]) -180- pfT = Nothing -181- (Eq -184- List -183- (Cons -186- x -185- xs) -182- (Cons -188- y -187- ys))
+            (x :189: B) (y :190: B) (xs :191: List) (ys :192: List) (pfH :193: Maybe -194- (Eq -197- B -196- x -195- y))
+               -198- x -199- y -200- xs -201- ys -202- pfH -203- (Nothing -204- [Eq -207- List -206- xs -205- ys]) = Nothing -208- (Eq -211- List -210- (Cons -213- x -212- xs) -209- (Cons -215- y -214- ys))
+            (x :216: B) (xs :217: List)
+               -218- x -219- [x] -220- xs -221- [xs] -222- (Just -223- [Eq -226- B -225- x -224- x] -227- [Refl -229- B -228- x]) -230- (Just -231- [Eq -234- List -233- xs -232- xs] -235- [Refl -237- List -236- xs]) = Just -239- (Eq -242- List -241- (Cons -244- x -243- xs) -240- (Cons -246- x -245- xs)) -238- (Refl -248- List -247- (Cons -250- x -249- xs))
           in semiDecEq' -256- x -255- y -254- xs -253- ys -252- (semiDecEqB -258- x -257- y) -251- (semiDecEq -260- xs -259- ys)
     sampleList :261: List = genList -263- T -262- input
     main :264: Maybe -265- (Eq -268- List -267- sampleList -266- sampleList) 
-      [main] = semiDecEq -270- sampleList -269- sampleList
+      = semiDecEq -270- sampleList -269- sampleList
   in main
 
 ### Constraints ###
 
-[] -> [2,3,5,6,8,9,10,11,12,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,31,32,45,48,52,53,54,59,60,68,69,77,78,83,84,89,90,91,98,99,100,101,106,107,110,111,112,113,118,119,120,121,129,130,131,132,133,134,135,136,137,138,139,144,149,158,159,160,161,171,172,185,186,187,188,198,199,212,213,214,215,218,219,243,244,245,246,251,252,257,258,259,260,261,262,263,264,269,270,R]
+[] -> [2,3,5,6,8,9,10,11,12,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,31,32,45,48,52,53,54,59,60,68,69,77,78,83,84,89,90,91,98,99,100,101,106,107,110,111,112,113,118,119,120,121,129,130,131,132,133,134,135,136,137,138,139,144,149,158,159,160,161,175,180,185,186,187,188,202,203,212,213,214,215,222,230,243,244,245,246,251,252,257,258,259,260,261,262,263,269,270,R]
 [34,46] -> [4,7,82,88,105,117,184,211]
 [34,49] -> [4,7,65,74,126,242]
-[34,177] -> [4,180]
+[34,176] -> [4,179]
 [34,204] -> [7,207]
-[34,225] -> [4,228]
-[34,232] -> [7,235]
+[34,223] -> [4,226]
+[34,231] -> [7,234]
 [35,46] -> [81,87,104,108,109,116,162,164,183,189,191,210]
 [35,49] -> [64,73,125,216,217,241]
-[35,177] -> [162,179]
+[35,176] -> [162,178]
 [35,204] -> [191,206]
-[35,225] -> [216,227]
-[35,232] -> [217,234]
+[35,223] -> [216,225]
+[35,231] -> [217,233]
 [36,46] -> [80,86,96,97,103,115,163,165,182,190,192,209]
 [36,49] -> [63,72,124,216,217,240]
-[36,177] -> [163,178]
+[36,176] -> [163,177]
 [36,204] -> [192,205]
-[36,225] -> [216,226]
-[36,232] -> [217,233]
+[36,223] -> [216,224]
+[36,231] -> [217,232]
 [38,50] -> [4,7,67,76,128,248]
-[38,224] -> [4,230]
-[38,231] -> [7,237]
+[38,227] -> [4,229]
+[38,235] -> [7,237]
 [39,50] -> [66,75,127,216,217,247,249,250]
-[39,224] -> [216,229]
-[39,231] -> [217,236]
-[40] -> [226,233]
+[39,227] -> [216,228]
+[39,235] -> [217,236]
 [40,50] -> [63,72,124,240]
-[41] -> [227,234]
+[40,227] -> [224]
+[40,235] -> [232]
 [41,50] -> [64,73,125,241]
-[42] -> [228,235]
+[41,227] -> [225]
+[41,235] -> [233]
 [42,50] -> [65,74,126,242]
-[46] -> [33,79,85,102,114,177,181,204,208]
+[42,227] -> [226]
+[42,235] -> [234]
+[46] -> [33,79,85,102,114,176,181,204,208]
 [46,80] -> [36]
 [46,81] -> [35]
 [46,82] -> [34]
@@ -157,7 +160,7 @@
 [46,210] -> [35]
 [46,211] -> [34]
 [47] -> [55,92,145,150,154]
-[49] -> [33,62,71,123,225,232,239]
+[49] -> [33,62,71,123,223,231,239]
 [49,63] -> [36]
 [49,64] -> [35]
 [49,65] -> [34]
@@ -170,7 +173,7 @@
 [49,240] -> [36]
 [49,241] -> [35]
 [49,242] -> [34]
-[50] -> [37,61,70,122,224,231,238,249,250]
+[50] -> [37,61,70,122,227,235,238,249,250]
 [50,63] -> [40]
 [50,64] -> [41]
 [50,65] -> [42]
@@ -231,57 +234,57 @@
 [124] -> [93]
 [125] -> [94]
 [126] -> [95]
-[140] -> [176,203,223,256]
-[141] -> [175,202,222,255]
-[142] -> [174,201,221,254]
-[143] -> [173,200,220,253]
+[140] -> [171,198,218,256]
+[141] -> [172,199,219,255]
+[142] -> [173,200,220,254]
+[143] -> [174,201,221,253]
 [145] -> [47,51,55,194]
-[146] -> [56,178,195,226]
-[147] -> [57,179,196,227]
-[148] -> [58,180,197,228]
+[146] -> [56,177,195,224]
+[147] -> [57,178,196,225]
+[148] -> [58,179,197,226]
 [150] -> [47,51,92,167]
-[151] -> [93,168,205,233]
-[152] -> [94,169,206,234]
-[153] -> [95,170,207,235]
+[151] -> [93,168,205,232]
+[152] -> [94,169,206,233]
+[153] -> [95,170,207,234]
 [154] -> [47,51,92]
 [155] -> [93,182,209,240]
 [156] -> [94,183,210,241]
 [157] -> [95,184,211,242]
-[162] -> [176]
-[163] -> [175]
-[164] -> [174]
-[165] -> [173]
+[162] -> [171]
+[163] -> [172]
+[164] -> [173]
+[165] -> [174]
 [167] -> [150]
 [168] -> [151]
 [169] -> [152]
 [170] -> [153]
-[173] -> [143]
-[174] -> [142]
-[175] -> [141]
-[176] -> [140]
-[177] -> [33,46]
-[177,178] -> [36]
-[177,179] -> [35]
-[177,180] -> [34]
-[178] -> [146]
-[179] -> [147]
-[180] -> [148]
+[171] -> [140]
+[172] -> [141]
+[173] -> [142]
+[174] -> [143]
+[176] -> [33,46]
+[176,177] -> [36]
+[176,178] -> [35]
+[176,179] -> [34]
+[177] -> [146]
+[178] -> [147]
+[179] -> [148]
 [181] -> [46]
 [182] -> [155]
 [183] -> [156]
 [184] -> [157]
-[189] -> [203]
-[190] -> [202]
-[191] -> [201]
-[192] -> [200]
+[189] -> [198]
+[190] -> [199]
+[191] -> [200]
+[192] -> [201]
 [194] -> [145]
 [195] -> [146]
 [196] -> [147]
 [197] -> [148]
-[200] -> [143]
-[201] -> [142]
-[202] -> [141]
-[203] -> [140]
+[198] -> [140]
+[199] -> [141]
+[200] -> [142]
+[201] -> [143]
 [204] -> [33,46]
 [204,205] -> [36]
 [204,206] -> [35]
@@ -293,32 +296,38 @@
 [209] -> [155]
 [210] -> [156]
 [211] -> [157]
-[216] -> [223]
-[217] -> [221]
-[220] -> [143,217]
-[221] -> [142]
-[222] -> [141,216]
-[223] -> [140]
-[224] -> [37,50]
-[224,229] -> [39]
-[224,230] -> [38]
-[225] -> [33,49]
-[225,226] -> [36]
-[225,227] -> [35]
-[225,228] -> [34]
-[226] -> [40,146]
-[227] -> [41,147]
-[228] -> [42,148]
-[231] -> [37,50]
-[231,236] -> [39]
-[231,237] -> [38]
-[232] -> [33,49]
-[232,233] -> [36]
-[232,234] -> [35]
-[232,235] -> [34]
-[233] -> [40,151]
-[234] -> [41,152]
-[235] -> [42,153]
+[216] -> [218]
+[217] -> [220]
+[218] -> [140]
+[219] -> [141,216]
+[220] -> [142]
+[221] -> [143,217]
+[223] -> [33,49]
+[223,224] -> [36]
+[223,225] -> [35]
+[223,226] -> [34]
+[224] -> [146]
+[224,227] -> [40]
+[225] -> [147]
+[225,227] -> [41]
+[226] -> [148]
+[226,227] -> [42]
+[227] -> [37,50]
+[227,228] -> [39]
+[227,229] -> [38]
+[231] -> [33,49]
+[231,232] -> [36]
+[231,233] -> [35]
+[231,234] -> [34]
+[232] -> [151]
+[232,235] -> [40]
+[233] -> [152]
+[233,235] -> [41]
+[234] -> [153]
+[234,235] -> [42]
+[235] -> [37,50]
+[235,236] -> [39]
+[235,237] -> [38]
 [238] -> [50]
 [239] -> [49]
 [240] -> [155]
@@ -336,7 +345,7 @@
 
 ### Solution ###
 
-[2,3,5,6,8,9,10,11,12,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,31,32,45,48,52,53,54,59,60,68,69,77,78,83,84,89,90,91,98,99,100,101,106,107,110,111,112,113,118,119,120,121,129,130,131,132,133,134,135,136,137,138,139,144,149,158,159,160,161,171,172,185,186,187,188,198,199,212,213,214,215,218,219,243,244,245,246,251,252,257,258,259,260,261,262,263,264,269,270,R]
+[2,3,5,6,8,9,10,11,12,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,31,32,45,48,52,53,54,59,60,68,69,77,78,83,84,89,90,91,98,99,100,101,106,107,110,111,112,113,118,119,120,121,129,130,131,132,133,134,135,136,137,138,139,144,149,158,159,160,161,175,180,185,186,187,188,202,203,212,213,214,215,222,230,243,244,245,246,251,252,257,258,259,260,261,262,263,264,269,270,R]
 
 ### Annotated ###
 
@@ -351,43 +360,43 @@
     postulate Cons :R: (_x0 :R: B) -> (_x1 :R: List) -> List
     postulate Nil :R: List
     not :R: (_x2 :R: B) -> B 
-      [not] -R- T = F
-      [not] -R- F = T
+       -R- T = F
+       -R- F = T
     foreign input :R: N
     genList :R: (_x3 :R: B) -> (_x4 :R: N) -> List 
-      b :E: B
-        [genList] -R- b -R- Z = Nil
-      b :R: B n :R: N
-        [genList] -R- b -R- (S -R- n) = Cons -R- b -R- (genList -R- (not -R- b) -R- n)
+      (b :E: B)
+         -R- b -R- Z = Nil
+      (b :R: B) (n :R: N)
+         -R- b -R- (S -R- n) = Cons -R- b -R- (genList -R- (not -R- b) -R- n)
     postulate Eq :E: (a :E: Type) -> (_x5 :E: a) -> (_x6 :E: a) -> Type
     postulate Refl :E: (a :E: Type) -> (x :E: a) -> Eq -E- a -E- x -E- x
     postulate Maybe :E: (_x7 :E: Type) -> Type
     postulate Nothing :R: (a :E: Type) -> Maybe -E- a
     postulate Just :R: (a :E: Type) -> (x :E: a) -> Maybe -E- a
     semiDecEqB :R: (x :R: B) -> (y :R: B) -> Maybe -E- (Eq -E- B -E- x -E- y) 
-      [semiDecEqB] -R- T -R- T = Just -E- (Eq -E- B -E- T -E- T) -E- (Refl -E- B -E- T)
-      [semiDecEqB] -R- F -R- F = Just -E- (Eq -E- B -E- F -E- F) -E- (Refl -E- B -E- F)
-      [semiDecEqB] -R- T -R- F = Nothing -E- (Eq -E- B -E- T -E- F)
-      [semiDecEqB] -R- F -R- T = Nothing -E- (Eq -E- B -E- F -E- T)
+       -R- T -R- T = Just -E- (Eq -E- B -E- T -E- T) -E- (Refl -E- B -E- T)
+       -R- F -R- F = Just -E- (Eq -E- B -E- F -E- F) -E- (Refl -E- B -E- F)
+       -R- T -R- F = Nothing -E- (Eq -E- B -E- T -E- F)
+       -R- F -R- T = Nothing -E- (Eq -E- B -E- F -E- T)
     semiDecEq :R: (xs :R: List) -> (ys :R: List) -> Maybe -E- (Eq -E- List -E- xs -E- ys) 
-      b :E: B ys :E: List
-        [semiDecEq] -R- Nil -R- (Cons -R- b -R- ys) = Nothing -E- (Eq -E- List -E- Nil -E- (Cons -R- b -R- ys))
-      b :E: B xs :E: List
-        [semiDecEq] -R- (Cons -R- b -R- xs) -R- Nil = Nothing -E- (Eq -E- List -E- (Cons -R- b -R- xs) -E- Nil)
-      [semiDecEq] -R- Nil -R- Nil = Just -E- (Eq -E- List -E- Nil -E- Nil) -E- (Refl -E- List -E- Nil)
-      x :R: B y :R: B xs :R: List ys :R: List
-        [semiDecEq] -R- (Cons -R- x -R- xs) -R- (Cons -R- y -R- ys) = 
+      (b :E: B) (ys :E: List)
+         -R- Nil -R- (Cons -R- b -R- ys) = Nothing -E- (Eq -E- List -E- Nil -E- (Cons -R- b -R- ys))
+      (b :E: B) (xs :E: List)
+         -R- (Cons -R- b -R- xs) -R- Nil = Nothing -E- (Eq -E- List -E- (Cons -R- b -R- xs) -E- Nil)
+       -R- Nil -R- Nil = Just -E- (Eq -E- List -E- Nil -E- Nil) -E- (Refl -E- List -E- Nil)
+      (x :R: B) (y :R: B) (xs :R: List) (ys :R: List)
+         -R- (Cons -R- x -R- xs) -R- (Cons -R- y -R- ys) = 
           let semiDecEq' :R: (x :E: B) -> (y :E: B) -> (xs :E: List) -> (ys :E: List) -> (pfH :R: Maybe -E- (Eq -E- B -E- x -E- y)) -> (pfT :R: Maybe -E- (Eq -E- List -E- xs -E- ys)) -> Maybe -E- (Eq -E- List -E- (Cons -R- x -R- xs) -E- (Cons -R- y -R- ys)) 
-            x :E: B y :E: B xs :E: List ys :E: List pfT :E: Maybe -E- (Eq -E- List -E- xs -E- ys)
-              [semiDecEq'] -E- x -E- y -E- xs -E- ys -R- (Nothing -E- [Eq -E- B -E- x -E- y]) -R- pfT = Nothing -E- (Eq -E- List -E- (Cons -R- x -R- xs) -E- (Cons -R- y -R- ys))
-            x :E: B y :E: B xs :E: List ys :E: List pfH :E: Maybe -E- (Eq -E- B -E- x -E- y)
-              [semiDecEq'] -E- x -E- y -E- xs -E- ys -R- pfH -R- (Nothing -E- [Eq -E- List -E- xs -E- ys]) = Nothing -E- (Eq -E- List -E- (Cons -R- x -R- xs) -E- (Cons -R- y -R- ys))
-            x :E: B xs :E: List
-              [semiDecEq'] -E- x -E- [x] -E- xs -E- [xs] -R- (Just -E- [Eq -E- B -E- x -E- x] -E- [Refl -E- B -E- x]) -R- (Just -E- [Eq -E- List -E- xs -E- xs] -E- [Refl -E- List -E- xs]) = Just -E- (Eq -E- List -E- (Cons -R- x -R- xs) -E- (Cons -R- x -R- xs)) -E- (Refl -E- List -E- (Cons -E- x -E- xs))
+            (x :E: B) (y :E: B) (xs :E: List) (ys :E: List) (pfT :E: Maybe -E- (Eq -E- List -E- xs -E- ys))
+               -E- x -E- y -E- xs -E- ys -R- (Nothing -E- [Eq -E- B -E- x -E- y]) -R- pfT = Nothing -E- (Eq -E- List -E- (Cons -R- x -R- xs) -E- (Cons -R- y -R- ys))
+            (x :E: B) (y :E: B) (xs :E: List) (ys :E: List) (pfH :E: Maybe -E- (Eq -E- B -E- x -E- y))
+               -E- x -E- y -E- xs -E- ys -R- pfH -R- (Nothing -E- [Eq -E- List -E- xs -E- ys]) = Nothing -E- (Eq -E- List -E- (Cons -R- x -R- xs) -E- (Cons -R- y -R- ys))
+            (x :E: B) (xs :E: List)
+               -E- x -E- [x] -E- xs -E- [xs] -R- (Just -E- [Eq -E- B -E- x -E- x] -E- [Refl -E- B -E- x]) -R- (Just -E- [Eq -E- List -E- xs -E- xs] -E- [Refl -E- List -E- xs]) = Just -E- (Eq -E- List -E- (Cons -R- x -R- xs) -E- (Cons -R- x -R- xs)) -E- (Refl -E- List -E- (Cons -E- x -E- xs))
           in semiDecEq' -E- x -E- y -E- xs -E- ys -R- (semiDecEqB -R- x -R- y) -R- (semiDecEq -R- xs -R- ys)
     sampleList :R: List = genList -R- T -R- input
     main :R: Maybe -E- (Eq -E- List -E- sampleList -E- sampleList) 
-      [main] = semiDecEq -R- sampleList -R- sampleList
+      = semiDecEq -R- sampleList -R- sampleList
   in main
 
 ### Specialised ###
@@ -403,43 +412,43 @@
     postulate Cons :R: (_x0 :R: B) -> (_x1 :R: List) -> List
     postulate Nil :R: List
     not :R: (_x2 :R: B) -> B 
-      [not] -R- T = F
-      [not] -R- F = T
+       -R- T = F
+       -R- F = T
     foreign input :R: N
     genList :R: (_x3 :R: B) -> (_x4 :R: N) -> List 
-      b :E: B
-        [genList] -R- b -R- Z = Nil
-      b :R: B n :R: N
-        [genList] -R- b -R- (S -R- n) = Cons -R- b -R- (genList -R- (not -R- b) -R- n)
+      (b :E: B)
+         -R- b -R- Z = Nil
+      (b :R: B) (n :R: N)
+         -R- b -R- (S -R- n) = Cons -R- b -R- (genList -R- (not -R- b) -R- n)
     postulate Eq :E: (a :E: Type) -> (_x5 :E: a) -> (_x6 :E: a) -> Type
     postulate Refl :E: (a :E: Type) -> (x :E: a) -> Eq -E- a -E- x -E- x
     postulate Maybe :E: (_x7 :E: Type) -> Type
     postulate Nothing :R: (a :E: Type) -> Maybe -E- a
     postulate Just :R: (a :E: Type) -> (x :E: a) -> Maybe -E- a
     semiDecEqB :R: (x :R: B) -> (y :R: B) -> Maybe -E- (Eq -E- B -E- x -E- y) 
-      [semiDecEqB] -R- T -R- T = Just -E- (Eq -E- B -E- T -E- T) -E- (Refl -E- B -E- T)
-      [semiDecEqB] -R- F -R- F = Just -E- (Eq -E- B -E- F -E- F) -E- (Refl -E- B -E- F)
-      [semiDecEqB] -R- T -R- F = Nothing -E- (Eq -E- B -E- T -E- F)
-      [semiDecEqB] -R- F -R- T = Nothing -E- (Eq -E- B -E- F -E- T)
+       -R- T -R- T = Just -E- (Eq -E- B -E- T -E- T) -E- (Refl -E- B -E- T)
+       -R- F -R- F = Just -E- (Eq -E- B -E- F -E- F) -E- (Refl -E- B -E- F)
+       -R- T -R- F = Nothing -E- (Eq -E- B -E- T -E- F)
+       -R- F -R- T = Nothing -E- (Eq -E- B -E- F -E- T)
     semiDecEq :R: (xs :R: List) -> (ys :R: List) -> Maybe -E- (Eq -E- List -E- xs -E- ys) 
-      b :E: B ys :E: List
-        [semiDecEq] -R- Nil -R- (Cons -R- b -R- ys) = Nothing -E- (Eq -E- List -E- Nil -E- (Cons -R- b -R- ys))
-      b :E: B xs :E: List
-        [semiDecEq] -R- (Cons -R- b -R- xs) -R- Nil = Nothing -E- (Eq -E- List -E- (Cons -R- b -R- xs) -E- Nil)
-      [semiDecEq] -R- Nil -R- Nil = Just -E- (Eq -E- List -E- Nil -E- Nil) -E- (Refl -E- List -E- Nil)
-      x :R: B y :R: B xs :R: List ys :R: List
-        [semiDecEq] -R- (Cons -R- x -R- xs) -R- (Cons -R- y -R- ys) = 
+      (b :E: B) (ys :E: List)
+         -R- Nil -R- (Cons -R- b -R- ys) = Nothing -E- (Eq -E- List -E- Nil -E- (Cons -R- b -R- ys))
+      (b :E: B) (xs :E: List)
+         -R- (Cons -R- b -R- xs) -R- Nil = Nothing -E- (Eq -E- List -E- (Cons -R- b -R- xs) -E- Nil)
+       -R- Nil -R- Nil = Just -E- (Eq -E- List -E- Nil -E- Nil) -E- (Refl -E- List -E- Nil)
+      (x :R: B) (y :R: B) (xs :R: List) (ys :R: List)
+         -R- (Cons -R- x -R- xs) -R- (Cons -R- y -R- ys) = 
           let semiDecEq' :R: (x :E: B) -> (y :E: B) -> (xs :E: List) -> (ys :E: List) -> (pfH :R: Maybe -E- (Eq -E- B -E- x -E- y)) -> (pfT :R: Maybe -E- (Eq -E- List -E- xs -E- ys)) -> Maybe -E- (Eq -E- List -E- (Cons -R- x -R- xs) -E- (Cons -R- y -R- ys)) 
-            x :E: B y :E: B xs :E: List ys :E: List pfT :E: Maybe -E- (Eq -E- List -E- xs -E- ys)
-              [semiDecEq'] -E- x -E- y -E- xs -E- ys -R- (Nothing -E- [Eq -E- B -E- x -E- y]) -R- pfT = Nothing -E- (Eq -E- List -E- (Cons -R- x -R- xs) -E- (Cons -R- y -R- ys))
-            x :E: B y :E: B xs :E: List ys :E: List pfH :E: Maybe -E- (Eq -E- B -E- x -E- y)
-              [semiDecEq'] -E- x -E- y -E- xs -E- ys -R- pfH -R- (Nothing -E- [Eq -E- List -E- xs -E- ys]) = Nothing -E- (Eq -E- List -E- (Cons -R- x -R- xs) -E- (Cons -R- y -R- ys))
-            x :E: B xs :E: List
-              [semiDecEq'] -E- x -E- [x] -E- xs -E- [xs] -R- (Just -E- [Eq -E- B -E- x -E- x] -E- [Refl -E- B -E- x]) -R- (Just -E- [Eq -E- List -E- xs -E- xs] -E- [Refl -E- List -E- xs]) = Just -E- (Eq -E- List -E- (Cons -R- x -R- xs) -E- (Cons -R- x -R- xs)) -E- (Refl -E- List -E- (Cons -E- x -E- xs))
+            (x :E: B) (y :E: B) (xs :E: List) (ys :E: List) (pfT :E: Maybe -E- (Eq -E- List -E- xs -E- ys))
+               -E- x -E- y -E- xs -E- ys -R- (Nothing -E- [Eq -E- B -E- x -E- y]) -R- pfT = Nothing -E- (Eq -E- List -E- (Cons -R- x -R- xs) -E- (Cons -R- y -R- ys))
+            (x :E: B) (y :E: B) (xs :E: List) (ys :E: List) (pfH :E: Maybe -E- (Eq -E- B -E- x -E- y))
+               -E- x -E- y -E- xs -E- ys -R- pfH -R- (Nothing -E- [Eq -E- List -E- xs -E- ys]) = Nothing -E- (Eq -E- List -E- (Cons -R- x -R- xs) -E- (Cons -R- y -R- ys))
+            (x :E: B) (xs :E: List)
+               -E- x -E- [x] -E- xs -E- [xs] -R- (Just -E- [Eq -E- B -E- x -E- x] -E- [Refl -E- B -E- x]) -R- (Just -E- [Eq -E- List -E- xs -E- xs] -E- [Refl -E- List -E- xs]) = Just -E- (Eq -E- List -E- (Cons -R- x -R- xs) -E- (Cons -R- x -R- xs)) -E- (Refl -E- List -E- (Cons -E- x -E- xs))
           in semiDecEq' -E- x -E- y -E- xs -E- ys -R- (semiDecEqB -R- x -R- y) -R- (semiDecEq -R- xs -R- ys)
     sampleList :R: List = genList -R- T -R- input
     main :R: Maybe -E- (Eq -E- List -E- sampleList -E- sampleList) 
-      [main] = semiDecEq -R- sampleList -R- sampleList
+      = semiDecEq -R- sampleList -R- sampleList
   in main
 
 ### Final annotation ###
@@ -455,43 +464,43 @@
     postulate Cons :R: (_x0 :R: B) -> (_x1 :R: List) -> List
     postulate Nil :R: List
     not :R: (_x2 :R: B) -> B 
-      [not] -R- T = F
-      [not] -R- F = T
+       -R- T = F
+       -R- F = T
     foreign input :R: N
     genList :R: (_x3 :R: B) -> (_x4 :R: N) -> List 
-      b :E: B
-        [genList] -R- b -R- Z = Nil
-      b :R: B n :R: N
-        [genList] -R- b -R- (S -R- n) = Cons -R- b -R- (genList -R- (not -R- b) -R- n)
+      (b :E: B)
+         -R- b -R- Z = Nil
+      (b :R: B) (n :R: N)
+         -R- b -R- (S -R- n) = Cons -R- b -R- (genList -R- (not -R- b) -R- n)
     postulate Eq :E: (a :E: Type) -> (_x5 :E: a) -> (_x6 :E: a) -> Type
     postulate Refl :E: (a :E: Type) -> (x :E: a) -> Eq -E- a -E- x -E- x
     postulate Maybe :E: (_x7 :E: Type) -> Type
     postulate Nothing :R: (a :E: Type) -> Maybe -E- a
     postulate Just :R: (a :E: Type) -> (x :E: a) -> Maybe -E- a
     semiDecEqB :R: (x :R: B) -> (y :R: B) -> Maybe -E- (Eq -E- B -E- x -E- y) 
-      [semiDecEqB] -R- T -R- T = Just -E- (Eq -E- B -E- T -E- T) -E- (Refl -E- B -E- T)
-      [semiDecEqB] -R- F -R- F = Just -E- (Eq -E- B -E- F -E- F) -E- (Refl -E- B -E- F)
-      [semiDecEqB] -R- T -R- F = Nothing -E- (Eq -E- B -E- T -E- F)
-      [semiDecEqB] -R- F -R- T = Nothing -E- (Eq -E- B -E- F -E- T)
+       -R- T -R- T = Just -E- (Eq -E- B -E- T -E- T) -E- (Refl -E- B -E- T)
+       -R- F -R- F = Just -E- (Eq -E- B -E- F -E- F) -E- (Refl -E- B -E- F)
+       -R- T -R- F = Nothing -E- (Eq -E- B -E- T -E- F)
+       -R- F -R- T = Nothing -E- (Eq -E- B -E- F -E- T)
     semiDecEq :R: (xs :R: List) -> (ys :R: List) -> Maybe -E- (Eq -E- List -E- xs -E- ys) 
-      b :E: B ys :E: List
-        [semiDecEq] -R- Nil -R- (Cons -R- b -R- ys) = Nothing -E- (Eq -E- List -E- Nil -E- (Cons -R- b -R- ys))
-      b :E: B xs :E: List
-        [semiDecEq] -R- (Cons -R- b -R- xs) -R- Nil = Nothing -E- (Eq -E- List -E- (Cons -R- b -R- xs) -E- Nil)
-      [semiDecEq] -R- Nil -R- Nil = Just -E- (Eq -E- List -E- Nil -E- Nil) -E- (Refl -E- List -E- Nil)
-      x :R: B y :R: B xs :R: List ys :R: List
-        [semiDecEq] -R- (Cons -R- x -R- xs) -R- (Cons -R- y -R- ys) = 
+      (b :E: B) (ys :E: List)
+         -R- Nil -R- (Cons -R- b -R- ys) = Nothing -E- (Eq -E- List -E- Nil -E- (Cons -R- b -R- ys))
+      (b :E: B) (xs :E: List)
+         -R- (Cons -R- b -R- xs) -R- Nil = Nothing -E- (Eq -E- List -E- (Cons -R- b -R- xs) -E- Nil)
+       -R- Nil -R- Nil = Just -E- (Eq -E- List -E- Nil -E- Nil) -E- (Refl -E- List -E- Nil)
+      (x :R: B) (y :R: B) (xs :R: List) (ys :R: List)
+         -R- (Cons -R- x -R- xs) -R- (Cons -R- y -R- ys) = 
           let semiDecEq' :R: (x :E: B) -> (y :E: B) -> (xs :E: List) -> (ys :E: List) -> (pfH :R: Maybe -E- (Eq -E- B -E- x -E- y)) -> (pfT :R: Maybe -E- (Eq -E- List -E- xs -E- ys)) -> Maybe -E- (Eq -E- List -E- (Cons -R- x -R- xs) -E- (Cons -R- y -R- ys)) 
-            x :E: B y :E: B xs :E: List ys :E: List pfT :E: Maybe -E- (Eq -E- List -E- xs -E- ys)
-              [semiDecEq'] -E- x -E- y -E- xs -E- ys -R- (Nothing -E- [Eq -E- B -E- x -E- y]) -R- pfT = Nothing -E- (Eq -E- List -E- (Cons -R- x -R- xs) -E- (Cons -R- y -R- ys))
-            x :E: B y :E: B xs :E: List ys :E: List pfH :E: Maybe -E- (Eq -E- B -E- x -E- y)
-              [semiDecEq'] -E- x -E- y -E- xs -E- ys -R- pfH -R- (Nothing -E- [Eq -E- List -E- xs -E- ys]) = Nothing -E- (Eq -E- List -E- (Cons -R- x -R- xs) -E- (Cons -R- y -R- ys))
-            x :E: B xs :E: List
-              [semiDecEq'] -E- x -E- [x] -E- xs -E- [xs] -R- (Just -E- [Eq -E- B -E- x -E- x] -E- [Refl -E- B -E- x]) -R- (Just -E- [Eq -E- List -E- xs -E- xs] -E- [Refl -E- List -E- xs]) = Just -E- (Eq -E- List -E- (Cons -R- x -R- xs) -E- (Cons -R- x -R- xs)) -E- (Refl -E- List -E- (Cons -E- x -E- xs))
+            (x :E: B) (y :E: B) (xs :E: List) (ys :E: List) (pfT :E: Maybe -E- (Eq -E- List -E- xs -E- ys))
+               -E- x -E- y -E- xs -E- ys -R- (Nothing -E- [Eq -E- B -E- x -E- y]) -R- pfT = Nothing -E- (Eq -E- List -E- (Cons -R- x -R- xs) -E- (Cons -R- y -R- ys))
+            (x :E: B) (y :E: B) (xs :E: List) (ys :E: List) (pfH :E: Maybe -E- (Eq -E- B -E- x -E- y))
+               -E- x -E- y -E- xs -E- ys -R- pfH -R- (Nothing -E- [Eq -E- List -E- xs -E- ys]) = Nothing -E- (Eq -E- List -E- (Cons -R- x -R- xs) -E- (Cons -R- y -R- ys))
+            (x :E: B) (xs :E: List)
+               -E- x -E- [x] -E- xs -E- [xs] -R- (Just -E- [Eq -E- B -E- x -E- x] -E- [Refl -E- B -E- x]) -R- (Just -E- [Eq -E- List -E- xs -E- xs] -E- [Refl -E- List -E- xs]) = Just -E- (Eq -E- List -E- (Cons -R- x -R- xs) -E- (Cons -R- x -R- xs)) -E- (Refl -E- List -E- (Cons -E- x -E- xs))
           in semiDecEq' -E- x -E- y -E- xs -E- ys -R- (semiDecEqB -R- x -R- y) -R- (semiDecEq -R- xs -R- ys)
     sampleList :R: List = genList -R- T -R- input
     main :R: Maybe -E- (Eq -E- List -E- sampleList -E- sampleList) 
-      [main] = semiDecEq -R- sampleList -R- sampleList
+      = semiDecEq -R- sampleList -R- sampleList
   in main
 
 ### Verification ###
@@ -508,32 +517,32 @@ Verification successful.
     postulate Cons : (_x0) -> (_x1) -> List
     postulate Nil : List
     not 
-      [_] T = F
-      [_] F = T
+       T = F
+       F = T
     foreign input
     genList 
-      [_] _ Z = Nil
-      [_] b (S n) = Cons b (genList (not b) n)
+       _ Z = Nil
+       b (S n) = Cons b (genList (not b) n)
     postulate Nothing : Maybe
     postulate Just : Maybe
     semiDecEqB 
-      [_] T T = Just
-      [_] F F = Just
-      [_] T F = Nothing
-      [_] F T = Nothing
+       T T = Just
+       F F = Just
+       T F = Nothing
+       F T = Nothing
     semiDecEq 
-      [_] Nil (Cons _ _) = Nothing
-      [_] (Cons _ _) Nil = Nothing
-      [_] Nil Nil = Just
-      [_] (Cons x xs) (Cons y ys) = 
+       Nil (Cons _ _) = Nothing
+       (Cons _ _) Nil = Nothing
+       Nil Nil = Just
+       (Cons x xs) (Cons y ys) = 
         let semiDecEq' 
-          [_] Nothing _ = Nothing
-          [_] _ Nothing = Nothing
-          [_] Just Just = Just
+           Nothing _ = Nothing
+           _ Nothing = Nothing
+           Just Just = Just
         in semiDecEq' (semiDecEqB x y) (semiDecEq xs ys)
     sampleList = genList T input
     main 
-      [_] = semiDecEq sampleList sampleList
+      = semiDecEq sampleList sampleList
   in main
 
 ### Normal forms ###
@@ -551,39 +560,39 @@ unerased:
     postulate Cons : (_x0 : B) -> (_x1 : List) -> List
     postulate Nil : List
     not : (_x2 : B) -> B 
-      [not] T = F
-      [not] F = T
+       T = F
+       F = T
     foreign input : N
     genList : (_x3 : B) -> (_x4 : N) -> List 
-      b : B
-        [genList] b Z = Nil
-      b : B n : N
-        [genList] b (S n) = Cons b (genList (not b) n)
+      (b : B)
+         b Z = Nil
+      (b : B) (n : N)
+         b (S n) = Cons b (genList (not b) n)
     postulate Eq : (a : Type) -> (_x5 : a) -> (_x6 : a) -> Type
     postulate Refl : (a : Type) -> (x : a) -> Eq a x x
     postulate Maybe : (_x7 : Type) -> Type
     postulate Nothing : (a : Type) -> Maybe a
     postulate Just : (a : Type) -> (x : a) -> Maybe a
     semiDecEqB : (x : B) -> (y : B) -> Maybe (Eq B x y) 
-      [semiDecEqB] T T = Just (Eq B T T) (Refl B T)
-      [semiDecEqB] F F = Just (Eq B F F) (Refl B F)
-      [semiDecEqB] T F = Nothing (Eq B T F)
-      [semiDecEqB] F T = Nothing (Eq B F T)
+       T T = Just (Eq B T T) (Refl B T)
+       F F = Just (Eq B F F) (Refl B F)
+       T F = Nothing (Eq B T F)
+       F T = Nothing (Eq B F T)
     semiDecEq : (xs : List) -> (ys : List) -> Maybe (Eq List xs ys) 
-      b : B ys : List
-        [semiDecEq] Nil (Cons b ys) = Nothing (Eq List Nil (Cons b ys))
-      b : B xs : List
-        [semiDecEq] (Cons b xs) Nil = Nothing (Eq List (Cons b xs) Nil)
-      [semiDecEq] Nil Nil = Just (Eq List Nil Nil) (Refl List Nil)
-      x : B y : B xs : List ys : List
-        [semiDecEq] (Cons x xs) (Cons y ys) = 
+      (b : B) (ys : List)
+         Nil (Cons b ys) = Nothing (Eq List Nil (Cons b ys))
+      (b : B) (xs : List)
+         (Cons b xs) Nil = Nothing (Eq List (Cons b xs) Nil)
+       Nil Nil = Just (Eq List Nil Nil) (Refl List Nil)
+      (x : B) (y : B) (xs : List) (ys : List)
+         (Cons x xs) (Cons y ys) = 
           let semiDecEq' : (x : B) -> (y : B) -> (xs : List) -> (ys : List) -> (pfH : Maybe (Eq B x y)) -> (pfT : Maybe (Eq List xs ys)) -> Maybe (Eq List (Cons x xs) (Cons y ys)) 
-            x : B y : B xs : List ys : List pfT : Maybe (Eq List xs ys)
-              [semiDecEq'] x y xs ys (Nothing [Eq B x y]) pfT = Nothing (Eq List (Cons x xs) (Cons y ys))
-            x : B y : B xs : List ys : List pfH : Maybe (Eq B x y)
-              [semiDecEq'] x y xs ys pfH (Nothing [Eq List xs ys]) = Nothing (Eq List (Cons x xs) (Cons y ys))
-            x : B xs : List
-              [semiDecEq'] x [x] xs [xs] (Just [Eq B x x] [Refl B x]) (Just [Eq List xs xs] [Refl List xs]) = Just (Eq List (Cons x xs) (Cons x xs)) (Refl List (Cons x xs))
+            (x : B) (y : B) (xs : List) (ys : List) (pfT : Maybe (Eq List xs ys))
+               x y xs ys (Nothing [Eq B x y]) pfT = Nothing (Eq List (Cons x xs) (Cons y ys))
+            (x : B) (y : B) (xs : List) (ys : List) (pfH : Maybe (Eq B x y))
+               x y xs ys pfH (Nothing [Eq List xs ys]) = Nothing (Eq List (Cons x xs) (Cons y ys))
+            (x : B) (xs : List)
+               x [x] xs [xs] (Just [Eq B x x] [Refl B x]) (Just [Eq List xs xs] [Refl List xs]) = Just (Eq List (Cons x xs) (Cons x xs)) (Refl List (Cons x xs))
           in semiDecEq' x y xs ys (semiDecEqB x y) (semiDecEq xs ys)
   in semiDecEq (genList T input) (genList T input)
 
@@ -597,28 +606,28 @@ erased:
     postulate Cons : (_x0) -> (_x1) -> List
     postulate Nil : List
     not 
-      [_] T = F
-      [_] F = T
+       T = F
+       F = T
     foreign input
     genList 
-      [_] _ Z = Nil
-      [_] b (S n) = Cons b (genList (not b) n)
+       _ Z = Nil
+       b (S n) = Cons b (genList (not b) n)
     postulate Nothing : Maybe
     postulate Just : Maybe
     semiDecEqB 
-      [_] T T = Just
-      [_] F F = Just
-      [_] T F = Nothing
-      [_] F T = Nothing
+       T T = Just
+       F F = Just
+       T F = Nothing
+       F T = Nothing
     semiDecEq 
-      [_] Nil (Cons _ _) = Nothing
-      [_] (Cons _ _) Nil = Nothing
-      [_] Nil Nil = Just
-      [_] (Cons x xs) (Cons y ys) = 
+       Nil (Cons _ _) = Nothing
+       (Cons _ _) Nil = Nothing
+       Nil Nil = Just
+       (Cons x xs) (Cons y ys) = 
         let semiDecEq' 
-          [_] Nothing _ = Nothing
-          [_] _ Nothing = Nothing
-          [_] Just Just = Just
+           Nothing _ = Nothing
+           _ Nothing = Nothing
+           Just Just = Just
         in semiDecEq' (semiDecEqB x y) (semiDecEq xs ys)
   in semiDecEq (genList T input) (genList T input)
 

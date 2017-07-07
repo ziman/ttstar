@@ -3,14 +3,14 @@
     postulate Z : Nat
     postulate S : (x) -> Nat
     plus 
-      [_] Z m = m
-      [_] (S n) m = S (plus n m)
+       Z m = m
+       (S n) m = S (plus n m)
     const = (\x. (\y. x))
     main = 
       let
         apply 
-          [_] f Z = f Z
-          [_] f (S x) = f (S x)
+           f Z = f Z
+           f (S x) = f (S x)
         postulate Q : Nat
         three = 3
       in plus (apply (\x. x) 2) (apply (const Q) three)

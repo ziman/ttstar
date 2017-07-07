@@ -46,7 +46,7 @@
           (lambda (_e3)
             (lambda (_e4)
               (match (list _e0 _e1 _e2 _e3 _e4)
-                ((a P x _ _)
+                ((a p x _ _)
                   (lambda (w)
                     w)))))))))
     (cong (lambda (_e0)

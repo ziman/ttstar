@@ -4,22 +4,22 @@
     postulate Z : Nat
     postulate S : (x) -> Nat
     plus 
-      [_] Z n = n
-      [_] (S m) n = S (plus m n)
+       Z n = n
+       (S m) n = S (plus m n)
     postulate Bool : Type
     postulate True : Bool
     postulate False : Bool
     not 
-      [_] True = False
-      [_] False = True
+       True = False
+       False = True
     postulate Unit : Type
     postulate MkUnit : Unit
     postulate Pair : (_x3) -> (_x4) -> Type
     postulate MkPair : (a) -> (b) -> (_x5) -> (_x6) -> Pair a b
     fst 
-      [_] a b ({_} [_] [_] x y) = x
+       a b ({_} [_] [_] x y) = x
     snd 
-      [_] a b ({_} [_] [_] x y) = y
+       a b ({_} [_] [_] x y) = y
     postulate Either : (_x9) -> (_x10) -> Type
     postulate Left : (a) -> (b) -> (_x11) -> Either a b
     postulate Right : (a) -> (b) -> (_x12) -> Either a b
@@ -35,34 +35,34 @@
     postulate Lam : (n) -> (_x2) -> TT n
     postulate App : (n) -> (_x3) -> (_x4) -> TT n
     env 
-      [_] [_] n (VC [_] [_] x xs) (FZ m) = x
-      [_] [_] n (VC [_] [_] x xs) (FS m i) = env m n xs i
+       [_] n (VC [_] [_] x xs) (FZ m) = x
+       [_] n (VC [_] [_] x xs) (FS m i) = env m n xs i
     extendMap 
-      [_] m n f (FZ [_]) = FZ n
-      [_] m n f (FS [_] i) = FS n (f i)
+       m n f (FZ [_]) = FZ n
+       m n f (FS [_] i) = FS n (f i)
     mapVars 
-      [_] m n f (V [_] i) = V n (f i)
-      [_] m n f (Lam [_] x) = Lam n (mapVars (S m) (S n) (extendMap m n f) x)
-      [_] m n f (App [_] g x) = App n (mapVars m n f g) (mapVars m n f x)
+       m n f (V [_] i) = V n (f i)
+       m n f (Lam [_] x) = Lam n (mapVars (S m) (S n) (extendMap m n f) x)
+       m n f (App [_] g x) = App n (mapVars m n f g) (mapVars m n f x)
     extendSubst 
-      [_] m n f (FZ [_]) = V (S n) (FZ n)
-      [_] m n f (FS [_] i) = mapVars n (S n) (FS n) (f i)
+       m n f (FZ [_]) = V (S n) (FZ n)
+       m n f (FS [_] i) = mapVars n (S n) (FS n) (f i)
     substVars 
-      [_] m n f (V [_] i) = f i
-      [_] m n f (Lam [_] x) = Lam n (substVars (S m) (S n) (extendSubst m n f) x)
-      [_] m n f (App [_] g x) = App n (substVars m n f g) (substVars m n f x)
+       m n f (V [_] i) = f i
+       m n f (Lam [_] x) = Lam n (substVars (S m) (S n) (extendSubst m n f) x)
+       m n f (App [_] g x) = App n (substVars m n f g) (substVars m n f x)
     testTm = App 1 (Lam 1 (App 2 (V 2 (FZ 1)) (V 2 (FS 1 (FZ Z))))) (Lam 1 (App 2 (V 2 (FS 1 (FZ Z))) (V 2 (FZ 1))))
     example1 = substVars 1 Z (env 1 Z (VC Z (TT Z) (Lam Z (V 1 (FZ Z))) (VN (TT Z)))) testTm
     substTop 
-      [_] n tm (FZ [_]) = tm
-      [_] n tm (FS [_] i) = V n i
+       n tm (FZ [_]) = tm
+       n tm (FS [_] i) = V n i
     nf 
-      [_] m (V [_] i) = V m i
-      [_] m (Lam [_] x) = Lam m (nf (S m) x)
-      [_] m (App [_] f x) = 
+       m (V [_] i) = V m i
+       m (Lam [_] x) = Lam m (nf (S m) x)
+       m (App [_] f x) = 
         let g 
-          [_] (Lam [_] y) = nf m (substVars (S m) m (substTop m (nf m x)) y)
-          [_] f' = App m f' (nf m x)
+           (Lam [_] y) = nf m (substVars (S m) m (substTop m (nf m x)) y)
+           f' = App m f' (nf m x)
         in g (nf m f)
     example2 = nf 1 testTm
     postulate Result : Type

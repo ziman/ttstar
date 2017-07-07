@@ -9,16 +9,16 @@
     postulate Pair : Type
     postulate P : (x : Bool) -> (y : Bool) -> Pair
     fst : (_x0 : Pair) -> Bool 
-      l : Bool r : Bool
-        [fst] (P l r) = l
+      (l : Bool) (r : Bool)
+         (P l r) = l
     snd : (_x1 : Pair) -> Bool 
-      l : Bool r : Bool
-        [snd] (P l r) = r
+      (l : Bool) (r : Bool)
+         (P l r) = r
     and : (_x2 : Bool) -> (_x3 : Bool) -> Bool 
-      y : Bool
-        [and] T y = y
-      y : Bool
-        [and] F y = F
+      (y : Bool)
+         T y = y
+      (y : Bool)
+         F y = F
     main : Bool = and (fst (P T F)) (snd (P F T))
   in main
 
@@ -31,16 +31,16 @@
     postulate Pair :4: Type
     postulate P :5: (x :6: Bool) -> (y :7: Bool) -> Pair
     fst :8: (_x0 :9: Pair) -> Bool 
-      l :10: Bool r :11: Bool
-        [fst] -12- (P -14- l -13- r) = l
+      (l :10: Bool) (r :11: Bool)
+         -12- (P -13- l -14- r) = l
     snd :15: (_x1 :16: Pair) -> Bool 
-      l :17: Bool r :18: Bool
-        [snd] -19- (P -21- l -20- r) = r
+      (l :17: Bool) (r :18: Bool)
+         -19- (P -20- l -21- r) = r
     and :22: (_x2 :23: Bool) -> (_x3 :24: Bool) -> Bool 
-      y :25: Bool
-        [and] -27- T -26- y = y
-      y :28: Bool
-        [and] -30- F -29- y = F
+      (y :25: Bool)
+         -26- T -27- y = y
+      (y :28: Bool)
+         -29- F -30- y = F
     main :31: Bool = and -33- (fst -34- (P -36- T -35- F)) -32- (snd -37- (P -39- F -38- T))
   in main
 
@@ -62,16 +62,16 @@
     postulate Pair :E: Type
     postulate P :R: (x :R: Bool) -> (y :R: Bool) -> Pair
     fst :R: (_x0 :R: Pair) -> Bool 
-      l :R: Bool r :E: Bool
-        [fst] -R- (P -R- l -R- r) = l
+      (l :R: Bool) (r :E: Bool)
+         -R- (P -R- l -R- r) = l
     snd :R: (_x1 :R: Pair) -> Bool 
-      l :E: Bool r :R: Bool
-        [snd] -R- (P -R- l -R- r) = r
+      (l :E: Bool) (r :R: Bool)
+         -R- (P -R- l -R- r) = r
     and :R: (_x2 :R: Bool) -> (_x3 :R: Bool) -> Bool 
-      y :R: Bool
-        [and] -R- T -R- y = y
-      y :E: Bool
-        [and] -R- F -R- y = F
+      (y :R: Bool)
+         -R- T -R- y = y
+      (y :E: Bool)
+         -R- F -R- y = F
     main :R: Bool = and -R- (fst -R- (P -R- T -R- F)) -R- (snd -R- (P -R- F -R- T))
   in main
 
@@ -84,16 +84,16 @@
     postulate Pair :E: Type
     postulate P :R: (x :R: Bool) -> (y :R: Bool) -> Pair
     fst :R: (_x0 :R: Pair) -> Bool 
-      l :R: Bool r :E: Bool
-        [fst] -R- (P -R- l -R- r) = l
+      (l :R: Bool) (r :E: Bool)
+         -R- (P -R- l -R- r) = l
     snd :R: (_x1 :R: Pair) -> Bool 
-      l :E: Bool r :R: Bool
-        [snd] -R- (P -R- l -R- r) = r
+      (l :E: Bool) (r :R: Bool)
+         -R- (P -R- l -R- r) = r
     and :R: (_x2 :R: Bool) -> (_x3 :R: Bool) -> Bool 
-      y :R: Bool
-        [and] -R- T -R- y = y
-      y :E: Bool
-        [and] -R- F -R- y = F
+      (y :R: Bool)
+         -R- T -R- y = y
+      (y :E: Bool)
+         -R- F -R- y = F
     main :R: Bool = and -R- (fst -R- (P -R- T -R- F)) -R- (snd -R- (P -R- F -R- T))
   in main
 
@@ -106,16 +106,16 @@
     postulate Pair :E: Type
     postulate P :R: (x :R: Bool) -> (y :R: Bool) -> Pair
     fst :R: (_x0 :R: Pair) -> Bool 
-      l :R: Bool r :E: Bool
-        [fst] -R- (P -R- l -R- r) = l
+      (l :R: Bool) (r :E: Bool)
+         -R- (P -R- l -R- r) = l
     snd :R: (_x1 :R: Pair) -> Bool 
-      l :E: Bool r :R: Bool
-        [snd] -R- (P -R- l -R- r) = r
+      (l :E: Bool) (r :R: Bool)
+         -R- (P -R- l -R- r) = r
     and :R: (_x2 :R: Bool) -> (_x3 :R: Bool) -> Bool 
-      y :R: Bool
-        [and] -R- T -R- y = y
-      y :E: Bool
-        [and] -R- F -R- y = F
+      (y :R: Bool)
+         -R- T -R- y = y
+      (y :E: Bool)
+         -R- F -R- y = F
     main :R: Bool = and -R- (fst -R- (P -R- T -R- F)) -R- (snd -R- (P -R- F -R- T))
   in main
 
@@ -130,12 +130,12 @@ Verification successful.
     postulate F : Bool
     postulate P : (x) -> (y) -> Pair
     fst 
-      [_] (P l _) = l
+       (P l _) = l
     snd 
-      [_] (P _ r) = r
+       (P _ r) = r
     and 
-      [_] T y = y
-      [_] F _ = F
+       T y = y
+       F _ = F
     main = and (fst (P T F)) (snd (P F T))
   in main
 

@@ -7,10 +7,10 @@
     postulate T : Bool
     postulate F : Bool
     broken : (_x0 : Bool) -> Bool 
-      n : Bool
-        [broken] n = 
+      (n : Bool)
+         n = 
           let id : (_x1 : Bool) -> Bool 
-            [id] n = n
+             n = n
           in id n
     main : Bool = broken T
   in main
@@ -22,10 +22,10 @@
     postulate T :2: Bool
     postulate F :3: Bool
     broken :4: (_x0 :5: Bool) -> Bool 
-      n :6: Bool
-        [broken] -7- n = 
+      (n :6: Bool)
+         -7- n = 
           let id :8: (_x1 :9: Bool) -> Bool 
-            [id] -10- n = n
+             -10- n = n
           in id -11- n
     main :12: Bool = broken -13- T
   in main
@@ -42,10 +42,10 @@ ttstar: Traceback:
     postulate T :2: Bool
     postulate F :3: Bool
     broken :4: (_x0 :5: Bool) -> Bool 
-      n :6: Bool
-        [broken] -7- n = 
+      (n :6: Bool)
+         -7- n = 
           let id :8: (_x1 :9: Bool) -> Bool 
-            [id] -10- n = n
+             -10- n = n
           in id -11- n
     main :12: Bool = broken -13- T
   in main)
@@ -66,7 +66,7 @@ ttstar: Traceback:
   Type : Type
   broken : (_x0 :5: Bool) -> Bool
 
-("CLAUSE",PApp 7 (PForced broken) (PV n))
+("CLAUSE",[(7,PV n)])
 
 4. In context:
   Bool : Type
@@ -78,7 +78,7 @@ ttstar: Traceback:
 
 ("LET",
   let id :8: (_x1 :9: Bool) -> Bool 
-    [id] -10- n = n
+     -10- n = n
   in id -11- n)
 
 5. In context:
@@ -101,7 +101,7 @@ ttstar: Traceback:
   id : (_x1 :9: Bool) -> Bool
   n : Bool
 
-("CLAUSE",PApp 10 (PForced id) (PV n))
+("CLAUSE",[(10,PV n)])
 
 Error: PatvarsPatternMismatch [] [n]
 

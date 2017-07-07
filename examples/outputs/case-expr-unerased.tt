@@ -6,14 +6,14 @@
     postulate Unit : Type
     postulate MkUnit : Unit
     not 
-      [_] T = F
-      [_] F = T
+       T = F
+       F = T
     retTy 
-      [_] T = Bool
-      [_] F = Unit
+       T = Bool
+       F = Unit
     main = not 
       let f 
-        [_] F = MkUnit
-        [_] T = F
+         F = MkUnit
+         T = F
       in f (not F)
   in main

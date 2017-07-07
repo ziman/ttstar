@@ -3,7 +3,7 @@
     postulate Z : N
     postulate S : N
     plus 
-      [_] Z m = m
-      [_] S _ = S
+       Z m = m
+       S _ = S
     main = plus S S
   in main
