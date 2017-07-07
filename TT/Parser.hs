@@ -69,10 +69,10 @@ sp = many ((satisfy isSpace *> return ()) <|> lineComment <|> bigComment) *> ret
 kwd :: String -> Parser ()
 kwd s = (try (string s) >> sp) <?> s
 
-identifier :: Parser Name
-identifier = (<?> "identifier") $ do
+identifier :: (Char -> Bool) -> Parser Name
+identifier firstChar = (<?> "identifier") $ do
     n <- try $ do
-        x <- satisfy isAlpha  -- let's make _idents reserved for the compiler
+        x <- satisfy firstChar -- let's make _idents reserved for the compiler
         xs <- many $ satisfy (\x -> idChar x || isDigit x)
         let n = x:xs
         if S.member n keywords
@@ -87,7 +87,10 @@ blankName :: Parser Name
 blankName = kwd "_" *> freshMN "" <?> "blank name"
 
 name :: Parser Name
-name = identifier <|> blankName <?> "name"
+name = identifier isAlpha <|> blankName <?> "name"
+
+ctorName :: Parser Name
+ctorName = identifier isUpper <?> "constructor name"
 
 rcolon :: Parser MRel
 rcolon =
@@ -171,17 +174,20 @@ patVar = PV <$> name <?> "pattern variable"
 patForced :: Parser (Pat MRel)
 patForced = PForced <$> brackets expr <?> "forced pattern"
 
-patForcedCtor :: Parser (Pat MRel)
-patForcedCtor = PForcedCtor <$> braces name <?> "forced constructor"
-
-patAtom :: Parser (Pat MRel)
-patAtom = parens pattern <|> patForced <|> patVar <|> patForcedCtor <?> "pattern atom"
-
 patApp :: Parser (Pat MRel)
-patApp = foldl (PApp Nothing) <$> patAtom <*> many patAtom <?> "pattern application"
+patApp = PCtor False <$> name <*> many pattern <?> "pattern application"
+
+patAppF :: Parser (Pat MRel)
+patAppF = PCtor True <$> try (braces name) <*> many pattern <?> "forced pattern application"
+
+loneCtorPat :: Parser (Pat MRel)
+loneCtorPat = PCtor False <$> ctorName <*> pure [] <?> "lone constructor pattern"
+
+loneCtorPatF :: Parser (Pat MRel)
+loneCtorPatF = PCtor True <$> try (braces ctorName) <*> pure [] <?> "forced lone constructor pattern"
 
 pattern :: Parser (Pat MRel)
-pattern = patApp
+pattern = loneCtorPatF <|> loneCtorPat <|> patAppF <|> patApp <|> patVar
 
 let_ :: Parser (TT MRel)
 let_ = (<?> "let expression") $ do
