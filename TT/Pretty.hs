@@ -93,9 +93,9 @@ instance PrettyR r => Pretty (Clause r) where
         typed _ = True
 
         pretty' (Clause [] lhs rhs)
-            = text "_" <> hcat (map pretty lhs) <+> text "=" <+> pretty rhs
+            = hcat (map pretty lhs) <+> text "=" <+> pretty rhs
         pretty' (Clause pvs lhs rhs) =
-            hsep (map pretty pvs)
+            hsep (map (parens . pretty) pvs)
             $$ indent (pretty $ Clause [] lhs rhs)
 
 instance PrettyR r => Pretty (TT r) where
