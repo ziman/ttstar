@@ -254,7 +254,7 @@ inferPatApp pvs s cs fty ((app_r,x):xs) = bt ("PAT-APP", fty, x) $ do
     ctx <- getCtx
     case whnf ctx fty of
         Bind Pi [Def n' pi_r ty' (Abstract Var) _noCs] retTy -> do
-            tycs <- conv xty ty'
+            tycs <- with' (M.union pvs) $ conv xty ty'
             let cs' =
                     cs
                     /\ cond s (app_r <--> pi_r) -- if we inspect here, then the pi must reflect that
