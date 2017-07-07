@@ -1,15 +1,6 @@
 -- vim: ft=ttstar
   let
-    constructor Bool : Type
-    constructor True : Bool
-    constructor False : Bool
     constructor Nat : Type
     constructor Z : Nat
     constructor S : (n) -> Nat
-    constructor Vec : (_x0) -> (_x1) -> Type
-    constructor VNil : (a) -> Vec Z a
-    constructor VCons : (a) -> (n) -> (x) -> (xs) -> Vec (S n) a
-    vlen 
-       a {_} (VNil [_]) = Z
-       a ({_} n) (VCons [_] [_] x xs) = S (vlen a n xs)
-  in vlen Bool 2 (VCons Bool 1 True (VCons Bool Z False (VNil Bool)))
+  in 2

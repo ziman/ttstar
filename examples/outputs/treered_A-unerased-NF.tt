@@ -3,10 +3,4 @@
     constructor N : Type
     constructor Z : N
     constructor S : (x) -> N
-    constructor Vec : (_x0) -> (_x1) -> Type
-    constructor Nil : (a) -> Vec Z a
-    constructor Cons : (a) -> (n) -> (x) -> (xs) -> Vec (S n) a
-    vlen 
-       {_} (Nil [_]) = Z
-       ({_} m) (Cons [_] [_] y ys) = S (vlen m ys)
-  in vlen 1 (Cons N Z 3 (Nil N))
+  in 1

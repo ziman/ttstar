@@ -1,31 +1,8 @@
 -- vim: ft=ttstar
   let
-    constructor Z : Nat
-    constructor S : (x) -> Nat
-    constructor MkPair : (_x5) -> (_x6) -> Pair
-    snd 
-       ({_} _ y) = y
-    constructor MkSt : (run) -> State
-    runState 
-       ({_} run) = run
-    stBind 
-       ({_} f) g = 
-        let
-          stBind3 
-             s ({_} f) = f s
-          stBind2 
-             g ({_} s x) = stBind3 s (g x)
-        in MkSt (\s. stBind2 g (f s))
     foreign intS
     foreign intZ
-    natToInt 
-       Z = intZ
-       (S n) = intS (natToInt n)
     foreign intToNat
   in 
-    let constructor TheWorld : RealWorld
-    in snd (runState (stBind (MkSt (\s. MkPair s 4)) (\v. 
-      let foreign nativePrint
-      in stBind (MkSt (\w. MkPair w (nativePrint (natToInt v)))) (\_0. 
-        let foreign nativePrint
-        in MkSt (\w. MkPair w (nativePrint (intToNat (intS (intS (intS intZ))))))))) TheWorld)
+    let foreign nativePrint0
+    in nativePrint0 (intToNat (intS (intS (intS intZ))))

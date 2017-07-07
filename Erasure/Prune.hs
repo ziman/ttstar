@@ -53,7 +53,4 @@ prunePat pvs (PV n)
         Nothing -> error $ "prune: nonexistent patvar: " ++ show n
 prunePat pvs (PForced tm) = PForced $ V Blank
 prunePat pvs (PCtor f cn args)
-    = PCtor f (cn' f) $ prunePats pvs args
-  where
-    cn' True  = Blank
-    cn' False = cn
+    = PCtor f (if f then Blank else cn) $ prunePats pvs args

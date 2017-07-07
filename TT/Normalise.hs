@@ -208,7 +208,7 @@ matchClause ctx fn tm (Clause pvs lhs rhs) = do
 
     -- get the matching substitution
     pvSubst <- M.unionsWith (\_ _ -> error "nonlinear pattern")
-        <$> sequence [match ctx p $ red WHNF ctx tm | (p,tm) <- pts]
+        <$> sequence [match ctx p tm | (p, tm) <- pts]
 
     -- substitute in RHS, and then tack on the superfluous terms
     return $
@@ -236,11 +236,36 @@ match ctx (PV n) tm'
 match ctx (PForced tm) tm'
     = Yes M.empty
 
-match ctx (PCtor f cn args) tm'
+-- forced constructor
+match ctx (PCtor True _ args) tm'
     | (V hn', args') <- unApply $ red WHNF ctx tm'
+    , Just (defBody -> Abstract Constructor) <- M.lookup hn' ctx  -- WHNF worked
+    = if length args' /= length args
+        then No
+        else M.unionsWith (\_ _ -> error "non-linear pattern")
+               <$> sequence [match ctx pat arg | ((_,pat),(_,arg)) <- zip args args']
+        -- this is a bit of a hack. Since patterns are checked in some order,
+        -- it may happen that forced patterns are checked before the determining
+        -- patterns.
+        --
+        -- If the determining patterns would fail, then forced patterns might
+        -- be matched against a non-matching value because forcing works only
+        -- if the whole pattern matches.
+        --
+        -- so non-matching arg lengths mean that the rest of the pattern will fail
+        -- but only if the forcedness has been annotated correctly (which we don't check)
+        --
+        -- in non-forced constructors, this is a hard error: something's gone
+        -- really wrong
+
+match ctx (PCtor False cn args) tm'
+    | (V hn', args') <- unApply $ red WHNF ctx tm'
+    , Just (defBody -> Abstract Constructor) <- M.lookup hn' ctx  -- WHNF successful
     = if cn == hn'
         then if length args /= length args'
-            then error $ "matching on " ++ show cn ++ ": arg counts differ"
+            then error $ "matching on "
+                    ++ show cn ++ ": arg counts differ: "
+                    ++ show (cn, args, hn', args')
             else M.unionsWith (\_ _ -> error "non-linear pattern")
                     <$> sequence [match ctx pat arg | ((_,pat),(_,arg)) <- zip args args']
         else
