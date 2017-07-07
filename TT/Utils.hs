@@ -17,16 +17,6 @@ mkApp :: TT r -> [(r, TT r)] -> TT r
 mkApp f [] = f
 mkApp f ((r, x) : xs) = mkApp (App r f x) xs
 
-unApplyPat :: Pat r -> (Pat r, [(r, Pat r)])
-unApplyPat pat = ua pat []
-  where
-    ua (PApp r f x) args = ua f ((r, x):args)
-    ua pat args = (pat, args)
-
-mkAppPat :: Pat r -> [(r, Pat r)] -> Pat r
-mkAppPat f [] = f
-mkAppPat f ((r, x) : xs) = mkAppPat (PApp r f x) xs
-
 class Termy f where
     subst :: Name -> TT r -> f r -> f r
     freeVars :: f r -> S.Set Name
@@ -56,20 +46,15 @@ instance Termy Pat where
         | n' == n   = error $ "trying to substitute for patvar: " ++ show n
         | otherwise = pat
 
-    subst n tm pat@(PApp r f x)
-        = PApp r (subst n tm f) (subst n tm x)
+    subst n tm pat@(PCtor f cn args)
+        = PCtor f cn [(r, subst n tm p) | (r,p) <- args]
 
     subst n tm pat@(PForced tm')
         = PForced $ subst n tm tm'
 
-    subst n tm pat@(PForcedCtor n')
-        | n' == n   = error $ "trying to substitute for forced ctor: " ++ show n
-        | otherwise = pat
-
     freeVars (PV n) = S.singleton n
-    freeVars (PApp r f x) = freeVars f `S.union` freeVars x
+    freeVars (PCtor f cn args) = S.insert cn $ S.unions [freeVars p | (r,p) <- args]
     freeVars (PForced tm) = freeVars tm
-    freeVars (PForcedCtor n) = S.singleton n
 
 instance Termy Def where
     subst n tm (Def dn r ty body mcs)
@@ -94,10 +79,10 @@ instance Termy Body where
 instance Termy Clause where
     subst n tm c@(Clause pvs lhs rhs)
         | n `elem` map defName pvs = c
-        | otherwise = Clause (map (subst n tm) pvs) (subst n tm lhs) (subst n tm rhs)
+        | otherwise = Clause (map (subst n tm) pvs) (map (subst n tm) lhs) (subst n tm rhs)
 
     freeVars (Clause pvs lhs rhs)
-        = (freeVars lhs `S.union` freeVars rhs)
+        = (S.unions (map freeVars lhs) `S.union` freeVars rhs)
             `S.difference` S.fromList (map defName pvs)
 
 freeVarsBinder :: Termy a => [Def r] -> a r -> S.Set Name
@@ -159,10 +144,8 @@ freePatVars ctx (PV n)
     = Just S.empty
 
     | otherwise = Just $ S.singleton n
-freePatVars ctx (PForcedCtor n) = Just S.empty
 freePatVars ctx (PForced tm) = Just S.empty
-freePatVars ctx (PApp r f x)
-    = join (linUnion <$> freePatVars ctx f <*> freePatVars ctx x)
+freePatVars ctx (PCtor f cn args) = foldM linUnion S.empty $ traverse (freePatVars ctx . snd) args
   where
     linUnion x y
         | S.null (S.intersection x y) = Just $ S.union x y
@@ -180,8 +163,7 @@ substs ss x = foldl (\x (n, tm) -> subst n tm x) x ss
 
 pat2term :: Pat r -> TT r
 pat2term (PV n) = V n
-pat2term (PForcedCtor n) = V n
-pat2term (PApp r f x) = App r (pat2term f) (pat2term x)
+pat2term (PCtor f cn args) = mkApp (V cn) [(r, pat2term p) | (r, p) <- args]
 pat2term (PForced tm) = tm
 
 monomorphise :: TT r -> TT r
@@ -203,6 +185,5 @@ monomorphise (Bind b d tm) = Bind b (map monoDef d) $ monomorphise tm
 
     monoPat :: Pat r -> Pat r
     monoPat (PV n) = PV n
-    monoPat (PForcedCtor n) = PForcedCtor n
     monoPat (PForced tm) = PForced $ monomorphise tm
-    monoPat (PApp r f x) = PApp r (monoPat f) (monoPat x)
+    monoPat (PCtor f cn args) = PCtor f cn [(r, monoPat p) | (r,p) <- args]

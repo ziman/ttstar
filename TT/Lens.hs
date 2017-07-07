@@ -19,8 +19,8 @@ ttRelevance f = g
         App r fun arg
             -> App <$> f r <*> g fun <*> g arg
 
-argRelevance :: Ord r' => Traversal (r, TT r) (r', TT r') r r'
-argRelevance f (r, tm) = (,) <$> f r <*> ttRelevance f tm
+argRelevance :: Ord r' => Traversal (r, Pat r) (r', Pat r') r r'
+argRelevance f (r, pat) = (,) <$> f r <*> patRelevance f pat
 
 patRelevance :: Ord r' => Traversal (Pat r) (Pat r') r r'
 patRelevance f = g
@@ -50,7 +50,7 @@ clauseRelevance :: Ord r' => Traversal (Clause r) (Clause r') r r'
 clauseRelevance f (Clause pvs lhs rhs)
     = Clause
         <$> traverse (defRelevance f) pvs
-        <*> patRelevance f lhs
+        <*> traverse (patRelevance f) lhs
         <*> ttRelevance f rhs
 
 csRelevance :: Ord r' => Traversal (Constrs r) (Constrs r') r r'

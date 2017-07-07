@@ -90,7 +90,7 @@ instance PrettyR r => Pretty (Clause r) where
         typed _ = True
 
         pretty' (Clause [] lhs rhs)
-            = pretty lhs <+> text "=" <+> pretty rhs
+            = text "_" <+> hsep (map pretty lhs) <+> text "=" <+> pretty rhs
         pretty' (Clause pvs lhs rhs) =
             hsep (map pretty pvs)
             $$ indent (pretty $ Clause [] lhs rhs)
@@ -131,7 +131,7 @@ instance PrettyR r => Pretty (TT r) where
 instance PrettyR r => Pretty (Pat r) where
     pretty (PV n) = pretty n
     pretty (PCtor f cn []) = prettyCtor f cn
-    pretty (PCtor f cn args) = parens $ prettyCtor f cn <+> hsep (map (pretty . snd) args))
+    pretty (PCtor f cn args) = parens $ prettyCtor f cn <+> hsep (map (pretty . snd) args)
     pretty (PForced tm) = brackets $ pretty tm
 
 prettyCtor :: Bool -> Name -> Doc
