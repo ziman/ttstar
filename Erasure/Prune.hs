@@ -19,8 +19,10 @@ pruneClause :: Clause Relevance -> Clause ()
 pruneClause (Clause pvs lhs rhs)
     = Clause
         (pruneDefs pvs)
-        (prunePat (M.fromList [(defName d, d) | d <- pvs]) lhs)
+        (prunePats pvsCtx lhs)
         (pruneTm rhs)
+  where
+    pvsCtx = M.fromList [(defName d, d) | d <- pvs]
 
 pruneDefs :: [Def Relevance] -> [Def ()]
 pruneDefs = concatMap pruneDef
@@ -35,12 +37,20 @@ pruneTm (Bind b ds tm)
 pruneTm (App E f x) = pruneTm f
 pruneTm (App R f x) = App () (pruneTm f) (pruneTm x)
 
+prunePats :: Ctx Relevance
+    -> [(Relevance, Pat Relevance)]
+    -> [((), Pat ())]
+prunePats pvs pats = [((), prunePat pvs p) | (R, p) <- pats]
+
 prunePat :: Ctx Relevance -> Pat Relevance -> Pat ()
 prunePat pvs (PV n)
     = case defR <$> M.lookup n pvs of
         Just R  -> PV n  -- relevant patvar
         Just E  -> PV Blank  -- irrelevant patvar
-        Nothing -> PV n  -- constructor
-prunePat pvs (PApp E f x) = prunePat pvs f
-prunePat pvs (PApp R f x) = PApp () (prunePat pvs f) (prunePat pvs x)
+        Nothing -> error $ "prune: nonexistent patvar: " ++ show n
 prunePat pvs (PForced tm) = PForced $ V Blank
+prunePat pvs (PCtor f cn args)
+    = PCtor f (cn' f) $ prunePats pvs args
+  where
+    cn' True  = Blank
+    cn' False = cn

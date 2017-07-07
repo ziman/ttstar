@@ -8,6 +8,7 @@ import TT.Utils
 import TT.Normalise (whnf)
 import TT.Pretty ()
 
+import Control.Monad
 import qualified Data.Set as S
 import qualified Data.Map as M
 import Control.Monad.Trans.Except
@@ -23,7 +24,7 @@ data VerError
     | NotConstructor Name
     | CantConvert Term Term
     | PatvarsPatternMismatch [Name] [Name]
-    | NonLinearPattern (Pat Relevance)
+    | NonLinearPattern [Pat Relevance]
     | AppliedForcedPattern (Pat Relevance)
     | StrangePattern (Pat Relevance)
     deriving Show
@@ -143,9 +144,9 @@ verClause r fTy (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
     -- check patvars
     ctx <- getCtx
     let pvsN = S.fromList (map defName pvs)
-    patN <- case freePatVars ctx lhs of
+    patN <- case S.unions <$> traverse (freePatVars . snd) lhs of
         Just pvs -> return pvs
-        Nothing  -> verFail $ NonLinearPattern lhs
+        Nothing  -> verFail $ NonLinearPattern (map snd lhs)
 
     if pvsN /= patN
         then verFail $ PatvarsPatternMismatch (S.toList pvsN) (S.toList patN)
@@ -202,8 +203,8 @@ verTm r tm = bt ("UNKNOWN-TERM", tm) $ do
 
 verPatApp :: Relevance -> Ctx Relevance -> Type
     -> [(Relevance, Pat Relevance)] -> Ver Type
-verPatApp r pvs fty [] = fty
-verPatApp r pvs fty ((s,x):xs) = ("APP-TY", fty, x) $ do
+verPatApp r pvs fty [] = return fty
+verPatApp r pvs fty ((s,x):xs) = bt ("APP-TY", fty, x) $ do
     ctx <- getCtx
     case whnf ctx fty of
         Bind Pi [Def n piR piTy (Abstract Var) _] piRhs -> do
@@ -211,18 +212,18 @@ verPatApp r pvs fty ((s,x):xs) = ("APP-TY", fty, x) $ do
             xty <- verPat (r /\ s) pvs x
             with' (M.union pvs) $
                 conv (r /\ s) xty piTy
-            appTy r pvs (subst n (pat2term x) piRhs) xs
+            verPatApp r pvs (subst n (pat2term x) piRhs) xs
 
         _ -> verFail $ NotPi fty
 
 verPat :: Relevance -> Ctx Relevance -> Pat Relevance -> Ver Type
 verPat r pvs (PV n) = bt ("PAT-VAR", n) $ do
     d <- case M.lookup n pvs of
-        Just d -> d
+        Just d  -> return d
         Nothing -> verFail $ UnknownName n
 
     case defBody d of
-        Abstract Variable -> return ()
+        Abstract Var -> return ()
         _ -> verFail $ NotPatvar n
 
     defR d --> r

@@ -139,15 +139,11 @@ insertDefs :: [Def r] -> Ctx r -> Ctx r
 insertDefs (d:ds) = insertDefs ds . M.insert (defName d) d
 insertDefs []     = id
 
-freePatVars :: Ctx r -> Pat r -> Maybe (S.Set Name)
-freePatVars ctx (PV n)
-    | Just (Def _n _r _ty (Abstract Postulate) _cs) <- M.lookup n ctx
-    = Just S.empty
-
-    | otherwise = Just $ S.singleton n
-freePatVars ctx (PForced tm) = Just S.empty
-freePatVars ctx (PCtor f cn args) =
-    foldM linUnion S.empty =<< traverse (freePatVars ctx . snd) args
+freePatVars :: Pat r -> Maybe (S.Set Name)
+freePatVars (PV n) = Just $ S.singleton n
+freePatVars (PForced _) = Just S.empty
+freePatVars (PCtor f cn args) = 
+    foldM linUnion S.empty =<< traverse (freePatVars . snd) args
   where
     linUnion x y
         | S.null (S.intersection x y) = Just $ S.union x y

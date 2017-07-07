@@ -2,9 +2,9 @@
 module Optimisation.Identity (optimise) where
 
 import TT.Core
-import TT.Utils
 import TT.Pretty ()
 
+import Control.Arrow
 import qualified Data.Set as S
 
 idTT :: TT ()
@@ -12,7 +12,7 @@ idTT = Bind Lam [Def (UN "x") () (V Blank) (Abstract Var) noConstrs] (V (UN "x")
 
 isIdClause :: S.Set Name -> Clause () -> Bool
 isIdClause ids (Clause pvs [(_, PV arg)] rhs)
-    = rmId ids rhs == PV arg
+    = rmId ids rhs == V arg
 isIdClause ids (Clause [] [] rhs) = isIdTm ids rhs
 isIdClause _ _ = False
 
@@ -34,7 +34,7 @@ rmIdPat ids (PCtor f cn args) = PCtor f cn [(r, rmIdPat ids p) | (r,p) <- args]
 rmIdPat ids (PForced tm) = PForced $ rmId ids tm
 
 rmIdClause :: S.Set Name -> Clause () -> Clause ()
-rmIdClause ids (Clause pvs lhs rhs) = Clause pvs (rmIdPat ids lhs) (rmId ids rhs)
+rmIdClause ids (Clause pvs lhs rhs) = Clause pvs (map (second $ rmIdPat ids) lhs) (rmId ids rhs)
     -- we don't touch pvs because they don't contain anything interesting at this stage
 
 rmIdBody :: S.Set Name -> Body () -> Body ()
