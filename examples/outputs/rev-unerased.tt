@@ -1,18 +1,18 @@
 -- vim: ft=ttstar
   let
-    postulate Id : (a) -> (x) -> (y) -> Type
-    postulate Refl : (a) -> (x) -> Id a x x
+    constructor Id : (a) -> (x) -> (y) -> Type
+    constructor Refl : (a) -> (x) -> Id a x x
     id = (\a. (\x. x))
     subst 
        a p x [_] [_] = (\w. w)
     cong 
        a b f x [_] [_] = Refl b (f x)
-    postulate Bool : Type
-    postulate T : Bool
-    postulate F : Bool
-    postulate List : Type
-    postulate Nil : List
-    postulate Cons : (x) -> (xs) -> List
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    constructor List : Type
+    constructor Nil : List
+    constructor Cons : (x) -> (xs) -> List
     one = (\x. Cons x Nil)
     app 
        Nil ys = ys
@@ -23,9 +23,9 @@
     appAssoc 
        Nil ys zs = Refl List (app ys zs)
        (Cons x xs) ys zs = cong List List (Cons x) (app (app xs ys) zs) (app xs (app ys zs)) (appAssoc xs ys zs)
-    postulate Rev : (_x7) -> Type
-    postulate RNil : Rev Nil
-    postulate RSnoc : (xs) -> (x) -> (rxs) -> Rev (app xs (one x))
+    constructor Rev : (_x7) -> Type
+    constructor RNil : Rev Nil
+    constructor RSnoc : (xs) -> (x) -> (rxs) -> Rev (app xs (one x))
     rev' 
        xs rxs Nil = subst List Rev xs (app xs Nil) (appRightNeutral xs) rxs
        xs rxs (Cons y ys) = subst List Rev (app (app xs (one y)) ys) (app xs (Cons y ys)) (appAssoc xs (one y) ys) (rev' (app xs (one y)) (RSnoc xs y rxs) ys)

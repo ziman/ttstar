@@ -235,7 +235,7 @@ inferPat pvs s pat@(PForced tm) = bt ("PAT-FORCED", tm) $ do
 inferPat pvs s pat@(PCtor forced cn args) = bt ("PAT-CTOR", pat) $ do
     d <- lookup cn
     case defBody d of
-        Abstract Postulate -> return ()
+        Abstract Constructor -> return ()
         _ -> tcfail $ NotConstructor cn
 
     -- if we inspect, that affects 1) surrounding, 2) ctor relevance

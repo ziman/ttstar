@@ -3,9 +3,9 @@
 ### Desugared ###
 
   let
-    postulate Nat : Type
-    postulate Z : Nat
-    postulate S : (x :R: Nat) -> Nat
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (x :R: Nat) -> Nat
     plus : (_x0 : Nat) -> (_x1 : Nat) -> Nat 
       (m : Nat)
          Z m = m
@@ -21,7 +21,7 @@
            f (S x) = f (S x)
       in 
         let
-          postulate Q : Nat
+          constructor Q : Nat
           three : Nat = 3
         in plus (apply id 2) (apply (const Q) three)
   in main
@@ -29,9 +29,9 @@
 ### Evarified ###
 
   let
-    postulate Nat :1: Type
-    postulate Z :2: Nat
-    postulate S :3: (x :R: Nat) -> Nat
+    constructor Nat :1: Type
+    constructor Z :2: Nat
+    constructor S :3: (x :R: Nat) -> Nat
     plus :4: (_x0 :5: Nat) -> (_x1 :6: Nat) -> Nat 
       (m :7: Nat)
          -8- Z -9- m = m
@@ -47,7 +47,7 @@
            -39- f -40- (S -41- x) = f -42- (S -43- x)
       in 
         let
-          postulate Q :44: Nat
+          constructor Q :44: Nat
           three :45: Nat = 3
         in plus -50- (apply -52- id -51- 2) -49- (apply -56- (const -57- Q) -55- three)
   in main
@@ -64,9 +64,9 @@
 ### Annotated ###
 
   let
-    postulate Nat :E: Type
-    postulate Z :R: Nat
-    postulate S :R: (x :R: Nat) -> Nat
+    constructor Nat :E: Type
+    constructor Z :R: Nat
+    constructor S :R: (x :R: Nat) -> Nat
     plus :R: (_x0 :R: Nat) -> (_x1 :R: Nat) -> Nat 
       (m :R: Nat)
          -R- Z -R- m = m
@@ -82,7 +82,7 @@
            -R- f -R- (S -R- x) = f -R- (S -R- x)
       in 
         let
-          postulate Q :R: Nat
+          constructor Q :R: Nat
           three :R: Nat = 3
         in plus -R- (apply -R- id -R- 2) -R- (apply -R- (const -R- Q) -R- three)
   in main
@@ -90,9 +90,9 @@
 ### Specialised ###
 
   let
-    postulate Nat :E: Type
-    postulate Z :R: Nat
-    postulate S :R: (x :R: Nat) -> Nat
+    constructor Nat :E: Type
+    constructor Z :R: Nat
+    constructor S :R: (x :R: Nat) -> Nat
     plus :R: (_x0 :R: Nat) -> (_x1 :R: Nat) -> Nat 
       (m :R: Nat)
          -R- Z -R- m = m
@@ -108,7 +108,7 @@
            -R- f -R- (S -R- x) = f -R- (S -R- x)
       in 
         let
-          postulate Q :R: Nat
+          constructor Q :R: Nat
           three :R: Nat = 3
         in plus -R- (apply -R- id -R- 2) -R- (apply -R- (const -R- Q) -R- three)
   in main
@@ -116,9 +116,9 @@
 ### Final annotation ###
 
   let
-    postulate Nat :E: Type
-    postulate Z :R: Nat
-    postulate S :R: (x :R: Nat) -> Nat
+    constructor Nat :E: Type
+    constructor Z :R: Nat
+    constructor S :R: (x :R: Nat) -> Nat
     plus :R: (_x0 :R: Nat) -> (_x1 :R: Nat) -> Nat 
       (m :R: Nat)
          -R- Z -R- m = m
@@ -134,7 +134,7 @@
            -R- f -R- (S -R- x) = f -R- (S -R- x)
       in 
         let
-          postulate Q :R: Nat
+          constructor Q :R: Nat
           three :R: Nat = 3
         in plus -R- (apply -R- id -R- 2) -R- (apply -R- (const -R- Q) -R- three)
   in main
@@ -146,8 +146,8 @@ Verification successful.
 ### Pruned ###
 
   let
-    postulate Z : Nat
-    postulate S : (x) -> Nat
+    constructor Z : Nat
+    constructor S : (x) -> Nat
     plus 
        Z m = m
        (S n) m = S (plus n m)
@@ -159,7 +159,7 @@ Verification successful.
          f (S x) = f (S x)
       in 
         let
-          postulate Q : Nat
+          constructor Q : Nat
           three = 3
         in plus (apply id 2) (apply (const Q) three)
   in main
@@ -169,16 +169,16 @@ Verification successful.
 unerased:
   
   let
-    postulate Nat : Type
-    postulate S : (x :R: Nat) -> Nat
+    constructor Nat : Type
+    constructor S : (x :R: Nat) -> Nat
   in 
-    let postulate Q : Nat
+    let constructor Q : Nat
     in S (S Q)
 
 erased:
   
-  let postulate S : (x) -> Nat
+  let constructor S : (x) -> Nat
   in 
-    let postulate Q : Nat
+    let constructor Q : Nat
     in S (S Q)
 

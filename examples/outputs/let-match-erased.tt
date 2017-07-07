@@ -1,7 +1,7 @@
 -- vim: ft=ttstar
   let
-    postulate T : Bool
-    postulate F : Bool
+    constructor T : Bool
+    constructor F : Bool
     main = 
       let not 
          T = F

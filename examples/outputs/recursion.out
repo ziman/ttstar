@@ -3,15 +3,15 @@
 ### Desugared ###
 
   let
-    postulate Bool : Type
-    postulate True : Bool
-    postulate False : Bool
-    postulate Nat : Type
-    postulate Z : Nat
-    postulate S : (n :R: Nat) -> Nat
-    postulate Vec : (_x0 : Nat) -> (_x1 : Type) -> Type
-    postulate VNil : (a : Type) -> Vec Z a
-    postulate VCons : (a : Type) -> (n : Nat) -> (x : a) -> (xs : Vec n a) -> Vec (S n) a
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (n :R: Nat) -> Nat
+    constructor Vec : (_x0 : Nat) -> (_x1 : Type) -> Type
+    constructor VNil : (a : Type) -> Vec Z a
+    constructor VCons : (a : Type) -> (n : Nat) -> (x : a) -> (xs : Vec n a) -> Vec (S n) a
     vlen : (a : Type) -> (n : Nat) -> (xs : Vec n a) -> Nat 
       (a : Type)
          a {Z} (VNil [a]) = Z
@@ -24,15 +24,15 @@
 ### Evarified ###
 
   let
-    postulate Bool :1: Type
-    postulate True :2: Bool
-    postulate False :3: Bool
-    postulate Nat :4: Type
-    postulate Z :5: Nat
-    postulate S :6: (n :R: Nat) -> Nat
-    postulate Vec :7: (_x0 :8: Nat) -> (_x1 :9: Type) -> Type
-    postulate VNil :10: (a :11: Type) -> Vec -13- Z -12- a
-    postulate VCons :14: (a :15: Type) -> (n :16: Nat) -> (x :17: a) -> (xs :18: Vec -20- n -19- a) -> Vec -22- (S -23- n) -21- a
+    constructor Bool :1: Type
+    constructor True :2: Bool
+    constructor False :3: Bool
+    constructor Nat :4: Type
+    constructor Z :5: Nat
+    constructor S :6: (n :R: Nat) -> Nat
+    constructor Vec :7: (_x0 :8: Nat) -> (_x1 :9: Type) -> Type
+    constructor VNil :10: (a :11: Type) -> Vec -13- Z -12- a
+    constructor VCons :14: (a :15: Type) -> (n :16: Nat) -> (x :17: a) -> (xs :18: Vec -20- n -19- a) -> Vec -22- (S -23- n) -21- a
     vlen :24: (a :25: Type) -> (n :26: Nat) -> (xs :27: Vec -29- n -28- a) -> Nat 
       (a :30: Type)
          -31- a -32- {Z} -33- (VNil -34- [a]) = Z
@@ -102,15 +102,15 @@
 ### Annotated ###
 
   let
-    postulate Bool :E: Type
-    postulate True :E: Bool
-    postulate False :E: Bool
-    postulate Nat :E: Type
-    postulate Z :R: Nat
-    postulate S :R: (n :R: Nat) -> Nat
-    postulate Vec :E: (_x0 :E: Nat) -> (_x1 :E: Type) -> Type
-    postulate VNil :R: (a :E: Type) -> Vec -E- Z -E- a
-    postulate VCons :R: (a :E: Type) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+    constructor Bool :E: Type
+    constructor True :E: Bool
+    constructor False :E: Bool
+    constructor Nat :E: Type
+    constructor Z :R: Nat
+    constructor S :R: (n :R: Nat) -> Nat
+    constructor Vec :E: (_x0 :E: Nat) -> (_x1 :E: Type) -> Type
+    constructor VNil :R: (a :E: Type) -> Vec -E- Z -E- a
+    constructor VCons :R: (a :E: Type) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     vlen :R: (a :E: Type) -> (n :E: Nat) -> (xs :R: Vec -E- n -E- a) -> Nat 
       (a :E: Type)
          -E- a -E- {Z} -R- (VNil -E- [a]) = Z
@@ -123,15 +123,15 @@
 ### Specialised ###
 
   let
-    postulate Bool :E: Type
-    postulate True :E: Bool
-    postulate False :E: Bool
-    postulate Nat :E: Type
-    postulate Z :R: Nat
-    postulate S :R: (n :R: Nat) -> Nat
-    postulate Vec :E: (_x0 :E: Nat) -> (_x1 :E: Type) -> Type
-    postulate VNil :R: (a :E: Type) -> Vec -E- Z -E- a
-    postulate VCons :R: (a :E: Type) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+    constructor Bool :E: Type
+    constructor True :E: Bool
+    constructor False :E: Bool
+    constructor Nat :E: Type
+    constructor Z :R: Nat
+    constructor S :R: (n :R: Nat) -> Nat
+    constructor Vec :E: (_x0 :E: Nat) -> (_x1 :E: Type) -> Type
+    constructor VNil :R: (a :E: Type) -> Vec -E- Z -E- a
+    constructor VCons :R: (a :E: Type) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     vlen :R: (a :E: Type) -> (n :E: Nat) -> (xs :R: Vec -E- n -E- a) -> Nat 
       (a :E: Type)
          -E- a -E- {Z} -R- (VNil -E- [a]) = Z
@@ -144,15 +144,15 @@
 ### Final annotation ###
 
   let
-    postulate Bool :E: Type
-    postulate True :E: Bool
-    postulate False :E: Bool
-    postulate Nat :E: Type
-    postulate Z :R: Nat
-    postulate S :R: (n :R: Nat) -> Nat
-    postulate Vec :E: (_x0 :E: Nat) -> (_x1 :E: Type) -> Type
-    postulate VNil :R: (a :E: Type) -> Vec -E- Z -E- a
-    postulate VCons :R: (a :E: Type) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+    constructor Bool :E: Type
+    constructor True :E: Bool
+    constructor False :E: Bool
+    constructor Nat :E: Type
+    constructor Z :R: Nat
+    constructor S :R: (n :R: Nat) -> Nat
+    constructor Vec :E: (_x0 :E: Nat) -> (_x1 :E: Type) -> Type
+    constructor VNil :R: (a :E: Type) -> Vec -E- Z -E- a
+    constructor VCons :R: (a :E: Type) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     vlen :R: (a :E: Type) -> (n :E: Nat) -> (xs :R: Vec -E- n -E- a) -> Nat 
       (a :E: Type)
          -E- a -E- {Z} -R- (VNil -E- [a]) = Z
@@ -169,10 +169,10 @@ Verification successful.
 ### Pruned ###
 
   let
-    postulate Z : Nat
-    postulate S : (n) -> Nat
-    postulate VNil : Vec
-    postulate VCons : (xs) -> Vec
+    constructor Z : Nat
+    constructor S : (n) -> Nat
+    constructor VNil : Vec
+    constructor VCons : (xs) -> Vec
     vlen 
        VNil = Z
        (VCons xs) = S (vlen xs)
@@ -185,15 +185,15 @@ Verification successful.
 unerased:
   
   let
-    postulate Nat : Type
-    postulate Z : Nat
-    postulate S : (n :R: Nat) -> Nat
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (n :R: Nat) -> Nat
   in 2
 
 erased:
   
   let
-    postulate Z : Nat
-    postulate S : (n) -> Nat
+    constructor Z : Nat
+    constructor S : (n) -> Nat
   in 2
 

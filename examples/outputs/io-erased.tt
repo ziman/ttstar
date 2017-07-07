@@ -1,12 +1,12 @@
 -- vim: ft=ttstar
   let
-    postulate Z : Nat
-    postulate S : (x) -> Nat
-    postulate MkUnit : Unit
-    postulate MkPair : (_x5) -> (_x6) -> Pair
+    constructor Z : Nat
+    constructor S : (x) -> Nat
+    constructor MkUnit : Unit
+    constructor MkPair : (_x5) -> (_x6) -> Pair
     snd 
        ({_} _ y) = y
-    postulate MkSt : (run) -> State
+    constructor MkSt : (run) -> State
     runState 
        ({_} run) = run
     execState = (\x. (\s. snd (runState x s)))
@@ -23,7 +23,7 @@
     ioBind = (\x. (\y. stBind x y))
     ioWrapImpure = (\impureF. MkSt (\w. MkPair w (impureF MkUnit)))
     unsafePerformIO = (\x. 
-      let postulate TheWorld : RealWorld
+      let constructor TheWorld : RealWorld
       in execState x TheWorld)
     foreign intS
     foreign intZ

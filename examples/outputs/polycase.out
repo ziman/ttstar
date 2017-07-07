@@ -3,14 +3,14 @@
 ### Desugared ###
 
   let
-    postulate Mool : Type
-    postulate Q : Mool
-    postulate W : Mool
-    postulate Bool : Type
-    postulate T : Bool
-    postulate F : Bool
-    postulate Id : (a : Type) -> (x : a) -> (y : a) -> Type
-    postulate Refl : (a : Type) -> (x : a) -> Id a x x
+    constructor Mool : Type
+    constructor Q : Mool
+    constructor W : Mool
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    constructor Id : (a : Type) -> (x : a) -> (y : a) -> Type
+    constructor Refl : (a : Type) -> (x : a) -> Id a x x
     not : (_x0 : Bool) -> Bool 
        T = F
        F = T
@@ -37,14 +37,14 @@
 ### Evarified ###
 
   let
-    postulate Mool :1: Type
-    postulate Q :2: Mool
-    postulate W :3: Mool
-    postulate Bool :4: Type
-    postulate T :5: Bool
-    postulate F :6: Bool
-    postulate Id :7: (a :8: Type) -> (x :9: a) -> (y :10: a) -> Type
-    postulate Refl :11: (a :12: Type) -> (x :13: a) -> Id -16- a -15- x -14- x
+    constructor Mool :1: Type
+    constructor Q :2: Mool
+    constructor W :3: Mool
+    constructor Bool :4: Type
+    constructor T :5: Bool
+    constructor F :6: Bool
+    constructor Id :7: (a :8: Type) -> (x :9: a) -> (y :10: a) -> Type
+    constructor Refl :11: (a :12: Type) -> (x :13: a) -> Id -16- a -15- x -14- x
     not :17: (_x0 :18: Bool) -> Bool 
        -19- T = F
        -20- F = T
@@ -80,14 +80,14 @@
 ### Annotated ###
 
   let
-    postulate Mool :E: Type
-    postulate Q :R: Mool
-    postulate W :R: Mool
-    postulate Bool :E: Type
-    postulate T :R: Bool
-    postulate F :R: Bool
-    postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
-    postulate Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+    constructor Mool :E: Type
+    constructor Q :R: Mool
+    constructor W :R: Mool
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    constructor Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
+    constructor Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
     not :R: (_x0 :R: Bool) -> Bool 
        -R- T = F
        -R- F = T
@@ -114,14 +114,14 @@
 ### Specialised ###
 
   let
-    postulate Mool :E: Type
-    postulate Q :R: Mool
-    postulate W :R: Mool
-    postulate Bool :E: Type
-    postulate T :R: Bool
-    postulate F :R: Bool
-    postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
-    postulate Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+    constructor Mool :E: Type
+    constructor Q :R: Mool
+    constructor W :R: Mool
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    constructor Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
+    constructor Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
     not :R: (_x0 :R: Bool) -> Bool 
        -R- T = F
        -R- F = T
@@ -148,14 +148,14 @@
 ### Final annotation ###
 
   let
-    postulate Mool :E: Type
-    postulate Q :R: Mool
-    postulate W :R: Mool
-    postulate Bool :E: Type
-    postulate T :R: Bool
-    postulate F :R: Bool
-    postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
-    postulate Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+    constructor Mool :E: Type
+    constructor Q :R: Mool
+    constructor W :R: Mool
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    constructor Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
+    constructor Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
     not :R: (_x0 :R: Bool) -> Bool 
        -R- T = F
        -R- F = T
@@ -186,10 +186,10 @@ Verification successful.
 ### Pruned ###
 
   let
-    postulate Q : Mool
-    postulate W : Mool
-    postulate T : Bool
-    postulate F : Bool
+    constructor Q : Mool
+    constructor W : Mool
+    constructor T : Bool
+    constructor F : Bool
     not 
        T = F
        F = T
@@ -207,12 +207,12 @@ Verification successful.
 unerased:
   
   let
-    postulate Mool : Type
-    postulate W : Mool
+    constructor Mool : Type
+    constructor W : Mool
   in W
 
 erased:
   
-  let postulate W : Mool
+  let constructor W : Mool
   in W
 

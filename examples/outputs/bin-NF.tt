@@ -1,11 +1,11 @@
 -- vim: ft=ttstar
   let
-    postulate Z : Nat
-    postulate S : (x) -> Nat
-    postulate True : Bool
-    postulate False : Bool
-    postulate N : Bin
-    postulate C : (rest) -> Bin
+    constructor Z : Nat
+    constructor S : (x) -> Nat
+    constructor True : Bool
+    constructor False : Bool
+    constructor N : Bin
+    constructor C : (rest) -> Bin
     add' 
        {_} N N = C N
        ({_} w) (C xn) (C yn) = 

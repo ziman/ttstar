@@ -3,15 +3,15 @@
 ### Desugared ###
 
   let
-    postulate N : Type
-    postulate Z : N
-    postulate S : (x :R: N) -> N
-    postulate B : Type
-    postulate T : B
-    postulate F : B
-    postulate List : Type
-    postulate Cons : (_x0 : B) -> (_x1 : List) -> List
-    postulate Nil : List
+    constructor N : Type
+    constructor Z : N
+    constructor S : (x :R: N) -> N
+    constructor B : Type
+    constructor T : B
+    constructor F : B
+    constructor List : Type
+    constructor Cons : (_x0 : B) -> (_x1 : List) -> List
+    constructor Nil : List
     not : (_x2 : B) -> B 
        T = F
        F = T
@@ -21,11 +21,11 @@
          b Z = Nil
       (b : B) (n : N)
          b (S n) = Cons b (genList (not b) n)
-    postulate Eq : (a : Type) -> (_x5 : a) -> (_x6 : a) -> Type
-    postulate Refl : (a : Type) -> (x : a) -> Eq a x x
-    postulate Maybe : (_x7 : Type) -> Type
-    postulate Nothing : (a : Type) -> Maybe a
-    postulate Just : (a : Type) -> (x : a) -> Maybe a
+    constructor Eq : (a : Type) -> (_x5 : a) -> (_x6 : a) -> Type
+    constructor Refl : (a : Type) -> (x : a) -> Eq a x x
+    constructor Maybe : (_x7 : Type) -> Type
+    constructor Nothing : (a : Type) -> Maybe a
+    constructor Just : (a : Type) -> (x : a) -> Maybe a
     semiDecEqB : (x : B) -> (y : B) -> Maybe (Eq B x y) 
        T T = Just (Eq B T T) (Refl B T)
        F F = Just (Eq B F F) (Refl B F)
@@ -55,15 +55,15 @@
 ### Evarified ###
 
   let
-    postulate N :1: Type
-    postulate Z :2: N
-    postulate S :3: (x :R: N) -> N
-    postulate B :4: Type
-    postulate T :5: B
-    postulate F :6: B
-    postulate List :7: Type
-    postulate Cons :8: (_x0 :9: B) -> (_x1 :10: List) -> List
-    postulate Nil :11: List
+    constructor N :1: Type
+    constructor Z :2: N
+    constructor S :3: (x :R: N) -> N
+    constructor B :4: Type
+    constructor T :5: B
+    constructor F :6: B
+    constructor List :7: Type
+    constructor Cons :8: (_x0 :9: B) -> (_x1 :10: List) -> List
+    constructor Nil :11: List
     not :12: (_x2 :13: B) -> B 
        -14- T = F
        -15- F = T
@@ -73,11 +73,11 @@
          -21- b -22- Z = Nil
       (b :23: B) (n :24: N)
          -25- b -26- (S -27- n) = Cons -29- b -28- (genList -31- (not -32- b) -30- n)
-    postulate Eq :33: (a :34: Type) -> (_x5 :35: a) -> (_x6 :36: a) -> Type
-    postulate Refl :37: (a :38: Type) -> (x :39: a) -> Eq -42- a -41- x -40- x
-    postulate Maybe :43: (_x7 :44: Type) -> Type
-    postulate Nothing :45: (a :46: Type) -> Maybe -47- a
-    postulate Just :48: (a :49: Type) -> (x :50: a) -> Maybe -51- a
+    constructor Eq :33: (a :34: Type) -> (_x5 :35: a) -> (_x6 :36: a) -> Type
+    constructor Refl :37: (a :38: Type) -> (x :39: a) -> Eq -42- a -41- x -40- x
+    constructor Maybe :43: (_x7 :44: Type) -> Type
+    constructor Nothing :45: (a :46: Type) -> Maybe -47- a
+    constructor Just :48: (a :49: Type) -> (x :50: a) -> Maybe -51- a
     semiDecEqB :52: (x :53: B) -> (y :54: B) -> Maybe -55- (Eq -58- B -57- x -56- y) 
        -59- T -60- T = Just -62- (Eq -65- B -64- T -63- T) -61- (Refl -67- B -66- T)
        -68- F -69- F = Just -71- (Eq -74- B -73- F -72- F) -70- (Refl -76- B -75- F)
@@ -350,15 +350,15 @@
 ### Annotated ###
 
   let
-    postulate N :E: Type
-    postulate Z :R: N
-    postulate S :R: (x :R: N) -> N
-    postulate B :E: Type
-    postulate T :R: B
-    postulate F :R: B
-    postulate List :E: Type
-    postulate Cons :R: (_x0 :R: B) -> (_x1 :R: List) -> List
-    postulate Nil :R: List
+    constructor N :E: Type
+    constructor Z :R: N
+    constructor S :R: (x :R: N) -> N
+    constructor B :E: Type
+    constructor T :R: B
+    constructor F :R: B
+    constructor List :E: Type
+    constructor Cons :R: (_x0 :R: B) -> (_x1 :R: List) -> List
+    constructor Nil :R: List
     not :R: (_x2 :R: B) -> B 
        -R- T = F
        -R- F = T
@@ -368,11 +368,11 @@
          -R- b -R- Z = Nil
       (b :R: B) (n :R: N)
          -R- b -R- (S -R- n) = Cons -R- b -R- (genList -R- (not -R- b) -R- n)
-    postulate Eq :E: (a :E: Type) -> (_x5 :E: a) -> (_x6 :E: a) -> Type
-    postulate Refl :E: (a :E: Type) -> (x :E: a) -> Eq -E- a -E- x -E- x
-    postulate Maybe :E: (_x7 :E: Type) -> Type
-    postulate Nothing :R: (a :E: Type) -> Maybe -E- a
-    postulate Just :R: (a :E: Type) -> (x :E: a) -> Maybe -E- a
+    constructor Eq :E: (a :E: Type) -> (_x5 :E: a) -> (_x6 :E: a) -> Type
+    constructor Refl :E: (a :E: Type) -> (x :E: a) -> Eq -E- a -E- x -E- x
+    constructor Maybe :E: (_x7 :E: Type) -> Type
+    constructor Nothing :R: (a :E: Type) -> Maybe -E- a
+    constructor Just :R: (a :E: Type) -> (x :E: a) -> Maybe -E- a
     semiDecEqB :R: (x :R: B) -> (y :R: B) -> Maybe -E- (Eq -E- B -E- x -E- y) 
        -R- T -R- T = Just -E- (Eq -E- B -E- T -E- T) -E- (Refl -E- B -E- T)
        -R- F -R- F = Just -E- (Eq -E- B -E- F -E- F) -E- (Refl -E- B -E- F)
@@ -402,15 +402,15 @@
 ### Specialised ###
 
   let
-    postulate N :E: Type
-    postulate Z :R: N
-    postulate S :R: (x :R: N) -> N
-    postulate B :E: Type
-    postulate T :R: B
-    postulate F :R: B
-    postulate List :E: Type
-    postulate Cons :R: (_x0 :R: B) -> (_x1 :R: List) -> List
-    postulate Nil :R: List
+    constructor N :E: Type
+    constructor Z :R: N
+    constructor S :R: (x :R: N) -> N
+    constructor B :E: Type
+    constructor T :R: B
+    constructor F :R: B
+    constructor List :E: Type
+    constructor Cons :R: (_x0 :R: B) -> (_x1 :R: List) -> List
+    constructor Nil :R: List
     not :R: (_x2 :R: B) -> B 
        -R- T = F
        -R- F = T
@@ -420,11 +420,11 @@
          -R- b -R- Z = Nil
       (b :R: B) (n :R: N)
          -R- b -R- (S -R- n) = Cons -R- b -R- (genList -R- (not -R- b) -R- n)
-    postulate Eq :E: (a :E: Type) -> (_x5 :E: a) -> (_x6 :E: a) -> Type
-    postulate Refl :E: (a :E: Type) -> (x :E: a) -> Eq -E- a -E- x -E- x
-    postulate Maybe :E: (_x7 :E: Type) -> Type
-    postulate Nothing :R: (a :E: Type) -> Maybe -E- a
-    postulate Just :R: (a :E: Type) -> (x :E: a) -> Maybe -E- a
+    constructor Eq :E: (a :E: Type) -> (_x5 :E: a) -> (_x6 :E: a) -> Type
+    constructor Refl :E: (a :E: Type) -> (x :E: a) -> Eq -E- a -E- x -E- x
+    constructor Maybe :E: (_x7 :E: Type) -> Type
+    constructor Nothing :R: (a :E: Type) -> Maybe -E- a
+    constructor Just :R: (a :E: Type) -> (x :E: a) -> Maybe -E- a
     semiDecEqB :R: (x :R: B) -> (y :R: B) -> Maybe -E- (Eq -E- B -E- x -E- y) 
        -R- T -R- T = Just -E- (Eq -E- B -E- T -E- T) -E- (Refl -E- B -E- T)
        -R- F -R- F = Just -E- (Eq -E- B -E- F -E- F) -E- (Refl -E- B -E- F)
@@ -454,15 +454,15 @@
 ### Final annotation ###
 
   let
-    postulate N :E: Type
-    postulate Z :R: N
-    postulate S :R: (x :R: N) -> N
-    postulate B :E: Type
-    postulate T :R: B
-    postulate F :R: B
-    postulate List :E: Type
-    postulate Cons :R: (_x0 :R: B) -> (_x1 :R: List) -> List
-    postulate Nil :R: List
+    constructor N :E: Type
+    constructor Z :R: N
+    constructor S :R: (x :R: N) -> N
+    constructor B :E: Type
+    constructor T :R: B
+    constructor F :R: B
+    constructor List :E: Type
+    constructor Cons :R: (_x0 :R: B) -> (_x1 :R: List) -> List
+    constructor Nil :R: List
     not :R: (_x2 :R: B) -> B 
        -R- T = F
        -R- F = T
@@ -472,11 +472,11 @@
          -R- b -R- Z = Nil
       (b :R: B) (n :R: N)
          -R- b -R- (S -R- n) = Cons -R- b -R- (genList -R- (not -R- b) -R- n)
-    postulate Eq :E: (a :E: Type) -> (_x5 :E: a) -> (_x6 :E: a) -> Type
-    postulate Refl :E: (a :E: Type) -> (x :E: a) -> Eq -E- a -E- x -E- x
-    postulate Maybe :E: (_x7 :E: Type) -> Type
-    postulate Nothing :R: (a :E: Type) -> Maybe -E- a
-    postulate Just :R: (a :E: Type) -> (x :E: a) -> Maybe -E- a
+    constructor Eq :E: (a :E: Type) -> (_x5 :E: a) -> (_x6 :E: a) -> Type
+    constructor Refl :E: (a :E: Type) -> (x :E: a) -> Eq -E- a -E- x -E- x
+    constructor Maybe :E: (_x7 :E: Type) -> Type
+    constructor Nothing :R: (a :E: Type) -> Maybe -E- a
+    constructor Just :R: (a :E: Type) -> (x :E: a) -> Maybe -E- a
     semiDecEqB :R: (x :R: B) -> (y :R: B) -> Maybe -E- (Eq -E- B -E- x -E- y) 
        -R- T -R- T = Just -E- (Eq -E- B -E- T -E- T) -E- (Refl -E- B -E- T)
        -R- F -R- F = Just -E- (Eq -E- B -E- F -E- F) -E- (Refl -E- B -E- F)
@@ -510,12 +510,12 @@ Verification successful.
 ### Pruned ###
 
   let
-    postulate Z : N
-    postulate S : (x) -> N
-    postulate T : B
-    postulate F : B
-    postulate Cons : (_x0) -> (_x1) -> List
-    postulate Nil : List
+    constructor Z : N
+    constructor S : (x) -> N
+    constructor T : B
+    constructor F : B
+    constructor Cons : (_x0) -> (_x1) -> List
+    constructor Nil : List
     not 
        T = F
        F = T
@@ -523,8 +523,8 @@ Verification successful.
     genList 
        _ Z = Nil
        b (S n) = Cons b (genList (not b) n)
-    postulate Nothing : Maybe
-    postulate Just : Maybe
+    constructor Nothing : Maybe
+    constructor Just : Maybe
     semiDecEqB 
        T T = Just
        F F = Just
@@ -550,15 +550,15 @@ Verification successful.
 unerased:
   
   let
-    postulate N : Type
-    postulate Z : N
-    postulate S : (x :R: N) -> N
-    postulate B : Type
-    postulate T : B
-    postulate F : B
-    postulate List : Type
-    postulate Cons : (_x0 : B) -> (_x1 : List) -> List
-    postulate Nil : List
+    constructor N : Type
+    constructor Z : N
+    constructor S : (x :R: N) -> N
+    constructor B : Type
+    constructor T : B
+    constructor F : B
+    constructor List : Type
+    constructor Cons : (_x0 : B) -> (_x1 : List) -> List
+    constructor Nil : List
     not : (_x2 : B) -> B 
        T = F
        F = T
@@ -568,11 +568,11 @@ unerased:
          b Z = Nil
       (b : B) (n : N)
          b (S n) = Cons b (genList (not b) n)
-    postulate Eq : (a : Type) -> (_x5 : a) -> (_x6 : a) -> Type
-    postulate Refl : (a : Type) -> (x : a) -> Eq a x x
-    postulate Maybe : (_x7 : Type) -> Type
-    postulate Nothing : (a : Type) -> Maybe a
-    postulate Just : (a : Type) -> (x : a) -> Maybe a
+    constructor Eq : (a : Type) -> (_x5 : a) -> (_x6 : a) -> Type
+    constructor Refl : (a : Type) -> (x : a) -> Eq a x x
+    constructor Maybe : (_x7 : Type) -> Type
+    constructor Nothing : (a : Type) -> Maybe a
+    constructor Just : (a : Type) -> (x : a) -> Maybe a
     semiDecEqB : (x : B) -> (y : B) -> Maybe (Eq B x y) 
        T T = Just (Eq B T T) (Refl B T)
        F F = Just (Eq B F F) (Refl B F)
@@ -599,12 +599,12 @@ unerased:
 erased:
   
   let
-    postulate Z : N
-    postulate S : (x) -> N
-    postulate T : B
-    postulate F : B
-    postulate Cons : (_x0) -> (_x1) -> List
-    postulate Nil : List
+    constructor Z : N
+    constructor S : (x) -> N
+    constructor T : B
+    constructor F : B
+    constructor Cons : (_x0) -> (_x1) -> List
+    constructor Nil : List
     not 
        T = F
        F = T
@@ -612,8 +612,8 @@ erased:
     genList 
        _ Z = Nil
        b (S n) = Cons b (genList (not b) n)
-    postulate Nothing : Maybe
-    postulate Just : Maybe
+    constructor Nothing : Maybe
+    constructor Just : Maybe
     semiDecEqB 
        T T = Just
        F F = Just

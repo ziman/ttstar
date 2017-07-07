@@ -1,8 +1,8 @@
 -- vim: ft=ttstar
   let
-    postulate T : Bool
-    postulate F : Bool
-    postulate P : (x) -> (y) -> Pair
+    constructor T : Bool
+    constructor F : Bool
+    constructor P : (x) -> (y) -> Pair
     fst 
        (P l _) = l
     snd 

@@ -3,40 +3,40 @@
 ### Desugared ###
 
   let
-    postulate N : Type
-    postulate Z : N
-    postulate S : (_x0 : N) -> N
-    postulate Fin : (_x1 : N) -> Type
-    postulate FZ : (n : N) -> Fin (S n)
-    postulate FS : (n : N) -> (x :R: Fin n) -> Fin (S n)
+    constructor N : Type
+    constructor Z : N
+    constructor S : (_x0 : N) -> N
+    constructor Fin : (_x1 : N) -> Type
+    constructor FZ : (n : N) -> Fin (S n)
+    constructor FS : (n : N) -> (x :R: Fin n) -> Fin (S n)
     embed : (n : N) -> (_x2 : Fin n) -> Fin (S n) 
       (n : N)
          [S n] (FZ n) = FZ (S n)
       (n : N) (x : Fin n)
          [S n] (FS n x) = FS (S n) (embed n x)
     fsuc : (n : N) -> (x : Fin n) -> Fin (S n) = FS
-    postulate Pair : Type
-    postulate P : (x :R: Fin 3) -> (y :R: Fin 4) -> Pair
+    constructor Pair : Type
+    constructor P : (x :R: Fin 3) -> (y :R: Fin 4) -> Pair
     main : Pair = P (fsuc 2 (FS 1 (FZ Z))) (embed 3 (FS 2 (FS 1 (FZ Z))))
   in main
 
 ### Evarified ###
 
   let
-    postulate N :1: Type
-    postulate Z :2: N
-    postulate S :3: (_x0 :4: N) -> N
-    postulate Fin :5: (_x1 :6: N) -> Type
-    postulate FZ :7: (n :8: N) -> Fin -9- (S -10- n)
-    postulate FS :11: (n :12: N) -> (x :R: Fin -13- n) -> Fin -14- (S -15- n)
+    constructor N :1: Type
+    constructor Z :2: N
+    constructor S :3: (_x0 :4: N) -> N
+    constructor Fin :5: (_x1 :6: N) -> Type
+    constructor FZ :7: (n :8: N) -> Fin -9- (S -10- n)
+    constructor FS :11: (n :12: N) -> (x :R: Fin -13- n) -> Fin -14- (S -15- n)
     embed :16: (n :17: N) -> (_x2 :18: Fin -19- n) -> Fin -20- (S -21- n) 
       (n :22: N)
          -23- [S -24- n] -25- (FZ -26- n) = FZ -27- (S -28- n)
       (n :29: N) (x :30: Fin -31- n)
          -32- [S -33- n] -34- (FS -35- n -36- x) = FS -38- (S -39- n) -37- (embed -41- n -40- x)
     fsuc :42: (n :43: N) -> (x :44: Fin -45- n) -> Fin -46- (S -47- n) = FS
-    postulate Pair :48: Type
-    postulate P :49: (x :R: Fin -50- 3) -> (y :R: Fin -54- 4) -> Pair
+    constructor Pair :48: Type
+    constructor P :49: (x :R: Fin -50- 3) -> (y :R: Fin -54- 4) -> Pair
     main :59: Pair = P -61- (fsuc -63- 2 -62- (FS -67- 1 -66- (FZ -69- Z))) -60- (embed -71- 3 -70- (FS -76- 2 -75- (FS -80- 1 -79- (FZ -82- Z))))
   in main
 
@@ -125,60 +125,60 @@
 ### Annotated ###
 
   let
-    postulate N :E: Type
-    postulate Z :E: N
-    postulate S :E: (_x0 :E: N) -> N
-    postulate Fin :E: (_x1 :E: N) -> Type
-    postulate FZ :R: (n :E: N) -> Fin -E- (S -E- n)
-    postulate FS :R: (n :E: N) -> (x :R: Fin -E- n) -> Fin -E- (S -E- n)
+    constructor N :E: Type
+    constructor Z :E: N
+    constructor S :E: (_x0 :E: N) -> N
+    constructor Fin :E: (_x1 :E: N) -> Type
+    constructor FZ :R: (n :E: N) -> Fin -E- (S -E- n)
+    constructor FS :R: (n :E: N) -> (x :R: Fin -E- n) -> Fin -E- (S -E- n)
     embed :R: (n :E: N) -> (_x2 :R: Fin -E- n) -> Fin -E- (S -E- n) 
       (n :E: N)
          -E- [S -E- n] -R- (FZ -E- n) = FZ -E- (S -E- n)
       (n :E: N) (x :R: Fin -E- n)
          -E- [S -E- n] -R- (FS -E- n -R- x) = FS -E- (S -E- n) -R- (embed -E- n -R- x)
     fsuc :R: (n :E: N) -> (x :R: Fin -E- n) -> Fin -E- (S -E- n) = FS
-    postulate Pair :E: Type
-    postulate P :R: (x :R: Fin -E- 3) -> (y :R: Fin -E- 4) -> Pair
+    constructor Pair :E: Type
+    constructor P :R: (x :R: Fin -E- 3) -> (y :R: Fin -E- 4) -> Pair
     main :R: Pair = P -R- (fsuc -E- 2 -R- (FS -E- 1 -R- (FZ -E- Z))) -R- (embed -E- 3 -R- (FS -E- 2 -R- (FS -E- 1 -R- (FZ -E- Z))))
   in main
 
 ### Specialised ###
 
   let
-    postulate N :E: Type
-    postulate Z :E: N
-    postulate S :E: (_x0 :E: N) -> N
-    postulate Fin :E: (_x1 :E: N) -> Type
-    postulate FZ :R: (n :E: N) -> Fin -E- (S -E- n)
-    postulate FS :R: (n :E: N) -> (x :R: Fin -E- n) -> Fin -E- (S -E- n)
+    constructor N :E: Type
+    constructor Z :E: N
+    constructor S :E: (_x0 :E: N) -> N
+    constructor Fin :E: (_x1 :E: N) -> Type
+    constructor FZ :R: (n :E: N) -> Fin -E- (S -E- n)
+    constructor FS :R: (n :E: N) -> (x :R: Fin -E- n) -> Fin -E- (S -E- n)
     embed :R: (n :E: N) -> (_x2 :R: Fin -E- n) -> Fin -E- (S -E- n) 
       (n :E: N)
          -E- [S -E- n] -R- (FZ -E- n) = FZ -E- (S -E- n)
       (n :E: N) (x :R: Fin -E- n)
          -E- [S -E- n] -R- (FS -E- n -R- x) = FS -E- (S -E- n) -R- (embed -E- n -R- x)
     fsuc :R: (n :E: N) -> (x :R: Fin -E- n) -> Fin -E- (S -E- n) = FS
-    postulate Pair :E: Type
-    postulate P :R: (x :R: Fin -E- 3) -> (y :R: Fin -E- 4) -> Pair
+    constructor Pair :E: Type
+    constructor P :R: (x :R: Fin -E- 3) -> (y :R: Fin -E- 4) -> Pair
     main :R: Pair = P -R- (fsuc -E- 2 -R- (FS -E- 1 -R- (FZ -E- Z))) -R- (embed -E- 3 -R- (FS -E- 2 -R- (FS -E- 1 -R- (FZ -E- Z))))
   in main
 
 ### Final annotation ###
 
   let
-    postulate N :E: Type
-    postulate Z :E: N
-    postulate S :E: (_x0 :E: N) -> N
-    postulate Fin :E: (_x1 :E: N) -> Type
-    postulate FZ :R: (n :E: N) -> Fin -E- (S -E- n)
-    postulate FS :R: (n :E: N) -> (x :R: Fin -E- n) -> Fin -E- (S -E- n)
+    constructor N :E: Type
+    constructor Z :E: N
+    constructor S :E: (_x0 :E: N) -> N
+    constructor Fin :E: (_x1 :E: N) -> Type
+    constructor FZ :R: (n :E: N) -> Fin -E- (S -E- n)
+    constructor FS :R: (n :E: N) -> (x :R: Fin -E- n) -> Fin -E- (S -E- n)
     embed :R: (n :E: N) -> (_x2 :R: Fin -E- n) -> Fin -E- (S -E- n) 
       (n :E: N)
          -E- [S -E- n] -R- (FZ -E- n) = FZ -E- (S -E- n)
       (n :E: N) (x :R: Fin -E- n)
          -E- [S -E- n] -R- (FS -E- n -R- x) = FS -E- (S -E- n) -R- (embed -E- n -R- x)
     fsuc :R: (n :E: N) -> (x :R: Fin -E- n) -> Fin -E- (S -E- n) = FS
-    postulate Pair :E: Type
-    postulate P :R: (x :R: Fin -E- 3) -> (y :R: Fin -E- 4) -> Pair
+    constructor Pair :E: Type
+    constructor P :R: (x :R: Fin -E- 3) -> (y :R: Fin -E- 4) -> Pair
     main :R: Pair = P -R- (fsuc -E- 2 -R- (FS -E- 1 -R- (FZ -E- Z))) -R- (embed -E- 3 -R- (FS -E- 2 -R- (FS -E- 1 -R- (FZ -E- Z))))
   in main
 
@@ -189,13 +189,13 @@ Verification successful.
 ### Pruned ###
 
   let
-    postulate FZ : Fin
-    postulate FS : (x) -> Fin
+    constructor FZ : Fin
+    constructor FS : (x) -> Fin
     embed 
        FZ = FZ
        (FS x) = FS (embed x)
     fsuc = FS
-    postulate P : (x) -> (y) -> Pair
+    constructor P : (x) -> (y) -> Pair
     main = P (fsuc (FS FZ)) (embed (FS (FS FZ)))
   in main
 
@@ -204,21 +204,21 @@ Verification successful.
 unerased:
   
   let
-    postulate N : Type
-    postulate Z : N
-    postulate S : (_x0 : N) -> N
-    postulate Fin : (_x1 : N) -> Type
-    postulate FZ : (n : N) -> Fin (S n)
-    postulate FS : (n : N) -> (x :R: Fin n) -> Fin (S n)
-    postulate Pair : Type
-    postulate P : (x :R: Fin 3) -> (y :R: Fin 4) -> Pair
+    constructor N : Type
+    constructor Z : N
+    constructor S : (_x0 : N) -> N
+    constructor Fin : (_x1 : N) -> Type
+    constructor FZ : (n : N) -> Fin (S n)
+    constructor FS : (n : N) -> (x :R: Fin n) -> Fin (S n)
+    constructor Pair : Type
+    constructor P : (x :R: Fin 3) -> (y :R: Fin 4) -> Pair
   in P (FS 2 (FS 1 (FZ Z))) (FS 3 (FS 2 (FZ 1)))
 
 erased:
   
   let
-    postulate FZ : Fin
-    postulate FS : (x) -> Fin
-    postulate P : (x) -> (y) -> Pair
+    constructor FZ : Fin
+    constructor FS : (x) -> Fin
+    constructor P : (x) -> (y) -> Pair
   in P (FS (FS FZ)) (FS (FS FZ))
 

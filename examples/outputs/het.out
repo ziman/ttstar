@@ -3,16 +3,16 @@
 ### Desugared ###
 
   let
-    postulate Tuple : (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type
-    postulate Bool : Type
-    postulate T : Bool
-    postulate F : Bool
-    postulate Mool : Type
-    postulate Q : Mool
-    postulate W : Mool
-    postulate U : Type
-    postulate B : U
-    postulate M : U
+    constructor Tuple : (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    constructor Mool : Type
+    constructor Q : Mool
+    constructor W : Mool
+    constructor U : Type
+    constructor B : U
+    constructor M : U
     ty : (_x0 : U) -> Type 
        B = Bool
        M = Mool
@@ -27,16 +27,16 @@
 ### Evarified ###
 
   let
-    postulate Tuple :1: (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type
-    postulate Bool :2: Type
-    postulate T :3: Bool
-    postulate F :4: Bool
-    postulate Mool :5: Type
-    postulate Q :6: Mool
-    postulate W :7: Mool
-    postulate U :8: Type
-    postulate B :9: U
-    postulate M :10: U
+    constructor Tuple :1: (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type
+    constructor Bool :2: Type
+    constructor T :3: Bool
+    constructor F :4: Bool
+    constructor Mool :5: Type
+    constructor Q :6: Mool
+    constructor W :7: Mool
+    constructor U :8: Type
+    constructor B :9: U
+    constructor M :10: U
     ty :11: (_x0 :12: U) -> Type 
        -13- B = Bool
        -14- M = Mool
@@ -69,16 +69,16 @@
 ### Annotated ###
 
   let
-    postulate Tuple :R: (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type
-    postulate Bool :R: Type
-    postulate T :R: Bool
-    postulate F :R: Bool
-    postulate Mool :R: Type
-    postulate Q :R: Mool
-    postulate W :R: Mool
-    postulate U :E: Type
-    postulate B :E: U
-    postulate M :E: U
+    constructor Tuple :R: (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type
+    constructor Bool :R: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    constructor Mool :R: Type
+    constructor Q :R: Mool
+    constructor W :R: Mool
+    constructor U :E: Type
+    constructor B :E: U
+    constructor M :E: U
     ty :E: (_x0 :E: U) -> Type 
        -E- B = Bool
        -E- M = Mool
@@ -93,16 +93,16 @@
 ### Specialised ###
 
   let
-    postulate Tuple :R: (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type
-    postulate Bool :R: Type
-    postulate T :R: Bool
-    postulate F :R: Bool
-    postulate Mool :R: Type
-    postulate Q :R: Mool
-    postulate W :R: Mool
-    postulate U :E: Type
-    postulate B :E: U
-    postulate M :E: U
+    constructor Tuple :R: (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type
+    constructor Bool :R: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    constructor Mool :R: Type
+    constructor Q :R: Mool
+    constructor W :R: Mool
+    constructor U :E: Type
+    constructor B :E: U
+    constructor M :E: U
     ty :E: (_x0 :E: U) -> Type 
        -E- B = Bool
        -E- M = Mool
@@ -117,16 +117,16 @@
 ### Final annotation ###
 
   let
-    postulate Tuple :R: (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type
-    postulate Bool :R: Type
-    postulate T :R: Bool
-    postulate F :R: Bool
-    postulate Mool :R: Type
-    postulate Q :R: Mool
-    postulate W :R: Mool
-    postulate U :E: Type
-    postulate B :E: U
-    postulate M :E: U
+    constructor Tuple :R: (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type
+    constructor Bool :R: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    constructor Mool :R: Type
+    constructor Q :R: Mool
+    constructor W :R: Mool
+    constructor U :E: Type
+    constructor B :E: U
+    constructor M :E: U
     ty :E: (_x0 :E: U) -> Type 
        -E- B = Bool
        -E- M = Mool
@@ -145,13 +145,13 @@ Verification successful.
 ### Pruned ###
 
   let
-    postulate Tuple : (x) -> (y) -> (z) -> (w) -> Type
-    postulate Bool : Type
-    postulate T : Bool
-    postulate F : Bool
-    postulate Mool : Type
-    postulate Q : Mool
-    postulate W : Mool
+    constructor Tuple : (x) -> (y) -> (z) -> (w) -> Type
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    constructor Mool : Type
+    constructor Q : Mool
+    constructor W : Mool
     f 
        T = Bool
        F = Mool
@@ -165,16 +165,16 @@ Verification successful.
 unerased:
   
   let
-    postulate Tuple : (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type
-    postulate Bool : Type
-    postulate Mool : Type
+    constructor Tuple : (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type
+    constructor Bool : Type
+    constructor Mool : Type
   in Tuple Bool Mool Bool Mool
 
 erased:
   
   let
-    postulate Tuple : (x) -> (y) -> (z) -> (w) -> Type
-    postulate Bool : Type
-    postulate Mool : Type
+    constructor Tuple : (x) -> (y) -> (z) -> (w) -> Type
+    constructor Bool : Type
+    constructor Mool : Type
   in Tuple Bool Mool Bool Mool
 

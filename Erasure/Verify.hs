@@ -232,7 +232,7 @@ verPat r pvs (PV n) = bt ("PAT-VAR", n) $ do
 verPat r pvs (PCtor forced cn args) = bt ("PAT-CTOR", cn, args) $ do
     d <- lookupName cn
     case defBody d of
-        Abstract Postulate -> return ()
+        Abstract Constructor -> return ()
         _ -> verFail $ NotConstructor cn
 
     when (not forced) $ r --> defR d

@@ -1,9 +1,9 @@
 -- vim: ft=ttstar
   let
-    postulate Just : (x) -> Maybe
-    postulate Nothing : Maybe
-    postulate Bool : Type
-    postulate False : Bool
+    constructor Just : (x) -> Maybe
+    constructor Nothing : Maybe
+    constructor Bool : Type
+    constructor False : Bool
     f 
        (Just b) = b
        Nothing = Bool

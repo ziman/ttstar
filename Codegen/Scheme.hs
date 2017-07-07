@@ -30,7 +30,7 @@ cgName = text . specialName . concatMap mogrify . show
 
 cgBody :: PrettyR r => Name -> TT r -> Body r -> Doc
 cgBody n ty (Abstract (Foreign code)) = text code
-cgBody n ty (Abstract Postulate) = cgCtor n ty
+cgBody n ty (Abstract Constructor) = cgCtor n ty
 cgBody n ty (Abstract Var) = error $ "let-bound variable: " ++ show n
 cgBody n ty (Term tm) = cgTm tm
 cgBody n ty (Clauses []) = symbol "CannotBeCalled"  -- can appear in unerased code

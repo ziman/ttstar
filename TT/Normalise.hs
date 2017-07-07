@@ -237,15 +237,15 @@ match ctx (PForced tm) tm'
     = Yes M.empty
 
 match ctx (PCtor f cn args) tm'
-    | (V cn', args') <- unApply $ red WHNF ctx tm'
-    = if cn == cn'
+    | (V hn', args') <- unApply $ red WHNF ctx tm'
+    = if cn == hn'
         then if length args /= length args'
             then error $ "matching on " ++ show cn ++ ": arg counts differ"
             else M.unionsWith (\_ _ -> error "non-linear pattern")
                     <$> sequence [match ctx pat arg | ((_,pat),(_,arg)) <- zip args args']
         else
-            case M.lookup cn' ctx of
-                Just (defBody -> Abstract Postulate) -> No
+            case M.lookup hn' ctx of
+                Just (defBody -> Abstract Constructor) -> No
                 _ -> Stuck
 
 match ctx _ _ = Stuck

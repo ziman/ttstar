@@ -1,14 +1,14 @@
 -- vim: ft=ttstar
   let
-    postulate Bool : Type
-    postulate True : Bool
-    postulate False : Bool
-    postulate Foo : (_x0) -> Type
-    postulate Yeah : Foo True
-    postulate Nope : Foo False
-    postulate Maybe : (_x1) -> Type
-    postulate Nothing : (a) -> Maybe a
-    postulate Just : (a) -> (x) -> Maybe a
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
+    constructor Foo : (_x0) -> Type
+    constructor Yeah : Foo True
+    constructor Nope : Foo False
+    constructor Maybe : (_x1) -> Type
+    constructor Nothing : (a) -> Maybe a
+    constructor Just : (a) -> (x) -> Maybe a
     f 
        (Just [_] b) = b
        (Nothing [_]) = False

@@ -1,10 +1,10 @@
 -- vim: ft=ttstar
   let
-    postulate Bool : Type
-    postulate T : Bool
-    postulate F : Bool
-    postulate Unit : Type
-    postulate MkUnit : Unit
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    constructor Unit : Type
+    constructor MkUnit : Unit
     not 
        T = F
        F = T

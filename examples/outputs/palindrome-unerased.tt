@@ -1,22 +1,22 @@
 -- vim: ft=ttstar
   let
-    postulate N : Type
-    postulate Z : N
-    postulate S : (_x0) -> N
-    postulate B : Type
-    postulate T : B
-    postulate F : B
-    postulate List : Type
-    postulate Cons : (_x1) -> (_x2) -> List
-    postulate Nil : List
-    postulate Maybe : (_x3) -> Type
-    postulate Nothing : (a) -> Maybe a
-    postulate Just : (a) -> (x) -> Maybe a
+    constructor N : Type
+    constructor Z : N
+    constructor S : (_x0) -> N
+    constructor B : Type
+    constructor T : B
+    constructor F : B
+    constructor List : Type
+    constructor Cons : (_x1) -> (_x2) -> List
+    constructor Nil : List
+    constructor Maybe : (_x3) -> Type
+    constructor Nothing : (a) -> Maybe a
+    constructor Just : (a) -> (x) -> Maybe a
     not 
        T = F
        F = T
-    postulate Id : (a) -> (x) -> (y) -> Type
-    postulate Refl : (a) -> (x) -> Id a x x
+    constructor Id : (a) -> (x) -> (y) -> Type
+    constructor Refl : (a) -> (x) -> Id a x x
     id = (\a. (\x. x))
     subst 
        a p x [_] [_] = (\w. w)
@@ -32,9 +32,9 @@
     appAssoc 
        Nil ys zs = Refl List (app ys zs)
        (Cons x xs) ys zs = cong List List (Cons x) (app (app xs ys) zs) (app xs (app ys zs)) (appAssoc xs ys zs)
-    postulate Rev : (_x12) -> Type
-    postulate RNil : Rev Nil
-    postulate RSnoc : (xs) -> (x) -> (rxs) -> Rev (app xs (one x))
+    constructor Rev : (_x12) -> Type
+    constructor RNil : Rev Nil
+    constructor RSnoc : (xs) -> (x) -> (rxs) -> Rev (app xs (one x))
     rev' 
        xs rxs Nil = subst List Rev xs (app xs Nil) (appRightNeutral xs) rxs
        xs rxs (Cons y ys) = subst List Rev (app (app xs (one y)) ys) (app xs (Cons y ys)) (appAssoc xs (one y) ys) (rev' (app xs (one y)) (RSnoc xs y rxs) ys)
@@ -43,10 +43,10 @@
        [_] RNil = Nil
        [_] (RSnoc xs x rxs) = Cons x (reverse' xs rxs)
     reverse = (\xs. reverse' xs (rev xs))
-    postulate V : (_x13) -> Type
-    postulate VNil : V Nil
-    postulate VOne : (x) -> V (Cons x Nil)
-    postulate VTwo : (x) -> (xs) -> (u) -> (y) -> V (Cons x (app xs (one y)))
+    constructor V : (_x13) -> Type
+    constructor VNil : V Nil
+    constructor VOne : (x) -> V (Cons x Nil)
+    constructor VTwo : (x) -> (xs) -> (u) -> (y) -> V (Cons x (app xs (one y)))
     length 
        Nil = Z
        (Cons x xs) = S (length xs)
@@ -60,12 +60,12 @@
        (S Z) (Cons x xs) (Cons y ys) = VOne x
        (S (S n)) (Cons x xs) (Cons y ys) = VTwo x (index n xs ys) (build n xs ys) y
        (S n) Nil Nil = VNil
-    postulate eq : (xs) -> Id List (index (length xs) xs (reverse xs)) xs
+    constructor eq : (xs) -> Id List (index (length xs) xs (reverse xs)) xs
     toV = (\xs. subst List V (index (length xs) xs (reverse xs)) xs (eq xs) (build (length xs) xs (reverse xs)))
-    postulate IsPalindrome : (_x18) -> Type
-    postulate PNil : IsPalindrome Nil
-    postulate POne : (b) -> IsPalindrome (Cons b Nil)
-    postulate PTwo : (b) -> (xs) -> (pf) -> IsPalindrome (Cons b (app xs (one b)))
+    constructor IsPalindrome : (_x18) -> Type
+    constructor PNil : IsPalindrome Nil
+    constructor POne : (b) -> IsPalindrome (Cons b Nil)
+    constructor PTwo : (b) -> (xs) -> (pf) -> IsPalindrome (Cons b (app xs (one b)))
     decEq 
        T T = Just (Id B T T) (Refl B T)
        F F = Just (Id B F F) (Refl B F)

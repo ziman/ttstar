@@ -1,7 +1,7 @@
 -- vim: ft=ttstar
   let
-    postulate Nat : Type
-    postulate S : (x) -> Nat
+    constructor Nat : Type
+    constructor S : (x) -> Nat
   in 
-    let postulate Q : Nat
+    let constructor Q : Nat
     in S (S Q)

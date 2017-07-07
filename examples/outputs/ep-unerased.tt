@@ -1,9 +1,9 @@
 -- vim: ft=ttstar
   let
-    postulate T : Type
-    postulate A : T
-    postulate B : T
-    postulate Op : (x) -> (y) -> T
+    constructor T : Type
+    constructor A : T
+    constructor B : T
+    constructor Op : (x) -> (y) -> T
     id = (\y. y)
     constA = (\x. A)
     apply = (\f. (\x. f x))

@@ -3,8 +3,8 @@
 ### Desugared ###
 
   let
-    postulate Id : (a : Type) -> (x : a) -> (y : a) -> Type
-    postulate Refl : (a : Type) -> (x : a) -> Id a x x
+    constructor Id : (a : Type) -> (x : a) -> (y : a) -> Type
+    constructor Refl : (a : Type) -> (x : a) -> Id a x x
     id : (a : Type) -> (_x0 : a) -> a = (\a : Type. (\x : a. x))
     subst : (a : Type) -> (p : (_x1 : a) -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -> (w : p x) -> p y 
       (a : Type) (p : (_x2 : a) -> Type) (x : a)
@@ -12,12 +12,12 @@
     cong : (a : Type) -> (b : Type) -> (f : (_x3 : a) -> b) -> (x : a) -> (y : a) -> (eq : Id a x y) -> Id b (f x) (f y) 
       (a : Type) (b : Type) (f : (_x4 : a) -> b) (x : a)
          a b f x [x] [Refl a x] = Refl b (f x)
-    postulate Bool : Type
-    postulate T : Bool
-    postulate F : Bool
-    postulate List : Type
-    postulate Nil : List
-    postulate Cons : (x :R: Bool) -> (xs :R: List) -> List
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    constructor List : Type
+    constructor Nil : List
+    constructor Cons : (x :R: Bool) -> (xs :R: List) -> List
     one : (x : Bool) -> List = (\x : Bool. Cons x Nil)
     app : (_x5 : List) -> (_x6 : List) -> List 
       (ys : List)
@@ -33,9 +33,9 @@
          Nil ys zs = Refl List (app ys zs)
       (x : Bool) (xs : List) (ys : List) (zs : List)
          (Cons x xs) ys zs = cong List List (Cons x) (app (app xs ys) zs) (app xs (app ys zs)) (appAssoc xs ys zs)
-    postulate Rev : (_x7 : List) -> Type
-    postulate RNil : Rev Nil
-    postulate RSnoc : (xs : List) -> (x : Bool) -> (rxs : Rev xs) -> Rev (app xs (one x))
+    constructor Rev : (_x7 : List) -> Type
+    constructor RNil : Rev Nil
+    constructor RSnoc : (xs : List) -> (x : Bool) -> (rxs : Rev xs) -> Rev (app xs (one x))
     rev' : (xs : List) -> (rxs : Rev xs) -> (ys : List) -> Rev (app xs ys) 
       (xs : List) (rxs : Rev xs)
          xs rxs Nil = subst List Rev xs (app xs Nil) (appRightNeutral xs) rxs
@@ -53,8 +53,8 @@
 ### Evarified ###
 
   let
-    postulate Id :1: (a :2: Type) -> (x :3: a) -> (y :4: a) -> Type
-    postulate Refl :5: (a :6: Type) -> (x :7: a) -> Id -10- a -9- x -8- x
+    constructor Id :1: (a :2: Type) -> (x :3: a) -> (y :4: a) -> Type
+    constructor Refl :5: (a :6: Type) -> (x :7: a) -> Id -10- a -9- x -8- x
     id :11: (a :12: Type) -> (_x0 :13: a) -> a = (\a :14: Type. (\x :15: a. x))
     subst :16: (a :17: Type) -> (p :18: (_x1 :19: a) -> Type) -> (x :20: a) -> (y :21: a) -> (eq :22: Id -25- a -24- x -23- y) -> (w :26: p -27- x) -> p -28- y 
       (a :29: Type) (p :30: (_x2 :31: a) -> Type) (x :32: a)
@@ -62,12 +62,12 @@
     cong :42: (a :43: Type) -> (b :44: Type) -> (f :45: (_x3 :46: a) -> b) -> (x :47: a) -> (y :48: a) -> (eq :49: Id -52- a -51- x -50- y) -> Id -55- b -54- (f -56- x) -53- (f -57- y) 
       (a :58: Type) (b :59: Type) (f :60: (_x4 :61: a) -> b) (x :62: a)
          -63- a -64- b -65- f -66- x -67- [x] -68- [Refl -70- a -69- x] = Refl -72- b -71- (f -73- x)
-    postulate Bool :74: Type
-    postulate T :75: Bool
-    postulate F :76: Bool
-    postulate List :77: Type
-    postulate Nil :78: List
-    postulate Cons :79: (x :R: Bool) -> (xs :R: List) -> List
+    constructor Bool :74: Type
+    constructor T :75: Bool
+    constructor F :76: Bool
+    constructor List :77: Type
+    constructor Nil :78: List
+    constructor Cons :79: (x :R: Bool) -> (xs :R: List) -> List
     one :80: (x :81: Bool) -> List = (\x :82: Bool. Cons -84- x -83- Nil)
     app :85: (_x5 :86: List) -> (_x6 :87: List) -> List 
       (ys :88: List)
@@ -83,9 +83,9 @@
          -144- Nil -145- ys -146- zs = Refl -148- List -147- (app -150- ys -149- zs)
       (x :151: Bool) (xs :152: List) (ys :153: List) (zs :154: List)
          -155- (Cons -156- x -157- xs) -158- ys -159- zs = cong -165- List -164- List -163- (Cons -166- x) -162- (app -168- (app -170- xs -169- ys) -167- zs) -161- (app -172- xs -171- (app -174- ys -173- zs)) -160- (appAssoc -177- xs -176- ys -175- zs)
-    postulate Rev :178: (_x7 :179: List) -> Type
-    postulate RNil :180: Rev -181- Nil
-    postulate RSnoc :182: (xs :183: List) -> (x :184: Bool) -> (rxs :185: Rev -186- xs) -> Rev -187- (app -189- xs -188- (one -190- x))
+    constructor Rev :178: (_x7 :179: List) -> Type
+    constructor RNil :180: Rev -181- Nil
+    constructor RSnoc :182: (xs :183: List) -> (x :184: Bool) -> (rxs :185: Rev -186- xs) -> Rev -187- (app -189- xs -188- (one -190- x))
     rev' :191: (xs :192: List) -> (rxs :193: Rev -194- xs) -> (ys :195: List) -> Rev -196- (app -198- xs -197- ys) 
       (xs :199: List) (rxs :200: Rev -201- xs)
          -202- xs -203- rxs -204- Nil = subst -210- List -209- Rev -208- xs -207- (app -212- xs -211- Nil) -206- (appRightNeutral -213- xs) -205- rxs
@@ -399,8 +399,8 @@
 ### Annotated ###
 
   let
-    postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
-    postulate Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+    constructor Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
+    constructor Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
     id :E: (a :E: Type) -> (_x0 :E: a) -> a = (\a :E: Type. (\x :E: a. x))
     subst :R: (a :E: Type) -> (p :E: (_x1 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (w :R: p -E- x) -> p -E- y 
       (a :E: Type) (p :E: (_x2 :E: a) -> Type) (x :E: a)
@@ -408,12 +408,12 @@
     cong :E: (a :E: Type) -> (b :E: Type) -> (f :E: (_x3 :E: a) -> b) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> Id -E- b -E- (f -E- x) -E- (f -E- y) 
       (a :E: Type) (b :E: Type) (f :E: (_x4 :E: a) -> b) (x :E: a)
          -E- a -E- b -E- f -E- x -E- [x] -E- [Refl -E- a -E- x] = Refl -E- b -E- (f -E- x)
-    postulate Bool :E: Type
-    postulate T :R: Bool
-    postulate F :R: Bool
-    postulate List :E: Type
-    postulate Nil :R: List
-    postulate Cons :R: (x :R: Bool) -> (xs :R: List) -> List
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    constructor List :E: Type
+    constructor Nil :R: List
+    constructor Cons :R: (x :R: Bool) -> (xs :R: List) -> List
     one :E: (x :E: Bool) -> List = (\x :E: Bool. Cons -E- x -E- Nil)
     app :E: (_x5 :E: List) -> (_x6 :E: List) -> List 
       (ys :E: List)
@@ -429,9 +429,9 @@
          -E- Nil -E- ys -E- zs = Refl -E- List -E- (app -E- ys -E- zs)
       (x :E: Bool) (xs :E: List) (ys :E: List) (zs :E: List)
          -E- (Cons -E- x -E- xs) -E- ys -E- zs = cong -E- List -E- List -E- (Cons -E- x) -E- (app -E- (app -E- xs -E- ys) -E- zs) -E- (app -E- xs -E- (app -E- ys -E- zs)) -E- (appAssoc -E- xs -E- ys -E- zs)
-    postulate Rev :E: (_x7 :E: List) -> Type
-    postulate RNil :R: Rev -E- Nil
-    postulate RSnoc :R: (xs :E: List) -> (x :R: Bool) -> (rxs :R: Rev -E- xs) -> Rev -E- (app -E- xs -E- (one -E- x))
+    constructor Rev :E: (_x7 :E: List) -> Type
+    constructor RNil :R: Rev -E- Nil
+    constructor RSnoc :R: (xs :E: List) -> (x :R: Bool) -> (rxs :R: Rev -E- xs) -> Rev -E- (app -E- xs -E- (one -E- x))
     rev' :R: (xs :E: List) -> (rxs :R: Rev -E- xs) -> (ys :R: List) -> Rev -E- (app -E- xs -E- ys) 
       (xs :E: List) (rxs :R: Rev -E- xs)
          -E- xs -R- rxs -R- Nil = subst -E- List -E- Rev -E- xs -E- (app -E- xs -E- Nil) -E- (appRightNeutral -E- xs) -R- rxs
@@ -449,8 +449,8 @@
 ### Specialised ###
 
   let
-    postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
-    postulate Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+    constructor Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
+    constructor Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
     id :E: (a :E: Type) -> (_x0 :E: a) -> a = (\a :E: Type. (\x :E: a. x))
     subst :R: (a :E: Type) -> (p :E: (_x1 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (w :R: p -E- x) -> p -E- y 
       (a :E: Type) (p :E: (_x2 :E: a) -> Type) (x :E: a)
@@ -458,12 +458,12 @@
     cong :E: (a :E: Type) -> (b :E: Type) -> (f :E: (_x3 :E: a) -> b) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> Id -E- b -E- (f -E- x) -E- (f -E- y) 
       (a :E: Type) (b :E: Type) (f :E: (_x4 :E: a) -> b) (x :E: a)
          -E- a -E- b -E- f -E- x -E- [x] -E- [Refl -E- a -E- x] = Refl -E- b -E- (f -E- x)
-    postulate Bool :E: Type
-    postulate T :R: Bool
-    postulate F :R: Bool
-    postulate List :E: Type
-    postulate Nil :R: List
-    postulate Cons :R: (x :R: Bool) -> (xs :R: List) -> List
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    constructor List :E: Type
+    constructor Nil :R: List
+    constructor Cons :R: (x :R: Bool) -> (xs :R: List) -> List
     one :E: (x :E: Bool) -> List = (\x :E: Bool. Cons -E- x -E- Nil)
     app :E: (_x5 :E: List) -> (_x6 :E: List) -> List 
       (ys :E: List)
@@ -479,9 +479,9 @@
          -E- Nil -E- ys -E- zs = Refl -E- List -E- (app -E- ys -E- zs)
       (x :E: Bool) (xs :E: List) (ys :E: List) (zs :E: List)
          -E- (Cons -E- x -E- xs) -E- ys -E- zs = cong -E- List -E- List -E- (Cons -E- x) -E- (app -E- (app -E- xs -E- ys) -E- zs) -E- (app -E- xs -E- (app -E- ys -E- zs)) -E- (appAssoc -E- xs -E- ys -E- zs)
-    postulate Rev :E: (_x7 :E: List) -> Type
-    postulate RNil :R: Rev -E- Nil
-    postulate RSnoc :R: (xs :E: List) -> (x :R: Bool) -> (rxs :R: Rev -E- xs) -> Rev -E- (app -E- xs -E- (one -E- x))
+    constructor Rev :E: (_x7 :E: List) -> Type
+    constructor RNil :R: Rev -E- Nil
+    constructor RSnoc :R: (xs :E: List) -> (x :R: Bool) -> (rxs :R: Rev -E- xs) -> Rev -E- (app -E- xs -E- (one -E- x))
     rev' :R: (xs :E: List) -> (rxs :R: Rev -E- xs) -> (ys :R: List) -> Rev -E- (app -E- xs -E- ys) 
       (xs :E: List) (rxs :R: Rev -E- xs)
          -E- xs -R- rxs -R- Nil = subst -E- List -E- Rev -E- xs -E- (app -E- xs -E- Nil) -E- (appRightNeutral -E- xs) -R- rxs
@@ -499,8 +499,8 @@
 ### Final annotation ###
 
   let
-    postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
-    postulate Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+    constructor Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
+    constructor Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
     id :E: (a :E: Type) -> (_x0 :E: a) -> a = (\a :E: Type. (\x :E: a. x))
     subst :R: (a :E: Type) -> (p :E: (_x1 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (w :R: p -E- x) -> p -E- y 
       (a :E: Type) (p :E: (_x2 :E: a) -> Type) (x :E: a)
@@ -508,12 +508,12 @@
     cong :E: (a :E: Type) -> (b :E: Type) -> (f :E: (_x3 :E: a) -> b) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> Id -E- b -E- (f -E- x) -E- (f -E- y) 
       (a :E: Type) (b :E: Type) (f :E: (_x4 :E: a) -> b) (x :E: a)
          -E- a -E- b -E- f -E- x -E- [x] -E- [Refl -E- a -E- x] = Refl -E- b -E- (f -E- x)
-    postulate Bool :E: Type
-    postulate T :R: Bool
-    postulate F :R: Bool
-    postulate List :E: Type
-    postulate Nil :R: List
-    postulate Cons :R: (x :R: Bool) -> (xs :R: List) -> List
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    constructor List :E: Type
+    constructor Nil :R: List
+    constructor Cons :R: (x :R: Bool) -> (xs :R: List) -> List
     one :E: (x :E: Bool) -> List = (\x :E: Bool. Cons -E- x -E- Nil)
     app :E: (_x5 :E: List) -> (_x6 :E: List) -> List 
       (ys :E: List)
@@ -529,9 +529,9 @@
          -E- Nil -E- ys -E- zs = Refl -E- List -E- (app -E- ys -E- zs)
       (x :E: Bool) (xs :E: List) (ys :E: List) (zs :E: List)
          -E- (Cons -E- x -E- xs) -E- ys -E- zs = cong -E- List -E- List -E- (Cons -E- x) -E- (app -E- (app -E- xs -E- ys) -E- zs) -E- (app -E- xs -E- (app -E- ys -E- zs)) -E- (appAssoc -E- xs -E- ys -E- zs)
-    postulate Rev :E: (_x7 :E: List) -> Type
-    postulate RNil :R: Rev -E- Nil
-    postulate RSnoc :R: (xs :E: List) -> (x :R: Bool) -> (rxs :R: Rev -E- xs) -> Rev -E- (app -E- xs -E- (one -E- x))
+    constructor Rev :E: (_x7 :E: List) -> Type
+    constructor RNil :R: Rev -E- Nil
+    constructor RSnoc :R: (xs :E: List) -> (x :R: Bool) -> (rxs :R: Rev -E- xs) -> Rev -E- (app -E- xs -E- (one -E- x))
     rev' :R: (xs :E: List) -> (rxs :R: Rev -E- xs) -> (ys :R: List) -> Rev -E- (app -E- xs -E- ys) 
       (xs :E: List) (rxs :R: Rev -E- xs)
          -E- xs -R- rxs -R- Nil = subst -E- List -E- Rev -E- xs -E- (app -E- xs -E- Nil) -E- (appRightNeutral -E- xs) -R- rxs
@@ -555,12 +555,12 @@ Verification successful.
   let
     subst 
       = (\w. w)
-    postulate T : Bool
-    postulate F : Bool
-    postulate Nil : List
-    postulate Cons : (x) -> (xs) -> List
-    postulate RNil : Rev
-    postulate RSnoc : (x) -> (rxs) -> Rev
+    constructor T : Bool
+    constructor F : Bool
+    constructor Nil : List
+    constructor Cons : (x) -> (xs) -> List
+    constructor RNil : Rev
+    constructor RSnoc : (x) -> (rxs) -> Rev
     rev' 
        rxs Nil = subst rxs
        rxs (Cons y ys) = subst (rev' (RSnoc y rxs) ys)
@@ -577,20 +577,20 @@ Verification successful.
 unerased:
   
   let
-    postulate Bool : Type
-    postulate T : Bool
-    postulate F : Bool
-    postulate List : Type
-    postulate Nil : List
-    postulate Cons : (x :R: Bool) -> (xs :R: List) -> List
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    constructor List : Type
+    constructor Nil : List
+    constructor Cons : (x :R: Bool) -> (xs :R: List) -> List
   in Cons F (Cons T (Cons F (Cons T Nil)))
 
 erased:
   
   let
-    postulate T : Bool
-    postulate F : Bool
-    postulate Nil : List
-    postulate Cons : (x) -> (xs) -> List
+    constructor T : Bool
+    constructor F : Bool
+    constructor Nil : List
+    constructor Cons : (x) -> (xs) -> List
   in Cons F (Cons T (Cons F (Cons T Nil)))
 

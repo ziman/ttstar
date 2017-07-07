@@ -1,7 +1,7 @@
 -- vim: ft=ttstar
   let
-    postulate Z : Nat
-    postulate S : (x) -> Nat
+    constructor Z : Nat
+    constructor S : (x) -> Nat
     plus 
        Z m = m
        (S n) m = S (plus n m)
@@ -11,7 +11,7 @@
         apply 
            f Z = f Z
            f (S x) = f (S x)
-        postulate Q : Nat
+        constructor Q : Nat
         three = 3
       in plus (apply (\x. x) 2) (apply (const Q) three)
   in main

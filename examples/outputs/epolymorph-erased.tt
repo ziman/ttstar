@@ -1,8 +1,8 @@
 -- vim: ft=ttstar
   let
-    postulate Z : Nat
-    postulate S : (n) -> Nat
-    postulate Plus : (x) -> (y) -> Nat
+    constructor Z : Nat
+    constructor S : (n) -> Nat
+    constructor Plus : (x) -> (y) -> Nat
     id 
        Z = Z
        (S y) = 

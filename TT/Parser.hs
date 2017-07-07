@@ -235,7 +235,7 @@ typing a = (<?> "name binding") $ do
 postulate :: Parser (Def MRel)
 postulate = (<?> "postulate") $ do
     kwd "postulate"
-    d <- typing Postulate
+    d <- typing Constructor
     return d
 
 clauseDef :: Parser (Def MRel)
@@ -280,9 +280,9 @@ clause = (<?> "pattern clause") $ do
 dataDef :: Parser [Def MRel]
 dataDef = (<?> "data definition") $ do
     kwd "data"
-    tfd <- typing Postulate
+    tfd <- typing Constructor
     kwd "where"
-    ctors <- typing Postulate `sepBy` kwd ","
+    ctors <- typing Constructor `sepBy` kwd ","
     return (tfd : ctors)
 
 foreignDef :: Parser (Def MRel)

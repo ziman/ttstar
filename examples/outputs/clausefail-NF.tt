@@ -1,8 +1,8 @@
 -- vim: ft=ttstar
   let
-    postulate S : N
-    postulate T : B
-    postulate F : B
+    constructor S : N
+    constructor T : B
+    constructor F : B
     isSuc 
        S = T
        _ = F

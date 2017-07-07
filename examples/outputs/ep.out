@@ -3,10 +3,10 @@
 ### Desugared ###
 
   let
-    postulate T : Type
-    postulate A : T
-    postulate B : T
-    postulate Op : (x :R: T) -> (y :R: T) -> T
+    constructor T : Type
+    constructor A : T
+    constructor B : T
+    constructor Op : (x :R: T) -> (y :R: T) -> T
     id : (y : T) -> T = (\y : T. y)
     constA : (x : T) -> T = (\x : T. A)
     apply : (f : (_x0 : T) -> T) -> (x : T) -> T = (\f : (_x0 : T) -> T. (\x : T. f x))
@@ -18,10 +18,10 @@
 ### Evarified ###
 
   let
-    postulate T :1: Type
-    postulate A :2: T
-    postulate B :3: T
-    postulate Op :4: (x :R: T) -> (y :R: T) -> T
+    constructor T :1: Type
+    constructor A :2: T
+    constructor B :3: T
+    constructor Op :4: (x :R: T) -> (y :R: T) -> T
     id :5: (y :6: T) -> T = (\y :7: T. y)
     constA :8: (x :9: T) -> T = (\x :10: T. A)
     apply :11: (f :12: (_x0 :13: T) -> T) -> (x :14: T) -> T = (\f :15: (_x0 :16: T) -> T. (\x :17: T. f -18- x))
@@ -52,10 +52,10 @@
 ### Annotated ###
 
   let
-    postulate T :E: Type
-    postulate A :R: T
-    postulate B :R: T
-    postulate Op :R: (x :R: T) -> (y :R: T) -> T
+    constructor T :E: Type
+    constructor A :R: T
+    constructor B :R: T
+    constructor Op :R: (x :R: T) -> (y :R: T) -> T
     id :R: (y :R: T) -> T = (\y :R: T. y)
     constA :R: (x :E: T) -> T = (\x :E: T. A)
     apply :E: (f :E: (_x0 :E: T) -> T) -> (x :E: T) -> T = (\f :E: (_x0 :E: T) -> T. (\x :E: T. f -E- x))
@@ -67,10 +67,10 @@
 ### Specialised ###
 
   let
-    postulate T :E: Type
-    postulate A :R: T
-    postulate B :R: T
-    postulate Op :R: (x :R: T) -> (y :R: T) -> T
+    constructor T :E: Type
+    constructor A :R: T
+    constructor B :R: T
+    constructor Op :R: (x :R: T) -> (y :R: T) -> T
     id :R: (y :R: T) -> T = (\y :R: T. y)
     constA :R: (x :E: T) -> T = (\x :E: T. A)
     apply :E: (f :E: (_x0 :E: T) -> T) -> (x :E: T) -> T = (\f :E: (_x0 :E: T) -> T. (\x :E: T. f -E- x))
@@ -97,10 +97,10 @@
 ### Annotated ###
 
   let
-    postulate T :E: Type
-    postulate A :R: T
-    postulate B :R: T
-    postulate Op :R: (x :R: T) -> (y :R: T) -> T
+    constructor T :E: Type
+    constructor A :R: T
+    constructor B :R: T
+    constructor Op :R: (x :R: T) -> (y :R: T) -> T
     id :R: (y :R: T) -> T = (\y :R: T. y)
     constA :R: (x :E: T) -> T = (\x :E: T. A)
     apply :E: (f :E: (_x0 :E: T) -> T) -> (x :E: T) -> T = (\f :E: (_x0 :E: T) -> T. (\x :E: T. f -E- x))
@@ -114,10 +114,10 @@
 ### Specialised ###
 
   let
-    postulate T :E: Type
-    postulate A :R: T
-    postulate B :R: T
-    postulate Op :R: (x :R: T) -> (y :R: T) -> T
+    constructor T :E: Type
+    constructor A :R: T
+    constructor B :R: T
+    constructor Op :R: (x :R: T) -> (y :R: T) -> T
     id :R: (y :R: T) -> T = (\y :R: T. y)
     constA :R: (x :E: T) -> T = (\x :E: T. A)
     apply :E: (f :E: (_x0 :E: T) -> T) -> (x :E: T) -> T = (\f :E: (_x0 :E: T) -> T. (\x :E: T. f -E- x))
@@ -131,10 +131,10 @@
 ### Final annotation ###
 
   let
-    postulate T :E: Type
-    postulate A :R: T
-    postulate B :R: T
-    postulate Op :R: (x :R: T) -> (y :R: T) -> T
+    constructor T :E: Type
+    constructor A :R: T
+    constructor B :R: T
+    constructor Op :R: (x :R: T) -> (y :R: T) -> T
     id :R: (y :R: T) -> T = (\y :R: T. y)
     constA :R: (x :E: T) -> T = (\x :E: T. A)
     apply :E: (f :E: (_x0 :E: T) -> T) -> (x :E: T) -> T = (\f :E: (_x0 :E: T) -> T. (\x :E: T. f -E- x))
@@ -152,9 +152,9 @@ Verification successful.
 ### Pruned ###
 
   let
-    postulate A : T
-    postulate B : T
-    postulate Op : (x) -> (y) -> T
+    constructor A : T
+    constructor B : T
+    constructor Op : (x) -> (y) -> T
     id = (\y. y)
     constA = A
     apply_REE = (\f. f)
@@ -169,17 +169,17 @@ Verification successful.
 unerased:
   
   let
-    postulate T : Type
-    postulate A : T
-    postulate B : T
-    postulate Op : (x :R: T) -> (y :R: T) -> T
+    constructor T : Type
+    constructor A : T
+    constructor B : T
+    constructor Op : (x :R: T) -> (y :R: T) -> T
   in Op B A
 
 erased:
   
   let
-    postulate A : T
-    postulate B : T
-    postulate Op : (x) -> (y) -> T
+    constructor A : T
+    constructor B : T
+    constructor Op : (x) -> (y) -> T
   in Op B A
 

@@ -1,8 +1,8 @@
 -- vim: ft=ttstar
   let
-    postulate A : T
-    postulate B : T
-    postulate Op : (x) -> (y) -> T
+    constructor A : T
+    constructor B : T
+    constructor Op : (x) -> (y) -> T
     constA = A
     apply_RRR = (\f. (\x. f x))
     test1 = apply_RRR (\x. x) B

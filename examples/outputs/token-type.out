@@ -3,8 +3,8 @@
 ### Desugared ###
 
   let
-    postulate TyEq : (_x0 : Type) -> (_x1 : Type) -> Type
-    postulate Refl : (a : Type) -> TyEq a a
+    constructor TyEq : (_x0 : Type) -> (_x1 : Type) -> Type
+    constructor Refl : (a : Type) -> TyEq a a
     coerce : (a : Type) -> (b : Type) -> (_x2 : TyEq a b) -> (_x3 : a) -> b 
       (a : Type)
          a [a] ({Refl} [a]) = (\x : a. x)
@@ -22,8 +22,8 @@
 ### Evarified ###
 
   let
-    postulate TyEq :1: (_x0 :2: Type) -> (_x1 :3: Type) -> Type
-    postulate Refl :4: (a :5: Type) -> TyEq -7- a -6- a
+    constructor TyEq :1: (_x0 :2: Type) -> (_x1 :3: Type) -> Type
+    constructor Refl :4: (a :5: Type) -> TyEq -7- a -6- a
     coerce :8: (a :9: Type) -> (b :10: Type) -> (_x2 :11: TyEq -13- a -12- b) -> (_x3 :14: a) -> b 
       (a :15: Type)
          -16- a -17- [a] -18- ({Refl} -19- [a]) = (\x :20: a. x)
@@ -131,8 +131,8 @@
 ### Annotated ###
 
   let
-    postulate TyEq :E: (_x0 :E: Type) -> (_x1 :E: Type) -> Type
-    postulate Refl :E: (a :E: Type) -> TyEq -E- a -E- a
+    constructor TyEq :E: (_x0 :E: Type) -> (_x1 :E: Type) -> Type
+    constructor Refl :E: (a :E: Type) -> TyEq -E- a -E- a
     coerce :R: (a :E: Type) -> (b :E: Type) -> (_x2 :E: TyEq -E- a -E- b) -> (_x3 :R: a) -> b 
       (a :E: Type)
          -E- a -E- [a] -E- ({Refl} -E- [a]) = (\x :R: a. x)
@@ -150,8 +150,8 @@
 ### Specialised ###
 
   let
-    postulate TyEq :E: (_x0 :E: Type) -> (_x1 :E: Type) -> Type
-    postulate Refl :E: (a :E: Type) -> TyEq -E- a -E- a
+    constructor TyEq :E: (_x0 :E: Type) -> (_x1 :E: Type) -> Type
+    constructor Refl :E: (a :E: Type) -> TyEq -E- a -E- a
     coerce :R: (a :E: Type) -> (b :E: Type) -> (_x2 :E: TyEq -E- a -E- b) -> (_x3 :R: a) -> b 
       (a :E: Type)
          -E- a -E- [a] -E- ({Refl} -E- [a]) = (\x :R: a. x)
@@ -169,8 +169,8 @@
 ### Final annotation ###
 
   let
-    postulate TyEq :E: (_x0 :E: Type) -> (_x1 :E: Type) -> Type
-    postulate Refl :E: (a :E: Type) -> TyEq -E- a -E- a
+    constructor TyEq :E: (_x0 :E: Type) -> (_x1 :E: Type) -> Type
+    constructor Refl :E: (a :E: Type) -> TyEq -E- a -E- a
     coerce :R: (a :E: Type) -> (b :E: Type) -> (_x2 :E: TyEq -E- a -E- b) -> (_x3 :R: a) -> b 
       (a :E: Type)
          -E- a -E- [a] -E- ({Refl} -E- [a]) = (\x :R: a. x)
@@ -206,8 +206,8 @@ Verification successful.
 unerased:
   
   let
-    postulate TyEq : (_x0 : Type) -> (_x1 : Type) -> Type
-    postulate Refl : (a : Type) -> TyEq a a
+    constructor TyEq : (_x0 : Type) -> (_x1 : Type) -> Type
+    constructor Refl : (a : Type) -> TyEq a a
     coerce : (a : Type) -> (b : Type) -> (_x2 : TyEq a b) -> (_x3 : a) -> b 
       (a : Type)
          a [a] ({Refl} [a]) = (\x : a. x)

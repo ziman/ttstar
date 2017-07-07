@@ -3,11 +3,11 @@
 ### Desugared ###
 
   let
-    postulate Bool : Type
-    postulate T : Bool
-    postulate F : Bool
-    postulate Unit : Type
-    postulate MkUnit : Unit
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    constructor Unit : Type
+    constructor MkUnit : Unit
     not : (_x0 : Bool) -> Unit 
        T = MkUnit
        F = MkUnit
@@ -17,11 +17,11 @@
 ### Evarified ###
 
   let
-    postulate Bool :1: Type
-    postulate T :2: Bool
-    postulate F :3: Bool
-    postulate Unit :4: Type
-    postulate MkUnit :5: Unit
+    constructor Bool :1: Type
+    constructor T :2: Bool
+    constructor F :3: Bool
+    constructor Unit :4: Type
+    constructor MkUnit :5: Unit
     not :6: (_x0 :7: Bool) -> Unit 
        -8- T = MkUnit
        -9- F = MkUnit
@@ -40,11 +40,11 @@
 ### Annotated ###
 
   let
-    postulate Bool :E: Type
-    postulate T :R: Bool
-    postulate F :R: Bool
-    postulate Unit :E: Type
-    postulate MkUnit :R: Unit
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    constructor Unit :E: Type
+    constructor MkUnit :R: Unit
     not :R: (_x0 :R: Bool) -> Unit 
        -R- T = MkUnit
        -R- F = MkUnit
@@ -54,11 +54,11 @@
 ### Specialised ###
 
   let
-    postulate Bool :E: Type
-    postulate T :R: Bool
-    postulate F :R: Bool
-    postulate Unit :E: Type
-    postulate MkUnit :R: Unit
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    constructor Unit :E: Type
+    constructor MkUnit :R: Unit
     not :R: (_x0 :R: Bool) -> Unit 
        -R- T = MkUnit
        -R- F = MkUnit
@@ -68,11 +68,11 @@
 ### Final annotation ###
 
   let
-    postulate Bool :E: Type
-    postulate T :R: Bool
-    postulate F :R: Bool
-    postulate Unit :E: Type
-    postulate MkUnit :R: Unit
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    constructor Unit :E: Type
+    constructor MkUnit :R: Unit
     not :R: (_x0 :R: Bool) -> Unit 
        -R- T = MkUnit
        -R- F = MkUnit
@@ -86,9 +86,9 @@ Verification successful.
 ### Pruned ###
 
   let
-    postulate T : Bool
-    postulate F : Bool
-    postulate MkUnit : Unit
+    constructor T : Bool
+    constructor F : Bool
+    constructor MkUnit : Unit
     not 
        T = MkUnit
        F = MkUnit
@@ -100,12 +100,12 @@ Verification successful.
 unerased:
   
   let
-    postulate Unit : Type
-    postulate MkUnit : Unit
+    constructor Unit : Type
+    constructor MkUnit : Unit
   in MkUnit
 
 erased:
   
-  let postulate MkUnit : Unit
+  let constructor MkUnit : Unit
   in MkUnit
 

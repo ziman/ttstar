@@ -1,11 +1,11 @@
 -- vim: ft=ttstar
   let
-    postulate N : Type
-    postulate Z : N
-    postulate S : (x) -> N
-    postulate Vec : (_x0) -> (_x1) -> Type
-    postulate Nil : (a) -> Vec Z a
-    postulate Cons : (a) -> (n) -> (x) -> (xs) -> Vec (S n) a
+    constructor N : Type
+    constructor Z : N
+    constructor S : (x) -> N
+    constructor Vec : (_x0) -> (_x1) -> Type
+    constructor Nil : (a) -> Vec Z a
+    constructor Cons : (a) -> (n) -> (x) -> (xs) -> Vec (S n) a
     vlen 
        {_} (Nil [_]) = Z
        ({_} m) (Cons [_] [_] y ys) = S (vlen m ys)

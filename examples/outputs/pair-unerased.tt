@@ -1,10 +1,10 @@
 -- vim: ft=ttstar
   let
-    postulate Bool : Type
-    postulate T : Bool
-    postulate F : Bool
-    postulate Pair : Type
-    postulate P : (x) -> (y) -> Pair
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    constructor Pair : Type
+    constructor P : (x) -> (y) -> Pair
     fst 
        (P l r) = l
     snd 

@@ -1,11 +1,11 @@
 -- vim: ft=ttstar
   let
-    postulate Z : Nat
-    postulate S : (x) -> Nat
-    postulate MkPair : (_x5) -> (_x6) -> Pair
+    constructor Z : Nat
+    constructor S : (x) -> Nat
+    constructor MkPair : (_x5) -> (_x6) -> Pair
     snd 
        ({_} _ y) = y
-    postulate MkSt : (run) -> State
+    constructor MkSt : (run) -> State
     runState 
        ({_} run) = run
     stBind 
@@ -23,7 +23,7 @@
        (S n) = intS (natToInt n)
     foreign intToNat
   in 
-    let postulate TheWorld : RealWorld
+    let constructor TheWorld : RealWorld
     in snd (runState (stBind (MkSt (\s. MkPair s 4)) (\v. 
       let foreign nativePrint
       in stBind (MkSt (\w. MkPair w (nativePrint (natToInt v)))) (\_0. 

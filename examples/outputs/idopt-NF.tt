@@ -1,6 +1,6 @@
 -- vim: ft=ttstar
   let
-    postulate FZ : Fin
-    postulate FS : (x) -> Fin
-    postulate P : (x) -> (y) -> Pair
+    constructor FZ : Fin
+    constructor FS : (x) -> Fin
+    constructor P : (x) -> (y) -> Pair
   in P (FS (FS FZ)) (FS (FS FZ))

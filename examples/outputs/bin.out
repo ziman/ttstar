@@ -3,57 +3,57 @@
 ### Desugared ###
 
   let
-    postulate Nat : Type
-    postulate Z : Nat
-    postulate S : (x :R: Nat) -> Nat
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (x :R: Nat) -> Nat
     plus : (_x0 : Nat) -> (_x1 : Nat) -> Nat 
       (n : Nat)
          Z n = n
       (m : Nat) (n : Nat)
          (S m) n = S (plus m n)
-    postulate Bool : Type
-    postulate True : Bool
-    postulate False : Bool
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
     not : (_x2 : Bool) -> Bool 
        True = False
        False = True
-    postulate Unit : Type
-    postulate MkUnit : Unit
-    postulate Pair : (_x3 : Type) -> (_x4 : Type) -> Type
-    postulate MkPair : (a : Type) -> (b : Type) -> (_x5 : a) -> (_x6 : b) -> Pair a b
+    constructor Unit : Type
+    constructor MkUnit : Unit
+    constructor Pair : (_x3 : Type) -> (_x4 : Type) -> Type
+    constructor MkPair : (a : Type) -> (b : Type) -> (_x5 : a) -> (_x6 : b) -> Pair a b
     fst : (a : Type) -> (b : Type) -> (_x7 : Pair a b) -> a 
       (a : Type) (b : Type) (x : a) (y : b)
          a b ({MkPair} [a] [b] x y) = x
     snd : (a : Type) -> (b : Type) -> (_x8 : Pair a b) -> b 
       (a : Type) (b : Type) (x : a) (y : b)
          a b ({MkPair} [a] [b] x y) = y
-    postulate Either : (_x9 : Type) -> (_x10 : Type) -> Type
-    postulate Left : (a : Type) -> (b : Type) -> (_x11 : a) -> Either a b
-    postulate Right : (a : Type) -> (b : Type) -> (_x12 : b) -> Either a b
+    constructor Either : (_x9 : Type) -> (_x10 : Type) -> Type
+    constructor Left : (a : Type) -> (b : Type) -> (_x11 : a) -> Either a b
+    constructor Right : (a : Type) -> (b : Type) -> (_x12 : b) -> Either a b
     id : (a : Type) -> (x : a) -> a = (\a : Type. (\x : a. x))
-    postulate Fin : (_x13 : Nat) -> Type
-    postulate FZ : (n : Nat) -> Fin (S n)
-    postulate FS : (n : Nat) -> (_x14 : Fin n) -> Fin (S n)
-    postulate Vect : (_x15 : Nat) -> (_x16 : Type) -> Type
-    postulate VN : (a : Type) -> Vect Z a
-    postulate VC : (n : Nat) -> (a : Type) -> (x : a) -> (xs : Vect n a) -> Vect (S n) a
-    postulate Id : (a : Type) -> (x : a) -> (y : a) -> Type
-    postulate Refl : (a : Type) -> (x : a) -> Id a x x
+    constructor Fin : (_x13 : Nat) -> Type
+    constructor FZ : (n : Nat) -> Fin (S n)
+    constructor FS : (n : Nat) -> (_x14 : Fin n) -> Fin (S n)
+    constructor Vect : (_x15 : Nat) -> (_x16 : Type) -> Type
+    constructor VN : (a : Type) -> Vect Z a
+    constructor VC : (n : Nat) -> (a : Type) -> (x : a) -> (xs : Vect n a) -> Vect (S n) a
+    constructor Id : (a : Type) -> (x : a) -> (y : a) -> Type
+    constructor Refl : (a : Type) -> (x : a) -> Id a x x
     subst : (a : Type) -> (p : (_x0 : a) -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -> (_x1 : p x) -> p y 
       (a : Type) (p : (_x2 : a) -> Type) (x : a)
          a p x [x] [Refl a x] = (\z : p x. z)
-    postulate Bit : (_x0 : Nat) -> Type
-    postulate I : Bit 1
-    postulate O : Bit Z
+    constructor Bit : (_x0 : Nat) -> Type
+    constructor I : Bit 1
+    constructor O : Bit Z
     double : (_x1 : Nat) -> Nat 
        Z = Z
       (n : Nat)
          (S n) = S (S (double n))
-    postulate Bin : (width : Nat) -> (value : Nat) -> Type
-    postulate N : Bin Z Z
-    postulate C : (width : Nat) -> (lsbVal : Nat) -> (lsb : Bit lsbVal) -> (restVal : Nat) -> (rest :R: Bin width restVal) -> Bin (S width) (plus lsbVal (double restVal))
-    postulate TwoBits : (_x2 : Nat) -> (_x3 : Nat) -> (_x4 : Nat) -> Type
-    postulate TB : (c : Nat) -> (x : Nat) -> (y : Nat) -> (hi' : Nat) -> (hi : Bit hi') -> (lo' : Nat) -> (lo : Bit lo') -> (pf : Id Nat (plus c (plus x y)) (plus lo' (double hi'))) -> TwoBits c x y
+    constructor Bin : (width : Nat) -> (value : Nat) -> Type
+    constructor N : Bin Z Z
+    constructor C : (width : Nat) -> (lsbVal : Nat) -> (lsb : Bit lsbVal) -> (restVal : Nat) -> (rest :R: Bin width restVal) -> Bin (S width) (plus lsbVal (double restVal))
+    constructor TwoBits : (_x2 : Nat) -> (_x3 : Nat) -> (_x4 : Nat) -> Type
+    constructor TB : (c : Nat) -> (x : Nat) -> (y : Nat) -> (hi' : Nat) -> (hi : Bit hi') -> (lo' : Nat) -> (lo : Bit lo') -> (pf : Id Nat (plus c (plus x y)) (plus lo' (double hi'))) -> TwoBits c x y
     adb : (c : Nat) -> (x : Nat) -> (y : Nat) -> (_x5 : Bit c) -> (_x6 : Bit x) -> (_x7 : Bit y) -> TwoBits c x y 
        [Z] [Z] [Z] O O O = TB Z Z Z Z O Z O (Refl Nat Z)
        [1] [Z] [Z] I O O = TB 1 Z Z Z O 1 I (Refl Nat 1)
@@ -71,7 +71,7 @@
           let f : (_x11 : TwoBits c xb' yb') -> Bin (S (S w)) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn')))) 
             (hi' : Nat) (hi : Bit hi') (lo' : Nat) (lo : Bit lo') (pf : Id Nat (plus c (plus xb' yb')) (plus lo' (double hi')))
                ({TB} [c] [xb'] [yb'] hi' hi lo' lo pf) = 
-                let postulate eq : Id Nat (plus lo' (double (plus hi' (plus xn' yn')))) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn'))))
+                let constructor eq : Id Nat (plus lo' (double (plus hi' (plus xn' yn')))) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn'))))
                 in subst Nat (Bin (S (S w))) (plus lo' (double (plus hi' (plus xn' yn')))) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn')))) eq (C (S w) lo' lo (plus hi' (plus xn' yn')) (add' w hi' xn' yn' hi xn yn))
           in f (adb c xb' yb' cb xb yb)
     add : (w : Nat) -> (x : Nat) -> (y : Nat) -> (bx : Bin w x) -> (by : Bin w y) -> Bin (S w) (plus x y) = (\w : Nat. (\x : Nat. (\y : Nat. (\bx : Bin w x. (\by : Bin w y. add' w Z x y O bx by)))))
@@ -100,57 +100,57 @@
 ### Evarified ###
 
   let
-    postulate Nat :1: Type
-    postulate Z :2: Nat
-    postulate S :3: (x :R: Nat) -> Nat
+    constructor Nat :1: Type
+    constructor Z :2: Nat
+    constructor S :3: (x :R: Nat) -> Nat
     plus :4: (_x0 :5: Nat) -> (_x1 :6: Nat) -> Nat 
       (n :7: Nat)
          -8- Z -9- n = n
       (m :10: Nat) (n :11: Nat)
          -12- (S -13- m) -14- n = S -15- (plus -17- m -16- n)
-    postulate Bool :18: Type
-    postulate True :19: Bool
-    postulate False :20: Bool
+    constructor Bool :18: Type
+    constructor True :19: Bool
+    constructor False :20: Bool
     not :21: (_x2 :22: Bool) -> Bool 
        -23- True = False
        -24- False = True
-    postulate Unit :25: Type
-    postulate MkUnit :26: Unit
-    postulate Pair :27: (_x3 :28: Type) -> (_x4 :29: Type) -> Type
-    postulate MkPair :30: (a :31: Type) -> (b :32: Type) -> (_x5 :33: a) -> (_x6 :34: b) -> Pair -36- a -35- b
+    constructor Unit :25: Type
+    constructor MkUnit :26: Unit
+    constructor Pair :27: (_x3 :28: Type) -> (_x4 :29: Type) -> Type
+    constructor MkPair :30: (a :31: Type) -> (b :32: Type) -> (_x5 :33: a) -> (_x6 :34: b) -> Pair -36- a -35- b
     fst :37: (a :38: Type) -> (b :39: Type) -> (_x7 :40: Pair -42- a -41- b) -> a 
       (a :43: Type) (b :44: Type) (x :45: a) (y :46: b)
          -47- a -48- b -49- ({MkPair} -50- [a] -51- [b] -52- x -53- y) = x
     snd :54: (a :55: Type) -> (b :56: Type) -> (_x8 :57: Pair -59- a -58- b) -> b 
       (a :60: Type) (b :61: Type) (x :62: a) (y :63: b)
          -64- a -65- b -66- ({MkPair} -67- [a] -68- [b] -69- x -70- y) = y
-    postulate Either :71: (_x9 :72: Type) -> (_x10 :73: Type) -> Type
-    postulate Left :74: (a :75: Type) -> (b :76: Type) -> (_x11 :77: a) -> Either -79- a -78- b
-    postulate Right :80: (a :81: Type) -> (b :82: Type) -> (_x12 :83: b) -> Either -85- a -84- b
+    constructor Either :71: (_x9 :72: Type) -> (_x10 :73: Type) -> Type
+    constructor Left :74: (a :75: Type) -> (b :76: Type) -> (_x11 :77: a) -> Either -79- a -78- b
+    constructor Right :80: (a :81: Type) -> (b :82: Type) -> (_x12 :83: b) -> Either -85- a -84- b
     id :86: (a :87: Type) -> (x :88: a) -> a = (\a :89: Type. (\x :90: a. x))
-    postulate Fin :91: (_x13 :92: Nat) -> Type
-    postulate FZ :93: (n :94: Nat) -> Fin -95- (S -96- n)
-    postulate FS :97: (n :98: Nat) -> (_x14 :99: Fin -100- n) -> Fin -101- (S -102- n)
-    postulate Vect :103: (_x15 :104: Nat) -> (_x16 :105: Type) -> Type
-    postulate VN :106: (a :107: Type) -> Vect -109- Z -108- a
-    postulate VC :110: (n :111: Nat) -> (a :112: Type) -> (x :113: a) -> (xs :114: Vect -116- n -115- a) -> Vect -118- (S -119- n) -117- a
-    postulate Id :120: (a :121: Type) -> (x :122: a) -> (y :123: a) -> Type
-    postulate Refl :124: (a :125: Type) -> (x :126: a) -> Id -129- a -128- x -127- x
+    constructor Fin :91: (_x13 :92: Nat) -> Type
+    constructor FZ :93: (n :94: Nat) -> Fin -95- (S -96- n)
+    constructor FS :97: (n :98: Nat) -> (_x14 :99: Fin -100- n) -> Fin -101- (S -102- n)
+    constructor Vect :103: (_x15 :104: Nat) -> (_x16 :105: Type) -> Type
+    constructor VN :106: (a :107: Type) -> Vect -109- Z -108- a
+    constructor VC :110: (n :111: Nat) -> (a :112: Type) -> (x :113: a) -> (xs :114: Vect -116- n -115- a) -> Vect -118- (S -119- n) -117- a
+    constructor Id :120: (a :121: Type) -> (x :122: a) -> (y :123: a) -> Type
+    constructor Refl :124: (a :125: Type) -> (x :126: a) -> Id -129- a -128- x -127- x
     subst :130: (a :131: Type) -> (p :132: (_x0 :133: a) -> Type) -> (x :134: a) -> (y :135: a) -> (eq :136: Id -139- a -138- x -137- y) -> (_x1 :140: p -141- x) -> p -142- y 
       (a :143: Type) (p :144: (_x2 :145: a) -> Type) (x :146: a)
          -147- a -148- p -149- x -150- [x] -151- [Refl -153- a -152- x] = (\z :154: p -155- x. z)
-    postulate Bit :156: (_x0 :157: Nat) -> Type
-    postulate I :158: Bit -159- 1
-    postulate O :161: Bit -162- Z
+    constructor Bit :156: (_x0 :157: Nat) -> Type
+    constructor I :158: Bit -159- 1
+    constructor O :161: Bit -162- Z
     double :163: (_x1 :164: Nat) -> Nat 
        -165- Z = Z
       (n :166: Nat)
          -167- (S -168- n) = S -169- (S -170- (double -171- n))
-    postulate Bin :172: (width :173: Nat) -> (value :174: Nat) -> Type
-    postulate N :175: Bin -177- Z -176- Z
-    postulate C :178: (width :179: Nat) -> (lsbVal :180: Nat) -> (lsb :181: Bit -182- lsbVal) -> (restVal :183: Nat) -> (rest :R: Bin -185- width -184- restVal) -> Bin -187- (S -188- width) -186- (plus -190- lsbVal -189- (double -191- restVal))
-    postulate TwoBits :192: (_x2 :193: Nat) -> (_x3 :194: Nat) -> (_x4 :195: Nat) -> Type
-    postulate TB :196: (c :197: Nat) -> (x :198: Nat) -> (y :199: Nat) -> (hi' :200: Nat) -> (hi :201: Bit -202- hi') -> (lo' :203: Nat) -> (lo :204: Bit -205- lo') -> (pf :206: Id -209- Nat -208- (plus -211- c -210- (plus -213- x -212- y)) -207- (plus -215- lo' -214- (double -216- hi'))) -> TwoBits -219- c -218- x -217- y
+    constructor Bin :172: (width :173: Nat) -> (value :174: Nat) -> Type
+    constructor N :175: Bin -177- Z -176- Z
+    constructor C :178: (width :179: Nat) -> (lsbVal :180: Nat) -> (lsb :181: Bit -182- lsbVal) -> (restVal :183: Nat) -> (rest :R: Bin -185- width -184- restVal) -> Bin -187- (S -188- width) -186- (plus -190- lsbVal -189- (double -191- restVal))
+    constructor TwoBits :192: (_x2 :193: Nat) -> (_x3 :194: Nat) -> (_x4 :195: Nat) -> Type
+    constructor TB :196: (c :197: Nat) -> (x :198: Nat) -> (y :199: Nat) -> (hi' :200: Nat) -> (hi :201: Bit -202- hi') -> (lo' :203: Nat) -> (lo :204: Bit -205- lo') -> (pf :206: Id -209- Nat -208- (plus -211- c -210- (plus -213- x -212- y)) -207- (plus -215- lo' -214- (double -216- hi'))) -> TwoBits -219- c -218- x -217- y
     adb :220: (c :221: Nat) -> (x :222: Nat) -> (y :223: Nat) -> (_x5 :224: Bit -225- c) -> (_x6 :226: Bit -227- x) -> (_x7 :228: Bit -229- y) -> TwoBits -232- c -231- x -230- y 
        -233- [Z] -234- [Z] -235- [Z] -236- O -237- O -238- O = TB -246- Z -245- Z -244- Z -243- Z -242- O -241- Z -240- O -239- (Refl -248- Nat -247- Z)
        -249- [1] -251- [Z] -252- [Z] -253- I -254- O -255- O = TB -263- 1 -262- Z -261- Z -260- Z -259- O -258- 1 -257- I -256- (Refl -267- Nat -266- 1)
@@ -168,7 +168,7 @@
           let f :482: (_x11 :483: TwoBits -486- c -485- xb' -484- yb') -> Bin -488- (S -489- (S -490- w)) -487- (plus -492- c -491- (plus -494- (plus -496- xb' -495- (double -497- xn')) -493- (plus -499- yb' -498- (double -500- yn')))) 
             (hi' :501: Nat) (hi :502: Bit -503- hi') (lo' :504: Nat) (lo :505: Bit -506- lo') (pf :507: Id -510- Nat -509- (plus -512- c -511- (plus -514- xb' -513- yb')) -508- (plus -516- lo' -515- (double -517- hi')))
                -518- ({TB} -519- [c] -520- [xb'] -521- [yb'] -522- hi' -523- hi -524- lo' -525- lo -526- pf) = 
-                let postulate eq :527: Id -530- Nat -529- (plus -532- lo' -531- (double -533- (plus -535- hi' -534- (plus -537- xn' -536- yn')))) -528- (plus -539- c -538- (plus -541- (plus -543- xb' -542- (double -544- xn')) -540- (plus -546- yb' -545- (double -547- yn'))))
+                let constructor eq :527: Id -530- Nat -529- (plus -532- lo' -531- (double -533- (plus -535- hi' -534- (plus -537- xn' -536- yn')))) -528- (plus -539- c -538- (plus -541- (plus -543- xb' -542- (double -544- xn')) -540- (plus -546- yb' -545- (double -547- yn'))))
                 in subst -553- Nat -552- (Bin -554- (S -555- (S -556- w))) -551- (plus -558- lo' -557- (double -559- (plus -561- hi' -560- (plus -563- xn' -562- yn')))) -550- (plus -565- c -564- (plus -567- (plus -569- xb' -568- (double -570- xn')) -566- (plus -572- yb' -571- (double -573- yn')))) -549- eq -548- (C -578- (S -579- w) -577- lo' -576- lo -575- (plus -581- hi' -580- (plus -583- xn' -582- yn')) -574- (add' -590- w -589- hi' -588- xn' -587- yn' -586- hi -585- xn -584- yn))
           in f -591- (adb -597- c -596- xb' -595- yb' -594- cb -593- xb -592- yb)
     add :598: (w :599: Nat) -> (x :600: Nat) -> (y :601: Nat) -> (bx :602: Bin -604- w -603- x) -> (by :605: Bin -607- w -606- y) -> Bin -609- (S -610- w) -608- (plus -612- x -611- y) = (\w :613: Nat. (\x :614: Nat. (\y :615: Nat. (\bx :616: Bin -618- w -617- x. (\by :619: Bin -621- w -620- y. add' -628- w -627- Z -626- x -625- y -624- O -623- bx -622- by)))))
@@ -809,57 +809,57 @@
 ### Annotated ###
 
   let
-    postulate Nat :E: Type
-    postulate Z :R: Nat
-    postulate S :R: (x :R: Nat) -> Nat
+    constructor Nat :E: Type
+    constructor Z :R: Nat
+    constructor S :R: (x :R: Nat) -> Nat
     plus :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Nat 
       (n :E: Nat)
          -E- Z -E- n = n
       (m :E: Nat) (n :E: Nat)
          -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
-    postulate Bool :E: Type
-    postulate True :R: Bool
-    postulate False :R: Bool
+    constructor Bool :E: Type
+    constructor True :R: Bool
+    constructor False :R: Bool
     not :E: (_x2 :E: Bool) -> Bool 
        -E- True = False
        -E- False = True
-    postulate Unit :E: Type
-    postulate MkUnit :E: Unit
-    postulate Pair :E: (_x3 :E: Type) -> (_x4 :E: Type) -> Type
-    postulate MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x5 :E: a) -> (_x6 :E: b) -> Pair -E- a -E- b
+    constructor Unit :E: Type
+    constructor MkUnit :E: Unit
+    constructor Pair :E: (_x3 :E: Type) -> (_x4 :E: Type) -> Type
+    constructor MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x5 :E: a) -> (_x6 :E: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: Pair -E- a -E- b) -> a 
       (a :E: Type) (b :E: Type) (x :E: a) (y :E: b)
          -E- a -E- b -E- ({MkPair} -E- [a] -E- [b] -E- x -E- y) = x
     snd :E: (a :E: Type) -> (b :E: Type) -> (_x8 :E: Pair -E- a -E- b) -> b 
       (a :E: Type) (b :E: Type) (x :E: a) (y :E: b)
          -E- a -E- b -E- ({MkPair} -E- [a] -E- [b] -E- x -E- y) = y
-    postulate Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
-    postulate Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
-    postulate Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
+    constructor Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
+    constructor Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
+    constructor Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
     id :E: (a :E: Type) -> (x :E: a) -> a = (\a :E: Type. (\x :E: a. x))
-    postulate Fin :E: (_x13 :E: Nat) -> Type
-    postulate FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
-    postulate FS :E: (n :E: Nat) -> (_x14 :E: Fin -E- n) -> Fin -E- (S -E- n)
-    postulate Vect :E: (_x15 :E: Nat) -> (_x16 :E: Type) -> Type
-    postulate VN :E: (a :E: Type) -> Vect -E- Z -E- a
-    postulate VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
-    postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
-    postulate Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+    constructor Fin :E: (_x13 :E: Nat) -> Type
+    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
+    constructor FS :E: (n :E: Nat) -> (_x14 :E: Fin -E- n) -> Fin -E- (S -E- n)
+    constructor Vect :E: (_x15 :E: Nat) -> (_x16 :E: Type) -> Type
+    constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
+    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
+    constructor Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
+    constructor Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
     subst :R: (a :E: Type) -> (p :E: (_x0 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (_x1 :R: p -E- x) -> p -E- y 
       (a :E: Type) (p :E: (_x2 :E: a) -> Type) (x :E: a)
          -E- a -E- p -E- x -E- [x] -E- [Refl -E- a -E- x] = (\z :R: p -E- x. z)
-    postulate Bit :E: (_x0 :E: Nat) -> Type
-    postulate I :E: Bit -E- 1
-    postulate O :E: Bit -E- Z
+    constructor Bit :E: (_x0 :E: Nat) -> Type
+    constructor I :E: Bit -E- 1
+    constructor O :E: Bit -E- Z
     double :E: (_x1 :E: Nat) -> Nat 
        -E- Z = Z
       (n :E: Nat)
          -E- (S -E- n) = S -E- (S -E- (double -E- n))
-    postulate Bin :E: (width :E: Nat) -> (value :E: Nat) -> Type
-    postulate N :R: Bin -E- Z -E- Z
-    postulate C :R: (width :E: Nat) -> (lsbVal :E: Nat) -> (lsb :E: Bit -E- lsbVal) -> (restVal :E: Nat) -> (rest :R: Bin -E- width -E- restVal) -> Bin -E- (S -R- width) -E- (plus -E- lsbVal -E- (double -E- restVal))
-    postulate TwoBits :E: (_x2 :E: Nat) -> (_x3 :E: Nat) -> (_x4 :E: Nat) -> Type
-    postulate TB :E: (c :E: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (hi' :E: Nat) -> (hi :E: Bit -E- hi') -> (lo' :E: Nat) -> (lo :E: Bit -E- lo') -> (pf :E: Id -E- Nat -E- (plus -E- c -E- (plus -E- x -E- y)) -E- (plus -E- lo' -E- (double -E- hi'))) -> TwoBits -E- c -E- x -E- y
+    constructor Bin :E: (width :E: Nat) -> (value :E: Nat) -> Type
+    constructor N :R: Bin -E- Z -E- Z
+    constructor C :R: (width :E: Nat) -> (lsbVal :E: Nat) -> (lsb :E: Bit -E- lsbVal) -> (restVal :E: Nat) -> (rest :R: Bin -E- width -E- restVal) -> Bin -E- (S -R- width) -E- (plus -E- lsbVal -E- (double -E- restVal))
+    constructor TwoBits :E: (_x2 :E: Nat) -> (_x3 :E: Nat) -> (_x4 :E: Nat) -> Type
+    constructor TB :E: (c :E: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (hi' :E: Nat) -> (hi :E: Bit -E- hi') -> (lo' :E: Nat) -> (lo :E: Bit -E- lo') -> (pf :E: Id -E- Nat -E- (plus -E- c -E- (plus -E- x -E- y)) -E- (plus -E- lo' -E- (double -E- hi'))) -> TwoBits -E- c -E- x -E- y
     adb :E: (c :E: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (_x5 :E: Bit -E- c) -> (_x6 :E: Bit -E- x) -> (_x7 :E: Bit -E- y) -> TwoBits -E- c -E- x -E- y 
        -E- [Z] -E- [Z] -E- [Z] -E- O -E- O -E- O = TB -E- Z -E- Z -E- Z -E- Z -E- O -E- Z -E- O -E- (Refl -E- Nat -E- Z)
        -E- [1] -E- [Z] -E- [Z] -E- I -E- O -E- O = TB -E- 1 -E- Z -E- Z -E- Z -E- O -E- 1 -E- I -E- (Refl -E- Nat -E- 1)
@@ -877,7 +877,7 @@
           let f :R: (_x11 :E: TwoBits -E- c -E- xb' -E- yb') -> Bin -E- (S -R- (S -R- w)) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn')))) 
             (hi' :E: Nat) (hi :E: Bit -E- hi') (lo' :E: Nat) (lo :E: Bit -E- lo') (pf :E: Id -E- Nat -E- (plus -E- c -E- (plus -E- xb' -E- yb')) -E- (plus -E- lo' -E- (double -E- hi')))
                -E- ({TB} -E- [c] -E- [xb'] -E- [yb'] -E- hi' -E- hi -E- lo' -E- lo -E- pf) = 
-                let postulate eq :E: Id -E- Nat -E- (plus -E- lo' -E- (double -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')))) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn'))))
+                let constructor eq :E: Id -E- Nat -E- (plus -E- lo' -E- (double -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')))) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn'))))
                 in subst -E- Nat -E- (Bin -E- (S -R- (S -R- w))) -E- (plus -E- lo' -E- (double -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')))) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn')))) -E- eq -R- (C -E- (S -R- w) -E- lo' -E- lo -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')) -R- (add' -R- w -E- hi' -E- xn' -E- yn' -E- hi -R- xn -R- yn))
           in f -E- (adb -E- c -E- xb' -E- yb' -E- cb -E- xb -E- yb)
     add :R: (w :R: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (bx :R: Bin -E- w -E- x) -> (by :R: Bin -E- w -E- y) -> Bin -E- (S -R- w) -E- (plus -E- x -E- y) = (\w :R: Nat. (\x :E: Nat. (\y :E: Nat. (\bx :R: Bin -E- w -E- x. (\by :R: Bin -E- w -E- y. add' -R- w -E- Z -E- x -E- y -E- O -R- bx -R- by)))))
@@ -906,57 +906,57 @@
 ### Specialised ###
 
   let
-    postulate Nat :E: Type
-    postulate Z :R: Nat
-    postulate S :R: (x :R: Nat) -> Nat
+    constructor Nat :E: Type
+    constructor Z :R: Nat
+    constructor S :R: (x :R: Nat) -> Nat
     plus :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Nat 
       (n :E: Nat)
          -E- Z -E- n = n
       (m :E: Nat) (n :E: Nat)
          -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
-    postulate Bool :E: Type
-    postulate True :R: Bool
-    postulate False :R: Bool
+    constructor Bool :E: Type
+    constructor True :R: Bool
+    constructor False :R: Bool
     not :E: (_x2 :E: Bool) -> Bool 
        -E- True = False
        -E- False = True
-    postulate Unit :E: Type
-    postulate MkUnit :E: Unit
-    postulate Pair :E: (_x3 :E: Type) -> (_x4 :E: Type) -> Type
-    postulate MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x5 :E: a) -> (_x6 :E: b) -> Pair -E- a -E- b
+    constructor Unit :E: Type
+    constructor MkUnit :E: Unit
+    constructor Pair :E: (_x3 :E: Type) -> (_x4 :E: Type) -> Type
+    constructor MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x5 :E: a) -> (_x6 :E: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: Pair -E- a -E- b) -> a 
       (a :E: Type) (b :E: Type) (x :E: a) (y :E: b)
          -E- a -E- b -E- ({MkPair} -E- [a] -E- [b] -E- x -E- y) = x
     snd :E: (a :E: Type) -> (b :E: Type) -> (_x8 :E: Pair -E- a -E- b) -> b 
       (a :E: Type) (b :E: Type) (x :E: a) (y :E: b)
          -E- a -E- b -E- ({MkPair} -E- [a] -E- [b] -E- x -E- y) = y
-    postulate Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
-    postulate Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
-    postulate Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
+    constructor Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
+    constructor Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
+    constructor Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
     id :E: (a :E: Type) -> (x :E: a) -> a = (\a :E: Type. (\x :E: a. x))
-    postulate Fin :E: (_x13 :E: Nat) -> Type
-    postulate FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
-    postulate FS :E: (n :E: Nat) -> (_x14 :E: Fin -E- n) -> Fin -E- (S -E- n)
-    postulate Vect :E: (_x15 :E: Nat) -> (_x16 :E: Type) -> Type
-    postulate VN :E: (a :E: Type) -> Vect -E- Z -E- a
-    postulate VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
-    postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
-    postulate Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+    constructor Fin :E: (_x13 :E: Nat) -> Type
+    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
+    constructor FS :E: (n :E: Nat) -> (_x14 :E: Fin -E- n) -> Fin -E- (S -E- n)
+    constructor Vect :E: (_x15 :E: Nat) -> (_x16 :E: Type) -> Type
+    constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
+    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
+    constructor Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
+    constructor Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
     subst :R: (a :E: Type) -> (p :E: (_x0 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (_x1 :R: p -E- x) -> p -E- y 
       (a :E: Type) (p :E: (_x2 :E: a) -> Type) (x :E: a)
          -E- a -E- p -E- x -E- [x] -E- [Refl -E- a -E- x] = (\z :R: p -E- x. z)
-    postulate Bit :E: (_x0 :E: Nat) -> Type
-    postulate I :E: Bit -E- 1
-    postulate O :E: Bit -E- Z
+    constructor Bit :E: (_x0 :E: Nat) -> Type
+    constructor I :E: Bit -E- 1
+    constructor O :E: Bit -E- Z
     double :E: (_x1 :E: Nat) -> Nat 
        -E- Z = Z
       (n :E: Nat)
          -E- (S -E- n) = S -E- (S -E- (double -E- n))
-    postulate Bin :E: (width :E: Nat) -> (value :E: Nat) -> Type
-    postulate N :R: Bin -E- Z -E- Z
-    postulate C :R: (width :E: Nat) -> (lsbVal :E: Nat) -> (lsb :E: Bit -E- lsbVal) -> (restVal :E: Nat) -> (rest :R: Bin -E- width -E- restVal) -> Bin -E- (S -R- width) -E- (plus -E- lsbVal -E- (double -E- restVal))
-    postulate TwoBits :E: (_x2 :E: Nat) -> (_x3 :E: Nat) -> (_x4 :E: Nat) -> Type
-    postulate TB :E: (c :E: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (hi' :E: Nat) -> (hi :E: Bit -E- hi') -> (lo' :E: Nat) -> (lo :E: Bit -E- lo') -> (pf :E: Id -E- Nat -E- (plus -E- c -E- (plus -E- x -E- y)) -E- (plus -E- lo' -E- (double -E- hi'))) -> TwoBits -E- c -E- x -E- y
+    constructor Bin :E: (width :E: Nat) -> (value :E: Nat) -> Type
+    constructor N :R: Bin -E- Z -E- Z
+    constructor C :R: (width :E: Nat) -> (lsbVal :E: Nat) -> (lsb :E: Bit -E- lsbVal) -> (restVal :E: Nat) -> (rest :R: Bin -E- width -E- restVal) -> Bin -E- (S -R- width) -E- (plus -E- lsbVal -E- (double -E- restVal))
+    constructor TwoBits :E: (_x2 :E: Nat) -> (_x3 :E: Nat) -> (_x4 :E: Nat) -> Type
+    constructor TB :E: (c :E: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (hi' :E: Nat) -> (hi :E: Bit -E- hi') -> (lo' :E: Nat) -> (lo :E: Bit -E- lo') -> (pf :E: Id -E- Nat -E- (plus -E- c -E- (plus -E- x -E- y)) -E- (plus -E- lo' -E- (double -E- hi'))) -> TwoBits -E- c -E- x -E- y
     adb :E: (c :E: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (_x5 :E: Bit -E- c) -> (_x6 :E: Bit -E- x) -> (_x7 :E: Bit -E- y) -> TwoBits -E- c -E- x -E- y 
        -E- [Z] -E- [Z] -E- [Z] -E- O -E- O -E- O = TB -E- Z -E- Z -E- Z -E- Z -E- O -E- Z -E- O -E- (Refl -E- Nat -E- Z)
        -E- [1] -E- [Z] -E- [Z] -E- I -E- O -E- O = TB -E- 1 -E- Z -E- Z -E- Z -E- O -E- 1 -E- I -E- (Refl -E- Nat -E- 1)
@@ -974,7 +974,7 @@
           let f :R: (_x11 :E: TwoBits -E- c -E- xb' -E- yb') -> Bin -E- (S -R- (S -R- w)) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn')))) 
             (hi' :E: Nat) (hi :E: Bit -E- hi') (lo' :E: Nat) (lo :E: Bit -E- lo') (pf :E: Id -E- Nat -E- (plus -E- c -E- (plus -E- xb' -E- yb')) -E- (plus -E- lo' -E- (double -E- hi')))
                -E- ({TB} -E- [c] -E- [xb'] -E- [yb'] -E- hi' -E- hi -E- lo' -E- lo -E- pf) = 
-                let postulate eq :E: Id -E- Nat -E- (plus -E- lo' -E- (double -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')))) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn'))))
+                let constructor eq :E: Id -E- Nat -E- (plus -E- lo' -E- (double -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')))) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn'))))
                 in subst -E- Nat -E- (Bin -E- (S -R- (S -R- w))) -E- (plus -E- lo' -E- (double -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')))) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn')))) -E- eq -R- (C -E- (S -R- w) -E- lo' -E- lo -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')) -R- (add' -R- w -E- hi' -E- xn' -E- yn' -E- hi -R- xn -R- yn))
           in f -E- (adb -E- c -E- xb' -E- yb' -E- cb -E- xb -E- yb)
     add :R: (w :R: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (bx :R: Bin -E- w -E- x) -> (by :R: Bin -E- w -E- y) -> Bin -E- (S -R- w) -E- (plus -E- x -E- y) = (\w :R: Nat. (\x :E: Nat. (\y :E: Nat. (\bx :R: Bin -E- w -E- x. (\by :R: Bin -E- w -E- y. add' -R- w -E- Z -E- x -E- y -E- O -R- bx -R- by)))))
@@ -1003,57 +1003,57 @@
 ### Final annotation ###
 
   let
-    postulate Nat :E: Type
-    postulate Z :R: Nat
-    postulate S :R: (x :R: Nat) -> Nat
+    constructor Nat :E: Type
+    constructor Z :R: Nat
+    constructor S :R: (x :R: Nat) -> Nat
     plus :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Nat 
       (n :E: Nat)
          -E- Z -E- n = n
       (m :E: Nat) (n :E: Nat)
          -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
-    postulate Bool :E: Type
-    postulate True :R: Bool
-    postulate False :R: Bool
+    constructor Bool :E: Type
+    constructor True :R: Bool
+    constructor False :R: Bool
     not :E: (_x2 :E: Bool) -> Bool 
        -E- True = False
        -E- False = True
-    postulate Unit :E: Type
-    postulate MkUnit :E: Unit
-    postulate Pair :E: (_x3 :E: Type) -> (_x4 :E: Type) -> Type
-    postulate MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x5 :E: a) -> (_x6 :E: b) -> Pair -E- a -E- b
+    constructor Unit :E: Type
+    constructor MkUnit :E: Unit
+    constructor Pair :E: (_x3 :E: Type) -> (_x4 :E: Type) -> Type
+    constructor MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x5 :E: a) -> (_x6 :E: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: Pair -E- a -E- b) -> a 
       (a :E: Type) (b :E: Type) (x :E: a) (y :E: b)
          -E- a -E- b -E- ({MkPair} -E- [a] -E- [b] -E- x -E- y) = x
     snd :E: (a :E: Type) -> (b :E: Type) -> (_x8 :E: Pair -E- a -E- b) -> b 
       (a :E: Type) (b :E: Type) (x :E: a) (y :E: b)
          -E- a -E- b -E- ({MkPair} -E- [a] -E- [b] -E- x -E- y) = y
-    postulate Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
-    postulate Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
-    postulate Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
+    constructor Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
+    constructor Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
+    constructor Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
     id :E: (a :E: Type) -> (x :E: a) -> a = (\a :E: Type. (\x :E: a. x))
-    postulate Fin :E: (_x13 :E: Nat) -> Type
-    postulate FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
-    postulate FS :E: (n :E: Nat) -> (_x14 :E: Fin -E- n) -> Fin -E- (S -E- n)
-    postulate Vect :E: (_x15 :E: Nat) -> (_x16 :E: Type) -> Type
-    postulate VN :E: (a :E: Type) -> Vect -E- Z -E- a
-    postulate VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
-    postulate Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
-    postulate Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+    constructor Fin :E: (_x13 :E: Nat) -> Type
+    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
+    constructor FS :E: (n :E: Nat) -> (_x14 :E: Fin -E- n) -> Fin -E- (S -E- n)
+    constructor Vect :E: (_x15 :E: Nat) -> (_x16 :E: Type) -> Type
+    constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
+    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
+    constructor Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
+    constructor Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
     subst :R: (a :E: Type) -> (p :E: (_x0 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (_x1 :R: p -E- x) -> p -E- y 
       (a :E: Type) (p :E: (_x2 :E: a) -> Type) (x :E: a)
          -E- a -E- p -E- x -E- [x] -E- [Refl -E- a -E- x] = (\z :R: p -E- x. z)
-    postulate Bit :E: (_x0 :E: Nat) -> Type
-    postulate I :E: Bit -E- 1
-    postulate O :E: Bit -E- Z
+    constructor Bit :E: (_x0 :E: Nat) -> Type
+    constructor I :E: Bit -E- 1
+    constructor O :E: Bit -E- Z
     double :E: (_x1 :E: Nat) -> Nat 
        -E- Z = Z
       (n :E: Nat)
          -E- (S -E- n) = S -E- (S -E- (double -E- n))
-    postulate Bin :E: (width :E: Nat) -> (value :E: Nat) -> Type
-    postulate N :R: Bin -E- Z -E- Z
-    postulate C :R: (width :E: Nat) -> (lsbVal :E: Nat) -> (lsb :E: Bit -E- lsbVal) -> (restVal :E: Nat) -> (rest :R: Bin -E- width -E- restVal) -> Bin -E- (S -R- width) -E- (plus -E- lsbVal -E- (double -E- restVal))
-    postulate TwoBits :E: (_x2 :E: Nat) -> (_x3 :E: Nat) -> (_x4 :E: Nat) -> Type
-    postulate TB :E: (c :E: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (hi' :E: Nat) -> (hi :E: Bit -E- hi') -> (lo' :E: Nat) -> (lo :E: Bit -E- lo') -> (pf :E: Id -E- Nat -E- (plus -E- c -E- (plus -E- x -E- y)) -E- (plus -E- lo' -E- (double -E- hi'))) -> TwoBits -E- c -E- x -E- y
+    constructor Bin :E: (width :E: Nat) -> (value :E: Nat) -> Type
+    constructor N :R: Bin -E- Z -E- Z
+    constructor C :R: (width :E: Nat) -> (lsbVal :E: Nat) -> (lsb :E: Bit -E- lsbVal) -> (restVal :E: Nat) -> (rest :R: Bin -E- width -E- restVal) -> Bin -E- (S -R- width) -E- (plus -E- lsbVal -E- (double -E- restVal))
+    constructor TwoBits :E: (_x2 :E: Nat) -> (_x3 :E: Nat) -> (_x4 :E: Nat) -> Type
+    constructor TB :E: (c :E: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (hi' :E: Nat) -> (hi :E: Bit -E- hi') -> (lo' :E: Nat) -> (lo :E: Bit -E- lo') -> (pf :E: Id -E- Nat -E- (plus -E- c -E- (plus -E- x -E- y)) -E- (plus -E- lo' -E- (double -E- hi'))) -> TwoBits -E- c -E- x -E- y
     adb :E: (c :E: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (_x5 :E: Bit -E- c) -> (_x6 :E: Bit -E- x) -> (_x7 :E: Bit -E- y) -> TwoBits -E- c -E- x -E- y 
        -E- [Z] -E- [Z] -E- [Z] -E- O -E- O -E- O = TB -E- Z -E- Z -E- Z -E- Z -E- O -E- Z -E- O -E- (Refl -E- Nat -E- Z)
        -E- [1] -E- [Z] -E- [Z] -E- I -E- O -E- O = TB -E- 1 -E- Z -E- Z -E- Z -E- O -E- 1 -E- I -E- (Refl -E- Nat -E- 1)
@@ -1071,7 +1071,7 @@
           let f :R: (_x11 :E: TwoBits -E- c -E- xb' -E- yb') -> Bin -E- (S -R- (S -R- w)) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn')))) 
             (hi' :E: Nat) (hi :E: Bit -E- hi') (lo' :E: Nat) (lo :E: Bit -E- lo') (pf :E: Id -E- Nat -E- (plus -E- c -E- (plus -E- xb' -E- yb')) -E- (plus -E- lo' -E- (double -E- hi')))
                -E- ({TB} -E- [c] -E- [xb'] -E- [yb'] -E- hi' -E- hi -E- lo' -E- lo -E- pf) = 
-                let postulate eq :E: Id -E- Nat -E- (plus -E- lo' -E- (double -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')))) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn'))))
+                let constructor eq :E: Id -E- Nat -E- (plus -E- lo' -E- (double -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')))) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn'))))
                 in subst -E- Nat -E- (Bin -E- (S -R- (S -R- w))) -E- (plus -E- lo' -E- (double -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')))) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn')))) -E- eq -R- (C -E- (S -R- w) -E- lo' -E- lo -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')) -R- (add' -R- w -E- hi' -E- xn' -E- yn' -E- hi -R- xn -R- yn))
           in f -E- (adb -E- c -E- xb' -E- yb' -E- cb -E- xb -E- yb)
     add :R: (w :R: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (bx :R: Bin -E- w -E- x) -> (by :R: Bin -E- w -E- y) -> Bin -E- (S -R- w) -E- (plus -E- x -E- y) = (\w :R: Nat. (\x :E: Nat. (\y :E: Nat. (\bx :R: Bin -E- w -E- x. (\by :R: Bin -E- w -E- y. add' -R- w -E- Z -E- x -E- y -E- O -R- bx -R- by)))))
@@ -1104,14 +1104,14 @@ Verification successful.
 ### Pruned ###
 
   let
-    postulate Z : Nat
-    postulate S : (x) -> Nat
-    postulate True : Bool
-    postulate False : Bool
+    constructor Z : Nat
+    constructor S : (x) -> Nat
+    constructor True : Bool
+    constructor False : Bool
     subst 
       = (\z. z)
-    postulate N : Bin
-    postulate C : (rest) -> Bin
+    constructor N : Bin
+    constructor C : (rest) -> Bin
     add' 
        {_} N N = C N
        ({_} w) (C xn) (C yn) = 
@@ -1136,34 +1136,34 @@ Verification successful.
 unerased:
   
   let
-    postulate Nat : Type
-    postulate Z : Nat
-    postulate S : (x :R: Nat) -> Nat
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (x :R: Nat) -> Nat
     plus : (_x0 : Nat) -> (_x1 : Nat) -> Nat 
       (n : Nat)
          Z n = n
       (m : Nat) (n : Nat)
          (S m) n = S (plus m n)
-    postulate Bool : Type
-    postulate True : Bool
-    postulate False : Bool
-    postulate Id : (a : Type) -> (x : a) -> (y : a) -> Type
-    postulate Refl : (a : Type) -> (x : a) -> Id a x x
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
+    constructor Id : (a : Type) -> (x : a) -> (y : a) -> Type
+    constructor Refl : (a : Type) -> (x : a) -> Id a x x
     subst : (a : Type) -> (p : (_x0 : a) -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -> (_x1 : p x) -> p y 
       (a : Type) (p : (_x2 : a) -> Type) (x : a)
          a p x [x] [Refl a x] = (\z : p x. z)
-    postulate Bit : (_x0 : Nat) -> Type
-    postulate I : Bit 1
-    postulate O : Bit Z
+    constructor Bit : (_x0 : Nat) -> Type
+    constructor I : Bit 1
+    constructor O : Bit Z
     double : (_x1 : Nat) -> Nat 
        Z = Z
       (n : Nat)
          (S n) = S (S (double n))
-    postulate Bin : (width : Nat) -> (value : Nat) -> Type
-    postulate N : Bin Z Z
-    postulate C : (width : Nat) -> (lsbVal : Nat) -> (lsb : Bit lsbVal) -> (restVal : Nat) -> (rest :R: Bin width restVal) -> Bin (S width) (plus lsbVal (double restVal))
-    postulate TwoBits : (_x2 : Nat) -> (_x3 : Nat) -> (_x4 : Nat) -> Type
-    postulate TB : (c : Nat) -> (x : Nat) -> (y : Nat) -> (hi' : Nat) -> (hi : Bit hi') -> (lo' : Nat) -> (lo : Bit lo') -> (pf : Id Nat (plus c (plus x y)) (plus lo' (double hi'))) -> TwoBits c x y
+    constructor Bin : (width : Nat) -> (value : Nat) -> Type
+    constructor N : Bin Z Z
+    constructor C : (width : Nat) -> (lsbVal : Nat) -> (lsb : Bit lsbVal) -> (restVal : Nat) -> (rest :R: Bin width restVal) -> Bin (S width) (plus lsbVal (double restVal))
+    constructor TwoBits : (_x2 : Nat) -> (_x3 : Nat) -> (_x4 : Nat) -> Type
+    constructor TB : (c : Nat) -> (x : Nat) -> (y : Nat) -> (hi' : Nat) -> (hi : Bit hi') -> (lo' : Nat) -> (lo : Bit lo') -> (pf : Id Nat (plus c (plus x y)) (plus lo' (double hi'))) -> TwoBits c x y
     adb : (c : Nat) -> (x : Nat) -> (y : Nat) -> (_x5 : Bit c) -> (_x6 : Bit x) -> (_x7 : Bit y) -> TwoBits c x y 
        [Z] [Z] [Z] O O O = TB Z Z Z Z O Z O (Refl Nat Z)
        [1] [Z] [Z] I O O = TB 1 Z Z Z O 1 I (Refl Nat 1)
@@ -1181,7 +1181,7 @@ unerased:
           let f : (_x11 : TwoBits c xb' yb') -> Bin (S (S w)) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn')))) 
             (hi' : Nat) (hi : Bit hi') (lo' : Nat) (lo : Bit lo') (pf : Id Nat (plus c (plus xb' yb')) (plus lo' (double hi')))
                ({TB} [c] [xb'] [yb'] hi' hi lo' lo pf) = 
-                let postulate eq : Id Nat (plus lo' (double (plus hi' (plus xn' yn')))) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn'))))
+                let constructor eq : Id Nat (plus lo' (double (plus hi' (plus xn' yn')))) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn'))))
                 in subst Nat (Bin (S (S w))) (plus lo' (double (plus hi' (plus xn' yn')))) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn')))) eq (C (S w) lo' lo (plus hi' (plus xn' yn')) (add' w hi' xn' yn' hi xn yn))
           in f (adb c xb' yb' cb xb yb)
     foreign inputSize : Nat
@@ -1204,14 +1204,14 @@ unerased:
 erased:
   
   let
-    postulate Z : Nat
-    postulate S : (x) -> Nat
-    postulate True : Bool
-    postulate False : Bool
+    constructor Z : Nat
+    constructor S : (x) -> Nat
+    constructor True : Bool
+    constructor False : Bool
     subst 
       = (\z. z)
-    postulate N : Bin
-    postulate C : (rest) -> Bin
+    constructor N : Bin
+    constructor C : (rest) -> Bin
     add' 
        {_} N N = C N
        ({_} w) (C xn) (C yn) = 

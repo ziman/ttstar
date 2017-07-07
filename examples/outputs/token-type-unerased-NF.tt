@@ -1,7 +1,7 @@
 -- vim: ft=ttstar
   let
-    postulate TyEq : (_x0) -> (_x1) -> Type
-    postulate Refl : (a) -> TyEq a a
+    constructor TyEq : (_x0) -> (_x1) -> Type
+    constructor Refl : (a) -> TyEq a a
     coerce 
        a [_] ({_} [_]) = (\x. x)
     sym 

@@ -1,14 +1,14 @@
 -- vim: ft=ttstar
   let
-    postulate Nat : Type
-    postulate Z : Nat
-    postulate S : (x) -> Nat
-    postulate Fin : (_x13) -> Type
-    postulate FZ : (n) -> Fin (S n)
-    postulate TT : (_x0) -> Type
-    postulate V : (n) -> (_x1) -> TT n
-    postulate Lam : (n) -> (_x2) -> TT n
-    postulate App : (n) -> (_x3) -> (_x4) -> TT n
-    postulate Result : Type
-    postulate R : (x) -> (y) -> Result
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (x) -> Nat
+    constructor Fin : (_x13) -> Type
+    constructor FZ : (n) -> Fin (S n)
+    constructor TT : (_x0) -> Type
+    constructor V : (n) -> (_x1) -> TT n
+    constructor Lam : (n) -> (_x2) -> TT n
+    constructor App : (n) -> (_x3) -> (_x4) -> TT n
+    constructor Result : Type
+    constructor R : (x) -> (y) -> Result
   in R (App Z (Lam Z (App 1 (V 1 (FZ Z)) (Lam 1 (V 2 (FZ 1))))) (Lam Z (App 1 (Lam 1 (V 2 (FZ 1))) (V 1 (FZ Z))))) (App 1 (V 1 (FZ Z)) (V 1 (FZ Z)))

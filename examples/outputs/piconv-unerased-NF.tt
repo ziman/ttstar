@@ -1,5 +1,5 @@
 -- vim: ft=ttstar
   let
-    postulate T : Type
-    postulate A : T
+    constructor T : Type
+    constructor A : T
   in A

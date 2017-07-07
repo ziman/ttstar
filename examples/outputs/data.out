@@ -3,9 +3,9 @@
 ### Desugared ###
 
   let
-    postulate N : Type
-    postulate Z : N
-    postulate S : (_x0 : N) -> N
+    constructor N : Type
+    constructor Z : N
+    constructor S : (_x0 : N) -> N
     plus : (_x1 : N) -> (_x2 : N) -> N 
       (m : N)
          Z m = m
@@ -22,9 +22,9 @@
 ### Evarified ###
 
   let
-    postulate N :1: Type
-    postulate Z :2: N
-    postulate S :3: (_x0 :4: N) -> N
+    constructor N :1: Type
+    constructor Z :2: N
+    constructor S :3: (_x0 :4: N) -> N
     plus :5: (_x1 :6: N) -> (_x2 :7: N) -> N 
       (m :8: N)
          -9- Z -10- m = m
@@ -59,9 +59,9 @@
 ### Annotated ###
 
   let
-    postulate N :E: Type
-    postulate Z :R: N
-    postulate S :R: (_x0 :E: N) -> N
+    constructor N :E: Type
+    constructor Z :R: N
+    constructor S :R: (_x0 :E: N) -> N
     plus :R: (_x1 :R: N) -> (_x2 :R: N) -> N 
       (m :R: N)
          -R- Z -R- m = m
@@ -78,9 +78,9 @@
 ### Specialised ###
 
   let
-    postulate N :E: Type
-    postulate Z :R: N
-    postulate S :R: (_x0 :E: N) -> N
+    constructor N :E: Type
+    constructor Z :R: N
+    constructor S :R: (_x0 :E: N) -> N
     plus :R: (_x1 :R: N) -> (_x2 :R: N) -> N 
       (m :R: N)
          -R- Z -R- m = m
@@ -97,9 +97,9 @@
 ### Final annotation ###
 
   let
-    postulate N :E: Type
-    postulate Z :R: N
-    postulate S :R: (_x0 :E: N) -> N
+    constructor N :E: Type
+    constructor Z :R: N
+    constructor S :R: (_x0 :E: N) -> N
     plus :R: (_x1 :R: N) -> (_x2 :R: N) -> N 
       (m :R: N)
          -R- Z -R- m = m
@@ -120,8 +120,8 @@ Verification successful.
 ### Pruned ###
 
   let
-    postulate Z : N
-    postulate S : N
+    constructor Z : N
+    constructor S : N
     plus 
        Z m = m
        S _ = S
@@ -133,13 +133,13 @@ Verification successful.
 unerased:
   
   let
-    postulate N : Type
-    postulate Z : N
-    postulate S : (_x0 : N) -> N
+    constructor N : Type
+    constructor Z : N
+    constructor S : (_x0 : N) -> N
   in 5
 
 erased:
   
-  let postulate S : N
+  let constructor S : N
   in S
 
