@@ -174,23 +174,22 @@ patForced :: Parser (Pat MRel)
 patForced = PForced <$> brackets expr <?> "forced pattern"
 
 patApp :: Parser (Pat MRel)
-patApp = PCtor False <$> name <*> many patternR <?> "pattern application"
-
-patAppF :: Parser (Pat MRel)
-patAppF = PCtor True <$> try (braces name) <*> many patternR <?> "forced pattern application"
+patApp = parens (
+    ((PCtor True <$> braces name <*> many patternR) <?> "forced ctor application")
+    <|> ((PCtor False <$> name <*> many patternR) <?> "ctor application")
+  ) <?> "pattern application"
 
 loneCtorPat :: Parser (Pat MRel)
 loneCtorPat = PCtor False <$> ctorName <*> pure [] <?> "lone constructor pattern"
 
 loneCtorPatF :: Parser (Pat MRel)
-loneCtorPatF = PCtor True <$> try (braces ctorName) <*> pure [] <?> "forced lone constructor pattern"
+loneCtorPatF = PCtor True <$> braces ctorName <*> pure [] <?> "forced lone constructor pattern"
 
 pattern :: Parser (Pat MRel)
 pattern
     =   patForced
     <|> loneCtorPatF
     <|> loneCtorPat
-    <|> patAppF
     <|> patApp
     <|> patVar
     <?> "pattern"
