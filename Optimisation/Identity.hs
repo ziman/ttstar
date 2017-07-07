@@ -11,10 +11,9 @@ idTT :: TT ()
 idTT = Bind Lam [Def (UN "x") () (V Blank) (Abstract Var) noConstrs] (V (UN "x"))
 
 isIdClause :: S.Set Name -> Clause () -> Bool
-isIdClause ids (Clause pvs (PApp _r _f arg) rhs)
-    = rmId ids (pat2term arg) == rmId ids rhs
-isIdClause ids (Clause [] (PForced _f) tm)
-    = isIdTm ids tm
+isIdClause ids (Clause pvs [(_, PV arg)] rhs)
+    = rmId ids rhs == PV arg
+isIdClause ids (Clause [] [] rhs) = isIdTm ids rhs
 isIdClause _ _ = False
 
 isIdTm' :: TT () -> Bool
@@ -30,9 +29,9 @@ isIdentity ids (defBody -> Term tm) = isIdTm ids tm
 isIdentity ids _ = False
 
 rmIdPat :: S.Set Name -> Pat () -> Pat ()
-rmIdPat ids (PApp () f x) = PApp () (rmIdPat ids f) (rmIdPat ids x)
+rmIdPat ids (PV n) = PV n
+rmIdPat ids (PCtor f cn args) = PCtor f cn [(r, rmIdPat ids p) | (r,p) <- args]
 rmIdPat ids (PForced tm) = PForced $ rmId ids tm
-rmIdPat ids pat = pat
 
 rmIdClause :: S.Set Name -> Clause () -> Clause ()
 rmIdClause ids (Clause pvs lhs rhs) = Clause pvs (rmIdPat ids lhs) (rmId ids rhs)

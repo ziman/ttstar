@@ -257,16 +257,11 @@ termBody = Term <$> expr
 clause :: Parser (Clause MRel)
 clause = (<?> "pattern clause") $ do
     pvs <- many (parens $ typing Var) <|> pure []
-    lhs <- forceHead <$> pattern
+    name  -- of the function; we'll accept any name here
+    lhs <- many pattern
     kwd "="
     rhs <- expr
     return $ Clause pvs lhs rhs
-
-forceHead :: Pat MRel -> Pat MRel
-forceHead p | (PV f, args) <- unApplyPat p
-    = mkAppPat (PForced $ V f) args
-forceHead p
-    = error $ "invalid clause LHS: " ++ show p
 
 dataDef :: Parser [Def MRel]
 dataDef = (<?> "data definition") $ do

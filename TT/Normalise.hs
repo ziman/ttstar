@@ -5,6 +5,7 @@ import TT.Core
 import TT.Utils
 import TT.Pretty
 
+import Control.Arrow
 import Control.Applicative
 import qualified Data.Set as S
 import qualified Data.Map as M
@@ -76,10 +77,9 @@ redClause NF ctx (Clause pvs lhs rhs) =
 redClause _ ctx clause = error $ "redClause non-NF"
 
 redPat :: IsRelevance r => Form -> Ctx r -> Pat r -> Pat r
-redPat NF ctx (PApp r f x) = PApp r (redPat NF ctx f) (redPat NF ctx x)
+redPat NF ctx (PCtor f cn args) = PCtor f cn $ map (second $ redPat NF ctx) args
 redPat NF ctx tm@(PV _)    = tm
 redPat NF ctx (PForced tm) = PForced $ red NF ctx tm
-redPat _ ctx pat = error $ "redPat non-NF"
 
 simplLet :: TT r -> TT r
 simplLet (Bind Let [] tm) = tm

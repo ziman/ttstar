@@ -93,29 +93,11 @@ cgClauseLHS pvs pat =
   where
     (_f, args) = unApplyPat pat
 
-cgPat :: PrettyR r => S.Set Name -> Pat r -> Doc
+cgPat :: PrettyR r => Pat r -> Doc
 cgPat pvs (PV Blank) = text "_"
-
-cgPat pvs (PV n)
-    | n `S.member` pvs = cgName n
-    | otherwise = parens (text "'" <> cgName n)
-
-cgPat pvs (PForcedCtor n) = cgName Blank
-
-cgPat pvs pat@(PApp r f x)
-    | (PV cn, args) <- unApplyPat pat
-    = cgPatApp cn args
-
-    | (PForcedCtor cn, args) <- unApplyPat pat
-    = cgPatApp Blank args
-  where
-    cgPatApp cn args = parens (hsep $ cgPName cn : map (cgPat pvs . snd) args)
-    cgPName Blank = text "_"
-    cgPName cn = text "'" <> cgName cn
-
-cgPat pvs pat@(PApp r f x) = error $ "can't compile pattern: " ++ show pat
-
-cgPat pvs (PForced tm) = text "_"
+cgPat pvs (PV n) = cgName n
+cgPat pvs (PCtor True cn args) = cgApp (text "_") $ map (cgPat pvs . snd) args
+cgPat pvs (PCtor False cn args) = cgApp (text "'" <> cgName cn) $ map (cgPat pvs . snd) args
 
 cgLambda :: Name -> Doc -> Doc
 cgLambda n body = parens (text "lambda" <+> parens (cgName n) $+$ indent body)
