@@ -72,7 +72,7 @@ redClause :: IsRelevance r => Form -> Ctx r -> Clause r -> Clause r
 redClause NF ctx (Clause pvs lhs rhs) =
     Clause
         (map (redDef NF ctx) pvs)
-        (redPat NF ctx lhs)
+        (map (second $ redPat NF ctx) lhs)
         (red NF ctx rhs)
 redClause _ ctx clause = error $ "redClause non-NF"
 
@@ -80,6 +80,7 @@ redPat :: IsRelevance r => Form -> Ctx r -> Pat r -> Pat r
 redPat NF ctx (PCtor f cn args) = PCtor f cn $ map (second $ redPat NF ctx) args
 redPat NF ctx tm@(PV _)    = tm
 redPat NF ctx (PForced tm) = PForced $ red NF ctx tm
+redPat WHNF _ _ = error "trying to reduce patterns to WHNF"
 
 simplLet :: TT r -> TT r
 simplLet (Bind Let [] tm) = tm
@@ -105,7 +106,7 @@ red form ctx t@(V n)
     = case body of
         Abstract _  -> t
         Term     tm -> red form ctx tm
-        Clauses [Clause [] (PForced _) rhs] -> red form ctx rhs  -- constant function
+        Clauses [Clause [] [] rhs] -> red form ctx rhs  -- constant function
         Clauses  cs -> t
 
     | otherwise = error $ "unknown variable: " ++ show n  -- unknown variable
@@ -203,11 +204,11 @@ matchClause ctx fn tm (Clause pvs lhs rhs) = do
 
     -- first, match up patterns vs. terms, keeping superfluous terms
     -- (if application is oversaturated)
-    (pts, extraTerms) <- matchUp pargs args
+    (pts, extraTerms) <- matchUp lhs args
 
     -- get the matching substitution
     pvSubst <- M.unionsWith (\_ _ -> error "nonlinear pattern")
-        <$> sequence [match pvs' ctx p $ red WHNF ctx tm | (p,tm) <- pts]
+        <$> sequence [match ctx p $ red WHNF ctx tm | (p,tm) <- pts]
 
     -- substitute in RHS, and then tack on the superfluous terms
     return $
@@ -215,9 +216,7 @@ matchClause ctx fn tm (Clause pvs lhs rhs) = do
             (safeSubst pvs [pvSubst M.! defName d | d <- pvs] rhs)
             extraTerms
   where
-    (_patH, pargs) = unApplyPat lhs
-    ( tmH,  args)  = unApply tm
-    pvs' = M.fromList [(defName d, d) | d <- pvs]
+    (tmH, args)  = unApply tm
 
 safeSubst :: [Def r] -> [TT r] -> TT r -> TT r
 safeSubst [] [] rhs = rhs
@@ -227,39 +226,29 @@ safeSubst (d:ds) (t:ts) rhs
     (ds', rhs') = substBinder (defName d) t ds rhs
 safeSubst _ _ rhs = error $ "safeSubst: defs vs. terms do not match up"
 
-match :: IsRelevance r => Ctx r -> Ctx r -> Pat r -> TT r -> Match (M.Map Name (TT r))
-match pvs ctx (PV Blank) tm'
+match :: IsRelevance r => Ctx r -> Pat r -> TT r -> Match (M.Map Name (TT r))
+match ctx (PV Blank) tm'
     = Yes M.empty
 
-match pvs ctx (PV n) tm'
-    | Just (defBody -> Abstract Var) <- M.lookup n pvs
+match ctx (PV n) tm'
     = Yes $ M.singleton n tm'
 
-match pvs ctx (PV n) (V n')
-    | n == n'
-    , Just (defBody -> Abstract Postulate) <- M.lookup n ctx
+match ctx (PForced tm) tm'
     = Yes M.empty
 
-match pvs ctx (PApp r f x) (App r' f' x')
-    = M.unionWith (\_ _ -> error "non-linear pattern")
-        <$> match pvs ctx f f'
-        <*> match pvs ctx x (red WHNF ctx x')
+match ctx (PCtor f cn args) tm'
+    | (V cn', args') <- unApply $ red WHNF ctx tm'
+    = if cn == cn'
+        then if length args /= length args'
+            then error $ "matching on " ++ show cn ++ ": arg counts differ"
+            else M.unionsWith (\_ _ -> error "non-linear pattern")
+                    <$> sequence [match ctx pat arg | ((_,pat),(_,arg)) <- zip args args']
+        else
+            case M.lookup cn' ctx of
+                Just (defBody -> Abstract Postulate) -> No
+                _ -> Stuck
 
-match pvs ctx (PForced tm) tm'
-    = Yes M.empty
-
-match pvs ctx (PForcedCtor n) (V n')
-    | Just (defBody -> Abstract Postulate) <- M.lookup n' ctx  -- check n' is /some/ constructor
-    = Yes M.empty
-
-match pvs ctx pat (V n)
-    | Just d <- M.lookup n ctx
-    = case defBody d of
-        Abstract Var -> Stuck  -- variables may or may not match as we learn what they are
-        Abstract (Foreign _) -> Stuck  -- foreigns are variables, really
-        _ -> No
-
-match _ _ _ _ = No
+match ctx _ _ = Stuck
 
 firstMatch :: Alternative f => [f a] -> f a
 firstMatch = foldr (<|>) empty
