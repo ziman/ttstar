@@ -6,6 +6,7 @@ import TT.Lens
 import Erasure.Evar
 import Erasure.Infer
 
+import Control.Monad
 import Control.Monad.Trans.State
 import qualified Data.Map as M
 import qualified Data.Set as S
@@ -67,9 +68,12 @@ specClause (Clause pm lm rm) (Clause pr lr rr) = do
     isp' <- sequence [specDef m r | (m,r) <- zip pm pr]
     let isp = M.unionsWith S.union $ map fst isp'
     let p' = map snd isp'
-    (isl, l') <- specPat lm lr
+    ls <- zipWithM specPat (map snd lm) (map snd lr)
     (isr, r') <- specTm rm rr
-    return (M.unionsWith S.union [isp,isl,isr], Clause p' l' r')
+    return (
+        M.unionsWith S.union (isp:isr:map fst ls),
+        Clause p' (zip (map (Fixed . fst) lr) (map snd ls)) r'
+      )
 
 specBody :: Body Evar -> Body Relevance -> Spec (Body Evar)
 specBody bm (Abstract a) = return $ (M.empty, Abstract a)
@@ -87,13 +91,13 @@ specDef (Def nm rm tym bodym _csm) (Def nr rr tyr bodyr csr) = do
 
 specPat :: Pat Evar -> Pat Relevance -> Spec (Pat Evar)
 specPat pm (PV n) = return (M.empty, PV n)
-specPat pm (PForcedCtor n) = return (M.empty, PForcedCtor n)
-specPat (PApp rm fm xm) (PApp rr fr xr) = do
-    (isf, fr') <- specPat fm fr
-    (isx, xr') <- specPat xm xr
-    return (M.unionWith S.union isf isx, PApp (Fixed rr) fr' xr')
 specPat (PForced tm) (PForced tr) = fmap PForced <$> specTm tm tr
-
+specPat (PCtor fm cnm asm) (PCtor fr cnr asr) = do
+    ps <- sequence [specPat pm pr | ((_,pm),(_,pr)) <- zip asm asr]
+    return (
+        M.unionsWith S.union (map fst ps),
+        PCtor fr cnr $ zip (map (Fixed . fst) asr) (map snd ps)
+      )
 specPat pm pr = error $ "cannot specialise: " ++ show (pm, pr)
 
 specTm :: TT Evar -> TT Relevance -> Spec (TT Evar)

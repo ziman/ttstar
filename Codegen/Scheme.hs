@@ -1,11 +1,9 @@
 module Codegen.Scheme (codegen) where
 
 import TT.Core
-import TT.Utils
 import TT.Pretty
 import Util.PrettyPrint
 import Codegen.Common
-import qualified Data.Set as S
 
 indent :: Doc -> Doc
 indent = nest 2
@@ -76,28 +74,24 @@ cgMatchLambda cs = nestLambdas ns $ parens (
     )
   where
     ns = [MN "e" i | i <- [0..nargs-1]]
-    nargs = maximum [length . snd . unApplyPat $ lhs | Clause pvs lhs rhs <- cs]
+    nargs = maximum [length lhs | Clause pvs lhs rhs <- cs]
+
+cgPats :: PrettyR r => [(r, Pat r)] -> Doc
+cgPats pats = hsep $ map (cgPat . snd) pats
 
 cgMatchClause :: PrettyR r => Clause r -> Doc
 cgMatchClause (Clause pvs lhs rhs)
     = parens (
-        parens (cgClauseLHS patvars lhs)
+        parens (cgPats lhs)
         $$ indent (cgTm rhs)
     )
-  where
-    patvars = S.fromList $ map defName pvs
-
-cgClauseLHS :: PrettyR r => S.Set Name -> Pat r -> Doc
-cgClauseLHS pvs pat =
-    hsep [cgPat pvs p | (r, p) <- args]
-  where
-    (_f, args) = unApplyPat pat
 
 cgPat :: PrettyR r => Pat r -> Doc
-cgPat pvs (PV Blank) = text "_"
-cgPat pvs (PV n) = cgName n
-cgPat pvs (PCtor True cn args) = cgApp (text "_") $ map (cgPat pvs . snd) args
-cgPat pvs (PCtor False cn args) = cgApp (text "'" <> cgName cn) $ map (cgPat pvs . snd) args
+cgPat (PV Blank) = text "_"
+cgPat (PV n) = cgName n
+cgPat (PCtor True cn args) = cgApp (text "_") $ cgPats args
+cgPat (PCtor False cn args) = cgApp (text "'" <> cgName cn) $ cgPats args
+cgPat (PForced _) = text "_"
 
 cgLambda :: Name -> Doc -> Doc
 cgLambda n body = parens (text "lambda" <+> parens (cgName n) $+$ indent body)

@@ -36,13 +36,14 @@ data TCError
     | CantMatch TTevar TTevar
     | NonVariableScrutinee TTevar
     | NotConstructor Name
+    | NotPi Type
     | InconsistentErasure Name
     | NotImplemented String
     | NonPatvar Name
     | InvalidPattern (Pat Evar)
     | UncheckableTerm TTevar
     | PatvarsPatternMismatch [Name] [Name]
-    | NonlinearPattern (Pat Evar)
+    | NonlinearPattern (Clause Evar)
     | Other String
     deriving (Eq, Ord, Show)
 
@@ -196,13 +197,13 @@ inferDef d@(Def n r ty (Clauses cls) _noCs) = bt ("DEF-CLAUSES", n) $ do
     return $ Def n r ty (Clauses cls) cs
 
 inferClause :: Type -> Clause Evar -> TC (Constrs Evar)
-inferClause fty (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
+inferClause fty c@(Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
     -- check patvars
     ctx <- getCtx
     let pvsN = S.fromList (map defName pvs)
-    patN <- case freePatVars ctx lhs of
+    patN <- case S.unions <$> traverse (freePatVars . snd) lhs of
         Just pvs -> return pvs
-        Nothing  -> tcfail $ NonlinearPattern lhs
+        Nothing  -> tcfail $ NonlinearPattern c
 
     if pvsN /= patN
         then tcfail $ PatvarsPatternMismatch (S.toList pvsN) (S.toList patN)
@@ -210,7 +211,7 @@ inferClause fty (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
 
     pvs' <- inferDefs' pvs
     let pvsCtx = M.fromList [(defName d, d) | d <- pvs']
-    (lty, lcs) <- inferPatApp pvsCtx (Fixed R) fty lhs
+    (lty, lcs) <- inferPatApp pvsCtx (Fixed R) noConstrs fty lhs
     withs pvs' $ do
         (rty, rcs) <- inferTm rhs
         ccs <- conv lty rty
@@ -225,31 +226,31 @@ inferPat pvs s pat@(PV n) = bt ("PAT-NAME", n) $ do
         Just (Def n r ty (Abstract Var) cs) ->
             return (ty, r --> s)  -- relevance of var forces surrounding to be relevant
 
-        _ -> tcFail $ NotPatvar n
+        _ -> tcfail $ NonPatvar n
 
 inferPat pvs s pat@(PForced tm) = bt ("PAT-FORCED", tm) $ do
     (ty, cs) <- with' (M.union pvs) $ inferTm tm
     return (ty, cond s cs)
 
 inferPat pvs s pat@(PCtor forced cn args) = bt ("PAT-CTOR", pat) $ do
-    d <- lookupName cn
+    d <- lookup cn
     case defBody d of
         Abstract Postulate -> return ()
-        _ -> verFail $ NotConstructor cn
+        _ -> tcfail $ NotConstructor cn
 
     -- if we inspect, that affects 1) surrounding, 2) ctor relevance
-    ctorCs <- case forced of
-        True  -> noConstrs
-        False -> Fixed r --> s /\ Fixed R --> defR r
+    let ctorCs
+          | forced    = noConstrs
+          | otherwise = Fixed R --> s /\ Fixed R --> defR d
 
-    inferPatApp pvs s appCs (defType d) args
+    inferPatApp pvs s ctorCs (defType d) args
 
 --inferPat s pat@(PApp app_r f x) = bt ("PAT-APP", pat) $ do
 inferPatApp :: Ctx Evar -> Evar -> Constrs Evar
     -> Type -> [(Evar, Pat Evar)] -> TC (Type, Constrs Evar)
 inferPatApp pvs s cs fty [] = return (fty, cs)
 inferPatApp pvs s cs fty ((app_r,x):xs) = bt ("PAT-APP", fty, x) $ do
-    (xty, xcs) <- inferPat app_r x  -- it's not (s /\ app_r) -- app_r is absolute
+    (xty, xcs) <- inferPat pvs app_r x  -- it's not (s /\ app_r) -- app_r is absolute
     ctx <- getCtx
     case whnf ctx fty of
         Bind Pi [Def n' pi_r ty' (Abstract Var) _noCs] retTy -> do
@@ -260,7 +261,6 @@ inferPatApp pvs s cs fty ((app_r,x):xs) = bt ("PAT-APP", fty, x) $ do
                                                 -- but only in relevant surroundings
                                                 -- (look at treered_A.tt what happens if you don't cond)
                     /\ app_r --> s    -- if we inspect anywhere here, then the whole pattern inspects
-                    /\ fcs
                     /\ xcs
                     /\ cond app_r tycs
                     -- we can't leave tycs out entirely because
