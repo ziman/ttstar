@@ -25,6 +25,7 @@ data VerError
     | PatvarsPatternMismatch [Name] [Name]
     | NonLinearPattern (Pat Relevance)
     | AppliedForcedPattern (Pat Relevance)
+    | StrangePattern (Pat Relevance)
     deriving Show
 
 data VerFailure = VerFailure VerError [String]
@@ -135,10 +136,10 @@ verDef d@(Def n r ty (Clauses cls) cs) = bt ("DEF-CLAUSES", n) $ do
     tyty <- verTm E ty
     mustBeType tyty
     with d{ defBody = Abstract Var } $
-        mapM_ (verClause r) cls
+        mapM_ (verClause r ty) cls
 
-verClause :: Relevance -> Clause Relevance -> Ver ()
-verClause r (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
+verClause :: Relevance -> Type -> Clause Relevance -> Ver ()
+verClause r fTy (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
     -- check patvars
     ctx <- getCtx
     let pvsN = S.fromList (map defName pvs)
@@ -151,7 +152,8 @@ verClause r (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
         else return ()
 
     verDefs pvs
-    lhsTy <- verPat True r (M.fromList [(defName d, d) | d <- pvs]) lhs
+    let pvsCtx = M.fromList [(defName d, d) | d <- pvs]
+    lhsTy <- verPatApp r pvsCtx fTy lhs
     withs pvs $ do
         rhsTy <- verTm r rhs
         conv r lhsTy rhsTy
@@ -198,46 +200,43 @@ verTm r (App s f x) = bt ("APP", r, f, s, x) $ do
 verTm r tm = bt ("UNKNOWN-TERM", tm) $ do
     verFail NotImplemented
 
--- The Bool says whether an applied [forced pattern] is allowed to occur.
--- The only case where it is allowed is the name of the function.
-verPat :: Bool -> Relevance -> Ctx Relevance -> Pat Relevance -> Ver Type
-verPat fapp r pvs (PV n)
-    | Just d <- M.lookup n pvs
-    = bt ("PAT-VAR", n) $ do
-        defR d --> r
-        return $ defType d
-
-verPat fapp r pvs (PV n) = bt ("PAT-REF", n) $ do
-    d <- lookupName n
-    r --> defR d
-    case defBody d of
-        Abstract Postulate -> return ()
-        _ -> verFail $ NotConstructor n
-    return $ defType d
-
-verPat fapp r pvs (PForcedCtor n) = bt ("PAT-FORCED-CTOR", n) $ do
-    d <- lookupName n
-    case defBody d of
-        Abstract Postulate -> return $ defType d
-        _ -> verFail $ NotConstructor n
-
-verPat False r pvs tm@(PApp s (PForced _) _) =
-    verFail $ AppliedForcedPattern tm
-
-verPat fapp r pvs (PApp s f x) = bt ("PAT-APP", r, s, f, x) $ do
-    ctx <- getCtx
-    fty <- verPat fapp r pvs f
+verPatApp :: Relevance -> Ctx Relevance -> Type
+    -> [(Relevance, Pat Relevance)] -> Ver Type
+verPatApp r pvs fty [] = fty
+verPatApp r pvs fty ((s,x):xs) = ("APP-TY", fty, x) $ do
     case whnf ctx fty of
         Bind Pi [Def n piR piTy (Abstract Var) _] piRhs -> do
             (r /\ piR) <-> (r /\ s)
-            xty <- verPat False (r /\ s) pvs x
+            xty <- verPat (r /\ s) pvs x
             with' (M.union pvs) $
                 conv (r /\ s) xty piTy
-            return $ subst n (pat2term x) piRhs
+            appTy r pvs (subst n (pat2term x) piRhs) xs
 
         _ -> verFail $ NotPi fty
 
-verPat fapp r pvs (PForced tm) = bt ("PAT-FORCED", tm) $ do
+verPat :: Relevance -> Ctx Relevance -> Pat Relevance -> Ver Type
+verPat r pvs (PV n) = bt ("PAT-VAR", n) $ do
+    d <- case M.lookup n pvs of
+        Just d -> d
+        Nothing -> verFail $ UnknownName n
+
+    case defBody d of
+        Abstract Variable -> return ()
+        _ -> verFail $ NotPatvar n
+
+    defR d --> r
+    return $ defType d
+
+verPat r pvs (PCtor forced cn args) = bt ("PAT-CTOR", cn, args) $ do
+    d <- lookupName cn
+    case defBody d of
+        Abstract Postulate -> return ()
+        _ -> verFail $ NotConstructor cn
+
+    when (not forced) $ r --> defR d
+    verPatApp r pvs (defType d) args
+                
+verPat r pvs (PForced tm) = bt ("PAT-FORCED", tm) $ do
     with' (M.union pvs) $ do
         verTm r tm
 
