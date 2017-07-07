@@ -1,7 +1,6 @@
 module TT.Parser (readProgram) where
 
 import TT.Core
-import TT.Utils
 import TT.Pretty ()
 
 import Data.Char
@@ -175,10 +174,10 @@ patForced :: Parser (Pat MRel)
 patForced = PForced <$> brackets expr <?> "forced pattern"
 
 patApp :: Parser (Pat MRel)
-patApp = PCtor False <$> name <*> many pattern <?> "pattern application"
+patApp = PCtor False <$> name <*> many patternR <?> "pattern application"
 
 patAppF :: Parser (Pat MRel)
-patAppF = PCtor True <$> try (braces name) <*> many pattern <?> "forced pattern application"
+patAppF = PCtor True <$> try (braces name) <*> many patternR <?> "forced pattern application"
 
 loneCtorPat :: Parser (Pat MRel)
 loneCtorPat = PCtor False <$> ctorName <*> pure [] <?> "lone constructor pattern"
@@ -187,7 +186,17 @@ loneCtorPatF :: Parser (Pat MRel)
 loneCtorPatF = PCtor True <$> try (braces ctorName) <*> pure [] <?> "forced lone constructor pattern"
 
 pattern :: Parser (Pat MRel)
-pattern = loneCtorPatF <|> loneCtorPat <|> patAppF <|> patApp <|> patVar
+pattern
+    =   patForced
+    <|> loneCtorPatF
+    <|> loneCtorPat
+    <|> patAppF
+    <|> patApp
+    <|> patVar
+    <?> "pattern"
+
+patternR :: Parser (MRel, Pat MRel)
+patternR = (,) <$> pure Nothing <*> pattern
 
 let_ :: Parser (TT MRel)
 let_ = (<?> "let expression") $ do
@@ -263,8 +272,8 @@ termBody = Term <$> expr
 clause :: Parser (Clause MRel)
 clause = (<?> "pattern clause") $ do
     pvs <- many (parens $ typing Var) <|> pure []
-    name  -- of the function; we'll accept any name here
-    lhs <- many pattern
+    _ <- name  -- of the function; we'll accept any name here
+    lhs <- many patternR
     kwd "="
     rhs <- expr
     return $ Clause pvs lhs rhs
