@@ -191,12 +191,12 @@ inferDef d@(Def n r ty (Clauses cls) _noCs) = bt ("DEF-CLAUSES", n) $ do
     (tyty, tycs) <- inferTm ty
     tytyTypeCs   <- conv tyty (V $ UN "Type")
     cfCs <- with d{ defBody = Abstract Var } $ do
-        unions <$> traverse inferClause cls
+        unions <$> traverse (inferClause ty) cls
     let cs = tytyTypeCs /\ cfCs  -- in types, only conversion constraints matter
     return $ Def n r ty (Clauses cls) cs
 
-inferClause :: Clause Evar -> TC (Constrs Evar)
-inferClause (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
+inferClause :: Type -> Clause Evar -> TC (Constrs Evar)
+inferClause fty (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
     -- check patvars
     ctx <- getCtx
     let pvsN = S.fromList (map defName pvs)
@@ -209,62 +209,67 @@ inferClause (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
         else return ()
 
     pvs' <- inferDefs' pvs
+    let pvsCtx = M.fromList [(defName d, d) | d <- pvs']
+    (lty, lcs) <- inferPatApp pvsCtx (Fixed R) fty lhs
     withs pvs' $ do
-        (lty, lcs) <- inferPat (Fixed R) lhs
         (rty, rcs) <- inferTm rhs
         ccs <- conv lty rty
         return $ lcs /\ rcs /\ ccs
 
 -- the relevance evar "s" stands for "surrounding"
 -- it's the relevance of the whole pattern
-inferPat :: Evar -> Pat Evar -> TC (Type, Constrs Evar)
-inferPat s pat@(PV n) = bt ("PAT-NAME", n) $ do
-    d@(Def n r ty body cs) <- lookup n
-    case body of
-        Abstract Var
-            -> return (ty, r --> s)  -- relevance of this var forces surrounding to be relevant
-        Abstract Postulate           -- here we inspect: that affects 1) surrounding, 2) ctor relevance
-            -> return (
-                    ty,
-                    Fixed R --> s /\ Fixed R --> r
-                )
-        _
-            -> tcfail $ InvalidPattern pat
+inferPat :: Ctx Evar -> Evar -> Pat Evar -> TC (Type, Constrs Evar)
+inferPat pvs s pat@(PV n) = bt ("PAT-NAME", n) $ do
+    case M.lookup n pvs of
+        Nothing -> tcfail $ UnknownName n
+        Just (Def n r ty (Abstract Var) cs) ->
+            return (ty, r --> s)  -- relevance of var forces surrounding to be relevant
 
-inferPat s pat@(PForcedCtor n) = bt ("PAT-FORCED-CTOR", n) $ do
-    d@(Def n' r ty body cs) <- lookup n
-    case body of
-        Abstract Postulate
-            -> return (ty, noConstrs)
-        _
-            -> tcfail $ NotConstructor n
+        _ -> tcFail $ NotPatvar n
 
-inferPat s pat@(PForced tm) = bt ("PAT-FORCED", tm) $ do
-    (ty, cs) <- inferTm tm
+inferPat pvs s pat@(PForced tm) = bt ("PAT-FORCED", tm) $ do
+    (ty, cs) <- with' (M.union pvs) $ inferTm tm
     return (ty, cond s cs)
 
-inferPat s pat@(PApp app_r f x) = bt ("PAT-APP", pat) $ do
-    (fty, fcs) <- inferPat s f
-    (xty, xcs) <- inferPat app_r x
+inferPat pvs s pat@(PCtor forced cn args) = bt ("PAT-CTOR", pat) $ do
+    d <- lookupName cn
+    case defBody d of
+        Abstract Postulate -> return ()
+        _ -> verFail $ NotConstructor cn
+
+    -- if we inspect, that affects 1) surrounding, 2) ctor relevance
+    ctorCs <- case forced of
+        True  -> noConstrs
+        False -> Fixed r --> s /\ Fixed R --> defR r
+
+    inferPatApp pvs s appCs (defType d) args
+
+--inferPat s pat@(PApp app_r f x) = bt ("PAT-APP", pat) $ do
+inferPatApp :: Ctx Evar -> Evar -> Constrs Evar
+    -> Type -> [(Evar, Pat Evar)] -> TC (Type, Constrs Evar)
+inferPatApp pvs s cs fty [] = return (fty, cs)
+inferPatApp pvs s cs fty ((app_r,x):xs) = bt ("PAT-APP", fty, x) $ do
+    (xty, xcs) <- inferPat app_r x  -- it's not (s /\ app_r) -- app_r is absolute
     ctx <- getCtx
     case whnf ctx fty of
         Bind Pi [Def n' pi_r ty' (Abstract Var) _noCs] retTy -> do
             tycs <- conv xty ty'
-            let cs =
-                    cond s (app_r <--> pi_r)  -- if we inspect here, then the pi must reflect that
-                                              -- but only in relevant surroundings
-                                              -- (look at treered_A.tt what happens if you don't cond)
+            let cs' =
+                    cs
+                    /\ cond s (app_r <--> pi_r) -- if we inspect here, then the pi must reflect that
+                                                -- but only in relevant surroundings
+                                                -- (look at treered_A.tt what happens if you don't cond)
                     /\ app_r --> s    -- if we inspect anywhere here, then the whole pattern inspects
                     /\ fcs
                     /\ xcs
-                    /\ tycs  -- do we need to cond this on app_r?
+                    /\ cond app_r tycs
                     -- we can't leave tycs out entirely because
                     -- if it's relevant, it needs to be erasure-correct as well
                     -- but if it's not used, then it needn't be erasure-correct
-            return (subst n' (pat2term x) retTy, cs)
+            inferPatApp pvs s cs' (subst n' (pat2term x) retTy) xs
 
         _ -> do
-            tcfail $ NonFunction (pat2term f) fty
+            tcfail $ NotPi fty
 
 inferTm :: Term -> TC (Type, Constrs Evar)
 

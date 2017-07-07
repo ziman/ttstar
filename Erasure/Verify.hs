@@ -204,6 +204,7 @@ verPatApp :: Relevance -> Ctx Relevance -> Type
     -> [(Relevance, Pat Relevance)] -> Ver Type
 verPatApp r pvs fty [] = fty
 verPatApp r pvs fty ((s,x):xs) = ("APP-TY", fty, x) $ do
+    ctx <- getCtx
     case whnf ctx fty of
         Bind Pi [Def n piR piTy (Abstract Var) _] piRhs -> do
             (r /\ piR) <-> (r /\ s)
