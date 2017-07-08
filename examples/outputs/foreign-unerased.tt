@@ -37,6 +37,5 @@
            x [_] xs [_] (Just [_] [_]) (Just [_] [_]) = Just (Eq List (Cons x xs) (Cons x xs)) (Refl List (Cons x xs))
         in semiDecEq' x y xs ys (semiDecEqB x y) (semiDecEq xs ys)
     sampleList = genList T input
-    main 
-      = semiDecEq sampleList sampleList
+    main = semiDecEq sampleList sampleList
   in main

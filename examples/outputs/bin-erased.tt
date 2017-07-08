@@ -9,8 +9,7 @@
     add' 
        {_} N N = C N
        ({_} w) (C xn) (C yn) = 
-        let f 
-          = C (add' w xn yn)
+        let f = C (add' w xn yn)
         in f
     add = (\w. (\bx. (\by. add' w bx by)))
     foreign inputSize

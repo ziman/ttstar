@@ -1108,15 +1108,13 @@ Verification successful.
     constructor S : (x) -> Nat
     constructor True : Bool
     constructor False : Bool
-    subst 
-      = (\z. z)
+    subst = (\z. z)
     constructor N : Bin
     constructor C : (rest) -> Bin
     add' 
        {_} N N = C N
        ({_} w) (C xn) (C yn) = 
-        let f 
-          = subst (C (add' w xn yn))
+        let f = subst (C (add' w xn yn))
         in f
     add = (\w. (\bx. (\by. add' w bx by)))
     foreign inputSize
@@ -1208,15 +1206,13 @@ erased:
     constructor S : (x) -> Nat
     constructor True : Bool
     constructor False : Bool
-    subst 
-      = (\z. z)
+    subst = (\z. z)
     constructor N : Bin
     constructor C : (rest) -> Bin
     add' 
        {_} N N = C N
        ({_} w) (C xn) (C yn) = 
-        let f 
-          = subst (C (add' w xn yn))
+        let f = subst (C (add' w xn yn))
         in f
     foreign inputSize
     mkBin 

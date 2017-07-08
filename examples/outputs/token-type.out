@@ -192,12 +192,10 @@ Verification successful.
 ### Pruned ###
 
   let
-    coerce 
-      = (\x. x)
-    loopy 
-      = 
-        let w = (\x. coerce x)
-        in w (coerce w)
+    coerce = (\x. x)
+    loopy = 
+      let w = (\x. coerce x)
+      in w (coerce w)
     main = loopy
   in main
 

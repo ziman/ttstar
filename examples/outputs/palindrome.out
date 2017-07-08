@@ -1626,8 +1626,7 @@ Verification successful.
     not 
        T = F
        F = T
-    subst 
-      = (\w. w)
+    subst = (\w. w)
     constructor RNil : Rev
     constructor RSnoc : (x) -> (rxs) -> Rev
     rev' 
@@ -1807,8 +1806,7 @@ erased:
     not 
        T = F
        F = T
-    subst 
-      = (\w. w)
+    subst = (\w. w)
     constructor RNil : Rev
     constructor RSnoc : (x) -> (rxs) -> Rev
     rev' 

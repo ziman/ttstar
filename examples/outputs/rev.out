@@ -553,8 +553,7 @@ Verification successful.
 ### Pruned ###
 
   let
-    subst 
-      = (\w. w)
+    subst = (\w. w)
     constructor T : Bool
     constructor F : Bool
     constructor Nil : List
