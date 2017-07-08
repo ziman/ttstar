@@ -13,7 +13,10 @@ pruneDef (Def n R ty body mcs) = [Def n () (V Blank) (pruneBody body) noConstrs]
 pruneBody :: Body Relevance -> Body ()
 pruneBody (Abstract a) = Abstract a
 pruneBody (Term tm)    = Term $ pruneTm tm
-pruneBody (Clauses cs) = Clauses $ map pruneClause cs
+pruneBody (Clauses cs) =
+    case map pruneClause cs of
+        [Clause [] (PForced _) rhs] -> Term rhs
+        cs' -> Clauses cs'
 
 pruneClause :: Clause Relevance -> Clause ()
 pruneClause (Clause pvs lhs rhs)

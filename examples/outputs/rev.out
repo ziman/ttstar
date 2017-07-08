@@ -550,8 +550,7 @@ Verification successful.
 ### Pruned ###
 
   let
-    subst 
-      [_] = (\w. w)
+    subst = (\w. w)
     postulate T : Bool
     postulate F : Bool
     postulate Nil : List

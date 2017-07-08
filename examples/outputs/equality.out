@@ -179,8 +179,7 @@ Verification successful.
     notnot 
       [_] T = Refl
       [_] F = Refl
-    subst 
-      [_] = (\w. w)
+    subst = (\w. w)
     main = notnot (subst F)
   in main
 

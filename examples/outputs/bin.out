@@ -1106,15 +1106,13 @@ Verification successful.
     postulate S : (x) -> Nat
     postulate True : Bool
     postulate False : Bool
-    subst 
-      [_] = (\z. z)
+    subst = (\z. z)
     postulate N : Bin
     postulate C : (rest) -> Bin
     add' 
       [_] {_} N N = C N
       [_] ({_} w) (C xn) (C yn) = 
-        let f 
-          [_] = subst (C (add' w xn yn))
+        let f = subst (C (add' w xn yn))
         in f
     add = (\w. (\bx. (\by. add' w bx by)))
     foreign inputSize
@@ -1206,15 +1204,13 @@ erased:
     postulate S : (x) -> Nat
     postulate True : Bool
     postulate False : Bool
-    subst 
-      [_] = (\z. z)
+    subst = (\z. z)
     postulate N : Bin
     postulate C : (rest) -> Bin
     add' 
       [_] {_} N N = C N
       [_] ({_} w) (C xn) (C yn) = 
-        let f 
-          [_] = subst (C (add' w xn yn))
+        let f = subst (C (add' w xn yn))
         in f
     foreign inputSize
     mkBin 

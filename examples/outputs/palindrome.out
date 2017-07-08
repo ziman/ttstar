@@ -1612,8 +1612,7 @@ Verification successful.
     not 
       [_] T = F
       [_] F = T
-    subst 
-      [_] = (\w. w)
+    subst = (\w. w)
     postulate RNil : Rev
     postulate RSnoc : (x) -> (rxs) -> Rev
     rev' 
@@ -1793,8 +1792,7 @@ erased:
     not 
       [_] T = F
       [_] F = T
-    subst 
-      [_] = (\w. w)
+    subst = (\w. w)
     postulate RNil : Rev
     postulate RSnoc : (x) -> (rxs) -> Rev
     rev' 

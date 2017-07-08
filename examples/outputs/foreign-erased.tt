@@ -31,6 +31,5 @@
           [_] Just Just = Just
         in semiDecEq' (semiDecEqB x y) (semiDecEq xs ys)
     sampleList = genList T input
-    main 
-      [_] = semiDecEq sampleList sampleList
+    main = semiDecEq sampleList sampleList
   in main
