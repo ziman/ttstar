@@ -138,7 +138,6 @@ instance PrettyR r => Pretty (Pat r) where
             show' r (PApp r' f' x') x = show' r' f' x' <> prettyApp r <> pretty' True x
             show' r f x = pretty f <> prettyApp r <> pretty' True x
         pretty' pp (PForced tm) = brackets (pretty tm) 
-        pretty' pp (PForcedCtor n) = braces (pretty n)
 
 instance PrettyR r => Show (TT r) where
     show = prettyShow

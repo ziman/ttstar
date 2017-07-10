@@ -7,10 +7,10 @@
     postulate Refl : (a : Type) -> TyEq a a
     coerce : (a : Type) -> (b : Type) -> (_x2 : TyEq a b) -> (_x3 : a) -> b 
       a : Type
-        [coerce] a [a] ({Refl} [a]) = (\x : a. x)
+        [coerce] a [a] ([Refl] [a]) = (\x : a. x)
     sym : (a : Type) -> (b : Type) -> (_x4 : TyEq a b) -> TyEq b a 
       a : Type
-        [sym] a [a] ({Refl} [a]) = Refl a
+        [sym] a [a] ([Refl] [a]) = Refl a
     loopy : (a : Type) -> (b : Type) -> (_x5 : TyEq a (_x6 : a) -> b) -> b 
       a : Type b : Type pf : TyEq a (_x7 : a) -> b
         [loopy] a b pf = 
@@ -26,10 +26,10 @@
     postulate Refl :4: (a :5: Type) -> TyEq -7- a -6- a
     coerce :8: (a :9: Type) -> (b :10: Type) -> (_x2 :11: TyEq -13- a -12- b) -> (_x3 :14: a) -> b 
       a :15: Type
-        [coerce] -18- a -17- [a] -16- ({Refl} -19- [a]) = (\x :20: a. x)
+        [coerce] -18- a -17- [a] -16- ([Refl] -19- [a]) = (\x :20: a. x)
     sym :21: (a :22: Type) -> (b :23: Type) -> (_x4 :24: TyEq -26- a -25- b) -> TyEq -28- b -27- a 
       a :29: Type
-        [sym] -32- a -31- [a] -30- ({Refl} -33- [a]) = Refl -34- a
+        [sym] -32- a -31- [a] -30- ([Refl] -33- [a]) = Refl -34- a
     loopy :35: (a :36: Type) -> (b :37: Type) -> (_x5 :38: TyEq -40- a -39- (_x6 :41: a) -> b) -> b 
       a :42: Type b :43: Type pf :44: TyEq -46- a -45- (_x7 :47: a) -> b
         [loopy] -50- a -49- b -48- pf = 
@@ -83,7 +83,7 @@
 [12] -> [6]
 [13] -> [7]
 [15] -> [18]
-[16] -> [11]
+[16] -> [4,11]
 [16,19] -> [5]
 [17] -> [10,15]
 [18] -> [9]
@@ -130,10 +130,10 @@
     postulate Refl :E: (a :E: Type) -> TyEq -E- a -E- a
     coerce :R: (a :E: Type) -> (b :E: Type) -> (_x2 :E: TyEq -E- a -E- b) -> (_x3 :R: a) -> b 
       a :E: Type
-        [coerce] -E- a -E- [a] -E- ({Refl} -E- [a]) = (\x :R: a. x)
+        [coerce] -E- a -E- [a] -E- ([Refl] -E- [a]) = (\x :R: a. x)
     sym :E: (a :E: Type) -> (b :E: Type) -> (_x4 :E: TyEq -E- a -E- b) -> TyEq -E- b -E- a 
       a :E: Type
-        [sym] -E- a -E- [a] -E- ({Refl} -E- [a]) = Refl -E- a
+        [sym] -E- a -E- [a] -E- ([Refl] -E- [a]) = Refl -E- a
     loopy :R: (a :E: Type) -> (b :E: Type) -> (_x5 :E: TyEq -E- a -E- (_x6 :E: a) -> b) -> b 
       a :E: Type b :E: Type pf :E: TyEq -E- a -E- (_x7 :E: a) -> b
         [loopy] -E- a -E- b -E- pf = 
@@ -149,10 +149,10 @@
     postulate Refl :E: (a :E: Type) -> TyEq -E- a -E- a
     coerce :R: (a :E: Type) -> (b :E: Type) -> (_x2 :E: TyEq -E- a -E- b) -> (_x3 :R: a) -> b 
       a :E: Type
-        [coerce] -E- a -E- [a] -E- ({Refl} -E- [a]) = (\x :R: a. x)
+        [coerce] -E- a -E- [a] -E- ([Refl] -E- [a]) = (\x :R: a. x)
     sym :E: (a :E: Type) -> (b :E: Type) -> (_x4 :E: TyEq -E- a -E- b) -> TyEq -E- b -E- a 
       a :E: Type
-        [sym] -E- a -E- [a] -E- ({Refl} -E- [a]) = Refl -E- a
+        [sym] -E- a -E- [a] -E- ([Refl] -E- [a]) = Refl -E- a
     loopy :R: (a :E: Type) -> (b :E: Type) -> (_x5 :E: TyEq -E- a -E- (_x6 :E: a) -> b) -> b 
       a :E: Type b :E: Type pf :E: TyEq -E- a -E- (_x7 :E: a) -> b
         [loopy] -E- a -E- b -E- pf = 
@@ -168,10 +168,10 @@
     postulate Refl :E: (a :E: Type) -> TyEq -E- a -E- a
     coerce :R: (a :E: Type) -> (b :E: Type) -> (_x2 :E: TyEq -E- a -E- b) -> (_x3 :R: a) -> b 
       a :E: Type
-        [coerce] -E- a -E- [a] -E- ({Refl} -E- [a]) = (\x :R: a. x)
+        [coerce] -E- a -E- [a] -E- ([Refl] -E- [a]) = (\x :R: a. x)
     sym :E: (a :E: Type) -> (b :E: Type) -> (_x4 :E: TyEq -E- a -E- b) -> TyEq -E- b -E- a 
       a :E: Type
-        [sym] -E- a -E- [a] -E- ({Refl} -E- [a]) = Refl -E- a
+        [sym] -E- a -E- [a] -E- ([Refl] -E- [a]) = Refl -E- a
     loopy :R: (a :E: Type) -> (b :E: Type) -> (_x5 :E: TyEq -E- a -E- (_x6 :E: a) -> b) -> b 
       a :E: Type b :E: Type pf :E: TyEq -E- a -E- (_x7 :E: a) -> b
         [loopy] -E- a -E- b -E- pf = 
@@ -203,10 +203,10 @@ unerased:
     postulate Refl : (a : Type) -> TyEq a a
     coerce : (a : Type) -> (b : Type) -> (_x2 : TyEq a b) -> (_x3 : a) -> b 
       a : Type
-        [coerce] a [a] ({Refl} [a]) = (\x : a. x)
+        [coerce] a [a] ([Refl] [a]) = (\x : a. x)
     sym : (a : Type) -> (b : Type) -> (_x4 : TyEq a b) -> TyEq b a 
       a : Type
-        [sym] a [a] ({Refl} [a]) = Refl a
+        [sym] a [a] ([Refl] [a]) = Refl a
     loopy : (a : Type) -> (b : Type) -> (_x5 : TyEq a (_x6 : a) -> b) -> b 
       a : Type b : Type pf : TyEq a (_x7 : a) -> b
         [loopy] a b pf = 

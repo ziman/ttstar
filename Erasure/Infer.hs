@@ -231,14 +231,6 @@ inferPat s pat@(PV n) = bt ("PAT-NAME", n) $ do
         _
             -> tcfail $ InvalidPattern pat
 
-inferPat s pat@(PForcedCtor n) = bt ("PAT-FORCED-CTOR", n) $ do
-    d@(Def n' r ty body cs) <- lookup n
-    case body of
-        Abstract Postulate
-            -> return (ty, noConstrs)
-        _
-            -> tcfail $ NotConstructor n
-
 inferPat s pat@(PForced tm) = bt ("PAT-FORCED", tm) $ do
     (ty, cs) <- inferTm tm
     return (ty, cond s cs)

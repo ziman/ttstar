@@ -246,11 +246,12 @@ match pvs ctx (PApp r f x) (App r' f' x')
         <*> match pvs ctx x (red WHNF ctx x')
 
 match pvs ctx (PForced tm) tm'
-    = Yes M.empty
+    = case unApply $ red WHNF ctx tm' of
+        (V n, args)
+            | Just (defBody -> Abstract Postulate) <- M.lookup n ctx
+            -> Yes M.empty  -- WHNF successful
 
-match pvs ctx (PForcedCtor n) (V n')
-    | Just (defBody -> Abstract Postulate) <- M.lookup n' ctx  -- check n' is /some/ constructor
-    = Yes M.empty
+        _ -> Stuck
 
 match pvs ctx pat (V n)
     | Just d <- M.lookup n ctx
