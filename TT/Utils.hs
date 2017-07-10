@@ -62,14 +62,9 @@ instance Termy Pat where
     subst n tm pat@(PForced tm')
         = PForced $ subst n tm tm'
 
-    subst n tm pat@(PForcedCtor n')
-        | n' == n   = error $ "trying to substitute for forced ctor: " ++ show n
-        | otherwise = pat
-
     freeVars (PV n) = S.singleton n
     freeVars (PApp r f x) = freeVars f `S.union` freeVars x
     freeVars (PForced tm) = freeVars tm
-    freeVars (PForcedCtor n) = S.singleton n
 
 instance Termy Def where
     subst n tm (Def dn r ty body mcs)
@@ -159,7 +154,6 @@ freePatVars ctx (PV n)
     = Just S.empty
 
     | otherwise = Just $ S.singleton n
-freePatVars ctx (PForcedCtor n) = Just S.empty
 freePatVars ctx (PForced tm) = Just S.empty
 freePatVars ctx (PApp r f x)
     = join (linUnion <$> freePatVars ctx f <*> freePatVars ctx x)
@@ -180,7 +174,6 @@ substs ss x = foldl (\x (n, tm) -> subst n tm x) x ss
 
 pat2term :: Pat r -> TT r
 pat2term (PV n) = V n
-pat2term (PForcedCtor n) = V n
 pat2term (PApp r f x) = App r (pat2term f) (pat2term x)
 pat2term (PForced tm) = tm
 
@@ -203,6 +196,5 @@ monomorphise (Bind b d tm) = Bind b (map monoDef d) $ monomorphise tm
 
     monoPat :: Pat r -> Pat r
     monoPat (PV n) = PV n
-    monoPat (PForcedCtor n) = PForcedCtor n
     monoPat (PForced tm) = PForced $ monomorphise tm
     monoPat (PApp r f x) = PApp r (monoPat f) (monoPat x)

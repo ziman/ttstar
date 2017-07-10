@@ -35,7 +35,6 @@ data Pat r
     = PV Name
     | PApp r (Pat r) (Pat r)
     | PForced (TT r)
-    | PForcedCtor Name
     deriving (Eq, Ord)
 
 data Clause r = Clause

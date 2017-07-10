@@ -86,47 +86,45 @@
 
 ### Verification ###
 
-ttstar: !! verification failed: Traceback:
-1. In context:
-  Type : Type
+Verification successful.
 
-("LET",R,[postulate Bool :E: Type,postulate T :R: Bool,postulate F :R: Bool,not :R: (_x0 :R: Bool) -> Bool 
-  [not] -R- T = F
-  [not] -R- F = T,f :R: (_x1 :R: Bool) -> Bool 
-  [f] -R- ([not] -R- T) = F
-  [f] -R- ([not] -R- F) = T,main :R: Bool = f -R- T])
+### Pruned ###
 
-2. In context:
-  Bool : Type
-  F : Bool
-  T : Bool
-  Type : Type
-  f : (_x1 :R: Bool) -> Bool
-  not : (_x0 :R: Bool) -> Bool
+  let
+    postulate T : Bool
+    postulate F : Bool
+    not 
+      [_] T = F
+      [_] F = T
+    f 
+      [_] ([_] T) = F
+      [_] ([_] F) = T
+    main = f T
+  in main
 
-("DEF-CLAUSES",f)
+### Normal forms ###
 
-3. In context:
-  Bool : Type
-  F : Bool
-  T : Bool
-  Type : Type
-  f : (_x1 :R: Bool) -> Bool
-  not : (_x0 :R: Bool) -> Bool
+unerased:
+  
+  let
+    postulate Bool : Type
+    postulate T : Bool
+    postulate F : Bool
+    not : (_x0 : Bool) -> Bool 
+      [not] T = F
+      [not] F = T
+    f : (_x1 : Bool) -> Bool 
+      [f] ([not] T) = F
+      [f] ([not] F) = T
+  in f T
 
-("CLAUSE",PApp R (PForced f) (PApp R (PForced not) (PV T)))
+erased:
+  
+  let
+    postulate T : Bool
+    postulate F : Bool
+    f 
+      [_] ([_] T) = F
+      [_] ([_] F) = T
+  in f T
 
-4. In context:
-  Bool : Type
-  F : Bool
-  T : Bool
-  Type : Type
-  f : (_x1 :R: Bool) -> Bool
-  not : (_x0 :R: Bool) -> Bool
-
-("PAT-APP",R,R,PForced f,PApp R (PForced not) (PV T))
-
-Error: AppliedForcedPattern (PApp R (PForced not) (PV T))
-
-CallStack (from HasCallStack):
-  error, called at Main.hs:123:25 in main:Main

@@ -172,7 +172,7 @@ patForced :: Parser (Pat MRel)
 patForced = PForced <$> brackets expr <?> "forced pattern"
 
 patForcedCtor :: Parser (Pat MRel)
-patForcedCtor = PForcedCtor <$> braces name <?> "forced constructor"
+patForcedCtor = PForced . V <$> braces name <?> "forced constructor"
 
 patAtom :: Parser (Pat MRel)
 patAtom = parens pattern <|> patForced <|> patVar <|> patForcedCtor <?> "pattern atom"

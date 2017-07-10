@@ -7,8 +7,8 @@
     postulate N : Bin
     postulate C : (rest) -> Bin
     add' 
-      [_] {_} N N = C N
-      [_] ({_} w) (C xn) (C yn) = 
+      [_] [_] N N = C N
+      [_] ([_] w) (C xn) (C yn) = 
         let f = C (add' w xn yn)
         in f
     add = (\w. (\bx. (\by. add' w bx by)))

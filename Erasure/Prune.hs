@@ -44,7 +44,6 @@ prunePat pvs (PV n)
         Just R  -> PV n  -- relevant patvar
         Just E  -> PV Blank  -- irrelevant patvar
         Nothing -> PV n  -- constructor
-prunePat pvs (PForcedCtor n) = PForcedCtor Blank
 prunePat pvs (PApp E f x) = prunePat pvs f
 prunePat pvs (PApp R f x) = PApp () (prunePat pvs f) (prunePat pvs x)
 prunePat pvs (PForced tm) = PForced $ V Blank

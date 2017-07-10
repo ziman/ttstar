@@ -23,10 +23,10 @@
     postulate MkPair : (a : Type) -> (b : Type) -> (_x5 : a) -> (_x6 : b) -> Pair a b
     fst : (a : Type) -> (b : Type) -> (_x7 : Pair a b) -> a 
       a : Type b : Type x : a y : b
-        [fst] a b ({MkPair} [a] [b] x y) = x
+        [fst] a b ([MkPair] [a] [b] x y) = x
     snd : (a : Type) -> (b : Type) -> (_x8 : Pair a b) -> b 
       a : Type b : Type x : a y : b
-        [snd] a b ({MkPair} [a] [b] x y) = y
+        [snd] a b ([MkPair] [a] [b] x y) = y
     postulate Either : (_x9 : Type) -> (_x10 : Type) -> Type
     postulate Left : (a : Type) -> (b : Type) -> (_x11 : a) -> Either a b
     postulate Right : (a : Type) -> (b : Type) -> (_x12 : b) -> Either a b
@@ -65,12 +65,12 @@
       [adb] [1] [1] [1] I I I = TB 1 1 1 1 I 1 I (Refl Nat 3)
     add' : (w : Nat) -> (c : Nat) -> (x : Nat) -> (y : Nat) -> (_x8 : Bit c) -> (_x9 : Bin w x) -> (_x10 : Bin w y) -> Bin (S w) (plus c (plus x y)) 
       c : Nat cb : Bit c
-        [add'] {Z} c {Z} {Z} cb N N = C Z c cb Z N
+        [add'] [Z] c [Z] [Z] cb N N = C Z c cb Z N
       w : Nat c : Nat cb : Bit c xb' : Nat xb : Bit xb' xn' : Nat xn : Bin w xn' yb' : Nat yb : Bit yb' yn' : Nat yn : Bin w yn'
-        [add'] ({S} w) c [plus xb' (double xn')] [plus yb' (double yn')] cb (C [w] xb' xb xn' xn) (C [w] yb' yb yn' yn) = 
+        [add'] ([S] w) c [plus xb' (double xn')] [plus yb' (double yn')] cb (C [w] xb' xb xn' xn) (C [w] yb' yb yn' yn) = 
           let f : (_x11 : TwoBits c xb' yb') -> Bin (S (S w)) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn')))) 
             hi' : Nat hi : Bit hi' lo' : Nat lo : Bit lo' pf : Id Nat (plus c (plus xb' yb')) (plus lo' (double hi'))
-              [f] ({TB} [c] [xb'] [yb'] hi' hi lo' lo pf) = 
+              [f] ([TB] [c] [xb'] [yb'] hi' hi lo' lo pf) = 
                 let postulate eq : Id Nat (plus lo' (double (plus hi' (plus xn' yn')))) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn'))))
                 in subst Nat (Bin (S (S w))) (plus lo' (double (plus hi' (plus xn' yn')))) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn')))) eq (C (S w) lo' lo (plus hi' (plus xn' yn')) (add' w hi' xn' yn' hi xn yn))
           in f (adb c xb' yb' cb xb yb)
@@ -120,10 +120,10 @@
     postulate MkPair :30: (a :31: Type) -> (b :32: Type) -> (_x5 :33: a) -> (_x6 :34: b) -> Pair -36- a -35- b
     fst :37: (a :38: Type) -> (b :39: Type) -> (_x7 :40: Pair -42- a -41- b) -> a 
       a :43: Type b :44: Type x :45: a y :46: b
-        [fst] -49- a -48- b -47- ({MkPair} -53- [a] -52- [b] -51- x -50- y) = x
+        [fst] -49- a -48- b -47- ([MkPair] -53- [a] -52- [b] -51- x -50- y) = x
     snd :54: (a :55: Type) -> (b :56: Type) -> (_x8 :57: Pair -59- a -58- b) -> b 
       a :60: Type b :61: Type x :62: a y :63: b
-        [snd] -66- a -65- b -64- ({MkPair} -70- [a] -69- [b] -68- x -67- y) = y
+        [snd] -66- a -65- b -64- ([MkPair] -70- [a] -69- [b] -68- x -67- y) = y
     postulate Either :71: (_x9 :72: Type) -> (_x10 :73: Type) -> Type
     postulate Left :74: (a :75: Type) -> (b :76: Type) -> (_x11 :77: a) -> Either -79- a -78- b
     postulate Right :80: (a :81: Type) -> (b :82: Type) -> (_x12 :83: b) -> Either -85- a -84- b
@@ -162,12 +162,12 @@
       [adb] -383- [1] -382- [1] -381- [1] -380- I -379- I -378- I = TB -394- 1 -393- 1 -392- 1 -391- 1 -390- I -389- 1 -388- I -387- (Refl -401- Nat -400- 3)
     add' :405: (w :406: Nat) -> (c :407: Nat) -> (x :408: Nat) -> (y :409: Nat) -> (_x8 :410: Bit -411- c) -> (_x9 :412: Bin -414- w -413- x) -> (_x10 :415: Bin -417- w -416- y) -> Bin -419- (S -420- w) -418- (plus -422- c -421- (plus -424- x -423- y)) 
       c :425: Nat cb :426: Bit -427- c
-        [add'] -434- {Z} -433- c -432- {Z} -431- {Z} -430- cb -429- N -428- N = C -439- Z -438- c -437- cb -436- Z -435- N
+        [add'] -434- [Z] -433- c -432- [Z] -431- [Z] -430- cb -429- N -428- N = C -439- Z -438- c -437- cb -436- Z -435- N
       w :440: Nat c :441: Nat cb :442: Bit -443- c xb' :444: Nat xb :445: Bit -446- xb' xn' :447: Nat xn :448: Bin -450- w -449- xn' yb' :451: Nat yb :452: Bit -453- yb' yn' :454: Nat yn :455: Bin -457- w -456- yn'
-        [add'] -464- ({S} -465- w) -463- c -462- [plus -467- xb' -466- (double -468- xn')] -461- [plus -470- yb' -469- (double -471- yn')] -460- cb -459- (C -476- [w] -475- xb' -474- xb -473- xn' -472- xn) -458- (C -481- [w] -480- yb' -479- yb -478- yn' -477- yn) = 
+        [add'] -464- ([S] -465- w) -463- c -462- [plus -467- xb' -466- (double -468- xn')] -461- [plus -470- yb' -469- (double -471- yn')] -460- cb -459- (C -476- [w] -475- xb' -474- xb -473- xn' -472- xn) -458- (C -481- [w] -480- yb' -479- yb -478- yn' -477- yn) = 
           let f :482: (_x11 :483: TwoBits -486- c -485- xb' -484- yb') -> Bin -488- (S -489- (S -490- w)) -487- (plus -492- c -491- (plus -494- (plus -496- xb' -495- (double -497- xn')) -493- (plus -499- yb' -498- (double -500- yn')))) 
             hi' :501: Nat hi :502: Bit -503- hi' lo' :504: Nat lo :505: Bit -506- lo' pf :507: Id -510- Nat -509- (plus -512- c -511- (plus -514- xb' -513- yb')) -508- (plus -516- lo' -515- (double -517- hi'))
-              [f] -518- ({TB} -526- [c] -525- [xb'] -524- [yb'] -523- hi' -522- hi -521- lo' -520- lo -519- pf) = 
+              [f] -518- ([TB] -526- [c] -525- [xb'] -524- [yb'] -523- hi' -522- hi -521- lo' -520- lo -519- pf) = 
                 let postulate eq :527: Id -530- Nat -529- (plus -532- lo' -531- (double -533- (plus -535- hi' -534- (plus -537- xn' -536- yn')))) -528- (plus -539- c -538- (plus -541- (plus -543- xb' -542- (double -544- xn')) -540- (plus -546- yb' -545- (double -547- yn'))))
                 in subst -553- Nat -552- (Bin -554- (S -555- (S -556- w))) -551- (plus -558- lo' -557- (double -559- (plus -561- hi' -560- (plus -563- xn' -562- yn')))) -550- (plus -565- c -564- (plus -567- (plus -569- xb' -568- (double -570- xn')) -566- (plus -572- yb' -571- (double -573- yn')))) -549- eq -548- (C -578- (S -579- w) -577- lo' -576- lo -575- (plus -581- hi' -580- (plus -583- xn' -582- yn')) -574- (add' -590- w -589- hi' -588- xn' -587- yn' -586- hi -585- xn -584- yn))
           in f -591- (adb -597- c -596- xb' -595- yb' -594- cb -593- xb -592- yb)
@@ -672,7 +672,7 @@
 [515] -> [214]
 [516] -> [215]
 [517] -> [216]
-[518] -> [483]
+[518] -> [196,483]
 [518,519] -> [206]
 [518,520] -> [204]
 [518,521] -> [203]
@@ -827,10 +827,10 @@
     postulate MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x5 :E: a) -> (_x6 :E: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: Pair -E- a -E- b) -> a 
       a :E: Type b :E: Type x :E: a y :E: b
-        [fst] -E- a -E- b -E- ({MkPair} -E- [a] -E- [b] -E- x -E- y) = x
+        [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
     snd :E: (a :E: Type) -> (b :E: Type) -> (_x8 :E: Pair -E- a -E- b) -> b 
       a :E: Type b :E: Type x :E: a y :E: b
-        [snd] -E- a -E- b -E- ({MkPair} -E- [a] -E- [b] -E- x -E- y) = y
+        [snd] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = y
     postulate Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
     postulate Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
     postulate Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
@@ -869,12 +869,12 @@
       [adb] -E- [1] -E- [1] -E- [1] -E- I -E- I -E- I = TB -E- 1 -E- 1 -E- 1 -E- 1 -E- I -E- 1 -E- I -E- (Refl -E- Nat -E- 3)
     add' :R: (w :R: Nat) -> (c :E: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (_x8 :E: Bit -E- c) -> (_x9 :R: Bin -E- w -E- x) -> (_x10 :R: Bin -E- w -E- y) -> Bin -E- (S -R- w) -E- (plus -E- c -E- (plus -E- x -E- y)) 
       c :E: Nat cb :E: Bit -E- c
-        [add'] -R- {Z} -E- c -E- {Z} -E- {Z} -E- cb -R- N -R- N = C -E- Z -E- c -E- cb -E- Z -R- N
+        [add'] -R- [Z] -E- c -E- [Z] -E- [Z] -E- cb -R- N -R- N = C -E- Z -E- c -E- cb -E- Z -R- N
       w :R: Nat c :E: Nat cb :E: Bit -E- c xb' :E: Nat xb :E: Bit -E- xb' xn' :E: Nat xn :R: Bin -E- w -E- xn' yb' :E: Nat yb :E: Bit -E- yb' yn' :E: Nat yn :R: Bin -E- w -E- yn'
-        [add'] -R- ({S} -R- w) -E- c -E- [plus -E- xb' -E- (double -E- xn')] -E- [plus -E- yb' -E- (double -E- yn')] -E- cb -R- (C -E- [w] -E- xb' -E- xb -E- xn' -R- xn) -R- (C -E- [w] -E- yb' -E- yb -E- yn' -R- yn) = 
+        [add'] -R- ([S] -R- w) -E- c -E- [plus -E- xb' -E- (double -E- xn')] -E- [plus -E- yb' -E- (double -E- yn')] -E- cb -R- (C -E- [w] -E- xb' -E- xb -E- xn' -R- xn) -R- (C -E- [w] -E- yb' -E- yb -E- yn' -R- yn) = 
           let f :R: (_x11 :E: TwoBits -E- c -E- xb' -E- yb') -> Bin -E- (S -R- (S -R- w)) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn')))) 
             hi' :E: Nat hi :E: Bit -E- hi' lo' :E: Nat lo :E: Bit -E- lo' pf :E: Id -E- Nat -E- (plus -E- c -E- (plus -E- xb' -E- yb')) -E- (plus -E- lo' -E- (double -E- hi'))
-              [f] -E- ({TB} -E- [c] -E- [xb'] -E- [yb'] -E- hi' -E- hi -E- lo' -E- lo -E- pf) = 
+              [f] -E- ([TB] -E- [c] -E- [xb'] -E- [yb'] -E- hi' -E- hi -E- lo' -E- lo -E- pf) = 
                 let postulate eq :E: Id -E- Nat -E- (plus -E- lo' -E- (double -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')))) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn'))))
                 in subst -E- Nat -E- (Bin -E- (S -R- (S -R- w))) -E- (plus -E- lo' -E- (double -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')))) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn')))) -E- eq -R- (C -E- (S -R- w) -E- lo' -E- lo -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')) -R- (add' -R- w -E- hi' -E- xn' -E- yn' -E- hi -R- xn -R- yn))
           in f -E- (adb -E- c -E- xb' -E- yb' -E- cb -E- xb -E- yb)
@@ -924,10 +924,10 @@
     postulate MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x5 :E: a) -> (_x6 :E: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: Pair -E- a -E- b) -> a 
       a :E: Type b :E: Type x :E: a y :E: b
-        [fst] -E- a -E- b -E- ({MkPair} -E- [a] -E- [b] -E- x -E- y) = x
+        [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
     snd :E: (a :E: Type) -> (b :E: Type) -> (_x8 :E: Pair -E- a -E- b) -> b 
       a :E: Type b :E: Type x :E: a y :E: b
-        [snd] -E- a -E- b -E- ({MkPair} -E- [a] -E- [b] -E- x -E- y) = y
+        [snd] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = y
     postulate Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
     postulate Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
     postulate Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
@@ -966,12 +966,12 @@
       [adb] -E- [1] -E- [1] -E- [1] -E- I -E- I -E- I = TB -E- 1 -E- 1 -E- 1 -E- 1 -E- I -E- 1 -E- I -E- (Refl -E- Nat -E- 3)
     add' :R: (w :R: Nat) -> (c :E: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (_x8 :E: Bit -E- c) -> (_x9 :R: Bin -E- w -E- x) -> (_x10 :R: Bin -E- w -E- y) -> Bin -E- (S -R- w) -E- (plus -E- c -E- (plus -E- x -E- y)) 
       c :E: Nat cb :E: Bit -E- c
-        [add'] -R- {Z} -E- c -E- {Z} -E- {Z} -E- cb -R- N -R- N = C -E- Z -E- c -E- cb -E- Z -R- N
+        [add'] -R- [Z] -E- c -E- [Z] -E- [Z] -E- cb -R- N -R- N = C -E- Z -E- c -E- cb -E- Z -R- N
       w :R: Nat c :E: Nat cb :E: Bit -E- c xb' :E: Nat xb :E: Bit -E- xb' xn' :E: Nat xn :R: Bin -E- w -E- xn' yb' :E: Nat yb :E: Bit -E- yb' yn' :E: Nat yn :R: Bin -E- w -E- yn'
-        [add'] -R- ({S} -R- w) -E- c -E- [plus -E- xb' -E- (double -E- xn')] -E- [plus -E- yb' -E- (double -E- yn')] -E- cb -R- (C -E- [w] -E- xb' -E- xb -E- xn' -R- xn) -R- (C -E- [w] -E- yb' -E- yb -E- yn' -R- yn) = 
+        [add'] -R- ([S] -R- w) -E- c -E- [plus -E- xb' -E- (double -E- xn')] -E- [plus -E- yb' -E- (double -E- yn')] -E- cb -R- (C -E- [w] -E- xb' -E- xb -E- xn' -R- xn) -R- (C -E- [w] -E- yb' -E- yb -E- yn' -R- yn) = 
           let f :R: (_x11 :E: TwoBits -E- c -E- xb' -E- yb') -> Bin -E- (S -R- (S -R- w)) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn')))) 
             hi' :E: Nat hi :E: Bit -E- hi' lo' :E: Nat lo :E: Bit -E- lo' pf :E: Id -E- Nat -E- (plus -E- c -E- (plus -E- xb' -E- yb')) -E- (plus -E- lo' -E- (double -E- hi'))
-              [f] -E- ({TB} -E- [c] -E- [xb'] -E- [yb'] -E- hi' -E- hi -E- lo' -E- lo -E- pf) = 
+              [f] -E- ([TB] -E- [c] -E- [xb'] -E- [yb'] -E- hi' -E- hi -E- lo' -E- lo -E- pf) = 
                 let postulate eq :E: Id -E- Nat -E- (plus -E- lo' -E- (double -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')))) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn'))))
                 in subst -E- Nat -E- (Bin -E- (S -R- (S -R- w))) -E- (plus -E- lo' -E- (double -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')))) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn')))) -E- eq -R- (C -E- (S -R- w) -E- lo' -E- lo -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')) -R- (add' -R- w -E- hi' -E- xn' -E- yn' -E- hi -R- xn -R- yn))
           in f -E- (adb -E- c -E- xb' -E- yb' -E- cb -E- xb -E- yb)
@@ -1021,10 +1021,10 @@
     postulate MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x5 :E: a) -> (_x6 :E: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: Pair -E- a -E- b) -> a 
       a :E: Type b :E: Type x :E: a y :E: b
-        [fst] -E- a -E- b -E- ({MkPair} -E- [a] -E- [b] -E- x -E- y) = x
+        [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
     snd :E: (a :E: Type) -> (b :E: Type) -> (_x8 :E: Pair -E- a -E- b) -> b 
       a :E: Type b :E: Type x :E: a y :E: b
-        [snd] -E- a -E- b -E- ({MkPair} -E- [a] -E- [b] -E- x -E- y) = y
+        [snd] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = y
     postulate Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
     postulate Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
     postulate Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
@@ -1063,12 +1063,12 @@
       [adb] -E- [1] -E- [1] -E- [1] -E- I -E- I -E- I = TB -E- 1 -E- 1 -E- 1 -E- 1 -E- I -E- 1 -E- I -E- (Refl -E- Nat -E- 3)
     add' :R: (w :R: Nat) -> (c :E: Nat) -> (x :E: Nat) -> (y :E: Nat) -> (_x8 :E: Bit -E- c) -> (_x9 :R: Bin -E- w -E- x) -> (_x10 :R: Bin -E- w -E- y) -> Bin -E- (S -R- w) -E- (plus -E- c -E- (plus -E- x -E- y)) 
       c :E: Nat cb :E: Bit -E- c
-        [add'] -R- {Z} -E- c -E- {Z} -E- {Z} -E- cb -R- N -R- N = C -E- Z -E- c -E- cb -E- Z -R- N
+        [add'] -R- [Z] -E- c -E- [Z] -E- [Z] -E- cb -R- N -R- N = C -E- Z -E- c -E- cb -E- Z -R- N
       w :R: Nat c :E: Nat cb :E: Bit -E- c xb' :E: Nat xb :E: Bit -E- xb' xn' :E: Nat xn :R: Bin -E- w -E- xn' yb' :E: Nat yb :E: Bit -E- yb' yn' :E: Nat yn :R: Bin -E- w -E- yn'
-        [add'] -R- ({S} -R- w) -E- c -E- [plus -E- xb' -E- (double -E- xn')] -E- [plus -E- yb' -E- (double -E- yn')] -E- cb -R- (C -E- [w] -E- xb' -E- xb -E- xn' -R- xn) -R- (C -E- [w] -E- yb' -E- yb -E- yn' -R- yn) = 
+        [add'] -R- ([S] -R- w) -E- c -E- [plus -E- xb' -E- (double -E- xn')] -E- [plus -E- yb' -E- (double -E- yn')] -E- cb -R- (C -E- [w] -E- xb' -E- xb -E- xn' -R- xn) -R- (C -E- [w] -E- yb' -E- yb -E- yn' -R- yn) = 
           let f :R: (_x11 :E: TwoBits -E- c -E- xb' -E- yb') -> Bin -E- (S -R- (S -R- w)) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn')))) 
             hi' :E: Nat hi :E: Bit -E- hi' lo' :E: Nat lo :E: Bit -E- lo' pf :E: Id -E- Nat -E- (plus -E- c -E- (plus -E- xb' -E- yb')) -E- (plus -E- lo' -E- (double -E- hi'))
-              [f] -E- ({TB} -E- [c] -E- [xb'] -E- [yb'] -E- hi' -E- hi -E- lo' -E- lo -E- pf) = 
+              [f] -E- ([TB] -E- [c] -E- [xb'] -E- [yb'] -E- hi' -E- hi -E- lo' -E- lo -E- pf) = 
                 let postulate eq :E: Id -E- Nat -E- (plus -E- lo' -E- (double -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')))) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn'))))
                 in subst -E- Nat -E- (Bin -E- (S -R- (S -R- w))) -E- (plus -E- lo' -E- (double -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')))) -E- (plus -E- c -E- (plus -E- (plus -E- xb' -E- (double -E- xn')) -E- (plus -E- yb' -E- (double -E- yn')))) -E- eq -R- (C -E- (S -R- w) -E- lo' -E- lo -E- (plus -E- hi' -E- (plus -E- xn' -E- yn')) -R- (add' -R- w -E- hi' -E- xn' -E- yn' -E- hi -R- xn -R- yn))
           in f -E- (adb -E- c -E- xb' -E- yb' -E- cb -E- xb -E- yb)
@@ -1110,8 +1110,8 @@ Verification successful.
     postulate N : Bin
     postulate C : (rest) -> Bin
     add' 
-      [_] {_} N N = C N
-      [_] ({_} w) (C xn) (C yn) = 
+      [_] [_] N N = C N
+      [_] ([_] w) (C xn) (C yn) = 
         let f = subst (C (add' w xn yn))
         in f
     add = (\w. (\bx. (\by. add' w bx by)))
@@ -1171,12 +1171,12 @@ unerased:
       [adb] [1] [1] [1] I I I = TB 1 1 1 1 I 1 I (Refl Nat 3)
     add' : (w : Nat) -> (c : Nat) -> (x : Nat) -> (y : Nat) -> (_x8 : Bit c) -> (_x9 : Bin w x) -> (_x10 : Bin w y) -> Bin (S w) (plus c (plus x y)) 
       c : Nat cb : Bit c
-        [add'] {Z} c {Z} {Z} cb N N = C Z c cb Z N
+        [add'] [Z] c [Z] [Z] cb N N = C Z c cb Z N
       w : Nat c : Nat cb : Bit c xb' : Nat xb : Bit xb' xn' : Nat xn : Bin w xn' yb' : Nat yb : Bit yb' yn' : Nat yn : Bin w yn'
-        [add'] ({S} w) c [plus xb' (double xn')] [plus yb' (double yn')] cb (C [w] xb' xb xn' xn) (C [w] yb' yb yn' yn) = 
+        [add'] ([S] w) c [plus xb' (double xn')] [plus yb' (double yn')] cb (C [w] xb' xb xn' xn) (C [w] yb' yb yn' yn) = 
           let f : (_x11 : TwoBits c xb' yb') -> Bin (S (S w)) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn')))) 
             hi' : Nat hi : Bit hi' lo' : Nat lo : Bit lo' pf : Id Nat (plus c (plus xb' yb')) (plus lo' (double hi'))
-              [f] ({TB} [c] [xb'] [yb'] hi' hi lo' lo pf) = 
+              [f] ([TB] [c] [xb'] [yb'] hi' hi lo' lo pf) = 
                 let postulate eq : Id Nat (plus lo' (double (plus hi' (plus xn' yn')))) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn'))))
                 in subst Nat (Bin (S (S w))) (plus lo' (double (plus hi' (plus xn' yn')))) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn')))) eq (C (S w) lo' lo (plus hi' (plus xn' yn')) (add' w hi' xn' yn' hi xn yn))
           in f (adb c xb' yb' cb xb yb)
@@ -1208,8 +1208,8 @@ erased:
     postulate N : Bin
     postulate C : (rest) -> Bin
     add' 
-      [_] {_} N N = C N
-      [_] ({_} w) (C xn) (C yn) = 
+      [_] [_] N N = C N
+      [_] ([_] w) (C xn) (C yn) = 
         let f = subst (C (add' w xn yn))
         in f
     foreign inputSize

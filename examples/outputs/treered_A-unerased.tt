@@ -7,7 +7,7 @@
     postulate Nil : (a) -> Vec Z a
     postulate Cons : (a) -> (n) -> (x) -> (xs) -> Vec (S n) a
     vlen 
-      [_] {_} (Nil [_]) = Z
-      [_] ({_} m) (Cons [_] [_] y ys) = S (vlen m ys)
+      [_] [_] (Nil [_]) = Z
+      [_] ([_] m) (Cons [_] [_] y ys) = S (vlen m ys)
     main = vlen 1 (Cons N Z 3 (Nil N))
   in main

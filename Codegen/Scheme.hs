@@ -100,13 +100,10 @@ cgPat pvs (PV n)
     | n `S.member` pvs = cgName n
     | otherwise = parens (text "'" <> cgName n)
 
-cgPat pvs (PForcedCtor n) = cgName Blank
-
 cgPat pvs pat@(PApp r f x)
     | (PV cn, args) <- unApplyPat pat
     = cgPatApp cn args
-
-    | (PForcedCtor cn, args) <- unApplyPat pat
+    | (PForced tm, args) <- unApplyPat pat
     = cgPatApp Blank args
   where
     cgPatApp cn args = parens (hsep $ cgPName cn : map (cgPat pvs . snd) args)
