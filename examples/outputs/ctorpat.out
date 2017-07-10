@@ -93,29 +93,63 @@
 
 ### Verification ###
 
-Verification successful.
+ttstar: !! verification failed: Traceback:
+1. In context:
+  Type : Type
 
-### Pruned ###
+("LET",R,[postulate B :E: Type,postulate T :E: B,postulate F :E: B,postulate K :E: Type,postulate P :R: (_x0 :E: B) -> K,postulate Q :E: (_x1 :E: B) -> K,f :R: (_x2 :R: K) -> (_x3 :E: B) -> K 
+  c :R: (_x4 :E: B) -> K x :E: B
+    [f] -R- (c -E- x) = c,main :R: (_x5 :E: B) -> K = f -R- (P -E- T)])
 
-  let
-    postulate P : K
-    f 
-      [_] c = c
-    main = f P
-  in main
+2. In context:
+  B : Type
+  F : B
+  K : Type
+  P : (_x0 :E: B) -> K
+  Q : (_x1 :E: B) -> K
+  T : B
+  Type : Type
+  f : (_x2 :R: K) -> (_x3 :E: B) -> K
 
-### Normal forms ###
+("DEF-CLAUSES",f)
 
-unerased:
-  
-  let
-    postulate B : Type
-    postulate K : Type
-    postulate P : (_x0 : B) -> K
-  in P
+3. In context:
+  B : Type
+  F : B
+  K : Type
+  P : (_x0 :E: B) -> K
+  Q : (_x1 :E: B) -> K
+  T : B
+  Type : Type
+  f : (_x2 :R: K) -> (_x3 :E: B) -> K
 
-erased:
-  
-  let postulate P : K
-  in P
+("CLAUSE",PApp R (PForced f) (PApp E (PV c) (PV x)))
 
+4. In context:
+  B : Type
+  F : B
+  K : Type
+  P : (_x0 :E: B) -> K
+  Q : (_x1 :E: B) -> K
+  T : B
+  Type : Type
+  f : (_x2 :R: K) -> (_x3 :E: B) -> K
+
+("PAT-APP",True,R,R,PForced f,PApp E (PV c) (PV x))
+
+5. In context:
+  B : Type
+  F : B
+  K : Type
+  P : (_x0 :E: B) -> K
+  Q : (_x1 :E: B) -> K
+  T : B
+  Type : Type
+  f : (_x2 :R: K) -> (_x3 :E: B) -> K
+
+("PAT-APP",False,R,E,PV c,PV x)
+
+Error: NotConstructor c
+
+CallStack (from HasCallStack):
+  error, called at Main.hs:123:25 in main:Main

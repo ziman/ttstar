@@ -1,3 +1,5 @@
+{-# LANGUAGE ViewPatterns #-}
+
 module Erasure.Verify
     ( verify
     , VerError(..)
@@ -21,6 +23,7 @@ data VerError
     | NotPatvar Name
     | NotImplemented
     | NotConstructor Name
+    | NotConstructorHead Term
     | CantConvert Term Term
     | PatvarsPatternMismatch [Name] [Name]
     | NonLinearPattern (Pat Relevance)
@@ -215,11 +218,25 @@ verPat fapp r pvs (PV n) = bt ("PAT-REF", n) $ do
         _ -> verFail $ NotConstructor n
     return $ defType d
 
---verPat False r pvs tm@(PApp s (PForced _) _) =
---    verFail $ AppliedForcedPattern tm
-
-verPat fapp r pvs (PApp s f x) = bt ("PAT-APP", r, s, f, x) $ do
+verPat fapp r pvs (PApp s f x) = bt ("PAT-APP", fapp, r, s, f, x) $ do
     ctx <- getCtx
+
+    case f of
+        PForced tm
+            | (h,_args) <- unApply tm
+            -> case h of
+                V n -> case M.lookup n ctx of
+                    Just (defBody -> Abstract Var) | fapp -> return () -- clause heads will be functions, vars at this stage
+                    Just (defBody -> Abstract Postulate) -> return ()  -- everything else must be a postulate
+                    _ -> verFail $ NotConstructor n
+                _ -> verFail $ NotConstructorHead h
+
+        PV n -> case M.lookup n ctx of
+            Just (defBody -> Abstract Postulate) -> return ()
+            _ -> verFail $ NotConstructor n
+
+        PApp _ _ _ -> return ()
+
     fty <- verPat fapp r pvs f
     case whnf ctx fty of
         Bind Pi [Def n piR piTy (Abstract Var) _] piRhs -> do
