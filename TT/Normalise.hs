@@ -227,40 +227,52 @@ safeSubst (d:ds) (t:ts) rhs
     (ds', rhs') = substBinder (defName d) t ds rhs
 safeSubst _ _ rhs = error $ "safeSubst: defs vs. terms do not match up"
 
+-- this function expects the term in any form, even unreduced
 match :: IsRelevance r => Ctx r -> Ctx r -> Pat r -> TT r -> Match (M.Map Name (TT r))
 match pvs ctx (PV Blank) tm'
+    = Yes M.empty
+
+match pvs ctx (PForced tm) tm'
     = Yes M.empty
 
 match pvs ctx (PV n) tm'
     | Just (defBody -> Abstract Var) <- M.lookup n pvs
     = Yes $ M.singleton n tm'
 
-match pvs ctx (PV n) (V n')
+match pvs ctx pat tm = matchWHNF pvs ctx pat (red WHNF ctx tm)
+
+-- this function expects the term in WHNF
+matchWHNF :: IsRelevance r => Ctx r -> Ctx r -> Pat r -> TT r -> Match (M.Map Name (TT r))
+matchWHNF pvs ctx (PV n) (V n')
     | n == n'
     , Just (defBody -> Abstract Postulate) <- M.lookup n ctx
     = Yes M.empty
 
-match pvs ctx (PApp r f x) (App r' f' x')
+matchWHNF pvs ctx (PApp r (PForced tm) x) (App r' f' x')
+    | (V n,_) <- unApply $ red WHNF ctx tm
+    , n /= Blank
+    , (defBody <$> M.lookup n ctx) /= Just (Abstract Postulate)
+    = error "forced pattern not constructor-headed"
+
+    | (V n,_) <- unApply $ red WHNF ctx f'
+    , Just (defBody -> Abstract Postulate) <- M.lookup n ctx
+    = match pvs ctx x x'  -- LHSs of the applications are constructor-headed
+
+    | otherwise = Stuck
+
+matchWHNF pvs ctx (PApp r f x) (App r' f' x')
     = M.unionWith (\_ _ -> error "non-linear pattern")
         <$> match pvs ctx f f'
-        <*> match pvs ctx x (red WHNF ctx x')
+        <*> match pvs ctx x x'
 
-match pvs ctx (PForced tm) tm'
-    = case unApply $ red WHNF ctx tm' of
-        (V n, args)
-            | Just (defBody -> Abstract Postulate) <- M.lookup n ctx
-            -> Yes M.empty  -- WHNF successful
-
-        _ -> Stuck
-
-match pvs ctx pat (V n)
+matchWHNF pvs ctx pat (V n)
     | Just d <- M.lookup n ctx
     = case defBody d of
         Abstract Var -> Stuck  -- variables may or may not match as we learn what they are
         Abstract (Foreign _) -> Stuck  -- foreigns are variables, really
         _ -> No
 
-match _ _ _ _ = No
+matchWHNF _ _ _ _ = No
 
 firstMatch :: Alternative f => [f a] -> f a
 firstMatch = foldr (<|>) empty
