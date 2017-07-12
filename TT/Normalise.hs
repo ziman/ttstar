@@ -270,6 +270,7 @@ matchWHNF pvs ctx pat (V n)
     = case defBody d of
         Abstract Var -> Stuck  -- variables may or may not match as we learn what they are
         Abstract (Foreign _) -> Stuck  -- foreigns are variables, really
+        Abstract Postulate -> Stuck    -- postulates too
         _ -> No
 
 matchWHNF _ _ _ _ = No

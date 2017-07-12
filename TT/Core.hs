@@ -46,7 +46,7 @@ data Clause r = Clause
 -- The difference between Var and Constructor is that for Var, the value is unknown,
 -- for constructor; the term itself is the value. A variable stands for something else,
 -- a constructor stands for itself.
-data Abstractness = Var | Constructor | Foreign (Maybe String) deriving (Eq, Ord, Show)
+data Abstractness = Constructor | Var | Postulate | Foreign String deriving (Eq, Ord, Show)
 data Body r = Abstract Abstractness | Term (TT r) | Clauses [Clause r] deriving (Eq, Ord)
 data Def r = Def
     { defName :: Name

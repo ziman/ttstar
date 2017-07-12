@@ -221,7 +221,7 @@ typing a = (<?> "name binding") $ do
 postulate :: Parser (Def MRel)
 postulate = (<?> "postulate") $ do
     kwd "postulate"
-    d <- typing $ Foreign Nothing
+    d <- typing Postulate
     return d
 
 clauseDef :: Parser (Def MRel)
@@ -282,7 +282,7 @@ foreignDef = (<?> "foreign definition") $ do
     d <- typing $ Foreign undefined
     kwd "="
     code <- stringLiteral
-    return d{defBody = Abstract $ Foreign (Just code)}
+    return d{defBody = Abstract $ Foreign code}
 
 simpleDef :: Parser (Def MRel)
 simpleDef = foreignDef <|> postulate <|> mlDef <|> clauseDef <?> "simple definition"
