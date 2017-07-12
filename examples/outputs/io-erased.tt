@@ -1,12 +1,12 @@
 -- vim: ft=ttstar
   let
-    postulate Z : Nat
-    postulate S : (x) -> Nat
-    postulate MkUnit : Unit
-    postulate MkPair : (_x5) -> (_x6) -> Pair
+    constructor Z : Nat
+    constructor S : (x) -> Nat
+    constructor MkUnit : Unit
+    constructor MkPair : (_x5) -> (_x6) -> Pair
     snd 
       [_] ([_] _ y) = y
-    postulate MkSt : (run) -> State
+    constructor MkSt : (run) -> State
     runState 
       [_] ([_] run) = run
     execState = (\x. (\s. snd (runState x s)))

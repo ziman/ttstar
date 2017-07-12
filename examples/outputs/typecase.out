@@ -3,40 +3,40 @@
 ### Desugared ###
 
   let
-    postulate Nat : Type
-    postulate Z : Nat
-    postulate S : (x :R: Nat) -> Nat
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (x :R: Nat) -> Nat
     plus : (_x0 : Nat) -> (_x1 : Nat) -> Nat 
       n : Nat
         [plus] Z n = n
       m : Nat n : Nat
         [plus] (S m) n = S (plus m n)
-    postulate Bool : Type
-    postulate True : Bool
-    postulate False : Bool
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
     not : (_x2 : Bool) -> Bool 
       [not] True = False
       [not] False = True
-    postulate Unit : Type
-    postulate MkUnit : Unit
-    postulate Pair : (_x3 : Type) -> (_x4 : Type) -> Type
-    postulate MkPair : (a : Type) -> (b : Type) -> (_x5 : a) -> (_x6 : b) -> Pair a b
+    constructor Unit : Type
+    constructor MkUnit : Unit
+    constructor Pair : (_x3 : Type) -> (_x4 : Type) -> Type
+    constructor MkPair : (a : Type) -> (b : Type) -> (_x5 : a) -> (_x6 : b) -> Pair a b
     fst : (a : Type) -> (b : Type) -> (_x7 : Pair a b) -> a 
       a : Type b : Type x : a y : b
         [fst] a b ([MkPair] [a] [b] x y) = x
     snd : (a : Type) -> (b : Type) -> (_x8 : Pair a b) -> b 
       a : Type b : Type x : a y : b
         [snd] a b ([MkPair] [a] [b] x y) = y
-    postulate Either : (_x9 : Type) -> (_x10 : Type) -> Type
-    postulate Left : (a : Type) -> (b : Type) -> (_x11 : a) -> Either a b
-    postulate Right : (a : Type) -> (b : Type) -> (_x12 : b) -> Either a b
+    constructor Either : (_x9 : Type) -> (_x10 : Type) -> Type
+    constructor Left : (a : Type) -> (b : Type) -> (_x11 : a) -> Either a b
+    constructor Right : (a : Type) -> (b : Type) -> (_x12 : b) -> Either a b
     id : (a : Type) -> (x : a) -> a = (\a : Type. (\x : a. x))
-    postulate Fin : (_x13 : Nat) -> Type
-    postulate FZ : (n : Nat) -> Fin (S n)
-    postulate FS : (n : Nat) -> (_x14 : Fin n) -> Fin (S n)
-    postulate Vect : (_x15 : Nat) -> (_x16 : Type) -> Type
-    postulate VN : (a : Type) -> Vect Z a
-    postulate VC : (n : Nat) -> (a : Type) -> (x : a) -> (xs : Vect n a) -> Vect (S n) a
+    constructor Fin : (_x13 : Nat) -> Type
+    constructor FZ : (n : Nat) -> Fin (S n)
+    constructor FS : (n : Nat) -> (_x14 : Fin n) -> Fin (S n)
+    constructor Vect : (_x15 : Nat) -> (_x16 : Type) -> Type
+    constructor VN : (a : Type) -> Vect Z a
+    constructor VC : (n : Nat) -> (a : Type) -> (x : a) -> (xs : Vect n a) -> Vect (S n) a
     isZero : (_x0 : Nat) -> Bool 
       [isZero] Z = True
       n : Nat
@@ -52,40 +52,40 @@
 ### Evarified ###
 
   let
-    postulate Nat :1: Type
-    postulate Z :2: Nat
-    postulate S :3: (x :R: Nat) -> Nat
+    constructor Nat :1: Type
+    constructor Z :2: Nat
+    constructor S :3: (x :R: Nat) -> Nat
     plus :4: (_x0 :5: Nat) -> (_x1 :6: Nat) -> Nat 
       n :7: Nat
         [plus] -9- Z -8- n = n
       m :10: Nat n :11: Nat
         [plus] -13- (S -14- m) -12- n = S -15- (plus -17- m -16- n)
-    postulate Bool :18: Type
-    postulate True :19: Bool
-    postulate False :20: Bool
+    constructor Bool :18: Type
+    constructor True :19: Bool
+    constructor False :20: Bool
     not :21: (_x2 :22: Bool) -> Bool 
       [not] -23- True = False
       [not] -24- False = True
-    postulate Unit :25: Type
-    postulate MkUnit :26: Unit
-    postulate Pair :27: (_x3 :28: Type) -> (_x4 :29: Type) -> Type
-    postulate MkPair :30: (a :31: Type) -> (b :32: Type) -> (_x5 :33: a) -> (_x6 :34: b) -> Pair -36- a -35- b
+    constructor Unit :25: Type
+    constructor MkUnit :26: Unit
+    constructor Pair :27: (_x3 :28: Type) -> (_x4 :29: Type) -> Type
+    constructor MkPair :30: (a :31: Type) -> (b :32: Type) -> (_x5 :33: a) -> (_x6 :34: b) -> Pair -36- a -35- b
     fst :37: (a :38: Type) -> (b :39: Type) -> (_x7 :40: Pair -42- a -41- b) -> a 
       a :43: Type b :44: Type x :45: a y :46: b
         [fst] -49- a -48- b -47- ([MkPair] -53- [a] -52- [b] -51- x -50- y) = x
     snd :54: (a :55: Type) -> (b :56: Type) -> (_x8 :57: Pair -59- a -58- b) -> b 
       a :60: Type b :61: Type x :62: a y :63: b
         [snd] -66- a -65- b -64- ([MkPair] -70- [a] -69- [b] -68- x -67- y) = y
-    postulate Either :71: (_x9 :72: Type) -> (_x10 :73: Type) -> Type
-    postulate Left :74: (a :75: Type) -> (b :76: Type) -> (_x11 :77: a) -> Either -79- a -78- b
-    postulate Right :80: (a :81: Type) -> (b :82: Type) -> (_x12 :83: b) -> Either -85- a -84- b
+    constructor Either :71: (_x9 :72: Type) -> (_x10 :73: Type) -> Type
+    constructor Left :74: (a :75: Type) -> (b :76: Type) -> (_x11 :77: a) -> Either -79- a -78- b
+    constructor Right :80: (a :81: Type) -> (b :82: Type) -> (_x12 :83: b) -> Either -85- a -84- b
     id :86: (a :87: Type) -> (x :88: a) -> a = (\a :89: Type. (\x :90: a. x))
-    postulate Fin :91: (_x13 :92: Nat) -> Type
-    postulate FZ :93: (n :94: Nat) -> Fin -95- (S -96- n)
-    postulate FS :97: (n :98: Nat) -> (_x14 :99: Fin -100- n) -> Fin -101- (S -102- n)
-    postulate Vect :103: (_x15 :104: Nat) -> (_x16 :105: Type) -> Type
-    postulate VN :106: (a :107: Type) -> Vect -109- Z -108- a
-    postulate VC :110: (n :111: Nat) -> (a :112: Type) -> (x :113: a) -> (xs :114: Vect -116- n -115- a) -> Vect -118- (S -119- n) -117- a
+    constructor Fin :91: (_x13 :92: Nat) -> Type
+    constructor FZ :93: (n :94: Nat) -> Fin -95- (S -96- n)
+    constructor FS :97: (n :98: Nat) -> (_x14 :99: Fin -100- n) -> Fin -101- (S -102- n)
+    constructor Vect :103: (_x15 :104: Nat) -> (_x16 :105: Type) -> Type
+    constructor VN :106: (a :107: Type) -> Vect -109- Z -108- a
+    constructor VC :110: (n :111: Nat) -> (a :112: Type) -> (x :113: a) -> (xs :114: Vect -116- n -115- a) -> Vect -118- (S -119- n) -117- a
     isZero :120: (_x0 :121: Nat) -> Bool 
       [isZero] -122- Z = True
       n :123: Nat
@@ -110,40 +110,40 @@
 ### Annotated ###
 
   let
-    postulate Nat :R: Type
-    postulate Z :R: Nat
-    postulate S :R: (x :R: Nat) -> Nat
+    constructor Nat :R: Type
+    constructor Z :R: Nat
+    constructor S :R: (x :R: Nat) -> Nat
     plus :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Nat 
       n :E: Nat
         [plus] -E- Z -E- n = n
       m :E: Nat n :E: Nat
         [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
-    postulate Bool :R: Type
-    postulate True :R: Bool
-    postulate False :R: Bool
+    constructor Bool :R: Type
+    constructor True :R: Bool
+    constructor False :R: Bool
     not :R: (_x2 :R: Bool) -> Bool 
       [not] -R- True = False
       [not] -R- False = True
-    postulate Unit :E: Type
-    postulate MkUnit :E: Unit
-    postulate Pair :E: (_x3 :E: Type) -> (_x4 :E: Type) -> Type
-    postulate MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x5 :E: a) -> (_x6 :E: b) -> Pair -E- a -E- b
+    constructor Unit :E: Type
+    constructor MkUnit :E: Unit
+    constructor Pair :E: (_x3 :E: Type) -> (_x4 :E: Type) -> Type
+    constructor MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x5 :E: a) -> (_x6 :E: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: Pair -E- a -E- b) -> a 
       a :E: Type b :E: Type x :E: a y :E: b
         [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
     snd :E: (a :E: Type) -> (b :E: Type) -> (_x8 :E: Pair -E- a -E- b) -> b 
       a :E: Type b :E: Type x :E: a y :E: b
         [snd] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = y
-    postulate Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
-    postulate Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
-    postulate Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
+    constructor Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
+    constructor Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
+    constructor Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
     id :E: (a :E: Type) -> (x :E: a) -> a = (\a :E: Type. (\x :E: a. x))
-    postulate Fin :E: (_x13 :E: Nat) -> Type
-    postulate FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
-    postulate FS :E: (n :E: Nat) -> (_x14 :E: Fin -E- n) -> Fin -E- (S -E- n)
-    postulate Vect :E: (_x15 :E: Nat) -> (_x16 :E: Type) -> Type
-    postulate VN :E: (a :E: Type) -> Vect -E- Z -E- a
-    postulate VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
+    constructor Fin :E: (_x13 :E: Nat) -> Type
+    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
+    constructor FS :E: (n :E: Nat) -> (_x14 :E: Fin -E- n) -> Fin -E- (S -E- n)
+    constructor Vect :E: (_x15 :E: Nat) -> (_x16 :E: Type) -> Type
+    constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
+    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
     isZero :R: (_x0 :R: Nat) -> Bool 
       [isZero] -R- Z = True
       n :E: Nat
@@ -159,40 +159,40 @@
 ### Specialised ###
 
   let
-    postulate Nat :R: Type
-    postulate Z :R: Nat
-    postulate S :R: (x :R: Nat) -> Nat
+    constructor Nat :R: Type
+    constructor Z :R: Nat
+    constructor S :R: (x :R: Nat) -> Nat
     plus :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Nat 
       n :E: Nat
         [plus] -E- Z -E- n = n
       m :E: Nat n :E: Nat
         [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
-    postulate Bool :R: Type
-    postulate True :R: Bool
-    postulate False :R: Bool
+    constructor Bool :R: Type
+    constructor True :R: Bool
+    constructor False :R: Bool
     not :R: (_x2 :R: Bool) -> Bool 
       [not] -R- True = False
       [not] -R- False = True
-    postulate Unit :E: Type
-    postulate MkUnit :E: Unit
-    postulate Pair :E: (_x3 :E: Type) -> (_x4 :E: Type) -> Type
-    postulate MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x5 :E: a) -> (_x6 :E: b) -> Pair -E- a -E- b
+    constructor Unit :E: Type
+    constructor MkUnit :E: Unit
+    constructor Pair :E: (_x3 :E: Type) -> (_x4 :E: Type) -> Type
+    constructor MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x5 :E: a) -> (_x6 :E: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: Pair -E- a -E- b) -> a 
       a :E: Type b :E: Type x :E: a y :E: b
         [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
     snd :E: (a :E: Type) -> (b :E: Type) -> (_x8 :E: Pair -E- a -E- b) -> b 
       a :E: Type b :E: Type x :E: a y :E: b
         [snd] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = y
-    postulate Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
-    postulate Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
-    postulate Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
+    constructor Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
+    constructor Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
+    constructor Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
     id :E: (a :E: Type) -> (x :E: a) -> a = (\a :E: Type. (\x :E: a. x))
-    postulate Fin :E: (_x13 :E: Nat) -> Type
-    postulate FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
-    postulate FS :E: (n :E: Nat) -> (_x14 :E: Fin -E- n) -> Fin -E- (S -E- n)
-    postulate Vect :E: (_x15 :E: Nat) -> (_x16 :E: Type) -> Type
-    postulate VN :E: (a :E: Type) -> Vect -E- Z -E- a
-    postulate VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
+    constructor Fin :E: (_x13 :E: Nat) -> Type
+    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
+    constructor FS :E: (n :E: Nat) -> (_x14 :E: Fin -E- n) -> Fin -E- (S -E- n)
+    constructor Vect :E: (_x15 :E: Nat) -> (_x16 :E: Type) -> Type
+    constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
+    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
     isZero :R: (_x0 :R: Nat) -> Bool 
       [isZero] -R- Z = True
       n :E: Nat
@@ -208,40 +208,40 @@
 ### Final annotation ###
 
   let
-    postulate Nat :R: Type
-    postulate Z :R: Nat
-    postulate S :R: (x :R: Nat) -> Nat
+    constructor Nat :R: Type
+    constructor Z :R: Nat
+    constructor S :R: (x :R: Nat) -> Nat
     plus :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Nat 
       n :E: Nat
         [plus] -E- Z -E- n = n
       m :E: Nat n :E: Nat
         [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
-    postulate Bool :R: Type
-    postulate True :R: Bool
-    postulate False :R: Bool
+    constructor Bool :R: Type
+    constructor True :R: Bool
+    constructor False :R: Bool
     not :R: (_x2 :R: Bool) -> Bool 
       [not] -R- True = False
       [not] -R- False = True
-    postulate Unit :E: Type
-    postulate MkUnit :E: Unit
-    postulate Pair :E: (_x3 :E: Type) -> (_x4 :E: Type) -> Type
-    postulate MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x5 :E: a) -> (_x6 :E: b) -> Pair -E- a -E- b
+    constructor Unit :E: Type
+    constructor MkUnit :E: Unit
+    constructor Pair :E: (_x3 :E: Type) -> (_x4 :E: Type) -> Type
+    constructor MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x5 :E: a) -> (_x6 :E: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: Pair -E- a -E- b) -> a 
       a :E: Type b :E: Type x :E: a y :E: b
         [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
     snd :E: (a :E: Type) -> (b :E: Type) -> (_x8 :E: Pair -E- a -E- b) -> b 
       a :E: Type b :E: Type x :E: a y :E: b
         [snd] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = y
-    postulate Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
-    postulate Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
-    postulate Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
+    constructor Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
+    constructor Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
+    constructor Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
     id :E: (a :E: Type) -> (x :E: a) -> a = (\a :E: Type. (\x :E: a. x))
-    postulate Fin :E: (_x13 :E: Nat) -> Type
-    postulate FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
-    postulate FS :E: (n :E: Nat) -> (_x14 :E: Fin -E- n) -> Fin -E- (S -E- n)
-    postulate Vect :E: (_x15 :E: Nat) -> (_x16 :E: Type) -> Type
-    postulate VN :E: (a :E: Type) -> Vect -E- Z -E- a
-    postulate VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
+    constructor Fin :E: (_x13 :E: Nat) -> Type
+    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
+    constructor FS :E: (n :E: Nat) -> (_x14 :E: Fin -E- n) -> Fin -E- (S -E- n)
+    constructor Vect :E: (_x15 :E: Nat) -> (_x16 :E: Type) -> Type
+    constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
+    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
     isZero :R: (_x0 :R: Nat) -> Bool 
       [isZero] -R- Z = True
       n :E: Nat
@@ -261,12 +261,12 @@ Verification successful.
 ### Pruned ###
 
   let
-    postulate Nat : Type
-    postulate Z : Nat
-    postulate S : (x) -> Nat
-    postulate Bool : Type
-    postulate True : Bool
-    postulate False : Bool
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (x) -> Nat
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
     not 
       [_] True = False
       [_] False = True
@@ -285,14 +285,14 @@ Verification successful.
 unerased:
   
   let
-    postulate Bool : Type
-    postulate True : Bool
+    constructor Bool : Type
+    constructor True : Bool
   in True
 
 erased:
   
   let
-    postulate Bool : Type
-    postulate True : Bool
+    constructor Bool : Type
+    constructor True : Bool
   in True
 

@@ -1,17 +1,17 @@
 -- vim: ft=ttstar
   let
-    postulate Bool : Type
-    postulate True : Bool
-    postulate False : Bool
-    postulate Nat : Type
-    postulate Z : Nat
-    postulate S : (_x0) -> Nat
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (_x0) -> Nat
     plus 
       [_] Z n = n
       [_] (S m) n = S (plus m n)
-    postulate Tag : Type
-    postulate Even : Tag
-    postulate Odd : Tag
+    constructor Tag : Type
+    constructor Even : Tag
+    constructor Odd : Tag
     funTy 
       [_] Even = (_x4) -> Bool
       [_] Odd = (_x5) -> (_x6) -> Bool

@@ -3,20 +3,20 @@
 ### Desugared ###
 
   let
-    postulate Bool : Type
-    postulate True : Bool
-    postulate False : Bool
-    postulate Nat : Type
-    postulate Z : Nat
-    postulate S : (_x0 : Nat) -> Nat
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (_x0 : Nat) -> Nat
     plus : (_x1 : Nat) -> (_x2 : Nat) -> Nat 
       n : Nat
         [plus] Z n = n
       m : Nat n : Nat
         [plus] (S m) n = S (plus m n)
-    postulate Tag : Type
-    postulate Even : Tag
-    postulate Odd : Tag
+    constructor Tag : Type
+    constructor Even : Tag
+    constructor Odd : Tag
     funTy : (_x3 : Tag) -> Type 
       [funTy] Even = (_x4 : Nat) -> Bool
       [funTy] Odd = (_x5 : Nat) -> (_x6 : Nat) -> Bool
@@ -41,20 +41,20 @@
 ### Evarified ###
 
   let
-    postulate Bool :1: Type
-    postulate True :2: Bool
-    postulate False :3: Bool
-    postulate Nat :4: Type
-    postulate Z :5: Nat
-    postulate S :6: (_x0 :7: Nat) -> Nat
+    constructor Bool :1: Type
+    constructor True :2: Bool
+    constructor False :3: Bool
+    constructor Nat :4: Type
+    constructor Z :5: Nat
+    constructor S :6: (_x0 :7: Nat) -> Nat
     plus :8: (_x1 :9: Nat) -> (_x2 :10: Nat) -> Nat 
       n :11: Nat
         [plus] -13- Z -12- n = n
       m :14: Nat n :15: Nat
         [plus] -17- (S -18- m) -16- n = S -19- (plus -21- m -20- n)
-    postulate Tag :22: Type
-    postulate Even :23: Tag
-    postulate Odd :24: Tag
+    constructor Tag :22: Type
+    constructor Even :23: Tag
+    constructor Odd :24: Tag
     funTy :25: (_x3 :26: Tag) -> Type 
       [funTy] -27- Even = (_x4 :28: Nat) -> Bool
       [funTy] -29- Odd = (_x5 :30: Nat) -> (_x6 :31: Nat) -> Bool
@@ -96,20 +96,20 @@
 ### Annotated ###
 
   let
-    postulate Bool :E: Type
-    postulate True :R: Bool
-    postulate False :R: Bool
-    postulate Nat :E: Type
-    postulate Z :R: Nat
-    postulate S :R: (_x0 :R: Nat) -> Nat
+    constructor Bool :E: Type
+    constructor True :R: Bool
+    constructor False :R: Bool
+    constructor Nat :E: Type
+    constructor Z :R: Nat
+    constructor S :R: (_x0 :R: Nat) -> Nat
     plus :E: (_x1 :E: Nat) -> (_x2 :E: Nat) -> Nat 
       n :E: Nat
         [plus] -E- Z -E- n = n
       m :E: Nat n :E: Nat
         [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
-    postulate Tag :E: Type
-    postulate Even :R: Tag
-    postulate Odd :R: Tag
+    constructor Tag :E: Type
+    constructor Even :R: Tag
+    constructor Odd :R: Tag
     funTy :E: (_x3 :E: Tag) -> Type 
       [funTy] -E- Even = (_x4 :R: Nat) -> Bool
       [funTy] -E- Odd = (_x5 :R: Nat) -> (_x6 :E: Nat) -> Bool
@@ -134,20 +134,20 @@
 ### Specialised ###
 
   let
-    postulate Bool :E: Type
-    postulate True :R: Bool
-    postulate False :R: Bool
-    postulate Nat :E: Type
-    postulate Z :R: Nat
-    postulate S :R: (_x0 :R: Nat) -> Nat
+    constructor Bool :E: Type
+    constructor True :R: Bool
+    constructor False :R: Bool
+    constructor Nat :E: Type
+    constructor Z :R: Nat
+    constructor S :R: (_x0 :R: Nat) -> Nat
     plus :E: (_x1 :E: Nat) -> (_x2 :E: Nat) -> Nat 
       n :E: Nat
         [plus] -E- Z -E- n = n
       m :E: Nat n :E: Nat
         [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
-    postulate Tag :E: Type
-    postulate Even :R: Tag
-    postulate Odd :R: Tag
+    constructor Tag :E: Type
+    constructor Even :R: Tag
+    constructor Odd :R: Tag
     funTy :E: (_x3 :E: Tag) -> Type 
       [funTy] -E- Even = (_x4 :R: Nat) -> Bool
       [funTy] -E- Odd = (_x5 :R: Nat) -> (_x6 :E: Nat) -> Bool
@@ -172,20 +172,20 @@
 ### Final annotation ###
 
   let
-    postulate Bool :E: Type
-    postulate True :R: Bool
-    postulate False :R: Bool
-    postulate Nat :E: Type
-    postulate Z :R: Nat
-    postulate S :R: (_x0 :R: Nat) -> Nat
+    constructor Bool :E: Type
+    constructor True :R: Bool
+    constructor False :R: Bool
+    constructor Nat :E: Type
+    constructor Z :R: Nat
+    constructor S :R: (_x0 :R: Nat) -> Nat
     plus :E: (_x1 :E: Nat) -> (_x2 :E: Nat) -> Nat 
       n :E: Nat
         [plus] -E- Z -E- n = n
       m :E: Nat n :E: Nat
         [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
-    postulate Tag :E: Type
-    postulate Even :R: Tag
-    postulate Odd :R: Tag
+    constructor Tag :E: Type
+    constructor Even :R: Tag
+    constructor Odd :R: Tag
     funTy :E: (_x3 :E: Tag) -> Type 
       [funTy] -E- Even = (_x4 :R: Nat) -> Bool
       [funTy] -E- Odd = (_x5 :R: Nat) -> (_x6 :E: Nat) -> Bool
@@ -214,12 +214,12 @@ Verification successful.
 ### Pruned ###
 
   let
-    postulate True : Bool
-    postulate False : Bool
-    postulate Z : Nat
-    postulate S : (_x0) -> Nat
-    postulate Even : Tag
-    postulate Odd : Tag
+    constructor True : Bool
+    constructor False : Bool
+    constructor Z : Nat
+    constructor S : (_x0) -> Nat
+    constructor Even : Tag
+    constructor Odd : Tag
     fun 
       [_] Even = (\n. 
         let f 
@@ -240,12 +240,12 @@ Verification successful.
 unerased:
   
   let
-    postulate Bool : Type
-    postulate True : Bool
+    constructor Bool : Type
+    constructor True : Bool
   in True
 
 erased:
   
-  let postulate True : Bool
+  let constructor True : Bool
   in True
 

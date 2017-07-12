@@ -3,12 +3,12 @@
 ### Desugared ###
 
   let
-    postulate N : Type
-    postulate Z : N
-    postulate S : (x :R: N) -> N
-    postulate Vec : (_x0 : N) -> (_x1 : Type) -> Type
-    postulate Nil : (a : Type) -> Vec Z a
-    postulate Cons : (a : Type) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a
+    constructor N : Type
+    constructor Z : N
+    constructor S : (x :R: N) -> N
+    constructor Vec : (_x0 : N) -> (_x1 : Type) -> Type
+    constructor Nil : (a : Type) -> Vec Z a
+    constructor Cons : (a : Type) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a
     plus : (_x2 : N) -> (_x3 : N) -> N 
       n : N
         [plus] Z n = n
@@ -25,12 +25,12 @@
 ### Evarified ###
 
   let
-    postulate N :1: Type
-    postulate Z :2: N
-    postulate S :3: (x :R: N) -> N
-    postulate Vec :4: (_x0 :5: N) -> (_x1 :6: Type) -> Type
-    postulate Nil :7: (a :8: Type) -> Vec -10- Z -9- a
-    postulate Cons :11: (a :12: Type) -> (n :13: N) -> (x :R: a) -> (xs :R: Vec -15- n -14- a) -> Vec -17- (S -18- n) -16- a
+    constructor N :1: Type
+    constructor Z :2: N
+    constructor S :3: (x :R: N) -> N
+    constructor Vec :4: (_x0 :5: N) -> (_x1 :6: Type) -> Type
+    constructor Nil :7: (a :8: Type) -> Vec -10- Z -9- a
+    constructor Cons :11: (a :12: Type) -> (n :13: N) -> (x :R: a) -> (xs :R: Vec -15- n -14- a) -> Vec -17- (S -18- n) -16- a
     plus :19: (_x2 :20: N) -> (_x3 :21: N) -> N 
       n :22: N
         [plus] -24- Z -23- n = n
@@ -123,12 +123,12 @@
 ### Annotated ###
 
   let
-    postulate N :E: Type
-    postulate Z :R: N
-    postulate S :R: (x :R: N) -> N
-    postulate Vec :E: (_x0 :E: N) -> (_x1 :E: Type) -> Type
-    postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a
-    postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+    constructor N :E: Type
+    constructor Z :R: N
+    constructor S :R: (x :R: N) -> N
+    constructor Vec :E: (_x0 :E: N) -> (_x1 :E: Type) -> Type
+    constructor Nil :R: (a :E: Type) -> Vec -E- Z -E- a
+    constructor Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     plus :E: (_x2 :E: N) -> (_x3 :E: N) -> N 
       n :E: N
         [plus] -E- Z -E- n = n
@@ -145,12 +145,12 @@
 ### Specialised ###
 
   let
-    postulate N :E: Type
-    postulate Z :R: N
-    postulate S :R: (x :R: N) -> N
-    postulate Vec :E: (_x0 :E: N) -> (_x1 :E: Type) -> Type
-    postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a
-    postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+    constructor N :E: Type
+    constructor Z :R: N
+    constructor S :R: (x :R: N) -> N
+    constructor Vec :E: (_x0 :E: N) -> (_x1 :E: Type) -> Type
+    constructor Nil :R: (a :E: Type) -> Vec -E- Z -E- a
+    constructor Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     plus :E: (_x2 :E: N) -> (_x3 :E: N) -> N 
       n :E: N
         [plus] -E- Z -E- n = n
@@ -167,12 +167,12 @@
 ### Final annotation ###
 
   let
-    postulate N :E: Type
-    postulate Z :R: N
-    postulate S :R: (x :R: N) -> N
-    postulate Vec :E: (_x0 :E: N) -> (_x1 :E: Type) -> Type
-    postulate Nil :R: (a :E: Type) -> Vec -E- Z -E- a
-    postulate Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+    constructor N :E: Type
+    constructor Z :R: N
+    constructor S :R: (x :R: N) -> N
+    constructor Vec :E: (_x0 :E: N) -> (_x1 :E: Type) -> Type
+    constructor Nil :R: (a :E: Type) -> Vec -E- Z -E- a
+    constructor Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
     plus :E: (_x2 :E: N) -> (_x3 :E: N) -> N 
       n :E: N
         [plus] -E- Z -E- n = n
@@ -193,10 +193,10 @@ Verification successful.
 ### Pruned ###
 
   let
-    postulate Z : N
-    postulate S : (x) -> N
-    postulate Nil : Vec
-    postulate Cons : (x) -> (xs) -> Vec
+    constructor Z : N
+    constructor S : (x) -> N
+    constructor Nil : Vec
+    constructor Cons : (x) -> (xs) -> Vec
     append 
       [_] Nil ys = ys
       [_] (Cons x xs) ys = Cons x (append xs ys)
@@ -208,20 +208,20 @@ Verification successful.
 unerased:
   
   let
-    postulate N : Type
-    postulate Z : N
-    postulate S : (x :R: N) -> N
-    postulate Vec : (_x0 : N) -> (_x1 : Type) -> Type
-    postulate Nil : (a : Type) -> Vec Z a
-    postulate Cons : (a : Type) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a
+    constructor N : Type
+    constructor Z : N
+    constructor S : (x :R: N) -> N
+    constructor Vec : (_x0 : N) -> (_x1 : Type) -> Type
+    constructor Nil : (a : Type) -> Vec Z a
+    constructor Cons : (a : Type) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a
   in Cons N Z 4 (Nil N)
 
 erased:
   
   let
-    postulate Z : N
-    postulate S : (x) -> N
-    postulate Nil : Vec
-    postulate Cons : (x) -> (xs) -> Vec
+    constructor Z : N
+    constructor S : (x) -> N
+    constructor Nil : Vec
+    constructor Cons : (x) -> (xs) -> Vec
   in Cons 4 Nil
 

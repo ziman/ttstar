@@ -1,11 +1,11 @@
 -- vim: ft=ttstar
   let
-    postulate T : Bool
-    postulate F : Bool
-    postulate Nil : List
-    postulate Cons : (x) -> (xs) -> List
-    postulate RNil : Rev
-    postulate RSnoc : (x) -> (rxs) -> Rev
+    constructor T : Bool
+    constructor F : Bool
+    constructor Nil : List
+    constructor Cons : (x) -> (xs) -> List
+    constructor RNil : Rev
+    constructor RSnoc : (x) -> (rxs) -> Rev
     rev' 
       [_] rxs Nil = rxs
       [_] rxs (Cons y ys) = rev' (RSnoc y rxs) ys

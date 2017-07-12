@@ -1,5 +1,5 @@
 -- vim: ft=ttstar
   let
-    postulate Unit : Type
-    postulate MkUnit : Unit
+    constructor Unit : Type
+    constructor MkUnit : Unit
   in MkUnit

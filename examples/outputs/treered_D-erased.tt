@@ -1,11 +1,11 @@
 -- vim: ft=ttstar
   let
-    postulate True : Bool
-    postulate False : Bool
-    postulate Yeah : Foo
-    postulate Nope : Foo
-    postulate Nothing : Maybe
-    postulate Just : (x) -> Maybe
+    constructor True : Bool
+    constructor False : Bool
+    constructor Yeah : Foo
+    constructor Nope : Foo
+    constructor Nothing : Maybe
+    constructor Just : (x) -> Maybe
     g 
       [_] (Just True) = Yeah
       [_] (Just False) = Nope

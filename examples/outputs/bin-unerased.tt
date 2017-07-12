@@ -1,50 +1,50 @@
 -- vim: ft=ttstar
   let
-    postulate Nat : Type
-    postulate Z : Nat
-    postulate S : (x) -> Nat
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (x) -> Nat
     plus 
       [_] Z n = n
       [_] (S m) n = S (plus m n)
-    postulate Bool : Type
-    postulate True : Bool
-    postulate False : Bool
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
     not 
       [_] True = False
       [_] False = True
-    postulate Unit : Type
-    postulate MkUnit : Unit
-    postulate Pair : (_x3) -> (_x4) -> Type
-    postulate MkPair : (a) -> (b) -> (_x5) -> (_x6) -> Pair a b
+    constructor Unit : Type
+    constructor MkUnit : Unit
+    constructor Pair : (_x3) -> (_x4) -> Type
+    constructor MkPair : (a) -> (b) -> (_x5) -> (_x6) -> Pair a b
     fst 
       [_] a b ([_] [_] [_] x y) = x
     snd 
       [_] a b ([_] [_] [_] x y) = y
-    postulate Either : (_x9) -> (_x10) -> Type
-    postulate Left : (a) -> (b) -> (_x11) -> Either a b
-    postulate Right : (a) -> (b) -> (_x12) -> Either a b
+    constructor Either : (_x9) -> (_x10) -> Type
+    constructor Left : (a) -> (b) -> (_x11) -> Either a b
+    constructor Right : (a) -> (b) -> (_x12) -> Either a b
     id = (\a. (\x. x))
-    postulate Fin : (_x13) -> Type
-    postulate FZ : (n) -> Fin (S n)
-    postulate FS : (n) -> (_x14) -> Fin (S n)
-    postulate Vect : (_x15) -> (_x16) -> Type
-    postulate VN : (a) -> Vect Z a
-    postulate VC : (n) -> (a) -> (x) -> (xs) -> Vect (S n) a
-    postulate Id : (a) -> (x) -> (y) -> Type
-    postulate Refl : (a) -> (x) -> Id a x x
+    constructor Fin : (_x13) -> Type
+    constructor FZ : (n) -> Fin (S n)
+    constructor FS : (n) -> (_x14) -> Fin (S n)
+    constructor Vect : (_x15) -> (_x16) -> Type
+    constructor VN : (a) -> Vect Z a
+    constructor VC : (n) -> (a) -> (x) -> (xs) -> Vect (S n) a
+    constructor Id : (a) -> (x) -> (y) -> Type
+    constructor Refl : (a) -> (x) -> Id a x x
     subst 
       [_] a P x [_] [_] = (\z. z)
-    postulate Bit : (_x0) -> Type
-    postulate I : Bit 1
-    postulate O : Bit Z
+    constructor Bit : (_x0) -> Type
+    constructor I : Bit 1
+    constructor O : Bit Z
     double 
       [_] Z = Z
       [_] (S n) = S (S (double n))
-    postulate Bin : (width) -> (value) -> Type
-    postulate N : Bin Z Z
-    postulate C : (width) -> (lsbVal) -> (lsb) -> (restVal) -> (rest) -> Bin (S width) (plus lsbVal (double restVal))
-    postulate TwoBits : (_x2) -> (_x3) -> (_x4) -> Type
-    postulate TB : (c) -> (x) -> (y) -> (hi') -> (hi) -> (lo') -> (lo) -> (pf) -> TwoBits c x y
+    constructor Bin : (width) -> (value) -> Type
+    constructor N : Bin Z Z
+    constructor C : (width) -> (lsbVal) -> (lsb) -> (restVal) -> (rest) -> Bin (S width) (plus lsbVal (double restVal))
+    constructor TwoBits : (_x2) -> (_x3) -> (_x4) -> Type
+    constructor TB : (c) -> (x) -> (y) -> (hi') -> (hi) -> (lo') -> (lo) -> (pf) -> TwoBits c x y
     adb 
       [_] [_] [_] [_] O O O = TB Z Z Z Z O Z O (Refl Nat Z)
       [_] [_] [_] [_] I O O = TB 1 Z Z Z O 1 I (Refl Nat 1)

@@ -1,7 +1,7 @@
 -- vim: ft=ttstar
   let
-    postulate Bool : Type
-    postulate F : Bool
-    postulate Id : (a) -> (x) -> (y) -> Type
-    postulate Refl : (a) -> (x) -> Id a x x
+    constructor Bool : Type
+    constructor F : Bool
+    constructor Id : (a) -> (x) -> (y) -> Type
+    constructor Refl : (a) -> (x) -> Id a x x
   in Refl Bool F

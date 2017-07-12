@@ -1,7 +1,7 @@
 -- vim: ft=ttstar
   let
-    postulate Bool : Type
-    postulate True : Bool
-    postulate Foo : (_x0) -> Type
-    postulate Yeah : Foo True
+    constructor Bool : Type
+    constructor True : Bool
+    constructor Foo : (_x0) -> Type
+    constructor Yeah : Foo True
   in Yeah

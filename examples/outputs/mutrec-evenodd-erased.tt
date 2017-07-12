@@ -1,9 +1,9 @@
 -- vim: ft=ttstar
   let
-    postulate Z : Nat
-    postulate S : (x) -> Nat
-    postulate True : Bool
-    postulate False : Bool
+    constructor Z : Nat
+    constructor S : (x) -> Nat
+    constructor True : Bool
+    constructor False : Bool
     even 
       [_] Z = True
       [_] (S n) = 

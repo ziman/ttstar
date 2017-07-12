@@ -1,8 +1,8 @@
 -- vim: ft=ttstar
   let
-    postulate T : Bool
-    postulate F : Bool
-    postulate MkUnit : Unit
+    constructor T : Bool
+    constructor F : Bool
+    constructor MkUnit : Unit
     not 
       [_] T = F
       [_] F = T

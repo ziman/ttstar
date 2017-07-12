@@ -1,10 +1,10 @@
 -- vim: ft=ttstar
   let
-    postulate N : Type
-    postulate S : (_x0) -> N
-    postulate B : Type
-    postulate T : B
-    postulate F : B
+    constructor N : Type
+    constructor S : (_x0) -> N
+    constructor B : Type
+    constructor T : B
+    constructor F : B
     isSuc 
       [_] (S n) = T
       [_] n = F

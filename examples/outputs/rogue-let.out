@@ -3,9 +3,9 @@
 ### Desugared ###
 
   let
-    postulate Bool : Type
-    postulate T : Bool
-    postulate F : Bool
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
     not : (_x0 : Bool) -> Bool 
       [not] T = F
       [not] F = T
@@ -15,9 +15,9 @@
 ### Evarified ###
 
   let
-    postulate Bool :1: Type
-    postulate T :2: Bool
-    postulate F :3: Bool
+    constructor Bool :1: Type
+    constructor T :2: Bool
+    constructor F :3: Bool
     not :4: (_x0 :5: Bool) -> Bool 
       [not] -6- T = F
       [not] -7- F = T
@@ -36,9 +36,9 @@
 ### Annotated ###
 
   let
-    postulate Bool :E: Type
-    postulate T :R: Bool
-    postulate F :R: Bool
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
     not :R: (_x0 :R: Bool) -> Bool 
       [not] -R- T = F
       [not] -R- F = T
@@ -48,9 +48,9 @@
 ### Specialised ###
 
   let
-    postulate Bool :E: Type
-    postulate T :R: Bool
-    postulate F :R: Bool
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
     not :R: (_x0 :R: Bool) -> Bool 
       [not] -R- T = F
       [not] -R- F = T
@@ -60,9 +60,9 @@
 ### Final annotation ###
 
   let
-    postulate Bool :E: Type
-    postulate T :R: Bool
-    postulate F :R: Bool
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
     not :R: (_x0 :R: Bool) -> Bool 
       [not] -R- T = F
       [not] -R- F = T
@@ -76,8 +76,8 @@ Verification successful.
 ### Pruned ###
 
   let
-    postulate T : Bool
-    postulate F : Bool
+    constructor T : Bool
+    constructor F : Bool
     not 
       [_] T = F
       [_] F = T
@@ -89,9 +89,9 @@ Verification successful.
 unerased:
   
   let
-    postulate Bool : Type
-    postulate T : Bool
-    postulate F : Bool
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
     not : (_x0 : Bool) -> Bool 
       [not] T = F
       [not] F = T
@@ -100,8 +100,8 @@ unerased:
 erased:
   
   let
-    postulate T : Bool
-    postulate F : Bool
+    constructor T : Bool
+    constructor F : Bool
     not 
       [_] T = F
       [_] F = T

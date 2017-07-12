@@ -1,9 +1,9 @@
 -- vim: ft=ttstar
   let
-    postulate Q : Mool
-    postulate W : Mool
-    postulate T : Bool
-    postulate F : Bool
+    constructor Q : Mool
+    constructor W : Mool
+    constructor T : Bool
+    constructor F : Bool
     not 
       [_] T = F
       [_] F = T

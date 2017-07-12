@@ -1,12 +1,12 @@
 -- vim: ft=ttstar
   let
     postulate Void : Type
-    postulate Maybe : (_x0) -> Type
-    postulate Just : (a) -> (x) -> Maybe a
-    postulate Nothing : (a) -> Maybe a
-    postulate Bool : Type
-    postulate True : Bool
-    postulate False : Bool
+    constructor Maybe : (_x0) -> Type
+    constructor Just : (a) -> (x) -> Maybe a
+    constructor Nothing : (a) -> Maybe a
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
     retTy 
       [_] (Just [_] t) = Bool
       [_] (Nothing [_]) = Type

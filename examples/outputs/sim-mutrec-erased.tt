@@ -1,11 +1,11 @@
 -- vim: ft=ttstar
   let
-    postulate True : Bool
-    postulate False : Bool
-    postulate Z : Nat
-    postulate S : (_x0) -> Nat
-    postulate Even : Tag
-    postulate Odd : Tag
+    constructor True : Bool
+    constructor False : Bool
+    constructor Z : Nat
+    constructor S : (_x0) -> Nat
+    constructor Even : Tag
+    constructor Odd : Tag
     fun 
       [_] Even = (\n. 
         let f 

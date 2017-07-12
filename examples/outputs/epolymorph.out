@@ -3,12 +3,12 @@
 ### Desugared ###
 
   let
-    postulate Bool : Type
-    postulate True : Bool
-    postulate False : Bool
-    postulate Nat : Type
-    postulate Z : Nat
-    postulate S : (n :R: Nat) -> Nat
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (n :R: Nat) -> Nat
     postulate Plus : (x :R: Nat) -> (y :R: Nat) -> Nat
     id : (_x0 : Nat) -> Nat 
       [id] Z = Z
@@ -28,12 +28,12 @@
 ### Evarified ###
 
   let
-    postulate Bool :1: Type
-    postulate True :2: Bool
-    postulate False :3: Bool
-    postulate Nat :4: Type
-    postulate Z :5: Nat
-    postulate S :6: (n :R: Nat) -> Nat
+    constructor Bool :1: Type
+    constructor True :2: Bool
+    constructor False :3: Bool
+    constructor Nat :4: Type
+    constructor Z :5: Nat
+    constructor S :6: (n :R: Nat) -> Nat
     postulate Plus :7: (x :R: Nat) -> (y :R: Nat) -> Nat
     id :8: (_x0 :9: Nat) -> Nat 
       [id] -10- Z = Z
@@ -62,12 +62,12 @@
 ### Annotated ###
 
   let
-    postulate Bool :E: Type
-    postulate True :E: Bool
-    postulate False :E: Bool
-    postulate Nat :E: Type
-    postulate Z :R: Nat
-    postulate S :R: (n :R: Nat) -> Nat
+    constructor Bool :E: Type
+    constructor True :E: Bool
+    constructor False :E: Bool
+    constructor Nat :E: Type
+    constructor Z :R: Nat
+    constructor S :R: (n :R: Nat) -> Nat
     postulate Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
     id :R: (_x0 :R: Nat) -> Nat 
       [id] -R- Z = Z
@@ -87,12 +87,12 @@
 ### Specialised ###
 
   let
-    postulate Bool :E: Type
-    postulate True :E: Bool
-    postulate False :E: Bool
-    postulate Nat :E: Type
-    postulate Z :R: Nat
-    postulate S :R: (n :R: Nat) -> Nat
+    constructor Bool :E: Type
+    constructor True :E: Bool
+    constructor False :E: Bool
+    constructor Nat :E: Type
+    constructor Z :R: Nat
+    constructor S :R: (n :R: Nat) -> Nat
     postulate Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
     id :R: (_x0 :R: Nat) -> Nat 
       [id] -R- Z = Z
@@ -112,12 +112,12 @@
 ### Final annotation ###
 
   let
-    postulate Bool :E: Type
-    postulate True :E: Bool
-    postulate False :E: Bool
-    postulate Nat :E: Type
-    postulate Z :R: Nat
-    postulate S :R: (n :R: Nat) -> Nat
+    constructor Bool :E: Type
+    constructor True :E: Bool
+    constructor False :E: Bool
+    constructor Nat :E: Type
+    constructor Z :R: Nat
+    constructor S :R: (n :R: Nat) -> Nat
     postulate Plus :R: (x :R: Nat) -> (y :R: Nat) -> Nat
     id :R: (_x0 :R: Nat) -> Nat 
       [id] -R- Z = Z
@@ -141,8 +141,8 @@ Verification successful.
 ### Pruned ###
 
   let
-    postulate Z : Nat
-    postulate S : (n) -> Nat
+    constructor Z : Nat
+    constructor S : (n) -> Nat
     postulate Plus : (x) -> (y) -> Nat
     id 
       [_] Z = Z
@@ -163,17 +163,17 @@ Verification successful.
 unerased:
   
   let
-    postulate Nat : Type
-    postulate Z : Nat
-    postulate S : (n :R: Nat) -> Nat
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (n :R: Nat) -> Nat
     postulate Plus : (x :R: Nat) -> (y :R: Nat) -> Nat
   in Plus (Plus 2 3) (Plus 2 3)
 
 erased:
   
   let
-    postulate Z : Nat
-    postulate S : (n) -> Nat
+    constructor Z : Nat
+    constructor S : (n) -> Nat
     postulate Plus : (x) -> (y) -> Nat
   in Plus (Plus 2 3) (Plus 2 3)
 

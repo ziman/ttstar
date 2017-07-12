@@ -4,12 +4,12 @@
 
   let
     postulate Void : Type
-    postulate Maybe : (_x0 : Type) -> Type
-    postulate Just : (a : Type) -> (x : a) -> Maybe a
-    postulate Nothing : (a : Type) -> Maybe a
-    postulate Bool : Type
-    postulate True : Bool
-    postulate False : Bool
+    constructor Maybe : (_x0 : Type) -> Type
+    constructor Just : (a : Type) -> (x : a) -> Maybe a
+    constructor Nothing : (a : Type) -> Maybe a
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
     retTy : (x : Maybe Bool) -> Type 
       t : Bool
         [retTy] (Just [Bool] t) = Bool
@@ -25,12 +25,12 @@
 
   let
     postulate Void :1: Type
-    postulate Maybe :2: (_x0 :3: Type) -> Type
-    postulate Just :4: (a :5: Type) -> (x :6: a) -> Maybe -7- a
-    postulate Nothing :8: (a :9: Type) -> Maybe -10- a
-    postulate Bool :11: Type
-    postulate True :12: Bool
-    postulate False :13: Bool
+    constructor Maybe :2: (_x0 :3: Type) -> Type
+    constructor Just :4: (a :5: Type) -> (x :6: a) -> Maybe -7- a
+    constructor Nothing :8: (a :9: Type) -> Maybe -10- a
+    constructor Bool :11: Type
+    constructor True :12: Bool
+    constructor False :13: Bool
     retTy :14: (x :15: Maybe -16- Bool) -> Type 
       t :17: Bool
         [retTy] -18- (Just -20- [Bool] -19- t) = Bool
@@ -63,12 +63,12 @@
 
   let
     postulate Void :E: Type
-    postulate Maybe :E: (_x0 :E: Type) -> Type
-    postulate Just :R: (a :E: Type) -> (x :R: a) -> Maybe -E- a
-    postulate Nothing :R: (a :E: Type) -> Maybe -E- a
-    postulate Bool :R: Type
-    postulate True :E: Bool
-    postulate False :R: Bool
+    constructor Maybe :E: (_x0 :E: Type) -> Type
+    constructor Just :R: (a :E: Type) -> (x :R: a) -> Maybe -E- a
+    constructor Nothing :R: (a :E: Type) -> Maybe -E- a
+    constructor Bool :R: Type
+    constructor True :E: Bool
+    constructor False :R: Bool
     retTy :E: (x :E: Maybe -E- Bool) -> Type 
       t :E: Bool
         [retTy] -E- (Just -E- [Bool] -E- t) = Bool
@@ -84,12 +84,12 @@
 
   let
     postulate Void :E: Type
-    postulate Maybe :E: (_x0 :E: Type) -> Type
-    postulate Just :R: (a :E: Type) -> (x :R: a) -> Maybe -E- a
-    postulate Nothing :R: (a :E: Type) -> Maybe -E- a
-    postulate Bool :R: Type
-    postulate True :E: Bool
-    postulate False :R: Bool
+    constructor Maybe :E: (_x0 :E: Type) -> Type
+    constructor Just :R: (a :E: Type) -> (x :R: a) -> Maybe -E- a
+    constructor Nothing :R: (a :E: Type) -> Maybe -E- a
+    constructor Bool :R: Type
+    constructor True :E: Bool
+    constructor False :R: Bool
     retTy :E: (x :E: Maybe -E- Bool) -> Type 
       t :E: Bool
         [retTy] -E- (Just -E- [Bool] -E- t) = Bool
@@ -105,12 +105,12 @@
 
   let
     postulate Void :E: Type
-    postulate Maybe :E: (_x0 :E: Type) -> Type
-    postulate Just :R: (a :E: Type) -> (x :R: a) -> Maybe -E- a
-    postulate Nothing :R: (a :E: Type) -> Maybe -E- a
-    postulate Bool :R: Type
-    postulate True :E: Bool
-    postulate False :R: Bool
+    constructor Maybe :E: (_x0 :E: Type) -> Type
+    constructor Just :R: (a :E: Type) -> (x :R: a) -> Maybe -E- a
+    constructor Nothing :R: (a :E: Type) -> Maybe -E- a
+    constructor Bool :R: Type
+    constructor True :E: Bool
+    constructor False :R: Bool
     retTy :E: (x :E: Maybe -E- Bool) -> Type 
       t :E: Bool
         [retTy] -E- (Just -E- [Bool] -E- t) = Bool
@@ -129,10 +129,10 @@ Verification successful.
 ### Pruned ###
 
   let
-    postulate Just : (x) -> Maybe
-    postulate Nothing : Maybe
-    postulate Bool : Type
-    postulate False : Bool
+    constructor Just : (x) -> Maybe
+    constructor Nothing : Maybe
+    constructor Bool : Type
+    constructor False : Bool
     f 
       [_] (Just b) = b
       [_] Nothing = Bool
@@ -144,14 +144,14 @@ Verification successful.
 unerased:
   
   let
-    postulate Bool : Type
-    postulate False : Bool
+    constructor Bool : Type
+    constructor False : Bool
   in False
 
 erased:
   
   let
-    postulate Bool : Type
-    postulate False : Bool
+    constructor Bool : Type
+    constructor False : Bool
   in False
 

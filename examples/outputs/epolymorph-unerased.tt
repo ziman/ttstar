@@ -1,11 +1,11 @@
 -- vim: ft=ttstar
   let
-    postulate Bool : Type
-    postulate True : Bool
-    postulate False : Bool
-    postulate Nat : Type
-    postulate Z : Nat
-    postulate S : (n) -> Nat
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (n) -> Nat
     postulate Plus : (x) -> (y) -> Nat
     id 
       [_] Z = Z

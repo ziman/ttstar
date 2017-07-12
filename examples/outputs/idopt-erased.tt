@@ -1,8 +1,8 @@
 -- vim: ft=ttstar
   let
-    postulate FZ : Fin
-    postulate FS : (x) -> Fin
+    constructor FZ : Fin
+    constructor FS : (x) -> Fin
     fsuc = FS
-    postulate P : (x) -> (y) -> Pair
+    constructor P : (x) -> (y) -> Pair
     main = P (fsuc (FS FZ)) (FS (FS FZ))
   in main

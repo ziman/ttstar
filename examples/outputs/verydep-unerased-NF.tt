@@ -1,5 +1,5 @@
 -- vim: ft=ttstar
   let
-    postulate Bool : Type
-    postulate False : Bool
+    constructor Bool : Type
+    constructor False : Bool
   in False

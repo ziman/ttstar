@@ -1,18 +1,18 @@
 -- vim: ft=ttstar
   let
-    postulate Z : N
-    postulate S : (_x0) -> N
-    postulate T : B
-    postulate F : B
-    postulate Cons : (_x1) -> (_x2) -> List
-    postulate Nil : List
-    postulate Nothing : Maybe
-    postulate Just : Maybe
+    constructor Z : N
+    constructor S : (_x0) -> N
+    constructor T : B
+    constructor F : B
+    constructor Cons : (_x1) -> (_x2) -> List
+    constructor Nil : List
+    constructor Nothing : Maybe
+    constructor Just : Maybe
     not 
       [_] T = F
       [_] F = T
-    postulate RNil : Rev
-    postulate RSnoc : (x) -> (rxs) -> Rev
+    constructor RNil : Rev
+    constructor RSnoc : (x) -> (rxs) -> Rev
     rev' 
       [_] rxs Nil = rxs
       [_] rxs (Cons y ys) = rev' (RSnoc y rxs) ys
@@ -21,9 +21,9 @@
       [_] RNil = Nil
       [_] (RSnoc x rxs) = Cons x (reverse' rxs)
     reverse = (\xs. reverse' (rev xs))
-    postulate VNil : V
-    postulate VOne : V
-    postulate VTwo : (x) -> (u) -> (y) -> V
+    constructor VNil : V
+    constructor VOne : V
+    constructor VTwo : (x) -> (u) -> (y) -> V
     length 
       [_] Nil = Z
       [_] (Cons _ xs) = S (length xs)

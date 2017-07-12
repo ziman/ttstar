@@ -1,12 +1,12 @@
 -- vim: ft=ttstar
   let
-    postulate FZ : Fin
-    postulate FS : (_x14) -> Fin
-    postulate VN : Vect
-    postulate VC : (x) -> (xs) -> Vect
-    postulate V : (_x1) -> TT
-    postulate Lam : (_x2) -> TT
-    postulate App : (_x3) -> (_x4) -> TT
+    constructor FZ : Fin
+    constructor FS : (_x14) -> Fin
+    constructor VN : Vect
+    constructor VC : (x) -> (xs) -> Vect
+    constructor V : (_x1) -> TT
+    constructor Lam : (_x2) -> TT
+    constructor App : (_x3) -> (_x4) -> TT
     env 
       [_] (VC x _) FZ = x
       [_] (VC _ xs) (FS i) = env xs i
@@ -38,6 +38,6 @@
           [_] f' = App f' (nf x)
         in g (nf f)
     example2 = nf testTm
-    postulate R : (x) -> (y) -> Result
+    constructor R : (x) -> (y) -> Result
     main = R example1 example2
   in main

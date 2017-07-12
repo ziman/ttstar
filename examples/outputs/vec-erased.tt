@@ -1,9 +1,9 @@
 -- vim: ft=ttstar
   let
-    postulate Z : N
-    postulate S : (x) -> N
-    postulate Nil : Vec
-    postulate Cons : (x) -> (xs) -> Vec
+    constructor Z : N
+    constructor S : (x) -> N
+    constructor Nil : Vec
+    constructor Cons : (x) -> (xs) -> Vec
     append 
       [_] Nil ys = ys
       [_] (Cons x xs) ys = Cons x (append xs ys)

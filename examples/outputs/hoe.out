@@ -3,9 +3,9 @@
 ### Desugared ###
 
   let
-    postulate T : Type
-    postulate A : T
-    postulate B : T
+    constructor T : Type
+    constructor A : T
+    constructor B : T
     postulate Op : (x :R: T) -> (y :R: T) -> T
     id : (x : T) -> T = (\x : T. x)
     const_A : (x : T) -> T = (\x : T. A)
@@ -16,9 +16,9 @@
 ### Evarified ###
 
   let
-    postulate T :1: Type
-    postulate A :2: T
-    postulate B :3: T
+    constructor T :1: Type
+    constructor A :2: T
+    constructor B :3: T
     postulate Op :4: (x :R: T) -> (y :R: T) -> T
     id :5: (x :6: T) -> T = (\x :7: T. x)
     const_A :8: (x :9: T) -> T = (\x :10: T. A)
@@ -46,9 +46,9 @@
 ### Annotated ###
 
   let
-    postulate T :E: Type
-    postulate A :R: T
-    postulate B :R: T
+    constructor T :E: Type
+    constructor A :R: T
+    constructor B :R: T
     postulate Op :R: (x :R: T) -> (y :R: T) -> T
     id :R: (x :R: T) -> T = (\x :R: T. x)
     const_A :R: (x :E: T) -> T = (\x :E: T. A)
@@ -59,9 +59,9 @@
 ### Specialised ###
 
   let
-    postulate T :E: Type
-    postulate A :R: T
-    postulate B :R: T
+    constructor T :E: Type
+    constructor A :R: T
+    constructor B :R: T
     postulate Op :R: (x :R: T) -> (y :R: T) -> T
     id :R: (x :R: T) -> T = (\x :R: T. x)
     const_A :R: (x :E: T) -> T = (\x :E: T. A)
@@ -72,9 +72,9 @@
 ### Final annotation ###
 
   let
-    postulate T :E: Type
-    postulate A :R: T
-    postulate B :R: T
+    constructor T :E: Type
+    constructor A :R: T
+    constructor B :R: T
     postulate Op :R: (x :R: T) -> (y :R: T) -> T
     id :R: (x :R: T) -> T = (\x :R: T. x)
     const_A :R: (x :E: T) -> T = (\x :E: T. A)
@@ -89,8 +89,8 @@ Verification successful.
 ### Pruned ###
 
   let
-    postulate A : T
-    postulate B : T
+    constructor A : T
+    constructor B : T
     postulate Op : (x) -> (y) -> T
     id = (\x. x)
     const_A = A
@@ -103,17 +103,17 @@ Verification successful.
 unerased:
   
   let
-    postulate T : Type
-    postulate A : T
-    postulate B : T
+    constructor T : Type
+    constructor A : T
+    constructor B : T
     postulate Op : (x :R: T) -> (y :R: T) -> T
   in Op B A
 
 erased:
   
   let
-    postulate A : T
-    postulate B : T
+    constructor A : T
+    constructor B : T
     postulate Op : (x) -> (y) -> T
   in Op B A
 

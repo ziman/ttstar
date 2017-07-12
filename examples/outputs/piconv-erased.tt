@@ -1,6 +1,6 @@
 -- vim: ft=ttstar
   let
-    postulate A : T
+    constructor A : T
     const_A = A
     main = const_A
   in main

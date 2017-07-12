@@ -1,14 +1,14 @@
 -- vim: ft=ttstar
   let
-    postulate Bool : Type
-    postulate True : Bool
-    postulate False : Bool
-    postulate Nat : Type
-    postulate Z : Nat
-    postulate S : (n) -> Nat
-    postulate Vec : (_x0) -> (_x1) -> Type
-    postulate VNil : (a) -> Vec Z a
-    postulate VCons : (a) -> (n) -> (x) -> (xs) -> Vec (S n) a
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (n) -> Nat
+    constructor Vec : (_x0) -> (_x1) -> Type
+    constructor VNil : (a) -> Vec Z a
+    constructor VCons : (a) -> (n) -> (x) -> (xs) -> Vec (S n) a
     vlen 
       [_] a [_] (VNil [_]) = Z
       [_] a ([_] n) (VCons [_] [_] x xs) = S (vlen a n xs)

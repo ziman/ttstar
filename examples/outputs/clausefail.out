@@ -3,12 +3,12 @@
 ### Desugared ###
 
   let
-    postulate N : Type
-    postulate Z : N
-    postulate S : (_x0 : N) -> N
-    postulate B : Type
-    postulate T : B
-    postulate F : B
+    constructor N : Type
+    constructor Z : N
+    constructor S : (_x0 : N) -> N
+    constructor B : Type
+    constructor T : B
+    constructor F : B
     isSuc : (_x1 : N) -> B 
       n : N
         [isSuc] (S n) = T
@@ -20,12 +20,12 @@
 ### Evarified ###
 
   let
-    postulate N :1: Type
-    postulate Z :2: N
-    postulate S :3: (_x0 :4: N) -> N
-    postulate B :5: Type
-    postulate T :6: B
-    postulate F :7: B
+    constructor N :1: Type
+    constructor Z :2: N
+    constructor S :3: (_x0 :4: N) -> N
+    constructor B :5: Type
+    constructor T :6: B
+    constructor F :7: B
     isSuc :8: (_x1 :9: N) -> B 
       n :10: N
         [isSuc] -11- (S -12- n) = T
@@ -49,12 +49,12 @@
 ### Annotated ###
 
   let
-    postulate N :E: Type
-    postulate Z :E: N
-    postulate S :R: (_x0 :E: N) -> N
-    postulate B :E: Type
-    postulate T :R: B
-    postulate F :R: B
+    constructor N :E: Type
+    constructor Z :E: N
+    constructor S :R: (_x0 :E: N) -> N
+    constructor B :E: Type
+    constructor T :R: B
+    constructor F :R: B
     isSuc :R: (_x1 :R: N) -> B 
       n :E: N
         [isSuc] -R- (S -E- n) = T
@@ -66,12 +66,12 @@
 ### Specialised ###
 
   let
-    postulate N :E: Type
-    postulate Z :E: N
-    postulate S :R: (_x0 :E: N) -> N
-    postulate B :E: Type
-    postulate T :R: B
-    postulate F :R: B
+    constructor N :E: Type
+    constructor Z :E: N
+    constructor S :R: (_x0 :E: N) -> N
+    constructor B :E: Type
+    constructor T :R: B
+    constructor F :R: B
     isSuc :R: (_x1 :R: N) -> B 
       n :E: N
         [isSuc] -R- (S -E- n) = T
@@ -83,12 +83,12 @@
 ### Final annotation ###
 
   let
-    postulate N :E: Type
-    postulate Z :E: N
-    postulate S :R: (_x0 :E: N) -> N
-    postulate B :E: Type
-    postulate T :R: B
-    postulate F :R: B
+    constructor N :E: Type
+    constructor Z :E: N
+    constructor S :R: (_x0 :E: N) -> N
+    constructor B :E: Type
+    constructor T :R: B
+    constructor F :R: B
     isSuc :R: (_x1 :R: N) -> B 
       n :E: N
         [isSuc] -R- (S -E- n) = T
@@ -104,9 +104,9 @@ Verification successful.
 ### Pruned ###
 
   let
-    postulate S : N
-    postulate T : B
-    postulate F : B
+    constructor S : N
+    constructor T : B
+    constructor F : B
     isSuc 
       [_] S = T
       [_] _ = F
@@ -118,11 +118,11 @@ Verification successful.
 unerased:
   
   let
-    postulate N : Type
-    postulate S : (_x0 : N) -> N
-    postulate B : Type
-    postulate T : B
-    postulate F : B
+    constructor N : Type
+    constructor S : (_x0 : N) -> N
+    constructor B : Type
+    constructor T : B
+    constructor F : B
     isSuc : (_x1 : N) -> B 
       n : N
         [isSuc] (S n) = T
@@ -133,9 +133,9 @@ unerased:
 erased:
   
   let
-    postulate S : N
-    postulate T : B
-    postulate F : B
+    constructor S : N
+    constructor T : B
+    constructor F : B
     isSuc 
       [_] S = T
       [_] _ = F

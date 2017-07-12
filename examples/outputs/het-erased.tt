@@ -1,12 +1,12 @@
 -- vim: ft=ttstar
   let
     postulate Tuple : (x) -> (y) -> (z) -> (w) -> Type
-    postulate Bool : Type
-    postulate T : Bool
-    postulate F : Bool
-    postulate Mool : Type
-    postulate Q : Mool
-    postulate W : Mool
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    constructor Mool : Type
+    constructor Q : Mool
+    constructor W : Mool
     f 
       [_] T = Bool
       [_] F = Mool

@@ -1,8 +1,8 @@
 -- vim: ft=ttstar
   let
-    postulate T : Bool
-    postulate F : Bool
-    postulate Refl : Id
+    constructor T : Bool
+    constructor F : Bool
+    constructor Refl : Id
     notnot 
       [_] T = Refl
       [_] F = Refl

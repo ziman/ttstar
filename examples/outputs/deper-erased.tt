@@ -1,8 +1,8 @@
 -- vim: ft=ttstar
   let
-    postulate T : Bool
-    postulate F : Bool
-    postulate TB : (x) -> (y) -> TwoBools
+    constructor T : Bool
+    constructor F : Bool
+    constructor TB : (x) -> (y) -> TwoBools
     constT = T
     f 
       [_] T = (\x. x)

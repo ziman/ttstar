@@ -1,7 +1,7 @@
 -- vim: ft=ttstar
   let
-    postulate Z : N
-    postulate S : N
+    constructor Z : N
+    constructor S : N
     plus 
       [_] Z m = m
       [_] S _ = S

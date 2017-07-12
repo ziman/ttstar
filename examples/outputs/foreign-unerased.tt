@@ -1,14 +1,14 @@
 -- vim: ft=ttstar
   let
-    postulate N : Type
-    postulate Z : N
-    postulate S : (x) -> N
-    postulate B : Type
-    postulate T : B
-    postulate F : B
-    postulate List : Type
-    postulate Cons : (_x0) -> (_x1) -> List
-    postulate Nil : List
+    constructor N : Type
+    constructor Z : N
+    constructor S : (x) -> N
+    constructor B : Type
+    constructor T : B
+    constructor F : B
+    constructor List : Type
+    constructor Cons : (_x0) -> (_x1) -> List
+    constructor Nil : List
     not 
       [_] T = F
       [_] F = T
@@ -16,11 +16,11 @@
     genList 
       [_] b Z = Nil
       [_] b (S n) = Cons b (genList (not b) n)
-    postulate Eq : (a) -> (_x5) -> (_x6) -> Type
-    postulate Refl : (a) -> (x) -> Eq a x x
-    postulate Maybe : (_x7) -> Type
-    postulate Nothing : (a) -> Maybe a
-    postulate Just : (a) -> (x) -> Maybe a
+    constructor Eq : (a) -> (_x5) -> (_x6) -> Type
+    constructor Refl : (a) -> (x) -> Eq a x x
+    constructor Maybe : (_x7) -> Type
+    constructor Nothing : (a) -> Maybe a
+    constructor Just : (a) -> (x) -> Maybe a
     semiDecEqB 
       [_] T T = Just (Eq B T T) (Refl B T)
       [_] F F = Just (Eq B F F) (Refl B F)

@@ -1,10 +1,10 @@
 -- vim: ft=ttstar
   let
-    postulate Bool : Type
-    postulate T : Bool
-    postulate F : Bool
-    postulate Id : (a) -> (x) -> (y) -> Type
-    postulate Refl : (a) -> (x) -> Id a x x
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    constructor Id : (a) -> (x) -> (y) -> Type
+    constructor Refl : (a) -> (x) -> Id a x x
     not 
       [_] T = F
       [_] F = T

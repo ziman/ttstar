@@ -1,8 +1,8 @@
 -- vim: ft=ttstar
   let
-    postulate Bool : Type
-    postulate T : Bool
-    postulate F : Bool
-    postulate TwoBools : Type
-    postulate TB : (x) -> (y) -> TwoBools
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    constructor TwoBools : Type
+    constructor TB : (x) -> (y) -> TwoBools
   in TB F T

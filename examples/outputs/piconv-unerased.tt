@@ -1,8 +1,8 @@
 -- vim: ft=ttstar
   let
-    postulate T : Type
-    postulate A : T
-    postulate B : T
+    constructor T : Type
+    constructor A : T
+    constructor B : T
     const_A = (\x. A)
     apply = (\f. (\x. f x))
     main = apply const_A B

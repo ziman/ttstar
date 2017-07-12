@@ -1,5 +1,5 @@
 -- vim: ft=ttstar
   let
-    postulate Z : Nat
-    postulate S : (n) -> Nat
+    constructor Z : Nat
+    constructor S : (n) -> Nat
   in 2

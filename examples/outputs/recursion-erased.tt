@@ -1,9 +1,9 @@
 -- vim: ft=ttstar
   let
-    postulate Z : Nat
-    postulate S : (n) -> Nat
-    postulate VNil : Vec
-    postulate VCons : (xs) -> Vec
+    constructor Z : Nat
+    constructor S : (n) -> Nat
+    constructor VNil : Vec
+    constructor VCons : (xs) -> Vec
     vlen 
       [_] VNil = Z
       [_] (VCons xs) = S (vlen xs)

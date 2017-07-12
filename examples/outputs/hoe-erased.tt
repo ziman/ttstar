@@ -1,7 +1,7 @@
 -- vim: ft=ttstar
   let
-    postulate A : T
-    postulate B : T
+    constructor A : T
+    constructor B : T
     postulate Op : (x) -> (y) -> T
     const_A = A
     f = (\g. (\z. (\h. Op (g z) h)))
