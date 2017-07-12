@@ -53,7 +53,7 @@ freshMN stem = do
 keywords :: S.Set String
 keywords = S.fromList [
     "case", "with", "where",
-    "data", "let", "in", "constructor",
+    "data", "let", "in", "postulate",
     "of"
   ]
 
@@ -218,10 +218,10 @@ typing a = (<?> "name binding") $ do
     ty <- expr
     return $ Def n r ty (Abstract a) noConstrs
 
-constructor :: Parser (Def MRel)
-constructor = (<?> "constructor") $ do
-    kwd "constructor"
-    d <- typing Constructor
+postulate :: Parser (Def MRel)
+postulate = (<?> "postulate") $ do
+    kwd "postulate"
+    d <- typing $ Foreign Nothing
     return d
 
 clauseDef :: Parser (Def MRel)
@@ -282,10 +282,10 @@ foreignDef = (<?> "foreign definition") $ do
     d <- typing $ Foreign undefined
     kwd "="
     code <- stringLiteral
-    return d{defBody = Abstract $ Foreign code}
+    return d{defBody = Abstract $ Foreign (Just code)}
 
 simpleDef :: Parser (Def MRel)
-simpleDef = foreignDef <|> constructor <|> mlDef <|> clauseDef <?> "simple definition"
+simpleDef = foreignDef <|> postulate <|> mlDef <|> clauseDef <?> "simple definition"
 
 imports :: Parser [String]
 imports = many (kwd "import" *> stringLiteral)
