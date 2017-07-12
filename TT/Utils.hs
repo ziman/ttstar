@@ -150,7 +150,7 @@ insertDefs []     = id
 
 freePatVars :: Ctx r -> Pat r -> Maybe (S.Set Name)
 freePatVars ctx (PV n)
-    | Just (Def _n _r _ty (Abstract Postulate) _cs) <- M.lookup n ctx
+    | Just (Def _n _r _ty (Abstract Constructor) _cs) <- M.lookup n ctx
     = Just S.empty
 
     | otherwise = Just $ S.singleton n

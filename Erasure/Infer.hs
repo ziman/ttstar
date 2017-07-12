@@ -223,7 +223,7 @@ inferPat s pat@(PV n) = bt ("PAT-NAME", n) $ do
     case body of
         Abstract Var
             -> return (ty, r --> s)  -- relevance of this var forces surrounding to be relevant
-        Abstract Postulate           -- here we inspect: that affects 1) surrounding, 2) ctor relevance
+        Abstract Constructor           -- here we inspect: that affects 1) surrounding, 2) ctor relevance
             -> return (
                     ty,
                     Fixed R --> s /\ Fixed R --> r

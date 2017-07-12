@@ -71,7 +71,7 @@ instance PrettyR r => Pretty (Body r) where
 instance PrettyR r => Pretty (Def r) where
     pretty (Def n r ty body cs) =
         case body of
-            Abstract Postulate -> text "postulate"
+            Abstract Constructor -> text "constructor"
             Abstract (Foreign code) -> text "foreign"
             _ -> empty
         <+> pretty n

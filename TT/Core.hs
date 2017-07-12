@@ -43,10 +43,10 @@ data Clause r = Clause
     , cRHS :: TT r
     } deriving (Eq, Ord)
 
--- The difference between Var and Postulate is that for Var, the value is unknown,
--- for postulate; the term itself is the value. A variable stands for something else,
--- a postulate stands for itself.
-data Abstractness = Var | Postulate | Foreign String deriving (Eq, Ord, Show)
+-- The difference between Var and Constructor is that for Var, the value is unknown,
+-- for constructor; the term itself is the value. A variable stands for something else,
+-- a constructor stands for itself.
+data Abstractness = Var | Constructor | Foreign String deriving (Eq, Ord, Show)
 data Body r = Abstract Abstractness | Term (TT r) | Clauses [Clause r] deriving (Eq, Ord)
 data Def r = Def
     { defName :: Name
@@ -70,7 +70,7 @@ typeOfTypes = UN "Type"
 
 builtins :: r -> Ctx r
 builtins r = M.fromList
-    [ (typeOfTypes, Def typeOfTypes r (V typeOfTypes) (Abstract Postulate) noConstrs)
+    [ (typeOfTypes, Def typeOfTypes r (V typeOfTypes) (Abstract Constructor) noConstrs)
     ]
 
 relOfType :: Relevance

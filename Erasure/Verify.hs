@@ -214,7 +214,7 @@ verPat fapp r pvs (PV n) = bt ("PAT-REF", n) $ do
     d <- lookupName n
     r --> defR d
     case defBody d of
-        Abstract Postulate -> return ()
+        Abstract Constructor -> return ()
         _ -> verFail $ NotConstructor n
     return $ defType d
 
@@ -227,12 +227,12 @@ verPat fapp r pvs (PApp s f x) = bt ("PAT-APP", fapp, r, s, f, x) $ do
             -> case h of
                 V n -> case M.lookup n ctx of
                     Just (defBody -> Abstract Var) | fapp -> return () -- clause heads will be functions, vars at this stage
-                    Just (defBody -> Abstract Postulate) -> return ()  -- everything else must be a postulate
+                    Just (defBody -> Abstract Constructor) -> return ()  -- everything else must be a constructor
                     _ -> verFail $ NotConstructor n
                 _ -> verFail $ NotConstructorHead h
 
         PV n -> case M.lookup n ctx of
-            Just (defBody -> Abstract Postulate) -> return ()
+            Just (defBody -> Abstract Constructor) -> return ()
             _ -> verFail $ NotConstructor n
 
         PApp _ _ _ -> return ()

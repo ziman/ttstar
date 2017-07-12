@@ -245,17 +245,17 @@ match pvs ctx pat tm = matchWHNF pvs ctx pat (red WHNF ctx tm)
 matchWHNF :: IsRelevance r => Ctx r -> Ctx r -> Pat r -> TT r -> Match (M.Map Name (TT r))
 matchWHNF pvs ctx (PV n) (V n')
     | n == n'
-    , Just (defBody -> Abstract Postulate) <- M.lookup n ctx
+    , Just (defBody -> Abstract Constructor) <- M.lookup n ctx
     = Yes M.empty
 
 matchWHNF pvs ctx (PApp r (PForced tm) x) (App r' f' x')
     | (V n,_) <- unApply $ red WHNF ctx tm
     , n /= Blank
-    , (defBody <$> M.lookup n ctx) /= Just (Abstract Postulate)
+    , (defBody <$> M.lookup n ctx) /= Just (Abstract Constructor)
     = error "forced pattern not constructor-headed"
 
     | (V n,_) <- unApply $ red WHNF ctx f'
-    , Just (defBody -> Abstract Postulate) <- M.lookup n ctx
+    , Just (defBody -> Abstract Constructor) <- M.lookup n ctx
     = match pvs ctx x x'  -- LHSs of the applications are constructor-headed
 
     | otherwise = Stuck
