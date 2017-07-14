@@ -7,3 +7,4 @@ examples/timelog.txt
 .ipynb_checkpoints/
 /*.csv
 benchmarks/*.csv
+.stack-work/

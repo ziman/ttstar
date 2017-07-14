@@ -1,0 +1,8 @@
+resolver: lts-8.18
+
+packages:
+  - location: .
+
+nix:
+  enable: false
+  shell-file: stack-shell.nix

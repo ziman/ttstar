@@ -27,3 +27,8 @@ executable ttstar
   default-language:    Haskell2010
   ghc-options:         -Wall -fno-warn-name-shadowing
                        -fno-warn-unused-matches -fno-warn-orphans
+
+  other-modules: Args, Codegen.Common, Codegen.Scheme, Erasure.Annotate,
+    Erasure.Evar, Erasure.Infer, Erasure.Prune, Erasure.Solve,
+    Erasure.Specialise, Erasure.Verify, Optimisation.Identity, TT.Core,
+    TT.Lens, TT.Normalise, TT.Parser, TT.Pretty, TT.Utils, Util.PrettyPrint
