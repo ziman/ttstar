@@ -174,8 +174,10 @@ inferDef :: Def Evar -> TC (Def Evar)
 -- can later represent the whole definition.
 
 inferDef (Def n r ty (Abstract a) _noCs) = do
+    -- check type
     (tyty, tycs) <- inferTm ty
     tytyTypeCs <- conv tyty (V $ UN "Type")
+
     -- no constraints because the type is always erased
     return $ Def n r ty (Abstract a) noConstrs
 
@@ -184,19 +186,22 @@ inferDef d@(Def n r ty (Term tm) _noCs) = bt ("DEF-TERM", n) $ do
     (tyty, tycs) <- inferTm ty
     _ <- conv tyty (V $ UN "Type")
 
-    -- check term
+    -- check body
     (tmty, tmcs) <- with d $ inferTm tm  -- "with d" because it could be recursive
     tmTyCs       <- conv ty tmty
 
     return $ Def n r ty (Term tm) (tmcs /\ tmTyCs)
 
 inferDef d@(Def n r ty (Clauses cls) _noCs) = bt ("DEF-CLAUSES", n) $ do
+    -- check type
     (tyty, tycs) <- inferTm ty
-    tytyTypeCs   <- conv tyty (V $ UN "Type")
-    cfCs <- with d{ defBody = Abstract Var } $ do
+    _ <- conv tyty (V $ UN "Type")
+
+    -- check clauses
+    clauseCs <- with d{ defBody = Abstract Var } $ do
         unions <$> traverse inferClause cls
-    let cs = tytyTypeCs /\ cfCs  -- in types, only conversion constraints matter
-    return $ Def n r ty (Clauses cls) cs
+
+    return $ Def n r ty (Clauses cls) clauseCs
 
 inferClause :: Clause Evar -> TC (Constrs Evar)
 inferClause (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
