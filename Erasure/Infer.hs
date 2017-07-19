@@ -205,8 +205,9 @@ inferDef d@(Def n r ty (Clauses cls) _noCs) = bt ("DEF-CLAUSES", n) $ do
 
 inferClause :: Clause Evar -> TC (Constrs Evar)
 inferClause (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
-    -- check patvars
     ctx <- getCtx
+
+    -- check patvar names
     let pvsN = S.fromList (map defName pvs)
     patN <- case freePatVars ctx lhs of
         Just pvs -> return pvs
@@ -216,21 +217,29 @@ inferClause (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
         then tcfail $ PatvarsPatternMismatch (S.toList pvsN) (S.toList patN)
         else return ()
 
+    -- check patvars
     pvs' <- inferDefs' pvs
+    let pvs'Ctx = M.fromList [(defName d, d) | d <- pvs']
+
+    -- check LHS vs. RHS
+    (lty, lcs) <- inferPat (Fixed R) pvs'Ctx lhs
     withs pvs' $ do
-        (lty, lcs) <- inferPat (Fixed R) lhs
         (rty, rcs) <- inferTm rhs
         ccs <- conv lty rty
         return $ lcs /\ rcs /\ ccs
 
 -- the relevance evar "s" stands for "surrounding"
 -- it's the relevance of the whole pattern
-inferPat :: Evar -> Pat Evar -> TC (Type, Constrs Evar)
-inferPat s pat@(PV n) = bt ("PAT-NAME", n) $ do
+inferPat :: Evar -> Ctx Evar -> Pat Evar -> TC (Type, Constrs Evar)
+inferPat s pvs pat@(PV n)
+    | Just d <- M.lookup n pvs
+    = bt ("PAT-VAR", n) $ do
+        return (defType d, defR d --> s)  -- forces surrounding to be relevant
+
+-- this must be a constructor if it's not a patvar
+inferPat s pvs pat@(PV n) = bt ("PAT-REF", n) $ do
     d@(Def n r ty body cs) <- lookup n
     case body of
-        Abstract Var
-            -> return (ty, r --> s)  -- relevance of this var forces surrounding to be relevant
         Abstract Constructor           -- here we inspect: that affects 1) surrounding, 2) ctor relevance
             -> return (
                     ty,
@@ -239,17 +248,17 @@ inferPat s pat@(PV n) = bt ("PAT-NAME", n) $ do
         _
             -> tcfail $ InvalidPattern pat
 
-inferPat s pat@(PForced tm) = bt ("PAT-FORCED", tm) $ do
-    (ty, cs) <- inferTm tm
+inferPat s pvs pat@(PForced tm) = bt ("PAT-FORCED", tm) $ do
+    (ty, cs) <- with' (M.union pvs) $ inferTm tm
     return (ty, cond s cs)
 
-inferPat s pat@(PApp app_r f x) = bt ("PAT-APP", pat) $ do
-    (fty, fcs) <- inferPat s f
-    (xty, xcs) <- inferPat app_r x
+inferPat s pvs pat@(PApp app_r f x) = bt ("PAT-APP", pat) $ do
+    (fty, fcs) <- inferPat s pvs f
+    (xty, xcs) <- inferPat app_r pvs x  -- app_r is always absolute
     ctx <- getCtx
     case whnf ctx fty of
         Bind Pi [Def n' pi_r ty' (Abstract Var) _noCs] retTy -> do
-            tycs <- conv xty ty'
+            tycs <- with' (M.union pvs) $ conv xty ty'
             let cs =
                     cond s (app_r <--> pi_r)  -- if we inspect here, then the pi must reflect that
                                               -- but only in relevant surroundings
@@ -257,7 +266,7 @@ inferPat s pat@(PApp app_r f x) = bt ("PAT-APP", pat) $ do
                     /\ app_r --> s    -- if we inspect anywhere here, then the whole pattern inspects
                     /\ fcs
                     /\ xcs
-                    /\ tycs  -- do we need to cond this on app_r?
+                    /\ cond app_r tycs
                     -- we can't leave tycs out entirely because
                     -- if it's relevant, it needs to be erasure-correct as well
                     -- but if it's not used, then it needn't be erasure-correct
