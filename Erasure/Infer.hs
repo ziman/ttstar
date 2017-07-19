@@ -180,12 +180,15 @@ inferDef (Def n r ty (Abstract a) _noCs) = do
     return $ Def n r ty (Abstract a) noConstrs
 
 inferDef d@(Def n r ty (Term tm) _noCs) = bt ("DEF-TERM", n) $ do
-    (tmty, tmcs) <- with d $ inferTm tm  -- "with d" because it could be recursive
+    -- check type
     (tyty, tycs) <- inferTm ty
-    tytyTypeCs   <- conv tyty (V $ UN "Type")
-    tyTmtyCs     <- conv ty tmty
-    let cs = tmcs /\ tytyTypeCs /\ tyTmtyCs  -- in types, only conversion constraints matter
-    return $ Def n r ty (Term tm) cs
+    _ <- conv tyty (V $ UN "Type")
+
+    -- check term
+    (tmty, tmcs) <- with d $ inferTm tm  -- "with d" because it could be recursive
+    tmTyCs       <- conv ty tmty
+
+    return $ Def n r ty (Term tm) (tmcs /\ tmTyCs)
 
 inferDef d@(Def n r ty (Clauses cls) _noCs) = bt ("DEF-CLAUSES", n) $ do
     (tyty, tycs) <- inferTm ty
