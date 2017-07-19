@@ -176,8 +176,8 @@ inferDef :: Def Evar -> TC (Def Evar)
 inferDef (Def n r ty (Abstract a) _noCs) = do
     (tyty, tycs) <- inferTm ty
     tytyTypeCs <- conv tyty (V $ UN "Type")
-    let cs = tytyTypeCs  -- in types, only conversion constraints matter
-    return $ Def n r ty (Abstract a) cs
+    -- no constraints because the type is always erased
+    return $ Def n r ty (Abstract a) noConstrs
 
 inferDef d@(Def n r ty (Term tm) _noCs) = bt ("DEF-TERM", n) $ do
     (tmty, tmcs) <- with d $ inferTm tm  -- "with d" because it could be recursive
