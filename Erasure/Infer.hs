@@ -258,15 +258,16 @@ inferPat s pvs pat@(PApp app_r f x) = bt ("PAT-APP", pat) $ do
     ctx <- getCtx
     case whnf ctx fty of
         Bind Pi [Def n' pi_r ty' (Abstract Var) _noCs] retTy -> do
-            tycs <- with' (M.union pvs) $ conv xty ty'
+            xtycs <- with' (M.union pvs) $ conv xty ty'
             let cs =
                     cond s (app_r <--> pi_r)  -- if we inspect here, then the pi must reflect that
                                               -- but only in relevant surroundings
                                               -- (look at treered_A.tt what happens if you don't cond)
+                                              -- this `s` is semi-absolute
                     /\ app_r --> s    -- if we inspect anywhere here, then the whole pattern inspects
                     /\ fcs
-                    /\ xcs
-                    /\ cond app_r tycs
+                    /\ cond app_r xtycs /\ xcs  -- xcs was derived with s=app_r
+                                                -- but xtycs wasn't so we need to cond it
                     -- we can't leave tycs out entirely because
                     -- if it's relevant, it needs to be erasure-correct as well
                     -- but if it's not used, then it needn't be erasure-correct
