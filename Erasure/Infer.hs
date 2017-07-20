@@ -260,9 +260,8 @@ inferPat s pvs pat@(PApp app_r f x) = bt ("PAT-APP", pat) $ do
         Bind Pi [Def n' pi_r ty' (Abstract Var) _noCs] retTy -> do
             xtycs <- with' (M.union pvs) $ conv xty ty'
             let cs =
-                    app_r --> pi_r
-                    /\ app_r --> s
-                    /\ cond s (pi_r --> app_r)  -- these three lines say that {t = r /\ s}
+                    app_r --> s                 -- if something inspects, the whole thing inspects
+                    /\ cond s (pi_r <--> app_r) -- the two must match in relevant contexts
                     /\ fcs
                     /\ cond app_r xtycs /\ xcs  -- xcs was derived with s=app_r
                                                 -- but xtycs wasn't so we need to cond it
@@ -327,14 +326,13 @@ inferTm t@(App app_r f x) = bt ("APP", t) $ do
     ctx <- getCtx
     case whnf ctx fty of
         Bind Pi [Def n' pi_r ty' (Abstract Var) _noCs] retTy -> do
-            tycs <- conv xty ty'
+            xtycs <- conv xty ty'
             let cs =
-                    -- we can't leave tycs out entirely because
+                    -- we can't leave xtycs out entirely because
                     -- if it's relevant, it needs to be erasure-correct as well
                     -- but if it's not used, then it needn't be erasure-correct
-                    cond pi_r tycs
-                    /\ fcs
-                    /\ cond pi_r xcs
+                    fcs
+                    /\ cond app_r (xcs /\ xtycs)
                     /\ pi_r <--> app_r
             return (subst n' x retTy, cs)
 
