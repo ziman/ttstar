@@ -240,10 +240,10 @@ verPat fapp r pvs (PApp s f x) = bt ("PAT-APP", fapp, r, s, f, x) $ do
     fty <- verPat fapp r pvs f
     case whnf ctx fty of
         Bind Pi [Def n piR piTy (Abstract Var) _] piRhs -> do
-            (r /\ piR) <-> (r /\ s)
-            xty <- verPat False (r /\ s) pvs x
+            (r /\ piR) <-> s
+            xty <- verPat False s pvs x
             with' (M.union pvs) $
-                conv (r /\ s) xty piTy
+                conv s xty piTy
             return $ subst n (pat2term x) piRhs
 
         _ -> verFail $ NotPi fty
