@@ -379,10 +379,10 @@ conv' (V n) (V n') = bt ("C-VAR", n, n') $ do
 conv' p@(Bind b [Def n r ty (Abstract Var) _noCs] tm) q@(Bind b' [Def n' r' ty' (Abstract Var) _noCs'] tm')
     = bt ("C-BIND", p, q) $ do
         require (b == b') $ Mismatch (show b) (show b')
-        xs <- conv ty ty' -- (rename n' n ty')
-        ys <- with (Def n r ty (Abstract Var) noConstrs)
+        tycs <- conv ty ty' -- (rename n' n ty')
+        tmcs <- with (Def n r ty (Abstract Var) noConstrs)
                 $ conv tm (rename n' n tm')
-        return $ xs /\ ys /\ r <-> r'
+        return $ cond r tycs /\ tmcs /\ r <-> r'
 
 {- This would be necessary for conversion-checking of multilets. Let's disable them for now.
 conv' (Bind b (d:ds) tm) (Bind b' (d':ds') tm') = bt ("C-SIMPL", b) $
@@ -393,7 +393,7 @@ conv' (Bind b (d:ds) tm) (Bind b' (d':ds') tm') = bt ("C-SIMPL", b) $
 conv' p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do
     fcs <- conv f f'
     xcs <- conv x x'
-    return $ fcs /\ cond r xcs /\ r <--> r'
+    return $ fcs /\ cond r xcs /\ r <-> r'
 
 -- we don't include a case for Forced because those constructors
 -- get normalised away to bare terms
