@@ -7,13 +7,13 @@
     constructor N : Bin
     constructor C : (rest) -> Bin
     add' 
-      [_] [_] N N = C N
-      [_] ([_] w) (C xn) (C yn) = 
-        let f = C (add' w xn yn)
+      [_] N N = C N
+      [_] (C xn) (C yn) = 
+        let f = C (add' xn yn)
         in f
     foreign inputSize
     mkBin 
       [_] _ Z = N
       [_] True (S n) = C (mkBin False n)
       [_] False (S n) = C (mkBin True n)
-  in add' inputSize (mkBin True inputSize) (mkBin False inputSize)
+  in add' (mkBin True inputSize) (mkBin False inputSize)

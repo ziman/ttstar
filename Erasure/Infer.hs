@@ -391,9 +391,9 @@ conv' (Bind b (d:ds) tm) (Bind b' (d':ds') tm') = bt ("C-SIMPL", b) $
 
 -- whnf is application (application of something irreducible)
 conv' p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do
-    xs <- conv f f'
-    ys <- conv x x'
-    return $ xs /\ ys /\ r <-> r'
+    fcs <- conv f f'
+    xcs <- conv x x'
+    return $ fcs /\ cond r xcs /\ r <--> r'
 
 -- we don't include a case for Forced because those constructors
 -- get normalised away to bare terms
