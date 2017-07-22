@@ -73,9 +73,9 @@ infix 3 -->
 (-->) :: Evar -> Evar -> Constrs Evar
 g --> u = M.singleton (S.singleton g) (S.singleton u)
 
-infix 3 <-->
-(<-->) :: Evar -> Evar -> Constrs Evar
-p <--> q = p --> q /\ q --> p
+infix 3 <->
+(<->) :: Evar -> Evar -> Constrs Evar
+p <-> q = p --> q /\ q --> p
 
 union :: Constrs Evar -> Constrs Evar -> Constrs Evar
 union = M.unionWith S.union
@@ -261,7 +261,7 @@ inferPat s pvs pat@(PApp app_r f x) = bt ("PAT-APP", pat) $ do
             xtycs <- with' (M.union pvs) $ conv xty ty'
             let cs =
                     app_r --> s                 -- if something inspects, the whole thing inspects
-                    /\ cond s (pi_r <--> app_r) -- the two must match in relevant contexts
+                    /\ cond s (pi_r <-> app_r) -- the two must match in relevant contexts
                     /\ fcs
                     /\ cond app_r xtycs /\ xcs  -- xcs was derived with s=app_r
                                                 -- but xtycs wasn't so we need to cond it
@@ -333,7 +333,7 @@ inferTm t@(App app_r f x) = bt ("APP", t) $ do
                     -- but if it's not used, then it needn't be erasure-correct
                     fcs
                     /\ cond app_r (xcs /\ xtycs)
-                    /\ pi_r <--> app_r
+                    /\ pi_r <-> app_r
             return (subst n' x retTy, cs)
 
         _ -> do
@@ -382,7 +382,7 @@ conv' p@(Bind b [Def n r ty (Abstract Var) _noCs] tm) q@(Bind b' [Def n' r' ty' 
         xs <- conv ty ty' -- (rename n' n ty')
         ys <- with (Def n r ty (Abstract Var) noConstrs)
                 $ conv tm (rename n' n tm')
-        return $ xs /\ ys /\ r <--> r'
+        return $ xs /\ ys /\ r <-> r'
 
 {- This would be necessary for conversion-checking of multilets. Let's disable them for now.
 conv' (Bind b (d:ds) tm) (Bind b' (d':ds') tm') = bt ("C-SIMPL", b) $
@@ -393,7 +393,7 @@ conv' (Bind b (d:ds) tm) (Bind b' (d':ds') tm') = bt ("C-SIMPL", b) $
 conv' p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do
     xs <- conv f f'
     ys <- conv x x'
-    return $ xs /\ ys /\ r <--> r'
+    return $ xs /\ ys /\ r <-> r'
 
 -- we don't include a case for Forced because those constructors
 -- get normalised away to bare terms
