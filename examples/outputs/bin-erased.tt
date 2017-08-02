@@ -4,19 +4,32 @@
     constructor S : (x) -> Nat
     constructor True : Bool
     constructor False : Bool
+    constructor I : Bit
+    constructor O : Bit
     constructor N : Bin
-    constructor C : (rest) -> Bin
+    constructor C : (lsb) -> (rest) -> Bin
+    constructor TB : (hi) -> (lo) -> TwoBits
+    adb 
+      [_] O O O = TB O O
+      [_] I O O = TB O I
+      [_] O I O = TB O I
+      [_] O O I = TB O I
+      [_] I I O = TB I O
+      [_] I O I = TB I O
+      [_] O I I = TB I O
+      [_] I I I = TB I I
     add' 
-      [_] N N = C N
-      [_] (C xn) (C yn) = 
-        let f = C (add' xn yn)
-        in f
-    add = (\bx. (\by. add' bx by))
+      [_] cb N N = C cb N
+      [_] cb (C xb xn) (C yb yn) = 
+        let f 
+          [_] ([_] hi lo) = C lo (add' hi xn yn)
+        in f (adb cb xb yb)
+    add = (\bx. (\by. add' O bx by))
     foreign inputSize
     mkBin 
       [_] _ Z = N
-      [_] True (S n) = C (mkBin False n)
-      [_] False (S n) = C (mkBin True n)
+      [_] True (S n) = C I (mkBin False n)
+      [_] False (S n) = C O (mkBin True n)
     main = 
       let
         x = mkBin True inputSize

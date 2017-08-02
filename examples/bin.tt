@@ -15,7 +15,7 @@ double : Nat -> Nat.
 data Bin : (width : Nat) -> (value : Nat) -> Type where
   N : Bin Z Z,
   C : (width : Nat)
-    -> (lsbVal : Nat) -> (lsb : Bit lsbVal)
+    -> (lsbVal : Nat) -> (lsb :R: Bit lsbVal)
     -> (restVal : Nat) -> (rest :R: Bin width restVal)
     -> Bin (S width) (plus lsbVal (double restVal)).
 
