@@ -17,7 +17,8 @@ import Util.PrettyPrint
 
 import Erasure.Evar
 import Erasure.Infer
-import Erasure.Solve
+import Erasure.SolveSimple
+import Erasure.SolveIndexed
 import Erasure.Annotate
 import Erasure.Specialise
 import Erasure.Prune
@@ -71,7 +72,7 @@ pipeline args = do
                         mapM_ (putStrLn . fmtCtr) $ M.toList cs
                         putStrLn ""
 
-                    let (uses, _residue) = solve cs
+                    let (uses, _residue) = solveConstraints cs
                     when (Args.verbose args) $ do
                         putStrLn "### Solution ###\n"
                         print $ S.toList uses
@@ -172,6 +173,9 @@ pipeline args = do
     dumpTT fname prog = writeFile fname $ "-- vim: ft=ttstar" ++ show prog ++ "\n"
     dumpScheme fname prog = writeFile fname $ render "; " (cgRun Codegen.Scheme.codegen prog) ++ "\n"
 
+    solveConstraints
+        | Args.solverIndexed args = solveIndexed
+        | otherwise               = solveSimple
 
 main :: IO ()
 main = pipeline =<< Args.parse

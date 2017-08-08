@@ -11,6 +11,7 @@ data Args = Args
     , skipVerification :: Bool
     , skipEvaluation :: Bool
     , optIdentity :: Bool
+    , solverIndexed :: Bool
     , dumpPretty :: Maybe String
     , dumpScheme :: Maybe String
     , dumpNF :: Maybe String
@@ -42,6 +43,9 @@ args = Args
     <*> switch
         ( long "opt-identity"
         <> help "Enable identity optimisation")
+    <*> switch
+        ( long "solver-indexed"
+        <> help "Use the indexed solver instead of the naive one")
     <*> optional (strOption
         ( metavar "file.tt"
         <> long "dump-pretty"
