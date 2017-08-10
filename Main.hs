@@ -72,7 +72,7 @@ pipeline args = do
                         mapM_ (putStrLn . fmtCtr) $ M.toList cs
                         putStrLn ""
 
-                    let (uses, _residue) = solveConstraints cs
+                    let uses = solveConstraints cs
                     when (Args.verbose args) $ do
                         putStrLn "### Solution ###\n"
                         print $ S.toList uses
@@ -175,7 +175,7 @@ pipeline args = do
 
     solveConstraints
         | Args.solverIndexed args = solveIndexed
-        | otherwise               = solveSimple
+        | otherwise               = fst . solveSimple
 
 main :: IO ()
 main = pipeline =<< Args.parse

@@ -7,7 +7,7 @@ import TT.Lens
 import TT.Utils
 import TT.Normalise
 import Erasure.Evar
-import Erasure.SolveSimple
+--import Erasure.SolveSimple
 
 import Prelude hiding (lookup)
 
