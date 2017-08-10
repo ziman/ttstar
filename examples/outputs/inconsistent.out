@@ -12,8 +12,8 @@
 
 ### Constraints ###
 
-[] -> [E,R]
-[R] -> [R]
+[E] -> [E]
+[R] -> [E,R]
 
 ### Solution ###
 
@@ -21,4 +21,4 @@
 
 ttstar: !! inconsistent annotation
 CallStack (from HasCallStack):
-  error, called at Main.hs:83:22 in main:Main
+  error, called at Main.hs:84:22 in main:Main
