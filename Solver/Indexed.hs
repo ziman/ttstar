@@ -1,4 +1,4 @@
-module Erasure.SolveIndexed (solve, reduce) where
+module Solver.Indexed (solve, reduce) where
 
 import TT.Core
 import Erasure.Evar

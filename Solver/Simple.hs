@@ -1,4 +1,4 @@
-module Erasure.SolveSimple (solve, reduce) where
+module Solver.Simple (solve, reduce) where
 
 import TT.Core
 import Erasure.Evar

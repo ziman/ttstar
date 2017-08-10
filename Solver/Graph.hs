@@ -1,4 +1,4 @@
-module Erasure.SolveGraph (solve) where
+module Solver.Graph (solve) where
 
 import TT.Core
 import Erasure.Evar

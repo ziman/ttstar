@@ -17,13 +17,14 @@ import Util.PrettyPrint
 
 import Erasure.Evar
 import Erasure.Infer
-import qualified Erasure.SolveSimple
-import qualified Erasure.SolveIndexed
-import qualified Erasure.SolveGraph
 import Erasure.Annotate
 import Erasure.Specialise
 import Erasure.Prune
 import Erasure.Verify
+
+import Solver.Simple
+import Solver.Graph
+import Solver.Indexed
 
 import qualified Optimisation.Identity
 
@@ -79,9 +80,9 @@ pipeline args = do
                     -- the solver has nothing to do.
                     let redConstrs =
                             case Args.solver args of
-                                Simple  -> Erasure.SolveSimple.reduce
+                                Simple  -> Solver.Simple.reduce
                                 Graph   -> id
-                                Indexed -> Erasure.SolveIndexed.reduce
+                                Indexed -> Solver.Indexed.reduce
 
                     let cs = either (error . show) id . infer redConstrs $ evarified
                     when (Args.verbose args) $ do
@@ -191,9 +192,9 @@ pipeline args = do
     dumpScheme fname prog = writeFile fname $ render "; " (cgRun Codegen.Scheme.codegen prog) ++ "\n"
 
     solveConstraints = case Args.solver args of
-        Simple  -> fst . Erasure.SolveSimple.solve
-        Graph   -> Erasure.SolveGraph.solve
-        Indexed -> fst . Erasure.SolveIndexed.solve
+        Simple  -> fst . Solver.Simple.solve
+        Graph   -> Solver.Graph.solve
+        Indexed -> fst . Solver.Indexed.solve
 
 main :: IO ()
 main = pipeline =<< Args.parse
