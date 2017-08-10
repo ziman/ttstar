@@ -1,4 +1,4 @@
-module Erasure.SolveIndexed (solveIndexed) where
+module Erasure.SolveGraph (solve) where
 
 import TT.Core
 import Erasure.Evar
@@ -32,8 +32,8 @@ addVertex v g = (vertexNo, IM.insert vertexNo v g)
   where
     vertexNo = IM.size g
 
-solveIndexed :: Constrs Evar -> Uses Evar
-solveIndexed cs' = evalState (traverseG increment initialVertices) graph
+solve :: Constrs Evar -> Uses Evar
+solve cs' = evalState (traverseG increment initialVertices) graph
   where
     cs = M.insertWith S.union S.empty (S.singleton $ Fixed R) cs'
 

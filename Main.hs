@@ -17,8 +17,8 @@ import Util.PrettyPrint
 
 import Erasure.Evar
 import Erasure.Infer
-import Erasure.SolveSimple
-import Erasure.SolveIndexed
+import qualified Erasure.SolveSimple
+import qualified Erasure.SolveGraph
 import Erasure.Annotate
 import Erasure.Specialise
 import Erasure.Prune
@@ -174,8 +174,8 @@ pipeline args = do
     dumpScheme fname prog = writeFile fname $ render "; " (cgRun Codegen.Scheme.codegen prog) ++ "\n"
 
     solveConstraints
-        | Args.solverIndexed args = solveIndexed
-        | otherwise               = fst . solveSimple
+        | Args.graphSolver args = Erasure.SolveGraph.solve
+        | otherwise             = fst . Erasure.SolveSimple.solve
 
 main :: IO ()
 main = pipeline =<< Args.parse

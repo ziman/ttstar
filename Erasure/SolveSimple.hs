@@ -1,4 +1,4 @@
-module Erasure.SolveSimple (solveSimple, reduce) where
+module Erasure.SolveSimple (solve, reduce) where
 
 import TT.Core
 import Erasure.Evar
@@ -12,10 +12,10 @@ reduce cs
     | S.null (S.delete (Fixed R) us) = residue
     | otherwise = M.insert S.empty us residue
   where
-    (us, residue) = solveSimple cs
+    (us, residue) = solve cs
 
-solveSimple :: Constrs Evar -> (Uses Evar, Constrs Evar)
-solveSimple = step $ S.singleton (Fixed R)
+solve :: Constrs Evar -> (Uses Evar, Constrs Evar)
+solve = step $ S.singleton (Fixed R)
   where
     step :: Uses Evar -> Constrs Evar -> (Uses Evar, Constrs Evar)
     step ans cs
