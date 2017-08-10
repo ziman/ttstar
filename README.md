@@ -17,6 +17,7 @@ Dependently typed core calculus with erasure inference.
 * type errors come with backtraces
 * rudimentary FFI via `foreign` postulates
 * native codegen via Scheme (Chicken Scheme or Racket)
+* faster graph-based constraint solver
 
 ## Interesting consequences
 
