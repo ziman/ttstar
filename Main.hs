@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 module Main where
 
-import Args (Args)
+import Args (Args, Solver(..))
 import qualified Args
 
 import TT.Core
@@ -18,6 +18,7 @@ import Util.PrettyPrint
 import Erasure.Evar
 import Erasure.Infer
 import qualified Erasure.SolveSimple
+import qualified Erasure.SolveIndexed
 import qualified Erasure.SolveGraph
 import Erasure.Annotate
 import Erasure.Specialise
@@ -66,17 +67,21 @@ pipeline args = do
                     evarified_1st ^.. (ttRelevance :: Traversal' (TT Evar) Evar)
                   )
                 False -> do
-                    -- We don't have a smart reductor (yet)
+                    -- We don't have a graph reductor (yet)
                     -- and it turns out that using `id` is actually better
                     -- than using the dumb reductor.
                     --
                     -- This is not surprising because `main` is a definition
                     -- and it will be reduced by inference, which of course
                     -- amounts to running the (dumb) solver on the whole program.
+                    --
+                    -- This also means that if we have a reductor,
+                    -- the solver has nothing to do.
                     let redConstrs =
-                            if Args.graphSolver args
-                                then id
-                                else Erasure.SolveSimple.reduce
+                            case Args.solver args of
+                                Simple  -> Erasure.SolveSimple.reduce
+                                Graph   -> id
+                                Indexed -> Erasure.SolveIndexed.reduce
 
                     let cs = either (error . show) id . infer redConstrs $ evarified
                     when (Args.verbose args) $ do
@@ -185,9 +190,10 @@ pipeline args = do
     dumpTT fname prog = writeFile fname $ "-- vim: ft=ttstar" ++ show prog ++ "\n"
     dumpScheme fname prog = writeFile fname $ render "; " (cgRun Codegen.Scheme.codegen prog) ++ "\n"
 
-    solveConstraints
-        | Args.graphSolver args = Erasure.SolveGraph.solve
-        | otherwise             = fst . Erasure.SolveSimple.solve
+    solveConstraints = case Args.solver args of
+        Simple  -> fst . Erasure.SolveSimple.solve
+        Graph   -> Erasure.SolveGraph.solve
+        Indexed -> fst . Erasure.SolveIndexed.solve
 
 main :: IO ()
 main = pipeline =<< Args.parse

@@ -30,6 +30,6 @@ executable ttstar
 
   other-modules: Args, Codegen.Common, Codegen.Scheme, Erasure.Annotate,
     Erasure.Evar, Erasure.Infer, Erasure.Prune, Erasure.SolveSimple,
-    Erasure.SolveGraph, Erasure.Specialise, Erasure.Verify,
-    Optimisation.Identity, TT.Core, TT.Lens, TT.Normalise, TT.Parser,
-    TT.Pretty, TT.Utils, Util.PrettyPrint
+    Erasure.SolveGraph, Erasure.SolveIndexed, Erasure.Specialise,
+    Erasure.Verify, Optimisation.Identity, TT.Core, TT.Lens, TT.Normalise,
+    TT.Parser, TT.Pretty, TT.Utils, Util.PrettyPrint
