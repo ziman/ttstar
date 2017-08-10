@@ -3,6 +3,8 @@ module Args where
 import Options.Applicative
 import Data.Semigroup ((<>))
 
+data Solver = Simple | Graph | Indexed deriving (Eq, Ord, Show)
+
 data Args = Args
     { sourceFile :: String
     , verbose :: Bool
@@ -11,7 +13,7 @@ data Args = Args
     , skipVerification :: Bool
     , skipEvaluation :: Bool
     , optIdentity :: Bool
-    , graphSolver :: Bool
+    , solver :: Solver
     , dumpPretty :: Maybe String
     , dumpScheme :: Maybe String
     , dumpNF :: Maybe String
@@ -43,9 +45,10 @@ args = Args
     <*> switch
         ( long "opt-identity"
         <> help "Enable identity optimisation")
-    <*> switch
-        ( long "graph-solver"
-        <> help "Use the graph solver instead of the naive one")
+    <*> (option . maybeReader) (`lookup` [("simple",Simple),("graph",Graph),("indexed",Indexed)])
+        ( long "solver"
+        <> metavar "simple|graph|indexed"
+        <> help "Constraint solver to use")
     <*> optional (strOption
         ( metavar "file.tt"
         <> long "dump-pretty"

@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 module Main where
 
-import Args (Args)
+import Args (Args, Solver(..))
 import qualified Args
 
 import TT.Core
@@ -74,9 +74,10 @@ pipeline args = do
                     -- and it will be reduced by inference, which of course
                     -- amounts to running the (dumb) solver on the whole program.
                     let redConstrs =
-                            if Args.graphSolver args
-                                then id
-                                else Erasure.SolveSimple.reduce
+                            case Args.solver args of
+                                Simple  -> Erasure.SolveSimple.reduce
+                                Graph   -> id
+                                Indexed -> id  -- TODO
 
                     let cs = either (error . show) id . infer redConstrs $ evarified
                     when (Args.verbose args) $ do
@@ -185,9 +186,10 @@ pipeline args = do
     dumpTT fname prog = writeFile fname $ "-- vim: ft=ttstar" ++ show prog ++ "\n"
     dumpScheme fname prog = writeFile fname $ render "; " (cgRun Codegen.Scheme.codegen prog) ++ "\n"
 
-    solveConstraints
-        | Args.graphSolver args = Erasure.SolveGraph.solve
-        | otherwise             = fst . Erasure.SolveSimple.solve
+    solveConstraints = case Args.solver args of
+        Simple  -> fst . Erasure.SolveSimple.solve
+        Graph   -> Erasure.SolveGraph.solve
+        Indexed -> fst . Erasure.SolveSimple.solve  -- TODO
 
 main :: IO ()
 main = pipeline =<< Args.parse
