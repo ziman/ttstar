@@ -19,7 +19,7 @@ import qualified Data.IntSet as IS
 
 -- reduce the constraint set, keeping the empty-guard constraint
 -- we could use the simple solver for smaller sets
--- but benchmarks shows that there's almost no runtime difference
+-- but benchmarks show that there's almost no runtime difference
 reduce :: Constrs Evar -> Constrs Evar
 reduce cs
     | S.null (S.delete (Fixed R) us) = residue
