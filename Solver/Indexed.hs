@@ -29,8 +29,14 @@ type Constraint = (Guards Evar, Uses Evar)
 type Constraints = IntMap Constraint
 type Index = Map Evar IntSet
 
+-- it turns out that this cleaning makes stuff slower
 toNumbered :: Constrs Evar -> Constraints
-toNumbered = IM.fromList . zip [0..] . M.toList
+toNumbered = IM.fromList . zip [0..] {- . filter informative .  map clean -} . M.toList
+{-
+  where
+    informative (gs, us) = (not $ S.null us)  -- && (Fixed E `S.notMember` gs)
+    clean (gs, us) = (gs, S.delete (Fixed R) us {- S.\\ gs -})
+-}
 
 fromNumbered :: Constraints -> Constrs Evar
 fromNumbered = IM.foldr addConstraint M.empty
