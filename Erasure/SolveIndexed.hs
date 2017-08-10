@@ -45,7 +45,7 @@ solve cs
     csN = toNumbered cs
 
     initialUses :: Uses Evar
-    initialUses = S.singleton $ Fixed R
+    initialUses = S.insert (Fixed R) $ M.findWithDefault S.empty S.empty cs
 
     index :: Constraints -> Index
     index = IM.foldrWithKey (
