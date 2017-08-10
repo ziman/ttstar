@@ -2,7 +2,6 @@ module Solver.Indexed (solve, reduce) where
 
 import TT.Core
 import Erasure.Evar
-import qualified Solver.Simple
 
 import Control.Arrow
 
@@ -19,18 +18,14 @@ import Data.IntSet (IntSet)
 import qualified Data.IntSet as IS
 
 -- reduce the constraint set, keeping the empty-guard constraint
+-- we could use the simple solver for smaller sets
+-- but benchmarks shows that there's almost no runtime difference
 reduce :: Constrs Evar -> Constrs Evar
 reduce cs
-    -- benchmarks show that for constraint sets smaller than 64,
-    -- it is faster to use the simple reducer
-    -- but it's probably not worth the added code complexity
-    -- (77.5 ms vs. 78.5 ms per whole ttstar run)
-    -- tested on palindrome.tt
-    | M.size cs < 64 = Solver.Simple.reduce cs
     | S.null (S.delete (Fixed R) us) = residue
     | otherwise = M.insert S.empty us residue
   where
-    ~(us, residue) = solve cs
+    (us, residue) = solve cs
 
 type Constraint = (Guards Evar, Uses Evar)
 type Constraints = IntMap Constraint
