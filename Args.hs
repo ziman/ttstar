@@ -48,6 +48,7 @@ args = Args
     <*> (option . maybeReader) (`lookup` [("simple",Simple),("graph",Graph),("indexed",Indexed)])
         ( long "solver"
         <> metavar "simple|graph|indexed"
+        <> value Indexed
         <> help "Constraint solver to use")
     <*> optional (strOption
         ( metavar "file.tt"
