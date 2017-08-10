@@ -7,7 +7,6 @@ import TT.Lens
 import TT.Utils
 import TT.Normalise
 import Erasure.Evar
---import Erasure.SolveSimple
 
 import Prelude hiding (lookup)
 
@@ -58,9 +57,10 @@ instance Show TCFailure where
                 (reverse tb)
             ++ ["Error: " ++ show e]
 
+type ConstrRedFun = Constrs Evar -> Constrs Evar
 type TCTraceback = [String]
 type TCState = Int
-type TC a = ReaderT (TCTraceback, Ctx Evar) (ExceptT TCFailure (State TCState)) a
+type TC a = ReaderT (ConstrRedFun, TCTraceback, Ctx Evar) (ExceptT TCFailure (State TCState)) a
 
 type Term = TT Evar
 type Type = TT Evar
@@ -94,13 +94,13 @@ withs []     = id
 withs (d:ds) = with d . withs ds
 
 with' :: (Ctx Evar -> Ctx Evar) -> TC a -> TC a
-with' f = local $ \(tb, ctx) -> (tb, f ctx)
+with' f = local $ \(rc, tb, ctx) -> (rc, tb, f ctx)
 
 bt :: Show a => a -> TC b -> TC b
 bt dbg sub = do
     ctx <- getCtx
     let btLine = "In context:\n" ++ showCtx ctx ++ "\n" ++ show dbg ++ "\n"
-    local (\(tb,ctx) -> (btLine:tb,ctx)) sub
+    local (\(rc, tb,ctx) -> (rc, btLine:tb,ctx)) sub
 
 showCtx :: Ctx Evar -> String
 showCtx ctx = unlines
@@ -110,12 +110,12 @@ showCtx ctx = unlines
 
 tcfail :: TCError -> TC a
 tcfail e = do
-    (tb, ctx) <- ask
+    (redConstrs, tb, ctx) <- ask
     lift . throwE $ TCFailure e tb
 
 getCtx :: TC (Ctx Evar)
 getCtx = do
-    (tb, ctx) <- ask
+    (redConstrs, tb, ctx) <- ask
     return ctx
 
 require :: Bool -> TCError -> TC ()
@@ -132,11 +132,16 @@ lookup n = do
 freshTag :: TC Int
 freshTag = lift $ lift (modify (+1) >> get)
 
-runTC :: Int -> Ctx Evar -> TC a -> Either TCFailure a
-runTC maxTag ctx tc = evalState (runExceptT $ runReaderT tc ([], ctx)) maxTag
+constrRedFun :: TC ConstrRedFun
+constrRedFun = do
+    (redConstrs, tb, ctx) <- ask
+    return redConstrs
 
-infer :: Program Evar -> Either TCFailure (Constrs Evar)
-infer prog = runTC maxTag ctx $ do
+runTC :: ConstrRedFun -> Int -> Ctx Evar -> TC a -> Either TCFailure a
+runTC redConstrs maxTag ctx tc = evalState (runExceptT $ runReaderT tc (redConstrs, [], ctx)) maxTag
+
+infer :: ConstrRedFun -> Program Evar -> Either TCFailure (Constrs Evar)
+infer redConstrs prog = runTC redConstrs maxTag ctx $ do
     (_ty, cs) <- inferTm prog
     return cs
   where
@@ -155,14 +160,16 @@ inferDefs :: [Def Evar] -> TC (Ctx Evar)
 inferDefs [] = getCtx
 inferDefs (d:ds) = do
     d' <- with d{ defBody = Abstract Var } $ inferDef d
-    let d'' = d'{ defConstraints = {- reduce $ -} defConstraints d' }
+    redConstrs <- constrRedFun
+    let d'' = d'{ defConstraints = redConstrs $ defConstraints d' }
     with d'' $ inferDefs ds
 
 inferDefs' :: [Def Evar] -> TC [Def Evar]
 inferDefs' [] = return []
 inferDefs' (d:ds) = do
     d' <- with d{ defBody = Abstract Var } $ inferDef d
-    let d'' = d'{ defConstraints = {- reduce $ -} defConstraints d' }
+    redConstrs <- constrRedFun
+    let d'' = d'{ defConstraints = redConstrs $ defConstraints d' }
     (d'' :) <$> (with d'' $ inferDefs' ds)
 
 inferDef :: Def Evar -> TC (Def Evar)

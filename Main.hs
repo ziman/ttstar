@@ -66,7 +66,19 @@ pipeline args = do
                     evarified_1st ^.. (ttRelevance :: Traversal' (TT Evar) Evar)
                   )
                 False -> do
-                    let cs = either (error . show) id . infer $ evarified
+                    -- We don't have a smart reductor (yet)
+                    -- and it turns out that using `id` is actually better
+                    -- than using the dumb reductor.
+                    --
+                    -- This is not surprising because `main` is a definition
+                    -- and it will be reduced by inference, which of course
+                    -- amounts to running the (dumb) solver on the whole program.
+                    let redConstrs =
+                            if Args.graphSolver args
+                                then id
+                                else Erasure.SolveSimple.reduce
+
+                    let cs = either (error . show) id . infer redConstrs $ evarified
                     when (Args.verbose args) $ do
                         putStrLn "### Constraints ###\n"
                         mapM_ (putStrLn . fmtCtr) $ M.toList cs
