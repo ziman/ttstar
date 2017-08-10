@@ -33,7 +33,7 @@ addVertex v g = (vertexNo, IM.insert vertexNo v g)
     vertexNo = IM.size g
 
 solve :: Constrs Evar -> Uses Evar
-solve cs' = evalState (traverseG increment initialVertices) graph
+solve cs' = evalState (increments initialVertices) graph
   where
     cs = M.insertWith S.union S.empty (S.singleton $ Fixed R) cs'
 
@@ -69,24 +69,21 @@ getVertex i = (IM.! i) <$> get
 putVertex :: Int -> Vertex -> GM ()
 putVertex i v = modify $ IM.insert i v 
 
-adjustVertex :: Int -> (Vertex -> Vertex) -> GM ()
-adjustVertex i f = putVertex i . f =<< getVertex i
+increment :: Int -> GM (S.Set Evar)
+increment i = do
+    -- increment the vertex
+    v' <- getVertex i
+    let v = v'{ nFlowIn = nFlowIn v' + 1 }
+    putVertex i v
 
-propagate :: Int -> GM (S.Set Evar)
-propagate i = do
-    v <- getVertex i
+    -- propagate the change
     if nFlowIn v /= nThreshold v
         then return S.empty
         else do
-            evs <- traverseG increment (nEdgesOut v)
+            evs <- increments $ nEdgesOut v
             return $ case nEvar v of
                 Nothing -> evs
                 Just e  -> S.insert e evs
 
-increment :: Int -> GM (S.Set Evar)
-increment i = do
-    adjustVertex i $ \v -> v{ nFlowIn = nFlowIn v + 1 }
-    propagate i
-
-traverseG :: (Int -> GM (S.Set Evar)) -> IntSet -> GM (S.Set Evar)
-traverseG f is = S.unions <$> traverse f (IS.toList is)
+increments :: IntSet -> GM (S.Set Evar)
+increments is = S.unions <$> traverse increment (IS.toList is)
