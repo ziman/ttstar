@@ -106,4 +106,4 @@ ttstar: Traceback:
 Error: PatvarsPatternMismatch [] [n]
 
 CallStack (from HasCallStack):
-  error, called at Main.hs:68:38 in main:Main
+  error, called at Main.hs:69:38 in main:Main

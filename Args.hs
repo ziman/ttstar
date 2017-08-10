@@ -11,6 +11,7 @@ data Args = Args
     , skipVerification :: Bool
     , skipEvaluation :: Bool
     , optIdentity :: Bool
+    , graphSolver :: Bool
     , dumpPretty :: Maybe String
     , dumpScheme :: Maybe String
     , dumpNF :: Maybe String
@@ -42,6 +43,9 @@ args = Args
     <*> switch
         ( long "opt-identity"
         <> help "Enable identity optimisation")
+    <*> switch
+        ( long "graph-solver"
+        <> help "Use the graph solver instead of the naive one")
     <*> optional (strOption
         ( metavar "file.tt"
         <> long "dump-pretty"

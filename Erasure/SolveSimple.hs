@@ -1,13 +1,10 @@
-{-# LANGUAGE TypeSynonymInstances, FlexibleInstances #-}
-module Erasure.Solve where
+module Erasure.SolveSimple (solve, reduce) where
 
 import TT.Core
 import Erasure.Evar
 
 import qualified Data.Map as M
 import qualified Data.Set as S
-
---import Debug.Trace
 
 -- reduce the constraint set, keeping the empty-guard constraint
 reduce :: Constrs Evar -> Constrs Evar

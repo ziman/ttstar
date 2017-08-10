@@ -32,15 +32,24 @@
 
 ### Constraints ###
 
-[] -> [5,9,10,12,15,19,R]
-[6] -> [20]
+[6,19] -> [20]
+[10] -> [19]
+[10,R] -> [15]
 [11] -> [13,18]
-[13] -> [11,16]
+[12] -> [15]
+[13] -> [11]
+[13,15] -> [16]
 [14] -> [16]
-[16] -> [13]
+[15] -> [R]
+[15,16] -> [13]
+[15,R] -> [10]
+[16] -> [15]
 [18] -> [11]
-[20] -> [2,6]
-[R] -> [17]
+[19] -> [10]
+[19,20] -> [6]
+[19,20,R] -> [2]
+[19,R] -> [5]
+[R] -> [9,12,17]
 
 ### Solution ###
 
@@ -152,4 +161,4 @@ ttstar: !! verification failed: Traceback:
 Error: NotConstructor c
 
 CallStack (from HasCallStack):
-  error, called at Main.hs:123:25 in main:Main
+  error, called at Main.hs:124:25 in main:Main

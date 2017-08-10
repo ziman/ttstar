@@ -7,7 +7,7 @@ import TT.Lens
 import TT.Utils
 import TT.Normalise
 import Erasure.Evar
-import Erasure.Solve
+--import Erasure.SolveSimple
 
 import Prelude hiding (lookup)
 
@@ -155,14 +155,14 @@ inferDefs :: [Def Evar] -> TC (Ctx Evar)
 inferDefs [] = getCtx
 inferDefs (d:ds) = do
     d' <- with d{ defBody = Abstract Var } $ inferDef d
-    let d'' = d'{ defConstraints = reduce $ defConstraints d' }
+    let d'' = d'{ defConstraints = {- reduce $ -} defConstraints d' }
     with d'' $ inferDefs ds
 
 inferDefs' :: [Def Evar] -> TC [Def Evar]
 inferDefs' [] = return []
 inferDefs' (d:ds) = do
     d' <- with d{ defBody = Abstract Var } $ inferDef d
-    let d'' = d'{ defConstraints = reduce $ defConstraints d' }
+    let d'' = d'{ defConstraints = {- reduce $ -} defConstraints d' }
     (d'' :) <$> (with d'' $ inferDefs' ds)
 
 inferDef :: Def Evar -> TC (Def Evar)
