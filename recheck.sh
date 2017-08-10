@@ -59,11 +59,11 @@ for i in examples/*.tt; do
     rm -f "${n}"{,-unerased}{,-NF}.*
     echo $i
 
-    ./ttstar -v --graph-solver "$i" &> "${n}.out" \
+    ./ttstar -v --solver indexed "$i" &> "${n}.out" \
         || continue  # skip if it doesn't typecheck
 
     ./ttstar "$i" \
-        --graph-solver \
+        --solver indexed \
         --opt-identity \
         --dump-pretty "${n}-erased.tt" \
         --dump-scheme "${n}.scm" \
@@ -73,7 +73,7 @@ for i in examples/*.tt; do
         && scheme "${n}-NF.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}-NF.scm.out"
 
     ./ttstar "$i" --skip-inference \
-        --graph-solver \
+        --solver indexed \
         --dump-pretty "${n}-unerased.tt" \
         --dump-scheme "${n}-unerased.scm" \
         --dump-nf     "${n}-unerased-NF.tt" \
