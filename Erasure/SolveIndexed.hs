@@ -6,7 +6,6 @@ import Erasure.Evar
 import Data.Map (Map)
 import qualified Data.Map as M
 
-import Data.Set (Set)
 import qualified Data.Set as S
 
 import Data.IntMap (IntMap)
@@ -34,12 +33,15 @@ addVertex v g = (vertexNo, IM.insert vertexNo v g)
     vertexNo = IM.size g
 
 solveIndexed :: Constrs Evar -> Uses Evar
-solveIndexed cs = evalState (traverseG propagate initialVertices) graph
+solveIndexed cs' = evalState (traverseG increment initialVertices) graph
   where
-    initialVertices = IS.fromList [evarIndex M.! e | e <- S.toList (cs M.! S.empty)]
+    cs = M.insertWith S.union S.empty (S.singleton $ Fixed R) cs'
+
     allEvars = S.union (S.unions $ M.keys cs) (S.unions $ M.elems cs)
     (terminals, evarIndex) = S.foldr addTerminal (IM.empty, M.empty) allEvars
     graph = M.foldrWithKey (addConstraint evarIndex) terminals cs
+    initialEvars = M.findWithDefault S.empty S.empty cs
+    initialVertices = IS.fromList [evarIndex M.! e | e <- S.toList initialEvars]
 
 addTerminal :: Evar -> (Graph, EvarIndex) -> (Graph, EvarIndex)
 addTerminal e (g, ix) = (g', M.insert e i ix)
@@ -88,17 +90,3 @@ increment i = do
 
 traverseG :: (Int -> GM (S.Set Evar)) -> IntSet -> GM (S.Set Evar)
 traverseG f is = S.unions <$> traverse f (IS.toList is)
-
-{-
-solveIndexed = step $ S.singleton (Fixed R)
-  where
-    step :: Uses Evar -> Constrs Evar -> (Uses Evar, Constrs Evar)
-    step ans cs
-        | S.null new = (ans, prunedCs)
-        | otherwise = step (S.union ans new) prunedCs
-      where
-        prunedCs_ans = M.mapKeysWith S.union (S.\\ ans) . M.map (S.\\ ans) $ cs
-        new = M.findWithDefault S.empty S.empty prunedCs_ans
-        prunedCs = M.filterWithKey flt prunedCs_ans
-        flt gs us = not (S.null gs) && not (S.null us)
--}
