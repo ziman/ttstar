@@ -55,6 +55,7 @@ CSV_FIELDS = (
 )
 
 def time_cmd(cmd):
+    # TODO: use perf stat -x \;
     ts_start = time.perf_counter()
     subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
     ts_end = time.perf_counter()
