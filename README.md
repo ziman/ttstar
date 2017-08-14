@@ -4,29 +4,44 @@ Dependently typed core calculus with erasure inference.
 
 ## Features
 
+### Erasure
+
 * erasure inference (fills in erasure annotations)
 * separate erasure checker (verifies consistency of erasure annotations)
 * erasure from higher-order functions
 * complete removal of unused arguments (rather than passing in `NULL`)
-* full dependent pattern matching clauses
 * erasure polymorphism for functions
-* pattern matching local `let` definitions are useful for emulating
-    * `case` expressions
-    * `with` clauses
-    * mutual recursion
-* type errors come with backtraces
-* rudimentary FFI via `foreign` postulates
-* native codegen via Scheme (Chicken Scheme or Racket)
-* three solvers
+* three constraint solvers
     * simple and straightforward O(n²) solver
     * graph-based constraint solver
     * indexing solver (default)
 
-## Interesting consequences
+### Language
+
+* full dependent pattern matching clauses
+* pattern matching local `let` definitions are useful for emulating
+    * `case` expressions
+    * `with` clauses
+    * mutual recursion
+
+### Practicalities
+
+* type errors come with backtraces
+* rudimentary FFI via `foreign` postulates
+* a simplified intermediate representation for backends (`IR`)
+    * translation from `TT` to `IR` compiles patterns into case trees
+* native code generators
+    * a codegen from `TT`: via Scheme (Chicken Scheme or Racket)
+        * uses the `matchable` extension
+    * a codegen from `IR`: produces R6RS Scheme
+        * generated code runs much faster
+
+## Other stuff
 
 * dependent erasure (if `x == 3` then `erased` else `not_erased`)
 * unused functions are removed entirely
 * `Refl` is always erased
+* `Maybe` sometimes becomes Boolean after erasure
 
 ## Does not feature
 
