@@ -6,6 +6,10 @@ import TT.Pretty ()
 
 import Codegen.IR
 
+import Data.Ord
+import Data.List
+import Data.Function
+
 toIR :: TT () -> IR
 toIR = irTm 0
 
@@ -74,7 +78,15 @@ ruleVar (v:vs) pats err = matchSort vs pats' err
     pats' = [(ps, substIR (irName n) v rhs) | (PV n : ps, rhs) <- pats]
 
 ruleCtor :: [Int] -> [([Pat ()], IR)] -> ICaseTree -> ICaseTree
-ruleCtor vars pats err = undefined
+ruleCtor (v:vs) pats err = ICase v $ alts ++ [IDefault err]
+  where
+    getCtor (p : ps, rhs) | (PV cn, args) <- unApplyPat p = cn
+    sorted = sortBy (comparing fst) [(irName $ getCtor p, p) | p <- pats]
+    grouped = groupBy ((==) `on` fst) sorted
+    alts = map (mkAlt vs) grouped
+
+mkAlt :: [Int] -> [(IName, ([Pat ()], IR))] -> IAlt
+mkAlt vs grp
 
 -- we know that the substituted name is unique
 substIR :: IName -> Int -> IR -> IR
@@ -91,8 +103,8 @@ substIRB n v b = b
 
 substIRCT :: IName -> Int -> ICaseTree -> ICaseTree
 substIRCT n v (ILeaf tm) = ILeaf $ substIR n v tm
-substIRCT n v (ICase n' alts)
-    = ICase (if n == n' then IPV v else n') (map (substIRA n v) alts)
+substIRCT n v (ICase v' alts)
+    = ICase v' (map (substIRA n v) alts)
 
 substIRA :: IName -> Int -> IAlt -> IAlt
 substIRA n v (ICtor cn pvs rhs) = ICtor cn pvs $ substIRCT n v rhs

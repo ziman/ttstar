@@ -20,7 +20,7 @@ data IBody
     deriving (Eq, Ord, Show)
 
 data ICaseTree
-    = ICase IName [IAlt]
+    = ICase Int [IAlt]
     | ILeaf IR
     deriving (Eq, Ord, Show)
 
