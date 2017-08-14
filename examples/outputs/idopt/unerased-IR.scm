@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(print
+(display
   (letrec* (
     (N `(N))
     (Z `(Z))
@@ -66,3 +66,4 @@
     (main ((P ((fsuc (S (S Z))) ((FS (S Z)) (FZ Z)))) ((embed (S (S (S Z)))) ((FS (S (S Z))) ((FS (S Z)) (FZ Z))))))
   )
     main))
+(newline)

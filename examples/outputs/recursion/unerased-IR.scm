@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(print
+(display
   (letrec* (
     (Bool `(Bool))
     (True `(True))
@@ -65,3 +65,4 @@
     (main (((vlen Bool) (S (S Z))) testVec))
   )
     main))
+(newline)

@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(print
+(display
   (letrec* (
     (T `(T))
     (A `(A))
@@ -64,3 +64,4 @@
     (main ((Op test1) test2))
   )
     main))
+(newline)

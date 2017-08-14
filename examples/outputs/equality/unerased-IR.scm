@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(print
+(display
   (letrec* (
     (Bool `(Bool))
     (T `(T))
@@ -67,3 +67,4 @@
       a)) Bool) Bool) ((Refl Type) Bool)) F)))
   )
     main))
+(newline)

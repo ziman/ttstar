@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(print
+(display
   (letrec* (
     (T `(T))
     (F `(F))
@@ -68,3 +68,4 @@
     (main (reverse_TT ((Cons T) ((Cons F) ((Cons T) ((Cons F) Nil))))))
   )
     main))
+(newline)

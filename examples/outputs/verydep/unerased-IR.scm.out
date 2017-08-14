@@ -17,5 +17,5 @@ Error: postulate
 	<syntax>	  (##core#undefined)
 	<syntax>	  (##core#undefined)
 	<syntax>	  (##core#undefined)
-	<eval>	  (print (letrec* ((Void (error "postulate")) (Maybe (lambda (e0) (quasiquote (Maybe (unquote e0))))) ...
+	<eval>	  (display (letrec* ((Void (error "postulate")) (Maybe (lambda (e0) (quasiquote (Maybe (unquote e0))))...
 	<eval>	  (error "postulate")	<--

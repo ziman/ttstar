@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(print
+(display
   (letrec* (
     (TyEq (curried-lambda (e0 e1)
       `(TyEq ,e0 ,e1)))
@@ -63,3 +63,4 @@
     (main ((loopy Type) Type))
   )
     main))
+(newline)

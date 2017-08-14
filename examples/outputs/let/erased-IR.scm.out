@@ -16,6 +16,6 @@ Error: postulate
 	<syntax>	  (##core#undefined)
 	<syntax>	  (##core#undefined)
 	<syntax>	  (##core#undefined)
-	<eval>	  (print (letrec* ((Z (quasiquote (Z))) (S (lambda (e0) (quasiquote (S (unquote e0))))) (plus (curried...
+	<eval>	  (display (letrec* ((Z (quasiquote (Z))) (S (lambda (e0) (quasiquote (S (unquote e0))))) (plus (curri...
 	<eval>	  (##sys#list (##core#quote Z))
 	<eval>	  (error "postulate")	<--

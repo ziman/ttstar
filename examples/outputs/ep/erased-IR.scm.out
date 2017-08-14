@@ -15,7 +15,7 @@ Error: postulate
 	<syntax>	  (##core#undefined)
 	<syntax>	  (##core#undefined)
 	<syntax>	  (##core#undefined)
-	<eval>	  (print (letrec* ((A (quasiquote (A))) (B (quasiquote (B))) (Op (error "postulate")) (constA A) (appl...
+	<eval>	  (display (letrec* ((A (quasiquote (A))) (B (quasiquote (B))) (Op (error "postulate")) (constA A) (ap...
 	<eval>	  (##sys#list (##core#quote A))
 	<eval>	  (##sys#list (##core#quote B))
 	<eval>	  (error "postulate")	<--

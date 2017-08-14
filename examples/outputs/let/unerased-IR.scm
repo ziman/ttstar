@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(print
+(display
   (letrec* (
     (Nat `(Nat))
     (Z `(Z))
@@ -69,3 +69,4 @@
       ((plus ((apply_TT id) (S (S Z)))) ((apply_TT (const Q)) three))))
   )
     main))
+(newline)

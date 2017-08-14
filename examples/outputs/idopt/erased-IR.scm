@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(print
+(display
   (letrec* (
     (FZ `(FZ))
     (FS (lambda (e0)
@@ -54,3 +54,4 @@
     (main ((P (fsuc (FS FZ))) (FS (FS FZ))))
   )
     main))
+(newline)

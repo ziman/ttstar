@@ -12,7 +12,7 @@ Error: postulate
 	<syntax>	  (##core#undefined)
 	<syntax>	  (##core#undefined)
 	<syntax>	  (##core#undefined)
-	<eval>	  (print (letrec* ((Bool (quasiquote (Bool))) (True (quasiquote (True))) (False (quasiquote (False))) ...
+	<eval>	  (display (letrec* ((Bool (quasiquote (Bool))) (True (quasiquote (True))) (False (quasiquote (False))...
 	<eval>	  (##sys#list (##core#quote Bool))
 	<eval>	  (##sys#list (##core#quote True))
 	<eval>	  (##sys#list (##core#quote False))

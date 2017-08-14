@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(print
+(display
   (letrec* (
     (Nat `(Nat))
     (Z `(Z))
@@ -157,3 +157,4 @@
       (((((add inputSize) ((binVal True) inputSize)) ((binVal False) inputSize)) x) y)))
   )
     main))
+(newline)

@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(print
+(display
   (letrec* (
     (Nat `(Nat))
     (Z `(Z))
@@ -146,3 +146,4 @@
     (main ((R example1) example2))
   )
     main))
+(newline)

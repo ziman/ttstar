@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(print
+(display
   (letrec* (
     (Z `(Z))
     (S (lambda (e0)
@@ -67,3 +67,4 @@
         x)) (S (S Z)))) ((apply_TT (const Q)) three))))
   )
     main))
+(newline)

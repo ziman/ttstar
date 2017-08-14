@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(print
+(display
   (letrec* (
     (Id (curried-lambda (e0 e1 e2)
       `(Id ,e0 ,e1 ,e2)))
@@ -98,3 +98,4 @@
     (main (reverse_TT ((Cons T) ((Cons F) ((Cons T) ((Cons F) Nil))))))
   )
     main))
+(newline)

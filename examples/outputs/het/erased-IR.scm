@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(print
+(display
   (letrec* (
     (Tuple (error "postulate"))
     (Bool `(Bool))
@@ -61,3 +61,4 @@
     (main ((((Tuple (f T)) (f F)) (f Q)) (f W)))
   )
     main))
+(newline)

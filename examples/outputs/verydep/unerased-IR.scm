@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(print
+(display
   (letrec* (
     (Void (error "postulate"))
     (Maybe (lambda (e0)
@@ -66,3 +66,4 @@
     (main (f ((Just Bool) False)))
   )
     main))
+(newline)

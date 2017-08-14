@@ -7,7 +7,9 @@ indent :: Doc -> Doc
 indent = nest 2
 
 codegen :: IR -> Doc
-codegen prog = parens (text "print" $+$ indent (cgTm prog))
+codegen prog = 
+    parens (text "display" $+$ indent (cgTm prog))
+    $$ parens (text "newline")
 
 pv :: Int -> Doc
 pv i = text "_pv" <> int i

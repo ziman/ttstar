@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(print
+(display
   (letrec* (
     (Z `(Z))
     (S (lambda (e0)
@@ -61,3 +61,4 @@
     (main (even (S (S (S (S (S Z)))))))
   )
     main))
+(newline)

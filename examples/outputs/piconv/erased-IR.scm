@@ -43,10 +43,11 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(print
+(display
   (letrec* (
     (A `(A))
     (const_A A)
     (main const_A)
   )
     main))
+(newline)

@@ -8,7 +8,7 @@ Error: postulate
 	<syntax>	  (##core#undefined)
 	<syntax>	  (##core#undefined)
 	<syntax>	  (##core#undefined)
-	<eval>	  (print (letrec* ((N (quasiquote (N))) (Z (quasiquote (Z))) (S (lambda (e0) (quasiquote (S (unquote e...
+	<eval>	  (display (letrec* ((N (quasiquote (N))) (Z (quasiquote (Z))) (S (lambda (e0) (quasiquote (S (unquote...
 	<eval>	  (##sys#list (##core#quote N))
 	<eval>	  (##sys#list (##core#quote Z))
 	<eval>	  (##sys#list (##core#quote B))

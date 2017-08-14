@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(print
+(display
   (letrec* (
     (N `(N))
     (Z `(Z))
@@ -65,3 +65,4 @@
     (main (((((append_TT N) Z) (S Z)) (Nil N)) ((((Cons N) Z) (S (S (S (S Z))))) (Nil N))))
   )
     main))
+(newline)

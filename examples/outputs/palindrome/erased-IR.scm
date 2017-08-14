@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(print
+(display
   (letrec* (
     (Z `(Z))
     (S (lambda (e0)
@@ -132,3 +132,4 @@
       (isJust (isPalindrome inputList))))
   )
     main))
+(newline)
