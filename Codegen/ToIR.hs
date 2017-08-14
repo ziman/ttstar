@@ -50,7 +50,7 @@ argNames _ = []
 
 compile :: S.Set Name -> Int -> [Clause ()] -> IBody
 compile cs pv clauses
-    = ICaseFun pvars $ matchSort cs pv' pvars pats (ILeaf $ IError "unreachable case")
+    = ICaseFun pvars $ matchSort cs pv' pvars pats Nothing
   where
     pv' = pv + width
     pvars = [pv + i | i <- [0..width-1]]
@@ -59,22 +59,27 @@ compile cs pv clauses
           | otherwise = error "compile: pat width mismatch"
     pats = [(map snd . snd $ unApplyPat lhs, rhs) | Clause pvs lhs rhs <- clauses]
 
-matchSort :: S.Set Name -> Int -> [Int] -> [([Pat ()], TT ())] -> ICaseTree -> ICaseTree
+matchSort :: S.Set Name -> Int -> [Int] -> [([Pat ()], TT ())] -> Maybe ICaseTree -> ICaseTree
 matchSort cs pv vars pats err = match cs pv vars pats err
 
-match :: S.Set Name -> Int -> [Int] -> [([Pat ()], TT ())] -> ICaseTree -> ICaseTree
+match :: S.Set Name -> Int -> [Int] -> [([Pat ()], TT ())] -> Maybe ICaseTree -> ICaseTree
 --match cs pv vars pats err | ("MATCH", pv, vars, pats, err) `traceShow` False = undefined
-match cs pv vars [] err = err
+match cs pv vars [] Nothing = {-ILeaf $ IError "pattern match failure" -} error $ "match: no fallback tree: " ++ show (cs, pv, vars)
+match cs pv vars [] (Just err) = err
 match cs pv [] [(ps, rhs)] err = ILeaf $ irTm cs pv rhs
 match cs pv [] ((ps, rhs):_) err = ILeaf $ irTm cs pv rhs  -- overlapping patterns
 match cs pv vars pats err
     | isVar firstPat
     = let (pats', rest) = span (isVar . head . fst) pats
-        in ruleVar cs pv vars pats' $ match cs pv vars rest err
+        in ruleVar cs pv vars pats' $ case rest of
+                                        [] -> Nothing
+                                        _  -> Just (match cs pv vars rest err)
 
     | isCtor firstPat
     = let (pats', rest) = span (isCtor . head . fst) pats
-        in ruleCtor cs pv vars pats' $ match cs pv vars rest err
+        in ruleCtor cs pv vars pats' $ case rest of
+                                        [] -> Nothing
+                                        _  -> Just (match cs pv vars rest err)
 
     | otherwise
     = error $ "match: unsupported pattern: " ++ show firstPat
@@ -88,15 +93,15 @@ match cs pv vars pats err
     isCtor pat@(PApp r f x) | (PV cn, args) <- unApplyPat pat = True
     isCtor _ = False
 
-ruleVar :: S.Set Name -> Int -> [Int] -> [([Pat ()], TT ())] -> ICaseTree -> ICaseTree
+ruleVar :: S.Set Name -> Int -> [Int] -> [([Pat ()], TT ())] -> Maybe ICaseTree -> ICaseTree
 ruleVar cs pv [] pats err = error $ "ruleVar: empty vars"
 ruleVar cs pv (v:vs) pats err = matchSort cs pv vs pats' err
   where
     pats' = [(ps, subst n (V $ MN "pv" v) rhs) | (PV n : ps, rhs) <- pats]
 
-ruleCtor :: S.Set Name -> Int -> [Int] -> [([Pat ()], TT ())] -> ICaseTree -> ICaseTree
+ruleCtor :: S.Set Name -> Int -> [Int] -> [([Pat ()], TT ())] -> Maybe ICaseTree -> ICaseTree
 ruleCtor cs pv [] pats err = error $ "ruleCtor: empty vars"
-ruleCtor cs pv (v:vs) pats err = ICase v $ alts ++ [IDefault err]
+ruleCtor cs pv (v:vs) pats err = ICase v alts'
   where
     getCtor (p : ps, rhs) | (PV cn, args) <- unApplyPat p = cn
     getCtor tm = error $ "getCtor: " ++ show tm
@@ -104,8 +109,10 @@ ruleCtor cs pv (v:vs) pats err = ICase v $ alts ++ [IDefault err]
     sorted = sortBy (comparing fst) [(irName $ getCtor p, p) | p <- pats]
     grouped = groupBy ((==) `on` fst) sorted
     alts = map (\grp -> mkAlt cs pv vs grp err) grouped
+    alts' | Just e <- err = alts ++ [IDefault e]
+          | otherwise     = alts
 
-mkAlt :: S.Set Name -> Int -> [Int] -> [(IName, ([Pat ()], TT ()))] -> ICaseTree -> IAlt
+mkAlt :: S.Set Name -> Int -> [Int] -> [(IName, ([Pat ()], TT ()))] -> Maybe ICaseTree -> IAlt
 mkAlt cs pv vs grp err
     = ICtor cn pvs $ matchSort cs pv' vs' pats' err
   where
