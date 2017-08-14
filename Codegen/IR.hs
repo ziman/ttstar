@@ -1,8 +1,7 @@
 module Codegen.IR where
 
 data IName
-    = IMN String Int  -- number-disambiguated name
-    | IPV Int         -- pattern variable
+    = IUN String
     deriving (Eq, Ord, Show)
 
 data IR
@@ -14,7 +13,7 @@ data IR
     deriving (Eq, Ord, Show)
 
 data IBody
-    = ICaseTree ICaseTree
+    = ICaseFun [Int] ICaseTree
     | IConstructor Int
     | IForeign String
     deriving (Eq, Ord, Show)
@@ -25,6 +24,6 @@ data ICaseTree
     deriving (Eq, Ord, Show)
 
 data IAlt
-    = ICtor IName [IName] ICaseTree
+    = ICtor IName [Int] ICaseTree
     | IDefault ICaseTree
     deriving (Eq, Ord, Show)
