@@ -30,7 +30,16 @@ letPrefix ir = ([], ir)
 cgBody :: IName -> IBody -> Doc
 cgBody n (IConstructor arity) = cgCtor n arity
 cgBody n (IForeign code) = text code
-cgBody n (ICaseFun pvs ct) = nestLambdas (map pv pvs) $ cgCaseTree ct
+cgBody n (ICaseFun pvs ct) = nestLambdas (map pv pvs) rhs
+  where
+    {-
+    -- use instead of `rhs` above
+    dbg = parens (text "begin"
+        <+> parens (hsep $ text "print" : (text "'" <> cgName n) : map pv pvs)
+        <+> rhs
+      )
+    -}
+    rhs = cgCaseTree ct
 
 cgCaseTree :: ICaseTree -> Doc
 cgCaseTree (ILeaf tm) = cgTm tm
@@ -42,7 +51,12 @@ cgAlt sv (ICtor IBlank pvs rhs) = parens (text "else" <+> cgUnpack sv pvs (cgCas
 cgAlt sv (ICtor cn pvs rhs) = parens (parens (cgName cn) <+> cgUnpack sv pvs (cgCaseTree rhs))
 
 cgCase :: Doc -> [Doc] -> Doc
-cgCase scrut alts = parens (text "case" <+> parens (text "car" <+> scrut) $$ indent (vcat alts))
+cgCase scrut alts = parens (
+    text "case" <+> parens (text "car" <+> scrut)
+    $$ indent (vcat alts)
+    -- $$ indent (parens (text "else" <+> parens (text "error" <+> text "\"match failure\"" <+> scrut)))
+    -- ^^ for debugging
+  )
 
 cgCtor :: IName -> Int -> Doc
 cgCtor n arity
@@ -54,7 +68,7 @@ cgCtor n arity
 cgUnpack :: Int -> [Int] -> Doc -> Doc
 cgUnpack scrut [] rhs = rhs
 cgUnpack scrut vs rhs = parens (
-    text "rts-unpack" <+> pv scrut <+> parens (hsep $ map pv vs)
+    text "rts-unpack" <+> parens (text "cdr" <+> pv scrut) <+> parens (hsep $ map pv vs)
     $$ indent rhs
   )
 

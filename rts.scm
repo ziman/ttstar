@@ -6,13 +6,6 @@
     ((curried-lambda (x . xs) body)
       (lambda (x) (curried-lambda xs body)))))
 
-; usage:
-; (define MkPair (constructor MkPair x y))
-(define-syntax constructor
-  (syntax-rules ()
-    ((constructor n . args)
-	  (curried-lambda args (list 'n . args)))))
-
 (define-syntax rts-unpack
   (syntax-rules ()
     ((rts-unpack xs () rhs) rhs)
