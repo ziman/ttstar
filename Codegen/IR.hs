@@ -2,6 +2,7 @@ module Codegen.IR where
 
 data IName
     = IUN String
+    | IBlank
     deriving (Eq, Ord)
 
 data IR

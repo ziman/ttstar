@@ -21,6 +21,7 @@ toIR :: TT () -> IR
 toIR = irTm S.empty 0
 
 irName :: Name -> IName
+irName Blank = IBlank
 irName n = IUN (show n)
 
 irTm :: S.Set Name -> Int -> TT () -> IR
@@ -92,6 +93,7 @@ match cs pv vars pats err
 
     isCtor (PV n) = S.member n cs
     isCtor pat@(PApp r f x) | (PV cn, args) <- unApplyPat pat = True
+    isCtor pat@(PApp r f x) | (PForced _, args) <- unApplyPat pat = True
     isCtor _ = False
 
 ruleVar :: S.Set Name -> Int -> [Int] -> [([Pat ()], TT ())] -> Maybe ICaseTree -> ICaseTree
@@ -108,6 +110,7 @@ ruleCtor cs pv [] pats err = error $ "ruleCtor: empty vars"
 ruleCtor cs pv (v:vs) pats err = ICase v alts'
   where
     getCtor (p : ps, rhs) | (PV cn, args) <- unApplyPat p = cn
+    getCtor (p : ps, rhs) | (PForced _, args) <- unApplyPat p = Blank
     getCtor tm = error $ "getCtor: " ++ show tm
 
     sorted = sortBy (comparing fst) [(irName $ getCtor p, p) | p <- pats]

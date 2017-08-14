@@ -7,13 +7,7 @@ indent :: Doc -> Doc
 indent = nest 2
 
 codegen :: IR -> Doc
-codegen prog
-    = text "(define Type '(Type))"
-    $$ text "(define (number->peano z s i) (if (= i 0) (list z) (list s (number->peano z s (- i 1)))))"
-    $$ text "(define (rts-arg-peano z s i) (number->peano z s (string->number (list-ref (command-line-arguments) i))))"
-    $$ text "(define (rts-arg-read i) (read (open-input-string (list-ref (command-line-arguments) i))))"
-    $$ parens (text "print" $+$ indent (cgTm prog))
-
+codegen prog = parens (text "print" $+$ indent (cgTm prog))
 
 pv :: Int -> Doc
 pv i = text "_pv" <> int i
@@ -40,28 +34,37 @@ cgBody n (ICaseFun pvs ct) = nestLambdas (map pv pvs) $ cgCaseTree ct
 
 cgCaseTree :: ICaseTree -> Doc
 cgCaseTree (ILeaf tm) = cgTm tm
-cgCaseTree (ICase v alts) = cgCase (pv v) (map cgAlt alts)
+cgCaseTree (ICase v alts) = cgCase (pv v) (map (cgAlt v) alts)
 
-cgAlt :: IAlt -> Doc
-cgAlt (IDefault rhs) = parens (text "else" <+> cgCaseTree rhs)
-cgAlt (ICtor cn pvs rhs) = parens (parens(text "'" <> cgName cn) <+> cgCaseTree rhs)
+cgAlt :: Int -> IAlt -> Doc
+cgAlt sv (IDefault rhs) = parens (text "else" <+> cgCaseTree rhs)
+cgAlt sv (ICtor IBlank pvs rhs) = parens (text "else" <+> cgUnpack sv pvs (cgCaseTree rhs))
+cgAlt sv (ICtor cn pvs rhs) = parens (parens (cgName cn) <+> cgUnpack sv pvs (cgCaseTree rhs))
 
 cgCase :: Doc -> [Doc] -> Doc
 cgCase scrut alts = parens (text "case" <+> parens (text "car" <+> scrut) $$ indent (vcat alts))
 
 cgCtor :: IName -> Int -> Doc
 cgCtor n arity
-    = nestLambdas argNs $
-        text"`" <> parens (
-            cgName n
-            <+> hsep [text "," <> n | n <- argNs]
-        )
+    -- = parens (text "constructor" <+> cgName n <+> hsep argNs)
+    = nestLambdas argNs (text "`" <> parens (cgName n <+> hsep [text "," <> n | n <- argNs]))
   where
     argNs = [text "e" <> int i | i <- [0..arity-1]]
 
+cgUnpack :: Int -> [Int] -> Doc -> Doc
+cgUnpack scrut [] rhs = rhs
+cgUnpack scrut vs rhs = parens (
+    text "rts-unpack" <+> pv scrut <+> parens (hsep $ map pv vs)
+    $$ indent rhs
+  )
+
 nestLambdas :: [Doc] -> Doc -> Doc
-nestLambdas [] = id
-nestLambdas (n:ns) = cgLambda (IUN $ show n) . nestLambdas ns
+nestLambdas [] rhs = rhs
+nestLambdas [n] rhs = parens (text "lambda" <+> parens n $+$ indent rhs)
+nestLambdas ns rhs = parens (
+    text "curried-lambda" <+> parens (hsep ns)
+    $$ indent rhs
+  )
 
 cgApp :: Doc -> Doc -> Doc
 cgApp f x = parens (f <+> x)
@@ -75,6 +78,7 @@ specialNames =
     ]
 
 cgName :: IName -> Doc
+cgName IBlank = text "_"
 cgName (IUN n) = text . specialName . concatMap mogrify $ n
   where
     specialName n
@@ -94,7 +98,7 @@ cgLet [(n, body)] rhs = parens (
         $+$ indent rhs
     )
 cgLet defs rhs = parens (
-        text "letrec" <+> text "("
+        text "letrec*" <+> text "("
         $+$ indent (
             vcat [parens (cgName n <+> body) | (n, body) <- defs]
         )

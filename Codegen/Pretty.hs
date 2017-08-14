@@ -11,6 +11,7 @@ instance Show IAlt where show = prettyShow
 
 instance Pretty IName where
     pretty (IUN n) = text n
+    pretty IBlank = text "_"
 
 instance Pretty IR where
     pretty (IV n) = pretty n

@@ -202,7 +202,10 @@ pipeline args = do
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
     dumpTT fname prog = writeFile fname $ "-- vim: ft=ttstar" ++ show prog ++ "\n"
     dumpScheme fname prog = writeFile fname $ render "; " (cgRun Codegen.Scheme.codegen prog) ++ "\n"
-    dumpSchemeIR fname prog = writeFile fname $ render "; " (Codegen.SchemeIR.codegen prog) ++ "\n"
+
+    dumpSchemeIR fname prog = do
+        rts <- readFile "rts.scm"
+        writeFile fname $ rts ++ "\n" ++ render "; " (Codegen.SchemeIR.codegen prog) ++ "\n"
 
     solveConstraints = case Args.solver args of
         Simple  -> fst . Solver.Simple.solve
