@@ -15,6 +15,7 @@ import Codegen.ToIR
 import Codegen.Pretty ()
 import Codegen.Common
 import qualified Codegen.Scheme
+import qualified Codegen.SchemeIR
 
 import Util.PrettyPrint
 
@@ -164,6 +165,11 @@ pipeline args = do
     when (Args.verbose args) $ do
         putStrLn "### Intermediate representation ###"
         print $ toIR optimised
+        putStrLn ""
+
+    when (Args.verbose args) $ do
+        putStrLn "### Scheme from IR ###"
+        print $ Codegen.SchemeIR.codegen (toIR optimised)
         putStrLn ""
 
     case Args.dumpPretty args of
