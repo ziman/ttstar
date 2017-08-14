@@ -15,9 +15,17 @@ pv i = text "_pv" <> int i
 cgTm :: IR -> Doc
 cgTm (IV n) = cgName n
 cgTm (ILam n rhs) = cgLambda n $ cgTm rhs
-cgTm (ILet n body rhs) = cgLet n (cgBody n body) $ cgTm rhs
+cgTm (ILet n body rhs) = cgLet ds $ cgTm rhs'
+  where
+    (ls, rhs') = letPrefix rhs
+    ds = [(n, cgBody n b) | (n, b) <- (n, body) : ls]
+
 cgTm (IApp f x) = cgApp (cgTm f) (cgTm x)
 cgTm (IError s) = cgApp (text "error") (text $ show s)
+
+letPrefix :: IR -> ([(IName, IBody)], IR)
+letPrefix (ILet n body rhs) = let (ls,ir) = letPrefix rhs in ((n,body):ls, ir)
+letPrefix ir = ([], ir)
 
 cgBody :: IName -> IBody -> Doc
 cgBody n (IConstructor arity) = cgCtor n arity
@@ -58,10 +66,18 @@ cgName (IUN n) = text n
 cgLambda :: IName -> Doc -> Doc
 cgLambda n body = parens (text "lambda" <+> parens (cgName n) $+$ indent body)
 
-cgLet :: IName -> Doc -> Doc -> Doc
-cgLet n body rhs = parens (
+cgLet :: [(IName, Doc)] -> Doc -> Doc
+cgLet [(n, body)] rhs = parens (
         text "letrec" <+> parens (
             parens (cgName n <+> body)
         )
+        $+$ indent rhs
+    )
+cgLet defs rhs = parens (
+        text "letrec" <+> text "("
+        $+$ indent (
+            vcat [parens (cgName n <+> body) | (n, body) <- defs]
+        )
+        $+$ text ")"
         $+$ indent rhs
     )
