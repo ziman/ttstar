@@ -14,7 +14,7 @@ Dependently typed core calculus with erasure inference.
 * three constraint solvers
     * simple and straightforward O(n²) solver
     * graph-based constraint solver
-    * indexing solver (default)
+    * indexing solver (fastest, default)
 
 ### Language
 
@@ -34,7 +34,8 @@ Dependently typed core calculus with erasure inference.
     * a codegen from `TT`: via Scheme (Chicken Scheme or Racket)
         * uses the `matchable` extension
     * a codegen from `IR`: produces R6RS Scheme
-        * generated code runs much faster
+        * generated code runs much (~3x) faster when interpreted with `csi`
+        * only about 10% faster than `TT`-generated code when compiled using `csc`
 
 ## Other stuff
 
