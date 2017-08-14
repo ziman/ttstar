@@ -32,4 +32,4 @@ executable ttstar
     Erasure.Evar, Erasure.Infer, Erasure.Prune, Solver.Simple, Solver.Graph,
     Solver.Indexed, Erasure.Specialise, Erasure.Verify, Optimisation.Identity,
     TT.Core, TT.Lens, TT.Normalise, TT.Parser, TT.Pretty, TT.Utils,
-    Util.PrettyPrint, Codegen.IR Codegen.ToIR
+    Util.PrettyPrint, Codegen.IR Codegen.ToIR, Codegen.Pretty

@@ -11,6 +11,7 @@ import Data.List
 import Data.Function
 
 import Debug.Trace
+import Codegen.Pretty
 
 toIR :: TT () -> IR
 toIR = irTm 0

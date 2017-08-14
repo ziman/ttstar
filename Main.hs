@@ -12,6 +12,7 @@ import TT.Normalise
 
 import Codegen.IR
 import Codegen.ToIR
+import Codegen.Pretty
 import Codegen.Common
 import qualified Codegen.Scheme
 
