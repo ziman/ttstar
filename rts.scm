@@ -13,6 +13,23 @@
       (let ((v (car xs)))
         (rts-unpack (cdr xs) vs rhs)))))
 
+(define-syntax rts-case-int
+  (syntax-rules (_)
+    ((rts-case-int tag args)
+     (error "pattern match failure" (list tag args)))
+    ((rts-case-int tag args (_ rhs) . rest)
+     rhs)
+    ((rts-case-int tag args ((_ . pvs) rhs) . rest)
+     (rts-unpack args pvs rhs))
+    ((rts-case-int tag args ((cn . pvs) rhs) . rest)
+     (if (eq? tag 'cn)
+         (rts-unpack args pvs rhs)
+         (rts-case-int tag args . rest)))))
+
+(define-syntax rts-case
+  (syntax-rules ()
+    ((rts-case s . alts) (rts-case-int (car s) (cdr s) . alts))))
+
 (define Type '(Type))
 
 (define (number->peano z s i)

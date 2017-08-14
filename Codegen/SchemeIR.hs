@@ -43,20 +43,21 @@ cgBody n (ICaseFun pvs ct) = nestLambdas (map pv pvs) rhs
 
 cgCaseTree :: ICaseTree -> Doc
 cgCaseTree (ILeaf tm) = cgTm tm
-cgCaseTree (ICase v alts) = cgCase (pv v) (map (cgAlt v) alts)
+cgCaseTree (ICase v alts) = cgCase (pv v) (map cgAlt alts)
 
-cgAlt :: Int -> IAlt -> Doc
-cgAlt sv (IDefault rhs) = parens (text "else" <+> cgCaseTree rhs)
-cgAlt sv (ICtor IBlank pvs rhs) = parens (text "else" <+> cgUnpack sv pvs (cgCaseTree rhs))
-cgAlt sv (ICtor cn pvs rhs) = parens (parens (cgName cn) <+> cgUnpack sv pvs (cgCaseTree rhs))
+cgAlt :: IAlt -> Doc
+cgAlt (IDefault rhs) = parens (text "_" <+> cgCaseTree rhs)
+cgAlt (ICtor IBlank pvs rhs) = parens (
+    parens (text "_" <+> hsep (map pv pvs))
+    <+> cgCaseTree rhs
+  )
+cgAlt (ICtor cn pvs rhs) = parens (
+    parens (cgName cn <+> hsep (map pv pvs))
+    <+> cgCaseTree rhs
+  )
 
 cgCase :: Doc -> [Doc] -> Doc
-cgCase scrut alts = parens (
-    text "case" <+> parens (text "car" <+> scrut)
-    $$ indent (vcat alts)
-    -- $$ indent (parens (text "else" <+> parens (text "error" <+> text "\"match failure\"" <+> scrut)))
-    -- ^^ for debugging
-  )
+cgCase scrut alts = parens (text "rts-case" <+> scrut $$ indent (vcat alts))
 
 cgCtor :: IName -> Int -> Doc
 cgCtor n arity
@@ -65,12 +66,14 @@ cgCtor n arity
   where
     argNs = [text "e" <> int i | i <- [0..arity-1]]
 
+{-
 cgUnpack :: Int -> [Int] -> Doc -> Doc
 cgUnpack scrut [] rhs = rhs
 cgUnpack scrut vs rhs = parens (
     text "rts-unpack" <+> parens (text "cdr" <+> pv scrut) <+> parens (hsep $ map pv vs)
     $$ indent rhs
   )
+-}
 
 nestLambdas :: [Doc] -> Doc -> Doc
 nestLambdas [] rhs = rhs
