@@ -1,10 +1,10 @@
-module Codegen.ToIR (toIR) where
+module IR.FromTT (toIR) where
 
 import TT.Core
 import TT.Utils (unApplyPat, subst)
 import TT.Pretty ()
 
-import Codegen.IR
+import IR.Core
 
 import Data.Ord
 import Data.List

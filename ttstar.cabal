@@ -28,8 +28,8 @@ executable ttstar
   ghc-options:         -Wall -fno-warn-name-shadowing
                        -fno-warn-unused-matches -fno-warn-orphans
 
-  other-modules: Args, Codegen.Common, Codegen.Scheme, Erasure.Annotate,
+  other-modules: Args, Codegen.Scheme, Erasure.Annotate,
     Erasure.Evar, Erasure.Infer, Erasure.Prune, Solver.Simple, Solver.Graph,
     Solver.Indexed, Erasure.Specialise, Erasure.Verify, Optimisation.Identity,
     TT.Core, TT.Lens, TT.Normalise, TT.Parser, TT.Pretty, TT.Utils,
-    Util.PrettyPrint, Codegen.IR Codegen.ToIR, Codegen.Pretty, Codegen.SchemeIR
+    Util.PrettyPrint, IR.Core, IR.FromTT, IR.Pretty, Codegen.SchemeIR

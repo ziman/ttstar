@@ -1,6 +1,6 @@
-module Codegen.Pretty where
+module IR.Pretty where
 
-import Codegen.IR
+import IR.Core
 import Util.PrettyPrint
 
 instance Show IR where show = prettyShow

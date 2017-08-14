@@ -10,9 +10,9 @@ import TT.Utils
 import TT.Parser
 import TT.Normalise
 
-import Codegen.ToIR
-import Codegen.Pretty ()
-import Codegen.Common
+import IR.FromTT
+import IR.Pretty ()
+
 import qualified Codegen.Scheme
 import qualified Codegen.SchemeIR
 
@@ -201,7 +201,7 @@ pipeline args = do
   where
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
     dumpTT fname prog = writeFile fname $ "-- vim: ft=ttstar" ++ show prog ++ "\n"
-    dumpScheme fname prog = writeFile fname $ render "; " (cgRun Codegen.Scheme.codegen prog) ++ "\n"
+    dumpScheme fname prog = writeFile fname $ render "; " (Codegen.Scheme.codegen prog) ++ "\n"
 
     dumpSchemeIR fname prog = do
         rts <- readFile "rts.scm"

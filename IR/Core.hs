@@ -1,4 +1,4 @@
-module Codegen.IR where
+module IR.Core where
 
 data IName
     = IUN String

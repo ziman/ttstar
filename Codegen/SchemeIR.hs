@@ -1,6 +1,6 @@
 module Codegen.SchemeIR (codegen) where
 
-import Codegen.IR
+import IR.Core
 import Util.PrettyPrint
 
 indent :: Doc -> Doc
