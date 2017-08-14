@@ -1,0 +1,21 @@
+
+Error: pattern match failure: (VCons ((Bool) (S (Z)) (True) (VCons (Bool) (Z) (False) (VNil (Bool)))))
+
+	Call history:
+
+	<eval>	  [VNil] (##sys#list (##core#quote VNil) e0)
+	<eval>	  [VCons] (##sys#list (##core#quote VCons) e0 e1 e2 e3)
+	<eval>	  [VCons] (##sys#list (##core#quote VCons) e0 e1 e2 e3)
+	<eval>	  (((vlen Bool) (S (S Z))) testVec)
+	<eval>	  ((vlen Bool) (S (S Z)))
+	<eval>	  (vlen Bool)
+	<eval>	  (S (S Z))
+	<eval>	  (S Z)
+	<eval>	  [S] (##sys#list (##core#quote S) e0)
+	<eval>	  [S] (##sys#list (##core#quote S) e0)
+	<eval>	  [vlen] (eq?284 (car280 _pv2) (quote285 VNil))
+	<eval>	  [vlen] (car280 _pv2)
+	<eval>	  [vlen] (error293 "pattern match failure" (list294 (car280 _pv2) (cdr281 _pv2)))
+	<eval>	  [vlen] (list294 (car280 _pv2) (cdr281 _pv2))
+	<eval>	  [vlen] (car280 _pv2)
+	<eval>	  [vlen] (cdr281 _pv2)	<--

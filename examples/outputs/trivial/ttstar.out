@@ -1,0 +1,57 @@
+-- vim: ft=ttstar
+
+### Desugared ###
+
+  let main :R: (x : Type) -> Type = (\x : Type. x)
+  in main
+
+### Evarified ###
+
+  let main :R: (x :1: Type) -> Type = (\x :2: Type. x)
+  in main
+
+### Constraints ###
+
+[] -> [1,2,R]
+[R] -> [R]
+
+### Solution ###
+
+[1,2,R]
+
+### Annotated ###
+
+  let main :R: (x :R: Type) -> Type = (\x :R: Type. x)
+  in main
+
+### Specialised ###
+
+  let main :R: (x :R: Type) -> Type = (\x :R: Type. x)
+  in main
+
+### Final annotation ###
+
+  let main :R: (x :R: Type) -> Type = (\x :R: Type. x)
+  in main
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+  let main = (\x. x)
+  in main
+
+### Intermediate representation ###
+let main = \x. x
+  in main
+
+### Normal forms ###
+
+unerased:
+  (\x : Type. x)
+
+erased:
+  (\x. x)
+

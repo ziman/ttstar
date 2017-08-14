@@ -1,0 +1,21 @@
+
+Error: pattern match failure: (Just ())
+
+	Call history:
+
+	<eval>	  [semiDecEq] (eq?371 (car367 _pv0) (quote372 Cons))
+	<eval>	  [semiDecEq] (car367 _pv0)
+	<eval>	  [semiDecEq] (eq?444 (car367 _pv0) (quote445 Nil))
+	<eval>	  [semiDecEq] (car367 _pv0)
+	<eval>	  [semiDecEq] (eq?453 (car449 _pv1) (quote454 Cons))
+	<eval>	  [semiDecEq] (car449 _pv1)
+	<eval>	  [semiDecEq] (eq?469 (car449 _pv1) (quote470 Nil))
+	<eval>	  [semiDecEq] (car449 _pv1)
+	<eval>	  [semiDecEq_404] (eq?418 (car414 _pv6) (quote419 Nothing))
+	<eval>	  [semiDecEq_404] (car414 _pv6)
+	<eval>	  [semiDecEq_404] (eq?428 (car424 _pv7) (quote429 Nothing))
+	<eval>	  [semiDecEq_404] (car424 _pv7)
+	<eval>	  [semiDecEq_404] (error432 "pattern match failure" (list433 (car424 _pv7) (cdr425 _pv7)))
+	<eval>	  [semiDecEq_404] (list433 (car424 _pv7) (cdr425 _pv7))
+	<eval>	  [semiDecEq_404] (car424 _pv7)
+	<eval>	  [semiDecEq_404] (cdr425 _pv7)	<--

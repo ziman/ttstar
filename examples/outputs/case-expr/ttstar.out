@@ -1,0 +1,165 @@
+-- vim: ft=ttstar
+
+### Desugared ###
+
+  let
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    constructor Unit : Type
+    constructor MkUnit : Unit
+    not : (_x0 : Bool) -> Bool 
+      [not] T = F
+      [not] F = T
+    retTy : (_x1 : Bool) -> Type 
+      [retTy] T = Bool
+      [retTy] F = Unit
+    main : Bool = not 
+      let f : (x : Bool) -> retTy x 
+        [f] F = MkUnit
+        [f] T = F
+      in f (not F)
+  in main
+
+### Evarified ###
+
+  let
+    constructor Bool :1: Type
+    constructor T :2: Bool
+    constructor F :3: Bool
+    constructor Unit :4: Type
+    constructor MkUnit :5: Unit
+    not :6: (_x0 :7: Bool) -> Bool 
+      [not] -8- T = F
+      [not] -9- F = T
+    retTy :10: (_x1 :11: Bool) -> Type 
+      [retTy] -12- T = Bool
+      [retTy] -13- F = Unit
+    main :14: Bool = not -15- 
+      let f :16: (x :17: Bool) -> retTy -18- x 
+        [f] -19- F = MkUnit
+        [f] -20- T = F
+      in f -21- (not -22- F)
+  in main
+
+### Constraints ###
+
+[] -> [2,3,5,6,7,8,9,15,16,17,19,20,21,22,R]
+[R] -> [14]
+
+### Solution ###
+
+[2,3,5,6,7,8,9,14,15,16,17,19,20,21,22,R]
+
+### Annotated ###
+
+  let
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    constructor Unit :E: Type
+    constructor MkUnit :R: Unit
+    not :R: (_x0 :R: Bool) -> Bool 
+      [not] -R- T = F
+      [not] -R- F = T
+    retTy :E: (_x1 :E: Bool) -> Type 
+      [retTy] -E- T = Bool
+      [retTy] -E- F = Unit
+    main :R: Bool = not -R- 
+      let f :R: (x :R: Bool) -> retTy -E- x 
+        [f] -R- F = MkUnit
+        [f] -R- T = F
+      in f -R- (not -R- F)
+  in main
+
+### Specialised ###
+
+  let
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    constructor Unit :E: Type
+    constructor MkUnit :R: Unit
+    not :R: (_x0 :R: Bool) -> Bool 
+      [not] -R- T = F
+      [not] -R- F = T
+    retTy :E: (_x1 :E: Bool) -> Type 
+      [retTy] -E- T = Bool
+      [retTy] -E- F = Unit
+    main :R: Bool = not -R- 
+      let f :R: (x :R: Bool) -> retTy -E- x 
+        [f] -R- F = MkUnit
+        [f] -R- T = F
+      in f -R- (not -R- F)
+  in main
+
+### Final annotation ###
+
+  let
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    constructor Unit :E: Type
+    constructor MkUnit :R: Unit
+    not :R: (_x0 :R: Bool) -> Bool 
+      [not] -R- T = F
+      [not] -R- F = T
+    retTy :E: (_x1 :E: Bool) -> Type 
+      [retTy] -E- T = Bool
+      [retTy] -E- F = Unit
+    main :R: Bool = not -R- 
+      let f :R: (x :R: Bool) -> retTy -E- x 
+        [f] -R- F = MkUnit
+        [f] -R- T = F
+      in f -R- (not -R- F)
+  in main
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+  let
+    constructor T : Bool
+    constructor F : Bool
+    constructor MkUnit : Unit
+    not 
+      [_] T = F
+      [_] F = T
+    main = not 
+      let f 
+        [_] F = MkUnit
+        [_] T = F
+      in f (not F)
+  in main
+
+### Intermediate representation ###
+let T = constructor 0
+  in let F = constructor 0
+    in let MkUnit = constructor 0
+      in let not = \_pv0.
+        case _pv0 of
+          F => T
+          T => F
+        in let main = (not let f = \_pv0.
+          case _pv0 of
+            F => MkUnit
+            T => F
+          in (f (not F)))
+          in main
+
+### Normal forms ###
+
+unerased:
+  
+  let
+    constructor Bool : Type
+    constructor T : Bool
+  in T
+
+erased:
+  
+  let constructor T : Bool
+  in T
+

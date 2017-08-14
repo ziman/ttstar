@@ -1,0 +1,21 @@
+
+Error: postulate
+
+	Call history:
+
+	<syntax>	  (Just Bool)
+	<syntax>	  (##core#begin (##core#let () main))
+	<syntax>	  (##core#let () main)
+	<syntax>	  (##core#begin main)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<eval>	  (print (letrec* ((Void (error "postulate")) (Maybe (lambda (e0) (quasiquote (Maybe (unquote e0))))) ...
+	<eval>	  (error "postulate")	<--

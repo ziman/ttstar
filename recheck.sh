@@ -56,26 +56,31 @@ for i in examples/*.tt; do
     n_src="${i%.tt}"
     n="${n_src/examples/examples\/outputs}"
 
-    rm -f "${n}"{,-unerased}{,-NF}.*
+    mkdir -p "${n}"
+    find "${n}" -type f | xargs rm
     echo $i
 
-    ./ttstar -v "$i" &> "${n}.out" \
+    ./ttstar -v "$i" &> "${n}/ttstar.out" \
         || continue  # skip if it doesn't typecheck
 
     ./ttstar "$i" \
         --opt-identity \
-        --dump-pretty "${n}-erased.tt" \
-        --dump-scheme "${n}.scm" \
-        --dump-nf     "${n}-NF.tt" \
-        --dump-nf-scheme "${n}-NF.scm" \
-        && scheme "${n}.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}.scm.out" \
-        && scheme "${n}-NF.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}-NF.scm.out"
+        --dump-pretty "${n}/erased.tt" \
+        --dump-scheme "${n}/erased.scm" \
+        --dump-scheme-ir "${n}/erased-IR.scm" \
+        --dump-nf     "${n}/erased-NF.tt" \
+        --dump-nf-scheme "${n}/erased-NF.scm" \
+        && scheme "${n}/erased.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}/erased.scm.out" \
+        && scheme "${n}/erased-IR.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}/erased-IR.scm.out" \
+        && scheme "${n}/erased-NF.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}/erased-NF.scm.out"
 
     ./ttstar "$i" --skip-inference \
-        --dump-pretty "${n}-unerased.tt" \
-        --dump-scheme "${n}-unerased.scm" \
-        --dump-nf     "${n}-unerased-NF.tt" \
-        --dump-nf-scheme "${n}-unerased-NF.scm" \
-        && scheme "${n}-unerased.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}-unerased.scm.out" \
-        && scheme "${n}-unerased-NF.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}-unerased-NF.scm.out"
+        --dump-pretty "${n}/unerased.tt" \
+        --dump-scheme "${n}/unerased.scm" \
+        --dump-scheme-ir "${n}/unerased-IR.scm" \
+        --dump-nf     "${n}/unerased-NF.tt" \
+        --dump-nf-scheme "${n}/unerased-NF.scm" \
+        && scheme "${n}/unerased.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}/unerased.scm.out" \
+        && scheme "${n}/unerased-IR.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}/unerased-IR.scm.out" \
+        && scheme "${n}/unerased-NF.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}/unerased-NF.scm.out"
 done

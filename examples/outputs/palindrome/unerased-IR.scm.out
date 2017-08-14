@@ -1,0 +1,21 @@
+
+Error: postulate
+
+	Call history:
+
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<eval>	  (print (letrec* ((N (quasiquote (N))) (Z (quasiquote (Z))) (S (lambda (e0) (quasiquote (S (unquote e...
+	<eval>	  (##sys#list (##core#quote N))
+	<eval>	  (##sys#list (##core#quote Z))
+	<eval>	  (##sys#list (##core#quote B))
+	<eval>	  (##sys#list (##core#quote T))
+	<eval>	  (##sys#list (##core#quote F))
+	<eval>	  (##sys#list (##core#quote List))
+	<eval>	  (##sys#list (##core#quote Nil))
+	<eval>	  (##sys#list (##core#quote RNil))
+	<eval>	  (##sys#list (##core#quote VNil))
+	<eval>	  (error "postulate")	<--

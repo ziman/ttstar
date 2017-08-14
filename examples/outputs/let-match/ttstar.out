@@ -1,0 +1,116 @@
+-- vim: ft=ttstar
+
+### Desugared ###
+
+  let
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    main : Bool = 
+      let not : (_x0 : Bool) -> Bool 
+        [not] T = F
+        [not] F = T
+      in not F
+  in main
+
+### Evarified ###
+
+  let
+    constructor Bool :1: Type
+    constructor T :2: Bool
+    constructor F :3: Bool
+    main :4: Bool = 
+      let not :6: (_x0 :7: Bool) -> Bool 
+        [not] -8- T = F
+        [not] -9- F = T
+      in not -5- F
+  in main
+
+### Constraints ###
+
+[] -> [2,3,5,6,7,8,9,R]
+[R] -> [4]
+
+### Solution ###
+
+[2,3,4,5,6,7,8,9,R]
+
+### Annotated ###
+
+  let
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    main :R: Bool = 
+      let not :R: (_x0 :R: Bool) -> Bool 
+        [not] -R- T = F
+        [not] -R- F = T
+      in not -R- F
+  in main
+
+### Specialised ###
+
+  let
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    main :R: Bool = 
+      let not :R: (_x0 :R: Bool) -> Bool 
+        [not] -R- T = F
+        [not] -R- F = T
+      in not -R- F
+  in main
+
+### Final annotation ###
+
+  let
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    main :R: Bool = 
+      let not :R: (_x0 :R: Bool) -> Bool 
+        [not] -R- T = F
+        [not] -R- F = T
+      in not -R- F
+  in main
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+  let
+    constructor T : Bool
+    constructor F : Bool
+    main = 
+      let not 
+        [_] T = F
+        [_] F = T
+      in not F
+  in main
+
+### Intermediate representation ###
+let T = constructor 0
+  in let F = constructor 0
+    in let main = (let not = \_pv0.
+      case _pv0 of
+        F => T
+        T => F
+      in not F)
+      in main
+
+### Normal forms ###
+
+unerased:
+  
+  let
+    constructor Bool : Type
+    constructor T : Bool
+  in T
+
+erased:
+  
+  let constructor T : Bool
+  in T
+

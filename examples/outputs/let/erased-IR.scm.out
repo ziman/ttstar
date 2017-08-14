@@ -1,0 +1,21 @@
+
+Error: postulate
+
+	Call history:
+
+	<syntax>	  ((apply_TT (const Q)) three)
+	<syntax>	  (apply_TT (const Q))
+	<syntax>	  (const Q)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#let () main)
+	<syntax>	  (##core#begin main)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<eval>	  (print (letrec* ((Z (quasiquote (Z))) (S (lambda (e0) (quasiquote (S (unquote e0))))) (plus (curried...
+	<eval>	  (##sys#list (##core#quote Z))
+	<eval>	  (error "postulate")	<--

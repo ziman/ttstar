@@ -1,0 +1,161 @@
+-- vim: ft=ttstar
+
+### Desugared ###
+
+  let
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    constructor TwoBools : Type
+    constructor TB : (x :R: Bool) -> (y :R: Bool) -> TwoBools
+    id : (_x0 : Bool) -> Bool = (\x : Bool. x)
+    constT : (_x1 : Bool) -> Bool = (\_0 : Bool. T)
+    fty : (_x2 : Bool) -> Type 
+      [fty] T = (_x3 : Bool) -> Bool
+      [fty] F = (_x4 : Bool) -> Bool
+    f : (x : Bool) -> fty x 
+      [f] T = id
+      [f] F = constT
+    main : TwoBools = TB (f T F) (f F F)
+  in main
+
+### Evarified ###
+
+  let
+    constructor Bool :1: Type
+    constructor T :2: Bool
+    constructor F :3: Bool
+    constructor TwoBools :4: Type
+    constructor TB :5: (x :R: Bool) -> (y :R: Bool) -> TwoBools
+    id :6: (_x0 :7: Bool) -> Bool = (\x :8: Bool. x)
+    constT :9: (_x1 :10: Bool) -> Bool = (\_0 :11: Bool. T)
+    fty :12: (_x2 :13: Bool) -> Type 
+      [fty] -14- T = (_x3 :15: Bool) -> Bool
+      [fty] -16- F = (_x4 :17: Bool) -> Bool
+    f :18: (x :19: Bool) -> fty -20- x 
+      [f] -21- T = id
+      [f] -22- F = constT
+    main :23: TwoBools = TB -25- (f -27- T -26- F) -24- (f -29- F -28- F)
+  in main
+
+### Constraints ###
+
+[] -> [2,3,5,6,7,8,9,15,18,19,21,22,24,25,26,27,29,R]
+[10] -> [11,17]
+[11] -> [10]
+[17] -> [10,28]
+[28] -> [3,17]
+[R] -> [23]
+
+### Solution ###
+
+[2,3,5,6,7,8,9,15,18,19,21,22,23,24,25,26,27,29,R]
+
+### Annotated ###
+
+  let
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    constructor TwoBools :E: Type
+    constructor TB :R: (x :R: Bool) -> (y :R: Bool) -> TwoBools
+    id :R: (_x0 :R: Bool) -> Bool = (\x :R: Bool. x)
+    constT :R: (_x1 :E: Bool) -> Bool = (\_0 :E: Bool. T)
+    fty :E: (_x2 :E: Bool) -> Type 
+      [fty] -E- T = (_x3 :R: Bool) -> Bool
+      [fty] -E- F = (_x4 :E: Bool) -> Bool
+    f :R: (x :R: Bool) -> fty -E- x 
+      [f] -R- T = id
+      [f] -R- F = constT
+    main :R: TwoBools = TB -R- (f -R- T -R- F) -R- (f -R- F -E- F)
+  in main
+
+### Specialised ###
+
+  let
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    constructor TwoBools :E: Type
+    constructor TB :R: (x :R: Bool) -> (y :R: Bool) -> TwoBools
+    id :R: (_x0 :R: Bool) -> Bool = (\x :R: Bool. x)
+    constT :R: (_x1 :E: Bool) -> Bool = (\_0 :E: Bool. T)
+    fty :E: (_x2 :E: Bool) -> Type 
+      [fty] -E- T = (_x3 :R: Bool) -> Bool
+      [fty] -E- F = (_x4 :E: Bool) -> Bool
+    f :R: (x :R: Bool) -> fty -E- x 
+      [f] -R- T = id
+      [f] -R- F = constT
+    main :R: TwoBools = TB -R- (f -R- T -R- F) -R- (f -R- F -E- F)
+  in main
+
+### Final annotation ###
+
+  let
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    constructor TwoBools :E: Type
+    constructor TB :R: (x :R: Bool) -> (y :R: Bool) -> TwoBools
+    id :R: (_x0 :R: Bool) -> Bool = (\x :R: Bool. x)
+    constT :R: (_x1 :E: Bool) -> Bool = (\_0 :E: Bool. T)
+    fty :E: (_x2 :E: Bool) -> Type 
+      [fty] -E- T = (_x3 :R: Bool) -> Bool
+      [fty] -E- F = (_x4 :E: Bool) -> Bool
+    f :R: (x :R: Bool) -> fty -E- x 
+      [f] -R- T = id
+      [f] -R- F = constT
+    main :R: TwoBools = TB -R- (f -R- T -R- F) -R- (f -R- F -E- F)
+  in main
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+  let
+    constructor T : Bool
+    constructor F : Bool
+    constructor TB : (x) -> (y) -> TwoBools
+    id = (\x. x)
+    constT = T
+    f 
+      [_] T = id
+      [_] F = constT
+    main = TB (f T F) (f F)
+  in main
+
+### Intermediate representation ###
+let T = constructor 0
+  in let F = constructor 0
+    in let TB = constructor 2
+      in let id = \x. x
+        in let constT = T
+          in let f = \_pv0.
+            case _pv0 of
+              F => constT
+              T => id
+            in let main = ((TB ((f T) F)) (f F))
+              in main
+
+### Normal forms ###
+
+unerased:
+  
+  let
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    constructor TwoBools : Type
+    constructor TB : (x :R: Bool) -> (y :R: Bool) -> TwoBools
+  in TB F T
+
+erased:
+  
+  let
+    constructor T : Bool
+    constructor F : Bool
+    constructor TB : (x) -> (y) -> TwoBools
+  in TB F T
+

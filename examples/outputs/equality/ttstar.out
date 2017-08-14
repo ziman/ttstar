@@ -1,0 +1,216 @@
+-- vim: ft=ttstar
+
+### Desugared ###
+
+  let
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    constructor Id : (a : Type) -> (x : a) -> (y : a) -> Type
+    constructor Refl : (a : Type) -> (x : a) -> Id a x x
+    not : (_x0 : Bool) -> Bool 
+      [not] T = F
+      [not] F = T
+    notnot : (x : Bool) -> Id Bool x (not (not x)) 
+      [notnot] T = Refl Bool T
+      [notnot] F = Refl Bool F
+    subst : (a : Type) -> (P : (_x1 : a) -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -> (w : P x) -> P y 
+      a : Type P : (_x2 : a) -> Type x : a
+        [subst] a P x [x] [Refl a x] = (\w : P x. w)
+    main : Id Bool F (not (not F)) = notnot (subst Type (\a : Type. a) Bool Bool (Refl Type Bool) F)
+  in main
+
+### Evarified ###
+
+  let
+    constructor Bool :1: Type
+    constructor T :2: Bool
+    constructor F :3: Bool
+    constructor Id :4: (a :5: Type) -> (x :6: a) -> (y :7: a) -> Type
+    constructor Refl :8: (a :9: Type) -> (x :10: a) -> Id -13- a -12- x -11- x
+    not :14: (_x0 :15: Bool) -> Bool 
+      [not] -16- T = F
+      [not] -17- F = T
+    notnot :18: (x :19: Bool) -> Id -22- Bool -21- x -20- (not -23- (not -24- x)) 
+      [notnot] -25- T = Refl -27- Bool -26- T
+      [notnot] -28- F = Refl -30- Bool -29- F
+    subst :31: (a :32: Type) -> (P :33: (_x1 :34: a) -> Type) -> (x :35: a) -> (y :36: a) -> (eq :37: Id -40- a -39- x -38- y) -> (w :41: P -42- x) -> P -43- y 
+      a :44: Type P :45: (_x2 :46: a) -> Type x :47: a
+        [subst] -52- a -51- P -50- x -49- [x] -48- [Refl -54- a -53- x] = (\w :55: P -56- x. w)
+    main :57: Id -60- Bool -59- F -58- (not -61- (not -62- F)) = notnot -63- (subst -69- Type -68- (\a :70: Type. a) -67- Bool -66- Bool -65- (Refl -72- Type -71- Bool) -64- F)
+  in main
+
+### Constraints ###
+
+[] -> [2,3,8,18,19,25,28,31,41,55,63,64,R]
+[9] -> [27,30]
+[9,48] -> [54]
+[9,65] -> [72]
+[10] -> [26,29]
+[10,48] -> [53]
+[10,65] -> [71]
+[11] -> [20]
+[11,48] -> [38]
+[11,65] -> [38]
+[12] -> [21]
+[12,48] -> [39]
+[12,65] -> [39]
+[13] -> [22]
+[13,48] -> [40]
+[13,65] -> [40]
+[20] -> [11,58]
+[21] -> [12,59]
+[22] -> [13,60]
+[26] -> [2,10]
+[27] -> [1,9]
+[29] -> [3,10]
+[30] -> [1,9]
+[32] -> [52,69]
+[33] -> [51,68]
+[34,51] -> [46]
+[34,68] -> [70]
+[35] -> [50,67]
+[36] -> [49,66]
+[37] -> [48,65]
+[38,48] -> [11]
+[38,65] -> [11]
+[39,48] -> [12]
+[39,65] -> [12]
+[40,48] -> [13]
+[40,65] -> [13]
+[42] -> [56]
+[43] -> [56]
+[44] -> [52]
+[45] -> [51]
+[46,51] -> [34]
+[47] -> [50]
+[48] -> [8,37,R]
+[48,53] -> [10,47]
+[48,54] -> [9,44]
+[49] -> [36,47,R]
+[50] -> [35,R]
+[51] -> [33,R]
+[52] -> [32,R]
+[56] -> [42,43]
+[58] -> [20]
+[59] -> [21]
+[60] -> [22]
+[65] -> [8,37]
+[65,71] -> [1,10]
+[65,72] -> [9,R]
+[66] -> [1,36]
+[67] -> [1,35]
+[68] -> [33,70]
+[68,70] -> [34]
+[69] -> [32,R]
+[R] -> [57]
+
+### Solution ###
+
+[2,3,8,18,19,25,28,31,41,55,57,63,64,R]
+
+### Annotated ###
+
+  let
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    constructor Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
+    constructor Refl :R: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+    not :E: (_x0 :E: Bool) -> Bool 
+      [not] -E- T = F
+      [not] -E- F = T
+    notnot :R: (x :R: Bool) -> Id -E- Bool -E- x -E- (not -E- (not -E- x)) 
+      [notnot] -R- T = Refl -E- Bool -E- T
+      [notnot] -R- F = Refl -E- Bool -E- F
+    subst :R: (a :E: Type) -> (P :E: (_x1 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (w :R: P -E- x) -> P -E- y 
+      a :E: Type P :E: (_x2 :E: a) -> Type x :E: a
+        [subst] -E- a -E- P -E- x -E- [x] -E- [Refl -E- a -E- x] = (\w :R: P -E- x. w)
+    main :R: Id -E- Bool -E- F -E- (not -E- (not -E- F)) = notnot -R- (subst -E- Type -E- (\a :E: Type. a) -E- Bool -E- Bool -E- (Refl -E- Type -E- Bool) -R- F)
+  in main
+
+### Specialised ###
+
+  let
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    constructor Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
+    constructor Refl :R: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+    not :E: (_x0 :E: Bool) -> Bool 
+      [not] -E- T = F
+      [not] -E- F = T
+    notnot :R: (x :R: Bool) -> Id -E- Bool -E- x -E- (not -E- (not -E- x)) 
+      [notnot] -R- T = Refl -E- Bool -E- T
+      [notnot] -R- F = Refl -E- Bool -E- F
+    subst :R: (a :E: Type) -> (P :E: (_x1 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (w :R: P -E- x) -> P -E- y 
+      a :E: Type P :E: (_x2 :E: a) -> Type x :E: a
+        [subst] -E- a -E- P -E- x -E- [x] -E- [Refl -E- a -E- x] = (\w :R: P -E- x. w)
+    main :R: Id -E- Bool -E- F -E- (not -E- (not -E- F)) = notnot -R- (subst -E- Type -E- (\a :E: Type. a) -E- Bool -E- Bool -E- (Refl -E- Type -E- Bool) -R- F)
+  in main
+
+### Final annotation ###
+
+  let
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    constructor Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
+    constructor Refl :R: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+    not :E: (_x0 :E: Bool) -> Bool 
+      [not] -E- T = F
+      [not] -E- F = T
+    notnot :R: (x :R: Bool) -> Id -E- Bool -E- x -E- (not -E- (not -E- x)) 
+      [notnot] -R- T = Refl -E- Bool -E- T
+      [notnot] -R- F = Refl -E- Bool -E- F
+    subst :R: (a :E: Type) -> (P :E: (_x1 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (w :R: P -E- x) -> P -E- y 
+      a :E: Type P :E: (_x2 :E: a) -> Type x :E: a
+        [subst] -E- a -E- P -E- x -E- [x] -E- [Refl -E- a -E- x] = (\w :R: P -E- x. w)
+    main :R: Id -E- Bool -E- F -E- (not -E- (not -E- F)) = notnot -R- (subst -E- Type -E- (\a :E: Type. a) -E- Bool -E- Bool -E- (Refl -E- Type -E- Bool) -R- F)
+  in main
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+  let
+    constructor T : Bool
+    constructor F : Bool
+    constructor Refl : Id
+    notnot 
+      [_] T = Refl
+      [_] F = Refl
+    subst = (\w. w)
+    main = notnot (subst F)
+  in main
+
+### Intermediate representation ###
+let T = constructor 0
+  in let F = constructor 0
+    in let Refl = constructor 0
+      in let notnot = \_pv0.
+        case _pv0 of
+          F => Refl
+          T => Refl
+        in let subst = \w. w
+          in let main = (notnot (subst F))
+            in main
+
+### Normal forms ###
+
+unerased:
+  
+  let
+    constructor Bool : Type
+    constructor F : Bool
+    constructor Id : (a : Type) -> (x : a) -> (y : a) -> Type
+    constructor Refl : (a : Type) -> (x : a) -> Id a x x
+  in Refl Bool F
+
+erased:
+  
+  let constructor Refl : Id
+  in Refl
+

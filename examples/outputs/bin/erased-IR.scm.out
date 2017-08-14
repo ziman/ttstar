@@ -1,0 +1,21 @@
+
+Error: pattern match failure: (S ((S (S (S (S (S (S (S (Z))))))))))
+
+	Call history:
+
+	<eval>	  [number->peano] (number->peano z s (- i 1))
+	<eval>	  [number->peano] (- i 1)
+	<eval>	  [number->peano] (= i 0)
+	<eval>	  [number->peano] (list s (number->peano z s (- i 1)))
+	<eval>	  [number->peano] (number->peano z s (- i 1))
+	<eval>	  [number->peano] (- i 1)
+	<eval>	  [number->peano] (= i 0)
+	<eval>	  [number->peano] (list z)
+	<eval>	  ((mkBin True) inputSize)
+	<eval>	  (mkBin True)
+	<eval>	  [mkBin] (eq?494 (car490 _pv1) (quote495 Z))
+	<eval>	  [mkBin] (car490 _pv1)
+	<eval>	  [mkBin] (error498 "pattern match failure" (list499 (car490 _pv1) (cdr491 _pv1)))
+	<eval>	  [mkBin] (list499 (car490 _pv1) (cdr491 _pv1))
+	<eval>	  [mkBin] (car490 _pv1)
+	<eval>	  [mkBin] (cdr491 _pv1)	<--

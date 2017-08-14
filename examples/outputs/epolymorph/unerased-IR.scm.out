@@ -1,0 +1,21 @@
+
+Error: postulate
+
+	Call history:
+
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<eval>	  (print (letrec* ((Bool (quasiquote (Bool))) (True (quasiquote (True))) (False (quasiquote (False))) ...
+	<eval>	  (##sys#list (##core#quote Bool))
+	<eval>	  (##sys#list (##core#quote True))
+	<eval>	  (##sys#list (##core#quote False))
+	<eval>	  (##sys#list (##core#quote Nat))
+	<eval>	  (##sys#list (##core#quote Z))
+	<eval>	  (error "postulate")	<--
