@@ -10,6 +10,8 @@ import TT.Utils
 import TT.Parser
 import TT.Normalise
 
+import Codegen.IR
+import Codegen.ToIR
 import Codegen.Common
 import qualified Codegen.Scheme
 
