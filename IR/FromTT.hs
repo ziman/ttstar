@@ -35,7 +35,7 @@ irTm cs pv (Bind Let (Def n () ty body _cs : ds) rhs)
     cs' | Abstract Constructor <- body = S.insert n cs
         | otherwise = cs
 
-irTm cs pv tm = error $ "irTm: cannot translate: " ++ show tm
+irTm cs pv tm = IError $ "irTm: cannot translate: " ++ show tm
 
 irBody :: S.Set Name -> Int -> TT () -> Body () -> IBody
 irBody cs pv ty (Clauses cls) = compile cs pv cls
