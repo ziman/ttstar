@@ -10,6 +10,8 @@ import Data.Ord
 import Data.List
 import Data.Function
 
+import Debug.Trace
+
 toIR :: TT () -> IR
 toIR = irTm 0
 
@@ -51,7 +53,9 @@ matchSort :: Int -> [Int] -> [([Pat ()], TT ())] -> ICaseTree -> ICaseTree
 matchSort pv vars pats err = match pv vars pats err
 
 match :: Int -> [Int] -> [([Pat ()], TT ())] -> ICaseTree -> ICaseTree
-match pv [] [([], rhs)] err = ILeaf $ irTm pv rhs
+match pv vars [] err = err
+match pv [] [(ps, rhs)] err = ILeaf $ irTm pv rhs
+match pv [] ((ps, rhs):_) err = ILeaf $ irTm pv rhs  -- overlapping patterns
 match pv vars pats err
     | isVar firstPat
     = let (pats', rest) = span (isVar . head . fst) pats

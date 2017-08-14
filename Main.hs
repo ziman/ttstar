@@ -160,6 +160,11 @@ pipeline args = do
         print optimised
         putStrLn ""
 
+    when (Args.verbose args) $ do
+        putStrLn "### Intermediate representation ###"
+        print $ toIR optimised
+        putStrLn ""
+
     case Args.dumpPretty args of
         Nothing -> return ()
         Just fname -> dumpTT fname optimised
