@@ -1,5 +1,3 @@
-; usage:
-; (curried-lambda (x y z) (f x y z))
 (define-syntax curried-lambda
   (syntax-rules ()
     ((curried-lambda () body) body)
