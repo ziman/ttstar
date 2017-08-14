@@ -1,0 +1,21 @@
+
+Error: postulate
+
+	Call history:
+
+	<syntax>	  (f F)
+	<syntax>	  (f Q)
+	<syntax>	  (f W)
+	<syntax>	  (##core#let () main)
+	<syntax>	  (##core#begin main)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<eval>	  (print (letrec* ((Tuple (error "postulate")) (Bool (quasiquote (Bool))) (T (quasiquote (T))) (F (qua...
+	<eval>	  (error "postulate")	<--

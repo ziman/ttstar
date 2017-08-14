@@ -1,0 +1,219 @@
+-- vim: ft=ttstar
+
+### Desugared ###
+
+  let
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (n :R: Nat) -> Nat
+    constructor Vec : (_x0 : Nat) -> (_x1 : Type) -> Type
+    constructor VNil : (a : Type) -> Vec Z a
+    constructor VCons : (a : Type) -> (n : Nat) -> (x : a) -> (xs : Vec n a) -> Vec (S n) a
+    vlen : (a : Type) -> (n : Nat) -> (xs : Vec n a) -> Nat 
+      a : Type
+        [vlen] a [Z] (VNil [a]) = Z
+      a : Type n : Nat x : a xs : Vec n a
+        [vlen] a ([S] n) (VCons [a] [n] x xs) = S (vlen a n xs)
+    testVec : Vec 2 Bool = VCons Bool 1 True (VCons Bool Z False (VNil Bool))
+    main : Nat = vlen Bool 2 testVec
+  in main
+
+### Evarified ###
+
+  let
+    constructor Bool :1: Type
+    constructor True :2: Bool
+    constructor False :3: Bool
+    constructor Nat :4: Type
+    constructor Z :5: Nat
+    constructor S :6: (n :R: Nat) -> Nat
+    constructor Vec :7: (_x0 :8: Nat) -> (_x1 :9: Type) -> Type
+    constructor VNil :10: (a :11: Type) -> Vec -13- Z -12- a
+    constructor VCons :14: (a :15: Type) -> (n :16: Nat) -> (x :17: a) -> (xs :18: Vec -20- n -19- a) -> Vec -22- (S -23- n) -21- a
+    vlen :24: (a :25: Type) -> (n :26: Nat) -> (xs :27: Vec -29- n -28- a) -> Nat 
+      a :30: Type
+        [vlen] -33- a -32- [Z] -31- (VNil -34- [a]) = Z
+      a :35: Type n :36: Nat x :37: a xs :38: Vec -40- n -39- a
+        [vlen] -43- a -42- ([S] -44- n) -41- (VCons -48- [a] -47- [n] -46- x -45- xs) = S -49- (vlen -52- a -51- n -50- xs)
+    testVec :53: Vec -55- 2 -54- Bool = VCons -61- Bool -60- 1 -59- True -58- (VCons -66- Bool -65- Z -64- False -63- (VNil -67- Bool))
+    main :68: Nat = vlen -71- Bool -70- 2 -69- testVec
+  in main
+
+### Constraints ###
+
+[] -> [5,6,10,14,18,24,27,31,38,41,45,49,50,53,58,63,69,R]
+[11] -> [34,67]
+[12] -> [19,28]
+[13] -> [20,29]
+[15] -> [48,61,66]
+[16] -> [47,60,65]
+[17] -> [46,59,64]
+[19] -> [12,21,39]
+[20] -> [13,22,40]
+[21] -> [19,28,54]
+[22] -> [20,29,55]
+[22,23] -> [44,62]
+[22,44] -> [23]
+[22,62] -> [23]
+[23,55] -> [56]
+[25] -> [33,43,52,71]
+[26] -> [32,42,51,70]
+[28] -> [12,21,39,54]
+[29] -> [13,22,40,55]
+[30] -> [33]
+[32] -> [5,26,R]
+[33] -> [25,R]
+[34] -> [11,30,31]
+[35] -> [43]
+[36] -> [44]
+[37] -> [46]
+[39] -> [19,28]
+[40] -> [20,29]
+[42] -> [6,26,44,R]
+[42,44] -> [R]
+[43] -> [25,R]
+[44] -> [42]
+[46] -> [17,41]
+[47] -> [16,36,41]
+[48] -> [15,35,41]
+[51] -> [26,36]
+[52] -> [25,35]
+[54] -> [21,28]
+[55] -> [22,29]
+[55,56] -> [23,72]
+[55,56,57] -> [62,73]
+[55,56,62] -> [57]
+[55,56,73] -> [57]
+[55,72] -> [56]
+[59] -> [2,17]
+[60] -> [6,16,62]
+[60,62] -> [5,R]
+[61] -> [1,15]
+[64] -> [3,17]
+[65] -> [5,16]
+[66] -> [1,15]
+[67] -> [1,11]
+[70] -> [6,26,72]
+[70,72] -> [6,73,R]
+[70,72,73] -> [5,R]
+[71] -> [1,25]
+[R] -> [68]
+
+### Solution ###
+
+[5,6,10,14,18,24,27,31,38,41,45,49,50,53,58,63,68,69,R]
+
+### Annotated ###
+
+  let
+    constructor Bool :E: Type
+    constructor True :E: Bool
+    constructor False :E: Bool
+    constructor Nat :E: Type
+    constructor Z :R: Nat
+    constructor S :R: (n :R: Nat) -> Nat
+    constructor Vec :E: (_x0 :E: Nat) -> (_x1 :E: Type) -> Type
+    constructor VNil :R: (a :E: Type) -> Vec -E- Z -E- a
+    constructor VCons :R: (a :E: Type) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+    vlen :R: (a :E: Type) -> (n :E: Nat) -> (xs :R: Vec -E- n -E- a) -> Nat 
+      a :E: Type
+        [vlen] -E- a -E- [Z] -R- (VNil -E- [a]) = Z
+      a :E: Type n :E: Nat x :E: a xs :R: Vec -E- n -E- a
+        [vlen] -E- a -E- ([S] -E- n) -R- (VCons -E- [a] -E- [n] -E- x -R- xs) = S -R- (vlen -E- a -E- n -R- xs)
+    testVec :R: Vec -E- 2 -E- Bool = VCons -E- Bool -E- 1 -E- True -R- (VCons -E- Bool -E- Z -E- False -R- (VNil -E- Bool))
+    main :R: Nat = vlen -E- Bool -E- 2 -R- testVec
+  in main
+
+### Specialised ###
+
+  let
+    constructor Bool :E: Type
+    constructor True :E: Bool
+    constructor False :E: Bool
+    constructor Nat :E: Type
+    constructor Z :R: Nat
+    constructor S :R: (n :R: Nat) -> Nat
+    constructor Vec :E: (_x0 :E: Nat) -> (_x1 :E: Type) -> Type
+    constructor VNil :R: (a :E: Type) -> Vec -E- Z -E- a
+    constructor VCons :R: (a :E: Type) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+    vlen :R: (a :E: Type) -> (n :E: Nat) -> (xs :R: Vec -E- n -E- a) -> Nat 
+      a :E: Type
+        [vlen] -E- a -E- [Z] -R- (VNil -E- [a]) = Z
+      a :E: Type n :E: Nat x :E: a xs :R: Vec -E- n -E- a
+        [vlen] -E- a -E- ([S] -E- n) -R- (VCons -E- [a] -E- [n] -E- x -R- xs) = S -R- (vlen -E- a -E- n -R- xs)
+    testVec :R: Vec -E- 2 -E- Bool = VCons -E- Bool -E- 1 -E- True -R- (VCons -E- Bool -E- Z -E- False -R- (VNil -E- Bool))
+    main :R: Nat = vlen -E- Bool -E- 2 -R- testVec
+  in main
+
+### Final annotation ###
+
+  let
+    constructor Bool :E: Type
+    constructor True :E: Bool
+    constructor False :E: Bool
+    constructor Nat :E: Type
+    constructor Z :R: Nat
+    constructor S :R: (n :R: Nat) -> Nat
+    constructor Vec :E: (_x0 :E: Nat) -> (_x1 :E: Type) -> Type
+    constructor VNil :R: (a :E: Type) -> Vec -E- Z -E- a
+    constructor VCons :R: (a :E: Type) -> (n :E: Nat) -> (x :E: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+    vlen :R: (a :E: Type) -> (n :E: Nat) -> (xs :R: Vec -E- n -E- a) -> Nat 
+      a :E: Type
+        [vlen] -E- a -E- [Z] -R- (VNil -E- [a]) = Z
+      a :E: Type n :E: Nat x :E: a xs :R: Vec -E- n -E- a
+        [vlen] -E- a -E- ([S] -E- n) -R- (VCons -E- [a] -E- [n] -E- x -R- xs) = S -R- (vlen -E- a -E- n -R- xs)
+    testVec :R: Vec -E- 2 -E- Bool = VCons -E- Bool -E- 1 -E- True -R- (VCons -E- Bool -E- Z -E- False -R- (VNil -E- Bool))
+    main :R: Nat = vlen -E- Bool -E- 2 -R- testVec
+  in main
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+  let
+    constructor Z : Nat
+    constructor S : (n) -> Nat
+    constructor VNil : Vec
+    constructor VCons : (xs) -> Vec
+    vlen 
+      [_] VNil = Z
+      [_] (VCons xs) = S (vlen xs)
+    testVec = VCons (VCons VNil)
+    main = vlen testVec
+  in main
+
+### Intermediate representation ###
+let Z = constructor 0
+  in let S = constructor 1
+    in let VNil = constructor 0
+      in let VCons = constructor 1
+        in let vlen = \_pv0.
+          case _pv0 of
+            VCons _pv1 => (S (vlen _pv1))
+            VNil => Z
+          in let testVec = (VCons (VCons VNil))
+            in let main = (vlen testVec)
+              in main
+
+### Normal forms ###
+
+unerased:
+  
+  let
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (n :R: Nat) -> Nat
+  in 2
+
+erased:
+  
+  let
+    constructor Z : Nat
+    constructor S : (n) -> Nat
+  in 2
+

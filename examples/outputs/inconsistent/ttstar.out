@@ -1,0 +1,24 @@
+-- vim: ft=ttstar
+
+### Desugared ###
+
+  let main :R: (x :E: Type) -> Type = (\x :E: Type. x)
+  in main
+
+### Evarified ###
+
+  let main :R: (x :E: Type) -> Type = (\x :E: Type. x)
+  in main
+
+### Constraints ###
+
+[] -> [E,R]
+[R] -> [R]
+
+### Solution ###
+
+[E,R]
+
+ttstar: !! inconsistent annotation
+CallStack (from HasCallStack):
+  error, called at Main.hs:105:22 in main:Main

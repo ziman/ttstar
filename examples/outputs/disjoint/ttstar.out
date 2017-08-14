@@ -1,0 +1,56 @@
+-- vim: ft=ttstar
+
+### Desugared ###
+
+  let main : Type = Type
+  in main
+
+### Evarified ###
+
+  let main :1: Type = Type
+  in main
+
+### Constraints ###
+
+[R] -> [1]
+
+### Solution ###
+
+[1,R]
+
+### Annotated ###
+
+  let main :R: Type = Type
+  in main
+
+### Specialised ###
+
+  let main :R: Type = Type
+  in main
+
+### Final annotation ###
+
+  let main :R: Type = Type
+  in main
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+  let main = Type
+  in main
+
+### Intermediate representation ###
+let main = Type
+  in main
+
+### Normal forms ###
+
+unerased:
+  Type
+
+erased:
+  Type
+

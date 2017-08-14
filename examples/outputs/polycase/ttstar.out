@@ -1,0 +1,238 @@
+-- vim: ft=ttstar
+
+### Desugared ###
+
+  let
+    constructor Mool : Type
+    constructor Q : Mool
+    constructor W : Mool
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    constructor Id : (a : Type) -> (x : a) -> (y : a) -> Type
+    constructor Refl : (a : Type) -> (x : a) -> Id a x x
+    not : (_x0 : Bool) -> Bool 
+      [not] T = F
+      [not] F = T
+    notnot : (x : Bool) -> Id Bool x (not (not x)) 
+      [notnot] T = Refl Bool T
+      [notnot] F = Refl Bool F
+    retTy : (_x1 : Bool) -> Type 
+      [retTy] T = Bool
+      [retTy] F = Mool
+    mot : (_x2 : Mool) -> Mool 
+      [mot] Q = W
+      [mot] W = Q
+    invert : (t : Bool) -> (x : retTy t) -> retTy t 
+      [invert] T = not
+      [invert] F = mot
+    invert' : (t : Bool) -> (x : retTy t) -> retTy t 
+      x : Bool
+        [invert'] T x = not x
+      x : Mool
+        [invert'] F x = mot x
+    main : Mool = invert F Q
+  in main
+
+### Evarified ###
+
+  let
+    constructor Mool :1: Type
+    constructor Q :2: Mool
+    constructor W :3: Mool
+    constructor Bool :4: Type
+    constructor T :5: Bool
+    constructor F :6: Bool
+    constructor Id :7: (a :8: Type) -> (x :9: a) -> (y :10: a) -> Type
+    constructor Refl :11: (a :12: Type) -> (x :13: a) -> Id -16- a -15- x -14- x
+    not :17: (_x0 :18: Bool) -> Bool 
+      [not] -19- T = F
+      [not] -20- F = T
+    notnot :21: (x :22: Bool) -> Id -25- Bool -24- x -23- (not -26- (not -27- x)) 
+      [notnot] -28- T = Refl -30- Bool -29- T
+      [notnot] -31- F = Refl -33- Bool -32- F
+    retTy :34: (_x1 :35: Bool) -> Type 
+      [retTy] -36- T = Bool
+      [retTy] -37- F = Mool
+    mot :38: (_x2 :39: Mool) -> Mool 
+      [mot] -40- Q = W
+      [mot] -41- W = Q
+    invert :42: (t :43: Bool) -> (x :44: retTy -45- t) -> retTy -46- t 
+      [invert] -47- T = not
+      [invert] -48- F = mot
+    invert' :49: (t :50: Bool) -> (x :51: retTy -52- t) -> retTy -53- t 
+      x :54: Bool
+        [invert'] -56- T -55- x = not -57- x
+      x :58: Mool
+        [invert'] -60- F -59- x = mot -61- x
+    main :62: Mool = invert -64- F -63- Q
+  in main
+
+### Constraints ###
+
+[] -> [2,3,5,6,17,18,19,20,38,39,40,41,42,43,44,47,48,63,64,R]
+[R] -> [62]
+
+### Solution ###
+
+[2,3,5,6,17,18,19,20,38,39,40,41,42,43,44,47,48,62,63,64,R]
+
+### Annotated ###
+
+  let
+    constructor Mool :E: Type
+    constructor Q :R: Mool
+    constructor W :R: Mool
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    constructor Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
+    constructor Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+    not :R: (_x0 :R: Bool) -> Bool 
+      [not] -R- T = F
+      [not] -R- F = T
+    notnot :E: (x :E: Bool) -> Id -E- Bool -E- x -E- (not -E- (not -E- x)) 
+      [notnot] -E- T = Refl -E- Bool -E- T
+      [notnot] -E- F = Refl -E- Bool -E- F
+    retTy :E: (_x1 :E: Bool) -> Type 
+      [retTy] -E- T = Bool
+      [retTy] -E- F = Mool
+    mot :R: (_x2 :R: Mool) -> Mool 
+      [mot] -R- Q = W
+      [mot] -R- W = Q
+    invert :R: (t :R: Bool) -> (x :R: retTy -E- t) -> retTy -E- t 
+      [invert] -R- T = not
+      [invert] -R- F = mot
+    invert' :E: (t :E: Bool) -> (x :E: retTy -E- t) -> retTy -E- t 
+      x :E: Bool
+        [invert'] -E- T -E- x = not -E- x
+      x :E: Mool
+        [invert'] -E- F -E- x = mot -E- x
+    main :R: Mool = invert -R- F -R- Q
+  in main
+
+### Specialised ###
+
+  let
+    constructor Mool :E: Type
+    constructor Q :R: Mool
+    constructor W :R: Mool
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    constructor Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
+    constructor Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+    not :R: (_x0 :R: Bool) -> Bool 
+      [not] -R- T = F
+      [not] -R- F = T
+    notnot :E: (x :E: Bool) -> Id -E- Bool -E- x -E- (not -E- (not -E- x)) 
+      [notnot] -E- T = Refl -E- Bool -E- T
+      [notnot] -E- F = Refl -E- Bool -E- F
+    retTy :E: (_x1 :E: Bool) -> Type 
+      [retTy] -E- T = Bool
+      [retTy] -E- F = Mool
+    mot :R: (_x2 :R: Mool) -> Mool 
+      [mot] -R- Q = W
+      [mot] -R- W = Q
+    invert :R: (t :R: Bool) -> (x :R: retTy -E- t) -> retTy -E- t 
+      [invert] -R- T = not
+      [invert] -R- F = mot
+    invert' :E: (t :E: Bool) -> (x :E: retTy -E- t) -> retTy -E- t 
+      x :E: Bool
+        [invert'] -E- T -E- x = not -E- x
+      x :E: Mool
+        [invert'] -E- F -E- x = mot -E- x
+    main :R: Mool = invert -R- F -R- Q
+  in main
+
+### Final annotation ###
+
+  let
+    constructor Mool :E: Type
+    constructor Q :R: Mool
+    constructor W :R: Mool
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    constructor Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
+    constructor Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+    not :R: (_x0 :R: Bool) -> Bool 
+      [not] -R- T = F
+      [not] -R- F = T
+    notnot :E: (x :E: Bool) -> Id -E- Bool -E- x -E- (not -E- (not -E- x)) 
+      [notnot] -E- T = Refl -E- Bool -E- T
+      [notnot] -E- F = Refl -E- Bool -E- F
+    retTy :E: (_x1 :E: Bool) -> Type 
+      [retTy] -E- T = Bool
+      [retTy] -E- F = Mool
+    mot :R: (_x2 :R: Mool) -> Mool 
+      [mot] -R- Q = W
+      [mot] -R- W = Q
+    invert :R: (t :R: Bool) -> (x :R: retTy -E- t) -> retTy -E- t 
+      [invert] -R- T = not
+      [invert] -R- F = mot
+    invert' :E: (t :E: Bool) -> (x :E: retTy -E- t) -> retTy -E- t 
+      x :E: Bool
+        [invert'] -E- T -E- x = not -E- x
+      x :E: Mool
+        [invert'] -E- F -E- x = mot -E- x
+    main :R: Mool = invert -R- F -R- Q
+  in main
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+  let
+    constructor Q : Mool
+    constructor W : Mool
+    constructor T : Bool
+    constructor F : Bool
+    not 
+      [_] T = F
+      [_] F = T
+    mot 
+      [_] Q = W
+      [_] W = Q
+    invert 
+      [_] T = not
+      [_] F = mot
+    main = invert F Q
+  in main
+
+### Intermediate representation ###
+let Q = constructor 0
+  in let W = constructor 0
+    in let T = constructor 0
+      in let F = constructor 0
+        in let not = \_pv0.
+          case _pv0 of
+            F => T
+            T => F
+          in let mot = \_pv0.
+            case _pv0 of
+              Q => W
+              W => Q
+            in let invert = \_pv0.
+              case _pv0 of
+                F => mot
+                T => not
+              in let main = ((invert F) Q)
+                in main
+
+### Normal forms ###
+
+unerased:
+  
+  let
+    constructor Mool : Type
+    constructor W : Mool
+  in W
+
+erased:
+  
+  let constructor W : Mool
+  in W
+

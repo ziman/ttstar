@@ -16,6 +16,7 @@ data Args = Args
     , solver :: Solver
     , dumpPretty :: Maybe String
     , dumpScheme :: Maybe String
+    , dumpSchemeIR :: Maybe String
     , dumpNF :: Maybe String
     , dumpNFScheme :: Maybe String
     }
@@ -58,6 +59,10 @@ args = Args
         ( metavar "file.scm"
         <> long "dump-scheme"
         <> help "Generate Scheme source from final program"))
+    <*> optional (strOption
+        ( metavar "file.scm"
+        <> long "dump-scheme-ir"
+        <> help "Generate Scheme source from IR"))
     <*> optional (strOption
         ( metavar "fileNF.tt"
         <> long "dump-nf"

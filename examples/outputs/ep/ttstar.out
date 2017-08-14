@@ -1,0 +1,198 @@
+-- vim: ft=ttstar
+
+### Desugared ###
+
+  let
+    constructor T : Type
+    constructor A : T
+    constructor B : T
+    postulate Op : (x :R: T) -> (y :R: T) -> T
+    id : (y : T) -> T = (\y : T. y)
+    constA : (x : T) -> T = (\x : T. A)
+    apply : (f : (_x0 : T) -> T) -> (x : T) -> T = (\f : (_x0 : T) -> T. (\x : T. f x))
+    test1 : T = [apply : (_x1 : (_x2 : T) -> T) -> (_x3 : T) -> T] id B
+    test2 : T = [apply : (_x4 : (_x5 : T) -> T) -> (_x6 : T) -> T] constA B
+    main : T = Op test1 test2
+  in main
+
+### Evarified ###
+
+  let
+    constructor T :1: Type
+    constructor A :2: T
+    constructor B :3: T
+    postulate Op :4: (x :R: T) -> (y :R: T) -> T
+    id :5: (y :6: T) -> T = (\y :7: T. y)
+    constA :8: (x :9: T) -> T = (\x :10: T. A)
+    apply :11: (f :12: (_x0 :13: T) -> T) -> (x :14: T) -> T = (\f :15: (_x0 :16: T) -> T. (\x :17: T. f -18- x))
+    test1 :19: T = [apply : (_x1 :22: (_x2 :23: T) -> T) -> (_x3 :24: T) -> T] -21- id -20- B
+    test2 :25: T = [apply : (_x4 :28: (_x5 :29: T) -> T) -> (_x6 :30: T) -> T] -27- constA -26- B
+    main :31: T = Op -33- test1 -32- test2
+  in main
+
+### Constraints ###
+
+[] -> [2,3,4,5,6,7,8,19,20,21,22,23,24,25,27,28,32,33,34,35,36,37,38,39,40,41,42,43,46,R]
+[9] -> [10,29]
+[10] -> [9]
+[26] -> [3,30]
+[29] -> [9,44]
+[30] -> [26,45]
+[44] -> [29,47]
+[45] -> [30,48]
+[47] -> [44,49]
+[48] -> [45]
+[49] -> [47,48]
+[R] -> [31]
+
+### Solution ###
+
+[2,3,4,5,6,7,8,19,20,21,22,23,24,25,27,28,31,32,33,34,35,36,37,38,39,40,41,42,43,46,R]
+
+### Annotated ###
+
+  let
+    constructor T :E: Type
+    constructor A :R: T
+    constructor B :R: T
+    postulate Op :R: (x :R: T) -> (y :R: T) -> T
+    id :R: (y :R: T) -> T = (\y :R: T. y)
+    constA :R: (x :E: T) -> T = (\x :E: T. A)
+    apply :E: (f :E: (_x0 :E: T) -> T) -> (x :E: T) -> T = (\f :E: (_x0 :E: T) -> T. (\x :E: T. f -E- x))
+    test1 :R: T = [apply : (_x1 :R: (_x2 :R: T) -> T) -> (_x3 :R: T) -> T] -R- id -R- B
+    test2 :R: T = [apply : (_x4 :R: (_x5 :E: T) -> T) -> (_x6 :E: T) -> T] -R- constA -E- B
+    main :R: T = Op -R- test1 -R- test2
+  in main
+
+### Specialised ###
+
+  let
+    constructor T :E: Type
+    constructor A :R: T
+    constructor B :R: T
+    postulate Op :R: (x :R: T) -> (y :R: T) -> T
+    id :R: (y :R: T) -> T = (\y :R: T. y)
+    constA :R: (x :E: T) -> T = (\x :E: T. A)
+    apply :E: (f :E: (_x0 :E: T) -> T) -> (x :E: T) -> T = (\f :E: (_x0 :E: T) -> T. (\x :E: T. f -E- x))
+    apply_REE :34: (f :R: (_x0 :E: T) -> T) -> (x :E: T) -> T = (\f :35: (_x0 :36: T) -> T. (\x :37: T. f -38- x))
+    apply_RRR :39: (f :R: (_x0 :R: T) -> T) -> (x :R: T) -> T = (\f :40: (_x0 :41: T) -> T. (\x :42: T. f -43- x))
+    test1 :R: T = apply_RRR -R- id -R- B
+    test2 :R: T = apply_REE -R- constA -E- B
+    main :R: T = Op -R- test1 -R- test2
+  in main
+
+### Constraints ###
+
+[] -> [34,35,39,40,41,42,43,R]
+[36] -> [38,E]
+[37] -> [E]
+[38] -> [36,37]
+[E] -> [36,37,E,R]
+[R] -> [R]
+
+### Solution ###
+
+[34,35,39,40,41,42,43,R]
+
+### Annotated ###
+
+  let
+    constructor T :E: Type
+    constructor A :R: T
+    constructor B :R: T
+    postulate Op :R: (x :R: T) -> (y :R: T) -> T
+    id :R: (y :R: T) -> T = (\y :R: T. y)
+    constA :R: (x :E: T) -> T = (\x :E: T. A)
+    apply :E: (f :E: (_x0 :E: T) -> T) -> (x :E: T) -> T = (\f :E: (_x0 :E: T) -> T. (\x :E: T. f -E- x))
+    apply_REE :R: (f :R: (_x0 :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_x0 :E: T) -> T. (\x :E: T. f -E- x))
+    apply_RRR :R: (f :R: (_x0 :R: T) -> T) -> (x :R: T) -> T = (\f :R: (_x0 :R: T) -> T. (\x :R: T. f -R- x))
+    test1 :R: T = apply_RRR -R- id -R- B
+    test2 :R: T = apply_REE -R- constA -E- B
+    main :R: T = Op -R- test1 -R- test2
+  in main
+
+### Specialised ###
+
+  let
+    constructor T :E: Type
+    constructor A :R: T
+    constructor B :R: T
+    postulate Op :R: (x :R: T) -> (y :R: T) -> T
+    id :R: (y :R: T) -> T = (\y :R: T. y)
+    constA :R: (x :E: T) -> T = (\x :E: T. A)
+    apply :E: (f :E: (_x0 :E: T) -> T) -> (x :E: T) -> T = (\f :E: (_x0 :E: T) -> T. (\x :E: T. f -E- x))
+    apply_REE :R: (f :R: (_x0 :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_x0 :E: T) -> T. (\x :E: T. f -E- x))
+    apply_RRR :R: (f :R: (_x0 :R: T) -> T) -> (x :R: T) -> T = (\f :R: (_x0 :R: T) -> T. (\x :R: T. f -R- x))
+    test1 :R: T = apply_RRR -R- id -R- B
+    test2 :R: T = apply_REE -R- constA -E- B
+    main :R: T = Op -R- test1 -R- test2
+  in main
+
+### Final annotation ###
+
+  let
+    constructor T :E: Type
+    constructor A :R: T
+    constructor B :R: T
+    postulate Op :R: (x :R: T) -> (y :R: T) -> T
+    id :R: (y :R: T) -> T = (\y :R: T. y)
+    constA :R: (x :E: T) -> T = (\x :E: T. A)
+    apply :E: (f :E: (_x0 :E: T) -> T) -> (x :E: T) -> T = (\f :E: (_x0 :E: T) -> T. (\x :E: T. f -E- x))
+    apply_REE :R: (f :R: (_x0 :E: T) -> T) -> (x :E: T) -> T = (\f :R: (_x0 :E: T) -> T. (\x :E: T. f -E- x))
+    apply_RRR :R: (f :R: (_x0 :R: T) -> T) -> (x :R: T) -> T = (\f :R: (_x0 :R: T) -> T. (\x :R: T. f -R- x))
+    test1 :R: T = apply_RRR -R- id -R- B
+    test2 :R: T = apply_REE -R- constA -E- B
+    main :R: T = Op -R- test1 -R- test2
+  in main
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+  let
+    constructor A : T
+    constructor B : T
+    postulate Op : (x) -> (y) -> T
+    id = (\y. y)
+    constA = A
+    apply_REE = (\f. f)
+    apply_RRR = (\f. (\x. f x))
+    test1 = apply_RRR id B
+    test2 = apply_REE constA
+    main = Op test1 test2
+  in main
+
+### Intermediate representation ###
+let A = constructor 0
+  in let B = constructor 0
+    in let Op = error "postulate"
+      in let id = \y. y
+        in let constA = A
+          in let apply_REE = \f. f
+            in let apply_RRR = \f. \x. (f x)
+              in let test1 = ((apply_RRR id) B)
+                in let test2 = (apply_REE constA)
+                  in let main = ((Op test1) test2)
+                    in main
+
+### Normal forms ###
+
+unerased:
+  
+  let
+    constructor T : Type
+    constructor A : T
+    constructor B : T
+    postulate Op : (x :R: T) -> (y :R: T) -> T
+  in Op B A
+
+erased:
+  
+  let
+    constructor A : T
+    constructor B : T
+    postulate Op : (x) -> (y) -> T
+  in Op B A
+

@@ -1,0 +1,21 @@
+
+Error: pattern match failure: (Just ((Eq (List) (Nil) (Nil)) (Refl (List) (Nil))))
+
+	Call history:
+
+	<eval>	  [semiDecEq] (((Eq List) Nil) Nil)
+	<eval>	  [semiDecEq] ((Eq List) Nil)
+	<eval>	  [semiDecEq] (Eq List)
+	<eval>	  [Eq] (##sys#list (##core#quote Eq) e0 e1 e2)
+	<eval>	  [semiDecEq] ((Refl List) Nil)
+	<eval>	  [semiDecEq] (Refl List)
+	<eval>	  [Refl] (##sys#list (##core#quote Refl) e0 e1)
+	<eval>	  [Just] (##sys#list (##core#quote Just) e0 e1)
+	<eval>	  [semiDecEq_451] (eq?477 (car473 _pv10) (quote478 Nothing))
+	<eval>	  [semiDecEq_451] (car473 _pv10)
+	<eval>	  [semiDecEq_451] (eq?492 (car488 _pv11) (quote493 Nothing))
+	<eval>	  [semiDecEq_451] (car488 _pv11)
+	<eval>	  [semiDecEq_451] (error501 "pattern match failure" (list502 (car488 _pv11) (cdr489 _pv11)))
+	<eval>	  [semiDecEq_451] (list502 (car488 _pv11) (cdr489 _pv11))
+	<eval>	  [semiDecEq_451] (car488 _pv11)
+	<eval>	  [semiDecEq_451] (cdr489 _pv11)	<--

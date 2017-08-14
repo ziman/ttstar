@@ -4,7 +4,6 @@ import TT.Core
 import TT.Utils
 import TT.Pretty
 import Util.PrettyPrint
-import Codegen.Common
 import qualified Data.Set as S
 
 indent :: Doc -> Doc
@@ -152,8 +151,8 @@ argNames :: TT r -> [Name]
 argNames (Bind Pi ds rhs) = map defName ds ++ argNames rhs
 argNames _ = []
 
-cgProgram :: PrettyR r => Program r -> Doc
-cgProgram prog = 
+codegen :: PrettyR r => Program r -> Doc
+codegen prog = 
     parens (text "require-extension" <+> text "matchable")
     $$ text "(define Type '(Type))"
     $$ text "(define (number->peano z s i) (if (= i 0) (list z) (list s (number->peano z s (- i 1)))))"
@@ -162,9 +161,3 @@ cgProgram prog =
     $$ parens (
         text "print" $+$ indent (cgTm prog)
     ) -- $+$ parens (text "newline")  -- newline for Racket
-
-codegen :: Codegen
-codegen = Codegen
-    { cgRun = cgProgram
-    , cgExt = "scm"
-    }

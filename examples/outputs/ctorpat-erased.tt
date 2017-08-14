@@ -1,5 +1,0 @@
--- vim: ft=ttstar
-  let
-    postulate P : K
-    main = P
-  in main

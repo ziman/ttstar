@@ -1,0 +1,21 @@
+
+Error: postulate
+
+	Call history:
+
+	<syntax>	  (lambda (x) x)
+	<syntax>	  (##core#lambda (x) x)
+	<syntax>	  (##core#begin x)
+	<syntax>	  (##core#begin (##core#let () main))
+	<syntax>	  (##core#let () main)
+	<syntax>	  (##core#begin main)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<eval>	  (print (letrec* ((A (quasiquote (A))) (B (quasiquote (B))) (Op (error "postulate")) (const_A A) (f (...
+	<eval>	  (##sys#list (##core#quote A))
+	<eval>	  (##sys#list (##core#quote B))
+	<eval>	  (error "postulate")	<--

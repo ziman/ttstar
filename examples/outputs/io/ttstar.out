@@ -1,0 +1,681 @@
+-- vim: ft=ttstar
+
+### Desugared ###
+
+  let
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (x :R: Nat) -> Nat
+    plus : (_x0 : Nat) -> (_x1 : Nat) -> Nat 
+      n : Nat
+        [plus] Z n = n
+      m : Nat n : Nat
+        [plus] (S m) n = S (plus m n)
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
+    not : (_x2 : Bool) -> Bool 
+      [not] True = False
+      [not] False = True
+    constructor Unit : Type
+    constructor MkUnit : Unit
+    constructor Pair : (_x3 : Type) -> (_x4 : Type) -> Type
+    constructor MkPair : (a : Type) -> (b : Type) -> (_x5 : a) -> (_x6 : b) -> Pair a b
+    fst : (a : Type) -> (b : Type) -> (_x7 : Pair a b) -> a 
+      a : Type b : Type x : a y : b
+        [fst] a b ([MkPair] [a] [b] x y) = x
+    snd : (a : Type) -> (b : Type) -> (_x8 : Pair a b) -> b 
+      a : Type b : Type x : a y : b
+        [snd] a b ([MkPair] [a] [b] x y) = y
+    constructor Either : (_x9 : Type) -> (_x10 : Type) -> Type
+    constructor Left : (a : Type) -> (b : Type) -> (_x11 : a) -> Either a b
+    constructor Right : (a : Type) -> (b : Type) -> (_x12 : b) -> Either a b
+    id : (a : Type) -> (x : a) -> a = (\a : Type. (\x : a. x))
+    constructor Fin : (_x13 : Nat) -> Type
+    constructor FZ : (n : Nat) -> Fin (S n)
+    constructor FS : (n : Nat) -> (_x14 : Fin n) -> Fin (S n)
+    constructor Vect : (_x15 : Nat) -> (_x16 : Type) -> Type
+    constructor VN : (a : Type) -> Vect Z a
+    constructor VC : (n : Nat) -> (a : Type) -> (x : a) -> (xs : Vect n a) -> Vect (S n) a
+    constructor State : (_x0 : Type) -> (_x1 : Type) -> Type
+    constructor MkSt : (st : Type) -> (a : Type) -> (run : (_x2 : st) -> Pair st a) -> State st a
+    runState : (st : Type) -> (a : Type) -> (_x3 : State st a) -> (_x4 : st) -> Pair st a 
+      st : Type a : Type run : (_x5 : st) -> Pair st a
+        [runState] st a ([MkSt] [st] [a] run) = run
+    execState : (st : Type) -> (a : Type) -> (x : State st a) -> (s : st) -> a = (\st : Type. (\a : Type. (\x : State st a. (\s : st. snd st a (runState st a x s)))))
+    stReturn : (st : Type) -> (a : Type) -> (x : a) -> State st a = (\st : Type. (\a : Type. (\x : a. MkSt st a (\s : st. MkPair st a s x))))
+    stBind : (st : Type) -> (a : Type) -> (b : Type) -> (x : State st a) -> (y : (z : a) -> State st b) -> State st b 
+      st : Type a : Type b : Type f : (_x6 : st) -> Pair st a g : (_x7 : a) -> State st b
+        [stBind] st a b ([MkSt] [st] [a] f) g = 
+          let
+            stBind3 : (st : Type) -> (b : Type) -> (_x8 : st) -> (_x9 : State st b) -> Pair st b 
+              st : Type b : Type s : st f : (_x10 : st) -> Pair st b
+                [stBind3] st b s ([MkSt] [st] [b] f) = f s
+            stBind2 : (st : Type) -> (a : Type) -> (b : Type) -> (g : (_x11 : a) -> State st b) -> (r : Pair st a) -> Pair st b 
+              st : Type a : Type b : Type g : (_x12 : a) -> State st b x : a s : st
+                [stBind2] st a b g ([MkPair] [st] [a] s x) = stBind3 st b s (g x)
+          in MkSt st b (\s : st. stBind2 st a b g (f s))
+    postulate RealWorld : Type
+    IO : (_x0 : Type) -> Type = State RealWorld
+    ioReturn : (a : Type) -> (x : a) -> IO a = (\a : Type. (\x : a. stReturn RealWorld a x))
+    ioBind : (a : Type) -> (b : Type) -> (x : IO a) -> (y : (_x1 : a) -> IO b) -> IO b = (\a : Type. (\b : Type. (\x : IO a. (\y : (_x1 : a) -> IO b. stBind RealWorld a b x y))))
+    ioWrapImpure : (a : Type) -> (impureF : (delayToken :R: Unit) -> a) -> IO a = (\a : Type. (\impureF : (delayToken :R: Unit) -> a. MkSt RealWorld a (\w :R: RealWorld. MkPair RealWorld a w (impureF MkUnit))))
+    unsafePerformIO : (a : Type) -> (x : IO a) -> a = (\a : Type. (\x : IO a. 
+      let postulate TheWorld : RealWorld
+      in execState RealWorld a x TheWorld))
+    postulate Int : Type
+    foreign intS : (x :R: Int) -> Int
+    foreign intZ : Int
+    postulate Unspec : Type
+    printSchemeRepr : (a : Type) -> (x : a) -> IO Unspec = (\a : Type. (\x : a. 
+      let foreign nativePrint : (a :E: Type) -> (x :R: a) -> Unspec
+      in ioWrapImpure Unspec (\delayToken : Unit. nativePrint a x)))
+    natToInt : (_x0 : Nat) -> Int 
+      [natToInt] Z = intZ
+      n : Nat
+        [natToInt] (S n) = intS (natToInt n)
+    foreign intToNat : (x :R: Int) -> Nat
+    printNat : (x : Nat) -> IO Unspec = (\x : Nat. printSchemeRepr Int (natToInt x))
+    main : Unspec = unsafePerformIO Unspec (ioBind Nat Unspec (ioReturn Nat 4) (\v : Nat. ioBind Unspec Unspec (printNat v) (\_0 : Unspec. printSchemeRepr Nat (intToNat (intS (intS (intS intZ)))))))
+  in main
+
+### Evarified ###
+
+  let
+    constructor Nat :1: Type
+    constructor Z :2: Nat
+    constructor S :3: (x :R: Nat) -> Nat
+    plus :4: (_x0 :5: Nat) -> (_x1 :6: Nat) -> Nat 
+      n :7: Nat
+        [plus] -9- Z -8- n = n
+      m :10: Nat n :11: Nat
+        [plus] -13- (S -14- m) -12- n = S -15- (plus -17- m -16- n)
+    constructor Bool :18: Type
+    constructor True :19: Bool
+    constructor False :20: Bool
+    not :21: (_x2 :22: Bool) -> Bool 
+      [not] -23- True = False
+      [not] -24- False = True
+    constructor Unit :25: Type
+    constructor MkUnit :26: Unit
+    constructor Pair :27: (_x3 :28: Type) -> (_x4 :29: Type) -> Type
+    constructor MkPair :30: (a :31: Type) -> (b :32: Type) -> (_x5 :33: a) -> (_x6 :34: b) -> Pair -36- a -35- b
+    fst :37: (a :38: Type) -> (b :39: Type) -> (_x7 :40: Pair -42- a -41- b) -> a 
+      a :43: Type b :44: Type x :45: a y :46: b
+        [fst] -49- a -48- b -47- ([MkPair] -53- [a] -52- [b] -51- x -50- y) = x
+    snd :54: (a :55: Type) -> (b :56: Type) -> (_x8 :57: Pair -59- a -58- b) -> b 
+      a :60: Type b :61: Type x :62: a y :63: b
+        [snd] -66- a -65- b -64- ([MkPair] -70- [a] -69- [b] -68- x -67- y) = y
+    constructor Either :71: (_x9 :72: Type) -> (_x10 :73: Type) -> Type
+    constructor Left :74: (a :75: Type) -> (b :76: Type) -> (_x11 :77: a) -> Either -79- a -78- b
+    constructor Right :80: (a :81: Type) -> (b :82: Type) -> (_x12 :83: b) -> Either -85- a -84- b
+    id :86: (a :87: Type) -> (x :88: a) -> a = (\a :89: Type. (\x :90: a. x))
+    constructor Fin :91: (_x13 :92: Nat) -> Type
+    constructor FZ :93: (n :94: Nat) -> Fin -95- (S -96- n)
+    constructor FS :97: (n :98: Nat) -> (_x14 :99: Fin -100- n) -> Fin -101- (S -102- n)
+    constructor Vect :103: (_x15 :104: Nat) -> (_x16 :105: Type) -> Type
+    constructor VN :106: (a :107: Type) -> Vect -109- Z -108- a
+    constructor VC :110: (n :111: Nat) -> (a :112: Type) -> (x :113: a) -> (xs :114: Vect -116- n -115- a) -> Vect -118- (S -119- n) -117- a
+    constructor State :120: (_x0 :121: Type) -> (_x1 :122: Type) -> Type
+    constructor MkSt :123: (st :124: Type) -> (a :125: Type) -> (run :126: (_x2 :127: st) -> Pair -129- st -128- a) -> State -131- st -130- a
+    runState :132: (st :133: Type) -> (a :134: Type) -> (_x3 :135: State -137- st -136- a) -> (_x4 :138: st) -> Pair -140- st -139- a 
+      st :141: Type a :142: Type run :143: (_x5 :144: st) -> Pair -146- st -145- a
+        [runState] -149- st -148- a -147- ([MkSt] -152- [st] -151- [a] -150- run) = run
+    execState :153: (st :154: Type) -> (a :155: Type) -> (x :156: State -158- st -157- a) -> (s :159: st) -> a = (\st :160: Type. (\a :161: Type. (\x :162: State -164- st -163- a. (\s :165: st. snd -168- st -167- a -166- (runState -172- st -171- a -170- x -169- s)))))
+    stReturn :173: (st :174: Type) -> (a :175: Type) -> (x :176: a) -> State -178- st -177- a = (\st :179: Type. (\a :180: Type. (\x :181: a. MkSt -184- st -183- a -182- (\s :185: st. MkPair -189- st -188- a -187- s -186- x))))
+    stBind :190: (st :191: Type) -> (a :192: Type) -> (b :193: Type) -> (x :194: State -196- st -195- a) -> (y :197: (z :198: a) -> State -200- st -199- b) -> State -202- st -201- b 
+      st :203: Type a :204: Type b :205: Type f :206: (_x6 :207: st) -> Pair -209- st -208- a g :210: (_x7 :211: a) -> State -213- st -212- b
+        [stBind] -218- st -217- a -216- b -215- ([MkSt] -221- [st] -220- [a] -219- f) -214- g = 
+          let
+            stBind3 :222: (st :223: Type) -> (b :224: Type) -> (_x8 :225: st) -> (_x9 :226: State -228- st -227- b) -> Pair -230- st -229- b 
+              st :231: Type b :232: Type s :233: st f :234: (_x10 :235: st) -> Pair -237- st -236- b
+                [stBind3] -241- st -240- b -239- s -238- ([MkSt] -244- [st] -243- [b] -242- f) = f -245- s
+            stBind2 :246: (st :247: Type) -> (a :248: Type) -> (b :249: Type) -> (g :250: (_x11 :251: a) -> State -253- st -252- b) -> (r :254: Pair -256- st -255- a) -> Pair -258- st -257- b 
+              st :259: Type a :260: Type b :261: Type g :262: (_x12 :263: a) -> State -265- st -264- b x :266: a s :267: st
+                [stBind2] -272- st -271- a -270- b -269- g -268- ([MkPair] -276- [st] -275- [a] -274- s -273- x) = stBind3 -280- st -279- b -278- s -277- (g -281- x)
+          in MkSt -284- st -283- b -282- (\s :285: st. stBind2 -290- st -289- a -288- b -287- g -286- (f -291- s))
+    postulate RealWorld :292: Type
+    IO :293: (_x0 :294: Type) -> Type = State -295- RealWorld
+    ioReturn :296: (a :297: Type) -> (x :298: a) -> IO -299- a = (\a :300: Type. (\x :301: a. stReturn -304- RealWorld -303- a -302- x))
+    ioBind :305: (a :306: Type) -> (b :307: Type) -> (x :308: IO -309- a) -> (y :310: (_x1 :311: a) -> IO -312- b) -> IO -313- b = (\a :314: Type. (\b :315: Type. (\x :316: IO -317- a. (\y :318: (_x1 :319: a) -> IO -320- b. stBind -325- RealWorld -324- a -323- b -322- x -321- y))))
+    ioWrapImpure :326: (a :327: Type) -> (impureF :328: (delayToken :R: Unit) -> a) -> IO -329- a = (\a :330: Type. (\impureF :331: (delayToken :R: Unit) -> a. MkSt -334- RealWorld -333- a -332- (\w :R: RealWorld. MkPair -338- RealWorld -337- a -336- w -335- (impureF -339- MkUnit))))
+    unsafePerformIO :340: (a :341: Type) -> (x :342: IO -343- a) -> a = (\a :344: Type. (\x :345: IO -346- a. 
+      let postulate TheWorld :347: RealWorld
+      in execState -351- RealWorld -350- a -349- x -348- TheWorld))
+    postulate Int :352: Type
+    foreign intS :353: (x :R: Int) -> Int
+    foreign intZ :354: Int
+    postulate Unspec :355: Type
+    printSchemeRepr :356: (a :357: Type) -> (x :358: a) -> IO -359- Unspec = (\a :360: Type. (\x :361: a. 
+      let foreign nativePrint :362: (a :E: Type) -> (x :R: a) -> Unspec
+      in ioWrapImpure -364- Unspec -363- (\delayToken :365: Unit. nativePrint -367- a -366- x)))
+    natToInt :368: (_x0 :369: Nat) -> Int 
+      [natToInt] -370- Z = intZ
+      n :371: Nat
+        [natToInt] -372- (S -373- n) = intS -374- (natToInt -375- n)
+    foreign intToNat :376: (x :R: Int) -> Nat
+    printNat :377: (x :378: Nat) -> IO -379- Unspec = (\x :380: Nat. printSchemeRepr -382- Int -381- (natToInt -383- x))
+    main :384: Unspec = unsafePerformIO -386- Unspec -385- (ioBind -390- Nat -389- Unspec -388- (ioReturn -392- Nat -391- 4) -387- (\v :397: Nat. ioBind -401- Unspec -400- Unspec -399- (printNat -402- v) -398- (\_0 :403: Unspec. printSchemeRepr -405- Nat -404- (intToNat -406- (intS -407- (intS -408- (intS -409- intZ)))))))
+  in main
+
+### Constraints ###
+
+[] -> [2,3,26,30,33,34,54,57,63,64,67,68,123,126,127,132,135,138,143,144,147,150,153,156,159,162,165,166,169,170,173,176,181,182,185,186,187,190,194,197,198,206,207,210,211,214,215,219,222,225,226,233,234,235,238,239,242,245,246,250,251,254,262,263,266,267,268,269,273,274,277,278,281,282,285,286,287,291,296,298,301,302,305,308,310,311,316,318,319,321,322,326,328,331,332,335,336,339,340,342,345,347,348,349,353,354,356,358,361,362,363,365,366,368,369,370,371,372,373,374,375,376,377,378,380,381,383,385,387,388,391,393,394,395,396,397,398,399,402,403,404,406,407,408,409,R]
+[31] -> [70,189,276,338]
+[32] -> [69,188,275,337]
+[35] -> [58,128,255]
+[36] -> [59,129,256]
+[55] -> [66,168]
+[56] -> [65,167]
+[58] -> [35,139]
+[59] -> [36,140]
+[60] -> [66]
+[61] -> [65]
+[62] -> [68]
+[65] -> [56,R]
+[66] -> [55,R]
+[69] -> [32,61,64]
+[70] -> [31,60,64]
+[124] -> [152,184,221,244,284,334]
+[125] -> [151,183,220,243,283,333]
+[128] -> [35,145,208,236,257]
+[129] -> [36,146,209,237,258]
+[130] -> [136,177,195,201,227,329]
+[131] -> [137,178,196,202,228,295]
+[133] -> [149,172]
+[134] -> [148,171]
+[136] -> [130,163]
+[137] -> [131,164]
+[139] -> [58,145]
+[140] -> [59,146]
+[141] -> [149]
+[142] -> [148]
+[145] -> [128,139]
+[146] -> [129,140]
+[148] -> [134,R]
+[149] -> [133,R]
+[151] -> [125,142,147]
+[152] -> [124,141,147]
+[154] -> [160,351]
+[155] -> [161,350]
+[157] -> [163,346]
+[158] -> [164,295]
+[160] -> [154]
+[161] -> [155]
+[163] -> [136,157]
+[164] -> [137,158]
+[167] -> [56,161]
+[168] -> [55,160]
+[171] -> [134,161]
+[172] -> [133,160]
+[174] -> [179,304]
+[175] -> [180,303]
+[177] -> [130,299]
+[178] -> [131,295]
+[179] -> [174]
+[180] -> [175]
+[183] -> [125,180]
+[184] -> [124,179]
+[188] -> [32,180]
+[189] -> [31,179]
+[191] -> [218,325]
+[192] -> [217,324]
+[193] -> [216,323]
+[195] -> [130,317]
+[196] -> [131,295]
+[199] -> [212,320]
+[200] -> [213,295]
+[201] -> [130,313]
+[202] -> [131,295]
+[203] -> [218]
+[204] -> [217]
+[205] -> [216]
+[208] -> [128,255]
+[209] -> [129,256]
+[212] -> [199,252]
+[213] -> [200,253]
+[216] -> [193,R]
+[217] -> [192,R]
+[218] -> [191,R]
+[220] -> [125,204,215]
+[221] -> [124,203,215]
+[223] -> [241,280]
+[224] -> [240,279]
+[227] -> [130,264]
+[228] -> [131,265]
+[229] -> [236,257]
+[230] -> [237,258]
+[231] -> [241]
+[232] -> [240]
+[236] -> [128,229]
+[237] -> [129,230]
+[240] -> [224,R]
+[241] -> [223,R]
+[243] -> [125,232,238]
+[244] -> [124,231,238]
+[247] -> [272,290]
+[248] -> [271,289]
+[249] -> [270,288]
+[252] -> [212,264]
+[253] -> [213,265]
+[255] -> [35,208]
+[256] -> [36,209]
+[257] -> [128,229]
+[258] -> [129,230]
+[259] -> [272]
+[260] -> [271]
+[261] -> [270]
+[264] -> [227,252]
+[265] -> [228,253]
+[270] -> [249,R]
+[271] -> [248,R]
+[272] -> [247,R]
+[275] -> [32,260,268]
+[276] -> [31,259,268]
+[279] -> [224,261]
+[280] -> [223,259]
+[283] -> [125,205]
+[284] -> [124,203]
+[288] -> [205,249]
+[289] -> [204,248]
+[290] -> [203,247]
+[295] -> [131,158,178,196,200,202,295]
+[297] -> [300,392]
+[299] -> [177,309]
+[300] -> [297]
+[303] -> [175,300]
+[304] -> [174,292]
+[306] -> [314,390,401]
+[307] -> [315,389,400]
+[309] -> [299,317,379]
+[312] -> [313,320,359]
+[313] -> [201,312,343]
+[314] -> [306]
+[315] -> [307]
+[317] -> [195,309]
+[320] -> [199,312]
+[323] -> [193,315]
+[324] -> [192,314]
+[325] -> [191,292]
+[327] -> [330,364]
+[329] -> [130,359]
+[330] -> [327]
+[333] -> [125,330]
+[334] -> [124,292]
+[337] -> [32,330]
+[338] -> [31,292]
+[341] -> [344,386]
+[343] -> [313,346]
+[344] -> [341]
+[346] -> [157,343]
+[350] -> [155,344]
+[351] -> [154,292]
+[357] -> [360,382,405]
+[359] -> [312,329,379]
+[360] -> [357]
+[364] -> [327,355]
+[367] -> [360,E]
+[379] -> [309,359]
+[382] -> [352,357]
+[386] -> [341,355]
+[389] -> [307,355]
+[390] -> [1,306]
+[392] -> [1,297]
+[400] -> [307,355]
+[401] -> [306,355]
+[405] -> [1,357]
+[E] -> [367]
+[R] -> [384]
+
+### Solution ###
+
+[2,3,26,30,33,34,54,57,63,64,67,68,123,126,127,132,135,138,143,144,147,150,153,156,159,162,165,166,169,170,173,176,181,182,185,186,187,190,194,197,198,206,207,210,211,214,215,219,222,225,226,233,234,235,238,239,242,245,246,250,251,254,262,263,266,267,268,269,273,274,277,278,281,282,285,286,287,291,296,298,301,302,305,308,310,311,316,318,319,321,322,326,328,331,332,335,336,339,340,342,345,347,348,349,353,354,356,358,361,362,363,365,366,368,369,370,371,372,373,374,375,376,377,378,380,381,383,384,385,387,388,391,393,394,395,396,397,398,399,402,403,404,406,407,408,409,R]
+
+### Annotated ###
+
+  let
+    constructor Nat :E: Type
+    constructor Z :R: Nat
+    constructor S :R: (x :R: Nat) -> Nat
+    plus :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Nat 
+      n :E: Nat
+        [plus] -E- Z -E- n = n
+      m :E: Nat n :E: Nat
+        [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
+    constructor Bool :E: Type
+    constructor True :E: Bool
+    constructor False :E: Bool
+    not :E: (_x2 :E: Bool) -> Bool 
+      [not] -E- True = False
+      [not] -E- False = True
+    constructor Unit :E: Type
+    constructor MkUnit :R: Unit
+    constructor Pair :E: (_x3 :E: Type) -> (_x4 :E: Type) -> Type
+    constructor MkPair :R: (a :E: Type) -> (b :E: Type) -> (_x5 :R: a) -> (_x6 :R: b) -> Pair -E- a -E- b
+    fst :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: Pair -E- a -E- b) -> a 
+      a :E: Type b :E: Type x :E: a y :E: b
+        [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
+    snd :R: (a :E: Type) -> (b :E: Type) -> (_x8 :R: Pair -E- a -E- b) -> b 
+      a :E: Type b :E: Type x :E: a y :R: b
+        [snd] -E- a -E- b -R- ([MkPair] -E- [a] -E- [b] -R- x -R- y) = y
+    constructor Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
+    constructor Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
+    constructor Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
+    id :E: (a :E: Type) -> (x :E: a) -> a = (\a :E: Type. (\x :E: a. x))
+    constructor Fin :E: (_x13 :E: Nat) -> Type
+    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
+    constructor FS :E: (n :E: Nat) -> (_x14 :E: Fin -E- n) -> Fin -E- (S -E- n)
+    constructor Vect :E: (_x15 :E: Nat) -> (_x16 :E: Type) -> Type
+    constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
+    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
+    constructor State :E: (_x0 :E: Type) -> (_x1 :E: Type) -> Type
+    constructor MkSt :R: (st :E: Type) -> (a :E: Type) -> (run :R: (_x2 :R: st) -> Pair -E- st -E- a) -> State -E- st -E- a
+    runState :R: (st :E: Type) -> (a :E: Type) -> (_x3 :R: State -E- st -E- a) -> (_x4 :R: st) -> Pair -E- st -E- a 
+      st :E: Type a :E: Type run :R: (_x5 :R: st) -> Pair -E- st -E- a
+        [runState] -E- st -E- a -R- ([MkSt] -E- [st] -E- [a] -R- run) = run
+    execState :R: (st :E: Type) -> (a :E: Type) -> (x :R: State -E- st -E- a) -> (s :R: st) -> a = (\st :E: Type. (\a :E: Type. (\x :R: State -E- st -E- a. (\s :R: st. snd -E- st -E- a -R- (runState -E- st -E- a -R- x -R- s)))))
+    stReturn :R: (st :E: Type) -> (a :E: Type) -> (x :R: a) -> State -E- st -E- a = (\st :E: Type. (\a :E: Type. (\x :R: a. MkSt -E- st -E- a -R- (\s :R: st. MkPair -E- st -E- a -R- s -R- x))))
+    stBind :R: (st :E: Type) -> (a :E: Type) -> (b :E: Type) -> (x :R: State -E- st -E- a) -> (y :R: (z :R: a) -> State -E- st -E- b) -> State -E- st -E- b 
+      st :E: Type a :E: Type b :E: Type f :R: (_x6 :R: st) -> Pair -E- st -E- a g :R: (_x7 :R: a) -> State -E- st -E- b
+        [stBind] -E- st -E- a -E- b -R- ([MkSt] -E- [st] -E- [a] -R- f) -R- g = 
+          let
+            stBind3 :R: (st :E: Type) -> (b :E: Type) -> (_x8 :R: st) -> (_x9 :R: State -E- st -E- b) -> Pair -E- st -E- b 
+              st :E: Type b :E: Type s :R: st f :R: (_x10 :R: st) -> Pair -E- st -E- b
+                [stBind3] -E- st -E- b -R- s -R- ([MkSt] -E- [st] -E- [b] -R- f) = f -R- s
+            stBind2 :R: (st :E: Type) -> (a :E: Type) -> (b :E: Type) -> (g :R: (_x11 :R: a) -> State -E- st -E- b) -> (r :R: Pair -E- st -E- a) -> Pair -E- st -E- b 
+              st :E: Type a :E: Type b :E: Type g :R: (_x12 :R: a) -> State -E- st -E- b x :R: a s :R: st
+                [stBind2] -E- st -E- a -E- b -R- g -R- ([MkPair] -E- [st] -E- [a] -R- s -R- x) = stBind3 -E- st -E- b -R- s -R- (g -R- x)
+          in MkSt -E- st -E- b -R- (\s :R: st. stBind2 -E- st -E- a -E- b -R- g -R- (f -R- s))
+    postulate RealWorld :E: Type
+    IO :E: (_x0 :E: Type) -> Type = State -E- RealWorld
+    ioReturn :R: (a :E: Type) -> (x :R: a) -> IO -E- a = (\a :E: Type. (\x :R: a. stReturn -E- RealWorld -E- a -R- x))
+    ioBind :R: (a :E: Type) -> (b :E: Type) -> (x :R: IO -E- a) -> (y :R: (_x1 :R: a) -> IO -E- b) -> IO -E- b = (\a :E: Type. (\b :E: Type. (\x :R: IO -E- a. (\y :R: (_x1 :R: a) -> IO -E- b. stBind -E- RealWorld -E- a -E- b -R- x -R- y))))
+    ioWrapImpure :R: (a :E: Type) -> (impureF :R: (delayToken :R: Unit) -> a) -> IO -E- a = (\a :E: Type. (\impureF :R: (delayToken :R: Unit) -> a. MkSt -E- RealWorld -E- a -R- (\w :R: RealWorld. MkPair -E- RealWorld -E- a -R- w -R- (impureF -R- MkUnit))))
+    unsafePerformIO :R: (a :E: Type) -> (x :R: IO -E- a) -> a = (\a :E: Type. (\x :R: IO -E- a. 
+      let postulate TheWorld :R: RealWorld
+      in execState -E- RealWorld -E- a -R- x -R- TheWorld))
+    postulate Int :E: Type
+    foreign intS :R: (x :R: Int) -> Int
+    foreign intZ :R: Int
+    postulate Unspec :E: Type
+    printSchemeRepr :R: (a :E: Type) -> (x :R: a) -> IO -E- Unspec = (\a :E: Type. (\x :R: a. 
+      let foreign nativePrint :R: (a :E: Type) -> (x :R: a) -> Unspec
+      in ioWrapImpure -E- Unspec -R- (\delayToken :R: Unit. nativePrint -E- a -R- x)))
+    natToInt :R: (_x0 :R: Nat) -> Int 
+      [natToInt] -R- Z = intZ
+      n :R: Nat
+        [natToInt] -R- (S -R- n) = intS -R- (natToInt -R- n)
+    foreign intToNat :R: (x :R: Int) -> Nat
+    printNat :R: (x :R: Nat) -> IO -E- Unspec = (\x :R: Nat. printSchemeRepr -E- Int -R- (natToInt -R- x))
+    main :R: Unspec = unsafePerformIO -E- Unspec -R- (ioBind -E- Nat -E- Unspec -R- (ioReturn -E- Nat -R- 4) -R- (\v :R: Nat. ioBind -E- Unspec -E- Unspec -R- (printNat -R- v) -R- (\_0 :R: Unspec. printSchemeRepr -E- Nat -R- (intToNat -R- (intS -R- (intS -R- (intS -R- intZ)))))))
+  in main
+
+### Specialised ###
+
+  let
+    constructor Nat :E: Type
+    constructor Z :R: Nat
+    constructor S :R: (x :R: Nat) -> Nat
+    plus :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Nat 
+      n :E: Nat
+        [plus] -E- Z -E- n = n
+      m :E: Nat n :E: Nat
+        [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
+    constructor Bool :E: Type
+    constructor True :E: Bool
+    constructor False :E: Bool
+    not :E: (_x2 :E: Bool) -> Bool 
+      [not] -E- True = False
+      [not] -E- False = True
+    constructor Unit :E: Type
+    constructor MkUnit :R: Unit
+    constructor Pair :E: (_x3 :E: Type) -> (_x4 :E: Type) -> Type
+    constructor MkPair :R: (a :E: Type) -> (b :E: Type) -> (_x5 :R: a) -> (_x6 :R: b) -> Pair -E- a -E- b
+    fst :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: Pair -E- a -E- b) -> a 
+      a :E: Type b :E: Type x :E: a y :E: b
+        [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
+    snd :R: (a :E: Type) -> (b :E: Type) -> (_x8 :R: Pair -E- a -E- b) -> b 
+      a :E: Type b :E: Type x :E: a y :R: b
+        [snd] -E- a -E- b -R- ([MkPair] -E- [a] -E- [b] -R- x -R- y) = y
+    constructor Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
+    constructor Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
+    constructor Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
+    id :E: (a :E: Type) -> (x :E: a) -> a = (\a :E: Type. (\x :E: a. x))
+    constructor Fin :E: (_x13 :E: Nat) -> Type
+    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
+    constructor FS :E: (n :E: Nat) -> (_x14 :E: Fin -E- n) -> Fin -E- (S -E- n)
+    constructor Vect :E: (_x15 :E: Nat) -> (_x16 :E: Type) -> Type
+    constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
+    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
+    constructor State :E: (_x0 :E: Type) -> (_x1 :E: Type) -> Type
+    constructor MkSt :R: (st :E: Type) -> (a :E: Type) -> (run :R: (_x2 :R: st) -> Pair -E- st -E- a) -> State -E- st -E- a
+    runState :R: (st :E: Type) -> (a :E: Type) -> (_x3 :R: State -E- st -E- a) -> (_x4 :R: st) -> Pair -E- st -E- a 
+      st :E: Type a :E: Type run :R: (_x5 :R: st) -> Pair -E- st -E- a
+        [runState] -E- st -E- a -R- ([MkSt] -E- [st] -E- [a] -R- run) = run
+    execState :R: (st :E: Type) -> (a :E: Type) -> (x :R: State -E- st -E- a) -> (s :R: st) -> a = (\st :E: Type. (\a :E: Type. (\x :R: State -E- st -E- a. (\s :R: st. snd -E- st -E- a -R- (runState -E- st -E- a -R- x -R- s)))))
+    stReturn :R: (st :E: Type) -> (a :E: Type) -> (x :R: a) -> State -E- st -E- a = (\st :E: Type. (\a :E: Type. (\x :R: a. MkSt -E- st -E- a -R- (\s :R: st. MkPair -E- st -E- a -R- s -R- x))))
+    stBind :R: (st :E: Type) -> (a :E: Type) -> (b :E: Type) -> (x :R: State -E- st -E- a) -> (y :R: (z :R: a) -> State -E- st -E- b) -> State -E- st -E- b 
+      st :E: Type a :E: Type b :E: Type f :R: (_x6 :R: st) -> Pair -E- st -E- a g :R: (_x7 :R: a) -> State -E- st -E- b
+        [stBind] -E- st -E- a -E- b -R- ([MkSt] -E- [st] -E- [a] -R- f) -R- g = 
+          let
+            stBind3 :R: (st :E: Type) -> (b :E: Type) -> (_x8 :R: st) -> (_x9 :R: State -E- st -E- b) -> Pair -E- st -E- b 
+              st :E: Type b :E: Type s :R: st f :R: (_x10 :R: st) -> Pair -E- st -E- b
+                [stBind3] -E- st -E- b -R- s -R- ([MkSt] -E- [st] -E- [b] -R- f) = f -R- s
+            stBind2 :R: (st :E: Type) -> (a :E: Type) -> (b :E: Type) -> (g :R: (_x11 :R: a) -> State -E- st -E- b) -> (r :R: Pair -E- st -E- a) -> Pair -E- st -E- b 
+              st :E: Type a :E: Type b :E: Type g :R: (_x12 :R: a) -> State -E- st -E- b x :R: a s :R: st
+                [stBind2] -E- st -E- a -E- b -R- g -R- ([MkPair] -E- [st] -E- [a] -R- s -R- x) = stBind3 -E- st -E- b -R- s -R- (g -R- x)
+          in MkSt -E- st -E- b -R- (\s :R: st. stBind2 -E- st -E- a -E- b -R- g -R- (f -R- s))
+    postulate RealWorld :E: Type
+    IO :E: (_x0 :E: Type) -> Type = State -E- RealWorld
+    ioReturn :R: (a :E: Type) -> (x :R: a) -> IO -E- a = (\a :E: Type. (\x :R: a. stReturn -E- RealWorld -E- a -R- x))
+    ioBind :R: (a :E: Type) -> (b :E: Type) -> (x :R: IO -E- a) -> (y :R: (_x1 :R: a) -> IO -E- b) -> IO -E- b = (\a :E: Type. (\b :E: Type. (\x :R: IO -E- a. (\y :R: (_x1 :R: a) -> IO -E- b. stBind -E- RealWorld -E- a -E- b -R- x -R- y))))
+    ioWrapImpure :R: (a :E: Type) -> (impureF :R: (delayToken :R: Unit) -> a) -> IO -E- a = (\a :E: Type. (\impureF :R: (delayToken :R: Unit) -> a. MkSt -E- RealWorld -E- a -R- (\w :R: RealWorld. MkPair -E- RealWorld -E- a -R- w -R- (impureF -R- MkUnit))))
+    unsafePerformIO :R: (a :E: Type) -> (x :R: IO -E- a) -> a = (\a :E: Type. (\x :R: IO -E- a. 
+      let postulate TheWorld :R: RealWorld
+      in execState -E- RealWorld -E- a -R- x -R- TheWorld))
+    postulate Int :E: Type
+    foreign intS :R: (x :R: Int) -> Int
+    foreign intZ :R: Int
+    postulate Unspec :E: Type
+    printSchemeRepr :R: (a :E: Type) -> (x :R: a) -> IO -E- Unspec = (\a :E: Type. (\x :R: a. 
+      let foreign nativePrint :R: (a :E: Type) -> (x :R: a) -> Unspec
+      in ioWrapImpure -E- Unspec -R- (\delayToken :R: Unit. nativePrint -E- a -R- x)))
+    natToInt :R: (_x0 :R: Nat) -> Int 
+      [natToInt] -R- Z = intZ
+      n :R: Nat
+        [natToInt] -R- (S -R- n) = intS -R- (natToInt -R- n)
+    foreign intToNat :R: (x :R: Int) -> Nat
+    printNat :R: (x :R: Nat) -> IO -E- Unspec = (\x :R: Nat. printSchemeRepr -E- Int -R- (natToInt -R- x))
+    main :R: Unspec = unsafePerformIO -E- Unspec -R- (ioBind -E- Nat -E- Unspec -R- (ioReturn -E- Nat -R- 4) -R- (\v :R: Nat. ioBind -E- Unspec -E- Unspec -R- (printNat -R- v) -R- (\_0 :R: Unspec. printSchemeRepr -E- Nat -R- (intToNat -R- (intS -R- (intS -R- (intS -R- intZ)))))))
+  in main
+
+### Final annotation ###
+
+  let
+    constructor Nat :E: Type
+    constructor Z :R: Nat
+    constructor S :R: (x :R: Nat) -> Nat
+    plus :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Nat 
+      n :E: Nat
+        [plus] -E- Z -E- n = n
+      m :E: Nat n :E: Nat
+        [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
+    constructor Bool :E: Type
+    constructor True :E: Bool
+    constructor False :E: Bool
+    not :E: (_x2 :E: Bool) -> Bool 
+      [not] -E- True = False
+      [not] -E- False = True
+    constructor Unit :E: Type
+    constructor MkUnit :R: Unit
+    constructor Pair :E: (_x3 :E: Type) -> (_x4 :E: Type) -> Type
+    constructor MkPair :R: (a :E: Type) -> (b :E: Type) -> (_x5 :R: a) -> (_x6 :R: b) -> Pair -E- a -E- b
+    fst :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: Pair -E- a -E- b) -> a 
+      a :E: Type b :E: Type x :E: a y :E: b
+        [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
+    snd :R: (a :E: Type) -> (b :E: Type) -> (_x8 :R: Pair -E- a -E- b) -> b 
+      a :E: Type b :E: Type x :E: a y :R: b
+        [snd] -E- a -E- b -R- ([MkPair] -E- [a] -E- [b] -R- x -R- y) = y
+    constructor Either :E: (_x9 :E: Type) -> (_x10 :E: Type) -> Type
+    constructor Left :E: (a :E: Type) -> (b :E: Type) -> (_x11 :E: a) -> Either -E- a -E- b
+    constructor Right :E: (a :E: Type) -> (b :E: Type) -> (_x12 :E: b) -> Either -E- a -E- b
+    id :E: (a :E: Type) -> (x :E: a) -> a = (\a :E: Type. (\x :E: a. x))
+    constructor Fin :E: (_x13 :E: Nat) -> Type
+    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
+    constructor FS :E: (n :E: Nat) -> (_x14 :E: Fin -E- n) -> Fin -E- (S -E- n)
+    constructor Vect :E: (_x15 :E: Nat) -> (_x16 :E: Type) -> Type
+    constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
+    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
+    constructor State :E: (_x0 :E: Type) -> (_x1 :E: Type) -> Type
+    constructor MkSt :R: (st :E: Type) -> (a :E: Type) -> (run :R: (_x2 :R: st) -> Pair -E- st -E- a) -> State -E- st -E- a
+    runState :R: (st :E: Type) -> (a :E: Type) -> (_x3 :R: State -E- st -E- a) -> (_x4 :R: st) -> Pair -E- st -E- a 
+      st :E: Type a :E: Type run :R: (_x5 :R: st) -> Pair -E- st -E- a
+        [runState] -E- st -E- a -R- ([MkSt] -E- [st] -E- [a] -R- run) = run
+    execState :R: (st :E: Type) -> (a :E: Type) -> (x :R: State -E- st -E- a) -> (s :R: st) -> a = (\st :E: Type. (\a :E: Type. (\x :R: State -E- st -E- a. (\s :R: st. snd -E- st -E- a -R- (runState -E- st -E- a -R- x -R- s)))))
+    stReturn :R: (st :E: Type) -> (a :E: Type) -> (x :R: a) -> State -E- st -E- a = (\st :E: Type. (\a :E: Type. (\x :R: a. MkSt -E- st -E- a -R- (\s :R: st. MkPair -E- st -E- a -R- s -R- x))))
+    stBind :R: (st :E: Type) -> (a :E: Type) -> (b :E: Type) -> (x :R: State -E- st -E- a) -> (y :R: (z :R: a) -> State -E- st -E- b) -> State -E- st -E- b 
+      st :E: Type a :E: Type b :E: Type f :R: (_x6 :R: st) -> Pair -E- st -E- a g :R: (_x7 :R: a) -> State -E- st -E- b
+        [stBind] -E- st -E- a -E- b -R- ([MkSt] -E- [st] -E- [a] -R- f) -R- g = 
+          let
+            stBind3 :R: (st :E: Type) -> (b :E: Type) -> (_x8 :R: st) -> (_x9 :R: State -E- st -E- b) -> Pair -E- st -E- b 
+              st :E: Type b :E: Type s :R: st f :R: (_x10 :R: st) -> Pair -E- st -E- b
+                [stBind3] -E- st -E- b -R- s -R- ([MkSt] -E- [st] -E- [b] -R- f) = f -R- s
+            stBind2 :R: (st :E: Type) -> (a :E: Type) -> (b :E: Type) -> (g :R: (_x11 :R: a) -> State -E- st -E- b) -> (r :R: Pair -E- st -E- a) -> Pair -E- st -E- b 
+              st :E: Type a :E: Type b :E: Type g :R: (_x12 :R: a) -> State -E- st -E- b x :R: a s :R: st
+                [stBind2] -E- st -E- a -E- b -R- g -R- ([MkPair] -E- [st] -E- [a] -R- s -R- x) = stBind3 -E- st -E- b -R- s -R- (g -R- x)
+          in MkSt -E- st -E- b -R- (\s :R: st. stBind2 -E- st -E- a -E- b -R- g -R- (f -R- s))
+    postulate RealWorld :E: Type
+    IO :E: (_x0 :E: Type) -> Type = State -E- RealWorld
+    ioReturn :R: (a :E: Type) -> (x :R: a) -> IO -E- a = (\a :E: Type. (\x :R: a. stReturn -E- RealWorld -E- a -R- x))
+    ioBind :R: (a :E: Type) -> (b :E: Type) -> (x :R: IO -E- a) -> (y :R: (_x1 :R: a) -> IO -E- b) -> IO -E- b = (\a :E: Type. (\b :E: Type. (\x :R: IO -E- a. (\y :R: (_x1 :R: a) -> IO -E- b. stBind -E- RealWorld -E- a -E- b -R- x -R- y))))
+    ioWrapImpure :R: (a :E: Type) -> (impureF :R: (delayToken :R: Unit) -> a) -> IO -E- a = (\a :E: Type. (\impureF :R: (delayToken :R: Unit) -> a. MkSt -E- RealWorld -E- a -R- (\w :R: RealWorld. MkPair -E- RealWorld -E- a -R- w -R- (impureF -R- MkUnit))))
+    unsafePerformIO :R: (a :E: Type) -> (x :R: IO -E- a) -> a = (\a :E: Type. (\x :R: IO -E- a. 
+      let postulate TheWorld :R: RealWorld
+      in execState -E- RealWorld -E- a -R- x -R- TheWorld))
+    postulate Int :E: Type
+    foreign intS :R: (x :R: Int) -> Int
+    foreign intZ :R: Int
+    postulate Unspec :E: Type
+    printSchemeRepr :R: (a :E: Type) -> (x :R: a) -> IO -E- Unspec = (\a :E: Type. (\x :R: a. 
+      let foreign nativePrint :R: (a :E: Type) -> (x :R: a) -> Unspec
+      in ioWrapImpure -E- Unspec -R- (\delayToken :R: Unit. nativePrint -E- a -R- x)))
+    natToInt :R: (_x0 :R: Nat) -> Int 
+      [natToInt] -R- Z = intZ
+      n :R: Nat
+        [natToInt] -R- (S -R- n) = intS -R- (natToInt -R- n)
+    foreign intToNat :R: (x :R: Int) -> Nat
+    printNat :R: (x :R: Nat) -> IO -E- Unspec = (\x :R: Nat. printSchemeRepr -E- Int -R- (natToInt -R- x))
+    main :R: Unspec = unsafePerformIO -E- Unspec -R- (ioBind -E- Nat -E- Unspec -R- (ioReturn -E- Nat -R- 4) -R- (\v :R: Nat. ioBind -E- Unspec -E- Unspec -R- (printNat -R- v) -R- (\_0 :R: Unspec. printSchemeRepr -E- Nat -R- (intToNat -R- (intS -R- (intS -R- (intS -R- intZ)))))))
+  in main
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+  let
+    constructor Z : Nat
+    constructor S : (x) -> Nat
+    constructor MkUnit : Unit
+    constructor MkPair : (_x5) -> (_x6) -> Pair
+    snd 
+      [_] ([_] _ y) = y
+    constructor MkSt : (run) -> State
+    runState 
+      [_] ([_] run) = run
+    execState = (\x. (\s. snd (runState x s)))
+    stReturn = (\x. MkSt (\s. MkPair s x))
+    stBind 
+      [_] ([_] f) g = 
+        let
+          stBind3 
+            [_] s ([_] f) = f s
+          stBind2 
+            [_] g ([_] s x) = stBind3 s (g x)
+        in MkSt (\s. stBind2 g (f s))
+    ioReturn = (\x. stReturn x)
+    ioBind = (\x. (\y. stBind x y))
+    ioWrapImpure = (\impureF. MkSt (\w. MkPair w (impureF MkUnit)))
+    unsafePerformIO = (\x. 
+      let postulate TheWorld : RealWorld
+      in execState x TheWorld)
+    foreign intS
+    foreign intZ
+    printSchemeRepr = (\x. 
+      let foreign nativePrint
+      in ioWrapImpure (\delayToken. nativePrint x))
+    natToInt 
+      [_] Z = intZ
+      [_] (S n) = intS (natToInt n)
+    foreign intToNat
+    printNat = (\x. printSchemeRepr (natToInt x))
+    main = unsafePerformIO (ioBind (ioReturn 4) (\v. ioBind (printNat v) (\_0. printSchemeRepr (intToNat (intS (intS (intS intZ)))))))
+  in main
+
+### Intermediate representation ###
+let Z = constructor 0
+  in let S = constructor 1
+    in let MkUnit = constructor 0
+      in let MkPair = constructor 2
+        in let snd = \_pv0.
+          case _pv0 of
+            _ _pv1 _pv2 => _pv2
+          in let MkSt = constructor 1
+            in let runState = \_pv0.
+              case _pv0 of
+                _ _pv1 => _pv1
+              in let execState = \x. \s. (snd ((runState x) s))
+                in let stReturn = \x. (MkSt \s. ((MkPair s) x))
+                  in let stBind = \_pv0. \_pv1.
+                    case _pv0 of
+                      _ _pv2 => let stBind3 = \_pv3. \_pv4.
+                        case _pv4 of
+                          _ _pv5 => (_pv5 _pv3)
+                        in let stBind2 = \_pv3. \_pv4.
+                          case _pv4 of
+                            _ _pv5 _pv6 => ((stBind3 _pv5) (_pv3 _pv6))
+                          in (MkSt \s. ((stBind2 _pv1) (_pv2 s)))
+                    in let ioReturn = \x. (stReturn x)
+                      in let ioBind = \x. \y. ((stBind x) y)
+                        in let ioWrapImpure = \impureF. (MkSt \w. ((MkPair w) (impureF MkUnit)))
+                          in let unsafePerformIO = \x. let TheWorld = error "postulate"
+                            in ((execState x) TheWorld)
+                            in let intS = foreign "(lambda (x) (+ x 1))"
+                              in let intZ = foreign "0"
+                                in let printSchemeRepr = \x. let nativePrint = foreign "print"
+                                  in (ioWrapImpure \delayToken. (nativePrint x))
+                                  in let natToInt = \_pv0.
+                                    case _pv0 of
+                                      S _pv1 => (intS (natToInt _pv1))
+                                      Z => intZ
+                                    in let intToNat = foreign "(lambda (x) (number->peano 'Z 'S x))"
+                                      in let printNat = \x. (printSchemeRepr (natToInt x))
+                                        in let main = (unsafePerformIO ((ioBind (ioReturn (S (S (S (S Z)))))) \v. ((ioBind (printNat v)) \_0. (printSchemeRepr (intToNat (intS (intS (intS intZ))))))))
+                                          in main
+
+### Normal forms ###
+
+unerased:
+  
+  let
+    constructor Nat : Type
+    postulate Int : Type
+    foreign intS : (x :R: Int) -> Int
+    foreign intZ : Int
+    postulate Unspec : Type
+    foreign intToNat : (x :R: Int) -> Nat
+  in 
+    let foreign nativePrint0 : (a :E: Type) -> (x :R: a) -> Unspec
+    in nativePrint0 Nat (intToNat (intS (intS (intS intZ))))
+
+erased:
+  
+  let
+    foreign intS
+    foreign intZ
+    foreign intToNat
+  in 
+    let foreign nativePrint0
+    in nativePrint0 (intToNat (intS (intS (intS intZ))))
+

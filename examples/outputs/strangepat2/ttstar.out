@@ -1,0 +1,142 @@
+-- vim: ft=ttstar
+
+### Desugared ###
+
+  let
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    not : (_x0 : Bool) -> Bool 
+      [not] T = F
+      [not] F = T
+    f : (_x1 : Bool) -> Bool 
+      [f] ([not] T) = F
+      [f] ([not] F) = T
+    main : Bool = f T
+  in main
+
+### Evarified ###
+
+  let
+    constructor Bool :1: Type
+    constructor T :2: Bool
+    constructor F :3: Bool
+    not :4: (_x0 :5: Bool) -> Bool 
+      [not] -6- T = F
+      [not] -7- F = T
+    f :8: (_x1 :9: Bool) -> Bool 
+      [f] -10- ([not] -11- T) = F
+      [f] -12- ([not] -13- F) = T
+    main :14: Bool = f -15- T
+  in main
+
+### Constraints ###
+
+[] -> [2,3,4,5,6,7,8,9,10,11,12,13,15,R]
+[R] -> [14]
+
+### Solution ###
+
+[2,3,4,5,6,7,8,9,10,11,12,13,14,15,R]
+
+### Annotated ###
+
+  let
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    not :R: (_x0 :R: Bool) -> Bool 
+      [not] -R- T = F
+      [not] -R- F = T
+    f :R: (_x1 :R: Bool) -> Bool 
+      [f] -R- ([not] -R- T) = F
+      [f] -R- ([not] -R- F) = T
+    main :R: Bool = f -R- T
+  in main
+
+### Specialised ###
+
+  let
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    not :R: (_x0 :R: Bool) -> Bool 
+      [not] -R- T = F
+      [not] -R- F = T
+    f :R: (_x1 :R: Bool) -> Bool 
+      [f] -R- ([not] -R- T) = F
+      [f] -R- ([not] -R- F) = T
+    main :R: Bool = f -R- T
+  in main
+
+### Final annotation ###
+
+  let
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    not :R: (_x0 :R: Bool) -> Bool 
+      [not] -R- T = F
+      [not] -R- F = T
+    f :R: (_x1 :R: Bool) -> Bool 
+      [f] -R- ([not] -R- T) = F
+      [f] -R- ([not] -R- F) = T
+    main :R: Bool = f -R- T
+  in main
+
+### Verification ###
+
+ttstar: !! verification failed: Traceback:
+1. In context:
+  Type : Type
+
+("LET",R,[constructor Bool :E: Type,constructor T :R: Bool,constructor F :R: Bool,not :R: (_x0 :R: Bool) -> Bool 
+  [not] -R- T = F
+  [not] -R- F = T,f :R: (_x1 :R: Bool) -> Bool 
+  [f] -R- ([not] -R- T) = F
+  [f] -R- ([not] -R- F) = T,main :R: Bool = f -R- T])
+
+2. In context:
+  Bool : Type
+  F : Bool
+  T : Bool
+  Type : Type
+  f : (_x1 :R: Bool) -> Bool
+  not : (_x0 :R: Bool) -> Bool
+
+("DEF-CLAUSES",f)
+
+3. In context:
+  Bool : Type
+  F : Bool
+  T : Bool
+  Type : Type
+  f : (_x1 :R: Bool) -> Bool
+  not : (_x0 :R: Bool) -> Bool
+
+("CLAUSE",PApp R (PForced f) (PApp R (PForced not) (PV T)))
+
+4. In context:
+  Bool : Type
+  F : Bool
+  T : Bool
+  Type : Type
+  f : (_x1 :R: Bool) -> Bool
+  not : (_x0 :R: Bool) -> Bool
+
+("PAT-APP",True,R,R,PForced f,PApp R (PForced not) (PV T))
+
+5. In context:
+  Bool : Type
+  F : Bool
+  T : Bool
+  Type : Type
+  f : (_x1 :R: Bool) -> Bool
+  not : (_x0 :R: Bool) -> Bool
+
+("PAT-APP",False,R,R,PForced not,PV T)
+
+Error: NotConstructor not
+
+CallStack (from HasCallStack):
+  error, called at Main.hs:145:25 in main:Main

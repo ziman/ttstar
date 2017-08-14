@@ -1,0 +1,21 @@
+
+Error: postulate
+
+	Call history:
+
+	<eval>	  (S (S Z))
+	<eval>	  (S Z)
+	<eval>	  [S] (##sys#list (##core#quote S) e0)
+	<eval>	  [S] (##sys#list (##core#quote S) e0)
+	<eval>	  [S] (##sys#list (##core#quote S) e0)
+	<eval>	  [S] (##sys#list (##core#quote S) e0)
+	<eval>	  [ioReturn] (stReturn x)
+	<eval>	  [stReturn] (MkSt (lambda (s) ((MkPair s) x)))
+	<eval>	  [MkSt] (##sys#list (##core#quote MkSt) e0)
+	<eval>	  [ioBind] ((stBind x) y)
+	<eval>	  [ioBind] (stBind x)
+	<eval>	  [stBind] (car298 (cdr294 _pv0))
+	<eval>	  [stBind] (cdr294 _pv0)
+	<eval>	  [stBind] (MkSt (lambda (s) ((stBind2 _pv1) (_pv2 s))))
+	<eval>	  [MkSt] (##sys#list (##core#quote MkSt) e0)
+	<eval>	  [unsafePerformIO] (error "postulate")	<--

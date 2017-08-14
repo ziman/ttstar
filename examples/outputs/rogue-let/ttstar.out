@@ -1,0 +1,119 @@
+-- vim: ft=ttstar
+
+### Desugared ###
+
+  let
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    not : (_x0 : Bool) -> Bool 
+      [not] T = F
+      [not] F = T
+    main : (_x1 : Bool) -> Bool = not
+  in main
+
+### Evarified ###
+
+  let
+    constructor Bool :1: Type
+    constructor T :2: Bool
+    constructor F :3: Bool
+    not :4: (_x0 :5: Bool) -> Bool 
+      [not] -6- T = F
+      [not] -7- F = T
+    main :8: (_x1 :9: Bool) -> Bool = not
+  in main
+
+### Constraints ###
+
+[] -> [2,3,4,5,6,7,9,R]
+[R] -> [8]
+
+### Solution ###
+
+[2,3,4,5,6,7,8,9,R]
+
+### Annotated ###
+
+  let
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    not :R: (_x0 :R: Bool) -> Bool 
+      [not] -R- T = F
+      [not] -R- F = T
+    main :R: (_x1 :R: Bool) -> Bool = not
+  in main
+
+### Specialised ###
+
+  let
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    not :R: (_x0 :R: Bool) -> Bool 
+      [not] -R- T = F
+      [not] -R- F = T
+    main :R: (_x1 :R: Bool) -> Bool = not
+  in main
+
+### Final annotation ###
+
+  let
+    constructor Bool :E: Type
+    constructor T :R: Bool
+    constructor F :R: Bool
+    not :R: (_x0 :R: Bool) -> Bool 
+      [not] -R- T = F
+      [not] -R- F = T
+    main :R: (_x1 :R: Bool) -> Bool = not
+  in main
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+  let
+    constructor T : Bool
+    constructor F : Bool
+    not 
+      [_] T = F
+      [_] F = T
+    main = not
+  in main
+
+### Intermediate representation ###
+let T = constructor 0
+  in let F = constructor 0
+    in let not = \_pv0.
+      case _pv0 of
+        F => T
+        T => F
+      in let main = not
+        in main
+
+### Normal forms ###
+
+unerased:
+  
+  let
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    not : (_x0 : Bool) -> Bool 
+      [not] T = F
+      [not] F = T
+  in not
+
+erased:
+  
+  let
+    constructor T : Bool
+    constructor F : Bool
+    not 
+      [_] T = F
+      [_] F = T
+  in not
+

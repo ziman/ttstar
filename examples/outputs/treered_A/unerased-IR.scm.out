@@ -1,0 +1,21 @@
+
+Error: pattern match failure: (Cons ((N) (Z) (S (S (S (Z)))) (Nil (N))))
+
+	Call history:
+
+	<eval>	  (Cons N)
+	<eval>	  (S (S (S Z)))
+	<eval>	  (S (S Z))
+	<eval>	  (S Z)
+	<eval>	  [S] (##sys#list (##core#quote S) e0)
+	<eval>	  [S] (##sys#list (##core#quote S) e0)
+	<eval>	  [S] (##sys#list (##core#quote S) e0)
+	<eval>	  (Nil N)
+	<eval>	  [Nil] (##sys#list (##core#quote Nil) e0)
+	<eval>	  [Cons] (##sys#list (##core#quote Cons) e0 e1 e2 e3)
+	<eval>	  [vlen] (eq?268 (car264 _pv1) (quote269 Nil))
+	<eval>	  [vlen] (car264 _pv1)
+	<eval>	  [vlen] (error277 "pattern match failure" (list278 (car264 _pv1) (cdr265 _pv1)))
+	<eval>	  [vlen] (list278 (car264 _pv1) (cdr265 _pv1))
+	<eval>	  [vlen] (car264 _pv1)
+	<eval>	  [vlen] (cdr265 _pv1)	<--

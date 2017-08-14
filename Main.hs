@@ -10,8 +10,11 @@ import TT.Utils
 import TT.Parser
 import TT.Normalise
 
-import Codegen.Common
+import IR.FromTT
+import IR.Pretty ()
+
 import qualified Codegen.Scheme
+import qualified Codegen.SchemeIR
 
 import Util.PrettyPrint
 
@@ -158,6 +161,11 @@ pipeline args = do
         print optimised
         putStrLn ""
 
+    when (Args.verbose args) $ do
+        putStrLn "### Intermediate representation ###"
+        print $ toIR optimised
+        putStrLn ""
+
     case Args.dumpPretty args of
         Nothing -> return ()
         Just fname -> dumpTT fname optimised
@@ -165,6 +173,10 @@ pipeline args = do
     case Args.dumpScheme args of
         Nothing -> return ()
         Just fname -> dumpScheme fname optimised
+
+    case Args.dumpSchemeIR args of
+        Nothing -> return ()
+        Just fname -> dumpSchemeIR fname (toIR optimised)
 
     let unerasedNF = red NF (builtins $ Just relOfType) prog
     let erasedNF = red NF (builtins ()) optimised
@@ -189,7 +201,11 @@ pipeline args = do
   where
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
     dumpTT fname prog = writeFile fname $ "-- vim: ft=ttstar" ++ show prog ++ "\n"
-    dumpScheme fname prog = writeFile fname $ render "; " (cgRun Codegen.Scheme.codegen prog) ++ "\n"
+    dumpScheme fname prog = writeFile fname $ render "; " (Codegen.Scheme.codegen prog) ++ "\n"
+
+    dumpSchemeIR fname prog = do
+        rts <- readFile "rts.scm"
+        writeFile fname $ rts ++ "\n" ++ render "; " (Codegen.SchemeIR.codegen prog) ++ "\n"
 
     solveConstraints = case Args.solver args of
         Simple  -> fst . Solver.Simple.solve
