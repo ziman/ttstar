@@ -1,6 +1,9 @@
 module Codegen.IR where
 
-data IName = IMN String Int deriving (Eq, Ord, Show)
+data IName
+    = IMN String Int  -- number-disambiguated name
+    | IPV Int         -- pattern variable
+    deriving (Eq, Ord, Show)
 
 data IR
     = IV IName
