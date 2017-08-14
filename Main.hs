@@ -10,7 +10,6 @@ import TT.Utils
 import TT.Parser
 import TT.Normalise
 
-import Codegen.IR
 import Codegen.ToIR
 import Codegen.Pretty ()
 import Codegen.Common
@@ -167,11 +166,6 @@ pipeline args = do
         print $ toIR optimised
         putStrLn ""
 
-    when (Args.verbose args) $ do
-        putStrLn "### Scheme from IR ###"
-        print $ Codegen.SchemeIR.codegen (toIR optimised)
-        putStrLn ""
-
     case Args.dumpPretty args of
         Nothing -> return ()
         Just fname -> dumpTT fname optimised
@@ -179,6 +173,10 @@ pipeline args = do
     case Args.dumpScheme args of
         Nothing -> return ()
         Just fname -> dumpScheme fname optimised
+
+    case Args.dumpSchemeIR args of
+        Nothing -> return ()
+        Just fname -> dumpSchemeIR fname (toIR optimised)
 
     let unerasedNF = red NF (builtins $ Just relOfType) prog
     let erasedNF = red NF (builtins ()) optimised
@@ -204,6 +202,7 @@ pipeline args = do
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
     dumpTT fname prog = writeFile fname $ "-- vim: ft=ttstar" ++ show prog ++ "\n"
     dumpScheme fname prog = writeFile fname $ render "; " (cgRun Codegen.Scheme.codegen prog) ++ "\n"
+    dumpSchemeIR fname prog = writeFile fname $ render "; " (Codegen.SchemeIR.codegen prog) ++ "\n"
 
     solveConstraints = case Args.solver args of
         Simple  -> fst . Solver.Simple.solve

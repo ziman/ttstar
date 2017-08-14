@@ -7,7 +7,13 @@ indent :: Doc -> Doc
 indent = nest 2
 
 codegen :: IR -> Doc
-codegen = cgTm
+codegen prog
+    = text "(define Type '(Type))"
+    $$ text "(define (number->peano z s i) (if (= i 0) (list z) (list s (number->peano z s (- i 1)))))"
+    $$ text "(define (rts-arg-peano z s i) (number->peano z s (string->number (list-ref (command-line-arguments) i))))"
+    $$ text "(define (rts-arg-read i) (read (open-input-string (list-ref (command-line-arguments) i))))"
+    $$ parens (text "print" $+$ indent (cgTm prog))
+
 
 pv :: Int -> Doc
 pv i = text "_pv" <> int i
@@ -41,7 +47,7 @@ cgAlt (IDefault rhs) = parens (text "else" <+> cgCaseTree rhs)
 cgAlt (ICtor cn pvs rhs) = parens (parens(text "'" <> cgName cn) <+> cgCaseTree rhs)
 
 cgCase :: Doc -> [Doc] -> Doc
-cgCase scrut alts = parens (text "case" <+> scrut $$ indent (vcat alts))
+cgCase scrut alts = parens (text "case" <+> parens (text "car" <+> scrut) $$ indent (vcat alts))
 
 cgCtor :: IName -> Int -> Doc
 cgCtor n arity
@@ -60,8 +66,22 @@ nestLambdas (n:ns) = cgLambda (IUN $ show n) . nestLambdas ns
 cgApp :: Doc -> Doc -> Doc
 cgApp f x = parens (f <+> x)
 
+specialNames :: [String]
+specialNames =
+    [ "apply"
+    , "append"
+    , "not"
+    , "reverse"
+    ]
+
 cgName :: IName -> Doc
-cgName (IUN n) = text n
+cgName (IUN n) = text . specialName . concatMap mogrify $ n
+  where
+    specialName n
+        | n `elem` specialNames = n ++ "_TT"
+        | otherwise = n
+    mogrify '\'' = "_"
+    mogrify c = [c]
 
 cgLambda :: IName -> Doc -> Doc
 cgLambda n body = parens (text "lambda" <+> parens (cgName n) $+$ indent body)
