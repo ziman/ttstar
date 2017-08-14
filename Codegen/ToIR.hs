@@ -86,6 +86,7 @@ match cs pv vars pats err
   where
     firstPat = head . fst . head $ pats
 
+    isVar (PForced _) = True
     isVar (PV n) = S.notMember n cs
     isVar _ = False
 
@@ -95,9 +96,12 @@ match cs pv vars pats err
 
 ruleVar :: S.Set Name -> Int -> [Int] -> [([Pat ()], TT ())] -> Maybe ICaseTree -> ICaseTree
 ruleVar cs pv [] pats err = error $ "ruleVar: empty vars"
-ruleVar cs pv (v:vs) pats err = matchSort cs pv vs pats' err
+ruleVar cs pv (v:vs) pats err = matchSort cs pv vs (map substPat pats) err
   where
-    pats' = [(ps, subst n (V $ MN "pv" v) rhs) | (PV n : ps, rhs) <- pats]
+    substPat (PV n : ps, rhs) = (ps, subst n (V $ MN "pv" v) rhs)
+    substPat (PForced _ : ps, rhs) = (ps, rhs)
+    substPat (p:ps, rhs) = error $ "substPat: unsupported pattern: " ++ show p
+    substPat ([], rhs) = error $ "substPat: no patterns for: " ++ show rhs
 
 ruleCtor :: S.Set Name -> Int -> [Int] -> [([Pat ()], TT ())] -> Maybe ICaseTree -> ICaseTree
 ruleCtor cs pv [] pats err = error $ "ruleCtor: empty vars"
