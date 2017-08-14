@@ -86,7 +86,7 @@ ruleCtor (v:vs) pats err = ICase v $ alts ++ [IDefault err]
     alts = map (mkAlt vs) grouped
 
 mkAlt :: [Int] -> [(IName, ([Pat ()], IR))] -> IAlt
-mkAlt vs grp
+mkAlt vs grp = ICtor cn -- we must keep the RHS as a term...
 
 -- we know that the substituted name is unique
 substIR :: IName -> Int -> IR -> IR
