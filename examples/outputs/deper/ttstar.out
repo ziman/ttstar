@@ -127,6 +127,7 @@ Verification successful.
   in main
 
 ### Intermediate representation ###
+
 let T = constructor 0
   in let F = constructor 0
     in let TB = constructor 2

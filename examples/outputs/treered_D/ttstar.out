@@ -158,6 +158,7 @@ Verification successful.
   in main
 
 ### Intermediate representation ###
+
 let True = constructor 0
   in let False = constructor 0
     in let Yeah = constructor 0

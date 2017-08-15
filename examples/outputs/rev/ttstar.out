@@ -674,6 +674,7 @@ Verification successful.
   in main
 
 ### Intermediate representation ###
+
 let subst = \w. w
   in let T = constructor 0
     in let F = constructor 0

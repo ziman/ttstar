@@ -86,6 +86,7 @@ Verification successful.
   in main
 
 ### Intermediate representation ###
+
 let A = constructor 0
   in let const_A = A
     in let apply = \f. f

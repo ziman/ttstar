@@ -203,6 +203,7 @@ Verification successful.
   in main
 
 ### Intermediate representation ###
+
 let Q = constructor 0
   in let W = constructor 0
     in let T = constructor 0

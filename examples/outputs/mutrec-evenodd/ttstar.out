@@ -276,6 +276,7 @@ Verification successful.
   in main
 
 ### Intermediate representation ###
+
 let Z = constructor 0
   in let S = constructor 1
     in let True = constructor 0

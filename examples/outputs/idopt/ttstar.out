@@ -222,6 +222,7 @@ Verification successful.
   in main
 
 ### Intermediate representation ###
+
 let FZ = constructor 0
   in let FS = constructor 1
     in let embed = \_pv0.

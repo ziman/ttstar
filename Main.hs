@@ -162,7 +162,7 @@ pipeline args = do
         putStrLn ""
 
     when (Args.verbose args) $ do
-        putStrLn "### Intermediate representation ###"
+        putStrLn "### Intermediate representation ###\n"
         print $ toIR optimised
         putStrLn ""
 

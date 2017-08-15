@@ -241,6 +241,7 @@ Verification successful.
   in main
 
 ### Intermediate representation ###
+
 let True = constructor 0
   in let False = constructor 0
     in let Z = constructor 0

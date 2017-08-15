@@ -96,6 +96,7 @@ Verification successful.
   in main
 
 ### Intermediate representation ###
+
 let T = constructor 0
   in let P = constructor 1
     in let fst = \_pv0.

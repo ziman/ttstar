@@ -43,6 +43,7 @@ Verification successful.
   in main
 
 ### Intermediate representation ###
+
 let main = Type
   in main
 

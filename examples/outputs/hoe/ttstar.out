@@ -99,6 +99,7 @@ Verification successful.
   in main
 
 ### Intermediate representation ###
+
 let A = constructor 0
   in let B = constructor 0
     in let Op = constructor 2

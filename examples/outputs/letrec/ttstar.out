@@ -44,6 +44,7 @@ Verification successful.
   in main
 
 ### Intermediate representation ###
+
 let main = \x. x
   in main
 

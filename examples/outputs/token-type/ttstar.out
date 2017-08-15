@@ -203,6 +203,7 @@ Verification successful.
   in main
 
 ### Intermediate representation ###
+
 let coerce = \x. x
   in let loopy = let w = \x. (coerce x)
     in (w (coerce w))

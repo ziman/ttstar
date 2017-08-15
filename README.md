@@ -33,7 +33,9 @@ Dependently typed core calculus with erasure inference.
 * native code generators
     * a codegen from `TT`: via Scheme (Chicken Scheme or Racket)
         * uses the `matchable` extension
-    * a codegen from `IR`: produces R6RS Scheme
+    * a codegen from `IR`: produces standard Scheme
+        * mostly R5RS-compliant
+            * except that some programs redefine the same name repeatedly in `let*`
         * generated code runs much (~3x) faster when interpreted with `csi`
         * only about 10% faster than `TT`-generated code when compiled using `csc`
 
