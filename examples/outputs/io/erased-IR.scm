@@ -86,7 +86,7 @@
       (MkSt (lambda (w)
         ((MkPair w) (impureF MkUnit))))))
     (unsafePerformIO (lambda (x)
-      (letrec ((TheWorld (error "postulate")))
+      (letrec ((TheWorld `(TheWorld)))
         ((execState x) TheWorld))))
     (intS (lambda (x) (+ x 1)))
     (intZ 0)

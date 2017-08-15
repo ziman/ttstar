@@ -45,7 +45,8 @@
 
 (display
   (letrec* (
-    (Tuple (error "postulate"))
+    (Tuple (curried-lambda (e0 e1 e2 e3)
+      `(Tuple ,e0 ,e1 ,e2 ,e3)))
     (Bool `(Bool))
     (T `(T))
     (F `(F))

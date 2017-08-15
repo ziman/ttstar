@@ -47,7 +47,8 @@
   (letrec* (
     (A `(A))
     (B `(B))
-    (Op (error "postulate"))
+    (Op (curried-lambda (e0 e1)
+      `(Op ,e0 ,e1)))
     (constA A)
     (apply_RRR (lambda (f)
       (lambda (x)

@@ -146,7 +146,8 @@
             ((Nil) (rts-case _pv2
               ((Nil) VNil)))))))
         ((Z) VNil))))
-    (eq (error "postulate"))
+    (eq (lambda (e0)
+      `(eq ,e0)))
     (toV (lambda (xs)
       ((((((subst List) V) (((index (length xs)) xs) (reverse_TT xs))) xs) (eq xs)) (((build (length xs)) xs) (reverse_TT xs)))))
     (IsPalindrome (lambda (e0)

@@ -177,7 +177,7 @@ let Z = constructor 0
             case _pv1 of
               S _pv2 => (_pv0 (S _pv2))
               Z => (_pv0 Z)
-            in let Q = error "postulate"
+            in let Q = constructor 0
               in let three = (S (S (S Z)))
                 in ((plus ((apply id) (S (S Z)))) ((apply (const Q)) three))
             in main

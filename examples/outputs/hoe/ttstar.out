@@ -101,7 +101,7 @@ Verification successful.
 ### Intermediate representation ###
 let A = constructor 0
   in let B = constructor 0
-    in let Op = error "postulate"
+    in let Op = constructor 2
       in let id = \x. x
         in let const_A = A
           in let f = \g. \z. \h. ((Op (g z)) h)

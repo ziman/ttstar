@@ -639,7 +639,7 @@ let Z = constructor 0
                     in let ioReturn = \x. (stReturn x)
                       in let ioBind = \x. \y. ((stBind x) y)
                         in let ioWrapImpure = \impureF. (MkSt \w. ((MkPair w) (impureF MkUnit)))
-                          in let unsafePerformIO = \x. let TheWorld = error "postulate"
+                          in let unsafePerformIO = \x. let TheWorld = constructor 0
                             in ((execState x) TheWorld)
                             in let intS = foreign "(lambda (x) (+ x 1))"
                               in let intZ = foreign "0"

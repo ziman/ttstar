@@ -161,7 +161,7 @@ Verification successful.
 ### Intermediate representation ###
 let Z = constructor 0
   in let S = constructor 1
-    in let Plus = error "postulate"
+    in let Plus = constructor 2
       in let id = \_pv0.
         case _pv0 of
           S _pv1 => let result = (S _pv1)

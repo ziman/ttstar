@@ -41,8 +41,9 @@ irBody :: S.Set Name -> Int -> TT () -> Body () -> IBody
 irBody cs pv ty (Clauses cls) = compile cs pv cls
 irBody cs pv ty (Term tm) = ICaseFun [] $ ILeaf (irTm cs pv tm)
 irBody cs pv ty (Abstract Constructor) = IConstructor (length $ argNames ty)
-irBody cs pv ty (Abstract Postulate) = ICaseFun [] $ ILeaf (IError "postulate")
 irBody cs pv ty (Abstract (Foreign code)) = IForeign code
+irBody cs pv ty (Abstract Postulate) = IConstructor (length $ argNames ty)
+    -- ^^ compiling like constructors is practical for unerased programs
 irBody cs pv ty b = error $ "irBody: cannot translate: " ++ show b
 
 argNames :: TT () -> [Name]

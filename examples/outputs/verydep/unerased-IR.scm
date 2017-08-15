@@ -45,7 +45,7 @@
 
 (display
   (letrec* (
-    (Void (error "postulate"))
+    (Void `(Void))
     (Maybe (lambda (e0)
       `(Maybe ,e0)))
     (Just (curried-lambda (e0 e1)

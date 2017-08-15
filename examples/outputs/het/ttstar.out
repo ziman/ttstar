@@ -161,7 +161,7 @@ Verification successful.
   in main
 
 ### Intermediate representation ###
-let Tuple = error "postulate"
+let Tuple = constructor 4
   in let Bool = constructor 0
     in let T = constructor 0
       in let F = constructor 0

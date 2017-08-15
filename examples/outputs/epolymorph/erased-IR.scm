@@ -48,7 +48,8 @@
     (Z `(Z))
     (S (lambda (e0)
       `(S ,e0)))
-    (Plus (error "postulate"))
+    (Plus (curried-lambda (e0 e1)
+      `(Plus ,e0 ,e1)))
     (id (lambda (_pv0)
       (rts-case _pv0
         ((S _pv1) (letrec ((result (S _pv1)))

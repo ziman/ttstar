@@ -167,7 +167,7 @@ Verification successful.
 ### Intermediate representation ###
 let A = constructor 0
   in let B = constructor 0
-    in let Op = error "postulate"
+    in let Op = constructor 2
       in let id = \y. y
         in let constA = A
           in let apply_REE = \f. f

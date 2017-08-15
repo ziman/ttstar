@@ -60,7 +60,7 @@
         (rts-case _pv1
           ((S _pv2) (_pv0 (S _pv2)))
           ((Z) (_pv0 Z)))))
-      (Q (error "postulate"))
+      (Q `(Q))
       (three (S (S (S Z))))
     )
       ((plus ((apply_TT (lambda (x)
