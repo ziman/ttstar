@@ -61,9 +61,10 @@ cgCaseTree (ICase v [ICtor IBlank pvs rhs])
 cgCaseTree (ICase v [IDefault rhs])
     = cgCaseTree rhs
 cgCaseTree (ICase v alts)
-    = cgCase (pv v) (map cgAlt alts)
+    = cgCase v (map (cgAlt v) alts)
 
-cgAlt :: IAlt -> Doc
+cgAlt :: Int -> IAlt -> Doc
+{-
 cgAlt (IDefault rhs) = parens (text "_" <+> cgCaseTree rhs)
 {-
 cgAlt (ICtor IBlank pvs rhs) = parens (
@@ -75,9 +76,21 @@ cgAlt (ICtor cn pvs rhs) = parens (
     parens (cgName cn <+> hsep (map pv pvs))
     <+> cgCaseTree rhs
   )
+-}
+cgAlt s (IDefault rhs) = parens (text "else" <+> cgCaseTree rhs)
+cgAlt s (ICtor IBlank pvs rhs) = parens (
+    text "else" <+> cgUnpack s pvs (cgCaseTree rhs)
+  )
+cgAlt s (ICtor cn pvs rhs) = parens (
+    parens (cgName cn) <+> cgUnpack s pvs (cgCaseTree rhs)
+  )
 
-cgCase :: Doc -> [Doc] -> Doc
-cgCase scrut alts = parens (text "rts-case" <+> scrut $$ indent (vcat alts))
+cgCase :: Int -> [Doc] -> Doc
+--cgCase scrut alts = parens (text "rts-case" <+> scrut $$ indent (vcat alts))
+cgCase scrut alts = parens (
+    text "case" <+> parens (text "car" <+> pv scrut)
+    $$ vcat alts
+  )
 
 cgCtor :: IName -> Int -> Doc
 cgCtor n arity
@@ -89,17 +102,36 @@ cgCtor n arity
 cgUnpack :: Int -> [Int] -> Doc -> Doc
 cgUnpack scrut [] rhs = rhs
 cgUnpack scrut vs rhs = parens (
+    text "let*" <+> parens (
+        parens (pv scrut <+> parens (text "cdr" <+> pv scrut))
+        <+> hsep [
+            parens (pv v <+> parens (text "car" <+> pv scrut))
+            <+> parens (pv scrut <+> parens (text "cdr" <+> pv scrut))
+            | v <- vs
+        ]
+    )
+    $$ indent rhs
+  )
+{-
+cgUnpack scrut vs rhs = parens (
     text "rts-unpack" <+> parens (text "cdr" <+> pv scrut) <+> parens (hsep $ map pv vs)
     $$ indent rhs
   )
+-}
 
 nestLambdas :: [Doc] -> Doc -> Doc
 nestLambdas [] rhs = rhs
+nestLambdas (n:ns) rhs = parens (
+    text "lambda" <+> parens n
+    $+$ indent (nestLambdas ns rhs)
+  )
+{-
 nestLambdas [n] rhs = parens (text "lambda" <+> parens n $+$ indent rhs)
 nestLambdas ns rhs = parens (
     text "curried-lambda" <+> parens (hsep ns)
     $$ indent rhs
   )
+-}
 
 cgApp :: Doc -> Doc -> Doc
 cgApp f x = parens (f <+> x)
