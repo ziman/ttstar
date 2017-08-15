@@ -52,13 +52,13 @@
     (MkPair (curried-lambda (e0 e1)
       `(MkPair ,e0 ,e1)))
     (snd (lambda (_pv0)
-      (rts-case _pv0
-        ((_ _pv1 _pv2) _pv2))))
+      (rts-unpack (cdr _pv0) (_pv1 _pv2)
+        _pv2)))
     (MkSt (lambda (e0)
       `(MkSt ,e0)))
     (runState (lambda (_pv0)
-      (rts-case _pv0
-        ((_ _pv1) _pv1))))
+      (rts-unpack (cdr _pv0) (_pv1)
+        _pv1)))
     (execState (lambda (x)
       (lambda (s)
         (snd ((runState x) s)))))
@@ -66,17 +66,17 @@
       (MkSt (lambda (s)
         ((MkPair s) x)))))
     (stBind (curried-lambda (_pv0 _pv1)
-      (rts-case _pv0
-        ((_ _pv2) 
+      (rts-unpack (cdr _pv0) (_pv2)
+        
           (letrec* (
             (stBind3 (curried-lambda (_pv3 _pv4)
-              (rts-case _pv4
-                ((_ _pv5) (_pv5 _pv3)))))
+              (rts-unpack (cdr _pv4) (_pv5)
+                (_pv5 _pv3))))
             (stBind2 (curried-lambda (_pv3 _pv4)
-              (rts-case _pv4
-                ((_ _pv5 _pv6) ((stBind3 _pv5) (_pv3 _pv6))))))
+              (rts-unpack (cdr _pv4) (_pv5 _pv6)
+                ((stBind3 _pv5) (_pv3 _pv6)))))
           ) (MkSt (lambda (s)
-            ((stBind2 _pv1) (_pv2 s)))))))))
+            ((stBind2 _pv1) (_pv2 s))))))))
     (ioReturn (lambda (x)
       (stReturn x)))
     (ioBind (lambda (x)

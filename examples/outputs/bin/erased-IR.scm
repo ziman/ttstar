@@ -78,8 +78,8 @@
         ((C _pv3 _pv4) (rts-case _pv2
           ((C _pv5 _pv6) 
             (letrec ((f (lambda (_pv7)
-              (rts-case _pv7
-                ((_ _pv8 _pv9) ((C _pv9) (((add_ _pv8) _pv4) _pv6)))))))
+              (rts-unpack (cdr _pv7) (_pv8 _pv9)
+                ((C _pv9) (((add_ _pv8) _pv4) _pv6))))))
               (f (((adb _pv0) _pv3) _pv5))))))
         ((N) (rts-case _pv2
           ((N) ((C _pv0) N)))))))

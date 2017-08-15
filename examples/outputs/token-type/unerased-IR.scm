@@ -50,12 +50,12 @@
     (Refl (lambda (e0)
       `(Refl ,e0)))
     (coerce (curried-lambda (_pv0 _pv1 _pv2)
-      (rts-case _pv2
-        ((_ _pv3) (lambda (x)
-          x)))))
+      (rts-unpack (cdr _pv2) (_pv3)
+        (lambda (x)
+          x))))
     (sym (curried-lambda (_pv0 _pv1 _pv2)
-      (rts-case _pv2
-        ((_ _pv3) (Refl _pv0)))))
+      (rts-unpack (cdr _pv2) (_pv3)
+        (Refl _pv0))))
     (loopy (curried-lambda (_pv0 _pv1 _pv2)
       
         (letrec ((w (lambda (x)

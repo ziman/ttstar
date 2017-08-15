@@ -50,11 +50,11 @@
     (P (curried-lambda (e0 e1)
       `(P ,e0 ,e1)))
     (fst (lambda (_pv0)
-      (rts-case _pv0
-        ((_ _pv1 _pv2) _pv1))))
+      (rts-unpack (cdr _pv0) (_pv1 _pv2)
+        _pv1)))
     (snd (lambda (_pv0)
-      (rts-case _pv0
-        ((_ _pv1 _pv2) _pv2))))
+      (rts-unpack (cdr _pv0) (_pv1 _pv2)
+        _pv2)))
     (and (curried-lambda (_pv0 _pv1)
       (rts-case _pv0
         ((F) F)

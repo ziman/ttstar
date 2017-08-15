@@ -67,11 +67,11 @@
     (MkPair (curried-lambda (e0 e1 e2 e3)
       `(MkPair ,e0 ,e1 ,e2 ,e3)))
     (fst (curried-lambda (_pv0 _pv1 _pv2)
-      (rts-case _pv2
-        ((_ _pv3 _pv4 _pv5 _pv6) _pv5))))
+      (rts-unpack (cdr _pv2) (_pv3 _pv4 _pv5 _pv6)
+        _pv5)))
     (snd (curried-lambda (_pv0 _pv1 _pv2)
-      (rts-case _pv2
-        ((_ _pv3 _pv4 _pv5 _pv6) _pv6))))
+      (rts-unpack (cdr _pv2) (_pv3 _pv4 _pv5 _pv6)
+        _pv6)))
     (Either (curried-lambda (e0 e1)
       `(Either ,e0 ,e1)))
     (Left (curried-lambda (e0 e1 e2)

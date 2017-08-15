@@ -54,15 +54,23 @@ cgBody n (ICaseFun pvs ct) = nestLambdas (map pv pvs) rhs
     rhs = cgCaseTree ct
 
 cgCaseTree :: ICaseTree -> Doc
-cgCaseTree (ILeaf tm) = cgTm tm
-cgCaseTree (ICase v alts) = cgCase (pv v) (map cgAlt alts)
+cgCaseTree (ILeaf tm)
+    = cgTm tm
+cgCaseTree (ICase v [ICtor IBlank pvs rhs])
+    = cgUnpack v pvs (cgCaseTree rhs)
+cgCaseTree (ICase v [IDefault rhs])
+    = cgCaseTree rhs
+cgCaseTree (ICase v alts)
+    = cgCase (pv v) (map cgAlt alts)
 
 cgAlt :: IAlt -> Doc
 cgAlt (IDefault rhs) = parens (text "_" <+> cgCaseTree rhs)
+{-
 cgAlt (ICtor IBlank pvs rhs) = parens (
     parens (text "_" <+> hsep (map pv pvs))
     <+> cgCaseTree rhs
   )
+-}
 cgAlt (ICtor cn pvs rhs) = parens (
     parens (cgName cn <+> hsep (map pv pvs))
     <+> cgCaseTree rhs
@@ -78,14 +86,12 @@ cgCtor n arity
   where
     argNs = [text "e" <> int i | i <- [0..arity-1]]
 
-{-
 cgUnpack :: Int -> [Int] -> Doc -> Doc
 cgUnpack scrut [] rhs = rhs
 cgUnpack scrut vs rhs = parens (
     text "rts-unpack" <+> parens (text "cdr" <+> pv scrut) <+> parens (hsep $ map pv vs)
     $$ indent rhs
   )
--}
 
 nestLambdas :: [Doc] -> Doc -> Doc
 nestLambdas [] rhs = rhs
