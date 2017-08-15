@@ -10,10 +10,10 @@
     constructor P : (x : Bool) -> (y : Bool) -> Pair
     fst : (_x0 : Pair) -> Bool 
       l : Bool r : Bool
-        [fst] (P l r) = l
+        [fst] ([P] l r) = l
     snd : (_x1 : Pair) -> Bool 
       l : Bool r : Bool
-        [snd] (P l r) = r
+        [snd] ([P] l r) = r
     and : (_x2 : Bool) -> (_x3 : Bool) -> Bool 
       y : Bool
         [and] T y = y
@@ -32,10 +32,10 @@
     constructor P :5: (x :6: Bool) -> (y :7: Bool) -> Pair
     fst :8: (_x0 :9: Pair) -> Bool 
       l :10: Bool r :11: Bool
-        [fst] -12- (P -14- l -13- r) = l
+        [fst] -12- ([P] -14- l -13- r) = l
     snd :15: (_x1 :16: Pair) -> Bool 
       l :17: Bool r :18: Bool
-        [snd] -19- (P -21- l -20- r) = r
+        [snd] -19- ([P] -21- l -20- r) = r
     and :22: (_x2 :23: Bool) -> (_x3 :24: Bool) -> Bool 
       y :25: Bool
         [and] -27- T -26- y = y
@@ -66,10 +66,10 @@
     constructor P :R: (x :R: Bool) -> (y :R: Bool) -> Pair
     fst :R: (_x0 :R: Pair) -> Bool 
       l :R: Bool r :E: Bool
-        [fst] -R- (P -R- l -R- r) = l
+        [fst] -R- ([P] -R- l -R- r) = l
     snd :R: (_x1 :R: Pair) -> Bool 
       l :E: Bool r :R: Bool
-        [snd] -R- (P -R- l -R- r) = r
+        [snd] -R- ([P] -R- l -R- r) = r
     and :R: (_x2 :R: Bool) -> (_x3 :R: Bool) -> Bool 
       y :R: Bool
         [and] -R- T -R- y = y
@@ -88,10 +88,10 @@
     constructor P :R: (x :R: Bool) -> (y :R: Bool) -> Pair
     fst :R: (_x0 :R: Pair) -> Bool 
       l :R: Bool r :E: Bool
-        [fst] -R- (P -R- l -R- r) = l
+        [fst] -R- ([P] -R- l -R- r) = l
     snd :R: (_x1 :R: Pair) -> Bool 
       l :E: Bool r :R: Bool
-        [snd] -R- (P -R- l -R- r) = r
+        [snd] -R- ([P] -R- l -R- r) = r
     and :R: (_x2 :R: Bool) -> (_x3 :R: Bool) -> Bool 
       y :R: Bool
         [and] -R- T -R- y = y
@@ -110,10 +110,10 @@
     constructor P :R: (x :R: Bool) -> (y :R: Bool) -> Pair
     fst :R: (_x0 :R: Pair) -> Bool 
       l :R: Bool r :E: Bool
-        [fst] -R- (P -R- l -R- r) = l
+        [fst] -R- ([P] -R- l -R- r) = l
     snd :R: (_x1 :R: Pair) -> Bool 
       l :E: Bool r :R: Bool
-        [snd] -R- (P -R- l -R- r) = r
+        [snd] -R- ([P] -R- l -R- r) = r
     and :R: (_x2 :R: Bool) -> (_x3 :R: Bool) -> Bool 
       y :R: Bool
         [and] -R- T -R- y = y
@@ -133,9 +133,9 @@ Verification successful.
     constructor F : Bool
     constructor P : (x) -> (y) -> Pair
     fst 
-      [_] (P l _) = l
+      [_] ([_] l _) = l
     snd 
-      [_] (P _ r) = r
+      [_] ([_] _ r) = r
     and 
       [_] T y = y
       [_] F _ = F
@@ -148,10 +148,10 @@ let T = constructor 0
     in let P = constructor 2
       in let fst = \_pv0.
         case _pv0 of
-          P _pv1 _pv2 => _pv1
+          _ _pv1 _pv2 => _pv1
         in let snd = \_pv0.
           case _pv0 of
-            P _pv1 _pv2 => _pv2
+            _ _pv1 _pv2 => _pv2
           in let and = \_pv0. \_pv1.
             case _pv0 of
               F => F

@@ -8,8 +8,8 @@
   (syntax-rules ()
     ((rts-unpack xs () rhs) rhs)
     ((rts-unpack xs (v . vs) rhs)
-      (let ((v (car xs)))
-        (rts-unpack (cdr xs) vs rhs)))))
+      (let ((v (car xs)) (rest (cdr xs)))
+        (rts-unpack rest vs rhs)))))
 
 (define-syntax rts-case-int
   (syntax-rules (_)
@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(display
+(display 
   (letrec* (
     (N `(N))
     (Z `(Z))
@@ -169,12 +169,13 @@
       (rts-case _pv1
         ((VNil) ((Just (IsPalindrome Nil)) PNil))
         ((VOne _pv2) ((Just (IsPalindrome ((Cons _pv2) Nil))) (POne _pv2)))
-        ((VTwo _pv2 _pv3 _pv4 _pv5) (letrec ((isPalinV_ (curried-lambda (_pv6 _pv7 _pv8 _pv9 _pv10 _pv11)
-          (rts-case _pv10
-            ((Just _pv12 _pv13) (rts-case _pv11
-              ((Just _pv14 _pv15) ((Just (IsPalindrome ((Cons _pv6) ((app _pv8) (one _pv6))))) (((PTwo _pv6) _pv8) _pv15)))))
-            (_ (Nothing (IsPalindrome ((Cons _pv6) ((app _pv8) (one _pv7))))))))))
-          ((((((isPalinV_ _pv2) _pv5) _pv3) _pv4) ((decEq _pv2) _pv5)) ((isPalinV _pv3) _pv4)))))))
+        ((VTwo _pv2 _pv3 _pv4 _pv5) 
+          (letrec ((isPalinV_ (curried-lambda (_pv6 _pv7 _pv8 _pv9 _pv10 _pv11)
+            (rts-case _pv10
+              ((Just _pv12 _pv13) (rts-case _pv11
+                ((Just _pv14 _pv15) ((Just (IsPalindrome ((Cons _pv6) ((app _pv8) (one _pv6))))) (((PTwo _pv6) _pv8) _pv15)))))
+              (_ (Nothing (IsPalindrome ((Cons _pv6) ((app _pv8) (one _pv7))))))))))
+            ((((((isPalinV_ _pv2) _pv5) _pv3) _pv4) ((decEq _pv2) _pv5)) ((isPalinV _pv3) _pv4)))))))
     (isPalindrome (lambda (xs)
       ((isPalinV xs) (toV xs))))
     (genList (curried-lambda (_pv0 _pv1)
@@ -185,11 +186,10 @@
       (rts-case _pv1
         ((Just _pv2 _pv3) T)
         ((Nothing _pv2) F))))
-    (main (letrec* (
-      (inputSize (rts-arg-peano 'Z 'S 0))
-      (inputList ((genList T) inputSize))
-    )
-      ((isJust (IsPalindrome inputList)) (isPalindrome inputList))))
-  )
-    main))
+    (main 
+      (letrec* (
+        (inputSize (rts-arg-peano 'Z 'S 0))
+        (inputList ((genList T) inputSize))
+      ) ((isJust (IsPalindrome inputList)) (isPalindrome inputList))))
+  ) main))
 (newline)

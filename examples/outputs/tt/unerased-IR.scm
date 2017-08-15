@@ -8,8 +8,8 @@
   (syntax-rules ()
     ((rts-unpack xs () rhs) rhs)
     ((rts-unpack xs (v . vs) rhs)
-      (let ((v (car xs)))
-        (rts-unpack (cdr xs) vs rhs)))))
+      (let ((v (car xs)) (rest (cdr xs)))
+        (rts-unpack rest vs rhs)))))
 
 (define-syntax rts-case-int
   (syntax-rules (_)
@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(display
+(display 
   (letrec* (
     (Nat `(Nat))
     (Z `(Z))
@@ -132,11 +132,12 @@
         ((FZ _pv3) _pv1))))
     (nf (curried-lambda (_pv0 _pv1)
       (rts-case _pv1
-        ((App _pv2 _pv3 _pv4) (letrec ((g (lambda (_pv5)
-          (rts-case _pv5
-            ((Lam _pv6 _pv7) ((nf _pv0) ((((substVars (S _pv0)) _pv0) ((substTop _pv0) ((nf _pv0) _pv4))) _pv7)))
-            (_ (((App _pv0) _pv5) ((nf _pv0) _pv4)))))))
-          (g ((nf _pv0) _pv3))))
+        ((App _pv2 _pv3 _pv4) 
+          (letrec ((g (lambda (_pv5)
+            (rts-case _pv5
+              ((Lam _pv6 _pv7) ((nf _pv0) ((((substVars (S _pv0)) _pv0) ((substTop _pv0) ((nf _pv0) _pv4))) _pv7)))
+              (_ (((App _pv0) _pv5) ((nf _pv0) _pv4)))))))
+            (g ((nf _pv0) _pv3))))
         ((Lam _pv2 _pv3) ((Lam _pv0) ((nf (S _pv0)) _pv3)))
         ((V _pv2 _pv3) ((V _pv0) _pv3)))))
     (example2 ((nf (S Z)) testTm))
@@ -144,6 +145,5 @@
     (R (curried-lambda (e0 e1)
       `(R ,e0 ,e1)))
     (main ((R example1) example2))
-  )
-    main))
+  ) main))
 (newline)

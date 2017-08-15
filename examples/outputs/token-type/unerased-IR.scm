@@ -8,8 +8,8 @@
   (syntax-rules ()
     ((rts-unpack xs () rhs) rhs)
     ((rts-unpack xs (v . vs) rhs)
-      (let ((v (car xs)))
-        (rts-unpack (cdr xs) vs rhs)))))
+      (let ((v (car xs)) (rest (cdr xs)))
+        (rts-unpack rest vs rhs)))))
 
 (define-syntax rts-case-int
   (syntax-rules (_)
@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(display
+(display 
   (letrec* (
     (TyEq (curried-lambda (e0 e1)
       `(TyEq ,e0 ,e1)))
@@ -57,10 +57,10 @@
       (rts-case _pv2
         ((_ _pv3) (Refl _pv0)))))
     (loopy (curried-lambda (_pv0 _pv1 _pv2)
-      (letrec ((w (lambda (x)
-        (((((coerce _pv0) (error "irTm: cannot translate: (y) -> _pv1")) _pv2) x) x))))
-        (w ((((coerce (error "irTm: cannot translate: (_x9) -> _pv1")) _pv0) (((sym _pv0) (error "irTm: cannot translate: (_x10) -> _pv1")) _pv2)) w)))))
+      
+        (letrec ((w (lambda (x)
+          (((((coerce _pv0) (error "irTm: cannot translate: (y) -> _pv1")) _pv2) x) x))))
+          (w ((((coerce (error "irTm: cannot translate: (_x9) -> _pv1")) _pv0) (((sym _pv0) (error "irTm: cannot translate: (_x10) -> _pv1")) _pv2)) w)))))
     (main ((loopy Type) Type))
-  )
-    main))
+  ) main))
 (newline)

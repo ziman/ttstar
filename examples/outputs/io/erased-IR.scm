@@ -8,8 +8,8 @@
   (syntax-rules ()
     ((rts-unpack xs () rhs) rhs)
     ((rts-unpack xs (v . vs) rhs)
-      (let ((v (car xs)))
-        (rts-unpack (cdr xs) vs rhs)))))
+      (let ((v (car xs)) (rest (cdr xs)))
+        (rts-unpack rest vs rhs)))))
 
 (define-syntax rts-case-int
   (syntax-rules (_)
@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(display
+(display 
   (letrec* (
     (Z `(Z))
     (S (lambda (e0)
@@ -67,15 +67,15 @@
         ((MkPair s) x)))))
     (stBind (curried-lambda (_pv0 _pv1)
       (rts-case _pv0
-        ((_ _pv2) (letrec* (
-          (stBind3 (curried-lambda (_pv3 _pv4)
-            (rts-case _pv4
-              ((_ _pv5) (_pv5 _pv3)))))
-          (stBind2 (curried-lambda (_pv3 _pv4)
-            (rts-case _pv4
-              ((_ _pv5 _pv6) ((stBind3 _pv5) (_pv3 _pv6))))))
-        )
-          (MkSt (lambda (s)
+        ((_ _pv2) 
+          (letrec* (
+            (stBind3 (curried-lambda (_pv3 _pv4)
+              (rts-case _pv4
+                ((_ _pv5) (_pv5 _pv3)))))
+            (stBind2 (curried-lambda (_pv3 _pv4)
+              (rts-case _pv4
+                ((_ _pv5 _pv6) ((stBind3 _pv5) (_pv3 _pv6))))))
+          ) (MkSt (lambda (s)
             ((stBind2 _pv1) (_pv2 s)))))))))
     (ioReturn (lambda (x)
       (stReturn x)))
@@ -86,14 +86,16 @@
       (MkSt (lambda (w)
         ((MkPair w) (impureF MkUnit))))))
     (unsafePerformIO (lambda (x)
-      (letrec ((TheWorld `(TheWorld)))
-        ((execState x) TheWorld))))
+      
+        (letrec ((TheWorld `(TheWorld)))
+          ((execState x) TheWorld))))
     (intS (lambda (x) (+ x 1)))
     (intZ 0)
     (printSchemeRepr (lambda (x)
-      (letrec ((nativePrint print))
-        (ioWrapImpure (lambda (delayToken)
-          (nativePrint x))))))
+      
+        (letrec ((nativePrint print))
+          (ioWrapImpure (lambda (delayToken)
+            (nativePrint x))))))
     (natToInt (lambda (_pv0)
       (rts-case _pv0
         ((S _pv1) (intS (natToInt _pv1)))
@@ -104,6 +106,5 @@
     (main (unsafePerformIO ((ioBind (ioReturn (S (S (S (S Z)))))) (lambda (v)
       ((ioBind (printNat v)) (lambda (_0)
         (printSchemeRepr (intToNat (intS (intS (intS intZ)))))))))))
-  )
-    main))
+  ) main))
 (newline)

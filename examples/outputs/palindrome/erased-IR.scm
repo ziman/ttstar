@@ -8,8 +8,8 @@
   (syntax-rules ()
     ((rts-unpack xs () rhs) rhs)
     ((rts-unpack xs (v . vs) rhs)
-      (let ((v (car xs)))
-        (rts-unpack (cdr xs) vs rhs)))))
+      (let ((v (car xs)) (rest (cdr xs)))
+        (rts-unpack rest vs rhs)))))
 
 (define-syntax rts-case-int
   (syntax-rules (_)
@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(display
+(display 
   (letrec* (
     (Z `(Z))
     (S (lambda (e0)
@@ -109,12 +109,13 @@
       (rts-case _pv0
         ((VNil) Just)
         ((VOne) Just)
-        ((VTwo _pv1 _pv2 _pv3) (letrec ((isPalinV_ (curried-lambda (_pv4 _pv5)
-          (rts-case _pv4
-            ((Just) (rts-case _pv5
-              ((Just) Just)))
-            (_ Nothing)))))
-          ((isPalinV_ ((decEq _pv1) _pv3)) (isPalinV _pv2)))))))
+        ((VTwo _pv1 _pv2 _pv3) 
+          (letrec ((isPalinV_ (curried-lambda (_pv4 _pv5)
+            (rts-case _pv4
+              ((Just) (rts-case _pv5
+                ((Just) Just)))
+              (_ Nothing)))))
+            ((isPalinV_ ((decEq _pv1) _pv3)) (isPalinV _pv2)))))))
     (isPalindrome (lambda (xs)
       (isPalinV (toV xs))))
     (genList (curried-lambda (_pv0 _pv1)
@@ -125,11 +126,10 @@
       (rts-case _pv0
         ((Just) T)
         ((Nothing) F))))
-    (main (letrec* (
-      (inputSize (rts-arg-peano 'Z 'S 0))
-      (inputList ((genList T) inputSize))
-    )
-      (isJust (isPalindrome inputList))))
-  )
-    main))
+    (main 
+      (letrec* (
+        (inputSize (rts-arg-peano 'Z 'S 0))
+        (inputList ((genList T) inputSize))
+      ) (isJust (isPalindrome inputList))))
+  ) main))
 (newline)

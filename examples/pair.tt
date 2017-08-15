@@ -9,11 +9,11 @@ data Pair : Type where
 
 fst : Pair -> Bool.
   (l : Bool) (r : Bool)
-    fst (P l r) = l.
+    fst ([P] l r) = l.
 
 snd : Pair -> Bool.
   (l : Bool) (r : Bool)
-    snd (P l r) = r.
+    snd ([P] l r) = r.
 
 and : Bool -> Bool -> Bool.
   (y : Bool)

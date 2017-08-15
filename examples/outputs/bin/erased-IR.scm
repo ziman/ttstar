@@ -8,8 +8,8 @@
   (syntax-rules ()
     ((rts-unpack xs () rhs) rhs)
     ((rts-unpack xs (v . vs) rhs)
-      (let ((v (car xs)))
-        (rts-unpack (cdr xs) vs rhs)))))
+      (let ((v (car xs)) (rest (cdr xs)))
+        (rts-unpack rest vs rhs)))))
 
 (define-syntax rts-case-int
   (syntax-rules (_)
@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(display
+(display 
   (letrec* (
     (Z `(Z))
     (S (lambda (e0)
@@ -76,10 +76,11 @@
     (add_ (curried-lambda (_pv0 _pv1 _pv2)
       (rts-case _pv1
         ((C _pv3 _pv4) (rts-case _pv2
-          ((C _pv5 _pv6) (letrec ((f (lambda (_pv7)
-            (rts-case _pv7
-              ((_ _pv8 _pv9) ((C _pv9) (((add_ _pv8) _pv4) _pv6)))))))
-            (f (((adb _pv0) _pv3) _pv5))))))
+          ((C _pv5 _pv6) 
+            (letrec ((f (lambda (_pv7)
+              (rts-case _pv7
+                ((_ _pv8 _pv9) ((C _pv9) (((add_ _pv8) _pv4) _pv6)))))))
+              (f (((adb _pv0) _pv3) _pv5))))))
         ((N) (rts-case _pv2
           ((N) ((C _pv0) N)))))))
     (add (lambda (bx)
@@ -89,11 +90,10 @@
     (mkBin (curried-lambda (_pv0 _pv1)
       (rts-case _pv1
         ((Z) N))))
-    (main (letrec* (
-      (x ((mkBin True) inputSize))
-      (y ((mkBin False) inputSize))
-    )
-      ((add x) y)))
-  )
-    main))
+    (main 
+      (letrec* (
+        (x ((mkBin True) inputSize))
+        (y ((mkBin False) inputSize))
+      ) ((add x) y)))
+  ) main))
 (newline)

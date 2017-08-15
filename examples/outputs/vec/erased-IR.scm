@@ -8,8 +8,8 @@
   (syntax-rules ()
     ((rts-unpack xs () rhs) rhs)
     ((rts-unpack xs (v . vs) rhs)
-      (let ((v (car xs)))
-        (rts-unpack (cdr xs) vs rhs)))))
+      (let ((v (car xs)) (rest (cdr xs)))
+        (rts-unpack rest vs rhs)))))
 
 (define-syntax rts-case-int
   (syntax-rules (_)
@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(display
+(display 
   (letrec* (
     (Z `(Z))
     (S (lambda (e0)
@@ -56,6 +56,5 @@
         ((Cons _pv2 _pv3) ((Cons _pv2) ((append_TT _pv3) _pv1)))
         ((Nil) _pv1))))
     (main ((append_TT Nil) ((Cons (S (S (S (S Z))))) Nil)))
-  )
-    main))
+  ) main))
 (newline)

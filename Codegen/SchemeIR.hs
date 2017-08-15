@@ -13,7 +13,10 @@ codegen prog =
     $$ parens (text "display" <+> cgTm entryPoint)
     $$ parens (text "newline")
   where
-    (defs, entryPoint) = letPrefix prog
+    -- (defs, entryPoint) = letPrefix prog
+    -- ^^ the above doesn't work because (define) does not seem
+    -- to be mutually recursive, at least in Chicken
+    (defs, entryPoint) = ([], prog)
 
 pv :: Int -> Doc
 pv i = text "_pv" <> int i

@@ -8,8 +8,8 @@
   (syntax-rules ()
     ((rts-unpack xs () rhs) rhs)
     ((rts-unpack xs (v . vs) rhs)
-      (let ((v (car xs)))
-        (rts-unpack (cdr xs) vs rhs)))))
+      (let ((v (car xs)) (rest (cdr xs)))
+        (rts-unpack rest vs rhs)))))
 
 (define-syntax rts-case-int
   (syntax-rules (_)
@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(display
+(display 
   (letrec* (
     (Nat `(Nat))
     (Z `(Z))
@@ -58,15 +58,14 @@
     (const (lambda (x)
       (lambda (y)
         x)))
-    (main (letrec* (
-      (apply_TT (curried-lambda (_pv0 _pv1)
-        (rts-case _pv1
-          ((S _pv2) (_pv0 (S _pv2)))
-          ((Z) (_pv0 Z)))))
-      (Q `(Q))
-      (three (S (S (S Z))))
-    )
-      ((plus ((apply_TT id) (S (S Z)))) ((apply_TT (const Q)) three))))
-  )
-    main))
+    (main 
+      (letrec* (
+        (apply_TT (curried-lambda (_pv0 _pv1)
+          (rts-case _pv1
+            ((S _pv2) (_pv0 (S _pv2)))
+            ((Z) (_pv0 Z)))))
+        (Q `(Q))
+        (three (S (S (S Z))))
+      ) ((plus ((apply_TT id) (S (S Z)))) ((apply_TT (const Q)) three))))
+  ) main))
 (newline)

@@ -8,8 +8,8 @@
   (syntax-rules ()
     ((rts-unpack xs () rhs) rhs)
     ((rts-unpack xs (v . vs) rhs)
-      (let ((v (car xs)))
-        (rts-unpack (cdr xs) vs rhs)))))
+      (let ((v (car xs)) (rest (cdr xs)))
+        (rts-unpack rest vs rhs)))))
 
 (define-syntax rts-case-int
   (syntax-rules (_)
@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(display
+(display 
   (letrec* (
     (True `(True))
     (False `(False))
@@ -52,24 +52,24 @@
       `(S ,e0)))
     (Even `(Even))
     (Odd `(Odd))
-    (fun (letrec* (
-      (even (lambda (_pv0)
-        (rts-case _pv0
-          ((S _pv1) ((fun Odd) _pv1))
-          ((Z) True))))
-      (odd (lambda (_pv0)
-        (rts-case _pv0
-          ((S _pv1) ((fun Even) _pv1))
-          ((Z) False))))
-    )
-      (lambda (tag)
-        (letrec ((f (lambda (_pv0)
+    (fun 
+      (letrec* (
+        (even (lambda (_pv0)
           (rts-case _pv0
-            ((Even) even)
-            ((Odd) odd)))))
-          (f tag)))))
+            ((S _pv1) ((fun Odd) _pv1))
+            ((Z) True))))
+        (odd (lambda (_pv0)
+          (rts-case _pv0
+            ((S _pv1) ((fun Even) _pv1))
+            ((Z) False))))
+      ) (lambda (tag)
+        
+          (letrec ((f (lambda (_pv0)
+            (rts-case _pv0
+              ((Even) even)
+              ((Odd) odd)))))
+            (f tag)))))
     (even (fun Even))
     (main (even (S (S (S (S (S (S (S (S Z))))))))))
-  )
-    main))
+  ) main))
 (newline)

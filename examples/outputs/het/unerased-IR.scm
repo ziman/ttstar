@@ -8,8 +8,8 @@
   (syntax-rules ()
     ((rts-unpack xs () rhs) rhs)
     ((rts-unpack xs (v . vs) rhs)
-      (let ((v (car xs)))
-        (rts-unpack (cdr xs) vs rhs)))))
+      (let ((v (car xs)) (rest (cdr xs)))
+        (rts-unpack rest vs rhs)))))
 
 (define-syntax rts-case-int
   (syntax-rules (_)
@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(display
+(display 
   (letrec* (
     (Tuple (curried-lambda (e0 e1 e2 e3)
       `(Tuple ,e0 ,e1 ,e2 ,e3)))
@@ -67,6 +67,5 @@
         ((T) Bool)
         ((W) Mool))))
     (main ((((Tuple ((f B) T)) ((f B) F)) ((f M) Q)) ((f M) W)))
-  )
-    main))
+  ) main))
 (newline)

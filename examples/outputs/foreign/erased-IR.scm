@@ -8,8 +8,8 @@
   (syntax-rules ()
     ((rts-unpack xs () rhs) rhs)
     ((rts-unpack xs (v . vs) rhs)
-      (let ((v (car xs)))
-        (rts-unpack (cdr xs) vs rhs)))))
+      (let ((v (car xs)) (rest (cdr xs)))
+        (rts-unpack rest vs rhs)))))
 
 (define-syntax rts-case-int
   (syntax-rules (_)
@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(display
+(display 
   (letrec* (
     (Z `(Z))
     (S (lambda (e0)
@@ -75,18 +75,18 @@
     (semiDecEq (curried-lambda (_pv0 _pv1)
       (rts-case _pv0
         ((Cons _pv2 _pv3) (rts-case _pv1
-          ((Cons _pv4 _pv5) (letrec ((semiDecEq_ (curried-lambda (_pv6 _pv7)
-            (rts-case _pv6
-              ((Nothing) Nothing)
-              (_ (rts-case _pv7
-                ((Nothing) Nothing)))))))
-            ((semiDecEq_ ((semiDecEqB _pv2) _pv4)) ((semiDecEq _pv3) _pv5))))
+          ((Cons _pv4 _pv5) 
+            (letrec ((semiDecEq_ (curried-lambda (_pv6 _pv7)
+              (rts-case _pv6
+                ((Nothing) Nothing)
+                (_ (rts-case _pv7
+                  ((Nothing) Nothing)))))))
+              ((semiDecEq_ ((semiDecEqB _pv2) _pv4)) ((semiDecEq _pv3) _pv5))))
           ((Nil) Nothing)))
         ((Nil) (rts-case _pv1
           ((Cons _pv2 _pv3) Nothing)
           ((Nil) Just))))))
     (sampleList ((genList T) input))
     (main ((semiDecEq sampleList) sampleList))
-  )
-    main))
+  ) main))
 (newline)

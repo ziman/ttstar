@@ -8,8 +8,8 @@
   (syntax-rules ()
     ((rts-unpack xs () rhs) rhs)
     ((rts-unpack xs (v . vs) rhs)
-      (let ((v (car xs)))
-        (rts-unpack (cdr xs) vs rhs)))))
+      (let ((v (car xs)) (rest (cdr xs)))
+        (rts-unpack rest vs rhs)))))
 
 (define-syntax rts-case-int
   (syntax-rules (_)
@@ -43,7 +43,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(display
+(display 
   (letrec* (
     (Nat `(Nat))
     (Z `(Z))
@@ -150,11 +150,10 @@
     (mkBin (curried-lambda (_pv0 _pv1)
       (rts-case _pv1
         ((Z) N))))
-    (main (letrec* (
-      (x ((mkBin True) inputSize))
-      (y ((mkBin False) inputSize))
-    )
-      (((((add inputSize) ((binVal True) inputSize)) ((binVal False) inputSize)) x) y)))
-  )
-    main))
+    (main 
+      (letrec* (
+        (x ((mkBin True) inputSize))
+        (y ((mkBin False) inputSize))
+      ) (((((add inputSize) ((binVal True) inputSize)) ((binVal False) inputSize)) x) y)))
+  ) main))
 (newline)

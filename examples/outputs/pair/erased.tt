@@ -4,9 +4,9 @@
     constructor F : Bool
     constructor P : (x) -> (y) -> Pair
     fst 
-      [_] (P l _) = l
+      [_] ([_] l _) = l
     snd 
-      [_] (P _ r) = r
+      [_] ([_] _ r) = r
     and 
       [_] T y = y
       [_] F _ = F
