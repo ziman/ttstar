@@ -698,6 +698,9 @@ let Z = constructor 0
                                   Nothing => Nothing
                                   _ => case _pv7 of
                                     Nothing => Nothing
+                                    _ => case _pv6 of
+                                      Just => case _pv7 of
+                                        Just => Just
                                 in ((semiDecEq' ((semiDecEqB _pv2) _pv4)) ((semiDecEq _pv3) _pv5))
                               Nil => Nothing
                             Nil => case _pv1 of

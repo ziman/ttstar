@@ -60,7 +60,10 @@
       `(VCons ,e0 ,e1 ,e2 ,e3)))
     (vlen (curried-lambda (_pv0 _pv1 _pv2)
       (rts-case _pv2
-        ((VNil _pv3) Z))))
+        ((VNil _pv3) Z)
+        (_ (rts-unpack (cdr _pv1) (_pv3)
+          (rts-case _pv2
+            ((VCons _pv4 _pv5 _pv6 _pv7) (S (((vlen _pv0) _pv3) _pv7)))))))))
     (testVec ((((VCons Bool) (S Z)) True) ((((VCons Bool) Z) False) (VNil Bool))))
     (main (((vlen Bool) (S (S Z))) testVec))
   ) main))

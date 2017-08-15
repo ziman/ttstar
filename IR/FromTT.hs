@@ -14,7 +14,7 @@ import qualified Data.Set as S
 
 {-
 import Debug.Trace
-import Codegen.Pretty
+import IR.Pretty ()
 -}
 
 toIR :: TT () -> IR
@@ -65,7 +65,7 @@ matchSort :: S.Set Name -> Int -> [Int] -> [([Pat ()], TT ())] -> Maybe ICaseTre
 matchSort cs pv vars pats err = match cs pv vars pats err
 
 match :: S.Set Name -> Int -> [Int] -> [([Pat ()], TT ())] -> Maybe ICaseTree -> ICaseTree
---match cs pv vars pats err | ("MATCH", pv, vars, pats, err) `traceShow` False = undefined
+--match cs pv vars pats err | ("MATCH", vars, pats, err) `traceShow` False = undefined
 match cs pv vars [] Nothing = {-ILeaf $ IError "pattern match failure" -} error $ "match: no fallback tree: " ++ show (cs, pv, vars)
 match cs pv vars [] (Just err) = err
 match cs pv [] [(ps, rhs)] err = ILeaf $ irTm cs pv rhs
@@ -74,13 +74,13 @@ match cs pv vars pats err
     | isVar firstPat
     = let (pats', rest) = span (isVar . head . fst) pats
         in ruleVar cs pv vars pats' $ case rest of
-                                        [] -> Nothing
+                                        [] -> err
                                         _  -> Just (match cs pv vars rest err)
 
     | isCtor firstPat
     = let (pats', rest) = span (isCtor . head . fst) pats
         in ruleCtor cs pv vars pats' $ case rest of
-                                        [] -> Nothing
+                                        [] -> err
                                         _  -> Just (match cs pv vars rest err)
 
     | otherwise
@@ -98,6 +98,7 @@ match cs pv vars pats err
     isCtor _ = False
 
 ruleVar :: S.Set Name -> Int -> [Int] -> [([Pat ()], TT ())] -> Maybe ICaseTree -> ICaseTree
+--ruleVar cs pv vs pats err | ("VAR", vs, pats, err) `traceShow` False = undefined
 ruleVar cs pv [] pats err = error $ "ruleVar: empty vars"
 ruleVar cs pv (v:vs) pats err = matchSort cs pv vs (map substPat pats) err
   where
@@ -107,6 +108,7 @@ ruleVar cs pv (v:vs) pats err = matchSort cs pv vs (map substPat pats) err
     substPat ([], rhs) = error $ "substPat: no patterns for: " ++ show rhs
 
 ruleCtor :: S.Set Name -> Int -> [Int] -> [([Pat ()], TT ())] -> Maybe ICaseTree -> ICaseTree
+--ruleCtor cs pv vs pats err | ("CTOR", vs, pats, err) `traceShow` False = undefined
 ruleCtor cs pv [] pats err = error $ "ruleCtor: empty vars"
 ruleCtor cs pv (v:vs) pats err = ICase v alts'
   where

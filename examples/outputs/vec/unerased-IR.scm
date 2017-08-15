@@ -61,7 +61,10 @@
         ((Z) _pv1))))
     (append_TT (curried-lambda (_pv0 _pv1 _pv2 _pv3 _pv4)
       (rts-case _pv3
-        ((Nil _pv5) _pv4))))
+        ((Nil _pv5) _pv4)
+        (_ (rts-unpack (cdr _pv1) (_pv5)
+          (rts-case _pv3
+            ((Cons _pv6 _pv7 _pv8 _pv9) ((((Cons _pv0) ((plus _pv5) _pv2)) _pv8) (((((append_TT _pv0) _pv5) _pv2) _pv9) _pv4)))))))))
     (main (((((append_TT N) Z) (S Z)) (Nil N)) ((((Cons N) Z) (S (S (S (S Z))))) (Nil N))))
   ) main))
 (newline)

@@ -1321,6 +1321,11 @@ let Z = constructor 0
                             in let mkBin = \_pv0. \_pv1.
                               case _pv1 of
                                 Z => N
+                                _ => case _pv0 of
+                                  False => case _pv1 of
+                                    S _pv2 => ((C O) ((mkBin True) _pv2))
+                                  True => case _pv1 of
+                                    S _pv2 => ((C I) ((mkBin False) _pv2))
                               in let main = let x = ((mkBin True) inputSize)
                                 in let y = ((mkBin False) inputSize)
                                   in ((add x) y)

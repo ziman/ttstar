@@ -57,7 +57,10 @@
       `(Cons ,e0 ,e1 ,e2 ,e3)))
     (vlen (curried-lambda (_pv0 _pv1)
       (rts-case _pv1
-        ((Nil _pv2) Z))))
+        ((Nil _pv2) Z)
+        (_ (rts-unpack (cdr _pv0) (_pv2)
+          (rts-case _pv1
+            ((Cons _pv3 _pv4 _pv5 _pv6) (S ((vlen _pv2) _pv6)))))))))
     (main ((vlen (S Z)) ((((Cons N) Z) (S (S (S Z)))) (Nil N))))
   ) main))
 (newline)

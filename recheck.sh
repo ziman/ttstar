@@ -71,8 +71,8 @@ for i in examples/*.tt; do
         --dump-nf     "${n}/erased-NF.tt" \
         --dump-nf-scheme "${n}/erased-NF.scm" \
         && scheme "${n}/erased.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}/erased.scm.out" \
-        && scheme "${n}/erased-IR.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}/erased-IR.scm.out" \
-        && scheme "${n}/erased-NF.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}/erased-NF.scm.out"
+		&& scheme "${n}/erased-NF.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}/erased-NF.scm.out" \
+        && scheme "${n}/erased-IR.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}/erased-IR.scm.out"
 
     ./ttstar "$i" --skip-inference \
         --dump-pretty "${n}/unerased.tt" \
@@ -81,6 +81,6 @@ for i in examples/*.tt; do
         --dump-nf     "${n}/unerased-NF.tt" \
         --dump-nf-scheme "${n}/unerased-NF.scm" \
         && scheme "${n}/unerased.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}/unerased.scm.out" \
-        && scheme "${n}/unerased-IR.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}/unerased-IR.scm.out" \
-        && scheme "${n}/unerased-NF.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}/unerased-NF.scm.out"
+		&& scheme "${n}/unerased-NF.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}/unerased-NF.scm.out" \
+        && scheme "${n}/unerased-IR.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}/unerased-IR.scm.out"
 done

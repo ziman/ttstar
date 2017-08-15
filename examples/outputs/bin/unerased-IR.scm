@@ -136,7 +136,27 @@
     (add_ (curried-lambda (_pv0 _pv1 _pv2 _pv3 _pv4 _pv5 _pv6)
       (rts-case _pv5
         ((N) (rts-case _pv6
-          ((N) (((((C Z) _pv1) _pv4) Z) N)))))))
+          ((N) (((((C Z) _pv1) _pv4) Z) N))
+          (_ (rts-unpack (cdr _pv0) (_pv7)
+            (rts-case _pv5
+              ((C _pv8 _pv9 _pv10 _pv11 _pv12) (rts-case _pv6
+                ((C _pv13 _pv14 _pv15 _pv16 _pv17) 
+                  (letrec ((f (lambda (_pv18)
+                    (rts-unpack (cdr _pv18) (_pv19 _pv20 _pv21 _pv22 _pv23 _pv24 _pv25 _pv26)
+                      
+                        (letrec ((eq `(eq)))
+                          ((((((subst Nat) (Bin (S (S _pv7)))) ((plus _pv24) (double ((plus _pv22) ((plus _pv11) _pv16))))) ((plus _pv1) ((plus ((plus _pv9) (double _pv11))) ((plus _pv14) (double _pv16))))) eq) (((((C (S _pv7)) _pv24) _pv25) ((plus _pv22) ((plus _pv11) _pv16))) (((((((add_ _pv7) _pv22) _pv11) _pv16) _pv23) _pv12) _pv17))))))))
+                    (f ((((((adb _pv1) _pv9) _pv14) _pv4) _pv10) _pv15)))))))))))
+        (_ (rts-unpack (cdr _pv0) (_pv7)
+          (rts-case _pv5
+            ((C _pv8 _pv9 _pv10 _pv11 _pv12) (rts-case _pv6
+              ((C _pv13 _pv14 _pv15 _pv16 _pv17) 
+                (letrec ((f (lambda (_pv18)
+                  (rts-unpack (cdr _pv18) (_pv19 _pv20 _pv21 _pv22 _pv23 _pv24 _pv25 _pv26)
+                    
+                      (letrec ((eq `(eq)))
+                        ((((((subst Nat) (Bin (S (S _pv7)))) ((plus _pv24) (double ((plus _pv22) ((plus _pv11) _pv16))))) ((plus _pv1) ((plus ((plus _pv9) (double _pv11))) ((plus _pv14) (double _pv16))))) eq) (((((C (S _pv7)) _pv24) _pv25) ((plus _pv22) ((plus _pv11) _pv16))) (((((((add_ _pv7) _pv22) _pv11) _pv16) _pv23) _pv12) _pv17))))))))
+                  (f ((((((adb _pv1) _pv9) _pv14) _pv4) _pv10) _pv15))))))))))))
     (add (lambda (w)
       (lambda (x)
         (lambda (y)
@@ -146,10 +166,20 @@
     (inputSize (rts-arg-peano 'Z 'S 0))
     (binVal (curried-lambda (_pv0 _pv1)
       (rts-case _pv1
-        ((Z) Z))))
+        ((Z) Z)
+        (_ (rts-case _pv0
+          ((False) (rts-case _pv1
+            ((S _pv2) (double ((binVal True) _pv2)))))
+          ((True) (rts-case _pv1
+            ((S _pv2) (S (double ((binVal False) _pv2)))))))))))
     (mkBin (curried-lambda (_pv0 _pv1)
       (rts-case _pv1
-        ((Z) N))))
+        ((Z) N)
+        (_ (rts-case _pv0
+          ((False) (rts-case _pv1
+            ((S _pv2) (((((C _pv2) Z) O) ((binVal True) _pv2)) ((mkBin True) _pv2)))))
+          ((True) (rts-case _pv1
+            ((S _pv2) (((((C _pv2) (S Z)) I) ((binVal False) _pv2)) ((mkBin False) _pv2))))))))))
     (main 
       (letrec* (
         (x ((mkBin True) inputSize))

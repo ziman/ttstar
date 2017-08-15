@@ -80,7 +80,10 @@
               (rts-case _pv6
                 ((Nothing) Nothing)
                 (_ (rts-case _pv7
-                  ((Nothing) Nothing)))))))
+                  ((Nothing) Nothing)
+                  (_ (rts-case _pv6
+                    ((Just) (rts-case _pv7
+                      ((Just) Just)))))))))))
               ((semiDecEq_ ((semiDecEqB _pv2) _pv4)) ((semiDecEq _pv3) _pv5))))
           ((Nil) Nothing)))
         ((Nil) (rts-case _pv1

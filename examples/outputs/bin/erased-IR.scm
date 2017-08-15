@@ -89,7 +89,12 @@
     (inputSize (rts-arg-peano 'Z 'S 0))
     (mkBin (curried-lambda (_pv0 _pv1)
       (rts-case _pv1
-        ((Z) N))))
+        ((Z) N)
+        (_ (rts-case _pv0
+          ((False) (rts-case _pv1
+            ((S _pv2) ((C O) ((mkBin True) _pv2)))))
+          ((True) (rts-case _pv1
+            ((S _pv2) ((C I) ((mkBin False) _pv2))))))))))
     (main 
       (letrec* (
         (x ((mkBin True) inputSize))

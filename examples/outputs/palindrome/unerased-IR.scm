@@ -125,10 +125,22 @@
         ((S _pv3) (rts-case _pv3
           ((S _pv4) (rts-case _pv1
             ((Cons _pv5 _pv6) (rts-case _pv2
-              ((Cons _pv7 _pv8) ((Cons _pv5) ((app (((index _pv4) _pv6) _pv8)) (one _pv7))))))))
+              ((Cons _pv7 _pv8) ((Cons _pv5) ((app (((index _pv4) _pv6) _pv8)) (one _pv7))))
+              (_ (rts-case _pv1
+                ((Nil) (rts-case _pv2
+                  ((Nil) Nil)))))))
+            (_ (rts-case _pv1
+              ((Nil) (rts-case _pv2
+                ((Nil) Nil)))))))
           ((Z) (rts-case _pv1
             ((Cons _pv4 _pv5) (rts-case _pv2
-              ((Cons _pv6 _pv7) ((Cons _pv4) Nil))))))
+              ((Cons _pv6 _pv7) ((Cons _pv4) Nil))
+              (_ (rts-case _pv1
+                ((Nil) (rts-case _pv2
+                  ((Nil) Nil)))))))
+            (_ (rts-case _pv1
+              ((Nil) (rts-case _pv2
+                ((Nil) Nil)))))))
           (_ (rts-case _pv1
             ((Nil) (rts-case _pv2
               ((Nil) Nil)))))))
@@ -138,10 +150,22 @@
         ((S _pv3) (rts-case _pv3
           ((S _pv4) (rts-case _pv1
             ((Cons _pv5 _pv6) (rts-case _pv2
-              ((Cons _pv7 _pv8) ((((VTwo _pv5) (((index _pv4) _pv6) _pv8)) (((build _pv4) _pv6) _pv8)) _pv7))))))
+              ((Cons _pv7 _pv8) ((((VTwo _pv5) (((index _pv4) _pv6) _pv8)) (((build _pv4) _pv6) _pv8)) _pv7))
+              (_ (rts-case _pv1
+                ((Nil) (rts-case _pv2
+                  ((Nil) VNil)))))))
+            (_ (rts-case _pv1
+              ((Nil) (rts-case _pv2
+                ((Nil) VNil)))))))
           ((Z) (rts-case _pv1
             ((Cons _pv4 _pv5) (rts-case _pv2
-              ((Cons _pv6 _pv7) (VOne _pv4))))))
+              ((Cons _pv6 _pv7) (VOne _pv4))
+              (_ (rts-case _pv1
+                ((Nil) (rts-case _pv2
+                  ((Nil) VNil)))))))
+            (_ (rts-case _pv1
+              ((Nil) (rts-case _pv2
+                ((Nil) VNil)))))))
           (_ (rts-case _pv1
             ((Nil) (rts-case _pv2
               ((Nil) VNil)))))))
@@ -173,7 +197,8 @@
           (letrec ((isPalinV_ (curried-lambda (_pv6 _pv7 _pv8 _pv9 _pv10 _pv11)
             (rts-case _pv10
               ((Just _pv12 _pv13) (rts-case _pv11
-                ((Just _pv14 _pv15) ((Just (IsPalindrome ((Cons _pv6) ((app _pv8) (one _pv6))))) (((PTwo _pv6) _pv8) _pv15)))))
+                ((Just _pv14 _pv15) ((Just (IsPalindrome ((Cons _pv6) ((app _pv8) (one _pv6))))) (((PTwo _pv6) _pv8) _pv15)))
+                (_ (Nothing (IsPalindrome ((Cons _pv6) ((app _pv8) (one _pv7))))))))
               (_ (Nothing (IsPalindrome ((Cons _pv6) ((app _pv8) (one _pv7))))))))))
             ((((((isPalinV_ _pv2) _pv5) _pv3) _pv4) ((decEq _pv2) _pv5)) ((isPalinV _pv3) _pv4)))))))
     (isPalindrome (lambda (xs)
