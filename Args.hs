@@ -19,6 +19,7 @@ data Args = Args
     , dumpSchemeIR :: Maybe String
     , dumpNF :: Maybe String
     , dumpNFScheme :: Maybe String
+    , rtsPath :: String
     }
     deriving (Show)
 
@@ -71,6 +72,11 @@ args = Args
         ( metavar "fileNF.scm"
         <> long "dump-nf-scheme"
         <> help "Generate Scheme source from normal form"))
+    <*> strOption
+        ( metavar "rts.scm"
+        <> long "rts"
+        <> value "rts.scm"
+        <> help "Embed RTS from this file")
 
 parse :: IO Args
 parse = execParser opts

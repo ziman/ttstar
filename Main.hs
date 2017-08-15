@@ -204,7 +204,7 @@ pipeline args = do
     dumpScheme fname prog = writeFile fname $ render "; " (Codegen.Scheme.codegen prog) ++ "\n"
 
     dumpSchemeIR fname prog = do
-        rts <- readFile "rts.scm"
+        rts <- readFile $ Args.rtsPath args
         writeFile fname $ rts ++ "\n" ++ render "; " (Codegen.SchemeIR.codegen prog) ++ "\n"
 
     solveConstraints = case Args.solver args of
