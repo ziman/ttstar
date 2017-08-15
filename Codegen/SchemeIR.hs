@@ -7,17 +7,24 @@ indent :: Doc -> Doc
 indent = nest 2
 
 codegen :: IR -> Doc
+
 codegen prog = 
-    parens (text "display" $+$ indent (cgTm prog))
+    vcat [cgDef n d $$ blankLine | (n,d) <- defs]
+    $$ parens (text "display" <+> cgTm entryPoint)
     $$ parens (text "newline")
+  where
+    (defs, entryPoint) = letPrefix prog
 
 pv :: Int -> Doc
 pv i = text "_pv" <> int i
 
+cgDef :: IName -> IBody -> Doc
+cgDef n b = parens (text "define" <+> cgName n <+> cgBody n b)
+
 cgTm :: IR -> Doc
 cgTm (IV n) = cgName n
 cgTm (ILam n rhs) = cgLambda n $ cgTm rhs
-cgTm (ILet n body rhs) = cgLet ds $ cgTm rhs'
+cgTm (ILet n body rhs) = blankLine $$ indent (cgLet ds $ cgTm rhs')
   where
     (ls, rhs') = letPrefix rhs
     ds = [(n, cgBody n b) | (n, b) <- (n, body) : ls]
@@ -121,6 +128,5 @@ cgLet defs rhs = parens (
         $+$ indent (
             vcat [parens (cgName n <+> body) | (n, body) <- defs]
         )
-        $+$ text ")"
-        $+$ indent rhs
+        $+$ text ")" <+> rhs
     )
