@@ -13,7 +13,8 @@ ioBind \(a : Type) (b : Type) (x : IO a) (y : a -> IO b) : IO b
 -- The purpose of `RealWorld` is to delay the execution of `impureF` until needed.
 -- It's marked as relevant so that erasure does not remove it.
 ioWrapImpure \(a : Type) (impureF : (w :R: RealWorld) -> a) : IO a
-    = MkSt RealWorld a (\w:RealWorld. MkPair RealWorld a w (impureF w)).
+    = stBind RealWorld RealWorld a (stGet RealWorld) (\w:RealWorld. stReturn RealWorld a (impureF w)).
+--    = MkSt RealWorld a (\w:RealWorld. MkPair RealWorld a w (impureF w)).
 
 unsafePerformIO \(a : Type) (x : IO a) : a
     = let

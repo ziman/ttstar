@@ -9,6 +9,7 @@
     runState 
       [_] ([_] run) = run
     execState = (\x. (\s. snd (runState x s)))
+    stGet = MkSt (\s. MkPair s s)
     stReturn = (\x. MkSt (\s. MkPair s x))
     stBind 
       [_] ([_] f) g = 
@@ -20,7 +21,7 @@
         in MkSt (\s. stBind2 g (f s))
     ioReturn = (\x. stReturn x)
     ioBind = (\x. (\y. stBind x y))
-    ioWrapImpure = (\impureF. MkSt (\w. MkPair w (impureF w)))
+    ioWrapImpure = (\impureF. stBind stGet (\w. stReturn (impureF w)))
     unsafePerformIO = (\x. 
       let postulate TheWorld : RealWorld
       in execState x TheWorld)

@@ -12,6 +12,9 @@ runState : (st : Type) -> (a : Type) -> (State st a) -> st -> Pair st a.
 execState \(st : Type) (a : Type) (x : State st a) (s : st) : a
     = snd st a (runState st a x s).
 
+stGet \(st : Type) : State st st
+    = MkSt st st (\s:st. MkPair st st s s).
+
 stReturn \(st : Type) (a : Type) (x : a) : State st a
     = MkSt st a (\s:st. MkPair st a s x).
 
