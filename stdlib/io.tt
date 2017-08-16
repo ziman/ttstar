@@ -10,15 +10,10 @@ ioReturn \(a : Type) (x : a) : IO a
 ioBind \(a : Type) (b : Type) (x : IO a) (y : a -> IO b) : IO b
     = stBind RealWorld a b x y.
 
--- The purpose of `delayToken` is to delay the execution of `impureF` until needed.
+-- The purpose of `RealWorld` is to delay the execution of `impureF` until needed.
 -- It's marked as relevant so that erasure does not remove it.
-ioWrapImpure \(a : Type) (impureF : (delayToken :R: Unit) -> a) : IO a
-    -- `w` is taken relevantly here because we just pass it on without
-    -- actually having it go through the RTS (which we could do as well).
-    -- TTstar sees that it's passed unchanged so it allows erasure on it.
-    -- However, in IO, we pretend that the world is transformed via the RTS
-    -- so we just explicitly label it as used.
-    = MkSt RealWorld a (\w:R:RealWorld. MkPair RealWorld a w (impureF MkUnit)).
+ioWrapImpure \(a : Type) (impureF : (w :R: RealWorld) -> a) : IO a
+    = MkSt RealWorld a (\w:RealWorld. MkPair RealWorld a w (impureF w)).
 
 unsafePerformIO \(a : Type) (x : IO a) : a
     = let

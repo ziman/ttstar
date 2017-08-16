@@ -2,7 +2,6 @@
   let
     constructor Z : Nat
     constructor S : (x) -> Nat
-    constructor MkUnit : Unit
     constructor MkPair : (_x5) -> (_x6) -> Pair
     snd 
       [_] ([_] _ y) = y
@@ -21,7 +20,7 @@
         in MkSt (\s. stBind2 g (f s))
     ioReturn = (\x. stReturn x)
     ioBind = (\x. (\y. stBind x y))
-    ioWrapImpure = (\impureF. MkSt (\w. MkPair w (impureF MkUnit)))
+    ioWrapImpure = (\impureF. MkSt (\w. MkPair w (impureF w)))
     unsafePerformIO = (\x. 
       let postulate TheWorld : RealWorld
       in execState x TheWorld)
@@ -29,7 +28,7 @@
     foreign intZ
     printSchemeRepr = (\x. 
       let foreign nativePrint
-      in ioWrapImpure (\delayToken. nativePrint x))
+      in ioWrapImpure (\w. nativePrint x))
     natToInt 
       [_] Z = intZ
       [_] (S n) = intS (natToInt n)

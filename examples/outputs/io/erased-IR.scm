@@ -48,7 +48,6 @@
     (Z `(Z))
     (S (lambda (e0)
       `(S ,e0)))
-    (MkUnit `(MkUnit))
     (MkPair (curried-lambda (e0 e1)
       `(MkPair ,e0 ,e1)))
     (snd (lambda (_pv0)
@@ -84,7 +83,7 @@
         ((stBind x) y))))
     (ioWrapImpure (lambda (impureF)
       (MkSt (lambda (w)
-        ((MkPair w) (impureF MkUnit))))))
+        ((MkPair w) (impureF w))))))
     (unsafePerformIO (lambda (x)
       
         (letrec ((TheWorld `(TheWorld)))
@@ -94,7 +93,7 @@
     (printSchemeRepr (lambda (x)
       
         (letrec ((nativePrint print))
-          (ioWrapImpure (lambda (delayToken)
+          (ioWrapImpure (lambda (w)
             (nativePrint x))))))
     (natToInt (lambda (_pv0)
       (rts-case _pv0

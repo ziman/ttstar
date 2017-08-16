@@ -59,7 +59,7 @@
     IO : (_x0 : Type) -> Type = State RealWorld
     ioReturn : (a : Type) -> (x : a) -> IO a = (\a : Type. (\x : a. stReturn RealWorld a x))
     ioBind : (a : Type) -> (b : Type) -> (x : IO a) -> (y : (_x1 : a) -> IO b) -> IO b = (\a : Type. (\b : Type. (\x : IO a. (\y : (_x1 : a) -> IO b. stBind RealWorld a b x y))))
-    ioWrapImpure : (a : Type) -> (impureF : (delayToken :R: Unit) -> a) -> IO a = (\a : Type. (\impureF : (delayToken :R: Unit) -> a. MkSt RealWorld a (\w :R: RealWorld. MkPair RealWorld a w (impureF MkUnit))))
+    ioWrapImpure : (a : Type) -> (impureF : (w :R: RealWorld) -> a) -> IO a = (\a : Type. (\impureF : (w :R: RealWorld) -> a. MkSt RealWorld a (\w : RealWorld. MkPair RealWorld a w (impureF w))))
     unsafePerformIO : (a : Type) -> (x : IO a) -> a = (\a : Type. (\x : IO a. 
       let postulate TheWorld : RealWorld
       in execState RealWorld a x TheWorld))
@@ -69,7 +69,7 @@
     postulate Unspec : Type
     printSchemeRepr : (a : Type) -> (x : a) -> IO Unspec = (\a : Type. (\x : a. 
       let foreign nativePrint : (a :E: Type) -> (x :R: a) -> Unspec
-      in ioWrapImpure Unspec (\delayToken : Unit. nativePrint a x)))
+      in ioWrapImpure Unspec (\w : RealWorld. nativePrint a x)))
     natToInt : (_x0 : Nat) -> Int 
       [natToInt] Z = intZ
       n : Nat
@@ -138,31 +138,31 @@
     IO :293: (_x0 :294: Type) -> Type = State -295- RealWorld
     ioReturn :296: (a :297: Type) -> (x :298: a) -> IO -299- a = (\a :300: Type. (\x :301: a. stReturn -304- RealWorld -303- a -302- x))
     ioBind :305: (a :306: Type) -> (b :307: Type) -> (x :308: IO -309- a) -> (y :310: (_x1 :311: a) -> IO -312- b) -> IO -313- b = (\a :314: Type. (\b :315: Type. (\x :316: IO -317- a. (\y :318: (_x1 :319: a) -> IO -320- b. stBind -325- RealWorld -324- a -323- b -322- x -321- y))))
-    ioWrapImpure :326: (a :327: Type) -> (impureF :328: (delayToken :R: Unit) -> a) -> IO -329- a = (\a :330: Type. (\impureF :331: (delayToken :R: Unit) -> a. MkSt -334- RealWorld -333- a -332- (\w :R: RealWorld. MkPair -338- RealWorld -337- a -336- w -335- (impureF -339- MkUnit))))
-    unsafePerformIO :340: (a :341: Type) -> (x :342: IO -343- a) -> a = (\a :344: Type. (\x :345: IO -346- a. 
-      let postulate TheWorld :347: RealWorld
-      in execState -351- RealWorld -350- a -349- x -348- TheWorld))
-    postulate Int :352: Type
-    foreign intS :353: (x :R: Int) -> Int
-    foreign intZ :354: Int
-    postulate Unspec :355: Type
-    printSchemeRepr :356: (a :357: Type) -> (x :358: a) -> IO -359- Unspec = (\a :360: Type. (\x :361: a. 
-      let foreign nativePrint :362: (a :E: Type) -> (x :R: a) -> Unspec
-      in ioWrapImpure -364- Unspec -363- (\delayToken :365: Unit. nativePrint -367- a -366- x)))
-    natToInt :368: (_x0 :369: Nat) -> Int 
-      [natToInt] -370- Z = intZ
-      n :371: Nat
-        [natToInt] -372- (S -373- n) = intS -374- (natToInt -375- n)
-    foreign intToNat :376: (x :R: Int) -> Nat
-    printNat :377: (x :378: Nat) -> IO -379- Unspec = (\x :380: Nat. printSchemeRepr -382- Int -381- (natToInt -383- x))
-    main :384: Unspec = unsafePerformIO -386- Unspec -385- (ioBind -390- Nat -389- Unspec -388- (ioReturn -392- Nat -391- 4) -387- (\v :397: Nat. ioBind -401- Unspec -400- Unspec -399- (printNat -402- v) -398- (\_0 :403: Unspec. printSchemeRepr -405- Nat -404- (intToNat -406- (intS -407- (intS -408- (intS -409- intZ)))))))
+    ioWrapImpure :326: (a :327: Type) -> (impureF :328: (w :R: RealWorld) -> a) -> IO -329- a = (\a :330: Type. (\impureF :331: (w :R: RealWorld) -> a. MkSt -334- RealWorld -333- a -332- (\w :335: RealWorld. MkPair -339- RealWorld -338- a -337- w -336- (impureF -340- w))))
+    unsafePerformIO :341: (a :342: Type) -> (x :343: IO -344- a) -> a = (\a :345: Type. (\x :346: IO -347- a. 
+      let postulate TheWorld :348: RealWorld
+      in execState -352- RealWorld -351- a -350- x -349- TheWorld))
+    postulate Int :353: Type
+    foreign intS :354: (x :R: Int) -> Int
+    foreign intZ :355: Int
+    postulate Unspec :356: Type
+    printSchemeRepr :357: (a :358: Type) -> (x :359: a) -> IO -360- Unspec = (\a :361: Type. (\x :362: a. 
+      let foreign nativePrint :363: (a :E: Type) -> (x :R: a) -> Unspec
+      in ioWrapImpure -365- Unspec -364- (\w :366: RealWorld. nativePrint -368- a -367- x)))
+    natToInt :369: (_x0 :370: Nat) -> Int 
+      [natToInt] -371- Z = intZ
+      n :372: Nat
+        [natToInt] -373- (S -374- n) = intS -375- (natToInt -376- n)
+    foreign intToNat :377: (x :R: Int) -> Nat
+    printNat :378: (x :379: Nat) -> IO -380- Unspec = (\x :381: Nat. printSchemeRepr -383- Int -382- (natToInt -384- x))
+    main :385: Unspec = unsafePerformIO -387- Unspec -386- (ioBind -391- Nat -390- Unspec -389- (ioReturn -393- Nat -392- 4) -388- (\v :398: Nat. ioBind -402- Unspec -401- Unspec -400- (printNat -403- v) -399- (\_0 :404: Unspec. printSchemeRepr -406- Nat -405- (intToNat -407- (intS -408- (intS -409- (intS -410- intZ)))))))
   in main
 
 ### Constraints ###
 
-[] -> [2,3,26,30,33,34,54,57,63,64,67,68,123,126,127,132,135,138,143,144,147,150,153,156,159,162,165,166,169,170,173,176,181,182,185,186,187,190,194,197,198,206,207,210,211,214,215,219,222,225,226,233,234,235,238,239,242,245,246,250,251,254,262,263,266,267,268,269,273,274,277,278,281,282,285,286,287,291,296,298,301,302,305,308,310,311,316,318,319,321,322,326,328,331,332,335,336,339,340,342,345,347,348,349,353,354,356,358,361,362,363,365,366,368,369,370,371,372,373,374,375,376,377,378,380,381,383,385,387,388,391,393,394,395,396,397,398,399,402,403,404,406,407,408,409,R]
-[31] -> [70,189,276,338]
-[32] -> [69,188,275,337]
+[] -> [2,3,30,33,34,54,57,63,64,67,68,123,126,127,132,135,138,143,144,147,150,153,156,159,162,165,166,169,170,173,176,181,182,185,186,187,190,194,197,198,206,207,210,211,214,215,219,222,225,226,233,234,235,238,239,242,245,246,250,251,254,262,263,266,267,268,269,273,274,277,278,281,282,285,286,287,291,296,298,301,302,305,308,310,311,316,318,319,321,322,326,328,331,332,335,336,337,340,341,343,346,348,349,350,354,355,357,359,362,363,364,366,367,369,370,371,372,373,374,375,376,377,378,379,381,382,384,386,388,389,392,394,395,396,397,398,399,400,403,404,405,407,408,409,410,R]
+[31] -> [70,189,276,339]
+[32] -> [69,188,275,338]
 [35] -> [58,128,255]
 [36] -> [59,129,256]
 [55] -> [66,168]
@@ -196,9 +196,9 @@
 [149] -> [133,R]
 [151] -> [125,142,147]
 [152] -> [124,141,147]
-[154] -> [160,351]
-[155] -> [161,350]
-[157] -> [163,346]
+[154] -> [160,352]
+[155] -> [161,351]
+[157] -> [163,347]
 [158] -> [164,295]
 [160] -> [154]
 [161] -> [155]
@@ -280,16 +280,16 @@
 [289] -> [204,248]
 [290] -> [203,247]
 [295] -> [131,158,178,196,200,202,295]
-[297] -> [300,392]
+[297] -> [300,393]
 [299] -> [177,309]
 [300] -> [297]
 [303] -> [175,300]
 [304] -> [174,292]
-[306] -> [314,390,401]
-[307] -> [315,389,400]
-[309] -> [299,317,379]
-[312] -> [313,320,359]
-[313] -> [201,312,343]
+[306] -> [314,391,402]
+[307] -> [315,390,401]
+[309] -> [299,317,380]
+[312] -> [313,320,360]
+[313] -> [201,312,344]
 [314] -> [306]
 [315] -> [307]
 [317] -> [195,309]
@@ -297,39 +297,39 @@
 [323] -> [193,315]
 [324] -> [192,314]
 [325] -> [191,292]
-[327] -> [330,364]
-[329] -> [130,359]
+[327] -> [330,365]
+[329] -> [130,360]
 [330] -> [327]
 [333] -> [125,330]
 [334] -> [124,292]
-[337] -> [32,330]
-[338] -> [31,292]
-[341] -> [344,386]
-[343] -> [313,346]
-[344] -> [341]
-[346] -> [157,343]
-[350] -> [155,344]
-[351] -> [154,292]
-[357] -> [360,382,405]
-[359] -> [312,329,379]
-[360] -> [357]
-[364] -> [327,355]
-[367] -> [360,E]
-[379] -> [309,359]
-[382] -> [352,357]
-[386] -> [341,355]
-[389] -> [307,355]
-[390] -> [1,306]
-[392] -> [1,297]
-[400] -> [307,355]
-[401] -> [306,355]
-[405] -> [1,357]
-[E] -> [367]
-[R] -> [384]
+[338] -> [32,330]
+[339] -> [31,292]
+[342] -> [345,387]
+[344] -> [313,347]
+[345] -> [342]
+[347] -> [157,344]
+[351] -> [155,345]
+[352] -> [154,292]
+[358] -> [361,383,406]
+[360] -> [312,329,380]
+[361] -> [358]
+[365] -> [327,356]
+[368] -> [361,E]
+[380] -> [309,360]
+[383] -> [353,358]
+[387] -> [342,356]
+[390] -> [307,356]
+[391] -> [1,306]
+[393] -> [1,297]
+[401] -> [307,356]
+[402] -> [306,356]
+[406] -> [1,358]
+[E] -> [368]
+[R] -> [385]
 
 ### Solution ###
 
-[2,3,26,30,33,34,54,57,63,64,67,68,123,126,127,132,135,138,143,144,147,150,153,156,159,162,165,166,169,170,173,176,181,182,185,186,187,190,194,197,198,206,207,210,211,214,215,219,222,225,226,233,234,235,238,239,242,245,246,250,251,254,262,263,266,267,268,269,273,274,277,278,281,282,285,286,287,291,296,298,301,302,305,308,310,311,316,318,319,321,322,326,328,331,332,335,336,339,340,342,345,347,348,349,353,354,356,358,361,362,363,365,366,368,369,370,371,372,373,374,375,376,377,378,380,381,383,384,385,387,388,391,393,394,395,396,397,398,399,402,403,404,406,407,408,409,R]
+[2,3,30,33,34,54,57,63,64,67,68,123,126,127,132,135,138,143,144,147,150,153,156,159,162,165,166,169,170,173,176,181,182,185,186,187,190,194,197,198,206,207,210,211,214,215,219,222,225,226,233,234,235,238,239,242,245,246,250,251,254,262,263,266,267,268,269,273,274,277,278,281,282,285,286,287,291,296,298,301,302,305,308,310,311,316,318,319,321,322,326,328,331,332,335,336,337,340,341,343,346,348,349,350,354,355,357,359,362,363,364,366,367,369,370,371,372,373,374,375,376,377,378,379,381,382,384,385,386,388,389,392,394,395,396,397,398,399,400,403,404,405,407,408,409,410,R]
 
 ### Annotated ###
 
@@ -349,7 +349,7 @@
       [not] -E- True = False
       [not] -E- False = True
     constructor Unit :E: Type
-    constructor MkUnit :R: Unit
+    constructor MkUnit :E: Unit
     constructor Pair :E: (_x3 :E: Type) -> (_x4 :E: Type) -> Type
     constructor MkPair :R: (a :E: Type) -> (b :E: Type) -> (_x5 :R: a) -> (_x6 :R: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: Pair -E- a -E- b) -> a 
@@ -390,7 +390,7 @@
     IO :E: (_x0 :E: Type) -> Type = State -E- RealWorld
     ioReturn :R: (a :E: Type) -> (x :R: a) -> IO -E- a = (\a :E: Type. (\x :R: a. stReturn -E- RealWorld -E- a -R- x))
     ioBind :R: (a :E: Type) -> (b :E: Type) -> (x :R: IO -E- a) -> (y :R: (_x1 :R: a) -> IO -E- b) -> IO -E- b = (\a :E: Type. (\b :E: Type. (\x :R: IO -E- a. (\y :R: (_x1 :R: a) -> IO -E- b. stBind -E- RealWorld -E- a -E- b -R- x -R- y))))
-    ioWrapImpure :R: (a :E: Type) -> (impureF :R: (delayToken :R: Unit) -> a) -> IO -E- a = (\a :E: Type. (\impureF :R: (delayToken :R: Unit) -> a. MkSt -E- RealWorld -E- a -R- (\w :R: RealWorld. MkPair -E- RealWorld -E- a -R- w -R- (impureF -R- MkUnit))))
+    ioWrapImpure :R: (a :E: Type) -> (impureF :R: (w :R: RealWorld) -> a) -> IO -E- a = (\a :E: Type. (\impureF :R: (w :R: RealWorld) -> a. MkSt -E- RealWorld -E- a -R- (\w :R: RealWorld. MkPair -E- RealWorld -E- a -R- w -R- (impureF -R- w))))
     unsafePerformIO :R: (a :E: Type) -> (x :R: IO -E- a) -> a = (\a :E: Type. (\x :R: IO -E- a. 
       let postulate TheWorld :R: RealWorld
       in execState -E- RealWorld -E- a -R- x -R- TheWorld))
@@ -400,7 +400,7 @@
     postulate Unspec :E: Type
     printSchemeRepr :R: (a :E: Type) -> (x :R: a) -> IO -E- Unspec = (\a :E: Type. (\x :R: a. 
       let foreign nativePrint :R: (a :E: Type) -> (x :R: a) -> Unspec
-      in ioWrapImpure -E- Unspec -R- (\delayToken :R: Unit. nativePrint -E- a -R- x)))
+      in ioWrapImpure -E- Unspec -R- (\w :R: RealWorld. nativePrint -E- a -R- x)))
     natToInt :R: (_x0 :R: Nat) -> Int 
       [natToInt] -R- Z = intZ
       n :R: Nat
@@ -428,7 +428,7 @@
       [not] -E- True = False
       [not] -E- False = True
     constructor Unit :E: Type
-    constructor MkUnit :R: Unit
+    constructor MkUnit :E: Unit
     constructor Pair :E: (_x3 :E: Type) -> (_x4 :E: Type) -> Type
     constructor MkPair :R: (a :E: Type) -> (b :E: Type) -> (_x5 :R: a) -> (_x6 :R: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: Pair -E- a -E- b) -> a 
@@ -469,7 +469,7 @@
     IO :E: (_x0 :E: Type) -> Type = State -E- RealWorld
     ioReturn :R: (a :E: Type) -> (x :R: a) -> IO -E- a = (\a :E: Type. (\x :R: a. stReturn -E- RealWorld -E- a -R- x))
     ioBind :R: (a :E: Type) -> (b :E: Type) -> (x :R: IO -E- a) -> (y :R: (_x1 :R: a) -> IO -E- b) -> IO -E- b = (\a :E: Type. (\b :E: Type. (\x :R: IO -E- a. (\y :R: (_x1 :R: a) -> IO -E- b. stBind -E- RealWorld -E- a -E- b -R- x -R- y))))
-    ioWrapImpure :R: (a :E: Type) -> (impureF :R: (delayToken :R: Unit) -> a) -> IO -E- a = (\a :E: Type. (\impureF :R: (delayToken :R: Unit) -> a. MkSt -E- RealWorld -E- a -R- (\w :R: RealWorld. MkPair -E- RealWorld -E- a -R- w -R- (impureF -R- MkUnit))))
+    ioWrapImpure :R: (a :E: Type) -> (impureF :R: (w :R: RealWorld) -> a) -> IO -E- a = (\a :E: Type. (\impureF :R: (w :R: RealWorld) -> a. MkSt -E- RealWorld -E- a -R- (\w :R: RealWorld. MkPair -E- RealWorld -E- a -R- w -R- (impureF -R- w))))
     unsafePerformIO :R: (a :E: Type) -> (x :R: IO -E- a) -> a = (\a :E: Type. (\x :R: IO -E- a. 
       let postulate TheWorld :R: RealWorld
       in execState -E- RealWorld -E- a -R- x -R- TheWorld))
@@ -479,7 +479,7 @@
     postulate Unspec :E: Type
     printSchemeRepr :R: (a :E: Type) -> (x :R: a) -> IO -E- Unspec = (\a :E: Type. (\x :R: a. 
       let foreign nativePrint :R: (a :E: Type) -> (x :R: a) -> Unspec
-      in ioWrapImpure -E- Unspec -R- (\delayToken :R: Unit. nativePrint -E- a -R- x)))
+      in ioWrapImpure -E- Unspec -R- (\w :R: RealWorld. nativePrint -E- a -R- x)))
     natToInt :R: (_x0 :R: Nat) -> Int 
       [natToInt] -R- Z = intZ
       n :R: Nat
@@ -507,7 +507,7 @@
       [not] -E- True = False
       [not] -E- False = True
     constructor Unit :E: Type
-    constructor MkUnit :R: Unit
+    constructor MkUnit :E: Unit
     constructor Pair :E: (_x3 :E: Type) -> (_x4 :E: Type) -> Type
     constructor MkPair :R: (a :E: Type) -> (b :E: Type) -> (_x5 :R: a) -> (_x6 :R: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: Pair -E- a -E- b) -> a 
@@ -548,7 +548,7 @@
     IO :E: (_x0 :E: Type) -> Type = State -E- RealWorld
     ioReturn :R: (a :E: Type) -> (x :R: a) -> IO -E- a = (\a :E: Type. (\x :R: a. stReturn -E- RealWorld -E- a -R- x))
     ioBind :R: (a :E: Type) -> (b :E: Type) -> (x :R: IO -E- a) -> (y :R: (_x1 :R: a) -> IO -E- b) -> IO -E- b = (\a :E: Type. (\b :E: Type. (\x :R: IO -E- a. (\y :R: (_x1 :R: a) -> IO -E- b. stBind -E- RealWorld -E- a -E- b -R- x -R- y))))
-    ioWrapImpure :R: (a :E: Type) -> (impureF :R: (delayToken :R: Unit) -> a) -> IO -E- a = (\a :E: Type. (\impureF :R: (delayToken :R: Unit) -> a. MkSt -E- RealWorld -E- a -R- (\w :R: RealWorld. MkPair -E- RealWorld -E- a -R- w -R- (impureF -R- MkUnit))))
+    ioWrapImpure :R: (a :E: Type) -> (impureF :R: (w :R: RealWorld) -> a) -> IO -E- a = (\a :E: Type. (\impureF :R: (w :R: RealWorld) -> a. MkSt -E- RealWorld -E- a -R- (\w :R: RealWorld. MkPair -E- RealWorld -E- a -R- w -R- (impureF -R- w))))
     unsafePerformIO :R: (a :E: Type) -> (x :R: IO -E- a) -> a = (\a :E: Type. (\x :R: IO -E- a. 
       let postulate TheWorld :R: RealWorld
       in execState -E- RealWorld -E- a -R- x -R- TheWorld))
@@ -558,7 +558,7 @@
     postulate Unspec :E: Type
     printSchemeRepr :R: (a :E: Type) -> (x :R: a) -> IO -E- Unspec = (\a :E: Type. (\x :R: a. 
       let foreign nativePrint :R: (a :E: Type) -> (x :R: a) -> Unspec
-      in ioWrapImpure -E- Unspec -R- (\delayToken :R: Unit. nativePrint -E- a -R- x)))
+      in ioWrapImpure -E- Unspec -R- (\w :R: RealWorld. nativePrint -E- a -R- x)))
     natToInt :R: (_x0 :R: Nat) -> Int 
       [natToInt] -R- Z = intZ
       n :R: Nat
@@ -577,7 +577,6 @@ Verification successful.
   let
     constructor Z : Nat
     constructor S : (x) -> Nat
-    constructor MkUnit : Unit
     constructor MkPair : (_x5) -> (_x6) -> Pair
     snd 
       [_] ([_] _ y) = y
@@ -596,7 +595,7 @@ Verification successful.
         in MkSt (\s. stBind2 g (f s))
     ioReturn = (\x. stReturn x)
     ioBind = (\x. (\y. stBind x y))
-    ioWrapImpure = (\impureF. MkSt (\w. MkPair w (impureF MkUnit)))
+    ioWrapImpure = (\impureF. MkSt (\w. MkPair w (impureF w)))
     unsafePerformIO = (\x. 
       let postulate TheWorld : RealWorld
       in execState x TheWorld)
@@ -604,7 +603,7 @@ Verification successful.
     foreign intZ
     printSchemeRepr = (\x. 
       let foreign nativePrint
-      in ioWrapImpure (\delayToken. nativePrint x))
+      in ioWrapImpure (\w. nativePrint x))
     natToInt 
       [_] Z = intZ
       [_] (S n) = intS (natToInt n)
@@ -617,43 +616,42 @@ Verification successful.
 
 let Z = constructor 0
   in let S = constructor 1
-    in let MkUnit = constructor 0
-      in let MkPair = constructor 2
-        in let snd = \_pv0.
-          case _pv0 of
-            _ _pv1 _pv2 => _pv2
-          in let MkSt = constructor 1
-            in let runState = \_pv0.
-              case _pv0 of
-                _ _pv1 => _pv1
-              in let execState = \x. \s. (snd ((runState x) s))
-                in let stReturn = \x. (MkSt \s. ((MkPair s) x))
-                  in let stBind = \_pv0. \_pv1.
-                    case _pv0 of
-                      _ _pv2 => let stBind3 = \_pv3. \_pv4.
+    in let MkPair = constructor 2
+      in let snd = \_pv0.
+        case _pv0 of
+          _ _pv1 _pv2 => _pv2
+        in let MkSt = constructor 1
+          in let runState = \_pv0.
+            case _pv0 of
+              _ _pv1 => _pv1
+            in let execState = \x. \s. (snd ((runState x) s))
+              in let stReturn = \x. (MkSt \s. ((MkPair s) x))
+                in let stBind = \_pv0. \_pv1.
+                  case _pv0 of
+                    _ _pv2 => let stBind3 = \_pv3. \_pv4.
+                      case _pv4 of
+                        _ _pv5 => (_pv5 _pv3)
+                      in let stBind2 = \_pv3. \_pv4.
                         case _pv4 of
-                          _ _pv5 => (_pv5 _pv3)
-                        in let stBind2 = \_pv3. \_pv4.
-                          case _pv4 of
-                            _ _pv5 _pv6 => ((stBind3 _pv5) (_pv3 _pv6))
-                          in (MkSt \s. ((stBind2 _pv1) (_pv2 s)))
-                    in let ioReturn = \x. (stReturn x)
-                      in let ioBind = \x. \y. ((stBind x) y)
-                        in let ioWrapImpure = \impureF. (MkSt \w. ((MkPair w) (impureF MkUnit)))
-                          in let unsafePerformIO = \x. let TheWorld = constructor 0
-                            in ((execState x) TheWorld)
-                            in let intS = foreign "(lambda (x) (+ x 1))"
-                              in let intZ = foreign "0"
-                                in let printSchemeRepr = \x. let nativePrint = foreign "print"
-                                  in (ioWrapImpure \delayToken. (nativePrint x))
-                                  in let natToInt = \_pv0.
-                                    case _pv0 of
-                                      S _pv1 => (intS (natToInt _pv1))
-                                      Z => intZ
-                                    in let intToNat = foreign "(lambda (x) (number->peano 'Z 'S x))"
-                                      in let printNat = \x. (printSchemeRepr (natToInt x))
-                                        in let main = (unsafePerformIO ((ioBind (ioReturn (S (S (S (S Z)))))) \v. ((ioBind (printNat v)) \_0. (printSchemeRepr (intToNat (intS (intS (intS intZ))))))))
-                                          in main
+                          _ _pv5 _pv6 => ((stBind3 _pv5) (_pv3 _pv6))
+                        in (MkSt \s. ((stBind2 _pv1) (_pv2 s)))
+                  in let ioReturn = \x. (stReturn x)
+                    in let ioBind = \x. \y. ((stBind x) y)
+                      in let ioWrapImpure = \impureF. (MkSt \w. ((MkPair w) (impureF w)))
+                        in let unsafePerformIO = \x. let TheWorld = constructor 0
+                          in ((execState x) TheWorld)
+                          in let intS = foreign "(lambda (x) (+ x 1))"
+                            in let intZ = foreign "0"
+                              in let printSchemeRepr = \x. let nativePrint = foreign "print"
+                                in (ioWrapImpure \w. (nativePrint x))
+                                in let natToInt = \_pv0.
+                                  case _pv0 of
+                                    S _pv1 => (intS (natToInt _pv1))
+                                    Z => intZ
+                                  in let intToNat = foreign "(lambda (x) (number->peano 'Z 'S x))"
+                                    in let printNat = \x. (printSchemeRepr (natToInt x))
+                                      in let main = (unsafePerformIO ((ioBind (ioReturn (S (S (S (S Z)))))) \v. ((ioBind (printNat v)) \_0. (printSchemeRepr (intToNat (intS (intS (intS intZ))))))))
+                                        in main
 
 ### Normal forms ###
 
