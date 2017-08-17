@@ -27,15 +27,17 @@ PROGRAMS = {
         ),
         is_epolymorphic = False,
     ),
-}
-
-PROGRAMS = {
     'bin': Program(
         inputs = ProgramInputs(
             unerased_interpreted = Input(lo=1, hi=18, step=1),
             unerased_compiled = Input(lo=1, hi=21, step=1),
             erased_interpreted = Input(lo=1, hi=64*1024, step=2*1024),
             erased_compiled = Input(lo=1, hi=1024*1024, step=32*1024),
+        ),
+        is_epolymorphic = False,
+    ),
+    'rle': Program(
+        inputs = ProgramInputs(
         ),
         is_epolymorphic = False,
     ),
@@ -47,6 +49,7 @@ CSV_FIELDS = (
     'specialisation',
     'verification',
     'normalisation',
+    'pattern_compilation',
     'compilation',
     'input_size',
     'sample_no',
@@ -83,8 +86,8 @@ def bench_program(prog_name, prog):
 
         for specialisation in specs:
             for verification in (True, False):
-                for normalisation in (True, False):
-                    ttstar_cmd = ["../ttstar", "../examples/%s.tt" % prog_name]
+                for normalisation, pattern_compilation in ((True,False), (False,False), (False,True)):
+                    ttstar_cmd = ["../ttstar", "--rts-scm", "../rts.scm", "../examples/%s.tt" % prog_name]
                     if not inference:
                         ttstar_cmd += ["--skip-inference"]
                     if not specialisation:
@@ -94,6 +97,8 @@ def bench_program(prog_name, prog):
 
                     if normalisation:
                         ttstar_cmd += ["--dump-nf-scheme", "x.scm"]
+                    elif pattern_compilation:
+                        ttstar_cmd += ["--dump-scheme-ir", "x.scm"]
                     else:
                         ttstar_cmd += ["--dump-scheme", "x.scm"]
 
@@ -103,6 +108,7 @@ def bench_program(prog_name, prog):
                         'specialisation': specialisation,
                         'verification': verification,
                         'normalisation': normalisation,
+                        'pattern_compilation': pattern_compilation,
                         'compilation': None,
                         'input_size': None,
                     }
@@ -119,7 +125,7 @@ def bench_program(prog_name, prog):
                         config['compilation'] = compilation
 
                         if compilation:
-                            for sample_no, runtime in bench_cmd(['csc', 'x.scm']):
+                            for sample_no, runtime in bench_cmd(['csc', '-O5', 'x.scm']):
                                 yield {
                                     'sample_no': sample_no,
                                     'stage': 'csc',
