@@ -20,6 +20,7 @@ data Args = Args
     , dumpSchemeIR :: Maybe String
     , dumpNF :: Maybe String
     , dumpNFScheme :: Maybe String
+    , dumpStats :: Maybe String
     , rtsSchemePath :: String
     }
     deriving (Show)
@@ -77,6 +78,10 @@ args = Args
         ( metavar "fileNF.scm"
         <> long "dump-nf-scheme"
         <> help "Generate Scheme source from normal form"))
+    <*> optional (strOption
+        ( metavar "stats.json"
+        <> long "dump-stats"
+        <> help "Information about the number of constraints/evars"))
     <*> strOption
         ( metavar "rts.scm"
         <> long "rts-scm"

@@ -35,6 +35,7 @@ import qualified Optimisation.Identity
 import Control.Monad
 import qualified Data.Set as S
 import qualified Data.Map as M
+import qualified Data.IntSet as IS
 
 import Lens.Family2
 
@@ -184,6 +185,19 @@ pipeline args = do
     case Args.dumpSchemeIR args of
         Nothing -> return ()
         Just fname -> dumpSchemeIR fname (toIR optimised)
+
+    case Args.dumpStats args of
+        Nothing -> return ()
+        Just fname -> do
+            let annotations = evarified_1st ^.. (ttRelevance :: Traversal' (TT Evar) Evar)
+            writeFile fname $ unlines
+                [ "{ \"annotations\": " ++ show (length annotations)
+                , ", \"evars\": " ++ show (IS.size $ IS.fromList [i | EV i <- annotations])
+                , ", \"annotations_used\": " ++ (show . length . filter (== R)) (
+                        annotated ^.. (ttRelevance :: Traversal' (TT Relevance) Relevance)
+                    )
+                , "}"
+                ]
 
     let unerasedNF = red NF (builtins $ Just relOfType) prog
     let erasedNF = red NF (builtins ()) optimised
