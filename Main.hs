@@ -28,6 +28,7 @@ import Erasure.Verify
 import Solver.Simple
 import Solver.Graph
 import Solver.Indexed
+import Solver.LMS
 
 import qualified Optimisation.Identity
 
@@ -86,6 +87,7 @@ pipeline args = do
                                 Simple  -> Solver.Simple.reduce
                                 Graph   -> id
                                 Indexed -> Solver.Indexed.reduce
+                                LMS     -> Solver.LMS.reduce
 
                     let cs = either (error . show) id . infer redConstrs $ evarified
                     when (Args.verbose args) $ do
@@ -216,6 +218,7 @@ pipeline args = do
         Simple  -> fst . Solver.Simple.solve
         Graph   -> Solver.Graph.solve
         Indexed -> fst . Solver.Indexed.solve
+        LMS     -> fst . Solver.LMS.solve
 
 main :: IO ()
 main = pipeline =<< Args.parse
