@@ -11,10 +11,15 @@ Dependently typed core calculus with erasure inference.
 * erasure from higher-order functions
 * complete removal of unused arguments (rather than passing in `NULL`)
 * erasure polymorphism for functions
-* three constraint solvers
+* four constraint solvers
     * simple and straightforward O(n²) solver
     * graph-based constraint solver
     * indexing solver (fastest, default)
+    * LMS solver
+        * "last man standing"
+        * Adapted from "Chaff: Engineering an efficient SAT solver"
+          by Moskewicz et al., 2001.
+        * theoretically faster than the indexer, my implementation is slower
 
 ### Language
 
