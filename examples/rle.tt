@@ -43,10 +43,10 @@ foldl : (Bool -> Bool -> Bool) -> Bool -> List -> Bool.
   foldl f z (Cons x xs) = foldl f (f z x) xs.
   
 xor : Bool -> Bool -> Bool.
-xor True True = False,
-xor True False = True,
-xor False True = True,
-xor False False = False.
+(b : Bool)
+  xor False b = b,
+  xor True False = True,
+  xor True True = False.
 
 xors \: List -> Bool = foldl xor False.
 

@@ -1,0 +1,69 @@
+-- vim: ft=ttstar
+  let
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (x) -> Nat
+    plus 
+      [_] Z n = n
+      [_] (S m) n = S (plus m n)
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
+    not 
+      [_] True = False
+      [_] False = True
+    constructor Unit : Type
+    constructor MkUnit : Unit
+    constructor Pair : (_x3) -> (_x4) -> Type
+    constructor MkPair : (a) -> (b) -> (_x5) -> (_x6) -> Pair a b
+    fst 
+      [_] a b ([_] [_] [_] x y) = x
+    snd 
+      [_] a b ([_] [_] [_] x y) = y
+    constructor Either : (_x9) -> (_x10) -> Type
+    constructor Left : (a) -> (b) -> (_x11) -> Either a b
+    constructor Right : (a) -> (b) -> (_x12) -> Either a b
+    id = (\a. (\x. x))
+    constructor Fin : (_x13) -> Type
+    constructor FZ : (n) -> Fin (S n)
+    constructor FS : (n) -> (_x14) -> Fin (S n)
+    constructor Vect : (_x15) -> (_x16) -> Type
+    constructor VN : (a) -> Vect Z a
+    constructor VC : (n) -> (a) -> (x) -> (xs) -> Vect (S n) a
+    constructor List : Type
+    constructor Nil : List
+    constructor Cons : (_x0) -> (_x1) -> List
+    repl 
+      [_] Z x xs = xs
+      [_] (S n) x xs = Cons x (repl n x xs)
+    constructor RLE : (_x3) -> Type
+    constructor RNil : RLE Nil
+    constructor RCons : (n) -> (x) -> (xs) -> (_x4) -> RLE (repl n x xs)
+    compress 
+      [_] Nil = RNil
+      [_] (Cons x xs) = 
+        let aux 
+          [_] y [_] RNil = RCons 1 y Nil RNil
+          [_] True [_] (RCons n True zs rzs) = RCons (S n) True zs rzs
+          [_] False [_] (RCons n False zs rzs) = RCons (S n) False zs rzs
+          [_] True [_] (RCons n False zs rzs) = RCons 1 True (repl n False zs) (RCons n False zs rzs)
+          [_] False [_] (RCons n True zs rzs) = RCons 1 False (repl n True zs) (RCons n True zs rzs)
+        in aux x xs (compress xs)
+    decompress 
+      [_] [_] RNil = Nil
+      [_] [_] (RCons n x xs rxs) = repl n x (decompress xs rxs)
+    foldl 
+      [_] f z Nil = z
+      [_] f z (Cons x xs) = foldl f (f z x) xs
+    xor 
+      [_] False b = b
+      [_] True False = True
+      [_] True True = False
+    xors = foldl xor False
+    genInputList = (\n. repl n True Nil)
+    main = 
+      let
+        foreign inputSize
+        inputList = genInputList inputSize
+      in xors (decompress inputList (compress inputList))
+  in main

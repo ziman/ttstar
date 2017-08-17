@@ -1,0 +1,40 @@
+-- vim: ft=ttstar
+  let
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (x) -> Nat
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
+    constructor List : Type
+    constructor Nil : List
+    constructor Cons : (_x0) -> (_x1) -> List
+    repl 
+      [_] Z x xs = xs
+      [_] (S n) x xs = Cons x (repl n x xs)
+    constructor RLE : (_x3) -> Type
+    constructor RNil : RLE Nil
+    constructor RCons : (n) -> (x) -> (xs) -> (_x4) -> RLE (repl n x xs)
+    compress 
+      [_] Nil = RNil
+      [_] (Cons x xs) = 
+        let aux 
+          [_] y [_] RNil = RCons 1 y Nil RNil
+          [_] True [_] (RCons n True zs rzs) = RCons (S n) True zs rzs
+          [_] False [_] (RCons n False zs rzs) = RCons (S n) False zs rzs
+          [_] True [_] (RCons n False zs rzs) = RCons 1 True (repl n False zs) (RCons n False zs rzs)
+          [_] False [_] (RCons n True zs rzs) = RCons 1 False (repl n True zs) (RCons n True zs rzs)
+        in aux x xs (compress xs)
+    decompress 
+      [_] [_] RNil = Nil
+      [_] [_] (RCons n x xs rxs) = repl n x (decompress xs rxs)
+    foldl 
+      [_] f z Nil = z
+      [_] f z (Cons x xs) = foldl f (f z x) xs
+    xor 
+      [_] False b = b
+      [_] True False = True
+      [_] True True = False
+  in 
+    let foreign inputSize
+    in foldl xor False (decompress (repl inputSize True Nil) (compress (repl inputSize True Nil)))
