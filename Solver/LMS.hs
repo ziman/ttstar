@@ -21,8 +21,8 @@ import qualified Data.IntMap as IM
 import Data.IntSet (IntSet)
 import qualified Data.IntSet as IS
 
-import Data.Ord
-import Data.List
+--import Data.Ord
+--import Data.List
 
 -- reduce the constraint set, keeping the empty-guard constraint
 -- we could use the simple solver for smaller sets
@@ -37,8 +37,8 @@ reduce cs
 type Constraint = (Guards Evar, Uses Evar)
 type Constraints = IntMap Constraint
 data Index = Index
-    { ixSelected    :: Map Evar IntSet
-    , ixFrequencies :: Map Evar Int
+    { _ixSelected    :: Map Evar IntSet
+    , _ixFrequencies :: Map Evar Int
     }
 
 toNumbered :: Constrs Evar -> Constraints
@@ -49,10 +49,11 @@ fromNumbered = IM.foldr addConstraint M.empty
   where
     addConstraint (ns, vs) = M.insertWith S.union ns vs
 
+-- choosing just the first one seems to be faster than choosing the least frequent
 rarestEvar :: Map Evar Int -> Set Evar -> Evar
-rarestEvar frequencies = minimumBy (comparing frequency) . S.toList
+rarestEvar frequencies = head . S.toList -- minimumBy (comparing frequency) . S.toList
   where
-    frequency n = M.findWithDefault 0 n frequencies
+    _frequency n = M.findWithDefault 0 n frequencies
 
 solve :: Constrs Evar -> (Uses Evar, Constrs Evar)
 solve cs
