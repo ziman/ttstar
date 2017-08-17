@@ -14,8 +14,8 @@ Input = collections.namedtuple('Input', 'lo hi step')
 Program = collections.namedtuple('Program', 'inputs is_epolymorphic')
 ProgramInputs = collections.namedtuple('ProgramInputs', 'erased_interpreted unerased_interpreted erased_compiled unerased_compiled')
 
-WARMUPS = 0
-SAMPLES = 1
+WARMUPS = 1
+SAMPLES = 4
 
 PROGRAMS = {
     'palindrome': Program(
