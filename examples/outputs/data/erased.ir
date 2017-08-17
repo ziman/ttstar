@@ -1,0 +1,9 @@
+-- vim: ft=ttstar
+let Z = constructor 0
+  in let S = constructor 0
+    in let plus = \_pv0. \_pv1.
+      case _pv0 of
+        S => S
+        Z => _pv1
+      in let main = ((plus S) S)
+        in main

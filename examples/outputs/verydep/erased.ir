@@ -1,0 +1,11 @@
+-- vim: ft=ttstar
+let Just = constructor 1
+  in let Nothing = constructor 0
+    in let Bool = constructor 0
+      in let False = constructor 0
+        in let f = \_pv0.
+          case _pv0 of
+            Just _pv1 => _pv1
+            Nothing => Bool
+          in let main = (f (Just False))
+            in main

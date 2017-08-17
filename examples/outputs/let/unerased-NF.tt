@@ -1,4 +1,5 @@
 -- vim: ft=ttstar
+
   let
     constructor Nat : Type
     constructor S : (x) -> Nat

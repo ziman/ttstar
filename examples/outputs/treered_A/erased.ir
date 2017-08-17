@@ -1,0 +1,11 @@
+-- vim: ft=ttstar
+let Z = constructor 0
+  in let S = constructor 1
+    in let Nil = constructor 0
+      in let Cons = constructor 2
+        in let vlen = \_pv0.
+          case _pv0 of
+            Cons _pv1 _pv2 => (S (vlen _pv2))
+            Nil => Z
+          in let main = (vlen ((Cons (S (S (S Z)))) Nil))
+            in main

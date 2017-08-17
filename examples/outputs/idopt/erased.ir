@@ -1,0 +1,7 @@
+-- vim: ft=ttstar
+let FZ = constructor 0
+  in let FS = constructor 1
+    in let fsuc = FS
+      in let P = constructor 2
+        in let main = ((P (fsuc (FS FZ))) (FS (FS FZ)))
+          in main

@@ -15,6 +15,7 @@ data Args = Args
     , optIdentity :: Bool
     , solver :: Solver
     , dumpPretty :: Maybe String
+    , dumpIR :: Maybe String
     , dumpScheme :: Maybe String
     , dumpSchemeIR :: Maybe String
     , dumpNF :: Maybe String
@@ -56,6 +57,10 @@ args = Args
         ( metavar "file.tt"
         <> long "dump-pretty"
         <> help "Pretty-print final program"))
+    <*> optional (strOption
+        ( metavar "file.ir"
+        <> long "dump-ir"
+        <> help "Pretty-print the IR"))
     <*> optional (strOption
         ( metavar "file.scm"
         <> long "dump-scheme"

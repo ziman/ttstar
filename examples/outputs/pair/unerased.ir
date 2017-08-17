@@ -1,0 +1,18 @@
+-- vim: ft=ttstar
+let Bool = constructor 0
+  in let T = constructor 0
+    in let F = constructor 0
+      in let Pair = constructor 0
+        in let P = constructor 2
+          in let fst = \_pv0.
+            case _pv0 of
+              _ _pv1 _pv2 => _pv1
+            in let snd = \_pv0.
+              case _pv0 of
+                _ _pv1 _pv2 => _pv2
+              in let and = \_pv0. \_pv1.
+                case _pv0 of
+                  F => F
+                  T => _pv1
+                in let main = ((and (fst ((P T) F))) (snd ((P F) T)))
+                  in main

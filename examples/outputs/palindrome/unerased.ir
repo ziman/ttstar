@@ -1,0 +1,146 @@
+-- vim: ft=ttstar
+let N = constructor 0
+  in let Z = constructor 0
+    in let S = constructor 1
+      in let B = constructor 0
+        in let T = constructor 0
+          in let F = constructor 0
+            in let List = constructor 0
+              in let Cons = constructor 2
+                in let Nil = constructor 0
+                  in let Maybe = constructor 1
+                    in let Nothing = constructor 1
+                      in let Just = constructor 2
+                        in let not = \_pv0.
+                          case _pv0 of
+                            F => T
+                            T => F
+                          in let Id = constructor 3
+                            in let Refl = constructor 2
+                              in let id = \a. \x. x
+                                in let subst = \_pv0. \_pv1. \_pv2. \_pv3. \_pv4.
+                                  \w. w
+                                  in let cong = \_pv0. \_pv1. \_pv2. \_pv3. \_pv4. \_pv5.
+                                    ((Refl _pv1) (_pv2 _pv3))
+                                    in let one = \x. ((Cons x) Nil)
+                                      in let app = \_pv0. \_pv1.
+                                        case _pv0 of
+                                          Cons _pv2 _pv3 => ((Cons _pv2) ((app _pv3) _pv1))
+                                          Nil => _pv1
+                                        in let appRightNeutral = \_pv0.
+                                          case _pv0 of
+                                            Cons _pv1 _pv2 => ((((((cong List) List) (Cons _pv1)) _pv2) ((app _pv2) Nil)) (appRightNeutral _pv2))
+                                            Nil => ((Refl List) Nil)
+                                          in let appAssoc = \_pv0. \_pv1. \_pv2.
+                                            case _pv0 of
+                                              Cons _pv3 _pv4 => ((((((cong List) List) (Cons _pv3)) ((app ((app _pv4) _pv1)) _pv2)) ((app _pv4) ((app _pv1) _pv2))) (((appAssoc _pv4) _pv1) _pv2))
+                                              Nil => ((Refl List) ((app _pv1) _pv2))
+                                            in let Rev = constructor 1
+                                              in let RNil = constructor 0
+                                                in let RSnoc = constructor 3
+                                                  in let rev' = \_pv0. \_pv1. \_pv2.
+                                                    case _pv2 of
+                                                      Cons _pv3 _pv4 => ((((((subst List) Rev) ((app ((app _pv0) (one _pv3))) _pv4)) ((app _pv0) ((Cons _pv3) _pv4))) (((appAssoc _pv0) (one _pv3)) _pv4)) (((rev' ((app _pv0) (one _pv3))) (((RSnoc _pv0) _pv3) _pv1)) _pv4))
+                                                      Nil => ((((((subst List) Rev) _pv0) ((app _pv0) Nil)) (appRightNeutral _pv0)) _pv1)
+                                                    in let rev = \xs. (((rev' Nil) RNil) xs)
+                                                      in let reverse' = \_pv0. \_pv1.
+                                                        case _pv1 of
+                                                          RNil => Nil
+                                                          RSnoc _pv2 _pv3 _pv4 => ((Cons _pv3) ((reverse' _pv2) _pv4))
+                                                        in let reverse = \xs. ((reverse' xs) (rev xs))
+                                                          in let V = constructor 1
+                                                            in let VNil = constructor 0
+                                                              in let VOne = constructor 1
+                                                                in let VTwo = constructor 4
+                                                                  in let length = \_pv0.
+                                                                    case _pv0 of
+                                                                      Cons _pv1 _pv2 => (S (length _pv2))
+                                                                      Nil => Z
+                                                                    in let index = \_pv0. \_pv1. \_pv2.
+                                                                      case _pv0 of
+                                                                        S _pv3 => case _pv3 of
+                                                                          S _pv4 => case _pv1 of
+                                                                            Cons _pv5 _pv6 => case _pv2 of
+                                                                              Cons _pv7 _pv8 => ((Cons _pv5) ((app (((index _pv4) _pv6) _pv8)) (one _pv7)))
+                                                                              _ => case _pv1 of
+                                                                                Nil => case _pv2 of
+                                                                                  Nil => Nil
+                                                                            _ => case _pv1 of
+                                                                              Nil => case _pv2 of
+                                                                                Nil => Nil
+                                                                          Z => case _pv1 of
+                                                                            Cons _pv4 _pv5 => case _pv2 of
+                                                                              Cons _pv6 _pv7 => ((Cons _pv4) Nil)
+                                                                              _ => case _pv1 of
+                                                                                Nil => case _pv2 of
+                                                                                  Nil => Nil
+                                                                            _ => case _pv1 of
+                                                                              Nil => case _pv2 of
+                                                                                Nil => Nil
+                                                                          _ => case _pv1 of
+                                                                            Nil => case _pv2 of
+                                                                              Nil => Nil
+                                                                        Z => Nil
+                                                                      in let build = \_pv0. \_pv1. \_pv2.
+                                                                        case _pv0 of
+                                                                          S _pv3 => case _pv3 of
+                                                                            S _pv4 => case _pv1 of
+                                                                              Cons _pv5 _pv6 => case _pv2 of
+                                                                                Cons _pv7 _pv8 => ((((VTwo _pv5) (((index _pv4) _pv6) _pv8)) (((build _pv4) _pv6) _pv8)) _pv7)
+                                                                                _ => case _pv1 of
+                                                                                  Nil => case _pv2 of
+                                                                                    Nil => VNil
+                                                                              _ => case _pv1 of
+                                                                                Nil => case _pv2 of
+                                                                                  Nil => VNil
+                                                                            Z => case _pv1 of
+                                                                              Cons _pv4 _pv5 => case _pv2 of
+                                                                                Cons _pv6 _pv7 => (VOne _pv4)
+                                                                                _ => case _pv1 of
+                                                                                  Nil => case _pv2 of
+                                                                                    Nil => VNil
+                                                                              _ => case _pv1 of
+                                                                                Nil => case _pv2 of
+                                                                                  Nil => VNil
+                                                                            _ => case _pv1 of
+                                                                              Nil => case _pv2 of
+                                                                                Nil => VNil
+                                                                          Z => VNil
+                                                                        in let eq = constructor 1
+                                                                          in let toV = \xs. ((((((subst List) V) (((index (length xs)) xs) (reverse xs))) xs) (eq xs)) (((build (length xs)) xs) (reverse xs)))
+                                                                            in let IsPalindrome = constructor 1
+                                                                              in let PNil = constructor 0
+                                                                                in let POne = constructor 1
+                                                                                  in let PTwo = constructor 3
+                                                                                    in let decEq = \_pv0. \_pv1.
+                                                                                      case _pv0 of
+                                                                                        F => case _pv1 of
+                                                                                          F => ((Just (((Id B) F) F)) ((Refl B) F))
+                                                                                          T => (Nothing (((Id B) F) T))
+                                                                                        T => case _pv1 of
+                                                                                          F => (Nothing (((Id B) T) F))
+                                                                                          T => ((Just (((Id B) T) T)) ((Refl B) T))
+                                                                                      in let isPalinV = \_pv0. \_pv1.
+                                                                                        case _pv1 of
+                                                                                          VNil => ((Just (IsPalindrome Nil)) PNil)
+                                                                                          VOne _pv2 => ((Just (IsPalindrome ((Cons _pv2) Nil))) (POne _pv2))
+                                                                                          VTwo _pv2 _pv3 _pv4 _pv5 => let isPalinV' = \_pv6. \_pv7. \_pv8. \_pv9. \_pv10. \_pv11.
+                                                                                            case _pv10 of
+                                                                                              Just _pv12 _pv13 => case _pv11 of
+                                                                                                Just _pv14 _pv15 => ((Just (IsPalindrome ((Cons _pv6) ((app _pv8) (one _pv6))))) (((PTwo _pv6) _pv8) _pv15))
+                                                                                                _ => (Nothing (IsPalindrome ((Cons _pv6) ((app _pv8) (one _pv7)))))
+                                                                                              _ => (Nothing (IsPalindrome ((Cons _pv6) ((app _pv8) (one _pv7)))))
+                                                                                            in ((((((isPalinV' _pv2) _pv5) _pv3) _pv4) ((decEq _pv2) _pv5)) ((isPalinV _pv3) _pv4))
+                                                                                        in let isPalindrome = \xs. ((isPalinV xs) (toV xs))
+                                                                                          in let genList = \_pv0. \_pv1.
+                                                                                            case _pv1 of
+                                                                                              S _pv2 => ((Cons _pv0) ((genList (not _pv0)) _pv2))
+                                                                                              Z => Nil
+                                                                                            in let isJust = \_pv0. \_pv1.
+                                                                                              case _pv1 of
+                                                                                                Just _pv2 _pv3 => T
+                                                                                                Nothing _pv2 => F
+                                                                                              in let main = let inputSize = foreign "(rts-arg-peano 'Z 'S 0)"
+                                                                                                in let inputList = ((genList T) inputSize)
+                                                                                                  in ((isJust (IsPalindrome inputList)) (isPalindrome inputList))
+                                                                                                in main

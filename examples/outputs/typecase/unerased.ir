@@ -1,0 +1,46 @@
+-- vim: ft=ttstar
+let Nat = constructor 0
+  in let Z = constructor 0
+    in let S = constructor 1
+      in let plus = \_pv0. \_pv1.
+        case _pv0 of
+          S _pv2 => (S ((plus _pv2) _pv1))
+          Z => _pv1
+        in let Bool = constructor 0
+          in let True = constructor 0
+            in let False = constructor 0
+              in let not = \_pv0.
+                case _pv0 of
+                  False => True
+                  True => False
+                in let Unit = constructor 0
+                  in let MkUnit = constructor 0
+                    in let Pair = constructor 2
+                      in let MkPair = constructor 4
+                        in let fst = \_pv0. \_pv1. \_pv2.
+                          case _pv2 of
+                            _ _pv3 _pv4 _pv5 _pv6 => _pv5
+                          in let snd = \_pv0. \_pv1. \_pv2.
+                            case _pv2 of
+                              _ _pv3 _pv4 _pv5 _pv6 => _pv6
+                            in let Either = constructor 2
+                              in let Left = constructor 3
+                                in let Right = constructor 3
+                                  in let id = \a. \x. x
+                                    in let Fin = constructor 1
+                                      in let FZ = constructor 1
+                                        in let FS = constructor 2
+                                          in let Vect = constructor 2
+                                            in let VN = constructor 1
+                                              in let VC = constructor 4
+                                                in let isZero = \_pv0.
+                                                  case _pv0 of
+                                                    S _pv1 => False
+                                                    Z => True
+                                                  in let f = \_pv0.
+                                                    case _pv0 of
+                                                      Bool => not
+                                                      Nat => isZero
+                                                      _ => \x. False
+                                                    in let main = ((f Bool) False)
+                                                      in main

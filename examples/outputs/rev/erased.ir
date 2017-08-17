@@ -1,0 +1,19 @@
+-- vim: ft=ttstar
+let T = constructor 0
+  in let F = constructor 0
+    in let Nil = constructor 0
+      in let Cons = constructor 2
+        in let RNil = constructor 0
+          in let RSnoc = constructor 2
+            in let rev' = \_pv0. \_pv1.
+              case _pv1 of
+                Cons _pv2 _pv3 => ((rev' ((RSnoc _pv2) _pv0)) _pv3)
+                Nil => _pv0
+              in let rev = \xs. ((rev' RNil) xs)
+                in let reverse' = \_pv0.
+                  case _pv0 of
+                    RNil => Nil
+                    RSnoc _pv1 _pv2 => ((Cons _pv1) (reverse' _pv2))
+                  in let reverse = \xs. (reverse' (rev xs))
+                    in let main = (reverse ((Cons T) ((Cons F) ((Cons T) ((Cons F) Nil)))))
+                      in main

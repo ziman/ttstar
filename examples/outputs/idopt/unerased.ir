@@ -1,0 +1,16 @@
+-- vim: ft=ttstar
+let N = constructor 0
+  in let Z = constructor 0
+    in let S = constructor 1
+      in let Fin = constructor 1
+        in let FZ = constructor 1
+          in let FS = constructor 2
+            in let embed = \_pv0. \_pv1.
+              case _pv1 of
+                FS _pv2 _pv3 => ((FS (S _pv2)) ((embed _pv2) _pv3))
+                FZ _pv2 => (FZ (S _pv2))
+              in let fsuc = FS
+                in let Pair = constructor 0
+                  in let P = constructor 2
+                    in let main = ((P ((fsuc (S (S Z))) ((FS (S Z)) (FZ Z)))) ((embed (S (S (S Z)))) ((FS (S (S Z))) ((FS (S Z)) (FZ Z)))))
+                      in main

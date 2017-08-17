@@ -1,0 +1,8 @@
+-- vim: ft=ttstar
+let T = constructor 0
+  in let P = constructor 1
+    in let fst = \_pv0.
+      case _pv0 of
+        P _pv1 => _pv1
+      in let main = (fst (P T))
+        in main

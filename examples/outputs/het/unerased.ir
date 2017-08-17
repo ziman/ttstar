@@ -1,0 +1,23 @@
+-- vim: ft=ttstar
+let Tuple = constructor 4
+  in let Bool = constructor 0
+    in let T = constructor 0
+      in let F = constructor 0
+        in let Mool = constructor 0
+          in let Q = constructor 0
+            in let W = constructor 0
+              in let U = constructor 0
+                in let B = constructor 0
+                  in let M = constructor 0
+                    in let ty = \_pv0.
+                      case _pv0 of
+                        B => Bool
+                        M => Mool
+                      in let f = \_pv0. \_pv1.
+                        case _pv1 of
+                          F => Mool
+                          Q => Bool
+                          T => Bool
+                          W => Mool
+                        in let main = ((((Tuple ((f B) T)) ((f B) F)) ((f M) Q)) ((f M) W))
+                          in main

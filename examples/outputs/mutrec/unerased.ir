@@ -1,0 +1,14 @@
+-- vim: ft=ttstar
+let Bool = constructor 0
+  in let T = constructor 0
+    in let F = constructor 0
+      in let g = \_pv0.
+        case _pv0 of
+          F => T
+          T => let h = \_pv1.
+            case _pv1 of
+              F => (g F)
+              T => T
+            in (h F)
+        in let main = (g T)
+          in main

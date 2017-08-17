@@ -1,0 +1,16 @@
+-- vim: ft=ttstar
+let Z = constructor 0
+  in let S = constructor 1
+    in let plus = \_pv0. \_pv1.
+      case _pv0 of
+        S _pv2 => (S ((plus _pv2) _pv1))
+        Z => _pv1
+      in let const = \x. \y. x
+        in let main = let apply = \_pv0. \_pv1.
+          case _pv1 of
+            S _pv2 => (_pv0 (S _pv2))
+            Z => (_pv0 Z)
+          in let Q = constructor 0
+            in let three = (S (S (S Z)))
+              in ((plus ((apply \x. x) (S (S Z)))) ((apply (const Q)) three))
+          in main

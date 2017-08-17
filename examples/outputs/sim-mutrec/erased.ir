@@ -1,0 +1,22 @@
+-- vim: ft=ttstar
+let True = constructor 0
+  in let False = constructor 0
+    in let Z = constructor 0
+      in let S = constructor 1
+        in let Even = constructor 0
+          in let Odd = constructor 0
+            in let fun = \_pv0.
+              case _pv0 of
+                Even => \n. let f = \_pv1.
+                  case _pv1 of
+                    S _pv2 => ((fun Odd) _pv2)
+                    Z => True
+                  in (f n)
+                Odd => \n. let f = \_pv1.
+                  case _pv1 of
+                    S _pv2 => ((fun Even) _pv2)
+                    Z => False
+                  in (f n)
+              in let even = (fun Even)
+                in let main = (even (S (S (S (S (S (S (S (S Z)))))))))
+                  in main

@@ -1,4 +1,5 @@
 -- vim: ft=ttstar
+
   let
     constructor S : N
     constructor T : B

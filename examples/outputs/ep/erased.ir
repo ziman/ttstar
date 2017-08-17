@@ -1,0 +1,10 @@
+-- vim: ft=ttstar
+let A = constructor 0
+  in let B = constructor 0
+    in let Op = constructor 2
+      in let constA = A
+        in let apply_RRR = \f. \x. (f x)
+          in let test1 = ((apply_RRR \x. x) B)
+            in let test2 = constA
+              in let main = ((Op test1) test2)
+                in main

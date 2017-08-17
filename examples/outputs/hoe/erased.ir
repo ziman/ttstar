@@ -1,0 +1,8 @@
+-- vim: ft=ttstar
+let A = constructor 0
+  in let B = constructor 0
+    in let Op = constructor 2
+      in let const_A = A
+        in let f = \g. \z. \h. ((Op (g z)) h)
+          in let main = (((f \x. x) B) const_A)
+            in main

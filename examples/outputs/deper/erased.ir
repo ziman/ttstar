@@ -1,0 +1,11 @@
+-- vim: ft=ttstar
+let T = constructor 0
+  in let F = constructor 0
+    in let TB = constructor 2
+      in let constT = T
+        in let f = \_pv0.
+          case _pv0 of
+            F => constT
+            T => \x. x
+          in let main = ((TB ((f T) F)) (f F))
+            in main

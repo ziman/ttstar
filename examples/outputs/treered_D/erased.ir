@@ -1,0 +1,15 @@
+-- vim: ft=ttstar
+let True = constructor 0
+  in let False = constructor 0
+    in let Yeah = constructor 0
+      in let Nope = constructor 0
+        in let Nothing = constructor 0
+          in let Just = constructor 1
+            in let g = \_pv0.
+              case _pv0 of
+                Just _pv1 => case _pv1 of
+                  False => Nope
+                  True => Yeah
+                Nothing => Nope
+              in let main = (g (Just True))
+                in main

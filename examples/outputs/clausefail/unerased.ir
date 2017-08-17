@@ -1,0 +1,13 @@
+-- vim: ft=ttstar
+let N = constructor 0
+  in let Z = constructor 0
+    in let S = constructor 1
+      in let B = constructor 0
+        in let T = constructor 0
+          in let F = constructor 0
+            in let isSuc = \_pv0.
+              case _pv0 of
+                S _pv1 => T
+                _ => F
+              in let main = \x. (isSuc x)
+                in main

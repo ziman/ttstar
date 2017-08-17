@@ -1,3 +1,4 @@
 -- vim: ft=ttstar
+
   let constructor A : T
   in A

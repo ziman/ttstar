@@ -1,0 +1,19 @@
+-- vim: ft=ttstar
+let Bool = constructor 0
+  in let True = constructor 0
+    in let False = constructor 0
+      in let Nat = constructor 0
+        in let Z = constructor 0
+          in let S = constructor 1
+            in let Vec = constructor 2
+              in let VNil = constructor 1
+                in let VCons = constructor 4
+                  in let vlen = \_pv0. \_pv1. \_pv2.
+                    case _pv2 of
+                      VNil _pv3 => Z
+                      _ => case _pv1 of
+                        _ _pv3 => case _pv2 of
+                          VCons _pv4 _pv5 _pv6 _pv7 => (S (((vlen _pv0) _pv3) _pv7))
+                    in let testVec = ((((VCons Bool) (S Z)) True) ((((VCons Bool) Z) False) (VNil Bool)))
+                      in let main = (((vlen Bool) (S (S Z))) testVec)
+                        in main

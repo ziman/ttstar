@@ -1,0 +1,22 @@
+-- vim: ft=ttstar
+let Bool = constructor 0
+  in let True = constructor 0
+    in let False = constructor 0
+      in let Foo = constructor 1
+        in let Yeah = constructor 0
+          in let Nope = constructor 0
+            in let Maybe = constructor 1
+              in let Nothing = constructor 1
+                in let Just = constructor 2
+                  in let f = \_pv0.
+                    case _pv0 of
+                      Just _pv1 _pv2 => _pv2
+                      Nothing _pv1 => False
+                    in let g = \_pv0.
+                      case _pv0 of
+                        Just _pv1 _pv2 => case _pv2 of
+                          False => Nope
+                          True => Yeah
+                        Nothing _pv1 => Nope
+                      in let main = (g ((Just Bool) True))
+                        in main

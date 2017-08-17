@@ -1,0 +1,19 @@
+-- vim: ft=ttstar
+let Q = constructor 0
+  in let W = constructor 0
+    in let T = constructor 0
+      in let F = constructor 0
+        in let not = \_pv0.
+          case _pv0 of
+            F => T
+            T => F
+          in let mot = \_pv0.
+            case _pv0 of
+              Q => W
+              W => Q
+            in let invert = \_pv0.
+              case _pv0 of
+                F => mot
+                T => not
+              in let main = ((invert F) Q)
+                in main

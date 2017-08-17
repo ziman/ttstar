@@ -1,0 +1,10 @@
+-- vim: ft=ttstar
+let Bool = constructor 0
+  in let T = constructor 0
+    in let F = constructor 0
+      in let main = (let not = \_pv0.
+        case _pv0 of
+          F => T
+          T => F
+        in not F)
+        in main

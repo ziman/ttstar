@@ -1,4 +1,5 @@
 -- vim: ft=ttstar
+
   let
     constructor Id : (a) -> (x) -> (y) -> Type
     constructor Refl : (a) -> (x) -> Id a x x

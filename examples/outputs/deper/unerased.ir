@@ -1,0 +1,18 @@
+-- vim: ft=ttstar
+let Bool = constructor 0
+  in let T = constructor 0
+    in let F = constructor 0
+      in let TwoBools = constructor 0
+        in let TB = constructor 2
+          in let id = \x. x
+            in let constT = \_0. T
+              in let fty = \_pv0.
+                case _pv0 of
+                  F => error "irTm: cannot translate: (_x4) -> Bool"
+                  T => error "irTm: cannot translate: (_x3) -> Bool"
+                in let f = \_pv0.
+                  case _pv0 of
+                    F => constT
+                    T => id
+                  in let main = ((TB ((f T) F)) ((f F) F))
+                    in main

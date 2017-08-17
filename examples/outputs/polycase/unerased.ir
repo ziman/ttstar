@@ -1,0 +1,35 @@
+-- vim: ft=ttstar
+let Mool = constructor 0
+  in let Q = constructor 0
+    in let W = constructor 0
+      in let Bool = constructor 0
+        in let T = constructor 0
+          in let F = constructor 0
+            in let Id = constructor 3
+              in let Refl = constructor 2
+                in let not = \_pv0.
+                  case _pv0 of
+                    F => T
+                    T => F
+                  in let notnot = \_pv0.
+                    case _pv0 of
+                      F => ((Refl Bool) F)
+                      T => ((Refl Bool) T)
+                    in let retTy = \_pv0.
+                      case _pv0 of
+                        F => Mool
+                        T => Bool
+                      in let mot = \_pv0.
+                        case _pv0 of
+                          Q => W
+                          W => Q
+                        in let invert = \_pv0.
+                          case _pv0 of
+                            F => mot
+                            T => not
+                          in let invert' = \_pv0. \_pv1.
+                            case _pv0 of
+                              F => (mot _pv1)
+                              T => (not _pv1)
+                            in let main = ((invert F) Q)
+                              in main

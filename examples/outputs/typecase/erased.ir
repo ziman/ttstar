@@ -1,0 +1,22 @@
+-- vim: ft=ttstar
+let Nat = constructor 0
+  in let Z = constructor 0
+    in let S = constructor 1
+      in let Bool = constructor 0
+        in let True = constructor 0
+          in let False = constructor 0
+            in let not = \_pv0.
+              case _pv0 of
+                False => True
+                True => False
+              in let isZero = \_pv0.
+                case _pv0 of
+                  S _pv1 => False
+                  Z => True
+                in let f = \_pv0.
+                  case _pv0 of
+                    Bool => not
+                    Nat => isZero
+                    _ => \x. False
+                  in let main = ((f Bool) False)
+                    in main

@@ -161,14 +161,19 @@ pipeline args = do
         print optimised
         putStrLn ""
 
+    let optimisedIR = toIR optimised
     when (Args.verbose args) $ do
         putStrLn "### Intermediate representation ###\n"
-        print $ toIR optimised
+        print optimisedIR
         putStrLn ""
 
     case Args.dumpPretty args of
         Nothing -> return ()
         Just fname -> dumpTT fname optimised
+
+    case Args.dumpIR args of
+        Nothing -> return ()
+        Just fname -> dumpTT fname optimisedIR
 
     case Args.dumpScheme args of
         Nothing -> return ()
@@ -200,7 +205,7 @@ pipeline args = do
         Just fname -> dumpScheme fname erasedNF
   where
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
-    dumpTT fname prog = writeFile fname $ "-- vim: ft=ttstar" ++ show prog ++ "\n"
+    dumpTT fname prog = writeFile fname $ "-- vim: ft=ttstar\n" ++ show prog ++ "\n"
     dumpScheme fname prog = writeFile fname $ render "; " (Codegen.Scheme.codegen prog) ++ "\n"
 
     dumpSchemeIR fname prog = do

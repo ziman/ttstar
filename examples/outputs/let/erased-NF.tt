@@ -1,4 +1,5 @@
 -- vim: ft=ttstar
+
   let constructor S : (x) -> Nat
   in 
     let postulate Q : Nat

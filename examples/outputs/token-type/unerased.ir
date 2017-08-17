@@ -1,0 +1,14 @@
+-- vim: ft=ttstar
+let TyEq = constructor 2
+  in let Refl = constructor 1
+    in let coerce = \_pv0. \_pv1. \_pv2.
+      case _pv2 of
+        _ _pv3 => \x. x
+      in let sym = \_pv0. \_pv1. \_pv2.
+        case _pv2 of
+          _ _pv3 => (Refl _pv0)
+        in let loopy = \_pv0. \_pv1. \_pv2.
+          let w = \x. (((((coerce _pv0) error "irTm: cannot translate: (y) -> _pv1") _pv2) x) x)
+            in (w ((((coerce error "irTm: cannot translate: (_x9) -> _pv1") _pv0) (((sym _pv0) error "irTm: cannot translate: (_x10) -> _pv1") _pv2)) w))
+          in let main = ((loopy Type) Type)
+            in main

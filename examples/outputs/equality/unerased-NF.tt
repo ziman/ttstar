@@ -1,4 +1,5 @@
 -- vim: ft=ttstar
+
   let
     constructor Bool : Type
     constructor F : Bool

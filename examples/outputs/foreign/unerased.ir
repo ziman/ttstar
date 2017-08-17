@@ -1,0 +1,51 @@
+-- vim: ft=ttstar
+let N = constructor 0
+  in let Z = constructor 0
+    in let S = constructor 1
+      in let B = constructor 0
+        in let T = constructor 0
+          in let F = constructor 0
+            in let List = constructor 0
+              in let Cons = constructor 2
+                in let Nil = constructor 0
+                  in let not = \_pv0.
+                    case _pv0 of
+                      F => T
+                      T => F
+                    in let input = foreign "(rts-arg-peano 'Z 'S 0)"
+                      in let genList = \_pv0. \_pv1.
+                        case _pv1 of
+                          S _pv2 => ((Cons _pv0) ((genList (not _pv0)) _pv2))
+                          Z => Nil
+                        in let Eq = constructor 3
+                          in let Refl = constructor 2
+                            in let Maybe = constructor 1
+                              in let Nothing = constructor 1
+                                in let Just = constructor 2
+                                  in let semiDecEqB = \_pv0. \_pv1.
+                                    case _pv0 of
+                                      F => case _pv1 of
+                                        F => ((Just (((Eq B) F) F)) ((Refl B) F))
+                                        T => (Nothing (((Eq B) F) T))
+                                      T => case _pv1 of
+                                        F => (Nothing (((Eq B) T) F))
+                                        T => ((Just (((Eq B) T) T)) ((Refl B) T))
+                                    in let semiDecEq = \_pv0. \_pv1.
+                                      case _pv0 of
+                                        Cons _pv2 _pv3 => case _pv1 of
+                                          Cons _pv4 _pv5 => let semiDecEq' = \_pv6. \_pv7. \_pv8. \_pv9. \_pv10. \_pv11.
+                                            case _pv10 of
+                                              Nothing _pv12 => (Nothing (((Eq List) ((Cons _pv6) _pv8)) ((Cons _pv7) _pv9)))
+                                              _ => case _pv11 of
+                                                Nothing _pv12 => (Nothing (((Eq List) ((Cons _pv6) _pv8)) ((Cons _pv7) _pv9)))
+                                                _ => case _pv10 of
+                                                  Just _pv12 _pv13 => case _pv11 of
+                                                    Just _pv14 _pv15 => ((Just (((Eq List) ((Cons _pv6) _pv8)) ((Cons _pv6) _pv8))) ((Refl List) ((Cons _pv6) _pv8)))
+                                            in ((((((semiDecEq' _pv2) _pv4) _pv3) _pv5) ((semiDecEqB _pv2) _pv4)) ((semiDecEq _pv3) _pv5))
+                                          Nil => (Nothing (((Eq List) ((Cons _pv2) _pv3)) Nil))
+                                        Nil => case _pv1 of
+                                          Cons _pv2 _pv3 => (Nothing (((Eq List) Nil) ((Cons _pv2) _pv3)))
+                                          Nil => ((Just (((Eq List) Nil) Nil)) ((Refl List) Nil))
+                                      in let sampleList = ((genList T) input)
+                                        in let main = ((semiDecEq sampleList) sampleList)
+                                          in main

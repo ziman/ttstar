@@ -66,6 +66,7 @@ for i in examples/*.tt; do
     ./ttstar "$i" \
         --opt-identity \
         --dump-pretty "${n}/erased.tt" \
+        --dump-ir     "${n}/erased.ir" \
         --dump-scheme "${n}/erased.scm" \
         --dump-scheme-ir "${n}/erased-IR.scm" \
         --dump-nf     "${n}/erased-NF.tt" \
@@ -76,6 +77,7 @@ for i in examples/*.tt; do
 
     ./ttstar "$i" --skip-inference \
         --dump-pretty "${n}/unerased.tt" \
+        --dump-ir     "${n}/unerased.ir" \
         --dump-scheme "${n}/unerased.scm" \
         --dump-scheme-ir "${n}/unerased-IR.scm" \
         --dump-nf     "${n}/unerased-NF.tt" \

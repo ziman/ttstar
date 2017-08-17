@@ -1,0 +1,50 @@
+-- vim: ft=ttstar
+let FZ = constructor 0
+  in let FS = constructor 1
+    in let VN = constructor 0
+      in let VC = constructor 2
+        in let V = constructor 1
+          in let Lam = constructor 1
+            in let App = constructor 2
+              in let env = \_pv0. \_pv1.
+                case _pv0 of
+                  VC _pv2 _pv3 => case _pv1 of
+                    FS _pv4 => ((env _pv3) _pv4)
+                    FZ => _pv2
+                in let extendMap = \_pv0. \_pv1.
+                  case _pv1 of
+                    FS _pv2 => (FS (_pv0 _pv2))
+                    FZ => FZ
+                  in let mapVars = \_pv0. \_pv1.
+                    case _pv1 of
+                      App _pv2 _pv3 => ((App ((mapVars _pv0) _pv2)) ((mapVars _pv0) _pv3))
+                      Lam _pv2 => (Lam ((mapVars (extendMap _pv0)) _pv2))
+                      V _pv2 => (V (_pv0 _pv2))
+                    in let extendSubst = \_pv0. \_pv1.
+                      case _pv1 of
+                        FS _pv2 => ((mapVars FS) (_pv0 _pv2))
+                        FZ => (V FZ)
+                      in let substVars = \_pv0. \_pv1.
+                        case _pv1 of
+                          App _pv2 _pv3 => ((App ((substVars _pv0) _pv2)) ((substVars _pv0) _pv3))
+                          Lam _pv2 => (Lam ((substVars (extendSubst _pv0)) _pv2))
+                          V _pv2 => (_pv0 _pv2)
+                        in let testTm = ((App (Lam ((App (V FZ)) (V (FS FZ))))) (Lam ((App (V (FS FZ))) (V FZ))))
+                          in let example1 = ((substVars (env ((VC (Lam (V FZ))) VN))) testTm)
+                            in let substTop = \_pv0. \_pv1.
+                              case _pv1 of
+                                FS _pv2 => (V _pv2)
+                                FZ => _pv0
+                              in let nf = \_pv0.
+                                case _pv0 of
+                                  App _pv1 _pv2 => let g = \_pv3.
+                                    case _pv3 of
+                                      Lam _pv4 => (nf ((substVars (substTop (nf _pv2))) _pv4))
+                                      _ => ((App _pv3) (nf _pv2))
+                                    in (g (nf _pv1))
+                                  Lam _pv1 => (Lam (nf _pv1))
+                                  V _pv1 => (V _pv1)
+                                in let example2 = (nf testTm)
+                                  in let R = constructor 2
+                                    in let main = ((R example1) example2)
+                                      in main

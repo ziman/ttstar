@@ -1,0 +1,18 @@
+-- vim: ft=ttstar
+let Bool = constructor 0
+  in let T = constructor 0
+    in let F = constructor 0
+      in let Id = constructor 3
+        in let Refl = constructor 2
+          in let not = \_pv0.
+            case _pv0 of
+              F => T
+              T => F
+            in let notnot = \_pv0.
+              case _pv0 of
+                F => ((Refl Bool) F)
+                T => ((Refl Bool) T)
+              in let subst = \_pv0. \_pv1. \_pv2. \_pv3. \_pv4.
+                \w. w
+                in let main = (notnot ((((((subst Type) \a. a) Bool) Bool) ((Refl Type) Bool)) F))
+                  in main

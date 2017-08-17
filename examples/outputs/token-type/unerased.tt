@@ -1,4 +1,5 @@
 -- vim: ft=ttstar
+
   let
     constructor TyEq : (_x0) -> (_x1) -> Type
     constructor Refl : (a) -> TyEq a a

@@ -1,0 +1,5 @@
+-- vim: ft=ttstar
+let A = constructor 0
+  in let const_A = A
+    in let main = const_A
+      in main

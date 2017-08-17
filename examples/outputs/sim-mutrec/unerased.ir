@@ -1,0 +1,34 @@
+-- vim: ft=ttstar
+let Bool = constructor 0
+  in let True = constructor 0
+    in let False = constructor 0
+      in let Nat = constructor 0
+        in let Z = constructor 0
+          in let S = constructor 1
+            in let plus = \_pv0. \_pv1.
+              case _pv0 of
+                S _pv2 => (S ((plus _pv2) _pv1))
+                Z => _pv1
+              in let Tag = constructor 0
+                in let Even = constructor 0
+                  in let Odd = constructor 0
+                    in let funTy = \_pv0.
+                      case _pv0 of
+                        Even => error "irTm: cannot translate: (_x4) -> Bool"
+                        Odd => error "irTm: cannot translate: (_x5) -> (_x6) -> Bool"
+                      in let fun = \_pv0.
+                        case _pv0 of
+                          Even => \n. let f = \_pv1.
+                            case _pv1 of
+                              S _pv2 => (((fun Odd) _pv2) ((plus _pv2) _pv2))
+                              Z => True
+                            in (f n)
+                          Odd => \n. \q. let f = \_pv1.
+                            case _pv1 of
+                              S _pv2 => ((fun Even) _pv2)
+                              Z => False
+                            in (f n)
+                        in let even = (fun Even)
+                          in let odd = (fun Odd)
+                            in let main = (even (S (S (S (S (S (S (S (S Z)))))))))
+                              in main
