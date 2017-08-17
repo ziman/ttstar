@@ -3,7 +3,7 @@ module Args where
 import Options.Applicative
 import Data.Semigroup ((<>))
 
-data Solver = Simple | Graph | Indexed deriving (Eq, Ord, Show)
+data Solver = Simple | Graph | Indexed | LMS deriving (Eq, Ord, Show)
 
 data Args = Args
     { sourceFile :: String
@@ -48,9 +48,9 @@ args = Args
     <*> switch
         ( long "opt-identity"
         <> help "Enable identity optimisation")
-    <*> (option . maybeReader) (`lookup` [("simple",Simple),("graph",Graph),("indexed",Indexed)])
+    <*> (option . maybeReader) (`lookup` solvers)
         ( long "solver"
-        <> metavar "simple|graph|indexed"
+        <> metavar "simple|graph|indexed|lms"
         <> value Indexed
         <> help "Constraint solver to use")
     <*> optional (strOption
@@ -82,6 +82,8 @@ args = Args
         <> long "rts-scm"
         <> value "rts.scm"
         <> help "Embed Scheme RTS from this file")
+  where
+    solvers = [("simple",Simple),("graph",Graph),("indexed",Indexed),("lms",LMS)]
 
 parse :: IO Args
 parse = execParser opts
