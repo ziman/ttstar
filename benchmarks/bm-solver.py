@@ -31,21 +31,23 @@ def bench_cmd(cmd):
 def main():
     print('"program","iteration","erasure","annotations","evars","annotations_used","duration"')
     for fname in os.listdir('../examples'):
-        cmd = ['../ttstar', '--dump-pretty', '/dev/null', '--dump-stats', '/tmp/stats.json']
+        for erasure in (True, False):
+            cmd = ['../ttstar', '--dump-pretty', '/dev/null', '--dump-stats', '/tmp/stats.json']
+            if not erasure:
+                cmd += ['--skip-inference']
 
-        # with erasure
-        for i, t in bench_cmd(cmd + ["../examples/" + fname]):
-            if t is None:  # some error
-                continue
+            for i, t in bench_cmd(cmd + ["../examples/" + fname]):
+                if t is None:  # some error
+                    continue
 
-            with open('/tmp/stats.json') as f:
-                doc = json.load(f)
+                with open('/tmp/stats.json') as f:
+                    doc = json.load(f)
 
-            print('"%s","%d","%s","%d","%d","%d","%f"' % (
-                fname.split('.')[0], i, True,
-                doc['annotations'], doc['evars'], doc['annotations_used'],
-                t,
-            ))
+                print('"%s","%d","%s","%d","%d","%d","%f"' % (
+                    fname.split('.')[0], i, erasure,
+                    doc['annotations'], doc['evars'], doc['annotations_used'],
+                    t,
+                ))
 
 if __name__ == '__main__':
     main()
