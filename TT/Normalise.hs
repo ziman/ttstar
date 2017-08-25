@@ -1,4 +1,4 @@
-{-# LANGUAGE ConstraintKinds, ViewPatterns #-}
+{-# LANGUAGE ConstraintKinds, ViewPatterns, Rank2Types #-}
 module TT.Normalise (IsRelevance, Form(..), red, whnf, nf) where
 
 import TT.Core
@@ -12,6 +12,8 @@ import qualified Data.Map as M
 --import Debug.Trace
 
 type IsRelevance r = (PrettyR r, Eq r)
+
+type Red f = forall r. (IsRelevance r) => Ctx r -> f r -> f r
 
 data Form = NF | WHNF deriving Show
 
@@ -52,22 +54,22 @@ dbg _ x = x
 --dbgS :: (Show a, Show b) => a -> b -> b
 --dbgS x y = (x, y) `dbg` y
 
-whnf :: IsRelevance r => Ctx r -> TT r -> TT r
+whnf :: Red TT
 whnf = red WHNF
 
-nf :: IsRelevance r => Ctx r -> TT r -> TT r
+nf :: Red TT
 nf = red NF
 
-redDef :: IsRelevance r => Form -> Ctx r -> Def r -> Def r
+redDef :: Form -> Red Def
 redDef form ctx (Def n r ty body cs) = Def n r (red form ctx ty) (redBody form ctx body) cs
 
-redBody :: IsRelevance r => Form -> Ctx r -> Body r -> Body r
+redBody :: Form -> Red Body
 redBody form ctx (Abstract a) = Abstract a
 redBody form ctx (Term tm)    = Term (red form ctx tm)
 redBody NF   ctx (Clauses cs) = Clauses $ map (redClause NF ctx) cs
 redBody WHNF ctx body@(Clauses cs) = body
 
-redClause :: IsRelevance r => Form -> Ctx r -> Clause r -> Clause r
+redClause :: Form -> Red Clause
 redClause NF ctx (Clause pvs lhs rhs) =
     Clause
         (map (redDef NF ctx) pvs)
@@ -75,7 +77,7 @@ redClause NF ctx (Clause pvs lhs rhs) =
         (red NF ctx rhs)
 redClause _ ctx clause = error $ "redClause non-NF"
 
-redPat :: IsRelevance r => Form -> Ctx r -> Pat r -> Pat r
+redPat :: Form -> Red Pat
 redPat NF ctx (PApp r f x) = PApp r (redPat NF ctx f) (redPat NF ctx x)
 redPat NF ctx tm@(PV _)    = tm
 redPat NF ctx (PForced tm) = PForced $ red NF ctx tm
@@ -96,7 +98,7 @@ pruneLet (Bind Let ds rhs) = Bind Let [d | d <- ds, defName d `S.member` reachab
         new = S.unions [freeVars d | d <- ds, defName d `S.member` orig]
 pruneLet tm = tm
 
-red :: IsRelevance r => Form -> Ctx r -> TT r -> TT r
+red :: Form -> Red TT
 
 red form ctx t@(V Blank) = t
 
