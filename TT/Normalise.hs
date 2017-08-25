@@ -9,11 +9,19 @@ import Control.Applicative
 import qualified Data.Set as S
 import qualified Data.Map as M
 
+import Control.Monad.Trans.Writer.Lazy
+
 --import Debug.Trace
 
-type IsRelevance r = (PrettyR r, Eq r)
+type IsRelevance r = (PrettyR r, Eq r, Ord r)
 
-type Red f = forall r. (IsRelevance r) => Ctx r -> f r -> f r
+newtype CM r = CM (Constrs r)
+instance Ord r => Monoid (CM r) where
+    mempty = CM M.empty
+    mappend (CM l) (CM r) = CM $ M.unionWith S.union l r
+
+type RM r a = Writer (CM r) a
+type Red f = forall r. (IsRelevance r) => Ctx r -> f r -> RM r (f r)
 
 data Form = NF | WHNF deriving Show
 
@@ -61,26 +69,26 @@ nf :: Red TT
 nf = red NF
 
 redDef :: Form -> Red Def
-redDef form ctx (Def n r ty body cs) = Def n r (red form ctx ty) (redBody form ctx body) cs
+redDef form ctx (Def n r ty body cs) = Def n r <$> red form ctx ty <*> redBody form ctx body <*> pure cs
 
 redBody :: Form -> Red Body
-redBody form ctx (Abstract a) = Abstract a
-redBody form ctx (Term tm)    = Term (red form ctx tm)
-redBody NF   ctx (Clauses cs) = Clauses $ map (redClause NF ctx) cs
-redBody WHNF ctx body@(Clauses cs) = body
+redBody form ctx (Abstract a) = pure $ Abstract a
+redBody form ctx (Term tm)    = Term <$> red form ctx tm
+redBody NF   ctx (Clauses cs) = Clauses <$> traverse (redClause NF ctx) cs
+redBody WHNF ctx body@(Clauses cs) = pure $ body
 
 redClause :: Form -> Red Clause
 redClause NF ctx (Clause pvs lhs rhs) =
     Clause
-        (map (redDef NF ctx) pvs)
-        (redPat NF ctx lhs)
-        (red NF ctx rhs)
+        <$> traverse (redDef NF ctx) pvs
+        <*> redPat NF ctx lhs
+        <*> red NF ctx rhs
 redClause _ ctx clause = error $ "redClause non-NF"
 
 redPat :: Form -> Red Pat
-redPat NF ctx (PApp r f x) = PApp r (redPat NF ctx f) (redPat NF ctx x)
-redPat NF ctx tm@(PV _)    = tm
-redPat NF ctx (PForced tm) = PForced $ red NF ctx tm
+redPat NF ctx (PApp r f x) = PApp r <$> redPat NF ctx f <*> redPat NF ctx x
+redPat NF ctx tm@(PV _)    = pure tm
+redPat NF ctx (PForced tm) = PForced <$> red NF ctx tm
 redPat _ ctx pat = error $ "redPat non-NF"
 
 simplLet :: TT r -> TT r
@@ -100,15 +108,15 @@ pruneLet tm = tm
 
 red :: Form -> Red TT
 
-red form ctx t@(V Blank) = t
+red form ctx t@(V Blank) = pure t
 
 red form ctx t@(V n)
     | Just (Def _n r ty body cs) <- M.lookup n ctx
     = case body of
-        Abstract _  -> t
+        Abstract _  -> pure t
         Term     tm -> red form ctx tm
         Clauses [Clause [] (PForced _) rhs] -> red form ctx rhs  -- constant function
-        Clauses  cs -> t
+        Clauses  cs -> pure t
 
     | otherwise = error $ "unknown variable: " ++ show n  -- unknown variable
 
@@ -120,18 +128,17 @@ red form ctx t@(I n i) = red form ctx (V n)
 
 -- empty let binding
 red form ctx t@(Bind Let [] tm) = red form ctx tm
-red form ctx t@(Bind Let ds tm)
-    -- some progress: try again
-    | reducedTm /= tm  = red form ctx $ Bind Let ds reducedTm
-
-    -- no progress: stop trying and go back
-    | otherwise = simplLet . pruneLet $ Bind Let ds reducedTm
-  where
-    reducedTm = red form (insertDefs ds ctx) tm
+red form ctx t@(Bind Let ds tm) = do
+    reducedTm <- red form (insertDefs ds ctx) tm
+    if reducedTm /= tm
+        -- some progress: try again
+        then red form ctx =<< (Bind Let ds <$> reducedTm)
+        -- no progress: stop trying and go back
+        else simplLet . pruneLet . Bind Let ds <$> reducedTm
 
 -- The remaining binders are Pi and Lam.
-red WHNF ctx t@(Bind b ds tm) = t  -- this is in WHNF already
-red  NF  ctx t@(Bind b [] tm) = Bind b [] $ red NF ctx tm
+red WHNF ctx t@(Bind b ds tm) = pure t  -- this is in WHNF already
+red  NF  ctx t@(Bind b [] tm) = Bind b [] <$> red NF ctx tm
 red  NF  ctx t@(Bind b (d:ds) tm)
     = Bind b (redDef NF ctx d : ds') tm'
   where
