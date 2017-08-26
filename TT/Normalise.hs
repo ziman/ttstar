@@ -20,7 +20,6 @@ instance Ord r => Monoid (CM r) where
     mempty = CM M.empty
     mappend (CM l) (CM r) = CM $ M.unionWith S.union l r
 
-type RMT m r a = WriterT m (CM r) a
 type RM r a = Writer (CM r) a
 type Red f = forall r. (IsRelevance r) => Ctx r -> f r -> RM r (f r)
 
@@ -68,6 +67,14 @@ whnf = red WHNF
 
 nf :: Red TT
 nf = red NF
+
+runRM :: RM r a -> (a, Constrs r)
+runRM rm = (x, cs)
+  where
+    (x, CM cs) = runWriter rm
+
+tellRM :: Constrs r -> RM r ()
+tellRM  = tell . CM
 
 redDef :: Form -> Red Def
 redDef form ctx (Def n r ty body cs) = Def n r <$> red form ctx ty <*> redBody form ctx body <*> pure cs
@@ -179,11 +186,8 @@ red form ctx t@(App r f x) = do
             -- pattern-matching definitions
             | (V fn, args) <- unApply t
             , Just (defBody -> Clauses cs) <- M.lookup fn ctx
-            -> do
-                fm <- firstMatch <$> traverse (matchClause ctx fn t) cs
-                case fm of
-                    Yes rhs -> red form ctx rhs
-                    _       -> App r redF <$> redX
+            , Yes (rhs, cs) <- firstMatch $ map (matchClause ctx fn t) cs
+            -> tellRM cs >> red form ctx rhs
 
             -- everything else
             | otherwise
@@ -208,7 +212,7 @@ matchUp [] ts = Yes ([], ts)
 
 matchUp ps [] = No
 
-matchClause :: IsRelevance r => Ctx r -> Name -> TT r -> Clause r -> Match (RM r (TT r))
+matchClause :: IsRelevance r => Ctx r -> Name -> TT r -> Clause r -> Match (TT r, Constrs r)
 matchClause ctx fn tm (Clause pvs lhs rhs) = do
     -- check that the matched term is actually an invocation of the given function
     () <- case tmH of
@@ -222,14 +226,20 @@ matchClause ctx fn tm (Clause pvs lhs rhs) = do
     (pts, extraTerms) <- matchUp pargs args
 
     -- get the matching substitution
-    pvSubst <- M.unionsWith (\_ _ -> error "nonlinear pattern")
-        <$> sequence [match pvs' ctx p $ red WHNF ctx tm | (p,tm) <- pts]
+    pvSubstCs <- sequence [
+        let (redTm, cs) = runRM $ red WHNF ctx tm
+          in addCs cs $ match pvs' ctx pat redTm
+        | (pat, tm) <- pts
+      ]
+    let pvSubst = M.unionsWith (\_ _ -> error "nonlinear pattern") $ map fst pvSubstCs
 
     -- substitute in RHS, and then tack on the superfluous terms
-    return $
+    return (
         mkApp
             (safeSubst pvs [pvSubst M.! defName d | d <- pvs] rhs)
-            extraTerms
+            extraTerms,
+        M.unionsWith S.union $ map snd pvSubstCs
+      )
   where
     (_patH, pargs) = unApplyPat lhs
     ( tmH,  args)  = unApply tm
@@ -244,32 +254,43 @@ safeSubst (d:ds) (t:ts) rhs
 safeSubst _ _ rhs = error $ "safeSubst: defs vs. terms do not match up"
 
 -- this function expects the term in any form, even unreduced
-match :: IsRelevance r => Ctx r -> Ctx r -> Pat r -> TT r -> Match (RM r (M.Map Name (TT r)))
+match :: IsRelevance r => Ctx r -> Ctx r -> Pat r -> TT r -> Match (M.Map Name (TT r), Constrs r)
 match pvs ctx (PV Blank) tm'
-    = pure $ Yes M.empty
+    = Yes (M.empty, noConstrs)
 
 match pvs ctx (PForced tm) tm'
-    = pure $ Yes M.empty
+    = Yes (M.empty, noConstrs)
 
 match pvs ctx (PV n) tm'
     | Just (defBody -> Abstract Var) <- M.lookup n pvs
-    = pure . Yes $ M.singleton n tm'
+    = Yes (M.singleton n tm', noConstrs)
 
-match pvs ctx pat tm = matchWHNF pvs ctx pat =<< red WHNF ctx tm
+match pvs ctx pat tm = do
+    (x, csMatch) <- matchWHNF pvs ctx pat tmWhnf
+    return (x, M.unionWith S.union csMatch csTm)
+  where
+    (tmWhnf, csTm) = runRM $ red WHNF ctx tm
 
-equate :: IsRelevance r => r -> r -> RM r ()
-equate r1 r2 = tell . CM $ r1 <-> r2
+(/\) :: Ord r => Constrs r -> Constrs r -> Constrs r
+(/\) = M.unionWith S.union
+
+(<->) :: Ord r => r -> r -> Constrs r
+r1 <-> r2 = (r1 --> r2) /\ (r2 --> r1)
+
+(-->) :: r -> r -> Constrs r
+r1 --> r2 = M.singleton (S.singleton r1) (S.singleton r2)
+
+addCs :: Ord r => Constrs r -> Match (a, Constrs r) -> Match (a, Constrs r)
+addCs cs = fmap $ \(x, cs') -> (x, cs /\ cs')
 
 -- this function expects the term in WHNF
-matchWHNF :: IsRelevance r => Ctx r -> Ctx r -> Pat r -> TT r -> Match (RM r (M.Map Name (TT r)))
+matchWHNF :: IsRelevance r => Ctx r -> Ctx r -> Pat r -> TT r -> Match (M.Map Name (TT r), Constrs r)
 matchWHNF pvs ctx (PV n) (V n')
     | n == n'
     , Just (defBody -> Abstract Constructor) <- M.lookup n ctx
-    = pure $ Yes M.empty
+    = Yes (M.empty, noConstrs)
 
 matchWHNF pvs ctx (PApp r (PForced tm) x) (App r' f' x') = do
-    tmR <- red WHNF ctx tm
-
     case unApply tmR of
         (V n,_)
             | n /= Blank
@@ -277,14 +298,20 @@ matchWHNF pvs ctx (PApp r (PForced tm) x) (App r' f' x') = do
             -> error "forced pattern not constructor-headed"
 
             | Just (defBody -> Abstract Constructor) <- M.lookup n ctx
-            -> match pvs ctx x x'  -- LHSs of the applications are constructor-headed
+            -> addCs ((r <-> r') /\ tmcs)
+                $ match pvs ctx x x'  -- LHSs of the applications are constructor-headed
 
         _ -> Stuck
+  where
+    (tmR, tmcs) = runRM $ red WHNF ctx tm
 
-matchWHNF pvs ctx (PApp r f x) (App r' f' x')
-    = M.unionWith (\_ _ -> error "non-linear pattern")
-        <$> match pvs ctx f f'
-        <*> match pvs ctx x x'
+matchWHNF pvs ctx (PApp r f x) (App r' f' x') = do
+    (fsub, fcs) <- match pvs ctx f f'
+    (xsub, xcs) <- match pvs ctx x x'
+    return
+        ( M.unionWith (\_ _ -> error "non-linear pattern") fsub xsub
+        , fcs /\ xcs /\ (r <-> r')
+        )
 
 matchWHNF pvs ctx pat (V n)
     | Just d <- M.lookup n ctx
