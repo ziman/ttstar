@@ -20,6 +20,7 @@ instance Ord r => Monoid (CM r) where
     mempty = CM M.empty
     mappend (CM l) (CM r) = CM $ M.unionWith S.union l r
 
+type RMT m r a = WriterT m (CM r) a
 type RM r a = Writer (CM r) a
 type Red f = forall r. (IsRelevance r) => Ctx r -> f r -> RM r (f r)
 
@@ -132,17 +133,18 @@ red form ctx t@(Bind Let ds tm) = do
     reducedTm <- red form (insertDefs ds ctx) tm
     if reducedTm /= tm
         -- some progress: try again
-        then red form ctx =<< (Bind Let ds <$> reducedTm)
+        then red form ctx (Bind Let ds $ reducedTm)
         -- no progress: stop trying and go back
-        else simplLet . pruneLet . Bind Let ds <$> reducedTm
+        else pure . simplLet . pruneLet . Bind Let ds $ reducedTm
 
 -- The remaining binders are Pi and Lam.
 red WHNF ctx t@(Bind b ds tm) = pure t  -- this is in WHNF already
 red  NF  ctx t@(Bind b [] tm) = Bind b [] <$> red NF ctx tm
 red  NF  ctx t@(Bind b (d:ds) tm)
-    = Bind b (redDef NF ctx d : ds') tm'
-  where
-    Bind _b ds' tm' = red NF (M.insert (defName d) d ctx) $ Bind b ds tm
+    = do
+        Bind _b ds' tm' <- red NF (M.insert (defName d) d ctx) $ Bind b ds tm
+        d' <- redDef NF ctx d
+        pure $ Bind b (d' : ds') tm'
 
 red form ctx t@(App r f (Bind Let ds tm))
     = case clashingNames of
@@ -158,33 +160,38 @@ red form ctx t@(App r (Bind Let ds tm) x)
   where
     clashingNames = [defName d | d <- ds, defName d `occursIn` x]
 
-red form ctx t@(App r f x)
-    -- simple lambda
-    | Bind Lam (Def n' r' ty' (Abstract Var) cs : ds) tm' <- redF
-    = let tm'' = red form ctx $ subst n' redX tm'
-        in case ds of
-            [] -> tm''
-            _  -> Bind Lam ds tm''
+red form ctx t@(App r f x) = do
+    redF <- red form ctx f
+    case redF of
+        -- simple lambda
+        Bind Lam (Def n' r' ty' (Abstract Var) cs : ds) tm'
+          -> do
+                rx <- redX
+                tm'' <- red form ctx $ subst n' rx tm'
+                pure $ case ds of
+                    [] -> tm''
+                    _  -> Bind Lam ds tm''
 
-    -- pattern matching instance reduces as variable
-    | (I fn _, args) <- unApply t
-    = red form ctx $ mkApp (V fn) args
+        _   -- pattern matching instance reduces as variable
+            | (I fn _, args) <- unApply t
+            -> red form ctx $ mkApp (V fn) args
 
-    -- pattern-matching definitions
-    | (V fn, args) <- unApply t
-    , Just (defBody -> Clauses cs) <- M.lookup fn ctx
-    , Yes rhs <- firstMatch $ map (matchClause ctx fn t) cs
-    = red form ctx rhs
+            -- pattern-matching definitions
+            | (V fn, args) <- unApply t
+            , Just (defBody -> Clauses cs) <- M.lookup fn ctx
+            -> do
+                fm <- firstMatch <$> traverse (matchClause ctx fn t) cs
+                case fm of
+                    Yes rhs -> red form ctx rhs
+                    _       -> App r redF <$> redX
 
-    -- everything else
-    | otherwise
-    = redT  -- not a redex
+            -- everything else
+            | otherwise
+            -> App r redF <$> redX  -- not a redex
   where
-    redT = App r redF redX
-    redF = red form ctx f
     redX = case form of
         NF   -> red NF ctx x
-        WHNF -> x
+        WHNF -> pure x
 
 -- This function takes a disassembled pattern and a term application
 -- and tries to match them up, while ensuring that there are at least
@@ -201,14 +208,14 @@ matchUp [] ts = Yes ([], ts)
 
 matchUp ps [] = No
 
-matchClause :: IsRelevance r => Ctx r -> Name -> TT r -> Clause r -> Match (TT r)
+matchClause :: IsRelevance r => Ctx r -> Name -> TT r -> Clause r -> Match (RM r (TT r))
 matchClause ctx fn tm (Clause pvs lhs rhs) = do
     -- check that the matched term is actually an invocation of the given function
     () <- case tmH of
-            V fn' | fn' == fn
-                -> Yes ()
-            _
-                -> Stuck
+        V fn' | fn' == fn
+            -> Yes ()
+        _
+            -> error $ "matchClause: function name mismatch: " ++ show (fn, tmH)
 
     -- first, match up patterns vs. terms, keeping superfluous terms
     -- (if application is oversaturated)
@@ -237,37 +244,42 @@ safeSubst (d:ds) (t:ts) rhs
 safeSubst _ _ rhs = error $ "safeSubst: defs vs. terms do not match up"
 
 -- this function expects the term in any form, even unreduced
-match :: IsRelevance r => Ctx r -> Ctx r -> Pat r -> TT r -> Match (M.Map Name (TT r))
+match :: IsRelevance r => Ctx r -> Ctx r -> Pat r -> TT r -> Match (RM r (M.Map Name (TT r)))
 match pvs ctx (PV Blank) tm'
-    = Yes M.empty
+    = pure $ Yes M.empty
 
 match pvs ctx (PForced tm) tm'
-    = Yes M.empty
+    = pure $ Yes M.empty
 
 match pvs ctx (PV n) tm'
     | Just (defBody -> Abstract Var) <- M.lookup n pvs
-    = Yes $ M.singleton n tm'
+    = pure . Yes $ M.singleton n tm'
 
-match pvs ctx pat tm = matchWHNF pvs ctx pat (red WHNF ctx tm)
+match pvs ctx pat tm = matchWHNF pvs ctx pat =<< red WHNF ctx tm
+
+equate :: IsRelevance r => r -> r -> RM r ()
+equate r1 r2 = tell . CM $ r1 <-> r2
 
 -- this function expects the term in WHNF
-matchWHNF :: IsRelevance r => Ctx r -> Ctx r -> Pat r -> TT r -> Match (M.Map Name (TT r))
+matchWHNF :: IsRelevance r => Ctx r -> Ctx r -> Pat r -> TT r -> Match (RM r (M.Map Name (TT r)))
 matchWHNF pvs ctx (PV n) (V n')
     | n == n'
     , Just (defBody -> Abstract Constructor) <- M.lookup n ctx
-    = Yes M.empty
+    = pure $ Yes M.empty
 
-matchWHNF pvs ctx (PApp r (PForced tm) x) (App r' f' x')
-    | (V n,_) <- unApply $ red WHNF ctx tm
-    , n /= Blank
-    , (defBody <$> M.lookup n ctx) /= Just (Abstract Constructor)
-    = error "forced pattern not constructor-headed"
+matchWHNF pvs ctx (PApp r (PForced tm) x) (App r' f' x') = do
+    tmR <- red WHNF ctx tm
 
-    | (V n,_) <- unApply $ red WHNF ctx f'
-    , Just (defBody -> Abstract Constructor) <- M.lookup n ctx
-    = match pvs ctx x x'  -- LHSs of the applications are constructor-headed
+    case unApply tmR of
+        (V n,_)
+            | n /= Blank
+            , (defBody <$> M.lookup n ctx) /= Just (Abstract Constructor)
+            -> error "forced pattern not constructor-headed"
 
-    | otherwise = Stuck
+            | Just (defBody -> Abstract Constructor) <- M.lookup n ctx
+            -> match pvs ctx x x'  -- LHSs of the applications are constructor-headed
+
+        _ -> Stuck
 
 matchWHNF pvs ctx (PApp r f x) (App r' f' x')
     = M.unionWith (\_ _ -> error "non-linear pattern")
