@@ -44,20 +44,22 @@
 
 ### Constraints ###
 
-[] -> [4,6,8,11,13,23,24,27,28,29,31,34,35,R]
+[] -> [4,6,8,11,13,19,23,24,27,28,29,31,34,35,R]
 [5] -> [30,36]
 [7] -> [25]
 [9] -> [32]
 [10] -> [25]
+[20] -> [30,36]
+[22] -> [32]
 [25] -> [7,10]
-[30] -> [5,11,28]
-[32] -> [9,11,31]
-[36] -> [5,11]
+[30] -> [5,11,20,28]
+[32] -> [9,11,22,31]
+[36] -> [5,11,20]
 [R] -> [33]
 
 ### Solution ###
 
-[4,6,8,11,13,23,24,27,28,29,31,33,34,35,R]
+[4,6,8,11,13,19,23,24,27,28,29,31,33,34,35,R]
 
 ### Annotated ###
 
@@ -71,7 +73,7 @@
     constructor False :R: Bool
     retTy :E: (x :E: Maybe -E- Bool) -> Type 
       t :E: Bool
-        [retTy] -E- (Just -E- [Bool] -E- t) = Bool
+        [retTy] -E- (Just -E- [Bool] -R- t) = Bool
       [retTy] -E- (Nothing -E- [Bool]) = Type
     f :R: (x :R: Maybe -E- Bool) -> retTy -E- x 
       b :R: Bool
@@ -92,7 +94,7 @@
     constructor False :R: Bool
     retTy :E: (x :E: Maybe -E- Bool) -> Type 
       t :E: Bool
-        [retTy] -E- (Just -E- [Bool] -E- t) = Bool
+        [retTy] -E- (Just -E- [Bool] -R- t) = Bool
       [retTy] -E- (Nothing -E- [Bool]) = Type
     f :R: (x :R: Maybe -E- Bool) -> retTy -E- x 
       b :R: Bool
@@ -113,7 +115,7 @@
     constructor False :R: Bool
     retTy :E: (x :E: Maybe -E- Bool) -> Type 
       t :E: Bool
-        [retTy] -E- (Just -E- [Bool] -E- t) = Bool
+        [retTy] -E- (Just -E- [Bool] -R- t) = Bool
       [retTy] -E- (Nothing -E- [Bool]) = Type
     f :R: (x :R: Maybe -E- Bool) -> retTy -E- x 
       b :R: Bool
