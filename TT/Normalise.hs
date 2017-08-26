@@ -13,6 +13,37 @@ import Control.Monad.Trans.Writer.Lazy
 
 --import Debug.Trace
 
+bt :: b -> a -> a
+bt _ x = x
+
+bt' :: b -> a -> a
+bt' _ x = x
+
+dbg :: b -> a -> a
+dbg _ x = x
+
+{-
+dbg :: Show a => a -> b -> b
+dbg = traceShow
+
+bt :: (Monad m, Show a, Show b) => b -> m a -> m a
+bt label action = do
+    () <- ("START " ++ show label) `trace` return ()
+    x <- action
+    () <- ("DONE  " ++ show label ++ " ~~> " ++ show x) `trace` return ()
+    return x
+
+bt' :: (Show a, Show b) => b -> a -> a
+bt' label value = ("PURE " ++ show label ++ " ~~> " ++ show value) `trace` value
+
+dbg :: a -> b -> b
+dbg _ x = x
+-}
+
+--dbgS :: (Show a, Show b) => a -> b -> b
+--dbgS x y = (x, y) `dbg` y
+
+
 type IsRelevance r = (PrettyR r, Eq r, Ord r)
 
 newtype CM r = CM (Constrs r)
@@ -52,15 +83,6 @@ instance Monad Match where
     Yes x >>= f = f x
     No >>= f = No
     Stuck >>= f = Stuck
-
---dbg :: Show a => a -> b -> b
---dbg = traceShow
-
-dbg :: a -> b -> b
-dbg _ x = x
-
---dbgS :: (Show a, Show b) => a -> b -> b
---dbgS x y = (x, y) `dbg` y
 
 whnf :: IsRelevance r => Ctx r -> TT r -> (TT r, Constrs r)
 whnf ctx = runRM . red WHNF ctx
@@ -167,7 +189,7 @@ red form ctx t@(App r (Bind Let ds tm) x)
   where
     clashingNames = [defName d | d <- ds, defName d `occursIn` x]
 
-red form ctx t@(App r f x) = do
+red form ctx t@(App r f x) = bt ("APP", f, x) $ do
     redF <- red form ctx f
     case redF of
         -- simple lambda
@@ -213,7 +235,7 @@ matchUp [] ts = Yes ([], ts)
 matchUp ps [] = No
 
 matchClause :: IsRelevance r => Ctx r -> Name -> TT r -> Clause r -> Match (TT r, Constrs r)
-matchClause ctx fn tm (Clause pvs lhs rhs) = do
+matchClause ctx fn tm (Clause pvs lhs rhs) = bt' ("MATCH-CLAUSE", lhs, tm) $ do
     -- check that the matched term is actually an invocation of the given function
     () <- case tmH of
         V fn' | fn' == fn
@@ -255,6 +277,7 @@ safeSubst _ _ rhs = error $ "safeSubst: defs vs. terms do not match up"
 
 -- this function expects the term in any form, even unreduced
 match :: IsRelevance r => Ctx r -> Ctx r -> Pat r -> TT r -> Match (M.Map Name (TT r), Constrs r)
+
 match pvs ctx (PV Blank) tm'
     = Yes (M.empty, noConstrs)
 
@@ -291,19 +314,21 @@ matchWHNF pvs ctx (PV n) (V n')
     = Yes (M.empty, noConstrs)
 
 matchWHNF pvs ctx (PApp r (PForced tm) x) (App r' f' x') = do
-    case unApply tmR of
-        (V n,_)
-            | n /= Blank
+    case () of
+        ()  | (V n, _) <- unApply tmR
+            , n /= Blank
             , (defBody <$> M.lookup n ctx) /= Just (Abstract Constructor)
-            -> error "forced pattern not constructor-headed"
+            -> error "forced pattern not blank nor constructor-headed"
 
-            | Just (defBody -> Abstract Constructor) <- M.lookup n ctx
-            -> addCs ((r <-> r') /\ tmcs)
+            | (V n, _) <- unApply f'R
+            , Just (defBody -> Abstract Constructor) <- M.lookup n ctx
+            -> addCs ((r <-> r') /\ f'cs)
                 $ match pvs ctx x x'  -- LHSs of the applications are constructor-headed
 
-        _ -> Stuck
+            | otherwise -> Stuck
   where
-    (tmR, tmcs) = runRM $ red WHNF ctx tm
+    (tmR, _tmcs) = runRM $ red WHNF ctx tm
+    (f'R, f'cs)  = runRM $ red WHNF ctx f'
 
 matchWHNF pvs ctx (PApp r f x) (App r' f' x') = do
     (fsub, fcs) <- match pvs ctx f f'
