@@ -199,8 +199,8 @@ pipeline args = do
                 , "}"
                 ]
 
-    let unerasedNF = red NF (builtins $ Just relOfType) prog
-    let erasedNF = red NF (builtins ()) optimised
+    let (unerasedNF, _cs) = nf (builtins $ Just relOfType) prog
+    let (erasedNF, _cs) = nf (builtins ()) optimised
 
     when (Args.verbose args) $ do
         when (not $ Args.skipEvaluation args) $ do

@@ -19,6 +19,7 @@ import Control.Monad.Trans.Reader
 data VerError
     = UnknownName Name
     | RelevanceMismatch Relevance Relevance
+    | ReductionRelInconsistent Term
     | NotPi Term
     | NotPatvar Name
     | NotImplemented
@@ -159,6 +160,15 @@ verClause r (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
         rhsTy <- verTm r rhs
         conv r lhsTy rhsTy
 
+whnf' :: Relevance -> Term -> Ver Term
+whnf' r tm = do
+    ctx <- getCtx
+    let (tm', cs) = whnf ctx tm
+    case r of
+        E -> return tm'  -- no worries about constraints
+        R | consistent cs -> return tm'  -- okay
+          | otherwise     -> verFail $ ReductionRelInconsistent tm
+
 verTm :: Relevance -> Term -> Ver Type
 verTm E (V n) = bt ("VAR-E", n) $ do
     d <- lookupName n
@@ -189,7 +199,8 @@ verTm r (Bind Let ds tm) = bt ("LET", r, ds) $ do
 verTm r (App s f x) = bt ("APP", r, f, s, x) $ do
     ctx <- getCtx
     fty <- verTm r f
-    case whnf ctx fty of
+    ftyRed <- whnf' r fty
+    case ftyRed of
         Bind Pi [Def n piR piTy (Abstract Var) _] piRhs -> do
             (r /\ piR) <-> (r /\ s)
             xty <- verTm (r /\ s) x
@@ -238,7 +249,8 @@ verPat fapp r pvs (PApp s f x) = bt ("PAT-APP", fapp, r, s, f, x) $ do
         PApp _ _ _ -> return ()
 
     fty <- verPat fapp r pvs f
-    case whnf ctx fty of
+    ftyRed <- whnf' r fty
+    case ftyRed of
         Bind Pi [Def n piR piTy (Abstract Var) _] piRhs -> do
             (r /\ piR) <-> (r /\ s)
             xty <- verPat False (r /\ s) pvs x
@@ -255,7 +267,9 @@ verPat fapp r pvs (PForced tm) = bt ("PAT-FORCED", tm) $ do
 conv :: Relevance -> Type -> Type -> Ver ()
 conv r p q = do
     ctx <- getCtx
-    conv' r (whnf ctx p) (whnf ctx q)
+    pRed <- whnf' r p
+    qRed <- whnf' r q
+    conv' r pRed qRed
     
 conv' :: Relevance -> Type -> Type -> Ver ()
 conv' r (V n) (V n')

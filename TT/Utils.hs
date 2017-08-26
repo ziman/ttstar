@@ -7,6 +7,12 @@ import Control.Monad
 import qualified Data.Map as M
 import qualified Data.Set as S
 
+consistent :: Constrs Relevance -> Bool
+consistent cs = E `S.notMember` solution
+  where
+    solution = M.findWithDefault S.empty S.empty cs
+        `S.union` M.findWithDefault S.empty (S.singleton R) cs
+
 unApply :: TT r -> (TT r, [(r, TT r)])
 unApply tm = ua tm []
   where

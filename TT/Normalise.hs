@@ -62,11 +62,11 @@ dbg _ x = x
 --dbgS :: (Show a, Show b) => a -> b -> b
 --dbgS x y = (x, y) `dbg` y
 
-whnf :: Red TT
-whnf = red WHNF
+whnf :: IsRelevance r => Ctx r -> TT r -> (TT r, Constrs r)
+whnf ctx = runRM . red WHNF ctx
 
-nf :: Red TT
-nf = red NF
+nf :: IsRelevance r => Ctx r -> TT r -> (TT r, Constrs r)
+nf ctx = runRM . red NF ctx
 
 runRM :: RM r a -> (a, Constrs r)
 runRM rm = (x, cs)

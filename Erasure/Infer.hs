@@ -264,12 +264,12 @@ inferPat s pvs pat@(PApp app_r f x) = bt ("PAT-APP", pat) $ do
     (xty, xcs) <- inferPat app_r pvs x  -- app_r is always absolute
     ctx <- getCtx
     case whnf ctx fty of
-        Bind Pi [Def n' pi_r ty' (Abstract Var) _noCs] retTy -> do
+        (Bind Pi [Def n' pi_r ty' (Abstract Var) _noCs] retTy, fcs_red) -> do
             xtycs <- with' (M.union pvs) $ conv xty ty'
             let cs =
                     app_r --> s                 -- if something inspects, the whole thing inspects
                     /\ cond s (pi_r <-> app_r) -- the two must match in relevant contexts
-                    /\ fcs
+                    /\ fcs /\ fcs_red
                     /\ cond app_r xtycs /\ xcs  -- xcs was derived with s=app_r
                                                 -- but xtycs wasn't so we need to cond it
                                                 -- this is equivalent to using the Conv rule
@@ -332,13 +332,13 @@ inferTm t@(App app_r f x) = bt ("APP", t) $ do
     (xty, xcs) <- inferTm x
     ctx <- getCtx
     case whnf ctx fty of
-        Bind Pi [Def n' pi_r ty' (Abstract Var) _noCs] retTy -> do
+        (Bind Pi [Def n' pi_r ty' (Abstract Var) _noCs] retTy, fcs_red) -> do
             xtycs <- conv xty ty'
             let cs =
                     -- we can't leave xtycs out entirely because
                     -- if it's relevant, it needs to be erasure-correct as well
                     -- but if it's not used, then it needn't be erasure-correct
-                    fcs
+                    fcs /\ fcs_red
                     /\ cond app_r (xcs /\ xtycs)
                     /\ pi_r <-> app_r
             return (subst n' x retTy, cs)
@@ -373,7 +373,10 @@ instantiate freshTag evarMap def = evalStateT refresh evarMap
 conv :: Type -> Type -> TC (Constrs Evar)
 conv p q = do
     ctx <- getCtx
-    conv' (whnf ctx p) (whnf ctx q)
+    let (pRed, pcs) = whnf ctx p
+        (qRed, qcs) = whnf ctx q
+    cs <- conv' pRed qRed
+    return $ cs /\ pcs /\ qcs
 
 -- note that this function gets arguments in WHNF
 conv' :: Type -> Type -> TC (Constrs Evar)
