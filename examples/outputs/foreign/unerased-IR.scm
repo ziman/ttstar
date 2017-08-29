@@ -92,9 +92,7 @@
                 ((Nothing _pv12) (Nothing (((Eq List) ((Cons _pv6) _pv8)) ((Cons _pv7) _pv9))))
                 (_ (rts-case _pv11
                   ((Nothing _pv12) (Nothing (((Eq List) ((Cons _pv6) _pv8)) ((Cons _pv7) _pv9))))
-                  (_ (rts-case _pv10
-                    ((Just _pv12 _pv13) (rts-case _pv11
-                      ((Just _pv14 _pv15) ((Just (((Eq List) ((Cons _pv6) _pv8)) ((Cons _pv6) _pv8))) ((Refl List) ((Cons _pv6) _pv8))))))))))))))
+                  (_ ((Just (((Eq List) ((Cons _pv6) _pv8)) ((Cons _pv6) _pv8))) ((Refl List) ((Cons _pv6) _pv8))))))))))
               ((((((semiDecEq_ _pv2) _pv4) _pv3) _pv5) ((semiDecEqB _pv2) _pv4)) ((semiDecEq _pv3) _pv5))))
           ((Nil) (Nothing (((Eq List) ((Cons _pv2) _pv3)) Nil)))))
         ((Nil) (rts-case _pv1

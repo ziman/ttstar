@@ -126,24 +126,14 @@
           ((S _pv4) (rts-case _pv1
             ((Cons _pv5 _pv6) (rts-case _pv2
               ((Cons _pv7 _pv8) ((Cons _pv5) ((app (((index _pv4) _pv6) _pv8)) (one _pv7))))
-              (_ (rts-case _pv1
-                ((Nil) (rts-case _pv2
-                  ((Nil) Nil)))))))
-            (_ (rts-case _pv1
-              ((Nil) (rts-case _pv2
-                ((Nil) Nil)))))))
+              (_ Nil)))
+            (_ Nil)))
           ((Z) (rts-case _pv1
             ((Cons _pv4 _pv5) (rts-case _pv2
               ((Cons _pv6 _pv7) ((Cons _pv4) Nil))
-              (_ (rts-case _pv1
-                ((Nil) (rts-case _pv2
-                  ((Nil) Nil)))))))
-            (_ (rts-case _pv1
-              ((Nil) (rts-case _pv2
-                ((Nil) Nil)))))))
-          (_ (rts-case _pv1
-            ((Nil) (rts-case _pv2
-              ((Nil) Nil)))))))
+              (_ Nil)))
+            (_ Nil)))
+          (_ Nil)))
         ((Z) Nil))))
     (build (curried-lambda (_pv0 _pv1 _pv2)
       (rts-case _pv0
@@ -151,24 +141,14 @@
           ((S _pv4) (rts-case _pv1
             ((Cons _pv5 _pv6) (rts-case _pv2
               ((Cons _pv7 _pv8) ((((VTwo _pv5) (((index _pv4) _pv6) _pv8)) (((build _pv4) _pv6) _pv8)) _pv7))
-              (_ (rts-case _pv1
-                ((Nil) (rts-case _pv2
-                  ((Nil) VNil)))))))
-            (_ (rts-case _pv1
-              ((Nil) (rts-case _pv2
-                ((Nil) VNil)))))))
+              (_ VNil)))
+            (_ VNil)))
           ((Z) (rts-case _pv1
             ((Cons _pv4 _pv5) (rts-case _pv2
               ((Cons _pv6 _pv7) (VOne _pv4))
-              (_ (rts-case _pv1
-                ((Nil) (rts-case _pv2
-                  ((Nil) VNil)))))))
-            (_ (rts-case _pv1
-              ((Nil) (rts-case _pv2
-                ((Nil) VNil)))))))
-          (_ (rts-case _pv1
-            ((Nil) (rts-case _pv2
-              ((Nil) VNil)))))))
+              (_ VNil)))
+            (_ VNil)))
+          (_ VNil)))
         ((Z) VNil))))
     (eq (lambda (e0)
       `(eq ,e0)))
