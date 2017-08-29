@@ -88,24 +88,14 @@
           ((S _pv4) (rts-case _pv1
             ((Cons _pv5 _pv6) (rts-case _pv2
               ((Cons _pv7 _pv8) (((VTwo _pv5) (((build _pv4) _pv6) _pv8)) _pv7))
-              (_ (rts-case _pv1
-                ((Nil) (rts-case _pv2
-                  ((Nil) VNil)))))))
-            (_ (rts-case _pv1
-              ((Nil) (rts-case _pv2
-                ((Nil) VNil)))))))
+              (_ VNil)))
+            (_ VNil)))
           ((Z) (rts-case _pv1
             ((Cons _pv4 _pv5) (rts-case _pv2
               ((Cons _pv6 _pv7) VOne)
-              (_ (rts-case _pv1
-                ((Nil) (rts-case _pv2
-                  ((Nil) VNil)))))))
-            (_ (rts-case _pv1
-              ((Nil) (rts-case _pv2
-                ((Nil) VNil)))))))
-          (_ (rts-case _pv1
-            ((Nil) (rts-case _pv2
-              ((Nil) VNil)))))))
+              (_ VNil)))
+            (_ VNil)))
+          (_ VNil)))
         ((Z) VNil))))
     (toV (lambda (xs)
       (((build (length xs)) xs) (reverse_TT xs))))

@@ -81,8 +81,7 @@
               (rts-unpack (cdr _pv7) (_pv8 _pv9)
                 ((C _pv9) (((add_ _pv8) _pv4) _pv6))))))
               (f (((adb _pv0) _pv3) _pv5))))))
-        ((N) (rts-case _pv2
-          ((N) ((C _pv0) N)))))))
+        ((N) ((C _pv0) N)))))
     (add (lambda (bx)
       (lambda (by)
         (((add_ O) bx) by))))

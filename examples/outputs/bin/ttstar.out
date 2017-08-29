@@ -1315,8 +1315,7 @@ let Z = constructor 0
                               case _pv7 of
                                 _ _pv8 _pv9 => (subst ((C _pv9) (((add' _pv8) _pv4) _pv6)))
                               in (f (((adb _pv0) _pv3) _pv5))
-                          N => case _pv2 of
-                            N => ((C _pv0) N)
+                          N => ((C _pv0) N)
                         in let add = \bx. \by. (((add' O) bx) by)
                           in let inputSize = foreign "(rts-arg-peano 'Z 'S 0)"
                             in let mkBin = \_pv0. \_pv1.
