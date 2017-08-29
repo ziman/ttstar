@@ -11,7 +11,6 @@ data IR
     | ILam IName IR
     | ILet IName IBody IR
     | IApp IR IR
-    | IProj IName Int
     | IError String
     deriving (Eq, Ord)
 

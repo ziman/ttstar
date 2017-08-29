@@ -4,7 +4,7 @@ import IR.Core
 import qualified Data.Set as S
 
 pruneIR :: IR -> IR
-pruneIR = fst . prune
+pruneIR = fst . pruneTm
 
 pruneTm :: IR -> (IR, S.Set IName)
 
@@ -41,14 +41,36 @@ pruneCT (ILeaf rhs) = (ILeaf rhs', rhsNs)
   where
     (rhs', rhsNs) = pruneTm rhs
 
-pruneCT (ICase v [IDefault ct]) = (ICase v [IDefault ct'], ctNs)
+pruneCT (ICase v [IDefault ct]) = (ICase v [IDefault ct'], S.insert (IPV v) ctNs)
   where
     (ct', ctNs) = pruneCT ct
 
-pruneCT (ICase v [ICtor _cn vs rhs]) = 
-  where
-    (rhs', rhsNs) = prune
+pruneCT (ICase v [ICtor cn vs ct])
+    | S.null (S.intersection vsS ctNs)
+    = (ct', ctNs')
 
-pruneCT (ICase v alts) = (ICase v $ map fst alts', S.unions $ map snd alts')
+    | otherwise
+    = (ICase v [ICtor cn vs ct'], S.insert (IPV v) ctNs')
+  where
+    vsS = S.fromList $ map IPV vs
+    ctNs' = ctNs S.\\ vsS
+    (ct', ctNs) = pruneCT ct
+
+pruneCT (ICase v alts)
+    = ( ICase v $ map fst alts'
+      , S.insert (IPV v) . S.unions $ map snd alts'
+      )
   where
     alts' = map pruneAlt alts
+
+pruneAlt :: IAlt -> (IAlt, S.Set IName)
+pruneAlt (IDefault ct) = (IDefault ct', ctNs)
+  where
+    (ct', ctNs) = pruneCT ct
+
+pruneAlt (ICtor cn vs ct) = (ICtor cn vs ct', ctNs')
+  where
+    vsS = S.fromList $ map IPV vs
+    ctNs' = ctNs S.\\ vsS
+    (ct', ctNs) = pruneCT ct
+

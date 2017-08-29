@@ -114,6 +114,7 @@ specialNames =
 
 cgName :: IName -> Doc
 cgName IBlank = text "_"
+cgName (IPV i) = pv i
 cgName (IUN n) = text . specialName . concatMap mogrify $ n
   where
     specialName n
