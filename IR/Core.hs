@@ -2,6 +2,7 @@ module IR.Core where
 
 data IName
     = IUN String
+    | IPV Int
     | IBlank
     deriving (Eq, Ord)
 
@@ -10,6 +11,7 @@ data IR
     | ILam IName IR
     | ILet IName IBody IR
     | IApp IR IR
+    | IProj IName Int
     | IError String
     deriving (Eq, Ord)
 

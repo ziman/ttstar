@@ -22,6 +22,7 @@ toIR = irTm S.empty 0
 
 irName :: Name -> IName
 irName Blank = IBlank
+irName (MN "pv" i) = IPV i
 irName n = IUN (show n)
 
 irTm :: S.Set Name -> Int -> TT () -> IR
