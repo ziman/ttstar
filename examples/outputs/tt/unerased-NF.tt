@@ -4,7 +4,7 @@
     constructor Nat : Type
     constructor Z : Nat
     constructor S : (x) -> Nat
-    constructor Fin : (_x13) -> Type
+    constructor Fin : (_x15) -> Type
     constructor FZ : (n) -> Fin (S n)
     constructor TT : (_x0) -> Type
     constructor V : (n) -> (_x1) -> TT n

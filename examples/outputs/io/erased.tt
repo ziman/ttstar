@@ -3,7 +3,7 @@
   let
     constructor Z : Nat
     constructor S : (x) -> Nat
-    constructor MkPair : (_x5) -> (_x6) -> Pair
+    constructor MkPair : (_x7) -> (_x8) -> Pair
     snd 
       [_] ([_] _ y) = y
     constructor MkSt : (run) -> State

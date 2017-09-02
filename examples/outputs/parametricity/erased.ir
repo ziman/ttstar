@@ -1,0 +1,4 @@
+-- vim: ft=ttstar
+let Refl = constructor 0
+  in let main = Refl
+    in main

@@ -53,6 +53,10 @@
       (rts-case _pv0
         ((S _pv2) (S ((plus _pv2) _pv1)))
         ((Z) _pv1))))
+    (times (curried-lambda (_pv0 _pv1)
+      (rts-case _pv0
+        ((S _pv2) ((plus _pv1) ((times _pv2) _pv1)))
+        ((Z) Z))))
     (Bool `(Bool))
     (True `(True))
     (False `(False))

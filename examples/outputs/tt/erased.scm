@@ -6,8 +6,8 @@
 (print
   (letrec* (
     (FZ `(FZ))
-    (FS (lambda (_x14)
-      `(FS ,_x14)))
+    (FS (lambda (_x16)
+      `(FS ,_x16)))
     (VN `(VN))
     (VC (lambda (x)
       (lambda (xs)

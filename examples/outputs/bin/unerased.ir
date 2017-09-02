@@ -6,69 +6,81 @@ let Nat = constructor 0
         case _pv0 of
           S _pv2 => (S ((plus _pv2) _pv1))
           Z => _pv1
-        in let Bool = constructor 0
-          in let True = constructor 0
-            in let False = constructor 0
-              in let not = \_pv0.
-                case _pv0 of
-                  False => True
-                  True => False
-                in let Unit = constructor 0
-                  in let MkUnit = constructor 0
-                    in let Pair = constructor 2
-                      in let MkPair = constructor 4
-                        in let fst = \_pv0. \_pv1. \_pv2.
-                          case _pv2 of
-                            _ _pv3 _pv4 _pv5 _pv6 => _pv5
-                          in let snd = \_pv0. \_pv1. \_pv2.
+        in let times = \_pv0. \_pv1.
+          case _pv0 of
+            S _pv2 => ((plus _pv1) ((times _pv2) _pv1))
+            Z => Z
+          in let Bool = constructor 0
+            in let True = constructor 0
+              in let False = constructor 0
+                in let not = \_pv0.
+                  case _pv0 of
+                    False => True
+                    True => False
+                  in let Unit = constructor 0
+                    in let MkUnit = constructor 0
+                      in let Pair = constructor 2
+                        in let MkPair = constructor 4
+                          in let fst = \_pv0. \_pv1. \_pv2.
                             case _pv2 of
-                              _ _pv3 _pv4 _pv5 _pv6 => _pv6
-                            in let Either = constructor 2
-                              in let Left = constructor 3
-                                in let Right = constructor 3
-                                  in let id = \a. \x. x
-                                    in let Fin = constructor 1
-                                      in let FZ = constructor 1
-                                        in let FS = constructor 2
-                                          in let Vect = constructor 2
-                                            in let VN = constructor 1
-                                              in let VC = constructor 4
-                                                in let Id = constructor 3
-                                                  in let Refl = constructor 2
-                                                    in let subst = \_pv0. \_pv1. \_pv2. \_pv3. \_pv4.
-                                                      \z. z
-                                                      in let Bit = constructor 1
-                                                        in let I = constructor 0
-                                                          in let O = constructor 0
-                                                            in let double = \_pv0.
-                                                              case _pv0 of
-                                                                S _pv1 => (S (S (double _pv1)))
-                                                                Z => Z
-                                                              in let Bin = constructor 2
-                                                                in let N = constructor 0
-                                                                  in let C = constructor 5
-                                                                    in let TwoBits = constructor 3
-                                                                      in let TB = constructor 8
-                                                                        in let adb = \_pv0. \_pv1. \_pv2. \_pv3. \_pv4. \_pv5.
-                                                                          case _pv3 of
-                                                                            I => case _pv4 of
-                                                                              I => case _pv5 of
-                                                                                I => ((((((((TB (S Z)) (S Z)) (S Z)) (S Z)) I) (S Z)) I) ((Refl Nat) (S (S (S Z)))))
-                                                                                O => ((((((((TB (S Z)) (S Z)) Z) (S Z)) I) Z) O) ((Refl Nat) (S (S Z))))
-                                                                              O => case _pv5 of
-                                                                                I => ((((((((TB (S Z)) Z) (S Z)) (S Z)) I) Z) O) ((Refl Nat) (S (S Z))))
-                                                                                O => ((((((((TB (S Z)) Z) Z) Z) O) (S Z)) I) ((Refl Nat) (S Z)))
-                                                                            O => case _pv4 of
-                                                                              I => case _pv5 of
-                                                                                I => ((((((((TB Z) (S Z)) (S Z)) (S Z)) I) Z) O) ((Refl Nat) (S (S Z))))
-                                                                                O => ((((((((TB Z) (S Z)) Z) Z) O) (S Z)) I) ((Refl Nat) (S Z)))
-                                                                              O => case _pv5 of
-                                                                                I => ((((((((TB Z) Z) (S Z)) Z) O) (S Z)) I) ((Refl Nat) (S Z)))
-                                                                                O => ((((((((TB Z) Z) Z) Z) O) Z) O) ((Refl Nat) Z))
-                                                                          in let add' = \_pv0. \_pv1. \_pv2. \_pv3. \_pv4. \_pv5. \_pv6.
-                                                                            case _pv5 of
-                                                                              N => case _pv6 of
-                                                                                N => (((((C Z) _pv1) _pv4) Z) N)
+                              _ _pv3 _pv4 _pv5 _pv6 => _pv5
+                            in let snd = \_pv0. \_pv1. \_pv2.
+                              case _pv2 of
+                                _ _pv3 _pv4 _pv5 _pv6 => _pv6
+                              in let Either = constructor 2
+                                in let Left = constructor 3
+                                  in let Right = constructor 3
+                                    in let id = \a. \x. x
+                                      in let Fin = constructor 1
+                                        in let FZ = constructor 1
+                                          in let FS = constructor 2
+                                            in let Vect = constructor 2
+                                              in let VN = constructor 1
+                                                in let VC = constructor 4
+                                                  in let Id = constructor 3
+                                                    in let Refl = constructor 2
+                                                      in let subst = \_pv0. \_pv1. \_pv2. \_pv3. \_pv4.
+                                                        \z. z
+                                                        in let Bit = constructor 1
+                                                          in let I = constructor 0
+                                                            in let O = constructor 0
+                                                              in let double = \_pv0.
+                                                                case _pv0 of
+                                                                  S _pv1 => (S (S (double _pv1)))
+                                                                  Z => Z
+                                                                in let Bin = constructor 2
+                                                                  in let N = constructor 0
+                                                                    in let C = constructor 5
+                                                                      in let TwoBits = constructor 3
+                                                                        in let TB = constructor 8
+                                                                          in let adb = \_pv0. \_pv1. \_pv2. \_pv3. \_pv4. \_pv5.
+                                                                            case _pv3 of
+                                                                              I => case _pv4 of
+                                                                                I => case _pv5 of
+                                                                                  I => ((((((((TB (S Z)) (S Z)) (S Z)) (S Z)) I) (S Z)) I) ((Refl Nat) (S (S (S Z)))))
+                                                                                  O => ((((((((TB (S Z)) (S Z)) Z) (S Z)) I) Z) O) ((Refl Nat) (S (S Z))))
+                                                                                O => case _pv5 of
+                                                                                  I => ((((((((TB (S Z)) Z) (S Z)) (S Z)) I) Z) O) ((Refl Nat) (S (S Z))))
+                                                                                  O => ((((((((TB (S Z)) Z) Z) Z) O) (S Z)) I) ((Refl Nat) (S Z)))
+                                                                              O => case _pv4 of
+                                                                                I => case _pv5 of
+                                                                                  I => ((((((((TB Z) (S Z)) (S Z)) (S Z)) I) Z) O) ((Refl Nat) (S (S Z))))
+                                                                                  O => ((((((((TB Z) (S Z)) Z) Z) O) (S Z)) I) ((Refl Nat) (S Z)))
+                                                                                O => case _pv5 of
+                                                                                  I => ((((((((TB Z) Z) (S Z)) Z) O) (S Z)) I) ((Refl Nat) (S Z)))
+                                                                                  O => ((((((((TB Z) Z) Z) Z) O) Z) O) ((Refl Nat) Z))
+                                                                            in let add' = \_pv0. \_pv1. \_pv2. \_pv3. \_pv4. \_pv5. \_pv6.
+                                                                              case _pv5 of
+                                                                                N => case _pv6 of
+                                                                                  N => (((((C Z) _pv1) _pv4) Z) N)
+                                                                                  _ => case _pv0 of
+                                                                                    _ _pv7 => case _pv5 of
+                                                                                      C _pv8 _pv9 _pv10 _pv11 _pv12 => case _pv6 of
+                                                                                        C _pv13 _pv14 _pv15 _pv16 _pv17 => let f = \_pv18.
+                                                                                          case _pv18 of
+                                                                                            _ _pv19 _pv20 _pv21 _pv22 _pv23 _pv24 _pv25 _pv26 => let eq = constructor 0
+                                                                                              in ((((((subst Nat) (Bin (S (S _pv7)))) ((plus _pv24) (double ((plus _pv22) ((plus _pv11) _pv16))))) ((plus _pv1) ((plus ((plus _pv9) (double _pv11))) ((plus _pv14) (double _pv16))))) eq) (((((C (S _pv7)) _pv24) _pv25) ((plus _pv22) ((plus _pv11) _pv16))) (((((((add' _pv7) _pv22) _pv11) _pv16) _pv23) _pv12) _pv17)))
+                                                                                          in (f ((((((adb _pv1) _pv9) _pv14) _pv4) _pv10) _pv15))
                                                                                 _ => case _pv0 of
                                                                                   _ _pv7 => case _pv5 of
                                                                                     C _pv8 _pv9 _pv10 _pv11 _pv12 => case _pv6 of
@@ -77,33 +89,25 @@ let Nat = constructor 0
                                                                                           _ _pv19 _pv20 _pv21 _pv22 _pv23 _pv24 _pv25 _pv26 => let eq = constructor 0
                                                                                             in ((((((subst Nat) (Bin (S (S _pv7)))) ((plus _pv24) (double ((plus _pv22) ((plus _pv11) _pv16))))) ((plus _pv1) ((plus ((plus _pv9) (double _pv11))) ((plus _pv14) (double _pv16))))) eq) (((((C (S _pv7)) _pv24) _pv25) ((plus _pv22) ((plus _pv11) _pv16))) (((((((add' _pv7) _pv22) _pv11) _pv16) _pv23) _pv12) _pv17)))
                                                                                         in (f ((((((adb _pv1) _pv9) _pv14) _pv4) _pv10) _pv15))
-                                                                              _ => case _pv0 of
-                                                                                _ _pv7 => case _pv5 of
-                                                                                  C _pv8 _pv9 _pv10 _pv11 _pv12 => case _pv6 of
-                                                                                    C _pv13 _pv14 _pv15 _pv16 _pv17 => let f = \_pv18.
-                                                                                      case _pv18 of
-                                                                                        _ _pv19 _pv20 _pv21 _pv22 _pv23 _pv24 _pv25 _pv26 => let eq = constructor 0
-                                                                                          in ((((((subst Nat) (Bin (S (S _pv7)))) ((plus _pv24) (double ((plus _pv22) ((plus _pv11) _pv16))))) ((plus _pv1) ((plus ((plus _pv9) (double _pv11))) ((plus _pv14) (double _pv16))))) eq) (((((C (S _pv7)) _pv24) _pv25) ((plus _pv22) ((plus _pv11) _pv16))) (((((((add' _pv7) _pv22) _pv11) _pv16) _pv23) _pv12) _pv17)))
-                                                                                      in (f ((((((adb _pv1) _pv9) _pv14) _pv4) _pv10) _pv15))
-                                                                            in let add = \w. \x. \y. \bx. \by. (((((((add' w) Z) x) y) O) bx) by)
-                                                                              in let inputSize = foreign "(rts-arg-peano 'Z 'S 0)"
-                                                                                in let binVal = \_pv0. \_pv1.
-                                                                                  case _pv1 of
-                                                                                    Z => Z
-                                                                                    _ => case _pv0 of
-                                                                                      False => case _pv1 of
-                                                                                        S _pv2 => (double ((binVal True) _pv2))
-                                                                                      True => case _pv1 of
-                                                                                        S _pv2 => (S (double ((binVal False) _pv2)))
-                                                                                  in let mkBin = \_pv0. \_pv1.
+                                                                              in let add = \w. \x. \y. \bx. \by. (((((((add' w) Z) x) y) O) bx) by)
+                                                                                in let inputSize = foreign "(rts-arg-peano 'Z 'S 0)"
+                                                                                  in let binVal = \_pv0. \_pv1.
                                                                                     case _pv1 of
-                                                                                      Z => N
+                                                                                      Z => Z
                                                                                       _ => case _pv0 of
                                                                                         False => case _pv1 of
-                                                                                          S _pv2 => (((((C _pv2) Z) O) ((binVal True) _pv2)) ((mkBin True) _pv2))
+                                                                                          S _pv2 => (double ((binVal True) _pv2))
                                                                                         True => case _pv1 of
-                                                                                          S _pv2 => (((((C _pv2) (S Z)) I) ((binVal False) _pv2)) ((mkBin False) _pv2))
-                                                                                    in let main = let x = ((mkBin True) inputSize)
-                                                                                      in let y = ((mkBin False) inputSize)
-                                                                                        in (((((add inputSize) ((binVal True) inputSize)) ((binVal False) inputSize)) x) y)
-                                                                                      in main
+                                                                                          S _pv2 => (S (double ((binVal False) _pv2)))
+                                                                                    in let mkBin = \_pv0. \_pv1.
+                                                                                      case _pv1 of
+                                                                                        Z => N
+                                                                                        _ => case _pv0 of
+                                                                                          False => case _pv1 of
+                                                                                            S _pv2 => (((((C _pv2) Z) O) ((binVal True) _pv2)) ((mkBin True) _pv2))
+                                                                                          True => case _pv1 of
+                                                                                            S _pv2 => (((((C _pv2) (S Z)) I) ((binVal False) _pv2)) ((mkBin False) _pv2))
+                                                                                      in let main = let x = ((mkBin True) inputSize)
+                                                                                        in let y = ((mkBin False) inputSize)
+                                                                                          in (((((add inputSize) ((binVal True) inputSize)) ((binVal False) inputSize)) x) y)
+                                                                                        in main
