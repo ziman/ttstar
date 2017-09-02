@@ -8,6 +8,12 @@ plus : Nat -> Nat -> Nat.
   (m : Nat) (n : Nat)
     plus (S m) n = S (plus m n).
 
+times : Nat -> Nat -> Nat.
+  (n : Nat)
+    times Z n = Z,
+  (m : Nat) (n : Nat)
+    times (S m) n = plus n (times m n).
+
 data Bool : Type where
   True : Bool,
   False : Bool.
