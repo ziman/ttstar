@@ -12,6 +12,14 @@ data B : Type where
 f \(g : (a :E: Type) -> (x :E: a) -> (y :R: a) -> a) : B
   = g B T F.
 
+-- forcing this to be :R: will break erasure inference
+--
+-- this is because proof is not mentioned anywhere
+-- a solution would be adding constraints of any def ahead of time,
+-- cond-ed on the r, which would simplify things because we would not
+-- have to remember constraints in environments (disregarding epolymorph)
+--
+-- however, we need to keep the constraints for epolymorph
 proof \: Id B (f constL) T
   = Refl B T.
 
