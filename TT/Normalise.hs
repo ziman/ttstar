@@ -46,7 +46,7 @@ dbg _ x = x
 
 type IsRelevance r = (PrettyR r, Eq r, Ord r)
 
-newtype CM r = CM (Constrs r)
+newtype CM r = CM { runCM :: Constrs r }
 instance Ord r => Monoid (CM r) where
     mempty = CM M.empty
     mappend (CM l) (CM r) = CM $ M.unionWith S.union l r
@@ -97,6 +97,9 @@ runRM rm = (x, cs)
 
 tellRM :: Constrs r -> RM r ()
 tellRM  = tell . CM
+
+under :: Ord r => r -> RM r a -> RM r a
+under r = censor (CM . cond r . runCM)
 
 redDef :: Form -> Red Def
 redDef form ctx (Def n r ty body cs) = Def n r <$> red form ctx ty <*> redBody form ctx body <*> pure cs
@@ -206,7 +209,7 @@ red form ctx t@(App r f x) = bt ("APP", f, x) $ do
             -> red form ctx $ mkApp (V fn) args
 
             -- pattern-matching definitions
-            | (V fn, args) <- unApply t
+            | (V fn, _args) <- unApply t
             , Just (defBody -> Clauses cs) <- M.lookup fn ctx
             , Yes (rhs, cs) <- firstMatch $ map (matchClause ctx fn t) cs
             -> tellRM cs >> red form ctx rhs
@@ -216,19 +219,19 @@ red form ctx t@(App r f x) = bt ("APP", f, x) $ do
             -> App r redF <$> redX  -- not a redex
   where
     redX = case form of
-        NF   -> red NF ctx x
+        NF   -> under r $ red NF ctx x
         WHNF -> pure x
 
 -- This function takes a disassembled pattern and a term application
 -- and tries to match them up, while ensuring that there are at least
 -- as many terms as there are patterns. Any superfluous terms are returned.
 matchUp :: [(r, Pat r)] -> [(r, TT r)]
-    -> Match ([(Pat r, TT r)], [(r, TT r)])
+    -> Match ([(r, Pat r, r, TT r)], [(r, TT r)])
 
-matchUp ((_pr, pat):ps) ((_tr, tm):ts)
+matchUp ((pr, pat):ps) ((tr, tm):ts)
     = do
         (pts, rest) <- matchUp ps ts
-        return ((pat,tm):pts, rest)
+        return ((pr, pat, tr, tm):pts, rest)
 
 matchUp [] ts = Yes ([], ts)
 
@@ -249,9 +252,10 @@ matchClause ctx fn tm (Clause pvs lhs rhs) = bt' ("MATCH-CLAUSE", lhs, tm) $ do
 
     -- get the matching substitution
     pvSubstCs <- sequence [
-        let (redTm, cs) = runRM $ red WHNF ctx tm
-          in addCs cs $ match pvs' ctx pat redTm
-        | (pat, tm) <- pts
+        let (redTm, cs) = runRM . under tr $ red WHNF ctx tm
+            cs' = cs /\ (pr <-> tr)
+          in addCs cs' $ match pvs' ctx pat redTm
+        | (pr, pat, tr, tm) <- pts
       ]
     let pvSubst = M.unionsWith (\_ _ -> error "nonlinear pattern") $ map fst pvSubstCs
 
@@ -302,6 +306,9 @@ r1 <-> r2 = (r1 --> r2) /\ (r2 --> r1)
 
 (-->) :: r -> r -> Constrs r
 r1 --> r2 = M.singleton (S.singleton r1) (S.singleton r2)
+
+cond :: Ord r => r -> Constrs r -> Constrs r
+cond r = M.mapKeysWith S.union (S.insert r)
 
 addCs :: Ord r => Constrs r -> Match (a, Constrs r) -> Match (a, Constrs r)
 addCs cs = fmap $ \(x, cs') -> (x, cs /\ cs')
