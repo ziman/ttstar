@@ -1,4 +1,5 @@
 -- vim: ft=ttstar
-let Refl = constructor 0
-  in let main = Refl
-    in main
+let F = constructor 0
+  in let f = \g. (g F)
+    in let main = (f \x. x)
+      in main

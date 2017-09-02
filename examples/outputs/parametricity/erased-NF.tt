@@ -1,4 +1,4 @@
 -- vim: ft=ttstar
 
-  let constructor Refl : Id
-  in Refl
+  let constructor F : B
+  in F

@@ -1,6 +1,7 @@
 -- vim: ft=ttstar
 
   let
-    constructor Refl : Id
-    main = Refl
+    constructor F : B
+    f = (\g. g F)
+    main = f (\x. x)
   in main

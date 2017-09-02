@@ -5,12 +5,14 @@
   let
     constructor Id : (a : Type) -> (x : a) -> (y : a) -> Type
     constructor Refl : (a : Type) -> (x : a) -> Id a x x
-    const : (a : Type) -> (x : a) -> (y : a) -> a = (\a : Type. (\x : a. (\y : a. x)))
+    constL : (a : Type) -> (x : a) -> (y : a) -> a = (\a : Type. (\x : a. (\y : a. x)))
+    constR : (a : Type) -> (x : a) -> (y : a) -> a = (\a : Type. (\x : a. (\y : a. y)))
     constructor B : Type
     constructor T : B
     constructor F : B
-    f : (g : (a : Type) -> (x :E: a) -> (y :R: a) -> a) -> B = (\g : (a : Type) -> (x :E: a) -> (y :R: a) -> a. g B T F)
-    main : Id B (f const) T = Refl B T
+    f : (g : (a :E: Type) -> (x :E: a) -> (y :R: a) -> a) -> B = (\g : (a :E: Type) -> (x :E: a) -> (y :R: a) -> a. g B T F)
+    proof : Id B (f constL) T = Refl B T
+    main : B = f constR
   in main
 
 ### Evarified ###
@@ -18,70 +20,75 @@
   let
     constructor Id :1: (a :2: Type) -> (x :3: a) -> (y :4: a) -> Type
     constructor Refl :5: (a :6: Type) -> (x :7: a) -> Id -10- a -9- x -8- x
-    const :11: (a :12: Type) -> (x :13: a) -> (y :14: a) -> a = (\a :15: Type. (\x :16: a. (\y :17: a. x)))
-    constructor B :18: Type
-    constructor T :19: B
-    constructor F :20: B
-    f :21: (g :22: (a :23: Type) -> (x :E: a) -> (y :R: a) -> a) -> B = (\g :24: (a :25: Type) -> (x :E: a) -> (y :R: a) -> a. g -28- B -27- T -26- F)
-    main :29: Id -32- B -31- (f -33- const) -30- T = Refl -35- B -34- T
+    constL :11: (a :12: Type) -> (x :13: a) -> (y :14: a) -> a = (\a :15: Type. (\x :16: a. (\y :17: a. x)))
+    constR :18: (a :19: Type) -> (x :20: a) -> (y :21: a) -> a = (\a :22: Type. (\x :23: a. (\y :24: a. y)))
+    constructor B :25: Type
+    constructor T :26: B
+    constructor F :27: B
+    f :28: (g :29: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a) -> B = (\g :30: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a. g -33- B -32- T -31- F)
+    proof :34: Id -37- B -36- (f -38- constL) -35- T = Refl -40- B -39- T
+    main :41: B = f -42- constR
   in main
 
 ### Constraints ###
 
-[] -> [5,R]
-[6] -> [35]
-[7] -> [34]
-[8] -> [30]
-[9] -> [31]
-[10] -> [32]
-[30] -> [8]
-[31] -> [9]
-[32] -> [10]
-[34] -> [7,19]
-[35] -> [6,18]
-[R] -> [29]
+[] -> [18,21,24,27,28,29,30,31,42,R]
+[19] -> [22,E]
+[20] -> [23,E]
+[22] -> [19]
+[23] -> [20]
+[32] -> [26,E]
+[33] -> [25,E]
+[E] -> [19,20,32,33,E]
+[R] -> [41]
 
 ### Solution ###
 
-[5,29,R]
+[18,21,24,27,28,29,30,31,41,42,R]
 
 ### Annotated ###
 
   let
     constructor Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
-    constructor Refl :R: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
-    const :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> a = (\a :E: Type. (\x :E: a. (\y :E: a. x)))
+    constructor Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+    constL :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> a = (\a :E: Type. (\x :E: a. (\y :E: a. x)))
+    constR :R: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a = (\a :E: Type. (\x :E: a. (\y :R: a. y)))
     constructor B :E: Type
     constructor T :E: B
-    constructor F :E: B
-    f :E: (g :E: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a) -> B = (\g :E: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a. g -E- B -E- T -E- F)
-    main :R: Id -E- B -E- (f -E- const) -E- T = Refl -E- B -E- T
+    constructor F :R: B
+    f :R: (g :R: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a) -> B = (\g :R: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a. g -E- B -E- T -R- F)
+    proof :E: Id -E- B -E- (f -E- constL) -E- T = Refl -E- B -E- T
+    main :R: B = f -R- constR
   in main
 
 ### Specialised ###
 
   let
     constructor Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
-    constructor Refl :R: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
-    const :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> a = (\a :E: Type. (\x :E: a. (\y :E: a. x)))
+    constructor Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+    constL :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> a = (\a :E: Type. (\x :E: a. (\y :E: a. x)))
+    constR :R: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a = (\a :E: Type. (\x :E: a. (\y :R: a. y)))
     constructor B :E: Type
     constructor T :E: B
-    constructor F :E: B
-    f :E: (g :E: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a) -> B = (\g :E: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a. g -E- B -E- T -E- F)
-    main :R: Id -E- B -E- (f -E- const) -E- T = Refl -E- B -E- T
+    constructor F :R: B
+    f :R: (g :R: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a) -> B = (\g :R: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a. g -E- B -E- T -R- F)
+    proof :E: Id -E- B -E- (f -E- constL) -E- T = Refl -E- B -E- T
+    main :R: B = f -R- constR
   in main
 
 ### Final annotation ###
 
   let
     constructor Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
-    constructor Refl :R: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
-    const :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> a = (\a :E: Type. (\x :E: a. (\y :E: a. x)))
+    constructor Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
+    constL :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> a = (\a :E: Type. (\x :E: a. (\y :E: a. x)))
+    constR :R: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a = (\a :E: Type. (\x :E: a. (\y :R: a. y)))
     constructor B :E: Type
     constructor T :E: B
-    constructor F :E: B
-    f :E: (g :E: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a) -> B = (\g :E: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a. g -E- B -E- T -E- F)
-    main :R: Id -E- B -E- (f -E- const) -E- T = Refl -E- B -E- T
+    constructor F :R: B
+    f :R: (g :R: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a) -> B = (\g :R: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a. g -E- B -E- T -R- F)
+    proof :E: Id -E- B -E- (f -E- constL) -E- T = Refl -E- B -E- T
+    main :R: B = f -R- constR
   in main
 
 ### Verification ###
@@ -91,29 +98,31 @@ Verification successful.
 ### Pruned ###
 
   let
-    constructor Refl : Id
-    main = Refl
+    constR = (\y. y)
+    constructor F : B
+    f = (\g. g F)
+    main = f constR
   in main
 
 ### Intermediate representation ###
 
-let Refl = constructor 0
-  in let main = Refl
-    in main
+let constR = \y. y
+  in let F = constructor 0
+    in let f = \g. (g F)
+      in let main = (f constR)
+        in main
 
 ### Normal forms ###
 
 unerased:
   
   let
-    constructor Id : (a : Type) -> (x : a) -> (y : a) -> Type
-    constructor Refl : (a : Type) -> (x : a) -> Id a x x
     constructor B : Type
-    constructor T : B
-  in Refl B T
+    constructor F : B
+  in F
 
 erased:
   
-  let constructor Refl : Id
-  in Refl
+  let constructor F : B
+  in F
 

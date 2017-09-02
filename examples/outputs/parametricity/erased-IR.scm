@@ -45,7 +45,10 @@
 
 (display 
   (letrec* (
-    (Refl `(Refl))
-    (main Refl)
+    (F `(F))
+    (f (lambda (g)
+      (g F)))
+    (main (f (lambda (x)
+      x)))
   ) main))
 (newline)

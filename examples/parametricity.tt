@@ -1,13 +1,18 @@
 data Id : (a : Type) -> (x : a) -> (y : a) -> Type where
   Refl : (a : Type) -> (x : a) -> Id a x x.
 
-const \(a : Type) (x : a) (y : a) : a = x.
+constL \(a : Type) (x : a) (y : a) : a = x.
+
+constR \(a : Type) (x : a) (y : a) : a = y.
 
 data B : Type where
   T : B,
   F : B.
 
-f \(g : (a : Type) -> (x :E: a) -> (y :R: a) -> a) : B
+f \(g : (a :E: Type) -> (x :E: a) -> (y :R: a) -> a) : B
   = g B T F.
 
-main \: Id B (f const) T = Refl B T.
+proof \: Id B (f constL) T
+  = Refl B T.
+
+main \: B = f constR.

@@ -5,7 +5,10 @@
 (define (rts-arg-read i) (read (open-input-string (list-ref (command-line-arguments) i))))
 (print
   (letrec* (
-    (Refl `(Refl))
-    (main Refl)
+    (F `(F))
+    (f (lambda (g)
+      (g F)))
+    (main (f (lambda (x)
+      x)))
   )
     main))
