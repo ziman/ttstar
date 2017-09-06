@@ -243,67 +243,44 @@ match pvs ctx pat tm = matchWHNF pvs ctx pat (red WHNF ctx tm)
 
 -- this function expects the term in WHNF
 matchWHNF :: IsRelevance r => Ctx r -> Ctx r -> Pat r -> TT r -> Match (M.Map Name (TT r))
-matchWHNF pvs ctx (PV n) (V n')
-    | n == n'
-    , Just (defBody -> Abstract Constructor) <- M.lookup n ctx
-    = Yes M.empty
 
-matchWHNF pvs ctx (PV n) (V n')
-    | n /= n'
-    , Just (defBody -> Abstract Constructor) <- M.lookup n ctx
+matchWHNF pvs ctx pat tm
+    | (V n', args') <- unApply tm
     , Just (defBody -> Abstract Constructor) <- M.lookup n' ctx
-    = No
-
--- constructor vs. application
--- definitely no match (in well-typed programs)
-matchWHNF pvs ctx (isHN ctx -> True) rhs@(App _ _ _)
-    | (isHN ctx -> True, _args) <- unApply rhs
-    = No
-
--- ...and the other way around
-matchWHNF pvs ctx lhs@(PApp _ _ _) (V n')
-    | (isHN ctx -> True, _args) <- unApplyPat lhs
-    = No
-
-matchWHNF pvs ctx (PApp r (PForced tm) x) (App r' f' x')
-    | (V n,_) <- unApply $ red WHNF ctx tm
-    , n /= Blank
-    , (defBody <$> M.lookup n ctx) /= Just (Abstract Constructor)
-    = error "forced pattern not constructor-headed"
-
-    | (V n,_) <- unApply $ red WHNF ctx f'
+    , (PV n, args) <- unApplyPat pat
     , Just (defBody -> Abstract Constructor) <- M.lookup n ctx
-    = match pvs ctx x x'  -- LHSs of the applications are constructor-headed
+    , n /= n'
+    = No
 
-    | otherwise = Stuck
+matchWHNF pvs ctx pat tm
+    | (V n', args') <- unApply tm
+    , Just (defBody -> Abstract Constructor) <- M.lookup n' ctx
+    , (PV n, args) <- unApplyPat pat
+    , Just (defBody -> Abstract Constructor) <- M.lookup n ctx
+    , n == n'
+    , length args == length args'
+    = M.unionsWith (\_ _ -> error "non-linear pattern")
+        <$> sequence [match pvs ctx x x' | ((_r, x), (_r', x')) <- zip args args']
 
-matchWHNF pvs ctx lhs@(PApp r f x) rhs@(App r' f' x')
-    | (hd@(isHN ctx -> True), args) <- unApplyPat lhs
-    , (hd'@(isHN ctx -> True), args') <- unApply rhs
-    = if matchH hd hd'
-        then M.unionsWith (\_ _ -> error "non-linear pattern")
-                <$> sequence [match pvs ctx x x' | ((_r, x), (_r', x')) <- zip args args']
-        else No
+matchWHNF pvs ctx pat tm
+    | (V n', args') <- unApply tm
+    , Just (defBody -> Abstract Constructor) <- M.lookup n' ctx
+    , (PForced (V n), args) <- unApplyPat pat
+    , Just (defBody -> Abstract Constructor) <- M.lookup n ctx
+    , length args == length args'
+    = M.unionsWith (\_ _ -> error "non-linear pattern")
+        <$> sequence [match pvs ctx x x' | ((_r, x), (_r', x')) <- zip args args']
+
+-- not in dissertation
+matchWHNF pvs ctx pat tm
+    | (V n', args') <- unApply tm
+    , Just (defBody -> Abstract Constructor) <- M.lookup n' ctx
+    , (PForced (V Blank), args) <- unApplyPat pat
+    , length args == length args'
+    = M.unionsWith (\_ _ -> error "non-linear pattern")
+        <$> sequence [match pvs ctx x x' | ((_r, x), (_r', x')) <- zip args args']
 
 matchWHNF _ _ _ _ = Stuck
-
-class IsHeadNormal f where
-    isHN :: IsRelevance r => Ctx r -> f r -> Bool
-
-instance IsHeadNormal TT where
-    isHN ctx (V n) | Just (defBody -> Abstract Constructor) <- M.lookup n ctx = True
-    isHN ctx _ = False
-
-instance IsHeadNormal Pat where
-    isHN ctx (PV n) | Just (defBody -> Abstract Constructor) <- M.lookup n ctx = True
-    isHN ctx (PForced _) = True
-    isHN ctx _ = False
-
--- we assume that isHN returns true on both args
-matchH :: IsRelevance r => Pat r -> TT r -> Bool
-matchH (PForced _) (V n') = True
-matchH (PV n) (V n') = n == n'
-matchH pat tm = error $ "matchH: unsuported combo: " ++ show (pat, tm)
 
 firstMatch :: Alternative f => [f a] -> f a
 firstMatch = foldr (<|>) empty
