@@ -248,6 +248,23 @@ matchWHNF pvs ctx (PV n) (V n')
     , Just (defBody -> Abstract Constructor) <- M.lookup n ctx
     = Yes M.empty
 
+matchWHNF pvs ctx (PV n) (V n')
+    | n /= n'
+    , Just (defBody -> Abstract Constructor) <- M.lookup n ctx
+    , Just (defBody -> Abstract Constructor) <- M.lookup n' ctx
+    = No
+
+-- constructor vs. application
+-- definitely no match (in well-typed programs)
+matchWHNF pvs ctx (PV n) (App _ _ _)
+    | Just (defBody -> Abstract Constructor) <- M.lookup n ctx
+    = No
+
+-- ...and the other way around
+matchWHNF pvs ctx (PApp _ _ _) (V n)
+    | Just (defBody -> Abstract Constructor) <- M.lookup n ctx
+    = No
+
 matchWHNF pvs ctx (PApp r (PForced tm) x) (App r' f' x')
     | (V n,_) <- unApply $ red WHNF ctx tm
     , n /= Blank
@@ -265,15 +282,7 @@ matchWHNF pvs ctx (PApp r f x) (App r' f' x')
         <$> match pvs ctx f f'
         <*> match pvs ctx x x'
 
-matchWHNF pvs ctx pat (V n)
-    | Just d <- M.lookup n ctx
-    = case defBody d of
-        Abstract Var -> Stuck  -- variables may or may not match as we learn what they are
-        Abstract (Foreign _) -> Stuck  -- foreigns are variables, really
-        Abstract Postulate -> Stuck    -- postulates too
-        _ -> No
-
-matchWHNF _ _ _ _ = No
+matchWHNF _ _ _ _ = Stuck
 
 firstMatch :: Alternative f => [f a] -> f a
 firstMatch = foldr (<|>) empty
