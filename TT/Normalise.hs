@@ -207,7 +207,8 @@ matchClause ctx fn tm (Clause pvs lhs rhs) = do
 
     -- get the matching substitution
     pvSubst <- M.unionsWith (\_ _ -> error "nonlinear pattern")
-        <$> sequence [match pvs' ctx p $ red WHNF ctx tm | (p,tm) <- pts]
+        <$> sequence [match pvs' ctx p tm | (p,tm) <- pts]
+        -- todo: use `matches` above
 
     -- substitute in RHS, and then tack on the superfluous terms
     return $
@@ -227,6 +228,11 @@ safeSubst (d:ds) (t:ts) rhs
     (ds', rhs') = substBinder (defName d) t ds rhs
 safeSubst _ _ rhs = error $ "safeSubst: defs vs. terms do not match up"
 
+matches :: IsRelevance r => Ctx r -> Ctx r -> [(r, Pat r)] -> [(r, TT r)] -> Match (M.Map Name (TT r))
+matches pvs ctx pats terms
+    = M.unionsWith (\_ _ -> error "non-linear pattern")
+        <$> sequence [match pvs ctx x x' | ((_r, x), (_r', x')) <- zip pats terms]
+
 -- this function expects the term in any form, even unreduced
 match :: IsRelevance r => Ctx r -> Ctx r -> Pat r -> TT r -> Match (M.Map Name (TT r))
 match pvs ctx (PV Blank) tm'
@@ -245,6 +251,8 @@ match pvs ctx pat tm = matchWHNF pvs ctx pat (red WHNF ctx tm)
 matchWHNF :: IsRelevance r => Ctx r -> Ctx r -> Pat r -> TT r -> Match (M.Map Name (TT r))
 
 matchWHNF pvs ctx pat tm
+
+    -- head mismatch
     | (V n', args') <- unApply tm
     , Just (defBody -> Abstract Constructor) <- M.lookup n' ctx
     , (PV n, args) <- unApplyPat pat
@@ -252,33 +260,29 @@ matchWHNF pvs ctx pat tm
     , n /= n'
     = No
 
-matchWHNF pvs ctx pat tm
+    -- arg mismatch: ctor head
     | (V n', args') <- unApply tm
     , Just (defBody -> Abstract Constructor) <- M.lookup n' ctx
     , (PV n, args) <- unApplyPat pat
     , Just (defBody -> Abstract Constructor) <- M.lookup n ctx
     , n == n'
     , length args == length args'
-    = M.unionsWith (\_ _ -> error "non-linear pattern")
-        <$> sequence [match pvs ctx x x' | ((_r, x), (_r', x')) <- zip args args']
+    = matches pvs ctx args args'
 
-matchWHNF pvs ctx pat tm
+    -- arg mismatch: forced head
     | (V n', args') <- unApply tm
     , Just (defBody -> Abstract Constructor) <- M.lookup n' ctx
     , (PForced (V n), args) <- unApplyPat pat
-    , Just (defBody -> Abstract Constructor) <- M.lookup n ctx
     , length args == length args'
-    = M.unionsWith (\_ _ -> error "non-linear pattern")
-        <$> sequence [match pvs ctx x x' | ((_r, x), (_r', x')) <- zip args args']
+    = case n of
+        Blank
+            -> matches pvs ctx args args'
 
--- not in dissertation
-matchWHNF pvs ctx pat tm
-    | (V n', args') <- unApply tm
-    , Just (defBody -> Abstract Constructor) <- M.lookup n' ctx
-    , (PForced (V Blank), args) <- unApplyPat pat
-    , length args == length args'
-    = M.unionsWith (\_ _ -> error "non-linear pattern")
-        <$> sequence [match pvs ctx x x' | ((_r, x), (_r', x')) <- zip args args']
+        _   | Just (defBody -> Abstract Constructor) <- M.lookup n ctx
+            -> matches pvs ctx args args'  -- good, it's a constructor
+
+            | otherwise
+            -> error $ "matchWHNF: not a constructor: " ++ show pat
 
 matchWHNF _ _ _ _ = Stuck
 
