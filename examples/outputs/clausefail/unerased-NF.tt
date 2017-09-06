@@ -1,12 +1,6 @@
 -- vim: ft=ttstar
 
   let
-    constructor N : Type
-    constructor S : (_x0) -> N
     constructor B : Type
-    constructor T : B
     constructor F : B
-    isSuc 
-      [_] (S n) = T
-      [_] n = F
-  in (\x. isSuc x)
+  in (\x. F)

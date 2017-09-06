@@ -132,16 +132,9 @@ unerased:
   
   let
     constructor N : Type
-    constructor S : (_x0 : N) -> N
     constructor B : Type
-    constructor T : B
     constructor F : B
-    isSuc : (_x1 : N) -> B 
-      n : N
-        [isSuc] (S n) = T
-      n : N
-        [isSuc] n = F
-  in (\x : N. isSuc x)
+  in (\x : N. F)
 
 erased:
   

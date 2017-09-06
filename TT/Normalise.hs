@@ -256,17 +256,13 @@ matchWHNF pvs ctx (PV n) (V n')
 
 -- constructor vs. application
 -- definitely no match (in well-typed programs)
-matchWHNF pvs ctx (PV n) rhs@(App _ _ _)
-    | (V n', _args) <- unApply rhs
-    , Just (defBody -> Abstract Constructor) <- M.lookup n ctx
-    , Just (defBody -> Abstract Constructor) <- M.lookup n' ctx
+matchWHNF pvs ctx (isHN ctx -> True) rhs@(App _ _ _)
+    | (isHN ctx -> True, _args) <- unApply rhs
     = No
 
 -- ...and the other way around
 matchWHNF pvs ctx lhs@(PApp _ _ _) (V n')
-    | (PV n, _args) <- unApplyPat lhs
-    , Just (defBody -> Abstract Constructor) <- M.lookup n ctx
-    , Just (defBody -> Abstract Constructor) <- M.lookup n' ctx
+    | (isHN ctx -> True, _args) <- unApplyPat lhs
     = No
 
 matchWHNF pvs ctx (PApp r (PForced tm) x) (App r' f' x')
@@ -281,12 +277,33 @@ matchWHNF pvs ctx (PApp r (PForced tm) x) (App r' f' x')
 
     | otherwise = Stuck
 
-matchWHNF pvs ctx (PApp r f x) (App r' f' x')
-    = M.unionWith (\_ _ -> error "non-linear pattern")
-        <$> match pvs ctx f f'
-        <*> match pvs ctx x x'
+matchWHNF pvs ctx lhs@(PApp r f x) rhs@(App r' f' x')
+    | (hd@(isHN ctx -> True), args) <- unApplyPat lhs
+    , (hd'@(isHN ctx -> True), args') <- unApply rhs
+    = if matchH hd hd'
+        then M.unionsWith (\_ _ -> error "non-linear pattern")
+                <$> sequence [match pvs ctx x x' | ((_r, x), (_r', x')) <- zip args args']
+        else No
 
 matchWHNF _ _ _ _ = Stuck
+
+class IsHeadNormal f where
+    isHN :: IsRelevance r => Ctx r -> f r -> Bool
+
+instance IsHeadNormal TT where
+    isHN ctx (V n) | Just (defBody -> Abstract Constructor) <- M.lookup n ctx = True
+    isHN ctx _ = False
+
+instance IsHeadNormal Pat where
+    isHN ctx (PV n) | Just (defBody -> Abstract Constructor) <- M.lookup n ctx = True
+    isHN ctx (PForced _) = True
+    isHN ctx _ = False
+
+-- we assume that isHN returns true on both args
+matchH :: IsRelevance r => Pat r -> TT r -> Bool
+matchH (PForced _) (V n') = True
+matchH (PV n) (V n') = n == n'
+matchH pat tm = error $ "matchH: unsuported combo: " ++ show (pat, tm)
 
 firstMatch :: Alternative f => [f a] -> f a
 firstMatch = foldr (<|>) empty
