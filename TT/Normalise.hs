@@ -256,13 +256,17 @@ matchWHNF pvs ctx (PV n) (V n')
 
 -- constructor vs. application
 -- definitely no match (in well-typed programs)
-matchWHNF pvs ctx (PV n) (App _ _ _)
-    | Just (defBody -> Abstract Constructor) <- M.lookup n ctx
+matchWHNF pvs ctx (PV n) rhs@(App _ _ _)
+    | (V n', _args) <- unApply rhs
+    , Just (defBody -> Abstract Constructor) <- M.lookup n ctx
+    , Just (defBody -> Abstract Constructor) <- M.lookup n' ctx
     = No
 
 -- ...and the other way around
-matchWHNF pvs ctx (PApp _ _ _) (V n)
-    | Just (defBody -> Abstract Constructor) <- M.lookup n ctx
+matchWHNF pvs ctx lhs@(PApp _ _ _) (V n')
+    | (PV n, _args) <- unApplyPat lhs
+    , Just (defBody -> Abstract Constructor) <- M.lookup n ctx
+    , Just (defBody -> Abstract Constructor) <- M.lookup n' ctx
     = No
 
 matchWHNF pvs ctx (PApp r (PForced tm) x) (App r' f' x')
