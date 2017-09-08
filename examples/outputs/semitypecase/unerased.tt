@@ -1,0 +1,42 @@
+-- vim: ft=ttstar
+
+  let
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (x) -> Nat
+    plus 
+      [_] Z n = n
+      [_] (S m) n = S (plus m n)
+    times 
+      [_] Z n = Z
+      [_] (S m) n = plus n (times m n)
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
+    not 
+      [_] True = False
+      [_] False = True
+    constructor Unit : Type
+    constructor MkUnit : Unit
+    constructor Pair : (_x5) -> (_x6) -> Type
+    constructor MkPair : (a) -> (b) -> (_x7) -> (_x8) -> Pair a b
+    fst 
+      [_] a b ([_] [_] [_] x y) = x
+    snd 
+      [_] a b ([_] [_] [_] x y) = y
+    constructor Either : (_x11) -> (_x12) -> Type
+    constructor Left : (a) -> (b) -> (_x13) -> Either a b
+    constructor Right : (a) -> (b) -> (_x14) -> Either a b
+    id = (\a. (\x. x))
+    constructor Fin : (_x15) -> Type
+    constructor FZ : (n) -> Fin (S n)
+    constructor FS : (n) -> (_x16) -> Fin (S n)
+    constructor Vect : (_x17) -> (_x18) -> Type
+    constructor VN : (a) -> Vect Z a
+    constructor VC : (n) -> (a) -> (x) -> (xs) -> Vect (S n) a
+    f 
+      [_] [_] True = False
+      [_] [_] False = True
+      [_] a x = x
+    main = f Nat Z
+  in main

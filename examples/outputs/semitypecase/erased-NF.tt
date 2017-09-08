@@ -1,0 +1,4 @@
+-- vim: ft=ttstar
+
+  let constructor Z : Nat
+  in Z

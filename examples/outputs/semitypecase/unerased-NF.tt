@@ -1,0 +1,6 @@
+-- vim: ft=ttstar
+
+  let
+    constructor Nat : Type
+    constructor Z : Nat
+  in Z

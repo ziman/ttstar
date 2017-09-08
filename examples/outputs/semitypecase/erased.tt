@@ -1,0 +1,12 @@
+-- vim: ft=ttstar
+
+  let
+    constructor Z : Nat
+    constructor True : Bool
+    constructor False : Bool
+    f 
+      [_] True = False
+      [_] False = True
+      [_] x = x
+    main = f Z
+  in main
