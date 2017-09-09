@@ -1,0 +1,12 @@
+-- vim: ft=ttstar
+
+  let
+    constructor Nat : Type
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
+    f 
+      [_] [_] True = False
+      [_] [_] False = True
+      [_] a x = x
+  in f (_x1) -> Nat (\x. x)

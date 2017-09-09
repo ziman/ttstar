@@ -1,0 +1,10 @@
+-- vim: ft=ttstar
+let True = constructor 0
+  in let False = constructor 0
+    in let f = \_pv0.
+      case _pv0 of
+        False => True
+        True => False
+        _ => _pv0
+      in let main = (f \x. x)
+        in main

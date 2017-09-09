@@ -1,0 +1,21 @@
+
+Error: irTm: cannot translate: (_x1) -> Nat
+
+	Call history:
+
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<eval>	  (display (letrec* ((Nat (quasiquote (Nat))) (Z (quasiquote (Z))) (S (lambda (e0) (quasiquote (S (unq...
+	<eval>	  (##sys#list (##core#quote Nat))
+	<eval>	  (##sys#list (##core#quote Z))
+	<eval>	  (##sys#list (##core#quote Bool))
+	<eval>	  (##sys#list (##core#quote True))
+	<eval>	  (##sys#list (##core#quote False))
+	<eval>	  (##sys#list (##core#quote Unit))
+	<eval>	  (##sys#list (##core#quote MkUnit))
+	<eval>	  ((f (error "irTm: cannot translate: (_x1) -> Nat")) (lambda (x) x))
+	<eval>	  (f (error "irTm: cannot translate: (_x1) -> Nat"))
+	<eval>	  (error "irTm: cannot translate: (_x1) -> Nat")	<--

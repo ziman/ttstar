@@ -1,0 +1,10 @@
+-- vim: ft=ttstar
+
+  let
+    constructor True : Bool
+    constructor False : Bool
+    f 
+      [_] True = False
+      [_] False = True
+      [_] x = x
+  in f (\x. x)

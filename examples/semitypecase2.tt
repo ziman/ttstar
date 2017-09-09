@@ -1,0 +1,9 @@
+import "../stdlib/prelude.tt"
+
+f : (a : Type) -> (x : a) -> a.
+f [Bool] True   = False,
+f [Bool] False  = True,
+(a : Type) (x : a)
+  f a x = x.
+
+main \: (Nat -> Nat) = f (Nat -> Nat) (\x:Nat. x).

@@ -1,0 +1,21 @@
+
+Error: (car) bad argument type: #<procedure (? x)>
+
+	Call history:
+
+	<syntax>	  (lambda (x) x)
+	<syntax>	  (##core#lambda (x) x)
+	<syntax>	  (##core#begin x)
+	<syntax>	  (##core#begin (##core#let () main))
+	<syntax>	  (##core#let () main)
+	<syntax>	  (##core#begin main)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<eval>	  (display (letrec* ((True (quasiquote (True))) (False (quasiquote (False))) (f (lambda (_pv0) (rts-ca...
+	<eval>	  (##sys#list (##core#quote True))
+	<eval>	  (##sys#list (##core#quote False))
+	<eval>	  (f (lambda (x) x))
+	<eval>	  [f] (eq?227 (car223 _pv0) (quote228 False))
+	<eval>	  [f] (car223 _pv0)	<--
