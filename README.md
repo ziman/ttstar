@@ -7,7 +7,7 @@ Dependently typed core calculus with erasure inference.
 ### Erasure
 
 * erasure inference (fills in erasure annotations)
-* separate erasure checker (verifies consistency of erasure annotations)
+* separate erasure checker (verifies consistency of inferred annotations)
 * erasure from higher-order functions
 * complete removal of unused arguments (rather than passing in `NULL`)
 * erasure polymorphism for functions
