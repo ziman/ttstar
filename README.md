@@ -10,6 +10,8 @@ Dependently typed core calculus with erasure inference.
   [erased](https://github.com/ziman/ttstar/blob/master/examples/outputs/bin/erased.tt))
 * RLE ([source](https://github.com/ziman/ttstar/blob/master/examples/rle.tt),
   [erased](https://github.com/ziman/ttstar/blob/master/examples/outputs/rle/erased.tt))
+* Scope-indexed lambda calculus ([source](https://github.com/ziman/ttstar/blob/master/examples/tt.tt),
+  [erased](https://github.com/ziman/ttstar/blob/master/examples/outputs/tt/erased.tt))
 * [Other example programs](https://github.com/ziman/ttstar/tree/master/examples)
   and [their outputs](https://github.com/ziman/ttstar/tree/master/examples/outputs)
 
