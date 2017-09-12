@@ -2,6 +2,17 @@
 
 Dependently typed core calculus with erasure inference.
 
+## Examples from the dissertation
+
+* Palindrome ([source](https://github.com/ziman/ttstar/blob/master/examples/palindrome.tt),
+  [erased](https://github.com/ziman/ttstar/blob/master/examples/outputs/palindrome/erased.tt))
+* Binary adder ([source](https://github.com/ziman/ttstar/blob/master/examples/bin.tt),
+  [erased](https://github.com/ziman/ttstar/blob/master/examples/outputs/bin/erased.tt))
+* RLE ([source](https://github.com/ziman/ttstar/blob/master/examples/rle.tt),
+  [erased](https://github.com/ziman/ttstar/blob/master/examples/outputs/rle/erased.tt))
+* [Other example programs](https://github.com/ziman/ttstar/tree/master/examples)
+  and [their outputs](https://github.com/ziman/ttstar/tree/master/examples/outputs)
+
 ## Features
 
 ### Erasure
