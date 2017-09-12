@@ -67,6 +67,7 @@ Dependently typed core calculus with erasure inference.
 ## Does not feature
 
 * type inference
+* totality checking
 * mutual recursion
 	* a restricted form is easy to achieve using local let bindings
 	* sufficient in all cases I've come across
