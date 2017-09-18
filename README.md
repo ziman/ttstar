@@ -64,6 +64,10 @@ Dependently typed core calculus with erasure inference.
 * `Refl` is always erased
 * `Maybe` sometimes becomes Boolean after erasure
 
+## Not implemented yet
+
+* irrelevance
+
 ## Does not feature
 
 * type inference
