@@ -157,7 +157,16 @@ stringLiteral = (<?> "string literal") $ do
         <|> (kwd "\\\\" *> return '\\')
 
 app :: Parser (TT MRel)
-app = foldl (App Nothing) <$> atomic <*> many atomic <?> "application"
+app = (<?> "application") $ do
+    f <- atomic
+    args <- many appArg
+    return $ mkApp f args
+
+appArg :: Parser (MRel, TT MRel)
+appArg =
+    ((,) <$> pure (Just I) <*> brackets expr)
+    <|> ((,) <$> pure Nothing <*> atomic)
+    <?> "application argument"
 
 brackets :: Parser a -> Parser a
 brackets p = kwd "[" *> p <* kwd "]"
