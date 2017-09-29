@@ -267,6 +267,9 @@ conv' :: Relevance -> Type -> Type -> Ver ()
 conv' r (V n) (V n')
     | n == n' = return ()
 
+conv' s (App I f x) (App I f' x') = bt ("CONV-APP-IRR", f, x, f', x') $ do
+    conv s f f'
+
 conv' s (App r f x) (App r' f' x') = bt ("CONV-APP", f, x, f', x') $ do
     (s /\ r) <-> (s /\ r')
     conv s f f'
