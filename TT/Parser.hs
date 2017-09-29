@@ -126,13 +126,13 @@ arrow = (<?> "arrow type") $ do
 lambda :: Parser (TT MRel)
 lambda = (<?> "lambda") $ do
     kwd "\\"
-    d <- typing Var
+    d <- ptyping Var <|> typing Var
     kwd "."
     Bind Lam [d] <$> expr
 
 bpi :: Parser (TT MRel)
 bpi = (<?> "pi") $ do
-    d <- try $ parens (typing Var)
+    d <- try $ ptyping Var
     kwd "->"
     Bind Pi [d] <$> expr
 
@@ -227,6 +227,13 @@ typing a = (<?> "name binding") $ do
     ty <- expr
     return $ Def n r ty (Abstract a) noConstrs
 
+ptyping :: Abstractness -> Parser (Def MRel)
+ptyping abs =
+    (parens (typing abs))
+    <|> (makeIrrelevant <$> brackets (typing abs))
+  where
+    makeIrrelevant def = def{ defR = Just I }
+
 postulate :: Parser (Def MRel)
 postulate = (<?> "postulate") $ do
     kwd "postulate"
@@ -244,7 +251,7 @@ clauseDef = (<?> "pattern-clause definition") $ do
 mlDef :: Parser (Def MRel)
 mlDef = (<?> "ml-style definition") $ do
     n <- try (name <* kwd "\\")
-    args <- many (parens $ typing Var)
+    args <- many (ptyping Var)
     r <- rcolon
     retTy <- expr
     kwd "="
@@ -265,7 +272,7 @@ termBody = Term <$> expr
 
 clause :: Parser (Clause MRel)
 clause = (<?> "pattern clause") $ do
-    pvs <- many (parens $ typing Var) <|> pure []
+    pvs <- many (ptyping Var) <|> pure []
     lhs <- forceHead <$> pattern
     kwd "="
     rhs <- expr
