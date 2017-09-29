@@ -10,7 +10,7 @@ data Name
     | Blank
     deriving (Eq, Ord)
 
-data Relevance = E | R deriving (Eq, Ord, Show)
+data Relevance = I | E | R deriving (Eq, Ord, Show)
 
 data Binder = Lam | Pi | Let deriving (Eq, Ord, Show)
 

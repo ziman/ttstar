@@ -5,6 +5,7 @@ import TT.Pretty ()
 import qualified Data.Map as M
 
 pruneDef :: Def Relevance -> [Def ()]
+pruneDef (Def n I ty body mcs) = []
 pruneDef (Def n E ty body mcs) = []
 -- special case for constructors and postulates to keep their arity:
 pruneDef (Def n R ty (Abstract Constructor) mcs) = [Def n () (pruneTm ty) (Abstract Constructor) noConstrs]
@@ -36,15 +37,18 @@ pruneTm (Bind b ds tm)
     = case pruneDefs ds of
         []  -> pruneTm tm
         ds' -> Bind b ds' (pruneTm tm)
+pruneTm (App I f x) = pruneTm f
 pruneTm (App E f x) = pruneTm f
 pruneTm (App R f x) = App () (pruneTm f) (pruneTm x)
 
 prunePat :: Ctx Relevance -> Pat Relevance -> Pat ()
 prunePat pvs (PV n)
     = case defR <$> M.lookup n pvs of
-        Just R  -> PV n  -- relevant patvar
-        Just E  -> PV Blank  -- irrelevant patvar
+        Just R  -> PV n      -- runtime patvar
+        Just E  -> PV Blank  -- erased patvar
+        Just I  -> PV Blank  -- irrelevant patvar
         Nothing -> PV n  -- constructor
+prunePat pvs (PApp I f x) = prunePat pvs f
 prunePat pvs (PApp E f x) = prunePat pvs f
 prunePat pvs (PApp R f x) = PApp () (prunePat pvs f) (prunePat pvs x)
 prunePat pvs (PForced tm) = PForced $ V Blank
