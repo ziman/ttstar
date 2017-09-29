@@ -1,1 +1,14 @@
-main \: Type = Type.
+data Bool : Type where
+  True : Bool,
+  False : Bool.
+
+data Irr : Type -> Type where
+  Poof : [a : Type] -> [x : a] -> Irr a.
+
+data Eq : (a : Type) -> (x : a) -> (y : a) -> Type where
+  Refl : [a : Type] -> (x : a) -> Eq a x x.
+
+const \[x : Type] (y : Type) : Type = y.
+
+main \: Eq (Irr Bool) (Poof [Bool] [True]) (Poof [Bool] [False])
+  = Refl [Irr Bool] (Poof [Bool] [True]).
