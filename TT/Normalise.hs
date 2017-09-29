@@ -114,7 +114,7 @@ red form ctx t
     | ("REDUCING", form, t, M.keys ctx) `dbg` False
     = undefined
 
-red form ctx t@(I n i) = red form ctx (V n)
+red form ctx t@(EI n i) = red form ctx (V n)
 
 -- empty let binding
 red form ctx t@(Bind Let [] tm) = red form ctx tm
@@ -158,7 +158,7 @@ red form ctx t@(App r f x)
             _  -> Bind Lam ds tm''
 
     -- pattern matching instance reduces as variable
-    | (I fn _, args) <- unApply t
+    | (EI fn _, args) <- unApply t
     = red form ctx $ mkApp (V fn) args
 
     -- pattern-matching definitions

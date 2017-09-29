@@ -12,8 +12,8 @@ ttRelevance :: Ord r' => Traversal (TT r) (TT r') r r'
 ttRelevance f = g
   where
     g tm = case tm of
-        V n    -> pure $ V n
-        I n ty -> I n <$> g ty
+        V n     -> pure $ V n
+        EI n ty -> EI n <$> g ty
         Bind b ds tm
             -> Bind b <$> traverse (defRelevance f) ds <*> g tm
         App r fun arg

@@ -26,7 +26,7 @@ type Constrs r = M.Map (Guards r) (Uses r)
 
 data TT r
     = V Name
-    | I Name (TT r)  -- instance of a global definition with a specific erasure type
+    | EI Name (TT r)  -- instance of a global definition with a specific erasure type
     | Bind Binder [Def r] (TT r)
     | App r (TT r) (TT r)
     deriving (Eq, Ord)

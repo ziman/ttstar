@@ -97,7 +97,7 @@ specPat pm pr = error $ "cannot specialise: " ++ show (pm, pr)
 
 specTm :: TT Evar -> TT Relevance -> Spec (TT Evar)
 specTm tmm (V n) = return (M.empty, V n)
-specTm tmm (I n@(UN ns) ty)
+specTm tmm (EI n@(UN ns) ty)
     = return (spec n rs, V (IN ns rs))
   where
     rs :: [Relevance]

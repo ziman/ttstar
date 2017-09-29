@@ -288,7 +288,7 @@ inferTm t@(V n) = bt ("VAR", n) $ do
     d <- lookup n
     return (defType d, defConstraints d /\ Fixed R --> defR d)
 
-inferTm t@(I n ty) = bt ("INST", n, ty) $ do
+inferTm t@(EI n ty) = bt ("INST", n, ty) $ do
     -- here, we need to freshen the constraints before bringing them up
     d <- instantiate freshTag IM.empty =<< lookup n
     convCs <- conv (defType d) ty

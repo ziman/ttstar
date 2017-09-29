@@ -71,7 +71,7 @@ rmId ids (App () (V f) x)
     x' = rmId ids x
 
 rmId ids (App () f x) = App () (rmId ids f) (rmId ids x)
-rmId ids tm@(I _ _) = error $ "rmId: instance found: " ++ show tm
+rmId ids tm@(EI _ _) = error $ "rmId: instance found: " ++ show tm
 rmId ids (Bind Let ds rhs) = rmLet ids ds rhs
 rmId ids (Bind b ds rhs) = Bind b ds $ rmId ids rhs
 

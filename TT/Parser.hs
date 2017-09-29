@@ -193,12 +193,12 @@ let_ = (<?> "let expression") $ do
 
 erasureInstance :: Parser (TT MRel)
 erasureInstance = (<?> "erasure instance") $ do
-    kwd "["
+    kwd "{"
     n <- name
     kwd ":"
     ty <- expr
-    kwd "]"
-    return $ I n ty
+    kwd "}"
+    return $ EI n ty
 
 caseExpr :: Parser (TT MRel)
 caseExpr = (<?> "case expression") $ do

@@ -49,7 +49,7 @@ cgLetRec ds = cgLet' "letrec*" [(n, cgBody n ty b) | Def n r ty b _cs <- ds]
 
 cgTm :: PrettyR r => TT r -> Doc
 cgTm (V n) = cgName n
-cgTm tm@(I n ty) = error $ "e-instance in codegen: " ++ show tm
+cgTm tm@(EI n ty) = error $ "e-instance in codegen: " ++ show tm
 cgTm (Bind Lam [Def n r ty (Abstract Var) cs] rhs) = cgLambda n $ cgTm rhs
 cgTm (Bind Let ds rhs) = cgLetRec ds $ cgTm rhs
 cgTm (Bind Pi ds rhs) = cgOmitted
