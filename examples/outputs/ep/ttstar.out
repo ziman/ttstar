@@ -10,8 +10,8 @@
     id : (y : T) -> T = (\y : T. y)
     constA : (x : T) -> T = (\x : T. A)
     apply : (f : (_x0 : T) -> T) -> (x : T) -> T = (\f : (_x0 : T) -> T. (\x : T. f x))
-    test1 : T = [apply : (_x1 : (_x2 : T) -> T) -> (_x3 : T) -> T] id B
-    test2 : T = [apply : (_x4 : (_x5 : T) -> T) -> (_x6 : T) -> T] constA B
+    test1 : T = {apply : (_x1 : (_x2 : T) -> T) -> (_x3 : T) -> T} id B
+    test2 : T = {apply : (_x4 : (_x5 : T) -> T) -> (_x6 : T) -> T} constA B
     main : T = Op test1 test2
   in main
 
@@ -25,8 +25,8 @@
     id :5: (y :6: T) -> T = (\y :7: T. y)
     constA :8: (x :9: T) -> T = (\x :10: T. A)
     apply :11: (f :12: (_x0 :13: T) -> T) -> (x :14: T) -> T = (\f :15: (_x0 :16: T) -> T. (\x :17: T. f -18- x))
-    test1 :19: T = [apply : (_x1 :22: (_x2 :23: T) -> T) -> (_x3 :24: T) -> T] -21- id -20- B
-    test2 :25: T = [apply : (_x4 :28: (_x5 :29: T) -> T) -> (_x6 :30: T) -> T] -27- constA -26- B
+    test1 :19: T = {apply : (_x1 :22: (_x2 :23: T) -> T) -> (_x3 :24: T) -> T} -21- id -20- B
+    test2 :25: T = {apply : (_x4 :28: (_x5 :29: T) -> T) -> (_x6 :30: T) -> T} -27- constA -26- B
     main :31: T = Op -33- test1 -32- test2
   in main
 
@@ -59,8 +59,8 @@
     id :R: (y :R: T) -> T = (\y :R: T. y)
     constA :R: (x :E: T) -> T = (\x :E: T. A)
     apply :E: (f :E: (_x0 :E: T) -> T) -> (x :E: T) -> T = (\f :E: (_x0 :E: T) -> T. (\x :E: T. f -E- x))
-    test1 :R: T = [apply : (_x1 :R: (_x2 :R: T) -> T) -> (_x3 :R: T) -> T] -R- id -R- B
-    test2 :R: T = [apply : (_x4 :R: (_x5 :E: T) -> T) -> (_x6 :E: T) -> T] -R- constA -E- B
+    test1 :R: T = {apply : (_x1 :R: (_x2 :R: T) -> T) -> (_x3 :R: T) -> T} -R- id -R- B
+    test2 :R: T = {apply : (_x4 :R: (_x5 :E: T) -> T) -> (_x6 :E: T) -> T} -R- constA -E- B
     main :R: T = Op -R- test1 -R- test2
   in main
 

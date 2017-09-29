@@ -48,7 +48,9 @@ install() {
     # pattern matching is in racket base already
 }
 
-cabal install -j1 \
+#cabal install -j1 \
+#    || die "could not install"
+stack install \
     || die "could not install"
 
 mkdir -p examples/outputs
@@ -60,10 +62,10 @@ for i in examples/*.tt; do
     find "${n}" -type f | xargs rm
     echo $i
 
-    ./ttstar -v "$i" &> "${n}/ttstar.out" \
+    ttstar -v "$i" &> "${n}/ttstar.out" \
         || continue  # skip if it doesn't typecheck
 
-    ./ttstar "$i" \
+    ttstar "$i" \
         --opt-identity \
         --dump-pretty "${n}/erased.tt" \
         --dump-ir     "${n}/erased.ir" \
@@ -75,7 +77,7 @@ for i in examples/*.tt; do
 		&& scheme "${n}/erased-NF.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}/erased-NF.scm.out" \
         && scheme "${n}/erased-IR.scm" $(cat "${n_src}.args" 2>/dev/null) &> "${n}/erased-IR.scm.out"
 
-    ./ttstar "$i" --skip-inference \
+    ttstar "$i" --skip-inference \
         --dump-pretty "${n}/unerased.tt" \
         --dump-ir     "${n}/unerased.ir" \
         --dump-scheme "${n}/unerased.scm" \
