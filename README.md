@@ -33,6 +33,7 @@ Dependently typed core calculus with erasure inference.
         * Adapted from "Chaff: Engineering an efficient SAT solver"
           by Moskewicz et al., 2001.
         * theoretically faster than the indexer, my implementation is slower
+* a tentative implementation of irrelevance ([example](https://github.com/ziman/ttstar/blob/master/examples/irrelevance.tt))
 
 ### Language
 
@@ -63,10 +64,6 @@ Dependently typed core calculus with erasure inference.
 * unused functions are removed entirely
 * `Refl` is always erased
 * `Maybe` sometimes becomes Boolean after erasure
-
-## Not implemented yet
-
-* irrelevance
 
 ## Does not feature
 
