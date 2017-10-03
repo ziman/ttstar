@@ -10,5 +10,9 @@ data Eq : (a : Type) -> (x : a) -> (y : a) -> Type where
 
 const \.(x : Type) (y : Type) : Type = y.
 
+subst : (a : Type) -> (P : a -> Type) -> (x : a) -> (y : a) -> Eq a x y -> P x -> P y.
+  (a : Type) (P : a -> Type) (x : a)
+    subst a P x [x] (Refl .[a] [x]) = \z : P x. z.
+
 main \: Eq (Irr Bool) (Poof .Bool .True) (Poof .Bool .False)
   = Refl .(Irr Bool) (Poof .Bool .True).
