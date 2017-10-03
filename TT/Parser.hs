@@ -186,8 +186,17 @@ forcedCtor = PForced . V <$> braces name <?> "forced constructor"
 patAtom :: Parser (Pat MRel)
 patAtom = parens pattern <|> forcedCtor <|> patForced <|> patVar <?> "pattern atom"
 
+patAppArg :: Parser (MRel, Pat MRel)
+patAppArg =
+    ((,) <$> pure (Just I) <*> try (string "." *> patAtom))
+    <|> ((,) <$> pure Nothing <*> patAtom)
+    <?> "pattern application argument"
+
 patApp :: Parser (Pat MRel)
-patApp = foldl (PApp Nothing) <$> patAtom <*> many patAtom <?> "pattern application"
+patApp = (<?> "pattern application") $ do
+    f <- patAtom
+    args <- many patAppArg
+    return $ mkAppPat f args
 
 pattern :: Parser (Pat MRel)
 pattern = patApp

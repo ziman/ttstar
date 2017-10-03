@@ -133,7 +133,7 @@ pipeline args = do
 
     annotated <- case Args.skipInference args of
         False -> return annotated_raw
-        True -> ttRelevance (const $ return R) annotated_raw
+        True -> ttRelevance setToR annotated_raw
                 -- specialisation may have created evars which we want to set to R
 
     when (Args.verbose args) $ do
@@ -233,6 +233,9 @@ pipeline args = do
         Graph   -> Solver.Graph.solve
         Indexed -> fst . Solver.Indexed.solve
         LMS     -> fst . Solver.LMS.solve
+
+    setToR I = return I  -- preserve irrelevance
+    setToR _ = return R
 
 main :: IO ()
 main = pipeline =<< Args.parse
