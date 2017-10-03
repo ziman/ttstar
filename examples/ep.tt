@@ -14,10 +14,10 @@ constA \(x : T) : T = A.
 apply \(f : T -> T) (x : T) : T = f x.
 
 test1 : T
-  = {apply : (T -> T) -> T -> T} id B.
+  = [apply : (T -> T) -> T -> T] id B.
 
 test2 : T
-  = {apply : (T -> T) -> T -> T} constA B.
+  = [apply : (T -> T) -> T -> T] constA B.
 
 main : T
   = Op test1 test2.

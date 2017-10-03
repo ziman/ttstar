@@ -44,6 +44,8 @@
           (list-ref (command-line-arguments) i))))
 
 (display 
-  (letrec ((main Type))
-    main))
+  (letrec* (
+    (Refl `(Refl))
+    (main Refl)
+  ) main))
 (newline)

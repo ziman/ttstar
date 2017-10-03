@@ -100,7 +100,7 @@ instance PrettyR r => Pretty (TT r) where
     pretty tm = pretty' False tm
       where
         pretty' pp (V n) = pretty n
-        pretty' pp (EI n ty) = braces (pretty n <+> colon <+> pretty ty)
+        pretty' pp (EI n ty) = brackets (pretty n <+> colon <+> pretty ty)
         pretty' pp (Bind Pi [d] tm) = parens (pretty d) <+> text "->" <+> pretty tm
         pretty' pp (Bind Lam [d] tm) = parens (text "\\" <> pretty d <> dot <+> pretty tm)
         pretty' pp (Bind Let [d] tm) =

@@ -164,7 +164,7 @@ app = (<?> "application") $ do
 
 appArg :: Parser (MRel, TT MRel)
 appArg =
-    ((,) <$> pure (Just I) <*> brackets expr)
+    ((,) <$> pure (Just I) <*> try (string "." *> atomic))
     <|> ((,) <$> pure Nothing <*> atomic)
     <?> "application argument"
 
@@ -180,11 +180,11 @@ patVar = PV <$> name <?> "pattern variable"
 patForced :: Parser (Pat MRel)
 patForced = PForced <$> brackets expr <?> "forced pattern"
 
-patForcedCtor :: Parser (Pat MRel)
-patForcedCtor = PForced . V <$> braces name <?> "forced constructor"
+forcedCtor :: Parser (Pat MRel)
+forcedCtor = PForced . V <$> braces name <?> "forced constructor"
 
 patAtom :: Parser (Pat MRel)
-patAtom = parens pattern <|> patForced <|> patVar <|> patForcedCtor <?> "pattern atom"
+patAtom = parens pattern <|> forcedCtor <|> patForced <|> patVar <?> "pattern atom"
 
 patApp :: Parser (Pat MRel)
 patApp = foldl (PApp Nothing) <$> patAtom <*> many patAtom <?> "pattern application"
@@ -202,11 +202,11 @@ let_ = (<?> "let expression") $ do
 
 erasureInstance :: Parser (TT MRel)
 erasureInstance = (<?> "erasure instance") $ do
-    kwd "{"
+    kwd "["
     n <- name
     kwd ":"
     ty <- expr
-    kwd "}"
+    kwd "]"
     return $ EI n ty
 
 caseExpr :: Parser (TT MRel)
@@ -230,7 +230,7 @@ typing a = (<?> "name binding") $ do
 ptyping :: Abstractness -> Parser (Def MRel)
 ptyping abs =
     (parens (typing abs))
-    <|> (makeIrrelevant <$> brackets (typing abs))
+    <|> try (string "." *> parens (makeIrrelevant <$> typing abs))
   where
     makeIrrelevant def = def{ defR = Just I }
 

@@ -1,2 +1,4 @@
 -- vim: ft=ttstar
-Type
+
+  let constructor Refl : Eq
+  in Refl

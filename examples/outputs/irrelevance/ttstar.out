@@ -2,35 +2,97 @@
 
 ### Desugared ###
 
-  let main : Type = Type
+  let
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
+    constructor Irr : (_x0 : Type) -> Type
+    constructor Poof : (a :I: Type) -> (x :I: a) -> Irr a
+    constructor Eq : (a : Type) -> (x : a) -> (y : a) -> Type
+    constructor Refl : (a :I: Type) -> (x : a) -> Eq a x x
+    const : (x :I: Type) -> (y : Type) -> Type = (\x :I: Type. (\y : Type. y))
+    main : Eq (Irr Bool) (Poof -I- Bool -I- True) (Poof -I- Bool -I- False) = Refl -I- (Irr Bool) (Poof -I- Bool -I- True)
   in main
 
 ### Evarified ###
 
-  let main :1: Type = Type
+  let
+    constructor Bool :1: Type
+    constructor True :2: Bool
+    constructor False :3: Bool
+    constructor Irr :4: (_x0 :5: Type) -> Type
+    constructor Poof :6: (a :I: Type) -> (x :I: a) -> Irr -7- a
+    constructor Eq :8: (a :9: Type) -> (x :10: a) -> (y :11: a) -> Type
+    constructor Refl :12: (a :I: Type) -> (x :13: a) -> Eq -16- a -15- x -14- x
+    const :17: (x :I: Type) -> (y :18: Type) -> Type = (\x :I: Type. (\y :19: Type. y))
+    main :20: Eq -23- (Irr -24- Bool) -22- (Poof -I- Bool -I- True) -21- (Poof -I- Bool -I- False) = Refl -I- (Irr -26- Bool) -25- (Poof -I- Bool -I- True)
   in main
 
 ### Constraints ###
 
-[R] -> [1]
+[] -> [12,R]
+[5,I] -> [26]
+[7,25] -> [26]
+[13] -> [25]
+[14] -> [21]
+[15] -> [22]
+[16] -> [23]
+[21] -> [14]
+[22] -> [15]
+[23] -> [16]
+[23,24] -> [26]
+[23,26] -> [24]
+[25] -> [6,13]
+[25,26] -> [7]
+[25,I] -> [1,2,I]
+[26,I] -> [1,5]
+[I] -> [4,I]
+[R] -> [20]
 
 ### Solution ###
 
-[1,R]
+[12,20,R]
 
 ### Annotated ###
 
-  let main :R: Type = Type
+  let
+    constructor Bool :E: Type
+    constructor True :E: Bool
+    constructor False :E: Bool
+    constructor Irr :E: (_x0 :E: Type) -> Type
+    constructor Poof :E: (a :I: Type) -> (x :I: a) -> Irr -E- a
+    constructor Eq :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
+    constructor Refl :R: (a :I: Type) -> (x :E: a) -> Eq -E- a -E- x -E- x
+    const :E: (x :I: Type) -> (y :E: Type) -> Type = (\x :I: Type. (\y :E: Type. y))
+    main :R: Eq -E- (Irr -E- Bool) -E- (Poof -I- Bool -I- True) -E- (Poof -I- Bool -I- False) = Refl -I- (Irr -E- Bool) -E- (Poof -I- Bool -I- True)
   in main
 
 ### Specialised ###
 
-  let main :R: Type = Type
+  let
+    constructor Bool :E: Type
+    constructor True :E: Bool
+    constructor False :E: Bool
+    constructor Irr :E: (_x0 :E: Type) -> Type
+    constructor Poof :E: (a :I: Type) -> (x :I: a) -> Irr -E- a
+    constructor Eq :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
+    constructor Refl :R: (a :I: Type) -> (x :E: a) -> Eq -E- a -E- x -E- x
+    const :E: (x :I: Type) -> (y :E: Type) -> Type = (\x :I: Type. (\y :E: Type. y))
+    main :R: Eq -E- (Irr -E- Bool) -E- (Poof -I- Bool -I- True) -E- (Poof -I- Bool -I- False) = Refl -I- (Irr -E- Bool) -E- (Poof -I- Bool -I- True)
   in main
 
 ### Final annotation ###
 
-  let main :R: Type = Type
+  let
+    constructor Bool :E: Type
+    constructor True :E: Bool
+    constructor False :E: Bool
+    constructor Irr :E: (_x0 :E: Type) -> Type
+    constructor Poof :E: (a :I: Type) -> (x :I: a) -> Irr -E- a
+    constructor Eq :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
+    constructor Refl :R: (a :I: Type) -> (x :E: a) -> Eq -E- a -E- x -E- x
+    const :E: (x :I: Type) -> (y :E: Type) -> Type = (\x :I: Type. (\y :E: Type. y))
+    main :R: Eq -E- (Irr -E- Bool) -E- (Poof -I- Bool -I- True) -E- (Poof -I- Bool -I- False) = Refl -I- (Irr -E- Bool) -E- (Poof -I- Bool -I- True)
   in main
 
 ### Verification ###
@@ -39,19 +101,32 @@ Verification successful.
 
 ### Pruned ###
 
-  let main = Type
+  let
+    constructor Refl : Eq
+    main = Refl
   in main
 
 ### Intermediate representation ###
 
-let main = Type
-  in main
+let Refl = constructor 0
+  in let main = Refl
+    in main
 
 ### Normal forms ###
 
 unerased:
-  Type
+  
+  let
+    constructor Bool : Type
+    constructor True : Bool
+    constructor Irr : (_x0 : Type) -> Type
+    constructor Poof : (a :I: Type) -> (x :I: a) -> Irr a
+    constructor Eq : (a : Type) -> (x : a) -> (y : a) -> Type
+    constructor Refl : (a :I: Type) -> (x : a) -> Eq a x x
+  in Refl -I- (Irr Bool) (Poof -I- Bool -I- True)
 
 erased:
-  Type
+  
+  let constructor Refl : Eq
+  in Refl
 

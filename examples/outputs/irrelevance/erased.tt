@@ -1,4 +1,6 @@
 -- vim: ft=ttstar
 
-  let main = Type
+  let
+    constructor Refl : Eq
+    main = Refl
   in main
