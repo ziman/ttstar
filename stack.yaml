@@ -2,7 +2,3 @@ resolver: lts-9.0
 
 packages:
   - location: .
-
-nix:
-  enable: false
-  shell-file: stack-shell.nix
