@@ -11,6 +11,9 @@
     constructor Eq : (a : Type) -> (x : a) -> (y : a) -> Type
     constructor Refl : (a :I: Type) -> (x : a) -> Eq a x x
     const : (x :I: Type) -> (y : Type) -> Type = (\x :I: Type. (\y : Type. y))
+    subst : (a : Type) -> (P : (_x1 : a) -> Type) -> (x : a) -> (y : a) -> (_x2 : Eq a x y) -> (_x3 : P x) -> P y 
+      a : Type P : (_x4 : a) -> Type x : a
+        [subst] a P x [x] (Refl -I- [a] [x]) = (\z : P x. z)
     main : Eq (Irr Bool) (Poof -I- Bool -I- True) (Poof -I- Bool -I- False) = Refl -I- (Irr Bool) (Poof -I- Bool -I- True)
   in main
 
@@ -25,33 +28,36 @@
     constructor Eq :8: (a :9: Type) -> (x :10: a) -> (y :11: a) -> Type
     constructor Refl :12: (a :I: Type) -> (x :13: a) -> Eq -16- a -15- x -14- x
     const :17: (x :I: Type) -> (y :18: Type) -> Type = (\x :I: Type. (\y :19: Type. y))
-    main :20: Eq -23- (Irr -24- Bool) -22- (Poof -I- Bool -I- True) -21- (Poof -I- Bool -I- False) = Refl -I- (Irr -26- Bool) -25- (Poof -I- Bool -I- True)
+    subst :20: (a :21: Type) -> (P :22: (_x1 :23: a) -> Type) -> (x :24: a) -> (y :25: a) -> (_x2 :26: Eq -29- a -28- x -27- y) -> (_x3 :30: P -31- x) -> P -32- y 
+      a :33: Type P :34: (_x4 :35: a) -> Type x :36: a
+        [subst] -41- a -40- P -39- x -38- [x] -37- (Refl -I- [a] -42- [x]) = (\z :43: P -44- x. z)
+    main :45: Eq -48- (Irr -49- Bool) -47- (Poof -I- Bool -I- True) -46- (Poof -I- Bool -I- False) = Refl -I- (Irr -51- Bool) -50- (Poof -I- Bool -I- True)
   in main
 
 ### Constraints ###
 
 [] -> [12,R]
-[5,I] -> [26]
-[7,25] -> [26]
-[13] -> [25]
-[14] -> [21]
-[15] -> [22]
-[16] -> [23]
-[21] -> [14]
-[22] -> [15]
-[23] -> [16]
-[23,24] -> [26]
-[23,26] -> [24]
-[25] -> [6,13]
-[25,26] -> [7]
-[25,I] -> [1,2,I]
-[26,I] -> [1,5]
+[5,I] -> [51]
+[7,50] -> [51]
+[13] -> [50]
+[14] -> [46]
+[15] -> [47]
+[16] -> [48]
+[46] -> [14]
+[47] -> [15]
+[48] -> [16]
+[48,49] -> [51]
+[48,51] -> [49]
+[50] -> [6,13]
+[50,51] -> [7]
+[50,I] -> [1,2,I]
+[51,I] -> [1,5]
 [I] -> [4,I]
-[R] -> [20]
+[R] -> [45]
 
 ### Solution ###
 
-[12,20,R]
+[12,45,R]
 
 ### Annotated ###
 
@@ -64,6 +70,9 @@
     constructor Eq :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
     constructor Refl :R: (a :I: Type) -> (x :E: a) -> Eq -E- a -E- x -E- x
     const :E: (x :I: Type) -> (y :E: Type) -> Type = (\x :I: Type. (\y :E: Type. y))
+    subst :E: (a :E: Type) -> (P :E: (_x1 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (_x2 :E: Eq -E- a -E- x -E- y) -> (_x3 :E: P -E- x) -> P -E- y 
+      a :E: Type P :E: (_x4 :E: a) -> Type x :E: a
+        [subst] -E- a -E- P -E- x -E- [x] -E- (Refl -I- [a] -E- [x]) = (\z :E: P -E- x. z)
     main :R: Eq -E- (Irr -E- Bool) -E- (Poof -I- Bool -I- True) -E- (Poof -I- Bool -I- False) = Refl -I- (Irr -E- Bool) -E- (Poof -I- Bool -I- True)
   in main
 
@@ -78,6 +87,9 @@
     constructor Eq :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
     constructor Refl :R: (a :I: Type) -> (x :E: a) -> Eq -E- a -E- x -E- x
     const :E: (x :I: Type) -> (y :E: Type) -> Type = (\x :I: Type. (\y :E: Type. y))
+    subst :E: (a :E: Type) -> (P :E: (_x1 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (_x2 :E: Eq -E- a -E- x -E- y) -> (_x3 :E: P -E- x) -> P -E- y 
+      a :E: Type P :E: (_x4 :E: a) -> Type x :E: a
+        [subst] -E- a -E- P -E- x -E- [x] -E- (Refl -I- [a] -E- [x]) = (\z :E: P -E- x. z)
     main :R: Eq -E- (Irr -E- Bool) -E- (Poof -I- Bool -I- True) -E- (Poof -I- Bool -I- False) = Refl -I- (Irr -E- Bool) -E- (Poof -I- Bool -I- True)
   in main
 
@@ -92,6 +104,9 @@
     constructor Eq :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
     constructor Refl :R: (a :I: Type) -> (x :E: a) -> Eq -E- a -E- x -E- x
     const :E: (x :I: Type) -> (y :E: Type) -> Type = (\x :I: Type. (\y :E: Type. y))
+    subst :E: (a :E: Type) -> (P :E: (_x1 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (_x2 :E: Eq -E- a -E- x -E- y) -> (_x3 :E: P -E- x) -> P -E- y 
+      a :E: Type P :E: (_x4 :E: a) -> Type x :E: a
+        [subst] -E- a -E- P -E- x -E- [x] -E- (Refl -I- [a] -E- [x]) = (\z :E: P -E- x. z)
     main :R: Eq -E- (Irr -E- Bool) -E- (Poof -I- Bool -I- True) -E- (Poof -I- Bool -I- False) = Refl -I- (Irr -E- Bool) -E- (Poof -I- Bool -I- True)
   in main
 

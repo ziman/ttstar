@@ -7,5 +7,7 @@ let Bool = constructor 0
           in let Eq = constructor 3
             in let Refl = constructor 1
               in let const = \y. y
-                in let main = (Refl Poof)
-                  in main
+                in let subst = \_pv0. \_pv1. \_pv2. \_pv3. \_pv4.
+                  \z. z
+                  in let main = (Refl Poof)
+                    in main

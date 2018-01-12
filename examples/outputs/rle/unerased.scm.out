@@ -3,19 +3,19 @@ Error: (car) bad argument type: ()
 
 	Call history:
 
-	<eval>	  (##sys#list (##core#quote Z))
-	<eval>	  (##sys#list (##core#quote Bool))
-	<eval>	  (##sys#list (##core#quote True))
-	<eval>	  (##sys#list (##core#quote False))
-	<eval>	  (##sys#list (##core#quote Unit))
-	<eval>	  (##sys#list (##core#quote MkUnit))
-	<eval>	  (##sys#list (##core#quote List))
-	<eval>	  (##sys#list (##core#quote Nil))
-	<eval>	  (##sys#list (##core#quote RNil))
-	<eval>	  ((foldl xor) False)
-	<eval>	  (foldl xor)
-	<eval>	  (rts-arg-peano (quote Z) (quote S) 0)
-	<eval>	  [rts-arg-peano] (number->peano z s (string->number (list-ref (command-line-arguments) i)))
-	<eval>	  [rts-arg-peano] (string->number (list-ref (command-line-arguments) i))
-	<eval>	  [rts-arg-peano] (list-ref (command-line-arguments) i)
-	<eval>	  [rts-arg-peano] (command-line-arguments)	<--
+	library.scm:3448: print-exit54375438	  
+	library.scm:2290: body3981	  
+	library.scm:2292: assign	  
+	library.scm:3448: current-print-length54395440	  
+	library.scm:2290: body3981	  
+	library.scm:2292: assign	  
+	library.scm:3926: ##sys#print	  
+	library.scm:3188: case-sensitive	  
+	library.scm:3189: keyword-style	  
+	library.scm:3190: ##sys#print-length-limit	  
+	library.scm:3297: outchr	  
+	library.scm:3188: g5148	  
+	library.scm:3927: print-call-chain	  
+	library.scm:3882: ##sys#get-call-chain	  
+	library.scm:3834: ##sys#make-vector	  
+	library.scm:1371: ##sys#allocate-vector	  	<--
