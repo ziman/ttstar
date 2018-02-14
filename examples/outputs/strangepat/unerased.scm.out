@@ -3,19 +3,19 @@ Error: (match) no matching pattern
 
 	Call history:
 
-	library.scm:3448: print-exit54375438	  
-	library.scm:2290: body3981	  
-	library.scm:2292: assign	  
-	library.scm:3448: current-print-length54395440	  
-	library.scm:2290: body3981	  
-	library.scm:2292: assign	  
-	library.scm:3926: ##sys#print	  
-	library.scm:3188: case-sensitive	  
-	library.scm:3189: keyword-style	  
-	library.scm:3190: ##sys#print-length-limit	  
-	library.scm:3297: outchr	  
-	library.scm:3188: g5148	  
-	library.scm:3927: print-call-chain	  
-	library.scm:3882: ##sys#get-call-chain	  
-	library.scm:3834: ##sys#make-vector	  
-	library.scm:1371: ##sys#allocate-vector	  	<--
+	<syntax>	  (##core#undefined)
+	<eval>	  (print (letrec* ((Bool (quasiquote (Bool))) (T (quasiquote (T))) (F (quasiquote (F))) (Pair (quasiqu...
+	<eval>	  (##sys#list (##core#quote Bool))
+	<eval>	  (##sys#list (##core#quote T))
+	<eval>	  (##sys#list (##core#quote F))
+	<eval>	  (##sys#list (##core#quote Pair))
+	<eval>	  (fst (P T))
+	<eval>	  (P T)
+	<eval>	  [fst] (list _e0)
+	<eval>	  [fst] (pair?73 v47)
+	<eval>	  [fst] (null?74 (cdr75 v47))
+	<eval>	  [fst] (cdr75 v47)
+	<eval>	  [fst] (car78 v47)
+	<eval>	  [fst] (pair?104 w77)
+	<eval>	  [fst] (failure53)
+	<eval>	  [failure53] (error200 (quote201 match202) "no matching pattern")	<--
