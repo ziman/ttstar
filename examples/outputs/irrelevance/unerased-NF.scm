@@ -5,8 +5,8 @@
 (define (rts-arg-read i) (read (open-input-string (list-ref (command-line-arguments) i))))
 (print
   (letrec* (
-    (Irr (lambda (_x0)
-      `(Irr ,_x0)))
+    (Squash (lambda (_x0)
+      `(Squash ,_x0)))
     (Poof `(Poof))
     (Eq (lambda (a)
       (lambda (x)

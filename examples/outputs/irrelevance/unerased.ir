@@ -2,7 +2,7 @@
 let Bool = constructor 0
   in let True = constructor 0
     in let False = constructor 0
-      in let Irr = constructor 1
+      in let Squash = constructor 1
         in let Poof = constructor 0
           in let Eq = constructor 3
             in let Refl = constructor 1

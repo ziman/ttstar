@@ -4,8 +4,8 @@
     constructor Bool : Type
     constructor True : Bool
     constructor False : Bool
-    constructor Irr : (_x0) -> Type
-    constructor Poof : Irr a
+    constructor Squash : (_x0) -> Type
+    constructor Poof : Squash a
     constructor Eq : (a) -> (x) -> (y) -> Type
     constructor Refl : (x) -> Eq a x x
     const = (\y. y)
