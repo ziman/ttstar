@@ -20,7 +20,7 @@ import qualified Data.IntSet as IS
 -- reduce the constraint set, keeping the empty-guard constraint
 -- we could use the simple solver for smaller sets
 -- but benchmarks show that there's almost no runtime difference
-reduce :: Constrs Evar -> Constrs Evar
+reduce :: Impls Evar -> Impls Evar
 reduce cs
     | S.null (S.delete (Fixed R) us) = residue
     | otherwise = M.insert S.empty us residue
@@ -32,7 +32,7 @@ type Constraints = IntMap Constraint
 type Index = Map Evar IntSet
 
 -- it turns out that this cleaning makes stuff slower
-toNumbered :: Constrs Evar -> Constraints
+toNumbered :: Impls Evar -> Constraints
 toNumbered = IM.fromList . zip [0..] {- . filter informative .  map clean -} . M.toList
 {-
   where
@@ -40,12 +40,12 @@ toNumbered = IM.fromList . zip [0..] {- . filter informative .  map clean -} . M
     clean (gs, us) = (gs, S.delete (Fixed R) us {- S.\\ gs -})
 -}
 
-fromNumbered :: Constraints -> Constrs Evar
+fromNumbered :: Constraints -> Impls Evar
 fromNumbered = IM.foldr addConstraint M.empty
   where
     addConstraint (ns, vs) = M.insertWith S.union ns vs
 
-solve :: Constrs Evar -> (Uses Evar, Constrs Evar)
+solve :: Impls Evar -> (Uses Evar, Impls Evar)
 solve cs
     = second fromNumbered
     $ step (index csN) initialUses initialUses csN

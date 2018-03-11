@@ -67,24 +67,30 @@ type Type = TT Evar
 
 infixl 2 /\
 (/\) :: Constrs Evar -> Constrs Evar -> Constrs Evar
-(/\) = union
+CS u c /\ CS u' c' = CS (u `unionI` u') (c `unionI` c')
 
 infix 3 -->
-(-->) :: Evar -> Evar -> Constrs Evar
+(-->) :: Evar -> Evar -> Impls Evar
 g --> u = M.singleton (S.singleton g) (S.singleton u)
 
 infix 3 <->
-(<->) :: Evar -> Evar -> Constrs Evar
-p <-> q = p --> q /\ q --> p
-
-union :: Constrs Evar -> Constrs Evar -> Constrs Evar
-union = M.unionWith S.union
-
-unions :: [Constrs Evar] -> Constrs Evar
-unions = M.unionsWith S.union
+(<->) :: Evar -> Evar -> Impls Evar
+p <-> q = (p --> q) `unionI` (q --> p)
 
 cond :: Evar -> Constrs Evar -> Constrs Evar
-cond r = M.mapKeysWith S.union (S.insert r)
+cond r (CS u c) = CS u $ M.mapKeysWith S.union (S.insert r) c
+
+conditionally :: Impls Evar -> Constrs Evar
+conditionally c = CS M.empty c
+
+unconditionally :: Impls Evar -> Constrs Evar
+unconditionally u = CS u M.empty
+
+unionI :: Impls Evar -> Impls Evar -> Impls Evar
+unionI = M.unionWith S.union
+
+unions :: [Constrs Evar] -> Constrs Evar
+unions = foldr (/\) noConstrs
 
 with :: Def Evar -> TC a -> TC a
 with d = with' $ M.insert (defName d) d
@@ -241,7 +247,7 @@ inferPat :: Evar -> Ctx Evar -> Pat Evar -> TC (Type, Constrs Evar)
 inferPat s pvs pat@(PV n)
     | Just d <- M.lookup n pvs
     = bt ("PAT-VAR", n) $ do
-        return (defType d, defR d --> s)  -- forces surrounding to be relevant
+        return (defType d, unconditionally $ defR d --> s)  -- forces surrounding to be relevant
 
 -- this must be a constructor if it's not a patvar
 inferPat s pvs pat@(PV n) = bt ("PAT-REF", n) $ do
@@ -250,7 +256,8 @@ inferPat s pvs pat@(PV n) = bt ("PAT-REF", n) $ do
         Abstract Constructor           -- here we inspect: that affects 1) surrounding, 2) ctor relevance
             -> return (
                     ty,
-                    Fixed R --> s /\ Fixed R --> r
+                    conditionally (Fixed R --> s)
+                        /\ conditionally (Fixed R --> r)
                 )
         _
             -> tcfail $ InvalidPattern pat
@@ -267,12 +274,11 @@ inferPat s pvs pat@(PApp app_r f x) = bt ("PAT-APP", pat) $ do
         Bind Pi [Def n' pi_r ty' (Abstract Var) _noCs] retTy -> do
             xtycs <- with' (M.union pvs) $ conv xty ty'
             let cs =
-                    app_r --> s                 -- if something inspects, the whole thing inspects
-                    /\ cond s (pi_r <-> app_r) -- the two must match in relevant contexts
+                    unconditionally (app_r --> s)  -- if something inspects, the whole thing inspects
+                    /\ unconditionally (pi_r <-> app_r) -- the two must match
                     /\ fcs
-                    /\ cond app_r xtycs /\ xcs  -- xcs was derived with s=app_r
-                                                -- but xtycs wasn't so we need to cond it
-                                                -- this is equivalent to using the Conv rule
+                    /\ xtycs
+                    /\ xcs
             return (subst n' (pat2term x) retTy, cs)
 
         _ -> do

@@ -7,17 +7,17 @@ import qualified Data.Map as M
 import qualified Data.Set as S
 
 -- reduce the constraint set, keeping the empty-guard constraint
-reduce :: Constrs Evar -> Constrs Evar
+reduce :: Impls Evar -> Impls Evar
 reduce cs
     | S.null (S.delete (Fixed R) us) = residue
     | otherwise = M.insert S.empty us residue
   where
     (us, residue) = solve cs
 
-solve :: Constrs Evar -> (Uses Evar, Constrs Evar)
+solve :: Impls Evar -> (Uses Evar, Impls Evar)
 solve = step $ S.singleton (Fixed R)
   where
-    step :: Uses Evar -> Constrs Evar -> (Uses Evar, Constrs Evar)
+    step :: Uses Evar -> Impls Evar -> (Uses Evar, Impls Evar)
     step ans cs
         | S.null new = (ans, prunedCs)
         | otherwise = step (S.union ans new) prunedCs
