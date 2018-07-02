@@ -221,10 +221,10 @@ erasureInstance = (<?> "erasure instance") $ do
 caseExpr :: Parser (TT MRel)
 caseExpr = (<?> "case expression") $ do
     kwd "case"
-    tm <- expr
+    tms <- expr `sepBy` kwd ","
     kwd "with"
     d <- clauseDef
-    return $ Bind Let [d] (App Nothing (V $ defName d) tm)
+    return $ Bind Let [d] (mkApp (V $ defName d) $ zip (repeat Nothing) tms)
 
 expr :: Parser (TT MRel)
 expr = bind <|> app <?> "expression"  -- app includes nullary-applied atoms
