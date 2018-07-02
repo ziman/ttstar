@@ -17,8 +17,8 @@
     main : Bool = not 
       let f : (x : Bool) -> (_x2 : retTy x) -> retTy x 
         [f] F MkUnit = MkUnit
-        x : Bool
-          [f] T x = not x
+        [f] T T = F
+        [f] T F = T
       in f (not F) T
   in main
 
@@ -39,8 +39,8 @@
     main :14: Bool = not -15- 
       let f :16: (x :17: Bool) -> (_x2 :18: retTy -19- x) -> retTy -20- x 
         [f] -22- F -21- MkUnit = MkUnit
-        x :23: Bool
-          [f] -25- T -24- x = not -26- x
+        [f] -24- T -23- T = F
+        [f] -26- T -25- F = T
       in f -28- (not -29- F) -27- T
   in main
 
@@ -70,8 +70,8 @@
     main :R: Bool = not -R- 
       let f :R: (x :R: Bool) -> (_x2 :R: retTy -E- x) -> retTy -E- x 
         [f] -R- F -R- MkUnit = MkUnit
-        x :R: Bool
-          [f] -R- T -R- x = not -R- x
+        [f] -R- T -R- T = F
+        [f] -R- T -R- F = T
       in f -R- (not -R- F) -R- T
   in main
 
@@ -92,8 +92,8 @@
     main :R: Bool = not -R- 
       let f :R: (x :R: Bool) -> (_x2 :R: retTy -E- x) -> retTy -E- x 
         [f] -R- F -R- MkUnit = MkUnit
-        x :R: Bool
-          [f] -R- T -R- x = not -R- x
+        [f] -R- T -R- T = F
+        [f] -R- T -R- F = T
       in f -R- (not -R- F) -R- T
   in main
 
@@ -114,8 +114,8 @@
     main :R: Bool = not -R- 
       let f :R: (x :R: Bool) -> (_x2 :R: retTy -E- x) -> retTy -E- x 
         [f] -R- F -R- MkUnit = MkUnit
-        x :R: Bool
-          [f] -R- T -R- x = not -R- x
+        [f] -R- T -R- T = F
+        [f] -R- T -R- F = T
       in f -R- (not -R- F) -R- T
   in main
 
@@ -135,7 +135,8 @@ Verification successful.
     main = not 
       let f 
         [_] F MkUnit = MkUnit
-        [_] T x = not x
+        [_] T T = F
+        [_] T F = T
       in f (not F) T
   in main
 
@@ -151,7 +152,9 @@ let T = constructor 0
         in let main = (not let f = \_pv0. \_pv1.
           case _pv0 of
             F => MkUnit
-            T => (not _pv1)
+            T => case _pv1 of
+              F => T
+              T => F
           in ((f (not F)) T))
           in main
 

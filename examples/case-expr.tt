@@ -20,5 +20,5 @@ main : Bool
       case not F, T with
         f : (x : Bool) -> retTy x -> retTy x.
         f F MkUnit = MkUnit,
-        (x : Bool)
-          f T x = not x.
+        f T T      = F,
+        f T F      = T.

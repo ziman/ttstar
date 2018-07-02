@@ -15,6 +15,8 @@ let Bool = constructor 0
               in let main = (not let f = \_pv0. \_pv1.
                 case _pv0 of
                   F => MkUnit
-                  T => (not _pv1)
+                  T => case _pv1 of
+                    F => T
+                    T => F
                 in ((f (not F)) T))
                 in main

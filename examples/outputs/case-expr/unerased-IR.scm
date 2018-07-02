@@ -62,7 +62,9 @@
       (letrec ((f (curried-lambda (_pv0 _pv1)
         (rts-case _pv0
           ((F) MkUnit)
-          ((T) (not_TT _pv1))))))
+          ((T) (rts-case _pv1
+            ((F) T)
+            ((T) F)))))))
         ((f (not_TT F)) T))))
   ) main))
 (newline)
