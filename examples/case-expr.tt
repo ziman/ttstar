@@ -17,7 +17,8 @@ retTy F = Unit.
 
 main : Bool
   = not
-      case not F with
-        f : (x : Bool) -> retTy x.
-        f F = MkUnit,
-        f T = F.
+      case not F, T with
+        f : (x : Bool) -> retTy x -> retTy x.
+        f F MkUnit = MkUnit,
+        (x : Bool)
+          f T x = not x.

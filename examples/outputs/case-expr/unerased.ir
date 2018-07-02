@@ -12,9 +12,9 @@ let Bool = constructor 0
               case _pv0 of
                 F => Unit
                 T => Bool
-              in let main = (not let f = \_pv0.
+              in let main = (not let f = \_pv0. \_pv1.
                 case _pv0 of
                   F => MkUnit
-                  T => F
-                in (f (not F)))
+                  T => (not _pv1)
+                in ((f (not F)) T))
                 in main

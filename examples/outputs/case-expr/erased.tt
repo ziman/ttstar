@@ -9,7 +9,7 @@
       [_] F = T
     main = not 
       let f 
-        [_] F = MkUnit
-        [_] T = F
-      in f (not F)
+        [_] F MkUnit = MkUnit
+        [_] T x = not x
+      in f (not F) T
   in main

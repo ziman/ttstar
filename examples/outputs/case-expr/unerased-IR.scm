@@ -59,10 +59,10 @@
         ((F) Unit)
         ((T) Bool))))
     (main (not_TT 
-      (letrec ((f (lambda (_pv0)
+      (letrec ((f (curried-lambda (_pv0 _pv1)
         (rts-case _pv0
           ((F) MkUnit)
-          ((T) F)))))
-        (f (not_TT F)))))
+          ((T) (not_TT _pv1))))))
+        ((f (not_TT F)) T))))
   ) main))
 (newline)
