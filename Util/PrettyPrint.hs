@@ -7,7 +7,7 @@ module Util.PrettyPrint
     , int, text
     , comma, colon, equals, semicolon, dot
     , lparen, rparen, lbracket, rbracket, lbrace, rbrace
-    , (<>), (<+>), ($+$), ($$)
+    , (<+>), ($+$), ($$)
     , (<?>)
     , nest
     , parens, brackets, braces
@@ -38,7 +38,7 @@ newtype Doc = Doc [Line]
 instance Show Doc where
     show = render "--"
 
-infixr 6 <>, <+>
+infixr 6 <+>
 infixr 5 $$, $+$
 infixl 1 <?>
 
@@ -66,8 +66,8 @@ rbracket = text "]"
 lbrace   = text "{"
 rbrace   = text "}"
 
-(<>) :: Doc -> Doc -> Doc
-Doc xs <> Doc ys = Doc $ meld "" xs ys
+instance Semigroup Doc where
+    Doc xs <> Doc ys = Doc $ meld "" xs ys
 
 (<+>) :: Doc -> Doc -> Doc
 Doc xs <+> Doc ys = Doc $ meld " " xs ys
