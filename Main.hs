@@ -29,6 +29,7 @@ import Solver.Simple
 import Solver.Graph
 import Solver.Indexed
 import Solver.LMS
+import Solver.Equalities
 
 import qualified Optimisation.Identity
 

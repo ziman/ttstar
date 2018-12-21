@@ -52,11 +52,15 @@ clauseRelevance f (Clause pvs lhs rhs)
 
 csRelevance :: Ord r' => Traversal (Constrs r) (Constrs r') r r'
 csRelevance f (Constrs impls eqs)
-    = Constrs <$> implF impls <*> eqF eqs
-  where
-    eqF = fmap S.fromList . traverse g . S.toList
-    g (x, y) = (,) <$> f x <*> f y
+    = Constrs <$> implRelevance f impls <*> eqRelevance f eqs
 
-    implF = fmap M.fromList . traverse f' . M.toList
+eqRelevance :: Ord r' => Traversal (Eqs r) (Eqs r') r r'
+eqRelevance f = fmap S.fromList . traverse f' . S.toList
+  where
+    f' (x, y) = (,) <$> f x <*> f y
+
+implRelevance :: Ord r' => Traversal (Impls r) (Impls r') r r'
+implRelevance f = fmap M.fromList . traverse f' . M.toList
+  where
     f' (x, y) = (,) <$> f'' x <*> f'' y
     f'' = fmap S.fromList . traverse f . S.toList
