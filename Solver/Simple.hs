@@ -2,24 +2,23 @@ module Solver.Simple (solve, reduce) where
 
 import TT.Core
 import Erasure.Evar
-import Solver.Common
 
 import qualified Data.Map as M
 import qualified Data.Set as S
 
--- reduce the constraint set, keeping the empty-guard constraint
 reduce :: Constrs Evar -> Constrs Evar
-reduce cs = cs  -- TODO
-{-
-reduce cs@(Constrs impls eqs)
+reduce (Constrs impls eqs) = Constrs (reduceImpls impls) eqs  -- TODO
+
+-- reduce the constraint set, keeping the empty-guard constraint
+reduceImpls :: Impls Evar -> Impls Evar
+reduceImpls impls
     | S.null (S.delete (Fixed R) us) = residue
     | otherwise = M.insert S.empty us residue
   where
-    (us, residue) = solve cs
--}
+    (us, residue) = solve impls
 
-solve :: Constrs Evar -> (Uses Evar, Impls Evar)
-solve = step (S.singleton $ Fixed R) . toImpls
+solve :: Impls Evar -> (Uses Evar, Impls Evar)
+solve = step (S.singleton $ Fixed R)
   where
     step :: Uses Evar -> Impls Evar -> (Uses Evar, Impls Evar)
     step ans cs

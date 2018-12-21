@@ -2,7 +2,6 @@ module Solver.Indexed (solve, reduce) where
 
 import TT.Core
 import Erasure.Evar
-import Solver.Common
 
 import Control.Arrow
 
@@ -18,37 +17,38 @@ import qualified Data.IntMap as IM
 import Data.IntSet (IntSet)
 import qualified Data.IntSet as IS
 
+reduce :: Constrs Evar -> Constrs Evar
+reduce (Constrs impls eqs) = Constrs (reduceImpls impls) eqs  -- TODO
+
 -- reduce the constraint set, keeping the empty-guard constraint
 -- we could use the simple solver for smaller sets
 -- but benchmarks show that there's almost no runtime difference
-reduce :: Constrs Evar -> Constrs Evar
-reduce cs = cs
-{-
+reduceImpls :: Impls Evar -> Impls Evar
+reduceImpls impls
     | S.null (S.delete (Fixed R) us) = residue
     | otherwise = M.insert S.empty us residue
   where
-    (us, residue) = solve cs
--}
+    (us, residue) = solve impls
 
 type Constraint = (Guards Evar, Uses Evar)
 type Constraints = IntMap Constraint
 type Index = Map Evar IntSet
 
 -- it turns out that this cleaning makes stuff slower
-toNumbered :: Constrs Evar -> Constraints
-toNumbered = IM.fromList . zip [0..] {- . filter informative .  map clean -} . M.toList . toImpls
+toNumbered :: Impls Evar -> Constraints
+toNumbered = IM.fromList . zip [0..] {- . filter informative .  map clean -} . M.toList
 {-
   where
     informative (gs, us) = (not $ S.null us)  -- && (Fixed E `S.notMember` gs)
     clean (gs, us) = (gs, S.delete (Fixed R) us {- S.\\ gs -})
 -}
 
-fromNumbered :: Constraints -> Constrs Evar
-fromNumbered = (\x -> Constrs x noEqs) . IM.foldr addConstraint M.empty
+fromNumbered :: Constraints -> Impls Evar
+fromNumbered = IM.foldr addConstraint M.empty
   where
     addConstraint (ns, vs) = M.insertWith S.union ns vs
 
-solve :: Constrs Evar -> (Uses Evar, Constrs Evar)
+solve :: Impls Evar -> (Uses Evar, Impls Evar)
 solve cs
     = second fromNumbered
     $ step (index csN) initialUses initialUses csN
@@ -56,7 +56,7 @@ solve cs
     csN = toNumbered cs
 
     initialUses :: Uses Evar
-    initialUses = S.insert (Fixed R) $ M.findWithDefault S.empty S.empty (toImpls cs)
+    initialUses = S.insert (Fixed R) $ M.findWithDefault S.empty S.empty cs
 
     index :: Constraints -> Index
     index = IM.foldrWithKey (

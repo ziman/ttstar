@@ -33,4 +33,4 @@ executable ttstar
     Solver.Indexed, Erasure.Specialise, Erasure.Verify, Optimisation.Identity,
     TT.Core, TT.Lens, TT.Normalise, TT.Parser, TT.Pretty, TT.Utils,
     Util.PrettyPrint, IR.Core, IR.FromTT, IR.Pretty, Codegen.SchemeIR,
-    Solver.LMS, IR.Prune, Solver.Common
+    Solver.LMS, IR.Prune, Solver.Equalities

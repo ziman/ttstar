@@ -96,7 +96,9 @@ pipeline args = do
                                 Indexed -> Solver.Indexed.reduce
                                 LMS     -> Solver.LMS.reduce
 
-                    let cs = either (error . show) id . infer redConstrs $ evarified
+                    let cs = either (error . show) id . infer redConstrs
+                            $ evarified_raw
+
                     when (Args.verbose args) $ do
                         putStrLn "### Constraints ###\n"
                         mapM_ (putStrLn . fmtCtr) $ M.toList (cImpls cs)
@@ -104,8 +106,16 @@ pipeline args = do
                         mapM_ (putStrLn . fmtEq) $ S.toList (cEqs cs)
                         putStrLn ""
 
-                    let uses = solveConstraints cs
+                    let Constrs impls eqs = cs
+                        evarMap = mergeEvars eqs
+                        impls' = replaceEvars evarMap implRelevance impls
+                        evarified = replaceEvars evarMap ttRelevance evarified_raw
+                        uses = solveConstraints impls'
+
                     when (Args.verbose args) $ do
+                        putStrLn "### Merged evars ###\n"
+                        print evarified
+                        putStrLn ""
                         putStrLn "### Solution ###\n"
                         print $ S.toList uses
                         putStrLn ""
