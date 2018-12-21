@@ -67,24 +67,33 @@ type Type = TT Evar
 
 infixl 2 /\
 (/\) :: Constrs Evar -> Constrs Evar -> Constrs Evar
-(/\) = union
+Constrs impls eqs /\ Constrs impls' eqs' = Constrs
+    { cImpls = M.unionWith S.union impls impls'
+    , cEqs   = S.union eqs eqs'
+    }
 
 infix 3 -->
 (-->) :: Evar -> Evar -> Constrs Evar
-g --> u = M.singleton (S.singleton g) (S.singleton u)
+g --> u = Constrs
+    { cImpls = M.singleton (S.singleton g) (S.singleton u)
+    , cEqs   = noEqs
+    }
 
 infix 3 <->
 (<->) :: Evar -> Evar -> Constrs Evar
-p <-> q = p --> q /\ q --> p
-
-union :: Constrs Evar -> Constrs Evar -> Constrs Evar
-union = M.unionWith S.union
+p <-> q = Constrs
+    { cImpls = noImpls
+    , cEqs   = S.singleton (min p q, max p q)
+    }
 
 unions :: [Constrs Evar] -> Constrs Evar
-unions = M.unionsWith S.union
+unions = foldr (/\) noConstrs
 
 cond :: Evar -> Constrs Evar -> Constrs Evar
-cond r = M.mapKeysWith S.union (S.insert r)
+cond r (Constrs impls eqs) = Constrs
+    { cImpls = M.mapKeysWith S.union (S.insert r) impls
+    , cEqs   = eqs
+    }
 
 with :: Def Evar -> TC a -> TC a
 with d = with' $ M.insert (defName d) d

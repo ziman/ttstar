@@ -2,6 +2,7 @@ module Solver.Graph (solve) where
 
 import TT.Core
 import Erasure.Evar
+import Solver.Common
 
 import Data.Map (Map)
 import qualified Data.Map as M
@@ -35,7 +36,7 @@ addVertex v g = (vertexNo, IM.insert vertexNo v g)
 solve :: Constrs Evar -> Uses Evar
 solve cs' = evalState (increments initialVertices) graph
   where
-    cs = M.insertWith S.union S.empty (S.singleton $ Fixed R) cs'
+    cs = M.insertWith S.union S.empty (S.singleton $ Fixed R) (toImpls cs')
 
     allEvars = S.union (S.unions $ M.keys cs) (S.unions $ M.elems cs)
     (terminals, evarIndex) = S.foldr addTerminal (IM.empty, M.empty) allEvars

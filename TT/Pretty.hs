@@ -3,7 +3,6 @@ module TT.Pretty (useUnicode, PrettyR(..), ShowUnicode (..), sup) where
 
 import TT.Core
 import Util.PrettyPrint
-import qualified Data.Map as M
 
 useUnicode :: Bool
 useUnicode = False  -- True
@@ -80,7 +79,7 @@ instance PrettyR r => Pretty (Def r) where
                 V Blank -> empty
                 _       -> prettyCol r <+> pretty ty
         <+> pretty body
-        <+> if M.null cs
+        <+> if isEmpty cs
                 then empty
                 else text "{- constraints apply -}"
 

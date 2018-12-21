@@ -22,7 +22,13 @@ instance Show Name where
 
 type Guards  r = S.Set r
 type Uses    r = S.Set r
-type Constrs r = M.Map (Guards r) (Uses r)
+type Impls   r = M.Map (Guards r) (Uses r)
+type Eqs     r = S.Set (r, r)
+data Constrs r = Constrs
+    { cImpls :: Impls r
+    , cEqs   :: Eqs r
+    }
+    deriving (Eq, Ord)
 
 data TT r
     = V Name
@@ -63,7 +69,16 @@ type Ctx r = M.Map Name (Def r)
 type Program r = TT r
 
 noConstrs :: Constrs r
-noConstrs = M.empty
+noConstrs = Constrs noImpls noEqs
+
+noImpls :: Impls r
+noImpls = M.empty
+
+noEqs :: Eqs r
+noEqs = S.empty
+
+isEmpty :: Constrs r -> Bool
+isEmpty (Constrs impls eqs) = M.null impls && S.null eqs
 
 typeOfTypes :: Name
 typeOfTypes = UN "Type"

@@ -6,6 +6,7 @@ module Solver.LMS (solve, reduce) where
 
 import TT.Core
 import Erasure.Evar
+import Solver.Common
 
 import Control.Arrow
 
@@ -28,11 +29,13 @@ import qualified Data.IntSet as IS
 -- we could use the simple solver for smaller sets
 -- but benchmarks show that there's almost no runtime difference
 reduce :: Constrs Evar -> Constrs Evar
-reduce cs
+reduce cs = cs
+{-
     | S.null (S.delete (Fixed R) us) = residue
     | otherwise = M.insert S.empty us residue
   where
     (us, residue) = solve cs
+-}
 
 type Constraint = (Guards Evar, Uses Evar)
 type Constraints = IntMap Constraint
@@ -42,10 +45,10 @@ data Index = Index
     }
 
 toNumbered :: Constrs Evar -> Constraints
-toNumbered = IM.fromList . zip [0..] . M.toList
+toNumbered = IM.fromList . zip [0..] . M.toList . toImpls
 
 fromNumbered :: Constraints -> Constrs Evar
-fromNumbered = IM.foldr addConstraint M.empty
+fromNumbered = (\x -> Constrs x noEqs) . IM.foldr addConstraint M.empty
   where
     addConstraint (ns, vs) = M.insertWith S.union ns vs
 
@@ -64,7 +67,7 @@ solve cs
     index = Index selected frequencies
 
     initialUses :: Uses Evar
-    initialUses = S.insert (Fixed R) $ M.findWithDefault S.empty S.empty cs
+    initialUses = S.insert (Fixed R) $ M.findWithDefault S.empty S.empty (toImpls cs)
 
     frequencies :: Map Evar Int
     frequencies

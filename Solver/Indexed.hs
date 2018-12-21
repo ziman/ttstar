@@ -2,6 +2,7 @@ module Solver.Indexed (solve, reduce) where
 
 import TT.Core
 import Erasure.Evar
+import Solver.Common
 
 import Control.Arrow
 
@@ -21,11 +22,13 @@ import qualified Data.IntSet as IS
 -- we could use the simple solver for smaller sets
 -- but benchmarks show that there's almost no runtime difference
 reduce :: Constrs Evar -> Constrs Evar
-reduce cs
+reduce cs = cs
+{-
     | S.null (S.delete (Fixed R) us) = residue
     | otherwise = M.insert S.empty us residue
   where
     (us, residue) = solve cs
+-}
 
 type Constraint = (Guards Evar, Uses Evar)
 type Constraints = IntMap Constraint
@@ -33,7 +36,7 @@ type Index = Map Evar IntSet
 
 -- it turns out that this cleaning makes stuff slower
 toNumbered :: Constrs Evar -> Constraints
-toNumbered = IM.fromList . zip [0..] {- . filter informative .  map clean -} . M.toList
+toNumbered = IM.fromList . zip [0..] {- . filter informative .  map clean -} . M.toList . toImpls
 {-
   where
     informative (gs, us) = (not $ S.null us)  -- && (Fixed E `S.notMember` gs)
@@ -41,7 +44,7 @@ toNumbered = IM.fromList . zip [0..] {- . filter informative .  map clean -} . M
 -}
 
 fromNumbered :: Constraints -> Constrs Evar
-fromNumbered = IM.foldr addConstraint M.empty
+fromNumbered = (\x -> Constrs x noEqs) . IM.foldr addConstraint M.empty
   where
     addConstraint (ns, vs) = M.insertWith S.union ns vs
 
@@ -53,7 +56,7 @@ solve cs
     csN = toNumbered cs
 
     initialUses :: Uses Evar
-    initialUses = S.insert (Fixed R) $ M.findWithDefault S.empty S.empty cs
+    initialUses = S.insert (Fixed R) $ M.findWithDefault S.empty S.empty (toImpls cs)
 
     index :: Constraints -> Index
     index = IM.foldrWithKey (

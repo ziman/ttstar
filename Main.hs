@@ -93,7 +93,9 @@ pipeline args = do
                     let cs = either (error . show) id . infer redConstrs $ evarified
                     when (Args.verbose args) $ do
                         putStrLn "### Constraints ###\n"
-                        mapM_ (putStrLn . fmtCtr) $ M.toList cs
+                        mapM_ (putStrLn . fmtCtr) $ M.toList (cImpls cs)
+                        putStrLn ""
+                        mapM_ (putStrLn . fmtEq) $ S.toList (cEqs cs)
                         putStrLn ""
 
                     let uses = solveConstraints cs
@@ -220,6 +222,7 @@ pipeline args = do
         Nothing -> return ()
         Just fname -> dumpScheme fname erasedNF
   where
+    fmtEq (r, s) = show r ++ " = " ++ show s
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
     dumpTT fname prog = writeFile fname $ "-- vim: ft=ttstar\n" ++ show prog ++ "\n"
     dumpScheme fname prog = writeFile fname $ render "; " (Codegen.Scheme.codegen prog) ++ "\n"
