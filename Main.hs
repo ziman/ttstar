@@ -114,7 +114,10 @@ pipeline args = do
                         uses = solveConstraints impls'
 
                     when (Args.verbose args) $ do
-                        putStrLn "### Merged evars ###\n"
+                        putStrLn "### Merge index ###"
+                        forM_ (M.toList evarMap) $ \(r, s) ->
+                            putStrLn $ show r ++ " -> " ++ show s
+                        putStrLn "### Merged evars ###"
                         print evarified
                         putStrLn ""
                         putStrLn "### Solution ###\n"

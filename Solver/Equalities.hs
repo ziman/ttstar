@@ -12,11 +12,10 @@ import Lens.Family2.Unchecked
 
 import qualified Data.Map as M
 import qualified Data.Set as S
-import qualified Data.IntMap as IM
 
 data Merge = Merge
-    { mCls :: IM.IntMap (S.Set Evar)
-    , mIdx :: M.Map Evar Int
+    { mCls :: M.Map Evar (S.Set Evar)  -- representant -> represented evars
+    , mIdx :: M.Map Evar Evar          -- represented -> representant
     }
 
 -- a = f Evar
@@ -28,56 +27,60 @@ replaceEvars
     -> a
     -> b
 replaceEvars evarMap traversal
-    = runIdentity . traversal g
-  where
-    g r = case M.lookup r evarMap of
-        Just s -> return s
-        Nothing -> error $ "no merge map for " ++ show r
+    = runIdentity . traversal (\r -> return $ M.findWithDefault r r evarMap)
 
 mergeEvars :: Eqs Evar -> M.Map Evar Evar
-mergeEvars = mrgResult . foldr mergeEvar mrgInitial . S.toList
+mergeEvars = mIdx . foldr mergeEvar mrgInitial . S.toList
 
-mrgResult :: Merge -> M.Map Evar Evar
-mrgResult (Merge _cls idx) = M.map EV idx
-
+-- start with R and E being representants
+-- so that they are always chosen as representants
 mrgInitial :: Merge
-mrgInitial = Merge IM.empty M.empty
+mrgInitial = Merge
+    { mCls = M.fromList
+        [ (Fixed E, S.singleton $ Fixed E)
+        , (Fixed R, S.singleton $ Fixed R)
+        ]
+    , mIdx = M.fromList
+        [ (Fixed E, Fixed E)
+        , (Fixed R, Fixed R)
+        ]
+    }
 
 mergeEvar :: (Evar, Evar) -> Merge -> Merge
 mergeEvar (r, s) (Merge cls idx) = case (M.lookup r idx, M.lookup s idx) of
-    (Nothing, Nothing) -> let freshClsNr = IM.size cls in Merge
-        { mCls = IM.insert freshClsNr (S.fromList [r,s]) cls
+    (Nothing, Nothing) -> Merge
+        { mCls = M.insert r (S.fromList [r,s]) cls
         , mIdx = idx `M.union` M.fromList
-            [(r, freshClsNr), (s, freshClsNr)]
+            [(r, r), (s, r)]
         }
 
     (Nothing, Just sCls) -> Merge
-        { mCls = IM.insertWith S.union sCls (S.singleton r) cls
+        { mCls = M.insertWith S.union sCls (S.singleton r) cls
         , mIdx = M.insert r sCls idx
         }
 
     (Just rCls, Nothing) -> Merge
-        { mCls = IM.insertWith S.union rCls (S.singleton s) cls
+        { mCls = M.insertWith S.union rCls (S.singleton s) cls
         , mIdx = M.insert s rCls idx
         }
 
     (Just rCls, Just sCls)
-        | rEvars <- cls IM.! rCls
-        , sEvars <- cls IM.! sCls
-        -> if S.size rEvars <= S.size sEvars
+        | rEvars <- cls M.! rCls
+        , sEvars <- cls M.! sCls
+        -> if rCls /= Fixed R && rCls /= Fixed E && S.size rEvars <= S.size sEvars
             -- if rEvars is smaller, merge it into sEvars
             then Merge
                 { mCls
-                    = IM.insertWith S.union sCls rEvars
-                    . IM.delete rCls
+                    = M.insertWith S.union sCls rEvars
+                    . M.delete rCls
                     $ cls
                 , mIdx = foldr (\r ix -> M.insert r sCls ix) idx (S.toList rEvars)
                 }
             -- otherwise merge sEvars into rEvars
             else Merge
                 { mCls
-                    = IM.insertWith S.union rCls sEvars
-                    . IM.delete sCls
+                    = M.insertWith S.union rCls sEvars
+                    . M.delete sCls
                     $ cls
                 , mIdx = foldr (\s ix -> M.insert s rCls ix) idx (S.toList sEvars)
                 }
