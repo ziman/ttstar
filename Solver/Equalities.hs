@@ -19,11 +19,14 @@ data Merge = Merge
     , mIdx :: M.Map Evar Int
     }
 
+-- a = f Evar
+-- b = f Evar
+-- but because `f` might be a type synonym, Haskell won't let us say so
 replaceEvars
     :: M.Map Evar Evar
-    -> Traversal (f Evar) (f Evar) Evar Evar
-    -> f Evar
-    -> f Evar
+    -> Traversal a b Evar Evar
+    -> a
+    -> b
 replaceEvars evarMap traversal
     = runIdentity . traversal g
   where
