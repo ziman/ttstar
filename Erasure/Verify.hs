@@ -109,7 +109,7 @@ R /\ R = R
 _ /\ _ = E
 
 mustBeType :: TT Relevance -> Ver ()
-mustBeType ty = conv E ty (V typeOfTypes)
+mustBeType ty = conv ty (V typeOfTypes)
 
 verify :: Program Relevance -> Either VerFailure ()
 verify prog = runVer (builtins relOfType) $ verProg prog
@@ -132,7 +132,7 @@ verDef d@(Def n r ty (Term tm) cs) = bt ("DEF-TERM", n) $ do
     tyty <- verTm E ty
     mustBeType tyty
     tmty <- with d{ defBody = Abstract Var } $ verTm r tm
-    conv r tmty ty
+    conv tmty ty
 
 verDef d@(Def n r ty (Clauses cls) cs) = bt ("DEF-CLAUSES", n) $ do
     tyty <- verTm E ty
@@ -157,7 +157,7 @@ verClause r (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
     lhsTy <- verPat True r r (M.fromList [(defName d, d) | d <- pvs]) lhs
     withs pvs $ do
         rhsTy <- verTm r rhs
-        conv r lhsTy rhsTy
+        conv lhsTy rhsTy
 
 verTm :: Relevance -> Term -> Ver Type
 verTm E (V n) = bt ("VAR-E", n) $ do
@@ -193,7 +193,7 @@ verTm r (App s f x) = bt ("APP", r, f, s, x) $ do
         Bind Pi [Def n piR piTy (Abstract Var) _] piRhs -> do
             (r /\ piR) <-> (r /\ s)
             xty <- verTm (r /\ s) x
-            conv (r /\ s) xty piTy            
+            conv xty piTy            
             return $ subst n x piRhs
 
         _ -> verFail $ NotPi fty
@@ -249,7 +249,7 @@ verPat fapp funR r pvs (PApp s f x) = bt ("PAT-APP", fapp, r, s, f, x) $ do
             (r /\ piR) <-> (r /\ s)
             xty <- verPat False funR (r /\ s) pvs x
             with' (M.union pvs) $
-                conv (r /\ s) xty piTy
+                conv xty piTy
             return $ subst n (pat2term x) piRhs
 
         _ -> verFail $ NotPi fty
@@ -258,36 +258,36 @@ verPat fapp funR r pvs (PForced tm) = bt ("PAT-FORCED", tm) $ do
     with' (M.union pvs) $ do
         verTm r tm
 
-conv :: Relevance -> Type -> Type -> Ver ()
-conv r p q = do
+conv :: Type -> Type -> Ver ()
+conv p q = do
     ctx <- getCtx
-    conv' r (whnf ctx p) (whnf ctx q)
+    conv' (whnf ctx p) (whnf ctx q)
     
-conv' :: Relevance -> Type -> Type -> Ver ()
-conv' r (V n) (V n')
+conv' :: Type -> Type -> Ver ()
+conv' (V n) (V n')
     | n == n' = return ()
 
-conv' s (App I f x) (App I f' x') = bt ("CONV-APP-IRR", f, x, f', x') $ do
-    conv s f f'
+conv' (App I f x) (App I f' x') = bt ("CONV-APP-IRR", f, x, f', x') $ do
+    conv f f'
 
-conv' s (App r f x) (App r' f' x') = bt ("CONV-APP", f, x, f', x') $ do
-    (s /\ r) <-> (s /\ r')
-    conv s f f'
-    conv (s /\ r) x x'
+conv' (App r f x) (App r' f' x') = bt ("CONV-APP", f, x, f', x') $ do
+    r <-> r'
+    conv f f'
+    conv x x'
 
-conv' s
+conv'
     (Bind b  [d@(Def  n  r  ty  (Abstract Var) _)] tm)
     (Bind b' [d'@(Def n' r' ty' (Abstract Var) _)] tm')
     | b == b' = bt ("CONV-BIND", b, d, tm, d', tm') $ do
-        (s /\ r) <-> (s /\ r')
-        conv (s /\ r) ty ty'
+        r <-> r'
+        conv ty ty'
         with d $ 
-            conv s tm (subst n' (V n) tm')
+            conv tm (subst n' (V n) tm')
 
 {- This would be necessary for conversion-checking of multilets. Let's disable them for now.
-conv' r (Bind b (d:ds) tm) (Bind b' (d':ds') tm')
+conv' (Bind b (d:ds) tm) (Bind b' (d':ds') tm')
     = bt ("CONV-SIMPL", b) $
-        conv' r (Bind b [d] $ Bind b ds tm) (Bind b' [d'] $ Bind b' ds' tm')
+        conv' (Bind b [d] $ Bind b ds tm) (Bind b' [d'] $ Bind b' ds' tm')
 -}
 
-conv' r p q = verFail $ CantConvert p q
+conv' p q = verFail $ CantConvert p q
