@@ -114,6 +114,8 @@ cgPat pvs pat@(PApp r f x) = error $ "can't compile pattern: " ++ show pat
 
 cgPat pvs (PForced tm) = text "_"
 
+cgPat pvs (PHead _f) = text "_"
+
 cgLambda :: Name -> Doc -> Doc
 cgLambda n body = parens (text "lambda" <+> parens (cgName n) $+$ indent body)
 

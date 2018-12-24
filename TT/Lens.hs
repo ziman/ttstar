@@ -29,6 +29,8 @@ patRelevance f = g
             -> PApp <$> f r <*> g fun <*> g arg
         PForced tm
             -> PForced <$> ttRelevance f tm
+        PHead f
+            -> pure $ PHead f
 
 defRelevance :: Ord r' => Traversal (Def r) (Def r') r r'
 defRelevance f (Def n r ty body mcs)
@@ -51,13 +53,7 @@ clauseRelevance f (Clause pvs lhs rhs)
         <*> ttRelevance f rhs
 
 csRelevance :: Ord r' => Traversal (Constrs r) (Constrs r') r r'
-csRelevance f (Constrs impls eqs)
-    = Constrs <$> implRelevance f impls <*> eqRelevance f eqs
-
-eqRelevance :: Ord r' => Traversal (Eqs r) (Eqs r') r r'
-eqRelevance f = fmap S.fromList . traverse f' . S.toList
-  where
-    f' (x, y) = (,) <$> f x <*> f y
+csRelevance f (Constrs impls) = Constrs <$> implRelevance f impls
 
 implRelevance :: Ord r' => Traversal (Impls r) (Impls r') r r'
 implRelevance f = fmap M.fromList . traverse f' . M.toList

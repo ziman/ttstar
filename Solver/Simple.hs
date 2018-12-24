@@ -7,7 +7,7 @@ import qualified Data.Map as M
 import qualified Data.Set as S
 
 reduce :: Constrs Evar -> Constrs Evar
-reduce (Constrs impls eqs) = Constrs (reduceImpls impls) eqs  -- TODO
+reduce (Constrs impls) = Constrs (reduceImpls impls)
 
 -- reduce the constraint set, keeping the empty-guard constraint
 reduceImpls :: Impls Evar -> Impls Evar

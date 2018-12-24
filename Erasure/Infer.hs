@@ -67,24 +67,15 @@ type Type = TT Evar
 
 infixl 2 /\
 (/\) :: Constrs Evar -> Constrs Evar -> Constrs Evar
-Constrs impls eqs /\ Constrs impls' eqs' = Constrs
-    { cImpls = M.unionWith S.union impls impls'
-    , cEqs   = S.union eqs eqs'
-    }
+Constrs impls /\ Constrs impls' = Constrs $ M.unionWith S.union impls impls'
 
 infix 3 -->
 (-->) :: Evar -> Evar -> Constrs Evar
-g --> u = Constrs
-    { cImpls = M.singleton (S.singleton g) (S.singleton u)
-    , cEqs   = noEqs
-    }
+p --> q = Constrs $ M.singleton (S.singleton p) (S.singleton q)
 
 infix 3 <->
 (<->) :: Evar -> Evar -> Constrs Evar
-p <-> q = Constrs
-    { cImpls = noImpls
-    , cEqs   = S.singleton (min p q, max p q)
-    }
+p <-> q = p --> q /\ q --> p
 
 unions :: [Constrs Evar] -> Constrs Evar
 unions = foldr (/\) noConstrs
@@ -186,7 +177,7 @@ inferDef :: Def Evar -> TC (Def Evar)
 -- We should probably explain on an example why.
 --
 -- The point is that the conversion infer binds the type signature (the asserted type)
--- with the inferred type, also binding the evarvars in them, so that the signature
+-- with the inferred type, also binding the evars in them, so that the signature
 -- can later represent the whole definition.
 
 inferDef (Def n r ty (Abstract a) _noCs) = do
@@ -215,12 +206,12 @@ inferDef d@(Def n r ty (Clauses cls) _noCs) = bt ("DEF-CLAUSES", n) $ do
 
     -- check clauses
     clauseCs <- with d{ defBody = Abstract Var } $ do
-        unions <$> traverse inferClause cls
+        unions <$> traverse (inferClause r) cls
 
     return $ Def n r ty (Clauses cls) clauseCs
 
-inferClause :: Clause Evar -> TC (Constrs Evar)
-inferClause (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
+inferClause :: Evar -> Clause Evar -> TC (Constrs Evar)
+inferClause q (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
     ctx <- getCtx
 
     -- check patvar names
@@ -238,7 +229,7 @@ inferClause (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
     let pvs'Ctx = M.fromList [(defName d, d) | d <- pvs']
 
     -- check LHS vs. RHS
-    (lty, lcs) <- inferPat (Fixed R) pvs'Ctx lhs
+    (lty, lcs) <- inferPat q q pvs'Ctx lhs
     withs pvs' $ do
         (rty, rcs) <- inferTm rhs
         ccs <- conv lty rty
@@ -246,42 +237,42 @@ inferClause (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
 
 -- the relevance evar "s" stands for "surrounding"
 -- it's the relevance of the whole pattern
-inferPat :: Evar -> Ctx Evar -> Pat Evar -> TC (Type, Constrs Evar)
-inferPat s pvs pat@(PV n)
+inferPat :: Evar -> Evar -> Ctx Evar -> Pat Evar -> TC (Type, Constrs Evar)
+inferPat q s pvs pat@(PV n)
     | Just d <- M.lookup n pvs
     = bt ("PAT-VAR", n) $ do
-        return (defType d, defR d --> s)  -- forces surrounding to be relevant
+        return (defType d, defR d <-> s)
 
 -- this must be a constructor if it's not a patvar
-inferPat s pvs pat@(PV n) = bt ("PAT-REF", n) $ do
+inferPat q s pvs pat@(PV n) = bt ("PAT-REF", n) $ do
     d@(Def n r ty body cs) <- lookup n
     case body of
         Abstract Constructor           -- here we inspect: that affects 1) surrounding, 2) ctor relevance
             -> return (
                     ty,
-                    Fixed R --> s /\ Fixed R --> r
+                    q --> s /\ q --> r
                 )
         _
             -> tcfail $ InvalidPattern pat
 
-inferPat s pvs pat@(PForced tm) = bt ("PAT-FORCED", tm) $ do
+inferPat q s pvs pat@(PForced tm) = bt ("PAT-FORCED", tm) $ do
     (ty, cs) <- with' (M.union pvs) $ inferTm tm
     return (ty, cond s cs)
 
-inferPat s pvs pat@(PApp app_r f x) = bt ("PAT-APP", pat) $ do
-    (fty, fcs) <- inferPat s pvs f
-    (xty, xcs) <- inferPat app_r pvs x  -- app_r is always absolute
+inferPat q s pvs pat@(PApp appR f x) = bt ("PAT-APP", pat) $ do
+    (fty, fcs) <- inferPat q s pvs f
+    (xty, xcs) <- inferPat q appR pvs x  -- app_r is always absolute
     ctx <- getCtx
     case whnf ctx fty of
-        Bind Pi [Def n' pi_r ty' (Abstract Var) _noCs] retTy -> do
+        Bind Pi [Def n' piR ty' (Abstract Var) _noCs] retTy -> do
             xtycs <- with' (M.union pvs) $ conv xty ty'
             let cs =
-                    app_r --> s                 -- if something inspects, the whole thing inspects
-                    /\ cond s (pi_r <-> app_r) -- the two must match in relevant contexts
+                    appR --> s      -- if something inspects, the whole thing inspects
+                    /\ piR <-> appR -- the two must match
                     /\ fcs
-                    /\ cond app_r xtycs /\ xcs  -- xcs was derived with s=app_r
-                                                -- but xtycs wasn't so we need to cond it
-                                                -- this is equivalent to using the Conv rule
+                    /\ xtycs
+                    /\ cond appR xcs
+
             return (subst n' (pat2term x) retTy, cs)
 
         _ -> do
@@ -336,20 +327,18 @@ inferTm t@(Bind Let ds tm) = bt ("LET", t) $ do
     (tmty, tmcs) <- with' (M.union ds') $ inferTm tm
     return (tmty, tmcs)
 
-inferTm t@(App app_r f x) = bt ("APP", t) $ do
+inferTm t@(App appR f x) = bt ("APP", t) $ do
     (fty, fcs) <- inferTm f
     (xty, xcs) <- inferTm x
     ctx <- getCtx
     case whnf ctx fty of
-        Bind Pi [Def n' pi_r ty' (Abstract Var) _noCs] retTy -> do
+        Bind Pi [Def n' piR ty' (Abstract Var) _noCs] retTy -> do
             xtycs <- conv xty ty'
             let cs =
-                    -- we can't leave xtycs out entirely because
-                    -- if it's relevant, it needs to be erasure-correct as well
-                    -- but if it's not used, then it needn't be erasure-correct
                     fcs
-                    /\ cond app_r (xcs /\ xtycs)
-                    /\ pi_r <-> app_r
+                    /\ cond appR xcs
+                    /\ xtycs
+                    /\ piR <-> appR
             return (subst n' x retTy, cs)
 
         _ -> do
@@ -398,7 +387,7 @@ conv' p@(Bind b [Def n r ty (Abstract Var) _noCs] tm) q@(Bind b' [Def n' r' ty' 
         tycs <- conv ty ty' -- (rename n' n ty')
         tmcs <- with (Def n r ty (Abstract Var) noConstrs)
                 $ conv tm (rename n' n tm')
-        return $ cond r tycs /\ tmcs /\ r <-> r'
+        return $ tycs /\ tmcs /\ r <-> r'
 
 {- This would be necessary for conversion-checking of multilets. Let's disable them for now.
 conv' (Bind b (d:ds) tm) (Bind b' (d':ds') tm') = bt ("C-SIMPL", b) $
@@ -414,7 +403,7 @@ conv' p@(App (Fixed I) f x) q@(App (Fixed I) f' x') = bt ("C-APP", p, q) $ do
 conv' p@(App r f x) q@(App r' f' x') = bt ("C-APP", p, q) $ do
     fcs <- conv f f'
     xcs <- conv x x'
-    return $ fcs /\ cond r xcs /\ r <-> r'
+    return $ fcs /\ xcs /\ r <-> r'
 
 -- we don't include a case for Forced because those constructors
 -- get normalised away to bare terms

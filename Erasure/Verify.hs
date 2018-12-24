@@ -1,4 +1,5 @@
 {-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE NamedFieldPuns #-}
 
 module Erasure.Verify
     ( verify
@@ -8,7 +9,7 @@ module Erasure.Verify
 import TT.Core
 import TT.Utils
 import TT.Normalise (whnf)
-import TT.Pretty ()
+import TT.Pretty (prettyCol)
 
 import qualified Data.Set as S
 import qualified Data.Map as M
@@ -24,6 +25,7 @@ data VerError
     | NotImplemented
     | NotConstructor Name
     | NotConstructorHead Term
+    | NotClauses Name
     | CantConvert Term Term
     | PatvarsPatternMismatch [Name] [Name]
     | NonLinearPattern (Pat Relevance)
@@ -73,8 +75,11 @@ bt dbg sub = do
 
 showCtx :: Ctx Relevance -> String
 showCtx ctx = unlines
-    [ "  " ++ show (defName d) ++ " : " ++ show (defType d)
-    | d <- M.elems ctx
+    [ "  "
+        ++ show defName
+        ++ " " ++ show (prettyCol defR)
+        ++ " " ++ show defType
+    | Def{defName, defR, defType} <- M.elems ctx
     ]
 
 getCtx :: Ver (Ctx Relevance)
@@ -191,7 +196,7 @@ verTm r (App s f x) = bt ("APP", r, f, s, x) $ do
     fty <- verTm r f
     case whnf ctx fty of
         Bind Pi [Def n piR piTy (Abstract Var) _] piRhs -> do
-            (r /\ piR) <-> (r /\ s)
+            piR <-> s
             xty <- verTm (r /\ s) x
             conv xty piTy            
             return $ subst n x piRhs
@@ -207,7 +212,7 @@ verPat :: Bool -> Relevance -> Relevance -> Ctx Relevance -> Pat Relevance -> Ve
 verPat fapp funR r pvs (PV n)
     | Just d <- M.lookup n pvs
     = bt ("PAT-VAR", n) $ do
-        defR d --> r
+        defR d <-> r
         return $ defType d
 
 verPat fapp funR r pvs (PV n) = bt ("PAT-REF", n) $ do
@@ -232,10 +237,15 @@ verPat fapp funR r pvs (PApp s f x) = bt ("PAT-APP", fapp, r, s, f, x) $ do
             | (h,_args) <- unApply tm
             -> case h of
                 V n -> case M.lookup n ctx of
-                    Just (defBody -> Abstract Var) | fapp -> return () -- clause heads will be functions, vars at this stage
-                    Just (defBody -> Abstract Constructor) -> return ()  -- everything else must be a constructor
+                    Just (defBody -> Abstract Constructor) -> return ()  -- forced constructor
                     _ -> verFail $ NotConstructor n
                 _ -> verFail $ NotConstructorHead h
+
+        PHead f -> case M.lookup f ctx of
+            Just (defBody -> Abstract Var)
+                | fapp
+                -> return () -- clause heads will be vars at this stage
+            _ -> verFail $ NotClauses f
 
         PV n -> case M.lookup n ctx of
             Just (defBody -> Abstract Constructor) -> return ()
@@ -246,7 +256,7 @@ verPat fapp funR r pvs (PApp s f x) = bt ("PAT-APP", fapp, r, s, f, x) $ do
     fty <- verPat fapp funR r pvs f
     case whnf ctx fty of
         Bind Pi [Def n piR piTy (Abstract Var) _] piRhs -> do
-            (r /\ piR) <-> (r /\ s)
+            piR <-> s
             xty <- verPat False funR (r /\ s) pvs x
             with' (M.union pvs) $
                 conv xty piTy
@@ -257,6 +267,16 @@ verPat fapp funR r pvs (PApp s f x) = bt ("PAT-APP", fapp, r, s, f, x) $ do
 verPat fapp funR r pvs (PForced tm) = bt ("PAT-FORCED", tm) $ do
     with' (M.union pvs) $ do
         verTm r tm
+
+verPat fapp funR r pvs (PHead f) = bt ("PAT-HEAD", f) $ do
+    d <- lookupName f
+    case defBody d of
+        Clauses _ -> return ()
+        _ -> verFail $ NotClauses f
+
+    funR --> defR d
+
+    return $ defType d
 
 conv :: Type -> Type -> Ver ()
 conv p q = do

@@ -18,7 +18,7 @@ import Data.IntSet (IntSet)
 import qualified Data.IntSet as IS
 
 reduce :: Constrs Evar -> Constrs Evar
-reduce (Constrs impls eqs) = Constrs (reduceImpls impls) eqs  -- TODO
+reduce (Constrs impls) = Constrs (reduceImpls impls)
 
 -- reduce the constraint set, keeping the empty-guard constraint
 -- we could use the simple solver for smaller sets
