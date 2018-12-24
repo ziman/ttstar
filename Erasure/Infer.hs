@@ -80,12 +80,6 @@ p <-> q = p --> q /\ q --> p
 unions :: [Constrs Evar] -> Constrs Evar
 unions = foldr (/\) noConstrs
 
-cond :: Evar -> Constrs Evar -> Constrs Evar
-cond r (Constrs impls eqs) = Constrs
-    { cImpls = M.mapKeysWith S.union (S.insert r) impls
-    , cEqs   = eqs
-    }
-
 with :: Def Evar -> TC a -> TC a
 with d = with' $ M.insert (defName d) d
 
@@ -142,7 +136,7 @@ runTC redConstrs maxTag ctx tc = evalState (runExceptT $ runReaderT tc (redConst
 
 infer :: ConstrRedFun -> Program Evar -> Either TCFailure (Constrs Evar)
 infer redConstrs prog = runTC redConstrs maxTag ctx $ do
-    (_ty, cs) <- inferTm prog
+    (_ty, cs) <- inferTm (S.singleton $ Fixed R) prog
     return cs
   where
     getTag :: Evar -> Int
@@ -182,7 +176,7 @@ inferDef :: Def Evar -> TC (Def Evar)
 
 inferDef (Def n r ty (Abstract a) _noCs) = do
     -- check type
-    (tyty, tycs) <- inferTm ty
+    (tyty, tycs) <- inferTm (S.singleton $ Fixed E) ty
     tytyTypeCs <- conv tyty (V $ UN "Type")
 
     -- no constraints because the type is always erased
@@ -190,18 +184,18 @@ inferDef (Def n r ty (Abstract a) _noCs) = do
 
 inferDef d@(Def n r ty (Term tm) _noCs) = bt ("DEF-TERM", n) $ do
     -- check type
-    (tyty, tycs) <- inferTm ty
+    (tyty, tycs) <- inferTm (S.singleton $ Fixed E) ty
     _ <- conv tyty (V $ UN "Type")
 
     -- check body
-    (tmty, tmcs) <- with d $ inferTm tm  -- "with d" because it could be recursive
+    (tmty, tmcs) <- with d $ inferTm (S.singleton r) tm  -- "with d" because it could be recursive
     tmTyCs       <- conv ty tmty
 
     return $ Def n r ty (Term tm) (tmcs /\ tmTyCs)
 
 inferDef d@(Def n r ty (Clauses cls) _noCs) = bt ("DEF-CLAUSES", n) $ do
     -- check type
-    (tyty, tycs) <- inferTm ty
+    (tyty, tycs) <- inferTm (S.singleton $ Fixed E) ty
     _ <- conv tyty (V $ UN "Type")
 
     -- check clauses
@@ -231,14 +225,19 @@ inferClause q (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
     -- check LHS vs. RHS
     (lty, lcs) <- inferPat q q pvs'Ctx lhs
     withs pvs' $ do
-        (rty, rcs) <- inferTm rhs
+        (rty, rcs) <- inferTm (S.singleton q) rhs
         ccs <- conv lty rty
         return $ lcs /\ rcs /\ ccs
 
 -- the relevance evar "s" stands for "surrounding"
 -- it's the relevance of the whole pattern
-inferPat :: Evar -> Evar -> Ctx Evar -> Pat Evar -> TC (Type, Constrs Evar)
-inferPat q s pvs pat@(PV n)
+inferPat
+    :: Evar
+    -> Guards Evar
+    -> Ctx Evar
+    -> Pat Evar
+    -> TC (Type, Constrs Evar)
+inferPat q gs pvs pat@(PV n)
     | Just d <- M.lookup n pvs
     = bt ("PAT-VAR", n) $ do
         return (defType d, defR d <-> s)
@@ -256,7 +255,7 @@ inferPat q s pvs pat@(PV n) = bt ("PAT-REF", n) $ do
             -> tcfail $ InvalidPattern pat
 
 inferPat q s pvs pat@(PForced tm) = bt ("PAT-FORCED", tm) $ do
-    (ty, cs) <- with' (M.union pvs) $ inferTm tm
+    (ty, cs) <- with' (M.union pvs) $ inferTm (S.singleton s) tm
     return (ty, cond s cs)
 
 inferPat q s pvs pat@(PApp appR f x) = bt ("PAT-APP", pat) $ do
@@ -278,17 +277,20 @@ inferPat q s pvs pat@(PApp appR f x) = bt ("PAT-APP", pat) $ do
         _ -> do
             tcfail $ NonFunction (pat2term f) fty
 
-inferTm :: Term -> TC (Type, Constrs Evar)
+inferTm
+    :: Guards Evar
+    -> Term
+    -> TC (Type, Constrs Evar)
 
-inferTm t@(V Blank) = tcfail $ UncheckableTerm t
+inferTm gs t@(V Blank) = tcfail $ UncheckableTerm t
 
-inferTm t@(V n) = bt ("VAR", n) $ do
+inferTm gs t@(V n) = bt ("VAR", n) $ do
     -- at the point of usage of a bound name,
     -- the constraints associated with that name come in
     d <- lookup n
     return (defType d, defConstraints d /\ Fixed R --> defR d)
 
-inferTm t@(EI n ty) = bt ("INST", n, ty) $ do
+inferTm gs t@(EI n ty) = bt ("INST", n, ty) $ do
     -- here, we need to freshen the constraints before bringing them up
     d <- instantiate freshTag IM.empty =<< lookup n
     convCs <- conv (defType d) ty
@@ -307,12 +309,12 @@ inferTm t@(EI n ty) = bt ("INST", n, ty) $ do
     -- Also, all unused instances should be recognised as erased (I didn't check that).
     return (ty, defConstraints d /\ Fixed R --> defR d /\ convCs)
 
-inferTm t@(Bind Lam [d@(Def n r ty (Abstract Var) _noCs)] tm) = bt ("LAM", t) $ do
+inferTm gs t@(Bind Lam [d@(Def n r ty (Abstract Var) _noCs)] tm) = bt ("LAM", t) $ do
     d' <- inferDef d
     (tmty, tmcs) <- with d' $ inferTm tm
     return (Bind Pi [d'] tmty, tmcs)
 
-inferTm t@(Bind Pi [d@(Def n r ty (Abstract Var) _noCs)] tm) = bt ("PI", t) $ do
+inferTm gs t@(Bind Pi [d@(Def n r ty (Abstract Var) _noCs)] tm) = bt ("PI", t) $ do
     d' <- inferDef d
     -- (tyty, _tycs) <- inferTm ty
     -- cs' <- conv (V $ UN "Type") tyty
@@ -322,12 +324,12 @@ inferTm t@(Bind Pi [d@(Def n r ty (Abstract Var) _noCs)] tm) = bt ("PI", t) $ do
         return $ tmcs /\ cs
     return (V $ UN "Type", tmcs)
 
-inferTm t@(Bind Let ds tm) = bt ("LET", t) $ do
+inferTm gs t@(Bind Let ds tm) = bt ("LET", t) $ do
     ds' <- inferDefs ds
     (tmty, tmcs) <- with' (M.union ds') $ inferTm tm
     return (tmty, tmcs)
 
-inferTm t@(App appR f x) = bt ("APP", t) $ do
+inferTm gs t@(App appR f x) = bt ("APP", t) $ do
     (fty, fcs) <- inferTm f
     (xty, xcs) <- inferTm x
     ctx <- getCtx
@@ -344,7 +346,7 @@ inferTm t@(App appR f x) = bt ("APP", t) $ do
         _ -> do
             tcfail $ NonFunction f fty
 
-inferTm tm = bt ("UNCHECKABLE-TERM", tm) $ do
+inferTm gs tm = bt ("UNCHECKABLE-TERM", tm) $ do
     tcfail $ UncheckableTerm tm
 
 freshen :: Monad m => m Int -> Evar -> StateT (IM.IntMap Evar) m Evar
