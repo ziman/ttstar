@@ -25,6 +25,7 @@ data VerError
     | NotImplemented
     | NotConstructor Name
     | NotConstructorHead Term
+    | BadPatAppHead (Pat Relevance)
     | NotClauses Name
     | CantConvert Term Term
     | PatvarsPatternMismatch [Name] [Name]
@@ -234,24 +235,22 @@ verPat fapp funR r pvs (PApp s f x) = bt ("PAT-APP", fapp, r, s, f, x) $ do
 
     case f of
         PForced tm
-            | (h,_args) <- unApply tm
-            -> case h of
-                V n -> case M.lookup n ctx of
-                    Just (defBody -> Abstract Constructor) -> return ()  -- forced constructor
-                    _ -> verFail $ NotConstructor n
-                _ -> verFail $ NotConstructorHead h
+            | (V n, _args) <- unApply tm
+            , Just (defBody -> Abstract Constructor) <- M.lookup n ctx
+            -> return ()  -- forced constructor
 
-        PHead f -> case M.lookup f ctx of
-            Just (defBody -> Abstract Var)
-                | fapp
-                -> return () -- clause heads will be vars at this stage
-            _ -> verFail $ NotClauses f
+        PHead f  -- whole fun def will be var at this stage
+            | Just (defBody -> Abstract Var) <- M.lookup f ctx
+            , fapp  -- can appear here
+            -> return ()
 
-        PV n -> case M.lookup n ctx of
-            Just (defBody -> Abstract Constructor) -> return ()
-            _ -> verFail $ NotConstructor n
+        PV n
+            | Just (defBody -> Abstract Constructor) <- M.lookup n ctx
+            -> return () -- regular constructor
 
         PApp _ _ _ -> return ()
+
+        _ -> verFail $ BadPatAppHead f
 
     fty <- verPat fapp funR r pvs f
     case whnf ctx fty of
