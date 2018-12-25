@@ -9,7 +9,8 @@ indent = nest 2
 codegen :: IR -> Doc
 
 codegen prog = 
-    vcat [cgDef n d $$ blankLine | (n,d) <- defs]
+    text "(import (chicken process-context))"
+    $$ vcat [cgDef n d $$ blankLine | (n,d) <- defs]
     $$ parens (text "display" <+> cgTm entryPoint)
     $$ parens (text "newline")
   where
