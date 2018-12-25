@@ -13,7 +13,7 @@ idTT = Bind Lam [Def (UN "x") () (V Blank) (Abstract Var) noConstrs] (V (UN "x")
 isIdClause :: S.Set Name -> Clause () -> Bool
 isIdClause ids (Clause pvs (PApp _r _f arg) rhs)
     = rmId ids (pat2term arg) == rmId ids rhs
-isIdClause ids (Clause [] (PForced _f) tm)
+isIdClause ids (Clause [] (PHead _f) tm)
     = isIdTm ids tm
 isIdClause _ _ = False
 
