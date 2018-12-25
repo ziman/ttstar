@@ -9,9 +9,9 @@
     constructor Q : Mool
     constructor W : Mool
     f 
-      [_] T = Bool
-      [_] F = Mool
-      [_] Q = Bool
-      [_] W = Mool
+      f T = Bool
+      f F = Mool
+      f Q = Bool
+      f W = Mool
     main = Tuple (f T) (f F) (f Q) (f W)
   in main

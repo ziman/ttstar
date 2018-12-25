@@ -9,10 +9,10 @@
     constructor True : Bool
     constructor False : Bool
     retTy 
-      [_] (Just [_] t) = Bool
-      [_] (Nothing [_]) = Type
+      retTy (Just [_] t) = Bool
+      retTy (Nothing [_]) = Type
     f 
-      [_] (Just [_] b) = b
-      [_] (Nothing [_]) = Bool
+      f (Just [_] b) = b
+      f (Nothing [_]) = Bool
     main = f (Just Bool False)
   in main

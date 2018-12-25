@@ -5,7 +5,7 @@
     constructor F : Bool
     main = 
       let not 
-        [_] T = F
-        [_] F = T
+        not T = F
+        not F = T
       in not F
   in main

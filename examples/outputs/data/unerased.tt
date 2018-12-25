@@ -5,11 +5,11 @@
     constructor Z : N
     constructor S : (_x0) -> N
     plus 
-      [_] Z m = m
-      [_] (S n) m = S (plus n m)
+      plus Z m = m
+      plus (S n) m = S (plus n m)
     main = 
       let pred 
-        [_] Z = Z
-        [_] (S n) = n
+        pred Z = Z
+        pred (S n) = n
       in plus 2 3
   in main

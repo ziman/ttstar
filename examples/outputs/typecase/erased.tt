@@ -8,14 +8,14 @@
     constructor True : Bool
     constructor False : Bool
     not 
-      [_] True = False
-      [_] False = True
+      not True = False
+      not False = True
     isZero 
-      [_] Z = True
-      [_] (S _) = False
+      isZero Z = True
+      isZero (S n) = False
     f 
-      [_] Bool = not
-      [_] Nat = isZero
-      [_] _ = (\x. False)
+      f Bool = not
+      f Nat = isZero
+      f a = (\x. False)
     main = f Bool False
   in main

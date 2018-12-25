@@ -11,11 +11,11 @@
     id : (_x0 : Bool) -> Bool = (\x : Bool. x)
     constT : (_x1 : Bool) -> Bool = (\_0 : Bool. T)
     fty : (_x2 : Bool) -> Type 
-      [fty] T = (_x3 : Bool) -> Bool
-      [fty] F = (_x4 : Bool) -> Bool
+      fty T = (_x3 : Bool) -> Bool
+      fty F = (_x4 : Bool) -> Bool
     f : (x : Bool) -> fty x 
-      [f] T = id
-      [f] F = constT
+      f T = id
+      f F = constT
     main : TwoBools = TB (f T F) (f F F)
   in main
 
@@ -30,21 +30,45 @@
     id :6: (_x0 :7: Bool) -> Bool = (\x :8: Bool. x)
     constT :9: (_x1 :10: Bool) -> Bool = (\_0 :11: Bool. T)
     fty :12: (_x2 :13: Bool) -> Type 
-      [fty] -14- T = (_x3 :15: Bool) -> Bool
-      [fty] -16- F = (_x4 :17: Bool) -> Bool
+      fty -14- T = (_x3 :15: Bool) -> Bool
+      fty -16- F = (_x4 :17: Bool) -> Bool
     f :18: (x :19: Bool) -> fty -20- x 
-      [f] -21- T = id
-      [f] -22- F = constT
+      f -21- T = id
+      f -22- F = constT
     main :23: TwoBools = TB -25- (f -27- T -26- F) -24- (f -29- F -28- F)
   in main
 
 ### Constraints ###
 
-[] -> [2,3,5,6,7,8,9,15,18,19,21,22,24,25,26,27,29,R]
+[] -> [24,25,R]
+[6] -> [8]
+[7] -> [8,15]
+[8] -> [7]
+[9] -> [2]
 [10] -> [11,17]
 [11] -> [10]
+[12] -> [1,2,3,12,14,16]
+[13] -> [14,16,20]
+[14] -> [13]
+[15] -> [7,26]
+[16] -> [13]
 [17] -> [10,28]
-[28] -> [3,17]
+[18] -> [2,3,6,9,18,21,22]
+[19] -> [21,22,27,29]
+[20] -> [13]
+[20,E] -> [19]
+[21] -> [19]
+[22] -> [19]
+[23] -> [5,18]
+[23,26] -> [3]
+[23,27] -> [2]
+[23,28] -> [3]
+[23,29] -> [3]
+[26] -> [15]
+[27] -> [19]
+[28] -> [17]
+[29] -> [19]
+[E] -> [1,4,12,R]
 [R] -> [23]
 
 ### Solution ###
@@ -62,11 +86,11 @@
     id :R: (_x0 :R: Bool) -> Bool = (\x :R: Bool. x)
     constT :R: (_x1 :E: Bool) -> Bool = (\_0 :E: Bool. T)
     fty :E: (_x2 :E: Bool) -> Type 
-      [fty] -E- T = (_x3 :R: Bool) -> Bool
-      [fty] -E- F = (_x4 :E: Bool) -> Bool
+      fty -E- T = (_x3 :R: Bool) -> Bool
+      fty -E- F = (_x4 :E: Bool) -> Bool
     f :R: (x :R: Bool) -> fty -E- x 
-      [f] -R- T = id
-      [f] -R- F = constT
+      f -R- T = id
+      f -R- F = constT
     main :R: TwoBools = TB -R- (f -R- T -R- F) -R- (f -R- F -E- F)
   in main
 
@@ -81,11 +105,11 @@
     id :R: (_x0 :R: Bool) -> Bool = (\x :R: Bool. x)
     constT :R: (_x1 :E: Bool) -> Bool = (\_0 :E: Bool. T)
     fty :E: (_x2 :E: Bool) -> Type 
-      [fty] -E- T = (_x3 :R: Bool) -> Bool
-      [fty] -E- F = (_x4 :E: Bool) -> Bool
+      fty -E- T = (_x3 :R: Bool) -> Bool
+      fty -E- F = (_x4 :E: Bool) -> Bool
     f :R: (x :R: Bool) -> fty -E- x 
-      [f] -R- T = id
-      [f] -R- F = constT
+      f -R- T = id
+      f -R- F = constT
     main :R: TwoBools = TB -R- (f -R- T -R- F) -R- (f -R- F -E- F)
   in main
 
@@ -100,11 +124,11 @@
     id :R: (_x0 :R: Bool) -> Bool = (\x :R: Bool. x)
     constT :R: (_x1 :E: Bool) -> Bool = (\_0 :E: Bool. T)
     fty :E: (_x2 :E: Bool) -> Type 
-      [fty] -E- T = (_x3 :R: Bool) -> Bool
-      [fty] -E- F = (_x4 :E: Bool) -> Bool
+      fty -E- T = (_x3 :R: Bool) -> Bool
+      fty -E- F = (_x4 :E: Bool) -> Bool
     f :R: (x :R: Bool) -> fty -E- x 
-      [f] -R- T = id
-      [f] -R- F = constT
+      f -R- T = id
+      f -R- F = constT
     main :R: TwoBools = TB -R- (f -R- T -R- F) -R- (f -R- F -E- F)
   in main
 
@@ -121,8 +145,8 @@ Verification successful.
     id = (\x. x)
     constT = T
     f 
-      [_] T = id
-      [_] F = constT
+      f T = id
+      f F = constT
     main = TB (f T F) (f F)
   in main
 

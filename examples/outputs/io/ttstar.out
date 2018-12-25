@@ -8,30 +8,30 @@
     constructor S : (x :R: Nat) -> Nat
     plus : (_x0 : Nat) -> (_x1 : Nat) -> Nat 
       n : Nat
-        [plus] Z n = n
+        plus Z n = n
       m : Nat n : Nat
-        [plus] (S m) n = S (plus m n)
+        plus (S m) n = S (plus m n)
     times : (_x2 : Nat) -> (_x3 : Nat) -> Nat 
       n : Nat
-        [times] Z n = Z
+        times Z n = Z
       m : Nat n : Nat
-        [times] (S m) n = plus n (times m n)
+        times (S m) n = plus n (times m n)
     constructor Bool : Type
     constructor True : Bool
     constructor False : Bool
     not : (_x4 : Bool) -> Bool 
-      [not] True = False
-      [not] False = True
+      not True = False
+      not False = True
     constructor Unit : Type
     constructor MkUnit : Unit
     constructor Pair : (_x5 : Type) -> (_x6 : Type) -> Type
     constructor MkPair : (a : Type) -> (b : Type) -> (_x7 : a) -> (_x8 : b) -> Pair a b
     fst : (a : Type) -> (b : Type) -> (_x9 : Pair a b) -> a 
       a : Type b : Type x : a y : b
-        [fst] a b ([MkPair] [a] [b] x y) = x
+        fst a b ([MkPair] [a] [b] x y) = x
     snd : (a : Type) -> (b : Type) -> (_x10 : Pair a b) -> b 
       a : Type b : Type x : a y : b
-        [snd] a b ([MkPair] [a] [b] x y) = y
+        snd a b ([MkPair] [a] [b] x y) = y
     constructor Either : (_x11 : Type) -> (_x12 : Type) -> Type
     constructor Left : (a : Type) -> (b : Type) -> (_x13 : a) -> Either a b
     constructor Right : (a : Type) -> (b : Type) -> (_x14 : b) -> Either a b
@@ -46,20 +46,20 @@
     constructor MkSt : (st : Type) -> (a : Type) -> (run : (_x2 : st) -> Pair st a) -> State st a
     runState : (st : Type) -> (a : Type) -> (_x3 : State st a) -> (_x4 : st) -> Pair st a 
       st : Type a : Type run : (_x5 : st) -> Pair st a
-        [runState] st a ([MkSt] [st] [a] run) = run
+        runState st a ([MkSt] [st] [a] run) = run
     execState : (st : Type) -> (a : Type) -> (x : State st a) -> (s : st) -> a = (\st : Type. (\a : Type. (\x : State st a. (\s : st. snd st a (runState st a x s)))))
     stGet : (st : Type) -> State st st = (\st : Type. MkSt st st (\s : st. MkPair st st s s))
     stReturn : (st : Type) -> (a : Type) -> (x : a) -> State st a = (\st : Type. (\a : Type. (\x : a. MkSt st a (\s : st. MkPair st a s x))))
     stBind : (st : Type) -> (a : Type) -> (b : Type) -> (x : State st a) -> (y : (z : a) -> State st b) -> State st b 
       st : Type a : Type b : Type f : (_x6 : st) -> Pair st a g : (_x7 : a) -> State st b
-        [stBind] st a b ([MkSt] [st] [a] f) g = 
+        stBind st a b ([MkSt] [st] [a] f) g = 
           let
             stBind3 : (st : Type) -> (b : Type) -> (_x8 : st) -> (_x9 : State st b) -> Pair st b 
               st : Type b : Type s : st f : (_x10 : st) -> Pair st b
-                [stBind3] st b s ([MkSt] [st] [b] f) = f s
+                stBind3 st b s ([MkSt] [st] [b] f) = f s
             stBind2 : (st : Type) -> (a : Type) -> (b : Type) -> (g : (_x11 : a) -> State st b) -> (r : Pair st a) -> Pair st b 
               st : Type a : Type b : Type g : (_x12 : a) -> State st b x : a s : st
-                [stBind2] st a b g ([MkPair] [st] [a] s x) = stBind3 st b s (g x)
+                stBind2 st a b g ([MkPair] [st] [a] s x) = stBind3 st b s (g x)
           in MkSt st b (\s : st. stBind2 st a b g (f s))
     postulate RealWorld : Type
     IO : (_x0 : Type) -> Type = State RealWorld
@@ -77,9 +77,9 @@
       let foreign nativePrint : (a :E: Type) -> (x :R: a) -> Unspec
       in ioWrapImpure Unspec (\w : RealWorld. nativePrint a x)))
     natToInt : (_x0 : Nat) -> Int 
-      [natToInt] Z = intZ
+      natToInt Z = intZ
       n : Nat
-        [natToInt] (S n) = intS (natToInt n)
+        natToInt (S n) = intS (natToInt n)
     foreign intToNat : (x :R: Int) -> Nat
     printNat : (x : Nat) -> IO Unspec = (\x : Nat. printSchemeRepr Int (natToInt x))
     main : Unspec = unsafePerformIO Unspec (ioBind Nat Unspec (ioReturn Nat 4) (\v : Nat. ioBind Unspec Unspec (printNat v) (\_0 : Unspec. printSchemeRepr Nat (intToNat (intS (intS (intS intZ)))))))
@@ -93,30 +93,30 @@
     constructor S :3: (x :R: Nat) -> Nat
     plus :4: (_x0 :5: Nat) -> (_x1 :6: Nat) -> Nat 
       n :7: Nat
-        [plus] -9- Z -8- n = n
+        plus -9- Z -8- n = n
       m :10: Nat n :11: Nat
-        [plus] -13- (S -14- m) -12- n = S -15- (plus -17- m -16- n)
+        plus -13- (S -14- m) -12- n = S -15- (plus -17- m -16- n)
     times :18: (_x2 :19: Nat) -> (_x3 :20: Nat) -> Nat 
       n :21: Nat
-        [times] -23- Z -22- n = Z
+        times -23- Z -22- n = Z
       m :24: Nat n :25: Nat
-        [times] -27- (S -28- m) -26- n = plus -30- n -29- (times -32- m -31- n)
+        times -27- (S -28- m) -26- n = plus -30- n -29- (times -32- m -31- n)
     constructor Bool :33: Type
     constructor True :34: Bool
     constructor False :35: Bool
     not :36: (_x4 :37: Bool) -> Bool 
-      [not] -38- True = False
-      [not] -39- False = True
+      not -38- True = False
+      not -39- False = True
     constructor Unit :40: Type
     constructor MkUnit :41: Unit
     constructor Pair :42: (_x5 :43: Type) -> (_x6 :44: Type) -> Type
     constructor MkPair :45: (a :46: Type) -> (b :47: Type) -> (_x7 :48: a) -> (_x8 :49: b) -> Pair -51- a -50- b
     fst :52: (a :53: Type) -> (b :54: Type) -> (_x9 :55: Pair -57- a -56- b) -> a 
       a :58: Type b :59: Type x :60: a y :61: b
-        [fst] -64- a -63- b -62- ([MkPair] -68- [a] -67- [b] -66- x -65- y) = x
+        fst -64- a -63- b -62- ([MkPair] -68- [a] -67- [b] -66- x -65- y) = x
     snd :69: (a :70: Type) -> (b :71: Type) -> (_x10 :72: Pair -74- a -73- b) -> b 
       a :75: Type b :76: Type x :77: a y :78: b
-        [snd] -81- a -80- b -79- ([MkPair] -85- [a] -84- [b] -83- x -82- y) = y
+        snd -81- a -80- b -79- ([MkPair] -85- [a] -84- [b] -83- x -82- y) = y
     constructor Either :86: (_x11 :87: Type) -> (_x12 :88: Type) -> Type
     constructor Left :89: (a :90: Type) -> (b :91: Type) -> (_x13 :92: a) -> Either -94- a -93- b
     constructor Right :95: (a :96: Type) -> (b :97: Type) -> (_x14 :98: b) -> Either -100- a -99- b
@@ -131,20 +131,20 @@
     constructor MkSt :138: (st :139: Type) -> (a :140: Type) -> (run :141: (_x2 :142: st) -> Pair -144- st -143- a) -> State -146- st -145- a
     runState :147: (st :148: Type) -> (a :149: Type) -> (_x3 :150: State -152- st -151- a) -> (_x4 :153: st) -> Pair -155- st -154- a 
       st :156: Type a :157: Type run :158: (_x5 :159: st) -> Pair -161- st -160- a
-        [runState] -164- st -163- a -162- ([MkSt] -167- [st] -166- [a] -165- run) = run
+        runState -164- st -163- a -162- ([MkSt] -167- [st] -166- [a] -165- run) = run
     execState :168: (st :169: Type) -> (a :170: Type) -> (x :171: State -173- st -172- a) -> (s :174: st) -> a = (\st :175: Type. (\a :176: Type. (\x :177: State -179- st -178- a. (\s :180: st. snd -183- st -182- a -181- (runState -187- st -186- a -185- x -184- s)))))
     stGet :188: (st :189: Type) -> State -191- st -190- st = (\st :192: Type. MkSt -195- st -194- st -193- (\s :196: st. MkPair -200- st -199- st -198- s -197- s))
     stReturn :201: (st :202: Type) -> (a :203: Type) -> (x :204: a) -> State -206- st -205- a = (\st :207: Type. (\a :208: Type. (\x :209: a. MkSt -212- st -211- a -210- (\s :213: st. MkPair -217- st -216- a -215- s -214- x))))
     stBind :218: (st :219: Type) -> (a :220: Type) -> (b :221: Type) -> (x :222: State -224- st -223- a) -> (y :225: (z :226: a) -> State -228- st -227- b) -> State -230- st -229- b 
       st :231: Type a :232: Type b :233: Type f :234: (_x6 :235: st) -> Pair -237- st -236- a g :238: (_x7 :239: a) -> State -241- st -240- b
-        [stBind] -246- st -245- a -244- b -243- ([MkSt] -249- [st] -248- [a] -247- f) -242- g = 
+        stBind -246- st -245- a -244- b -243- ([MkSt] -249- [st] -248- [a] -247- f) -242- g = 
           let
             stBind3 :250: (st :251: Type) -> (b :252: Type) -> (_x8 :253: st) -> (_x9 :254: State -256- st -255- b) -> Pair -258- st -257- b 
               st :259: Type b :260: Type s :261: st f :262: (_x10 :263: st) -> Pair -265- st -264- b
-                [stBind3] -269- st -268- b -267- s -266- ([MkSt] -272- [st] -271- [b] -270- f) = f -273- s
+                stBind3 -269- st -268- b -267- s -266- ([MkSt] -272- [st] -271- [b] -270- f) = f -273- s
             stBind2 :274: (st :275: Type) -> (a :276: Type) -> (b :277: Type) -> (g :278: (_x11 :279: a) -> State -281- st -280- b) -> (r :282: Pair -284- st -283- a) -> Pair -286- st -285- b 
               st :287: Type a :288: Type b :289: Type g :290: (_x12 :291: a) -> State -293- st -292- b x :294: a s :295: st
-                [stBind2] -300- st -299- a -298- b -297- g -296- ([MkPair] -304- [st] -303- [a] -302- s -301- x) = stBind3 -308- st -307- b -306- s -305- (g -309- x)
+                stBind2 -300- st -299- a -298- b -297- g -296- ([MkPair] -304- [st] -303- [a] -302- s -301- x) = stBind3 -308- st -307- b -306- s -305- (g -309- x)
           in MkSt -312- st -311- b -310- (\s :313: st. stBind2 -318- st -317- a -316- b -315- g -314- (f -319- s))
     postulate RealWorld :320: Type
     IO :321: (_x0 :322: Type) -> Type = State -323- RealWorld
@@ -162,9 +162,9 @@
       let foreign nativePrint :393: (a :E: Type) -> (x :R: a) -> Unspec
       in ioWrapImpure -395- Unspec -394- (\w :396: RealWorld. nativePrint -398- a -397- x)))
     natToInt :399: (_x0 :400: Nat) -> Int 
-      [natToInt] -401- Z = intZ
+      natToInt -401- Z = intZ
       n :402: Nat
-        [natToInt] -403- (S -404- n) = intS -405- (natToInt -406- n)
+        natToInt -403- (S -404- n) = intS -405- (natToInt -406- n)
     foreign intToNat :407: (x :R: Int) -> Nat
     printNat :408: (x :409: Nat) -> IO -410- Unspec = (\x :411: Nat. printSchemeRepr -413- Int -412- (natToInt -414- x))
     main :415: Unspec = unsafePerformIO -417- Unspec -416- (ioBind -421- Nat -420- Unspec -419- (ioReturn -423- Nat -422- 4) -418- (\v :428: Nat. ioBind -432- Unspec -431- Unspec -430- (printNat -433- v) -429- (\_0 :434: Unspec. printSchemeRepr -436- Nat -435- (intToNat -437- (intS -438- (intS -439- (intS -440- intZ)))))))
@@ -172,186 +172,561 @@
 
 ### Constraints ###
 
-[] -> [2,3,45,48,49,69,72,78,79,82,83,138,141,142,147,150,153,158,159,162,165,168,171,174,177,180,181,184,185,188,193,196,197,198,201,204,209,210,213,214,215,218,222,225,226,234,235,238,239,242,243,247,250,253,254,261,262,263,266,267,270,273,274,278,279,282,290,291,294,295,296,297,301,302,305,306,309,310,313,314,315,319,324,326,329,330,333,336,338,339,344,346,347,349,350,354,356,359,360,361,366,367,370,371,373,376,378,379,380,384,385,387,389,392,393,394,396,397,399,400,401,402,403,404,405,406,407,408,409,411,412,414,416,418,419,422,424,425,426,427,428,429,430,433,434,435,437,438,439,440,R]
-[46] -> [85,200,217,304]
-[47] -> [84,199,216,303]
-[50] -> [73,143,283]
-[51] -> [74,144,284]
+[] -> [14,15,28,111,117,134,370,396,397,404,405,424,425,426,427,437,438,439,440,R]
+[4] -> [2,3,4,7,9,13]
+[4,8] -> [7]
+[4,12] -> [11]
+[4,13] -> [10]
+[4,16] -> [11]
+[4,17] -> [10]
+[5] -> [9,13,17,30]
+[6] -> [8,12,16,29]
+[7] -> [4,8]
+[8] -> [6]
+[9] -> [5]
+[10] -> [4,13,14]
+[11] -> [4,12]
+[12] -> [6]
+[13] -> [5]
+[16] -> [6]
+[17] -> [5]
+[18] -> [2,3,4,18,23,27]
+[18,22] -> [21]
+[18,26] -> [25]
+[18,27] -> [24]
+[18,29] -> [18]
+[18,29,31] -> [25]
+[18,29,32] -> [24]
+[18,30] -> [25]
+[19] -> [23,27,32]
+[20] -> [22,26,31]
+[21] -> [18,22]
+[22] -> [20]
+[23] -> [19]
+[24] -> [18,27,28]
+[25] -> [18,26]
+[26] -> [20]
+[27] -> [19]
+[29] -> [6]
+[30] -> [5]
+[31] -> [20]
+[32] -> [19]
+[36] -> [34,35,36,38,39]
+[37] -> [38,39]
+[38] -> [37]
+[39] -> [37]
+[43] -> [51,155,237,258,286]
+[44] -> [50,154,236,257,285]
+[46] -> [68,85,200,217,304]
+[47] -> [67,84,199,216,303]
+[48] -> [66,83,198,215,302]
+[49] -> [65,82,197,214,301]
+[50] -> [44,56,73,143,283]
+[50,E] -> [47]
+[51] -> [43,57,74,144,284]
+[51,E] -> [46]
+[52] -> [52,60]
+[52,62] -> [45]
+[52,62,65] -> [61]
+[52,62,66] -> [60]
+[52,62,67] -> [59]
+[52,62,68] -> [58]
+[52,63] -> [59]
+[52,64] -> [58]
+[53] -> [64]
+[54] -> [63]
+[55] -> [62]
+[56] -> [50]
+[57] -> [51]
+[58] -> [52,64]
+[59] -> [52,63]
+[60] -> [52,62,66]
+[61] -> [52,62,65]
+[62] -> [55]
+[63] -> [54]
+[64] -> [53]
+[65] -> [49]
+[66] -> [48]
+[67] -> [47]
+[68] -> [46]
+[69] -> [69,78]
+[69,79] -> [45]
+[69,79,82] -> [78]
+[69,79,83] -> [77]
+[69,79,84] -> [76]
+[69,79,85] -> [75]
+[69,80] -> [76]
+[69,81] -> [75]
 [70] -> [81,183]
 [71] -> [80,182]
+[72] -> [79,181]
 [73] -> [50,154]
 [74] -> [51,155]
-[75] -> [81]
-[76] -> [80]
-[77] -> [83]
-[80] -> [71,R]
-[81] -> [70,R]
-[84] -> [47,76,79]
-[85] -> [46,75,79]
+[75] -> [69,81]
+[76] -> [69,80]
+[77] -> [69,79,83]
+[78] -> [69,79,82]
+[79] -> [72]
+[80] -> [71]
+[81] -> [70]
+[82] -> [49]
+[83] -> [48]
+[84] -> [47]
+[85] -> [46]
+[87] -> [94,100]
+[88] -> [93,99]
+[93] -> [88]
+[93,E] -> [91]
+[94] -> [87]
+[94,E] -> [90]
+[99] -> [88]
+[99,E] -> [97]
+[100] -> [87]
+[100,E] -> [96]
+[101] -> [105]
+[102] -> [104]
+[103] -> [105]
+[104] -> [102]
+[105] -> [103]
+[107] -> [110,116]
+[110] -> [107]
+[110,E] -> [3,109]
+[116] -> [107]
+[116,E] -> [3,113]
+[119] -> [124,133]
+[120] -> [123,132]
+[123] -> [120]
+[123,E] -> [122]
+[124] -> [119]
+[124,E] -> [2]
+[132] -> [120]
+[132,E] -> [127]
+[133] -> [119]
+[133,E] -> [3,126]
+[136] -> [146,191,206,230,241,323]
+[137] -> [145,190,205,229,240,322]
 [139] -> [167,195,212,249,272,312]
 [140] -> [166,194,211,248,271,311]
+[141] -> [165,193,210,247,270,310]
+[142] -> [159,196,213,235,263,313]
 [143] -> [50,160,236,264,285]
 [144] -> [51,161,237,265,286]
-[145] -> [151,190,205,223,229,255]
-[146] -> [152,191,206,224,230,256]
+[145] -> [137,151,190,205,223,229,255]
+[145,E] -> [140]
+[146] -> [136,152,191,206,224,230,256]
+[146,E] -> [139]
+[147] -> [147,158]
+[147,162] -> [138]
+[147,162,165] -> [158]
+[147,162,166] -> [157]
+[147,162,167] -> [156]
+[147,163] -> [157]
+[147,164] -> [156]
 [148] -> [164,187]
 [149] -> [163,186]
+[150] -> [162,185]
 [151] -> [145,178]
 [152] -> [146,179]
-[154] -> [73,160]
-[155] -> [74,161]
-[156] -> [164]
-[157] -> [163]
+[153] -> [159,184]
+[154] -> [44,73,160]
+[154,E] -> [149]
+[155] -> [43,74,161]
+[155,E] -> [148]
+[156] -> [147,164]
+[157] -> [147,163]
+[158] -> [147,162,165]
+[159] -> [142,153]
 [160] -> [143,154]
 [161] -> [144,155]
-[163] -> [149,R]
-[164] -> [148,R]
-[166] -> [140,157,162]
-[167] -> [139,156,162]
+[162] -> [150]
+[163] -> [149]
+[164] -> [148]
+[165] -> [141]
+[166] -> [140]
+[167] -> [139]
+[168] -> [69]
+[168,181] -> [147]
+[168,181,184] -> [180]
+[168,181,185] -> [177]
+[168,181,186] -> [176]
+[168,181,187] -> [175]
+[168,182] -> [176]
+[168,183] -> [175]
 [169] -> [175,382]
 [170] -> [176,381]
+[171] -> [177,380]
 [172] -> [178,377]
 [173] -> [179,323]
+[174] -> [180,379]
 [175] -> [169]
 [176] -> [170]
+[177] -> [171]
 [178] -> [151,172]
 [179] -> [152,173]
-[182] -> [71,176]
-[183] -> [70,175]
-[186] -> [149,176]
-[187] -> [148,175]
+[180] -> [174]
+[181] -> [72]
+[182] -> [71]
+[183] -> [70]
+[184] -> [153]
+[185] -> [150]
+[186] -> [149]
+[187] -> [148]
+[188] -> [138]
+[188,193] -> [45]
+[188,193,197] -> [196]
+[188,193,198] -> [196]
+[188,193,199] -> [192]
+[188,193,200] -> [192]
+[188,194] -> [192]
+[188,195] -> [192]
 [189] -> [192,365]
-[190] -> [145,223]
-[191] -> [146,224]
+[190] -> [137,145,223]
+[190,E] -> [189]
+[191] -> [136,146,224]
+[191,E] -> [189]
 [192] -> [189]
-[194] -> [140,192]
-[195] -> [139,192]
-[199] -> [47,192]
-[200] -> [46,192]
+[193] -> [141]
+[194] -> [140]
+[195] -> [139]
+[196] -> [142]
+[197] -> [49]
+[198] -> [48]
+[199] -> [47]
+[200] -> [46]
+[201] -> [138]
+[201,210] -> [45]
+[201,210,214] -> [209]
+[201,210,215] -> [213]
+[201,210,216] -> [208]
+[201,210,217] -> [207]
+[201,211] -> [208]
+[201,212] -> [207]
 [202] -> [207,332,369]
 [203] -> [208,331,368]
-[205] -> [145,227,327]
-[206] -> [146,228,323]
+[204] -> [209,330,367]
+[205] -> [137,145,227,327]
+[205,E] -> [203]
+[206] -> [136,146,228,323]
+[206,E] -> [202]
 [207] -> [202]
 [208] -> [203]
-[211] -> [140,208]
-[212] -> [139,207]
-[216] -> [47,208]
-[217] -> [46,207]
+[209] -> [204]
+[210] -> [141]
+[211] -> [140]
+[212] -> [139]
+[213] -> [142]
+[214] -> [49]
+[215] -> [48]
+[216] -> [47]
+[217] -> [46]
+[218] -> [138,218]
+[218,242] -> [238]
+[218,243] -> [138]
+[218,243,247] -> [234]
+[218,243,248] -> [232]
+[218,243,249] -> [231]
+[218,244] -> [233]
+[218,245] -> [232]
+[218,246] -> [231]
+[218,310] -> [274]
+[218,310,314] -> [234]
+[218,310,314,319] -> [313]
+[218,310,315] -> [238]
+[218,310,316] -> [233]
+[218,310,317] -> [232]
+[218,310,318] -> [231]
+[218,311] -> [233]
+[218,312] -> [231]
 [219] -> [246,353,364]
 [220] -> [245,352,363]
 [221] -> [244,351,362]
+[222] -> [243,350,361]
 [223] -> [145,190,345]
 [224] -> [146,191,323]
+[225] -> [242,349,360]
+[226] -> [239,347,366]
 [227] -> [205,240,348]
 [228] -> [206,241,323]
-[229] -> [145,341,357]
-[230] -> [146,323]
-[231] -> [246]
-[232] -> [245]
-[233] -> [244]
-[236] -> [143,283]
-[237] -> [144,284]
-[240] -> [227,280]
-[241] -> [228,281]
-[244] -> [221,R]
-[245] -> [220,R]
-[246] -> [219,R]
-[248] -> [140,232,243]
-[249] -> [139,231,243]
+[229] -> [137,145,341,357]
+[229,E] -> [221]
+[230] -> [136,146,323]
+[230,E] -> [219]
+[231] -> [218,246]
+[232] -> [218,245]
+[233] -> [218,244]
+[234] -> [218,243,247]
+[235] -> [142,319]
+[236] -> [44,143,283]
+[236,E] -> [232]
+[237] -> [43,144,284]
+[237,E] -> [231]
+[238] -> [218,242]
+[239] -> [226,279]
+[240] -> [137,227,280]
+[240,E] -> [233]
+[241] -> [136,228,281]
+[241,E] -> [231]
+[242] -> [225]
+[243] -> [222]
+[244] -> [221]
+[245] -> [220]
+[246] -> [219]
+[247] -> [141]
+[248] -> [140]
+[249] -> [139]
+[250] -> [250,262]
+[250,266] -> [138]
+[250,266,270] -> [262]
+[250,266,271] -> [260]
+[250,266,272] -> [259]
+[250,267] -> [261]
+[250,268] -> [260]
+[250,269] -> [259]
+[250,273] -> [261]
 [251] -> [269,308]
 [252] -> [268,307]
+[253] -> [267,306]
+[254] -> [266,305]
 [255] -> [145,292]
 [256] -> [146,293]
-[257] -> [264,285]
-[258] -> [265,286]
-[259] -> [269]
-[260] -> [268]
+[257] -> [44,264,285]
+[257,E] -> [252]
+[258] -> [43,265,286]
+[258,E] -> [251]
+[259] -> [250,269]
+[260] -> [250,268]
+[261] -> [250,267]
+[262] -> [250,266,270]
+[263] -> [142,273]
 [264] -> [143,257]
 [265] -> [144,258]
-[268] -> [252,R]
-[269] -> [251,R]
-[271] -> [140,260,266]
-[272] -> [139,259,266]
+[266] -> [254]
+[267] -> [253]
+[268] -> [252]
+[269] -> [251]
+[270] -> [141]
+[271] -> [140]
+[272] -> [139]
+[273] -> [263]
+[274] -> [250,274]
+[274,296] -> [45]
+[274,296,301] -> [294]
+[274,296,302] -> [295]
+[274,296,303] -> [288]
+[274,296,304] -> [287]
+[274,297] -> [290]
+[274,298] -> [289]
+[274,299] -> [288]
+[274,300] -> [287]
+[274,305] -> [290]
+[274,305,309] -> [294]
+[274,306] -> [295]
+[274,307] -> [289]
+[274,308] -> [287]
 [275] -> [300,318]
 [276] -> [299,317]
 [277] -> [298,316]
+[278] -> [297,315]
+[279] -> [239,291]
 [280] -> [240,292]
 [281] -> [241,293]
+[282] -> [296,314]
 [283] -> [50,236]
 [284] -> [51,237]
-[285] -> [143,257]
-[286] -> [144,258]
-[287] -> [300]
-[288] -> [299]
-[289] -> [298]
+[285] -> [44,143,257]
+[285,E] -> [277]
+[286] -> [43,144,258]
+[286,E] -> [275]
+[287] -> [274,300]
+[288] -> [274,299]
+[289] -> [274,298]
+[290] -> [274,297]
+[291] -> [279,309]
 [292] -> [255,280]
 [293] -> [256,281]
-[298] -> [277,R]
-[299] -> [276,R]
-[300] -> [275,R]
-[303] -> [47,288,296]
-[304] -> [46,287,296]
-[307] -> [252,289]
-[308] -> [251,287]
-[311] -> [140,233]
-[312] -> [139,231]
-[316] -> [233,277]
-[317] -> [232,276]
-[318] -> [231,275]
-[323] -> [173,206,224,228,230,323]
+[294] -> [274,296,301]
+[295] -> [274,296,302]
+[296] -> [282]
+[297] -> [278]
+[298] -> [277]
+[299] -> [276]
+[300] -> [275]
+[301] -> [49]
+[302] -> [48]
+[303] -> [47]
+[304] -> [46]
+[305] -> [254]
+[306] -> [253]
+[307] -> [252]
+[308] -> [251]
+[309] -> [291]
+[310] -> [141]
+[311] -> [140]
+[312] -> [139]
+[313] -> [142]
+[314] -> [282]
+[315] -> [278]
+[316] -> [277]
+[317] -> [276]
+[318] -> [275]
+[319] -> [235]
+[321] -> [135]
+[321,323] -> [320]
+[322] -> [137,327,341,357,377,390,410]
+[323] -> [136,173,206,224,228,230,323]
+[324] -> [201]
+[324,330] -> [329]
+[324,331] -> [328]
+[324,332] -> [320]
 [325] -> [328,423]
-[327] -> [205,337]
+[326] -> [329,422]
+[327] -> [205,322,337]
+[327,E] -> [325]
 [328] -> [325]
-[331] -> [203,328]
-[332] -> [202,320]
+[329] -> [326]
+[330] -> [204]
+[331] -> [203]
+[332] -> [202]
+[333] -> [218]
+[333,349] -> [346]
+[333,350] -> [344]
+[333,351] -> [343]
+[333,352] -> [342]
+[333,353] -> [320]
 [334] -> [342,421,432]
 [335] -> [343,420,431]
+[336] -> [344,419,430]
 [337] -> [327,345,410]
+[338] -> [346,418,429]
+[339] -> [347,428,434]
 [340] -> [341,348,390]
-[341] -> [229,340,374]
+[341] -> [229,322,340,374]
+[341,E] -> [335]
 [342] -> [334]
 [343] -> [335]
+[344] -> [336]
 [345] -> [223,337]
+[346] -> [338]
+[347] -> [226,339]
 [348] -> [227,340]
-[351] -> [221,343]
-[352] -> [220,342]
-[353] -> [219,320]
+[349] -> [225]
+[350] -> [222]
+[351] -> [221]
+[352] -> [220]
+[353] -> [219]
+[354] -> [218]
+[354,360] -> [201]
+[354,360,367] -> [359,366]
+[354,360,368] -> [358]
+[354,360,369] -> [320]
+[354,361] -> [188]
+[354,361,365] -> [320]
+[354,362] -> [358]
+[354,363] -> [320]
+[354,364] -> [320]
 [355] -> [358,395]
-[357] -> [229,390]
+[356] -> [359,394]
+[357] -> [229,322,390]
+[357,E] -> [355]
 [358] -> [355]
-[362] -> [221,358]
-[363] -> [220,320]
-[364] -> [219,320]
-[365] -> [189,320]
-[368] -> [203,358]
-[369] -> [202,320]
+[359] -> [356]
+[360] -> [225]
+[361] -> [222]
+[362] -> [221]
+[363] -> [220]
+[364] -> [219]
+[365] -> [189]
+[366] -> [226]
+[367] -> [204]
+[368] -> [203]
+[369] -> [202]
+[371] -> [168]
+[371,379] -> [378]
+[371,380] -> [376]
+[371,381] -> [375]
+[371,382] -> [320]
 [372] -> [375,417]
+[373] -> [376,416]
 [374] -> [341,377]
 [375] -> [372]
-[377] -> [172,374]
-[381] -> [170,375]
-[382] -> [169,320]
+[376] -> [373]
+[377] -> [172,322,374]
+[377,E] -> [375]
+[379] -> [174]
+[380] -> [171]
+[381] -> [170]
+[382] -> [169]
+[387] -> [354]
+[387,394] -> [392,393]
+[387,394,398] -> [391]
+[387,395] -> [386]
 [388] -> [391,413,436]
-[390] -> [340,357,410]
+[389] -> [392,412,435]
+[390] -> [322,340,357,410]
+[390,E] -> [386]
 [391] -> [388]
-[395] -> [355,386]
-[398] -> [391,E]
-[410] -> [337,390]
-[413] -> [383,388]
-[417] -> [372,386]
-[420] -> [335,386]
-[421] -> [1,334]
-[423] -> [1,325]
-[431] -> [335,386]
-[432] -> [334,386]
-[436] -> [1,388]
-[E] -> [398]
+[392] -> [389]
+[394] -> [356]
+[395] -> [355]
+[398] -> [E]
+[399] -> [2,3,384,385,399,401,403]
+[399,403] -> [402]
+[399,406] -> [402]
+[400] -> [401,403,406,414]
+[401] -> [400]
+[402] -> [399,403,404]
+[403] -> [400]
+[406] -> [400]
+[408] -> [387]
+[408,412] -> [399]
+[408,412,414] -> [411]
+[408,413] -> [383]
+[409] -> [411,433]
+[410] -> [322,337,390]
+[410,E] -> [386]
+[411] -> [409]
+[412] -> [389]
+[413] -> [388]
+[414] -> [400]
+[415] -> [371]
+[415,416] -> [333]
+[415,416,418] -> [333]
+[415,416,418,429] -> [387]
+[415,416,418,429,435] -> [384,385,407]
+[415,416,418,429,436] -> [1]
+[415,416,418,430] -> [408]
+[415,416,418,430,433] -> [428]
+[415,416,418,431] -> [386]
+[415,416,418,432] -> [386]
+[415,416,419] -> [324]
+[415,416,419,422] -> [2,3]
+[415,416,419,423] -> [1]
+[415,416,420] -> [386]
+[415,416,421] -> [1]
+[415,417] -> [386]
+[416] -> [373]
+[417] -> [372]
+[418] -> [338]
+[419] -> [336]
+[420] -> [335]
+[421] -> [334]
+[422] -> [326]
+[423] -> [325]
+[428] -> [339]
+[429] -> [338]
+[430] -> [336]
+[431] -> [335]
+[432] -> [334]
+[433] -> [409]
+[434] -> [339]
+[435] -> [389]
+[436] -> [388]
+[E] -> [1,33,40,42,53,71,86,102,106,118,135,170,320,321,372,383,386,391,398,R]
 [R] -> [415]
 
 ### Solution ###
 
-[2,3,45,48,49,69,72,78,79,82,83,138,141,142,147,150,153,158,159,162,165,168,171,174,177,180,181,184,185,188,193,196,197,198,201,204,209,210,213,214,215,218,222,225,226,234,235,238,239,242,243,247,250,253,254,261,262,263,266,267,270,273,274,278,279,282,290,291,294,295,296,297,301,302,305,306,309,310,313,314,315,319,324,326,329,330,333,336,338,339,344,346,347,349,350,354,356,359,360,361,366,367,370,371,373,376,378,379,380,384,385,387,389,392,393,394,396,397,399,400,401,402,403,404,405,406,407,408,409,411,412,414,415,416,418,419,422,424,425,426,427,428,429,430,433,434,435,437,438,439,440,R]
+[2,3,14,15,28,45,48,49,65,66,69,72,77,78,79,82,83,111,117,134,138,141,142,147,150,153,158,159,162,165,168,171,174,177,180,181,184,185,188,193,196,197,198,201,204,209,210,213,214,215,218,222,225,226,234,235,238,239,242,243,247,250,253,254,261,262,263,266,267,270,273,274,278,279,282,290,291,294,295,296,297,301,302,305,306,309,310,313,314,315,319,324,326,329,330,333,336,338,339,344,346,347,349,350,354,356,359,360,361,366,367,370,371,373,376,378,379,380,384,385,387,389,392,393,394,396,397,399,400,401,402,403,404,405,406,407,408,409,411,412,414,415,416,418,419,422,424,425,426,427,428,429,430,433,434,435,437,438,439,440,R]
 
 ### Annotated ###
 
@@ -361,58 +736,58 @@
     constructor S :R: (x :R: Nat) -> Nat
     plus :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Nat 
       n :E: Nat
-        [plus] -E- Z -E- n = n
+        plus -E- Z -E- n = n
       m :E: Nat n :E: Nat
-        [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
+        plus -E- (S -R- m) -E- n = S -R- (plus -E- m -E- n)
     times :E: (_x2 :E: Nat) -> (_x3 :E: Nat) -> Nat 
       n :E: Nat
-        [times] -E- Z -E- n = Z
+        times -E- Z -E- n = Z
       m :E: Nat n :E: Nat
-        [times] -E- (S -E- m) -E- n = plus -E- n -E- (times -E- m -E- n)
+        times -E- (S -R- m) -E- n = plus -E- n -E- (times -E- m -E- n)
     constructor Bool :E: Type
     constructor True :E: Bool
     constructor False :E: Bool
     not :E: (_x4 :E: Bool) -> Bool 
-      [not] -E- True = False
-      [not] -E- False = True
+      not -E- True = False
+      not -E- False = True
     constructor Unit :E: Type
     constructor MkUnit :E: Unit
     constructor Pair :E: (_x5 :E: Type) -> (_x6 :E: Type) -> Type
     constructor MkPair :R: (a :E: Type) -> (b :E: Type) -> (_x7 :R: a) -> (_x8 :R: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x9 :E: Pair -E- a -E- b) -> a 
       a :E: Type b :E: Type x :E: a y :E: b
-        [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
+        fst -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -R- x -R- y) = x
     snd :R: (a :E: Type) -> (b :E: Type) -> (_x10 :R: Pair -E- a -E- b) -> b 
-      a :E: Type b :E: Type x :E: a y :R: b
-        [snd] -E- a -E- b -R- ([MkPair] -E- [a] -E- [b] -R- x -R- y) = y
+      a :E: Type b :E: Type x :R: a y :R: b
+        snd -E- a -E- b -R- ([MkPair] -E- [a] -E- [b] -R- x -R- y) = y
     constructor Either :E: (_x11 :E: Type) -> (_x12 :E: Type) -> Type
     constructor Left :E: (a :E: Type) -> (b :E: Type) -> (_x13 :E: a) -> Either -E- a -E- b
     constructor Right :E: (a :E: Type) -> (b :E: Type) -> (_x14 :E: b) -> Either -E- a -E- b
     id :E: (a :E: Type) -> (x :E: a) -> a = (\a :E: Type. (\x :E: a. x))
     constructor Fin :E: (_x15 :E: Nat) -> Type
-    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
-    constructor FS :E: (n :E: Nat) -> (_x16 :E: Fin -E- n) -> Fin -E- (S -E- n)
+    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -R- n)
+    constructor FS :E: (n :E: Nat) -> (_x16 :E: Fin -E- n) -> Fin -E- (S -R- n)
     constructor Vect :E: (_x17 :E: Nat) -> (_x18 :E: Type) -> Type
     constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
-    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
+    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
     constructor State :E: (_x0 :E: Type) -> (_x1 :E: Type) -> Type
     constructor MkSt :R: (st :E: Type) -> (a :E: Type) -> (run :R: (_x2 :R: st) -> Pair -E- st -E- a) -> State -E- st -E- a
     runState :R: (st :E: Type) -> (a :E: Type) -> (_x3 :R: State -E- st -E- a) -> (_x4 :R: st) -> Pair -E- st -E- a 
       st :E: Type a :E: Type run :R: (_x5 :R: st) -> Pair -E- st -E- a
-        [runState] -E- st -E- a -R- ([MkSt] -E- [st] -E- [a] -R- run) = run
+        runState -E- st -E- a -R- ([MkSt] -E- [st] -E- [a] -R- run) = run
     execState :R: (st :E: Type) -> (a :E: Type) -> (x :R: State -E- st -E- a) -> (s :R: st) -> a = (\st :E: Type. (\a :E: Type. (\x :R: State -E- st -E- a. (\s :R: st. snd -E- st -E- a -R- (runState -E- st -E- a -R- x -R- s)))))
     stGet :R: (st :E: Type) -> State -E- st -E- st = (\st :E: Type. MkSt -E- st -E- st -R- (\s :R: st. MkPair -E- st -E- st -R- s -R- s))
     stReturn :R: (st :E: Type) -> (a :E: Type) -> (x :R: a) -> State -E- st -E- a = (\st :E: Type. (\a :E: Type. (\x :R: a. MkSt -E- st -E- a -R- (\s :R: st. MkPair -E- st -E- a -R- s -R- x))))
     stBind :R: (st :E: Type) -> (a :E: Type) -> (b :E: Type) -> (x :R: State -E- st -E- a) -> (y :R: (z :R: a) -> State -E- st -E- b) -> State -E- st -E- b 
       st :E: Type a :E: Type b :E: Type f :R: (_x6 :R: st) -> Pair -E- st -E- a g :R: (_x7 :R: a) -> State -E- st -E- b
-        [stBind] -E- st -E- a -E- b -R- ([MkSt] -E- [st] -E- [a] -R- f) -R- g = 
+        stBind -E- st -E- a -E- b -R- ([MkSt] -E- [st] -E- [a] -R- f) -R- g = 
           let
             stBind3 :R: (st :E: Type) -> (b :E: Type) -> (_x8 :R: st) -> (_x9 :R: State -E- st -E- b) -> Pair -E- st -E- b 
               st :E: Type b :E: Type s :R: st f :R: (_x10 :R: st) -> Pair -E- st -E- b
-                [stBind3] -E- st -E- b -R- s -R- ([MkSt] -E- [st] -E- [b] -R- f) = f -R- s
+                stBind3 -E- st -E- b -R- s -R- ([MkSt] -E- [st] -E- [b] -R- f) = f -R- s
             stBind2 :R: (st :E: Type) -> (a :E: Type) -> (b :E: Type) -> (g :R: (_x11 :R: a) -> State -E- st -E- b) -> (r :R: Pair -E- st -E- a) -> Pair -E- st -E- b 
               st :E: Type a :E: Type b :E: Type g :R: (_x12 :R: a) -> State -E- st -E- b x :R: a s :R: st
-                [stBind2] -E- st -E- a -E- b -R- g -R- ([MkPair] -E- [st] -E- [a] -R- s -R- x) = stBind3 -E- st -E- b -R- s -R- (g -R- x)
+                stBind2 -E- st -E- a -E- b -R- g -R- ([MkPair] -E- [st] -E- [a] -R- s -R- x) = stBind3 -E- st -E- b -R- s -R- (g -R- x)
           in MkSt -E- st -E- b -R- (\s :R: st. stBind2 -E- st -E- a -E- b -R- g -R- (f -R- s))
     postulate RealWorld :E: Type
     IO :E: (_x0 :E: Type) -> Type = State -E- RealWorld
@@ -430,9 +805,9 @@
       let foreign nativePrint :R: (a :E: Type) -> (x :R: a) -> Unspec
       in ioWrapImpure -E- Unspec -R- (\w :R: RealWorld. nativePrint -E- a -R- x)))
     natToInt :R: (_x0 :R: Nat) -> Int 
-      [natToInt] -R- Z = intZ
+      natToInt -R- Z = intZ
       n :R: Nat
-        [natToInt] -R- (S -R- n) = intS -R- (natToInt -R- n)
+        natToInt -R- (S -R- n) = intS -R- (natToInt -R- n)
     foreign intToNat :R: (x :R: Int) -> Nat
     printNat :R: (x :R: Nat) -> IO -E- Unspec = (\x :R: Nat. printSchemeRepr -E- Int -R- (natToInt -R- x))
     main :R: Unspec = unsafePerformIO -E- Unspec -R- (ioBind -E- Nat -E- Unspec -R- (ioReturn -E- Nat -R- 4) -R- (\v :R: Nat. ioBind -E- Unspec -E- Unspec -R- (printNat -R- v) -R- (\_0 :R: Unspec. printSchemeRepr -E- Nat -R- (intToNat -R- (intS -R- (intS -R- (intS -R- intZ)))))))
@@ -446,58 +821,58 @@
     constructor S :R: (x :R: Nat) -> Nat
     plus :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Nat 
       n :E: Nat
-        [plus] -E- Z -E- n = n
+        plus -E- Z -E- n = n
       m :E: Nat n :E: Nat
-        [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
+        plus -E- (S -R- m) -E- n = S -R- (plus -E- m -E- n)
     times :E: (_x2 :E: Nat) -> (_x3 :E: Nat) -> Nat 
       n :E: Nat
-        [times] -E- Z -E- n = Z
+        times -E- Z -E- n = Z
       m :E: Nat n :E: Nat
-        [times] -E- (S -E- m) -E- n = plus -E- n -E- (times -E- m -E- n)
+        times -E- (S -R- m) -E- n = plus -E- n -E- (times -E- m -E- n)
     constructor Bool :E: Type
     constructor True :E: Bool
     constructor False :E: Bool
     not :E: (_x4 :E: Bool) -> Bool 
-      [not] -E- True = False
-      [not] -E- False = True
+      not -E- True = False
+      not -E- False = True
     constructor Unit :E: Type
     constructor MkUnit :E: Unit
     constructor Pair :E: (_x5 :E: Type) -> (_x6 :E: Type) -> Type
     constructor MkPair :R: (a :E: Type) -> (b :E: Type) -> (_x7 :R: a) -> (_x8 :R: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x9 :E: Pair -E- a -E- b) -> a 
       a :E: Type b :E: Type x :E: a y :E: b
-        [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
+        fst -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -R- x -R- y) = x
     snd :R: (a :E: Type) -> (b :E: Type) -> (_x10 :R: Pair -E- a -E- b) -> b 
-      a :E: Type b :E: Type x :E: a y :R: b
-        [snd] -E- a -E- b -R- ([MkPair] -E- [a] -E- [b] -R- x -R- y) = y
+      a :E: Type b :E: Type x :R: a y :R: b
+        snd -E- a -E- b -R- ([MkPair] -E- [a] -E- [b] -R- x -R- y) = y
     constructor Either :E: (_x11 :E: Type) -> (_x12 :E: Type) -> Type
     constructor Left :E: (a :E: Type) -> (b :E: Type) -> (_x13 :E: a) -> Either -E- a -E- b
     constructor Right :E: (a :E: Type) -> (b :E: Type) -> (_x14 :E: b) -> Either -E- a -E- b
     id :E: (a :E: Type) -> (x :E: a) -> a = (\a :E: Type. (\x :E: a. x))
     constructor Fin :E: (_x15 :E: Nat) -> Type
-    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
-    constructor FS :E: (n :E: Nat) -> (_x16 :E: Fin -E- n) -> Fin -E- (S -E- n)
+    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -R- n)
+    constructor FS :E: (n :E: Nat) -> (_x16 :E: Fin -E- n) -> Fin -E- (S -R- n)
     constructor Vect :E: (_x17 :E: Nat) -> (_x18 :E: Type) -> Type
     constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
-    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
+    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
     constructor State :E: (_x0 :E: Type) -> (_x1 :E: Type) -> Type
     constructor MkSt :R: (st :E: Type) -> (a :E: Type) -> (run :R: (_x2 :R: st) -> Pair -E- st -E- a) -> State -E- st -E- a
     runState :R: (st :E: Type) -> (a :E: Type) -> (_x3 :R: State -E- st -E- a) -> (_x4 :R: st) -> Pair -E- st -E- a 
       st :E: Type a :E: Type run :R: (_x5 :R: st) -> Pair -E- st -E- a
-        [runState] -E- st -E- a -R- ([MkSt] -E- [st] -E- [a] -R- run) = run
+        runState -E- st -E- a -R- ([MkSt] -E- [st] -E- [a] -R- run) = run
     execState :R: (st :E: Type) -> (a :E: Type) -> (x :R: State -E- st -E- a) -> (s :R: st) -> a = (\st :E: Type. (\a :E: Type. (\x :R: State -E- st -E- a. (\s :R: st. snd -E- st -E- a -R- (runState -E- st -E- a -R- x -R- s)))))
     stGet :R: (st :E: Type) -> State -E- st -E- st = (\st :E: Type. MkSt -E- st -E- st -R- (\s :R: st. MkPair -E- st -E- st -R- s -R- s))
     stReturn :R: (st :E: Type) -> (a :E: Type) -> (x :R: a) -> State -E- st -E- a = (\st :E: Type. (\a :E: Type. (\x :R: a. MkSt -E- st -E- a -R- (\s :R: st. MkPair -E- st -E- a -R- s -R- x))))
     stBind :R: (st :E: Type) -> (a :E: Type) -> (b :E: Type) -> (x :R: State -E- st -E- a) -> (y :R: (z :R: a) -> State -E- st -E- b) -> State -E- st -E- b 
       st :E: Type a :E: Type b :E: Type f :R: (_x6 :R: st) -> Pair -E- st -E- a g :R: (_x7 :R: a) -> State -E- st -E- b
-        [stBind] -E- st -E- a -E- b -R- ([MkSt] -E- [st] -E- [a] -R- f) -R- g = 
+        stBind -E- st -E- a -E- b -R- ([MkSt] -E- [st] -E- [a] -R- f) -R- g = 
           let
             stBind3 :R: (st :E: Type) -> (b :E: Type) -> (_x8 :R: st) -> (_x9 :R: State -E- st -E- b) -> Pair -E- st -E- b 
               st :E: Type b :E: Type s :R: st f :R: (_x10 :R: st) -> Pair -E- st -E- b
-                [stBind3] -E- st -E- b -R- s -R- ([MkSt] -E- [st] -E- [b] -R- f) = f -R- s
+                stBind3 -E- st -E- b -R- s -R- ([MkSt] -E- [st] -E- [b] -R- f) = f -R- s
             stBind2 :R: (st :E: Type) -> (a :E: Type) -> (b :E: Type) -> (g :R: (_x11 :R: a) -> State -E- st -E- b) -> (r :R: Pair -E- st -E- a) -> Pair -E- st -E- b 
               st :E: Type a :E: Type b :E: Type g :R: (_x12 :R: a) -> State -E- st -E- b x :R: a s :R: st
-                [stBind2] -E- st -E- a -E- b -R- g -R- ([MkPair] -E- [st] -E- [a] -R- s -R- x) = stBind3 -E- st -E- b -R- s -R- (g -R- x)
+                stBind2 -E- st -E- a -E- b -R- g -R- ([MkPair] -E- [st] -E- [a] -R- s -R- x) = stBind3 -E- st -E- b -R- s -R- (g -R- x)
           in MkSt -E- st -E- b -R- (\s :R: st. stBind2 -E- st -E- a -E- b -R- g -R- (f -R- s))
     postulate RealWorld :E: Type
     IO :E: (_x0 :E: Type) -> Type = State -E- RealWorld
@@ -515,9 +890,9 @@
       let foreign nativePrint :R: (a :E: Type) -> (x :R: a) -> Unspec
       in ioWrapImpure -E- Unspec -R- (\w :R: RealWorld. nativePrint -E- a -R- x)))
     natToInt :R: (_x0 :R: Nat) -> Int 
-      [natToInt] -R- Z = intZ
+      natToInt -R- Z = intZ
       n :R: Nat
-        [natToInt] -R- (S -R- n) = intS -R- (natToInt -R- n)
+        natToInt -R- (S -R- n) = intS -R- (natToInt -R- n)
     foreign intToNat :R: (x :R: Int) -> Nat
     printNat :R: (x :R: Nat) -> IO -E- Unspec = (\x :R: Nat. printSchemeRepr -E- Int -R- (natToInt -R- x))
     main :R: Unspec = unsafePerformIO -E- Unspec -R- (ioBind -E- Nat -E- Unspec -R- (ioReturn -E- Nat -R- 4) -R- (\v :R: Nat. ioBind -E- Unspec -E- Unspec -R- (printNat -R- v) -R- (\_0 :R: Unspec. printSchemeRepr -E- Nat -R- (intToNat -R- (intS -R- (intS -R- (intS -R- intZ)))))))
@@ -531,58 +906,58 @@
     constructor S :R: (x :R: Nat) -> Nat
     plus :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Nat 
       n :E: Nat
-        [plus] -E- Z -E- n = n
+        plus -E- Z -E- n = n
       m :E: Nat n :E: Nat
-        [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
+        plus -E- (S -R- m) -E- n = S -R- (plus -E- m -E- n)
     times :E: (_x2 :E: Nat) -> (_x3 :E: Nat) -> Nat 
       n :E: Nat
-        [times] -E- Z -E- n = Z
+        times -E- Z -E- n = Z
       m :E: Nat n :E: Nat
-        [times] -E- (S -E- m) -E- n = plus -E- n -E- (times -E- m -E- n)
+        times -E- (S -R- m) -E- n = plus -E- n -E- (times -E- m -E- n)
     constructor Bool :E: Type
     constructor True :E: Bool
     constructor False :E: Bool
     not :E: (_x4 :E: Bool) -> Bool 
-      [not] -E- True = False
-      [not] -E- False = True
+      not -E- True = False
+      not -E- False = True
     constructor Unit :E: Type
     constructor MkUnit :E: Unit
     constructor Pair :E: (_x5 :E: Type) -> (_x6 :E: Type) -> Type
     constructor MkPair :R: (a :E: Type) -> (b :E: Type) -> (_x7 :R: a) -> (_x8 :R: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x9 :E: Pair -E- a -E- b) -> a 
       a :E: Type b :E: Type x :E: a y :E: b
-        [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
+        fst -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -R- x -R- y) = x
     snd :R: (a :E: Type) -> (b :E: Type) -> (_x10 :R: Pair -E- a -E- b) -> b 
-      a :E: Type b :E: Type x :E: a y :R: b
-        [snd] -E- a -E- b -R- ([MkPair] -E- [a] -E- [b] -R- x -R- y) = y
+      a :E: Type b :E: Type x :R: a y :R: b
+        snd -E- a -E- b -R- ([MkPair] -E- [a] -E- [b] -R- x -R- y) = y
     constructor Either :E: (_x11 :E: Type) -> (_x12 :E: Type) -> Type
     constructor Left :E: (a :E: Type) -> (b :E: Type) -> (_x13 :E: a) -> Either -E- a -E- b
     constructor Right :E: (a :E: Type) -> (b :E: Type) -> (_x14 :E: b) -> Either -E- a -E- b
     id :E: (a :E: Type) -> (x :E: a) -> a = (\a :E: Type. (\x :E: a. x))
     constructor Fin :E: (_x15 :E: Nat) -> Type
-    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
-    constructor FS :E: (n :E: Nat) -> (_x16 :E: Fin -E- n) -> Fin -E- (S -E- n)
+    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -R- n)
+    constructor FS :E: (n :E: Nat) -> (_x16 :E: Fin -E- n) -> Fin -E- (S -R- n)
     constructor Vect :E: (_x17 :E: Nat) -> (_x18 :E: Type) -> Type
     constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
-    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
+    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
     constructor State :E: (_x0 :E: Type) -> (_x1 :E: Type) -> Type
     constructor MkSt :R: (st :E: Type) -> (a :E: Type) -> (run :R: (_x2 :R: st) -> Pair -E- st -E- a) -> State -E- st -E- a
     runState :R: (st :E: Type) -> (a :E: Type) -> (_x3 :R: State -E- st -E- a) -> (_x4 :R: st) -> Pair -E- st -E- a 
       st :E: Type a :E: Type run :R: (_x5 :R: st) -> Pair -E- st -E- a
-        [runState] -E- st -E- a -R- ([MkSt] -E- [st] -E- [a] -R- run) = run
+        runState -E- st -E- a -R- ([MkSt] -E- [st] -E- [a] -R- run) = run
     execState :R: (st :E: Type) -> (a :E: Type) -> (x :R: State -E- st -E- a) -> (s :R: st) -> a = (\st :E: Type. (\a :E: Type. (\x :R: State -E- st -E- a. (\s :R: st. snd -E- st -E- a -R- (runState -E- st -E- a -R- x -R- s)))))
     stGet :R: (st :E: Type) -> State -E- st -E- st = (\st :E: Type. MkSt -E- st -E- st -R- (\s :R: st. MkPair -E- st -E- st -R- s -R- s))
     stReturn :R: (st :E: Type) -> (a :E: Type) -> (x :R: a) -> State -E- st -E- a = (\st :E: Type. (\a :E: Type. (\x :R: a. MkSt -E- st -E- a -R- (\s :R: st. MkPair -E- st -E- a -R- s -R- x))))
     stBind :R: (st :E: Type) -> (a :E: Type) -> (b :E: Type) -> (x :R: State -E- st -E- a) -> (y :R: (z :R: a) -> State -E- st -E- b) -> State -E- st -E- b 
       st :E: Type a :E: Type b :E: Type f :R: (_x6 :R: st) -> Pair -E- st -E- a g :R: (_x7 :R: a) -> State -E- st -E- b
-        [stBind] -E- st -E- a -E- b -R- ([MkSt] -E- [st] -E- [a] -R- f) -R- g = 
+        stBind -E- st -E- a -E- b -R- ([MkSt] -E- [st] -E- [a] -R- f) -R- g = 
           let
             stBind3 :R: (st :E: Type) -> (b :E: Type) -> (_x8 :R: st) -> (_x9 :R: State -E- st -E- b) -> Pair -E- st -E- b 
               st :E: Type b :E: Type s :R: st f :R: (_x10 :R: st) -> Pair -E- st -E- b
-                [stBind3] -E- st -E- b -R- s -R- ([MkSt] -E- [st] -E- [b] -R- f) = f -R- s
+                stBind3 -E- st -E- b -R- s -R- ([MkSt] -E- [st] -E- [b] -R- f) = f -R- s
             stBind2 :R: (st :E: Type) -> (a :E: Type) -> (b :E: Type) -> (g :R: (_x11 :R: a) -> State -E- st -E- b) -> (r :R: Pair -E- st -E- a) -> Pair -E- st -E- b 
               st :E: Type a :E: Type b :E: Type g :R: (_x12 :R: a) -> State -E- st -E- b x :R: a s :R: st
-                [stBind2] -E- st -E- a -E- b -R- g -R- ([MkPair] -E- [st] -E- [a] -R- s -R- x) = stBind3 -E- st -E- b -R- s -R- (g -R- x)
+                stBind2 -E- st -E- a -E- b -R- g -R- ([MkPair] -E- [st] -E- [a] -R- s -R- x) = stBind3 -E- st -E- b -R- s -R- (g -R- x)
           in MkSt -E- st -E- b -R- (\s :R: st. stBind2 -E- st -E- a -E- b -R- g -R- (f -R- s))
     postulate RealWorld :E: Type
     IO :E: (_x0 :E: Type) -> Type = State -E- RealWorld
@@ -600,9 +975,9 @@
       let foreign nativePrint :R: (a :E: Type) -> (x :R: a) -> Unspec
       in ioWrapImpure -E- Unspec -R- (\w :R: RealWorld. nativePrint -E- a -R- x)))
     natToInt :R: (_x0 :R: Nat) -> Int 
-      [natToInt] -R- Z = intZ
+      natToInt -R- Z = intZ
       n :R: Nat
-        [natToInt] -R- (S -R- n) = intS -R- (natToInt -R- n)
+        natToInt -R- (S -R- n) = intS -R- (natToInt -R- n)
     foreign intToNat :R: (x :R: Int) -> Nat
     printNat :R: (x :R: Nat) -> IO -E- Unspec = (\x :R: Nat. printSchemeRepr -E- Int -R- (natToInt -R- x))
     main :R: Unspec = unsafePerformIO -E- Unspec -R- (ioBind -E- Nat -E- Unspec -R- (ioReturn -E- Nat -R- 4) -R- (\v :R: Nat. ioBind -E- Unspec -E- Unspec -R- (printNat -R- v) -R- (\_0 :R: Unspec. printSchemeRepr -E- Nat -R- (intToNat -R- (intS -R- (intS -R- (intS -R- intZ)))))))
@@ -619,20 +994,20 @@ Verification successful.
     constructor S : (x) -> Nat
     constructor MkPair : (_x7) -> (_x8) -> Pair
     snd 
-      [_] ([_] _ y) = y
+      snd ([_] x y) = y
     constructor MkSt : (run) -> State
     runState 
-      [_] ([_] run) = run
+      runState ([_] run) = run
     execState = (\x. (\s. snd (runState x s)))
     stGet = MkSt (\s. MkPair s s)
     stReturn = (\x. MkSt (\s. MkPair s x))
     stBind 
-      [_] ([_] f) g = 
+      stBind ([_] f) g = 
         let
           stBind3 
-            [_] s ([_] f) = f s
+            stBind3 s ([_] f) = f s
           stBind2 
-            [_] g ([_] s x) = stBind3 s (g x)
+            stBind2 g ([_] s x) = stBind3 s (g x)
         in MkSt (\s. stBind2 g (f s))
     ioReturn = (\x. stReturn x)
     ioBind = (\x. (\y. stBind x y))
@@ -646,8 +1021,8 @@ Verification successful.
       let foreign nativePrint
       in ioWrapImpure (\w. nativePrint x))
     natToInt 
-      [_] Z = intZ
-      [_] (S n) = intS (natToInt n)
+      natToInt Z = intZ
+      natToInt (S n) = intS (natToInt n)
     foreign intToNat
     printNat = (\x. printSchemeRepr (natToInt x))
     main = unsafePerformIO (ioBind (ioReturn 4) (\v. ioBind (printNat v) (\_0. printSchemeRepr (intToNat (intS (intS (intS intZ)))))))

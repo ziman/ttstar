@@ -9,16 +9,16 @@
     constructor Unit : Type
     constructor MkUnit : Unit
     not : (_x0 : Bool) -> Bool 
-      [not] T = F
-      [not] F = T
+      not T = F
+      not F = T
     retTy : (_x1 : Bool) -> Type 
-      [retTy] T = Bool
-      [retTy] F = Unit
+      retTy T = Bool
+      retTy F = Unit
     main : Bool = not 
       let f : (x : Bool) -> (_x2 : retTy x) -> retTy x 
-        [f] F MkUnit = MkUnit
-        [f] T T = F
-        [f] T F = T
+        f F MkUnit = MkUnit
+        f T T = F
+        f T F = T
       in f (not F) T
   in main
 
@@ -31,22 +31,50 @@
     constructor Unit :4: Type
     constructor MkUnit :5: Unit
     not :6: (_x0 :7: Bool) -> Bool 
-      [not] -8- T = F
-      [not] -9- F = T
+      not -8- T = F
+      not -9- F = T
     retTy :10: (_x1 :11: Bool) -> Type 
-      [retTy] -12- T = Bool
-      [retTy] -13- F = Unit
+      retTy -12- T = Bool
+      retTy -13- F = Unit
     main :14: Bool = not -15- 
       let f :16: (x :17: Bool) -> (_x2 :18: retTy -19- x) -> retTy -20- x 
-        [f] -22- F -21- MkUnit = MkUnit
-        [f] -24- T -23- T = F
-        [f] -26- T -25- F = T
+        f -22- F -21- MkUnit = MkUnit
+        f -24- T -23- T = F
+        f -26- T -25- F = T
       in f -28- (not -29- F) -27- T
   in main
 
 ### Constraints ###
 
-[] -> [2,3,5,6,7,8,9,15,16,17,18,21,22,23,24,25,26,27,28,29,R]
+[6] -> [2,3,6,8,9]
+[7] -> [8,9,15,29]
+[8] -> [7]
+[9] -> [7]
+[10] -> [1,2,3,4,10,12,13]
+[11] -> [12,13,20]
+[12] -> [11]
+[13] -> [11]
+[14] -> [6]
+[14,15] -> [16]
+[14,15,27] -> [2]
+[14,15,28] -> [6]
+[14,15,28,29] -> [3]
+[15] -> [7]
+[16] -> [2,3,5,16,21,22,23,24,25,26]
+[17] -> [22,24,26,28]
+[18] -> [21,23,25,27]
+[20] -> [11]
+[20,E] -> [17]
+[21] -> [18]
+[22] -> [17]
+[23] -> [18]
+[24] -> [17]
+[25] -> [18]
+[26] -> [17]
+[27] -> [18]
+[28] -> [17]
+[29] -> [7]
+[E] -> [1,4,10,R]
 [R] -> [14]
 
 ### Solution ###
@@ -62,16 +90,16 @@
     constructor Unit :E: Type
     constructor MkUnit :R: Unit
     not :R: (_x0 :R: Bool) -> Bool 
-      [not] -R- T = F
-      [not] -R- F = T
+      not -R- T = F
+      not -R- F = T
     retTy :E: (_x1 :E: Bool) -> Type 
-      [retTy] -E- T = Bool
-      [retTy] -E- F = Unit
+      retTy -E- T = Bool
+      retTy -E- F = Unit
     main :R: Bool = not -R- 
       let f :R: (x :R: Bool) -> (_x2 :R: retTy -E- x) -> retTy -E- x 
-        [f] -R- F -R- MkUnit = MkUnit
-        [f] -R- T -R- T = F
-        [f] -R- T -R- F = T
+        f -R- F -R- MkUnit = MkUnit
+        f -R- T -R- T = F
+        f -R- T -R- F = T
       in f -R- (not -R- F) -R- T
   in main
 
@@ -84,16 +112,16 @@
     constructor Unit :E: Type
     constructor MkUnit :R: Unit
     not :R: (_x0 :R: Bool) -> Bool 
-      [not] -R- T = F
-      [not] -R- F = T
+      not -R- T = F
+      not -R- F = T
     retTy :E: (_x1 :E: Bool) -> Type 
-      [retTy] -E- T = Bool
-      [retTy] -E- F = Unit
+      retTy -E- T = Bool
+      retTy -E- F = Unit
     main :R: Bool = not -R- 
       let f :R: (x :R: Bool) -> (_x2 :R: retTy -E- x) -> retTy -E- x 
-        [f] -R- F -R- MkUnit = MkUnit
-        [f] -R- T -R- T = F
-        [f] -R- T -R- F = T
+        f -R- F -R- MkUnit = MkUnit
+        f -R- T -R- T = F
+        f -R- T -R- F = T
       in f -R- (not -R- F) -R- T
   in main
 
@@ -106,16 +134,16 @@
     constructor Unit :E: Type
     constructor MkUnit :R: Unit
     not :R: (_x0 :R: Bool) -> Bool 
-      [not] -R- T = F
-      [not] -R- F = T
+      not -R- T = F
+      not -R- F = T
     retTy :E: (_x1 :E: Bool) -> Type 
-      [retTy] -E- T = Bool
-      [retTy] -E- F = Unit
+      retTy -E- T = Bool
+      retTy -E- F = Unit
     main :R: Bool = not -R- 
       let f :R: (x :R: Bool) -> (_x2 :R: retTy -E- x) -> retTy -E- x 
-        [f] -R- F -R- MkUnit = MkUnit
-        [f] -R- T -R- T = F
-        [f] -R- T -R- F = T
+        f -R- F -R- MkUnit = MkUnit
+        f -R- T -R- T = F
+        f -R- T -R- F = T
       in f -R- (not -R- F) -R- T
   in main
 
@@ -130,13 +158,13 @@ Verification successful.
     constructor F : Bool
     constructor MkUnit : Unit
     not 
-      [_] T = F
-      [_] F = T
+      not T = F
+      not F = T
     main = not 
       let f 
-        [_] F MkUnit = MkUnit
-        [_] T T = F
-        [_] T F = T
+        f F MkUnit = MkUnit
+        f T T = F
+        f T F = T
       in f (not F) T
   in main
 

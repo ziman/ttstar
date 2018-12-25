@@ -8,30 +8,30 @@
     constructor Nil : List
     constructor Cons : (_x0) -> (_x1) -> List
     repl 
-      [_] Z _ xs = xs
-      [_] (S n) x xs = Cons x (repl n x xs)
+      repl Z x xs = xs
+      repl (S n) x xs = Cons x (repl n x xs)
     constructor RNil : RLE
     constructor RCons : (n) -> (x) -> (_x4) -> RLE
     compress 
-      [_] Nil = RNil
-      [_] (Cons x xs) = 
+      compress Nil = RNil
+      compress (Cons x xs) = 
         let aux 
-          [_] y RNil = RCons 1 y RNil
-          [_] True (RCons n True rzs) = RCons (S n) True rzs
-          [_] False (RCons n False rzs) = RCons (S n) False rzs
-          [_] True (RCons n False rzs) = RCons 1 True (RCons n False rzs)
-          [_] False (RCons n True rzs) = RCons 1 False (RCons n True rzs)
+          aux y RNil = RCons 1 y RNil
+          aux True (RCons n True rzs) = RCons (S n) True rzs
+          aux False (RCons n False rzs) = RCons (S n) False rzs
+          aux True (RCons n False rzs) = RCons 1 True (RCons n False rzs)
+          aux False (RCons n True rzs) = RCons 1 False (RCons n True rzs)
         in aux x (compress xs)
     decompress 
-      [_] RNil = Nil
-      [_] (RCons n x rxs) = repl n x (decompress rxs)
+      decompress RNil = Nil
+      decompress (RCons n x rxs) = repl n x (decompress rxs)
     foldl 
-      [_] _ z Nil = z
-      [_] f z (Cons x xs) = foldl f (f z x) xs
+      foldl f z Nil = z
+      foldl f z (Cons x xs) = foldl f (f z x) xs
     xor 
-      [_] False b = b
-      [_] True False = True
-      [_] True True = False
+      xor False b = b
+      xor True False = True
+      xor True True = False
   in 
     let foreign inputSize
     in foldl xor False (decompress (compress (repl inputSize True Nil)))

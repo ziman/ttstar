@@ -8,7 +8,7 @@
     constructor Nil : (a) -> Vec Z a
     constructor Cons : (a) -> (n) -> (x) -> (xs) -> Vec (S n) a
     vlen 
-      [_] [_] (Nil [_]) = Z
-      [_] ([_] m) (Cons [_] [_] y ys) = S (vlen m ys)
+      vlen [_] (Nil [_]) = Z
+      vlen ([_] m) (Cons [_] [_] y ys) = S (vlen m ys)
     main = vlen 1 (Cons N Z 3 (Nil N))
   in main

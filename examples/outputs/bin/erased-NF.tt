@@ -11,23 +11,23 @@
     constructor C : (lsb) -> (rest) -> Bin
     constructor TB : (hi) -> (lo) -> TwoBits
     adb 
-      [_] O O O = TB O O
-      [_] I O O = TB O I
-      [_] O I O = TB O I
-      [_] O O I = TB O I
-      [_] I I O = TB I O
-      [_] I O I = TB I O
-      [_] O I I = TB I O
-      [_] I I I = TB I I
+      adb O O O = TB O O
+      adb I O O = TB O I
+      adb O I O = TB O I
+      adb O O I = TB O I
+      adb I I O = TB I O
+      adb I O I = TB I O
+      adb O I I = TB I O
+      adb I I I = TB I I
     add' 
-      [_] cb N N = C cb N
-      [_] cb (C xb xn) (C yb yn) = 
+      add' cb N N = C cb N
+      add' cb (C xb xn) (C yb yn) = 
         let f 
-          [_] ([_] hi lo) = C lo (add' hi xn yn)
+          f ([_] hi lo) = C lo (add' hi xn yn)
         in f (adb cb xb yb)
     foreign inputSize
     mkBin 
-      [_] _ Z = N
-      [_] True (S n) = C I (mkBin False n)
-      [_] False (S n) = C O (mkBin True n)
+      mkBin b Z = N
+      mkBin True (S n) = C I (mkBin False n)
+      mkBin False (S n) = C O (mkBin True n)
   in add' O (mkBin True inputSize) (mkBin False inputSize)

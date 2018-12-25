@@ -10,15 +10,15 @@
     fun = 
       let
         even 
-          [_] Z = True
-          [_] (S n) = fun Odd n
+          even Z = True
+          even (S n) = fun Odd n
         odd 
-          [_] Z = False
-          [_] (S m) = fun Even m
+          odd Z = False
+          odd (S m) = fun Even m
       in (\tag. 
         let f 
-          [_] Even = even
-          [_] Odd = odd
+          f Even = even
+          f Odd = odd
         in f tag)
     even = fun Even
     main = even 8

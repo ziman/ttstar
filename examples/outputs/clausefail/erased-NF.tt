@@ -5,6 +5,6 @@
     constructor T : B
     constructor F : B
     isSuc 
-      [_] S = T
-      [_] _ = F
+      isSuc S = T
+      isSuc n = F
   in (\x. isSuc x)

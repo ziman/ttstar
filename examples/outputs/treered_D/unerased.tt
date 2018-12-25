@@ -11,11 +11,11 @@
     constructor Nothing : (a) -> Maybe a
     constructor Just : (a) -> (x) -> Maybe a
     f 
-      [_] (Just [_] b) = b
-      [_] (Nothing [_]) = False
+      f (Just [_] b) = b
+      f (Nothing [_]) = False
     g 
-      [_] (Just [_] True) = Yeah
-      [_] (Just [_] False) = Nope
-      [_] (Nothing [_]) = Nope
+      g (Just [_] True) = Yeah
+      g (Just [_] False) = Nope
+      g (Nothing [_]) = Nope
     main = g (Just Bool True)
   in main

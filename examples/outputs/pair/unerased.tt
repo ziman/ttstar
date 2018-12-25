@@ -7,11 +7,11 @@
     constructor Pair : Type
     constructor P : (x) -> (y) -> Pair
     fst 
-      [_] ([_] l r) = l
+      fst ([_] l r) = l
     snd 
-      [_] ([_] l r) = r
+      snd ([_] l r) = r
     and 
-      [_] T y = y
-      [_] F y = F
+      and T y = y
+      and F y = F
     main = and (fst (P T F)) (snd (P F T))
   in main

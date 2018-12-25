@@ -11,30 +11,33 @@
     constructor Cons : (_x0) -> (_x1) -> List
     constructor Nil : List
     not 
-      [_] T = F
-      [_] F = T
+      not T = F
+      not F = T
     foreign input
     genList 
-      [_] b Z = Nil
-      [_] b (S n) = Cons b (genList (not b) n)
+      genList b Z = Nil
+      genList b (S n) = Cons b (genList (not b) n)
     constructor Eq : (a) -> (_x5) -> (_x6) -> Type
     constructor Refl : (a) -> (x) -> Eq a x x
     constructor Maybe : (_x7) -> Type
     constructor Nothing : (a) -> Maybe a
     constructor Just : (a) -> (x) -> Maybe a
     semiDecEqB 
-      [_] T T = Just (Eq B T T) (Refl B T)
-      [_] F F = Just (Eq B F F) (Refl B F)
-      [_] T F = Nothing (Eq B T F)
-      [_] F T = Nothing (Eq B F T)
+      semiDecEqB T T = Just (Eq B T T) (Refl B T)
+      semiDecEqB F F = Just (Eq B F F) (Refl B F)
+      semiDecEqB T F = Nothing (Eq B T F)
+      semiDecEqB F T = Nothing (Eq B F T)
     semiDecEq 
-      [_] Nil (Cons b ys) = Nothing (Eq List Nil (Cons b ys))
-      [_] (Cons b xs) Nil = Nothing (Eq List (Cons b xs) Nil)
-      [_] Nil Nil = Just (Eq List Nil Nil) (Refl List Nil)
-      [_] (Cons x xs) (Cons y ys) = 
+      semiDecEq Nil (Cons b ys) = Nothing (Eq List Nil (Cons b ys))
+      semiDecEq (Cons b xs) Nil = Nothing (Eq List (Cons b xs) Nil)
+      semiDecEq Nil Nil = Just (Eq List Nil Nil) (Refl List Nil)
+      semiDecEq (Cons x xs) (Cons y ys) = 
         let semiDecEq' 
-          [_] x y xs ys (Nothing [_]) pfT = Nothing (Eq List (Cons x xs) (Cons y ys))
-          [_] x y xs ys pfH (Nothing [_]) = Nothing (Eq List (Cons x xs) (Cons y ys))
-          [_] x [_] xs [_] (Just [_] [_]) (Just [_] [_]) = Just (Eq List (Cons x xs) (Cons x xs)) (Refl List (Cons x xs))
+          semiDecEq' x y xs ys (Nothing [_]) pfT = Nothing (Eq List (Cons x xs) (Cons y ys))
+          semiDecEq' x y xs ys pfH (Nothing [_]) = Nothing (Eq List (Cons x xs) (Cons y ys))
+          semiDecEq' x [_] xs [_] (Just [_] [_]) (Just [_] [_]) = Just (Eq List (Cons x xs) (Cons x xs)) (Refl List (Cons x xs))
         in semiDecEq' x y xs ys (semiDecEqB x y) (semiDecEq xs ys)
-  in semiDecEq (genList T input) (genList T input)
+    sampleList = genList T input
+    main 
+      main = semiDecEq sampleList sampleList
+  in main

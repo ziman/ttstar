@@ -6,7 +6,7 @@
     constructor True : Bool
     constructor False : Bool
     f 
-      [_] [_] True = False
-      [_] [_] False = True
-      [_] a x = x
+      f [_] True = False
+      f [_] False = True
+      f a x = x
   in f (_x1) -> Nat (\x. x)

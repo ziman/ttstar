@@ -9,34 +9,34 @@
     constructor Lam : (_x2) -> TT
     constructor App : (_x3) -> (_x4) -> TT
     env 
-      [_] (VC x _) FZ = x
-      [_] (VC _ xs) (FS i) = env xs i
+      env (VC x xs) FZ = x
+      env (VC x xs) (FS i) = env xs i
     extendMap 
-      [_] _ FZ = FZ
-      [_] f (FS i) = FS (f i)
+      extendMap f FZ = FZ
+      extendMap f (FS i) = FS (f i)
     mapVars 
-      [_] f (V i) = V (f i)
-      [_] f (Lam x) = Lam (mapVars (extendMap f) x)
-      [_] f (App g x) = App (mapVars f g) (mapVars f x)
+      mapVars f (V i) = V (f i)
+      mapVars f (Lam x) = Lam (mapVars (extendMap f) x)
+      mapVars f (App g x) = App (mapVars f g) (mapVars f x)
     extendSubst 
-      [_] _ FZ = V FZ
-      [_] f (FS i) = mapVars FS (f i)
+      extendSubst f FZ = V FZ
+      extendSubst f (FS i) = mapVars FS (f i)
     substVars 
-      [_] f (V i) = f i
-      [_] f (Lam x) = Lam (substVars (extendSubst f) x)
-      [_] f (App g x) = App (substVars f g) (substVars f x)
+      substVars f (V i) = f i
+      substVars f (Lam x) = Lam (substVars (extendSubst f) x)
+      substVars f (App g x) = App (substVars f g) (substVars f x)
     testTm = App (Lam (App (V FZ) (V (FS FZ)))) (Lam (App (V (FS FZ)) (V FZ)))
     example1 = substVars (env (VC (Lam (V FZ)) VN)) testTm
     substTop 
-      [_] tm FZ = tm
-      [_] _ (FS i) = V i
+      substTop tm FZ = tm
+      substTop tm (FS i) = V i
     nf 
-      [_] (V i) = V i
-      [_] (Lam x) = Lam (nf x)
-      [_] (App f x) = 
+      nf (V i) = V i
+      nf (Lam x) = Lam (nf x)
+      nf (App f x) = 
         let g 
-          [_] (Lam y) = nf (substVars (substTop (nf x)) y)
-          [_] f' = App f' (nf x)
+          g (Lam y) = nf (substVars (substTop (nf x)) y)
+          g f' = App f' (nf x)
         in g (nf f)
     example2 = nf testTm
     constructor R : (x) -> (y) -> Result

@@ -6,11 +6,11 @@
     constructor True : Bool
     constructor False : Bool
     even 
-      [_] Z = True
-      [_] (S n) = 
+      even Z = True
+      even (S n) = 
         let odd 
-          [_] Z = False
-          [_] (S n) = even n
+          odd Z = False
+          odd (S n) = even n
         in odd n
     main = even 5
   in main

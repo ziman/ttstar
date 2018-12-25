@@ -1,3 +1,4 @@
+(import (chicken process-context))
 (require-extension matchable)
 (define Type '(Type))
 (define (number->peano z s i) (if (= i 0) (list z) (list s (number->peano z s (- i 1)))))
@@ -31,6 +32,6 @@
               (letrec* ((w (lambda (x)
                 (((((coerce a) '_) pf) x) x))))
                 (w ((((coerce '_) a) (((sym a) '_) pf)) w)))))))))
-    (main ((loopy Type) Type))
+    (main Type)
   )
     main))

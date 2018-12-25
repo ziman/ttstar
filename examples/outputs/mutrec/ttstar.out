@@ -7,12 +7,12 @@
     constructor T : Bool
     constructor F : Bool
     g : (_x0 : Bool) -> Bool 
-      [g] T = 
+      g T = 
         let h : (_x1 : Bool) -> Bool 
-          [h] F = g F
-          [h] T = T
+          h F = g F
+          h T = T
         in h F
-      [g] F = T
+      g F = T
     main : Bool = g T
   in main
 
@@ -23,18 +23,33 @@
     constructor T :2: Bool
     constructor F :3: Bool
     g :4: (_x0 :5: Bool) -> Bool 
-      [g] -6- T = 
+      g -6- T = 
         let h :7: (_x1 :8: Bool) -> Bool 
-          [h] -9- F = g -10- F
-          [h] -11- T = T
+          h -9- F = g -10- F
+          h -11- T = T
         in h -12- F
-      [g] -13- F = T
+      g -13- F = T
     main :14: Bool = g -15- T
   in main
 
 ### Constraints ###
 
-[] -> [2,3,4,5,6,7,8,9,10,11,12,13,15,R]
+[4] -> [2,3,4,6,7,13]
+[4,12] -> [3]
+[5] -> [6,10,13,15]
+[6] -> [5]
+[7] -> [2,3,4,7,9,11]
+[7,10] -> [3]
+[8] -> [9,11,12]
+[9] -> [8]
+[10] -> [5]
+[11] -> [8]
+[12] -> [8]
+[13] -> [5]
+[14] -> [4]
+[14,15] -> [2]
+[15] -> [5]
+[E] -> [1,R]
 [R] -> [14]
 
 ### Solution ###
@@ -48,12 +63,12 @@
     constructor T :R: Bool
     constructor F :R: Bool
     g :R: (_x0 :R: Bool) -> Bool 
-      [g] -R- T = 
+      g -R- T = 
         let h :R: (_x1 :R: Bool) -> Bool 
-          [h] -R- F = g -R- F
-          [h] -R- T = T
+          h -R- F = g -R- F
+          h -R- T = T
         in h -R- F
-      [g] -R- F = T
+      g -R- F = T
     main :R: Bool = g -R- T
   in main
 
@@ -64,12 +79,12 @@
     constructor T :R: Bool
     constructor F :R: Bool
     g :R: (_x0 :R: Bool) -> Bool 
-      [g] -R- T = 
+      g -R- T = 
         let h :R: (_x1 :R: Bool) -> Bool 
-          [h] -R- F = g -R- F
-          [h] -R- T = T
+          h -R- F = g -R- F
+          h -R- T = T
         in h -R- F
-      [g] -R- F = T
+      g -R- F = T
     main :R: Bool = g -R- T
   in main
 
@@ -80,12 +95,12 @@
     constructor T :R: Bool
     constructor F :R: Bool
     g :R: (_x0 :R: Bool) -> Bool 
-      [g] -R- T = 
+      g -R- T = 
         let h :R: (_x1 :R: Bool) -> Bool 
-          [h] -R- F = g -R- F
-          [h] -R- T = T
+          h -R- F = g -R- F
+          h -R- T = T
         in h -R- F
-      [g] -R- F = T
+      g -R- F = T
     main :R: Bool = g -R- T
   in main
 
@@ -99,12 +114,12 @@ Verification successful.
     constructor T : Bool
     constructor F : Bool
     g 
-      [_] T = 
+      g T = 
         let h 
-          [_] F = g F
-          [_] T = T
+          h F = g F
+          h T = T
         in h F
-      [_] F = T
+      g F = T
     main = g T
   in main
 

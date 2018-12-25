@@ -14,13 +14,13 @@
     constructor B : U
     constructor M : U
     ty : (_x0 : U) -> Type 
-      [ty] B = Bool
-      [ty] M = Mool
+      ty B = Bool
+      ty M = Mool
     f : (u : U) -> (x : ty u) -> Type 
-      [f] [B] T = Bool
-      [f] [B] F = Mool
-      [f] [M] Q = Bool
-      [f] [M] W = Mool
+      f [B] T = Bool
+      f [B] F = Mool
+      f [M] Q = Bool
+      f [M] W = Mool
     main : Type = Tuple (f B T) (f B F) (f M Q) (f M W)
   in main
 
@@ -38,28 +38,56 @@
     constructor B :9: U
     constructor M :10: U
     ty :11: (_x0 :12: U) -> Type 
-      [ty] -13- B = Bool
-      [ty] -14- M = Mool
+      ty -13- B = Bool
+      ty -14- M = Mool
     f :15: (u :16: U) -> (x :17: ty -18- u) -> Type 
-      [f] -20- [B] -19- T = Bool
-      [f] -22- [B] -21- F = Mool
-      [f] -24- [M] -23- Q = Bool
-      [f] -26- [M] -25- W = Mool
+      f -20- [B] -19- T = Bool
+      f -22- [B] -21- F = Mool
+      f -24- [M] -23- Q = Bool
+      f -26- [M] -25- W = Mool
     main :27: Type = Tuple -31- (f -33- B -32- T) -30- (f -35- B -34- F) -29- (f -37- M -36- Q) -28- (f -39- M -38- W)
   in main
 
 ### Constraints ###
 
-[] -> [1,2,3,4,5,6,7,15,17,19,21,23,25,28,29,30,31,32,34,36,38,R]
+[] -> [28,29,30,31,R]
+[11] -> [2,5,9,10,11,13,14]
+[12] -> [13,14]
+[13] -> [12]
+[14] -> [12]
+[15] -> [2,3,4,5,6,7,15,19,21,23,25]
+[15,20] -> [9]
+[15,22] -> [9]
+[15,24] -> [10]
+[15,26] -> [10]
 [16] -> [20,22,24,26,33,35,37,39]
-[20] -> [9,16,R]
-[22] -> [9,16,R]
-[24] -> [10,16,R]
-[26] -> [10,16,R]
-[33] -> [9,16]
-[35] -> [9,16]
-[37] -> [10,16]
-[39] -> [10,16]
+[17] -> [19,21,23,25,32,34,36,38]
+[19] -> [17]
+[20] -> [16]
+[21] -> [17]
+[22] -> [16]
+[23] -> [17]
+[24] -> [16]
+[25] -> [17]
+[26] -> [16]
+[27] -> [1,15]
+[27,32] -> [3]
+[27,33] -> [9]
+[27,34] -> [4]
+[27,35] -> [9]
+[27,36] -> [6]
+[27,37] -> [10]
+[27,38] -> [7]
+[27,39] -> [10]
+[32] -> [17]
+[33] -> [16]
+[34] -> [17]
+[35] -> [16]
+[36] -> [17]
+[37] -> [16]
+[38] -> [17]
+[39] -> [16]
+[E] -> [2,5,8,R]
 [R] -> [27]
 
 ### Solution ###
@@ -80,13 +108,13 @@
     constructor B :E: U
     constructor M :E: U
     ty :E: (_x0 :E: U) -> Type 
-      [ty] -E- B = Bool
-      [ty] -E- M = Mool
+      ty -E- B = Bool
+      ty -E- M = Mool
     f :R: (u :E: U) -> (x :R: ty -E- u) -> Type 
-      [f] -E- [B] -R- T = Bool
-      [f] -E- [B] -R- F = Mool
-      [f] -E- [M] -R- Q = Bool
-      [f] -E- [M] -R- W = Mool
+      f -E- [B] -R- T = Bool
+      f -E- [B] -R- F = Mool
+      f -E- [M] -R- Q = Bool
+      f -E- [M] -R- W = Mool
     main :R: Type = Tuple -R- (f -E- B -R- T) -R- (f -E- B -R- F) -R- (f -E- M -R- Q) -R- (f -E- M -R- W)
   in main
 
@@ -104,13 +132,13 @@
     constructor B :E: U
     constructor M :E: U
     ty :E: (_x0 :E: U) -> Type 
-      [ty] -E- B = Bool
-      [ty] -E- M = Mool
+      ty -E- B = Bool
+      ty -E- M = Mool
     f :R: (u :E: U) -> (x :R: ty -E- u) -> Type 
-      [f] -E- [B] -R- T = Bool
-      [f] -E- [B] -R- F = Mool
-      [f] -E- [M] -R- Q = Bool
-      [f] -E- [M] -R- W = Mool
+      f -E- [B] -R- T = Bool
+      f -E- [B] -R- F = Mool
+      f -E- [M] -R- Q = Bool
+      f -E- [M] -R- W = Mool
     main :R: Type = Tuple -R- (f -E- B -R- T) -R- (f -E- B -R- F) -R- (f -E- M -R- Q) -R- (f -E- M -R- W)
   in main
 
@@ -128,13 +156,13 @@
     constructor B :E: U
     constructor M :E: U
     ty :E: (_x0 :E: U) -> Type 
-      [ty] -E- B = Bool
-      [ty] -E- M = Mool
+      ty -E- B = Bool
+      ty -E- M = Mool
     f :R: (u :E: U) -> (x :R: ty -E- u) -> Type 
-      [f] -E- [B] -R- T = Bool
-      [f] -E- [B] -R- F = Mool
-      [f] -E- [M] -R- Q = Bool
-      [f] -E- [M] -R- W = Mool
+      f -E- [B] -R- T = Bool
+      f -E- [B] -R- F = Mool
+      f -E- [M] -R- Q = Bool
+      f -E- [M] -R- W = Mool
     main :R: Type = Tuple -R- (f -E- B -R- T) -R- (f -E- B -R- F) -R- (f -E- M -R- Q) -R- (f -E- M -R- W)
   in main
 
@@ -153,10 +181,10 @@ Verification successful.
     constructor Q : Mool
     constructor W : Mool
     f 
-      [_] T = Bool
-      [_] F = Mool
-      [_] Q = Bool
-      [_] W = Mool
+      f T = Bool
+      f F = Mool
+      f Q = Bool
+      f W = Mool
     main = Tuple (f T) (f F) (f Q) (f W)
   in main
 

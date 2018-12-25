@@ -5,12 +5,12 @@
     constructor F : Bool
     constructor MkUnit : Unit
     not 
-      [_] T = F
-      [_] F = T
+      not T = F
+      not F = T
     main = not 
       let f 
-        [_] F MkUnit = MkUnit
-        [_] T T = F
-        [_] T F = T
+        f F MkUnit = MkUnit
+        f T T = F
+        f T F = T
       in f (not F) T
   in main

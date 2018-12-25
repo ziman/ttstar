@@ -6,13 +6,13 @@
     constructor T : Bool
     constructor F : Bool
     not 
-      [_] T = F
-      [_] F = T
+      not T = F
+      not F = T
     mot 
-      [_] Q = W
-      [_] W = Q
+      mot Q = W
+      mot W = Q
     invert 
-      [_] T = not
-      [_] F = mot
+      invert T = not
+      invert F = mot
     main = invert F Q
   in main

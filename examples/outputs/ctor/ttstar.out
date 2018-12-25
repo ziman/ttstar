@@ -9,8 +9,8 @@
     constructor Unit : Type
     constructor MkUnit : Unit
     not : (_x0 : Bool) -> Unit 
-      [not] T = MkUnit
-      [not] F = MkUnit
+      not T = MkUnit
+      not F = MkUnit
     main : Unit = not T
   in main
 
@@ -23,14 +23,21 @@
     constructor Unit :4: Type
     constructor MkUnit :5: Unit
     not :6: (_x0 :7: Bool) -> Unit 
-      [not] -8- T = MkUnit
-      [not] -9- F = MkUnit
+      not -8- T = MkUnit
+      not -9- F = MkUnit
     main :10: Unit = not -11- T
   in main
 
 ### Constraints ###
 
-[] -> [2,3,5,6,7,8,9,11,R]
+[6] -> [2,3,5,6,8,9]
+[7] -> [8,9,11]
+[8] -> [7]
+[9] -> [7]
+[10] -> [6]
+[10,11] -> [2]
+[11] -> [7]
+[E] -> [1,4,R]
 [R] -> [10]
 
 ### Solution ###
@@ -46,8 +53,8 @@
     constructor Unit :E: Type
     constructor MkUnit :R: Unit
     not :R: (_x0 :R: Bool) -> Unit 
-      [not] -R- T = MkUnit
-      [not] -R- F = MkUnit
+      not -R- T = MkUnit
+      not -R- F = MkUnit
     main :R: Unit = not -R- T
   in main
 
@@ -60,8 +67,8 @@
     constructor Unit :E: Type
     constructor MkUnit :R: Unit
     not :R: (_x0 :R: Bool) -> Unit 
-      [not] -R- T = MkUnit
-      [not] -R- F = MkUnit
+      not -R- T = MkUnit
+      not -R- F = MkUnit
     main :R: Unit = not -R- T
   in main
 
@@ -74,8 +81,8 @@
     constructor Unit :E: Type
     constructor MkUnit :R: Unit
     not :R: (_x0 :R: Bool) -> Unit 
-      [not] -R- T = MkUnit
-      [not] -R- F = MkUnit
+      not -R- T = MkUnit
+      not -R- F = MkUnit
     main :R: Unit = not -R- T
   in main
 
@@ -90,8 +97,8 @@ Verification successful.
     constructor F : Bool
     constructor MkUnit : Unit
     not 
-      [_] T = MkUnit
-      [_] F = MkUnit
+      not T = MkUnit
+      not F = MkUnit
     main = not T
   in main
 

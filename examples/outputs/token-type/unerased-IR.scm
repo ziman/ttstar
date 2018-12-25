@@ -1,3 +1,5 @@
+(import (chicken process-context))
+
 (define-syntax curried-lambda
   (syntax-rules ()
     ((curried-lambda () body) body)
@@ -59,6 +61,6 @@
         (letrec ((w (lambda (x)
           (((((coerce _pv0) (error "irTm: cannot translate: (y) -> _pv1")) _pv2) x) x))))
           (w ((((coerce (error "irTm: cannot translate: (_x9) -> _pv1")) _pv0) (((sym _pv0) (error "irTm: cannot translate: (_x10) -> _pv1")) _pv2)) w)))))
-    (main ((loopy Type) Type))
+    (main Type)
   ) main))
 (newline)

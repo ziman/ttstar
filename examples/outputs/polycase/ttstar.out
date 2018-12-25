@@ -12,25 +12,25 @@
     constructor Id : (a : Type) -> (x : a) -> (y : a) -> Type
     constructor Refl : (a : Type) -> (x : a) -> Id a x x
     not : (_x0 : Bool) -> Bool 
-      [not] T = F
-      [not] F = T
+      not T = F
+      not F = T
     notnot : (x : Bool) -> Id Bool x (not (not x)) 
-      [notnot] T = Refl Bool T
-      [notnot] F = Refl Bool F
+      notnot T = Refl Bool T
+      notnot F = Refl Bool F
     retTy : (_x1 : Bool) -> Type 
-      [retTy] T = Bool
-      [retTy] F = Mool
+      retTy T = Bool
+      retTy F = Mool
     mot : (_x2 : Mool) -> Mool 
-      [mot] Q = W
-      [mot] W = Q
+      mot Q = W
+      mot W = Q
     invert : (t : Bool) -> (x : retTy t) -> retTy t 
-      [invert] T = not
-      [invert] F = mot
+      invert T = not
+      invert F = mot
     invert' : (t : Bool) -> (x : retTy t) -> retTy t 
       x : Bool
-        [invert'] T x = not x
+        invert' T x = not x
       x : Mool
-        [invert'] F x = mot x
+        invert' F x = mot x
     main : Mool = invert F Q
   in main
 
@@ -46,36 +46,110 @@
     constructor Id :7: (a :8: Type) -> (x :9: a) -> (y :10: a) -> Type
     constructor Refl :11: (a :12: Type) -> (x :13: a) -> Id -16- a -15- x -14- x
     not :17: (_x0 :18: Bool) -> Bool 
-      [not] -19- T = F
-      [not] -20- F = T
+      not -19- T = F
+      not -20- F = T
     notnot :21: (x :22: Bool) -> Id -25- Bool -24- x -23- (not -26- (not -27- x)) 
-      [notnot] -28- T = Refl -30- Bool -29- T
-      [notnot] -31- F = Refl -33- Bool -32- F
+      notnot -28- T = Refl -30- Bool -29- T
+      notnot -31- F = Refl -33- Bool -32- F
     retTy :34: (_x1 :35: Bool) -> Type 
-      [retTy] -36- T = Bool
-      [retTy] -37- F = Mool
+      retTy -36- T = Bool
+      retTy -37- F = Mool
     mot :38: (_x2 :39: Mool) -> Mool 
-      [mot] -40- Q = W
-      [mot] -41- W = Q
+      mot -40- Q = W
+      mot -41- W = Q
     invert :42: (t :43: Bool) -> (x :44: retTy -45- t) -> retTy -46- t 
-      [invert] -47- T = not
-      [invert] -48- F = mot
+      invert -47- T = not
+      invert -48- F = mot
     invert' :49: (t :50: Bool) -> (x :51: retTy -52- t) -> retTy -53- t 
       x :54: Bool
-        [invert'] -56- T -55- x = not -57- x
+        invert' -56- T -55- x = not -57- x
       x :58: Mool
-        [invert'] -60- F -59- x = mot -61- x
+        invert' -60- F -59- x = mot -61- x
     main :62: Mool = invert -64- F -63- Q
   in main
 
 ### Constraints ###
 
-[] -> [2,3,5,6,17,18,19,20,38,39,40,41,42,43,44,47,48,63,64,R]
+[8] -> [16,25]
+[9] -> [15,24]
+[10] -> [14,23]
+[12] -> [30,33]
+[13] -> [29,32]
+[14] -> [10,23]
+[14,E] -> [13]
+[15] -> [9,24]
+[15,E] -> [13]
+[16] -> [8,25]
+[16,E] -> [12]
+[17] -> [5,6,17,19,20]
+[18] -> [19,20,26,27,44,57]
+[19] -> [18]
+[20] -> [18]
+[21] -> [5,6,11,21,28,31]
+[21,29] -> [5]
+[21,30] -> [4]
+[21,32] -> [6]
+[21,33] -> [4]
+[22] -> [28,31]
+[23] -> [10,14]
+[23,26,27,E] -> [22]
+[23,26,E] -> [17]
+[23,E] -> [17]
+[24] -> [9,15]
+[24,E] -> [22]
+[25] -> [8,16]
+[25,E] -> [4]
+[26] -> [18]
+[27] -> [18]
+[28] -> [22]
+[29] -> [13]
+[30] -> [12]
+[31] -> [22]
+[32] -> [13]
+[33] -> [12]
+[34] -> [1,4,5,6,34,36,37]
+[35] -> [36,37,46,53]
+[36] -> [35]
+[37] -> [35]
+[38] -> [2,3,38,40,41]
+[39] -> [40,41,44,61]
+[40] -> [39]
+[41] -> [39]
+[42] -> [5,6,17,38,42,47,48]
+[43] -> [47,48,64]
+[44] -> [18,39,63]
+[46] -> [35]
+[46,E] -> [43]
+[47] -> [43]
+[48] -> [43]
+[49] -> [5,6,17,38,49,56,60]
+[49,55] -> [54]
+[49,57] -> [54]
+[49,59] -> [58]
+[49,61] -> [58]
+[50] -> [56,60]
+[51] -> [55,59]
+[53] -> [35]
+[53,E] -> [50]
+[54] -> [49,55]
+[55] -> [51]
+[56] -> [50]
+[57] -> [18]
+[58] -> [49,59]
+[59] -> [51]
+[60] -> [50]
+[61] -> [39]
+[62] -> [42]
+[62,63] -> [2]
+[62,64] -> [6]
+[63] -> [44]
+[64] -> [43]
+[E] -> [1,4,7,34,R]
 [R] -> [62]
 
 ### Solution ###
 
-[2,3,5,6,17,18,19,20,38,39,40,41,42,43,44,47,48,62,63,64,R]
+[2,3,5,6,17,18,19,20,26,27,38,39,40,41,42,43,44,47,48,57,61,62,63,64,R]
 
 ### Annotated ###
 
@@ -89,25 +163,25 @@
     constructor Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
     constructor Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
     not :R: (_x0 :R: Bool) -> Bool 
-      [not] -R- T = F
-      [not] -R- F = T
-    notnot :E: (x :E: Bool) -> Id -E- Bool -E- x -E- (not -E- (not -E- x)) 
-      [notnot] -E- T = Refl -E- Bool -E- T
-      [notnot] -E- F = Refl -E- Bool -E- F
+      not -R- T = F
+      not -R- F = T
+    notnot :E: (x :E: Bool) -> Id -E- Bool -E- x -E- (not -R- (not -R- x)) 
+      notnot -E- T = Refl -E- Bool -E- T
+      notnot -E- F = Refl -E- Bool -E- F
     retTy :E: (_x1 :E: Bool) -> Type 
-      [retTy] -E- T = Bool
-      [retTy] -E- F = Mool
+      retTy -E- T = Bool
+      retTy -E- F = Mool
     mot :R: (_x2 :R: Mool) -> Mool 
-      [mot] -R- Q = W
-      [mot] -R- W = Q
+      mot -R- Q = W
+      mot -R- W = Q
     invert :R: (t :R: Bool) -> (x :R: retTy -E- t) -> retTy -E- t 
-      [invert] -R- T = not
-      [invert] -R- F = mot
+      invert -R- T = not
+      invert -R- F = mot
     invert' :E: (t :E: Bool) -> (x :E: retTy -E- t) -> retTy -E- t 
       x :E: Bool
-        [invert'] -E- T -E- x = not -E- x
+        invert' -E- T -E- x = not -R- x
       x :E: Mool
-        [invert'] -E- F -E- x = mot -E- x
+        invert' -E- F -E- x = mot -R- x
     main :R: Mool = invert -R- F -R- Q
   in main
 
@@ -123,25 +197,25 @@
     constructor Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
     constructor Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
     not :R: (_x0 :R: Bool) -> Bool 
-      [not] -R- T = F
-      [not] -R- F = T
-    notnot :E: (x :E: Bool) -> Id -E- Bool -E- x -E- (not -E- (not -E- x)) 
-      [notnot] -E- T = Refl -E- Bool -E- T
-      [notnot] -E- F = Refl -E- Bool -E- F
+      not -R- T = F
+      not -R- F = T
+    notnot :E: (x :E: Bool) -> Id -E- Bool -E- x -E- (not -R- (not -R- x)) 
+      notnot -E- T = Refl -E- Bool -E- T
+      notnot -E- F = Refl -E- Bool -E- F
     retTy :E: (_x1 :E: Bool) -> Type 
-      [retTy] -E- T = Bool
-      [retTy] -E- F = Mool
+      retTy -E- T = Bool
+      retTy -E- F = Mool
     mot :R: (_x2 :R: Mool) -> Mool 
-      [mot] -R- Q = W
-      [mot] -R- W = Q
+      mot -R- Q = W
+      mot -R- W = Q
     invert :R: (t :R: Bool) -> (x :R: retTy -E- t) -> retTy -E- t 
-      [invert] -R- T = not
-      [invert] -R- F = mot
+      invert -R- T = not
+      invert -R- F = mot
     invert' :E: (t :E: Bool) -> (x :E: retTy -E- t) -> retTy -E- t 
       x :E: Bool
-        [invert'] -E- T -E- x = not -E- x
+        invert' -E- T -E- x = not -R- x
       x :E: Mool
-        [invert'] -E- F -E- x = mot -E- x
+        invert' -E- F -E- x = mot -R- x
     main :R: Mool = invert -R- F -R- Q
   in main
 
@@ -157,25 +231,25 @@
     constructor Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
     constructor Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
     not :R: (_x0 :R: Bool) -> Bool 
-      [not] -R- T = F
-      [not] -R- F = T
-    notnot :E: (x :E: Bool) -> Id -E- Bool -E- x -E- (not -E- (not -E- x)) 
-      [notnot] -E- T = Refl -E- Bool -E- T
-      [notnot] -E- F = Refl -E- Bool -E- F
+      not -R- T = F
+      not -R- F = T
+    notnot :E: (x :E: Bool) -> Id -E- Bool -E- x -E- (not -R- (not -R- x)) 
+      notnot -E- T = Refl -E- Bool -E- T
+      notnot -E- F = Refl -E- Bool -E- F
     retTy :E: (_x1 :E: Bool) -> Type 
-      [retTy] -E- T = Bool
-      [retTy] -E- F = Mool
+      retTy -E- T = Bool
+      retTy -E- F = Mool
     mot :R: (_x2 :R: Mool) -> Mool 
-      [mot] -R- Q = W
-      [mot] -R- W = Q
+      mot -R- Q = W
+      mot -R- W = Q
     invert :R: (t :R: Bool) -> (x :R: retTy -E- t) -> retTy -E- t 
-      [invert] -R- T = not
-      [invert] -R- F = mot
+      invert -R- T = not
+      invert -R- F = mot
     invert' :E: (t :E: Bool) -> (x :E: retTy -E- t) -> retTy -E- t 
       x :E: Bool
-        [invert'] -E- T -E- x = not -E- x
+        invert' -E- T -E- x = not -R- x
       x :E: Mool
-        [invert'] -E- F -E- x = mot -E- x
+        invert' -E- F -E- x = mot -R- x
     main :R: Mool = invert -R- F -R- Q
   in main
 
@@ -191,14 +265,14 @@ Verification successful.
     constructor T : Bool
     constructor F : Bool
     not 
-      [_] T = F
-      [_] F = T
+      not T = F
+      not F = T
     mot 
-      [_] Q = W
-      [_] W = Q
+      mot Q = W
+      mot W = Q
     invert 
-      [_] T = not
-      [_] F = mot
+      invert T = not
+      invert F = mot
     main = invert F Q
   in main
 

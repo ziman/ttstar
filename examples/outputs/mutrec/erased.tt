@@ -4,11 +4,11 @@
     constructor T : Bool
     constructor F : Bool
     g 
-      [_] T = 
+      g T = 
         let h 
-          [_] F = g F
-          [_] T = T
+          h F = g F
+          h T = T
         in h F
-      [_] F = T
+      g F = T
     main = g T
   in main

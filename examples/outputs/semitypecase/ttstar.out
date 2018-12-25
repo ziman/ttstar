@@ -8,30 +8,30 @@
     constructor S : (x :R: Nat) -> Nat
     plus : (_x0 : Nat) -> (_x1 : Nat) -> Nat 
       n : Nat
-        [plus] Z n = n
+        plus Z n = n
       m : Nat n : Nat
-        [plus] (S m) n = S (plus m n)
+        plus (S m) n = S (plus m n)
     times : (_x2 : Nat) -> (_x3 : Nat) -> Nat 
       n : Nat
-        [times] Z n = Z
+        times Z n = Z
       m : Nat n : Nat
-        [times] (S m) n = plus n (times m n)
+        times (S m) n = plus n (times m n)
     constructor Bool : Type
     constructor True : Bool
     constructor False : Bool
     not : (_x4 : Bool) -> Bool 
-      [not] True = False
-      [not] False = True
+      not True = False
+      not False = True
     constructor Unit : Type
     constructor MkUnit : Unit
     constructor Pair : (_x5 : Type) -> (_x6 : Type) -> Type
     constructor MkPair : (a : Type) -> (b : Type) -> (_x7 : a) -> (_x8 : b) -> Pair a b
     fst : (a : Type) -> (b : Type) -> (_x9 : Pair a b) -> a 
       a : Type b : Type x : a y : b
-        [fst] a b ([MkPair] [a] [b] x y) = x
+        fst a b ([MkPair] [a] [b] x y) = x
     snd : (a : Type) -> (b : Type) -> (_x10 : Pair a b) -> b 
       a : Type b : Type x : a y : b
-        [snd] a b ([MkPair] [a] [b] x y) = y
+        snd a b ([MkPair] [a] [b] x y) = y
     constructor Either : (_x11 : Type) -> (_x12 : Type) -> Type
     constructor Left : (a : Type) -> (b : Type) -> (_x13 : a) -> Either a b
     constructor Right : (a : Type) -> (b : Type) -> (_x14 : b) -> Either a b
@@ -43,10 +43,10 @@
     constructor VN : (a : Type) -> Vect Z a
     constructor VC : (n : Nat) -> (a : Type) -> (x : a) -> (xs : Vect n a) -> Vect (S n) a
     f : (a : Type) -> (x : a) -> a 
-      [f] [Bool] True = False
-      [f] [Bool] False = True
+      f [Bool] True = False
+      f [Bool] False = True
       a : Type x : a
-        [f] a x = x
+        f a x = x
     main : Nat = f Nat Z
   in main
 
@@ -58,30 +58,30 @@
     constructor S :3: (x :R: Nat) -> Nat
     plus :4: (_x0 :5: Nat) -> (_x1 :6: Nat) -> Nat 
       n :7: Nat
-        [plus] -9- Z -8- n = n
+        plus -9- Z -8- n = n
       m :10: Nat n :11: Nat
-        [plus] -13- (S -14- m) -12- n = S -15- (plus -17- m -16- n)
+        plus -13- (S -14- m) -12- n = S -15- (plus -17- m -16- n)
     times :18: (_x2 :19: Nat) -> (_x3 :20: Nat) -> Nat 
       n :21: Nat
-        [times] -23- Z -22- n = Z
+        times -23- Z -22- n = Z
       m :24: Nat n :25: Nat
-        [times] -27- (S -28- m) -26- n = plus -30- n -29- (times -32- m -31- n)
+        times -27- (S -28- m) -26- n = plus -30- n -29- (times -32- m -31- n)
     constructor Bool :33: Type
     constructor True :34: Bool
     constructor False :35: Bool
     not :36: (_x4 :37: Bool) -> Bool 
-      [not] -38- True = False
-      [not] -39- False = True
+      not -38- True = False
+      not -39- False = True
     constructor Unit :40: Type
     constructor MkUnit :41: Unit
     constructor Pair :42: (_x5 :43: Type) -> (_x6 :44: Type) -> Type
     constructor MkPair :45: (a :46: Type) -> (b :47: Type) -> (_x7 :48: a) -> (_x8 :49: b) -> Pair -51- a -50- b
     fst :52: (a :53: Type) -> (b :54: Type) -> (_x9 :55: Pair -57- a -56- b) -> a 
       a :58: Type b :59: Type x :60: a y :61: b
-        [fst] -64- a -63- b -62- ([MkPair] -68- [a] -67- [b] -66- x -65- y) = x
+        fst -64- a -63- b -62- ([MkPair] -68- [a] -67- [b] -66- x -65- y) = x
     snd :69: (a :70: Type) -> (b :71: Type) -> (_x10 :72: Pair -74- a -73- b) -> b 
       a :75: Type b :76: Type x :77: a y :78: b
-        [snd] -81- a -80- b -79- ([MkPair] -85- [a] -84- [b] -83- x -82- y) = y
+        snd -81- a -80- b -79- ([MkPair] -85- [a] -84- [b] -83- x -82- y) = y
     constructor Either :86: (_x11 :87: Type) -> (_x12 :88: Type) -> Type
     constructor Left :89: (a :90: Type) -> (b :91: Type) -> (_x13 :92: a) -> Either -94- a -93- b
     constructor Right :95: (a :96: Type) -> (b :97: Type) -> (_x14 :98: b) -> Either -100- a -99- b
@@ -93,27 +93,172 @@
     constructor VN :121: (a :122: Type) -> Vect -124- Z -123- a
     constructor VC :125: (n :126: Nat) -> (a :127: Type) -> (x :128: a) -> (xs :129: Vect -131- n -130- a) -> Vect -133- (S -134- n) -132- a
     f :135: (a :136: Type) -> (x :137: a) -> a 
-      [f] -139- [Bool] -138- True = False
-      [f] -141- [Bool] -140- False = True
+      f -139- [Bool] -138- True = False
+      f -141- [Bool] -140- False = True
       a :142: Type x :143: a
-        [f] -145- a -144- x = x
+        f -145- a -144- x = x
     main :146: Nat = f -148- Nat -147- Z
   in main
 
 ### Constraints ###
 
-[] -> [2,34,35,135,137,138,140,143,144,147,R]
+[] -> [14,15,28,111,117,134,R]
+[4] -> [2,3,4,7,9,13]
+[4,8] -> [7]
+[4,12] -> [11]
+[4,13] -> [10]
+[4,16] -> [11]
+[4,17] -> [10]
+[5] -> [9,13,17,30]
+[6] -> [8,12,16,29]
+[7] -> [4,8]
+[8] -> [6]
+[9] -> [5]
+[10] -> [4,13,14]
+[11] -> [4,12]
+[12] -> [6]
+[13] -> [5]
+[16] -> [6]
+[17] -> [5]
+[18] -> [2,3,4,18,23,27]
+[18,22] -> [21]
+[18,26] -> [25]
+[18,27] -> [24]
+[18,29] -> [18]
+[18,29,31] -> [25]
+[18,29,32] -> [24]
+[18,30] -> [25]
+[19] -> [23,27,32]
+[20] -> [22,26,31]
+[21] -> [18,22]
+[22] -> [20]
+[23] -> [19]
+[24] -> [18,27,28]
+[25] -> [18,26]
+[26] -> [20]
+[27] -> [19]
+[29] -> [6]
+[30] -> [5]
+[31] -> [20]
+[32] -> [19]
+[36] -> [34,35,36,38,39]
+[37] -> [38,39]
+[38] -> [37]
+[39] -> [37]
+[43] -> [51]
+[44] -> [50]
+[46] -> [68,85]
+[47] -> [67,84]
+[48] -> [66,83]
+[49] -> [65,82]
+[50] -> [44,56,73]
+[50,E] -> [47]
+[51] -> [43,57,74]
+[51,E] -> [46]
+[52] -> [52,60]
+[52,62] -> [45]
+[52,62,65] -> [61]
+[52,62,66] -> [60]
+[52,62,67] -> [59]
+[52,62,68] -> [58]
+[52,63] -> [59]
+[52,64] -> [58]
+[53] -> [64]
+[54] -> [63]
+[55] -> [62]
+[56] -> [50]
+[57] -> [51]
+[58] -> [52,64]
+[59] -> [52,63]
+[60] -> [52,62,66]
+[61] -> [52,62,65]
+[62] -> [55]
+[63] -> [54]
+[64] -> [53]
+[65] -> [49]
+[66] -> [48]
+[67] -> [47]
+[68] -> [46]
+[69] -> [69,78]
+[69,79] -> [45]
+[69,79,82] -> [78]
+[69,79,83] -> [77]
+[69,79,84] -> [76]
+[69,79,85] -> [75]
+[69,80] -> [76]
+[69,81] -> [75]
+[70] -> [81]
+[71] -> [80]
+[72] -> [79]
+[73] -> [50]
+[74] -> [51]
+[75] -> [69,81]
+[76] -> [69,80]
+[77] -> [69,79,83]
+[78] -> [69,79,82]
+[79] -> [72]
+[80] -> [71]
+[81] -> [70]
+[82] -> [49]
+[83] -> [48]
+[84] -> [47]
+[85] -> [46]
+[87] -> [94,100]
+[88] -> [93,99]
+[93] -> [88]
+[93,E] -> [91]
+[94] -> [87]
+[94,E] -> [90]
+[99] -> [88]
+[99,E] -> [97]
+[100] -> [87]
+[100,E] -> [96]
+[101] -> [105]
+[102] -> [104]
+[103] -> [105]
+[104] -> [102]
+[105] -> [103]
+[107] -> [110,116]
+[110] -> [107]
+[110,E] -> [3,109]
+[116] -> [107]
+[116,E] -> [3,113]
+[119] -> [124,133]
+[120] -> [123,132]
+[123] -> [120]
+[123,E] -> [122]
+[124] -> [119]
+[124,E] -> [2]
+[132] -> [120]
+[132,E] -> [127]
+[133] -> [119]
+[133,E] -> [3,126]
+[135] -> [34,35,135,138,140,143]
+[135,139] -> [33]
+[135,141] -> [33]
+[135,144] -> [143]
+[135,145] -> [142]
 [136] -> [139,141,145,148]
-[139] -> [33,136,R]
-[141] -> [33,136,R]
-[142] -> [145]
-[145] -> [136,R]
-[148] -> [1,136]
+[137] -> [138,140,144,147]
+[138] -> [137]
+[139] -> [136]
+[140] -> [137]
+[141] -> [136]
+[142] -> [135,145]
+[143] -> [135,144]
+[144] -> [137]
+[145] -> [136]
+[146] -> [135]
+[146,147] -> [2]
+[146,148] -> [1]
+[147] -> [137]
+[148] -> [136]
+[E] -> [1,33,40,42,53,71,86,102,106,118,136,R]
 [R] -> [146]
 
 ### Solution ###
 
-[2,34,35,135,137,138,140,143,144,146,147,R]
+[2,14,15,28,34,35,111,117,134,135,137,138,140,143,144,146,147,R]
 
 ### Annotated ###
 
@@ -123,45 +268,45 @@
     constructor S :E: (x :R: Nat) -> Nat
     plus :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Nat 
       n :E: Nat
-        [plus] -E- Z -E- n = n
+        plus -E- Z -E- n = n
       m :E: Nat n :E: Nat
-        [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
+        plus -E- (S -R- m) -E- n = S -R- (plus -E- m -E- n)
     times :E: (_x2 :E: Nat) -> (_x3 :E: Nat) -> Nat 
       n :E: Nat
-        [times] -E- Z -E- n = Z
+        times -E- Z -E- n = Z
       m :E: Nat n :E: Nat
-        [times] -E- (S -E- m) -E- n = plus -E- n -E- (times -E- m -E- n)
+        times -E- (S -R- m) -E- n = plus -E- n -E- (times -E- m -E- n)
     constructor Bool :E: Type
     constructor True :R: Bool
     constructor False :R: Bool
     not :E: (_x4 :E: Bool) -> Bool 
-      [not] -E- True = False
-      [not] -E- False = True
+      not -E- True = False
+      not -E- False = True
     constructor Unit :E: Type
     constructor MkUnit :E: Unit
     constructor Pair :E: (_x5 :E: Type) -> (_x6 :E: Type) -> Type
     constructor MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: a) -> (_x8 :E: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x9 :E: Pair -E- a -E- b) -> a 
       a :E: Type b :E: Type x :E: a y :E: b
-        [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
+        fst -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
     snd :E: (a :E: Type) -> (b :E: Type) -> (_x10 :E: Pair -E- a -E- b) -> b 
       a :E: Type b :E: Type x :E: a y :E: b
-        [snd] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = y
+        snd -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = y
     constructor Either :E: (_x11 :E: Type) -> (_x12 :E: Type) -> Type
     constructor Left :E: (a :E: Type) -> (b :E: Type) -> (_x13 :E: a) -> Either -E- a -E- b
     constructor Right :E: (a :E: Type) -> (b :E: Type) -> (_x14 :E: b) -> Either -E- a -E- b
     id :E: (a :E: Type) -> (x :E: a) -> a = (\a :E: Type. (\x :E: a. x))
     constructor Fin :E: (_x15 :E: Nat) -> Type
-    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
-    constructor FS :E: (n :E: Nat) -> (_x16 :E: Fin -E- n) -> Fin -E- (S -E- n)
+    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -R- n)
+    constructor FS :E: (n :E: Nat) -> (_x16 :E: Fin -E- n) -> Fin -E- (S -R- n)
     constructor Vect :E: (_x17 :E: Nat) -> (_x18 :E: Type) -> Type
     constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
-    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
+    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
     f :R: (a :E: Type) -> (x :R: a) -> a 
-      [f] -E- [Bool] -R- True = False
-      [f] -E- [Bool] -R- False = True
+      f -E- [Bool] -R- True = False
+      f -E- [Bool] -R- False = True
       a :E: Type x :R: a
-        [f] -E- a -R- x = x
+        f -E- a -R- x = x
     main :R: Nat = f -E- Nat -R- Z
   in main
 
@@ -173,45 +318,45 @@
     constructor S :E: (x :R: Nat) -> Nat
     plus :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Nat 
       n :E: Nat
-        [plus] -E- Z -E- n = n
+        plus -E- Z -E- n = n
       m :E: Nat n :E: Nat
-        [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
+        plus -E- (S -R- m) -E- n = S -R- (plus -E- m -E- n)
     times :E: (_x2 :E: Nat) -> (_x3 :E: Nat) -> Nat 
       n :E: Nat
-        [times] -E- Z -E- n = Z
+        times -E- Z -E- n = Z
       m :E: Nat n :E: Nat
-        [times] -E- (S -E- m) -E- n = plus -E- n -E- (times -E- m -E- n)
+        times -E- (S -R- m) -E- n = plus -E- n -E- (times -E- m -E- n)
     constructor Bool :E: Type
     constructor True :R: Bool
     constructor False :R: Bool
     not :E: (_x4 :E: Bool) -> Bool 
-      [not] -E- True = False
-      [not] -E- False = True
+      not -E- True = False
+      not -E- False = True
     constructor Unit :E: Type
     constructor MkUnit :E: Unit
     constructor Pair :E: (_x5 :E: Type) -> (_x6 :E: Type) -> Type
     constructor MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: a) -> (_x8 :E: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x9 :E: Pair -E- a -E- b) -> a 
       a :E: Type b :E: Type x :E: a y :E: b
-        [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
+        fst -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
     snd :E: (a :E: Type) -> (b :E: Type) -> (_x10 :E: Pair -E- a -E- b) -> b 
       a :E: Type b :E: Type x :E: a y :E: b
-        [snd] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = y
+        snd -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = y
     constructor Either :E: (_x11 :E: Type) -> (_x12 :E: Type) -> Type
     constructor Left :E: (a :E: Type) -> (b :E: Type) -> (_x13 :E: a) -> Either -E- a -E- b
     constructor Right :E: (a :E: Type) -> (b :E: Type) -> (_x14 :E: b) -> Either -E- a -E- b
     id :E: (a :E: Type) -> (x :E: a) -> a = (\a :E: Type. (\x :E: a. x))
     constructor Fin :E: (_x15 :E: Nat) -> Type
-    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
-    constructor FS :E: (n :E: Nat) -> (_x16 :E: Fin -E- n) -> Fin -E- (S -E- n)
+    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -R- n)
+    constructor FS :E: (n :E: Nat) -> (_x16 :E: Fin -E- n) -> Fin -E- (S -R- n)
     constructor Vect :E: (_x17 :E: Nat) -> (_x18 :E: Type) -> Type
     constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
-    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
+    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
     f :R: (a :E: Type) -> (x :R: a) -> a 
-      [f] -E- [Bool] -R- True = False
-      [f] -E- [Bool] -R- False = True
+      f -E- [Bool] -R- True = False
+      f -E- [Bool] -R- False = True
       a :E: Type x :R: a
-        [f] -E- a -R- x = x
+        f -E- a -R- x = x
     main :R: Nat = f -E- Nat -R- Z
   in main
 
@@ -223,45 +368,45 @@
     constructor S :E: (x :R: Nat) -> Nat
     plus :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Nat 
       n :E: Nat
-        [plus] -E- Z -E- n = n
+        plus -E- Z -E- n = n
       m :E: Nat n :E: Nat
-        [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
+        plus -E- (S -R- m) -E- n = S -R- (plus -E- m -E- n)
     times :E: (_x2 :E: Nat) -> (_x3 :E: Nat) -> Nat 
       n :E: Nat
-        [times] -E- Z -E- n = Z
+        times -E- Z -E- n = Z
       m :E: Nat n :E: Nat
-        [times] -E- (S -E- m) -E- n = plus -E- n -E- (times -E- m -E- n)
+        times -E- (S -R- m) -E- n = plus -E- n -E- (times -E- m -E- n)
     constructor Bool :E: Type
     constructor True :R: Bool
     constructor False :R: Bool
     not :E: (_x4 :E: Bool) -> Bool 
-      [not] -E- True = False
-      [not] -E- False = True
+      not -E- True = False
+      not -E- False = True
     constructor Unit :E: Type
     constructor MkUnit :E: Unit
     constructor Pair :E: (_x5 :E: Type) -> (_x6 :E: Type) -> Type
     constructor MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: a) -> (_x8 :E: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x9 :E: Pair -E- a -E- b) -> a 
       a :E: Type b :E: Type x :E: a y :E: b
-        [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
+        fst -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
     snd :E: (a :E: Type) -> (b :E: Type) -> (_x10 :E: Pair -E- a -E- b) -> b 
       a :E: Type b :E: Type x :E: a y :E: b
-        [snd] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = y
+        snd -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = y
     constructor Either :E: (_x11 :E: Type) -> (_x12 :E: Type) -> Type
     constructor Left :E: (a :E: Type) -> (b :E: Type) -> (_x13 :E: a) -> Either -E- a -E- b
     constructor Right :E: (a :E: Type) -> (b :E: Type) -> (_x14 :E: b) -> Either -E- a -E- b
     id :E: (a :E: Type) -> (x :E: a) -> a = (\a :E: Type. (\x :E: a. x))
     constructor Fin :E: (_x15 :E: Nat) -> Type
-    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
-    constructor FS :E: (n :E: Nat) -> (_x16 :E: Fin -E- n) -> Fin -E- (S -E- n)
+    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -R- n)
+    constructor FS :E: (n :E: Nat) -> (_x16 :E: Fin -E- n) -> Fin -E- (S -R- n)
     constructor Vect :E: (_x17 :E: Nat) -> (_x18 :E: Type) -> Type
     constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
-    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
+    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
     f :R: (a :E: Type) -> (x :R: a) -> a 
-      [f] -E- [Bool] -R- True = False
-      [f] -E- [Bool] -R- False = True
+      f -E- [Bool] -R- True = False
+      f -E- [Bool] -R- False = True
       a :E: Type x :R: a
-        [f] -E- a -R- x = x
+        f -E- a -R- x = x
     main :R: Nat = f -E- Nat -R- Z
   in main
 
@@ -276,9 +421,9 @@ Verification successful.
     constructor True : Bool
     constructor False : Bool
     f 
-      [_] True = False
-      [_] False = True
-      [_] x = x
+      f True = False
+      f False = True
+      f x = x
     main = f Z
   in main
 
