@@ -181,29 +181,29 @@ inferDef (Def n r ty (Abstract a) _noCs) = do
     tytyTypeCs <- conv tyty (V $ UN "Type")
 
     -- no constraints because the type is always erased
-    return $ Def n r ty (Abstract a) noConstrs
+    return $ Def n r ty (Abstract a) (tycs /\ tytyTypeCs)
 
 inferDef d@(Def n r ty (Term tm) _noCs) = bt ("DEF-TERM", n) $ do
     -- check type
     (tyty, tycs) <- inferTm [Fixed E] ty
-    _ <- conv tyty (V $ UN "Type")
+    tytyTypeCs <- conv tyty (V $ UN "Type")
 
     -- check body
     (tmty, tmcs) <- with d $ inferTm [r] tm  -- "with d" because it could be recursive
     tmTyCs       <- conv ty tmty
 
-    return $ Def n r ty (Term tm) (tmcs /\ tmTyCs)
+    return $ Def n r ty (Term tm) (tmcs /\ tmTyCs /\ tycs /\ tytyTypeCs)
 
 inferDef d@(Def n r ty (Clauses cls) _noCs) = bt ("DEF-CLAUSES", n) $ do
     -- check type
     (tyty, tycs) <- inferTm [Fixed E] ty
-    _ <- conv tyty (V $ UN "Type")
+    tyTypeCs <- conv tyty (V $ UN "Type")
 
     -- check clauses
     clauseCs <- with d{ defBody = Abstract Var } $ do
         unions <$> traverse (inferClause r) cls
 
-    return $ Def n r ty (Clauses cls) clauseCs
+    return $ Def n r ty (Clauses cls) (clauseCs /\ tycs /\ tyTypeCs)
 
 inferClause :: Evar -> Clause Evar -> TC (Constrs Evar)
 inferClause q (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
