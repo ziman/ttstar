@@ -299,7 +299,9 @@ inferTm s t@(V n) = bt ("VAR", n) $ do
 inferTm s t@(EI n ty) = bt ("INST", n, ty) $ do
     -- here, we need to freshen the constraints before bringing them up
     d <- instantiate freshTag IM.empty =<< lookup n
+    (tyty, tycs) <- inferTm [Fixed E] ty
     convCs <- conv (defType d) ty
+    convType <- conv tyty (V typeOfTypes)
     -- This (Fixed R --> r) thing is tricky.
     --
     -- We should not include (Fixed R --> r) because it will be an instance
@@ -313,7 +315,7 @@ inferTm s t@(EI n ty) = bt ("INST", n, ty) $ do
     -- the original function will be recognised as erased again, if necessary.
     --
     -- Also, all unused instances should be recognised as erased (I didn't check that).
-    return (ty, [] --> [defR d] /\ convCs)
+    return (ty, [] --> [defR d] /\ convCs /\ convType /\ tycs)
 
 inferTm s t@(Bind Lam [d@(Def n r ty (Abstract Var) _noCs)] tm) = bt ("LAM", t) $ do
     d' <- inferDef d
