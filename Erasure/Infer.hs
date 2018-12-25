@@ -72,11 +72,11 @@ Constrs impls /\ Constrs impls' = Constrs $ M.unionWith S.union impls impls'
 
 infix 3 -->
 (-->) :: Guards Evar -> Uses Evar -> Constrs Evar
-ps --> qs = Constrs $ M.singleton guards uses
+ps --> qs = Constrs $ M.singleton ps qs
 
 infix 3 <->
 (<->) :: S.Set Evar -> S.Set Evar -> Constrs Evar
-ps <-> qs = p --> q /\ q --> p
+ps <-> qs = ps --> qs /\ qs --> ps
 
 unions :: [Constrs Evar] -> Constrs Evar
 unions = foldr (/\) noConstrs
@@ -224,7 +224,7 @@ inferClause q (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
     let pvs'Ctx = M.fromList [(defName d, d) | d <- pvs']
 
     -- check LHS vs. RHS
-    (lty, lcs) <- inferPat q q pvs'Ctx lhs
+    (lty, lcs) <- inferPat q [q] pvs'Ctx lhs
     withs pvs' $ do
         (rty, rcs) <- inferTm [q] rhs
         ccs <- conv lty rty
@@ -280,7 +280,7 @@ inferPat q s pvs pat@(PApp appR f x) = bt ("PAT-APP", pat) $ do
 inferPat q s pvs pat@(PHead f) = bt ("PAT-HEAD", pat) $ do
     d <- lookup f
     case defBody d of
-        Abstract Var -> return (defType d, [q] <-> s /\ [defR] <-> s)
+        Abstract Var -> return (defType d, [q] <-> s /\ [defR d] <-> s)
         _ -> tcfail $ NotPatternHead f
 
 inferTm
@@ -332,8 +332,8 @@ inferTm s t@(Bind Pi [d@(Def n r ty (Abstract Var) _noCs)] tm) = bt ("PI", t) $ 
 
 inferTm s t@(Bind Let ds tm) = bt ("LET", t) $ do
     ds' <- inferDefs ds
-    (tmty, tmcs) <- with' (M.union ds') $ inferTm tm
-    return (tmty, tmcs /\ union [defCs d | d <- ds'])
+    (tmty, tmcs) <- with' (M.union ds') $ inferTm s tm
+    return (tmty, tmcs /\ unions [defCs d | d <- ds'])
 
 inferTm s t@(App appR f x) = bt ("APP", t) $ do
     (fty, fcs) <- inferTm s f

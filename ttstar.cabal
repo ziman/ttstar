@@ -19,7 +19,9 @@ cabal-version:       >=1.10
 executable ttstar
   main-is:             Main.hs
   -- other-modules:       
-  default-extensions:  FlexibleInstances, StandaloneDeriving, OverloadedLists
+  default-extensions:  FlexibleInstances, StandaloneDeriving, OverloadedLists,
+                       ViewPatterns, NamedFieldPuns, FlexibleContexts,
+                       KindSignatures
   build-depends:       base, parsec, containers, transformers >=0.4,
                        lens-family >=1.2, lens-family-core >=1.2,
                        optparse-applicative, filepath
