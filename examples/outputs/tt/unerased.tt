@@ -5,25 +5,25 @@
     constructor Z : Nat
     constructor S : (x) -> Nat
     plus 
-      [_] Z n = n
-      [_] (S m) n = S (plus m n)
+      plus Z n = n
+      plus (S m) n = S (plus m n)
     times 
-      [_] Z n = Z
-      [_] (S m) n = plus n (times m n)
+      times Z n = Z
+      times (S m) n = plus n (times m n)
     constructor Bool : Type
     constructor True : Bool
     constructor False : Bool
     not 
-      [_] True = False
-      [_] False = True
+      not True = False
+      not False = True
     constructor Unit : Type
     constructor MkUnit : Unit
     constructor Pair : (_x5) -> (_x6) -> Type
     constructor MkPair : (a) -> (b) -> (_x7) -> (_x8) -> Pair a b
     fst 
-      [_] a b ([_] [_] [_] x y) = x
+      fst a b ([_] [_] [_] x y) = x
     snd 
-      [_] a b ([_] [_] [_] x y) = y
+      snd a b ([_] [_] [_] x y) = y
     constructor Either : (_x11) -> (_x12) -> Type
     constructor Left : (a) -> (b) -> (_x13) -> Either a b
     constructor Right : (a) -> (b) -> (_x14) -> Either a b
@@ -39,34 +39,34 @@
     constructor Lam : (n) -> (_x2) -> TT n
     constructor App : (n) -> (_x3) -> (_x4) -> TT n
     env 
-      [_] [_] n (VC [_] [_] x xs) (FZ m) = x
-      [_] [_] n (VC [_] [_] x xs) (FS m i) = env m n xs i
+      env [_] n (VC [_] [_] x xs) (FZ m) = x
+      env [_] n (VC [_] [_] x xs) (FS m i) = env m n xs i
     extendMap 
-      [_] m n f (FZ [_]) = FZ n
-      [_] m n f (FS [_] i) = FS n (f i)
+      extendMap m n f (FZ [_]) = FZ n
+      extendMap m n f (FS [_] i) = FS n (f i)
     mapVars 
-      [_] m n f (V [_] i) = V n (f i)
-      [_] m n f (Lam [_] x) = Lam n (mapVars (S m) (S n) (extendMap m n f) x)
-      [_] m n f (App [_] g x) = App n (mapVars m n f g) (mapVars m n f x)
+      mapVars m n f (V [_] i) = V n (f i)
+      mapVars m n f (Lam [_] x) = Lam n (mapVars (S m) (S n) (extendMap m n f) x)
+      mapVars m n f (App [_] g x) = App n (mapVars m n f g) (mapVars m n f x)
     extendSubst 
-      [_] m n f (FZ [_]) = V (S n) (FZ n)
-      [_] m n f (FS [_] i) = mapVars n (S n) (FS n) (f i)
+      extendSubst m n f (FZ [_]) = V (S n) (FZ n)
+      extendSubst m n f (FS [_] i) = mapVars n (S n) (FS n) (f i)
     substVars 
-      [_] m n f (V [_] i) = f i
-      [_] m n f (Lam [_] x) = Lam n (substVars (S m) (S n) (extendSubst m n f) x)
-      [_] m n f (App [_] g x) = App n (substVars m n f g) (substVars m n f x)
+      substVars m n f (V [_] i) = f i
+      substVars m n f (Lam [_] x) = Lam n (substVars (S m) (S n) (extendSubst m n f) x)
+      substVars m n f (App [_] g x) = App n (substVars m n f g) (substVars m n f x)
     testTm = App 1 (Lam 1 (App 2 (V 2 (FZ 1)) (V 2 (FS 1 (FZ Z))))) (Lam 1 (App 2 (V 2 (FS 1 (FZ Z))) (V 2 (FZ 1))))
     example1 = substVars 1 Z (env 1 Z (VC Z (TT Z) (Lam Z (V 1 (FZ Z))) (VN (TT Z)))) testTm
     substTop 
-      [_] n tm (FZ [_]) = tm
-      [_] n tm (FS [_] i) = V n i
+      substTop n tm (FZ [_]) = tm
+      substTop n tm (FS [_] i) = V n i
     nf 
-      [_] m (V [_] i) = V m i
-      [_] m (Lam [_] x) = Lam m (nf (S m) x)
-      [_] m (App [_] f x) = 
+      nf m (V [_] i) = V m i
+      nf m (Lam [_] x) = Lam m (nf (S m) x)
+      nf m (App [_] f x) = 
         let g 
-          [_] (Lam [_] y) = nf m (substVars (S m) m (substTop m (nf m x)) y)
-          [_] f' = App m f' (nf m x)
+          g (Lam [_] y) = nf m (substVars (S m) m (substTop m (nf m x)) y)
+          g f' = App m f' (nf m x)
         in g (nf m f)
     example2 = nf 1 testTm
     constructor Result : Type

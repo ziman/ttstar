@@ -8,8 +8,8 @@
     constructor F : Bool
     main : Bool = 
       let not : (_x0 : Bool) -> Bool 
-        [not] T = F
-        [not] F = T
+        not T = F
+        not F = T
       in not F
   in main
 
@@ -21,14 +21,21 @@
     constructor F :3: Bool
     main :4: Bool = 
       let not :6: (_x0 :7: Bool) -> Bool 
-        [not] -8- T = F
-        [not] -9- F = T
+        not -8- T = F
+        not -9- F = T
       in not -5- F
   in main
 
 ### Constraints ###
 
-[] -> [2,3,5,6,7,8,9,R]
+[4] -> [6]
+[4,5] -> [3]
+[5] -> [7]
+[6] -> [2,3,6,8,9]
+[7] -> [5,8,9]
+[8] -> [7]
+[9] -> [7]
+[E] -> [1,R]
 [R] -> [4]
 
 ### Solution ###
@@ -43,8 +50,8 @@
     constructor F :R: Bool
     main :R: Bool = 
       let not :R: (_x0 :R: Bool) -> Bool 
-        [not] -R- T = F
-        [not] -R- F = T
+        not -R- T = F
+        not -R- F = T
       in not -R- F
   in main
 
@@ -56,8 +63,8 @@
     constructor F :R: Bool
     main :R: Bool = 
       let not :R: (_x0 :R: Bool) -> Bool 
-        [not] -R- T = F
-        [not] -R- F = T
+        not -R- T = F
+        not -R- F = T
       in not -R- F
   in main
 
@@ -69,8 +76,8 @@
     constructor F :R: Bool
     main :R: Bool = 
       let not :R: (_x0 :R: Bool) -> Bool 
-        [not] -R- T = F
-        [not] -R- F = T
+        not -R- T = F
+        not -R- F = T
       in not -R- F
   in main
 
@@ -85,8 +92,8 @@ Verification successful.
     constructor F : Bool
     main = 
       let not 
-        [_] T = F
-        [_] F = T
+        not T = F
+        not F = T
       in not F
   in main
 

@@ -6,7 +6,7 @@
     constructor Nil : Vec
     constructor Cons : (x) -> (xs) -> Vec
     vlen 
-      [_] Nil = Z
-      [_] (Cons _ ys) = S (vlen ys)
+      vlen Nil = Z
+      vlen (Cons y ys) = S (vlen ys)
     main = vlen (Cons 3 Nil)
   in main

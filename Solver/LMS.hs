@@ -21,18 +21,18 @@ import qualified Data.IntMap as IM
 import Data.IntSet (IntSet)
 import qualified Data.IntSet as IS
 
---import Data.Ord
---import Data.List
+reduce :: Constrs Evar -> Constrs Evar
+reduce (Constrs impls) = Constrs (reduceImpls impls)
 
 -- reduce the constraint set, keeping the empty-guard constraint
 -- we could use the simple solver for smaller sets
 -- but benchmarks show that there's almost no runtime difference
-reduce :: Constrs Evar -> Constrs Evar
-reduce cs
+reduceImpls :: Impls Evar -> Impls Evar
+reduceImpls impls
     | S.null (S.delete (Fixed R) us) = residue
     | otherwise = M.insert S.empty us residue
   where
-    (us, residue) = solve cs
+    (us, residue) = solve impls
 
 type Constraint = (Guards Evar, Uses Evar)
 type Constraints = IntMap Constraint
@@ -41,10 +41,10 @@ data Index = Index
     , _ixFrequencies :: Map Evar Int
     }
 
-toNumbered :: Constrs Evar -> Constraints
+toNumbered :: Impls Evar -> Constraints
 toNumbered = IM.fromList . zip [0..] . M.toList
 
-fromNumbered :: Constraints -> Constrs Evar
+fromNumbered :: Constraints -> Impls Evar
 fromNumbered = IM.foldr addConstraint M.empty
   where
     addConstraint (ns, vs) = M.insertWith S.union ns vs
@@ -55,7 +55,7 @@ rarestEvar frequencies = head . S.toList -- minimumBy (comparing frequency) . S.
   where
     _frequency n = M.findWithDefault 0 n frequencies
 
-solve :: Constrs Evar -> (Uses Evar, Constrs Evar)
+solve :: Impls Evar -> (Uses Evar, Impls Evar)
 solve cs
     = second fromNumbered
     $ step index initialUses initialUses csN

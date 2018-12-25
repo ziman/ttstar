@@ -7,6 +7,6 @@
     constructor Pair : Type
     constructor P : (_x0) -> (_x1) -> Pair
     fst 
-      [_] (P y) = y
+      fst (P y) = y
     main = fst (P T)
   in main

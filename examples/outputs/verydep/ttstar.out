@@ -12,12 +12,12 @@
     constructor False : Bool
     retTy : (x : Maybe Bool) -> Type 
       t : Bool
-        [retTy] (Just [Bool] t) = Bool
-      [retTy] (Nothing [Bool]) = Type
+        retTy (Just [Bool] t) = Bool
+      retTy (Nothing [Bool]) = Type
     f : (x : Maybe Bool) -> retTy x 
       b : Bool
-        [f] (Just [Bool] b) = b
-      [f] (Nothing [Bool]) = Bool
+        f (Just [Bool] b) = b
+      f (Nothing [Bool]) = Bool
     main : Bool = f (Just Bool False)
   in main
 
@@ -33,31 +33,64 @@
     constructor False :13: Bool
     retTy :14: (x :15: Maybe -16- Bool) -> Type 
       t :17: Bool
-        [retTy] -18- (Just -20- [Bool] -19- t) = Bool
-      [retTy] -21- (Nothing -22- [Bool]) = Type
+        retTy -18- (Just -20- [Bool] -19- t) = Bool
+      retTy -21- (Nothing -22- [Bool]) = Type
     f :23: (x :24: Maybe -25- Bool) -> retTy -26- x 
       b :27: Bool
-        [f] -28- (Just -30- [Bool] -29- b) = b
-      [f] -31- (Nothing -32- [Bool]) = Bool
+        f -28- (Just -30- [Bool] -29- b) = b
+      f -31- (Nothing -32- [Bool]) = Bool
     main :33: Bool = f -34- (Just -36- Bool -35- False)
   in main
 
 ### Constraints ###
 
-[] -> [4,6,8,11,13,23,24,27,28,29,31,34,35,R]
-[5] -> [30,36]
-[7] -> [25]
-[9] -> [32]
-[10] -> [25]
-[25] -> [7,10]
-[30] -> [5,11,28]
-[32] -> [9,11,31]
-[36] -> [5,11]
+[3] -> [7,10]
+[5] -> [20,30,36]
+[6] -> [19,29,35]
+[7] -> [3,16,25]
+[7,E] -> [5]
+[9] -> [22,32]
+[10] -> [3,16,25]
+[10,E] -> [9]
+[14] -> [4,8,11,14,18,21,R]
+[14,18,19] -> [17]
+[14,18,20] -> [11]
+[14,21,22] -> [11]
+[15] -> [18,21,26]
+[16] -> [7,10,25]
+[17] -> [14,18,19]
+[18] -> [15]
+[19] -> [6]
+[20] -> [5]
+[21] -> [15]
+[22] -> [9]
+[23] -> [4,8,11,23,27,28,31]
+[23,28,29] -> [27]
+[23,28,30] -> [11]
+[23,31,32] -> [11]
+[24] -> [28,31,34]
+[25] -> [7,10,16]
+[26] -> [15]
+[26,E] -> [24]
+[27] -> [23,28,29]
+[28] -> [24]
+[29] -> [6]
+[30] -> [5]
+[31] -> [24]
+[32] -> [9]
+[33] -> [23]
+[33,34] -> [4]
+[33,34,35] -> [13]
+[33,34,36] -> [11]
+[34] -> [24]
+[35] -> [6]
+[36] -> [5]
+[E] -> [2,11,14,R]
 [R] -> [33]
 
 ### Solution ###
 
-[4,6,8,11,13,23,24,27,28,29,31,33,34,35,R]
+[4,6,8,11,13,19,23,24,27,28,29,31,33,34,35,R]
 
 ### Annotated ###
 
@@ -71,12 +104,12 @@
     constructor False :R: Bool
     retTy :E: (x :E: Maybe -E- Bool) -> Type 
       t :E: Bool
-        [retTy] -E- (Just -E- [Bool] -E- t) = Bool
-      [retTy] -E- (Nothing -E- [Bool]) = Type
+        retTy -E- (Just -E- [Bool] -R- t) = Bool
+      retTy -E- (Nothing -E- [Bool]) = Type
     f :R: (x :R: Maybe -E- Bool) -> retTy -E- x 
       b :R: Bool
-        [f] -R- (Just -E- [Bool] -R- b) = b
-      [f] -R- (Nothing -E- [Bool]) = Bool
+        f -R- (Just -E- [Bool] -R- b) = b
+      f -R- (Nothing -E- [Bool]) = Bool
     main :R: Bool = f -R- (Just -E- Bool -R- False)
   in main
 
@@ -92,12 +125,12 @@
     constructor False :R: Bool
     retTy :E: (x :E: Maybe -E- Bool) -> Type 
       t :E: Bool
-        [retTy] -E- (Just -E- [Bool] -E- t) = Bool
-      [retTy] -E- (Nothing -E- [Bool]) = Type
+        retTy -E- (Just -E- [Bool] -R- t) = Bool
+      retTy -E- (Nothing -E- [Bool]) = Type
     f :R: (x :R: Maybe -E- Bool) -> retTy -E- x 
       b :R: Bool
-        [f] -R- (Just -E- [Bool] -R- b) = b
-      [f] -R- (Nothing -E- [Bool]) = Bool
+        f -R- (Just -E- [Bool] -R- b) = b
+      f -R- (Nothing -E- [Bool]) = Bool
     main :R: Bool = f -R- (Just -E- Bool -R- False)
   in main
 
@@ -113,12 +146,12 @@
     constructor False :R: Bool
     retTy :E: (x :E: Maybe -E- Bool) -> Type 
       t :E: Bool
-        [retTy] -E- (Just -E- [Bool] -E- t) = Bool
-      [retTy] -E- (Nothing -E- [Bool]) = Type
+        retTy -E- (Just -E- [Bool] -R- t) = Bool
+      retTy -E- (Nothing -E- [Bool]) = Type
     f :R: (x :R: Maybe -E- Bool) -> retTy -E- x 
       b :R: Bool
-        [f] -R- (Just -E- [Bool] -R- b) = b
-      [f] -R- (Nothing -E- [Bool]) = Bool
+        f -R- (Just -E- [Bool] -R- b) = b
+      f -R- (Nothing -E- [Bool]) = Bool
     main :R: Bool = f -R- (Just -E- Bool -R- False)
   in main
 
@@ -134,8 +167,8 @@ Verification successful.
     constructor Bool : Type
     constructor False : Bool
     f 
-      [_] (Just b) = b
-      [_] Nothing = Bool
+      f (Just b) = b
+      f Nothing = Bool
     main = f (Just False)
   in main
 

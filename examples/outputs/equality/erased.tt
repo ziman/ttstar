@@ -5,7 +5,7 @@
     constructor F : Bool
     constructor Refl : Id
     notnot 
-      [_] T = Refl
-      [_] F = Refl
+      notnot T = Refl
+      notnot F = Refl
     main = notnot F
   in main

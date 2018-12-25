@@ -8,7 +8,7 @@
     constructor T : B
     constructor F : B
     isSuc 
-      [_] (S n) = T
-      [_] n = F
+      isSuc (S n) = T
+      isSuc n = F
     main = (\x. isSuc x)
   in main

@@ -8,24 +8,24 @@
     constructor Z : Nat
     constructor S : (_x0) -> Nat
     plus 
-      [_] Z n = n
-      [_] (S m) n = S (plus m n)
+      plus Z n = n
+      plus (S m) n = S (plus m n)
     constructor Tag : Type
     constructor Even : Tag
     constructor Odd : Tag
     funTy 
-      [_] Even = (_x4) -> Bool
-      [_] Odd = (_x5) -> (_x6) -> Bool
+      funTy Even = (_x4) -> Bool
+      funTy Odd = (_x5) -> (_x6) -> Bool
     fun 
-      [_] Even = (\n. 
+      fun Even = (\n. 
         let f 
-          [_] Z = True
-          [_] (S m) = fun Odd m (plus m m)
+          f Z = True
+          f (S m) = fun Odd m (plus m m)
         in f n)
-      [_] Odd = (\n. (\q. 
+      fun Odd = (\n. (\q. 
         let f 
-          [_] Z = False
-          [_] (S m) = fun Even m
+          f Z = False
+          f (S m) = fun Even m
         in f n))
     even = fun Even
     odd = fun Odd

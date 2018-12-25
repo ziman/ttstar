@@ -7,12 +7,12 @@
     constructor Id : (a) -> (x) -> (y) -> Type
     constructor Refl : (a) -> (x) -> Id a x x
     not 
-      [_] T = F
-      [_] F = T
+      not T = F
+      not F = T
     notnot 
-      [_] T = Refl Bool T
-      [_] F = Refl Bool F
+      notnot T = Refl Bool T
+      notnot F = Refl Bool F
     subst 
-      [_] a P x [_] [_] = (\w. w)
+      subst a P x [_] [_] = (\w. w)
     main = notnot (subst Type (\a. a) Bool Bool (Refl Type Bool) F)
   in main

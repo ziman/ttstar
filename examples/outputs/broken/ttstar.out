@@ -8,9 +8,9 @@
     constructor F : Bool
     broken : (_x0 : Bool) -> Bool 
       n : Bool
-        [broken] n = 
+        broken n = 
           let id : (_x1 : Bool) -> Bool 
-            [id] n = n
+            id n = n
           in id n
     main : Bool = broken T
   in main
@@ -23,9 +23,9 @@
     constructor F :3: Bool
     broken :4: (_x0 :5: Bool) -> Bool 
       n :6: Bool
-        [broken] -7- n = 
+        broken -7- n = 
           let id :8: (_x1 :9: Bool) -> Bool 
-            [id] -10- n = n
+            id -10- n = n
           in id -11- n
     main :12: Bool = broken -13- T
   in main
@@ -43,9 +43,9 @@ ttstar: Traceback:
     constructor F :3: Bool
     broken :4: (_x0 :5: Bool) -> Bool 
       n :6: Bool
-        [broken] -7- n = 
+        broken -7- n = 
           let id :8: (_x1 :9: Bool) -> Bool 
-            [id] -10- n = n
+            id -10- n = n
           in id -11- n
     main :12: Bool = broken -13- T
   in main)
@@ -66,7 +66,7 @@ ttstar: Traceback:
   Type : Type
   broken : (_x0 :5: Bool) -> Bool
 
-("CLAUSE",PApp 7 (PForced broken) (PV n))
+("CLAUSE",PApp 7 (PHead broken) (PV n))
 
 4. In context:
   Bool : Type
@@ -78,7 +78,7 @@ ttstar: Traceback:
 
 ("LET",
   let id :8: (_x1 :9: Bool) -> Bool 
-    [id] -10- n = n
+    id -10- n = n
   in id -11- n)
 
 5. In context:
@@ -101,9 +101,9 @@ ttstar: Traceback:
   id : (_x1 :9: Bool) -> Bool
   n : Bool
 
-("CLAUSE",PApp 10 (PForced id) (PV n))
+("CLAUSE",PApp 10 (PHead id) (PV n))
 
 Error: PatvarsPatternMismatch [] [n]
 
 CallStack (from HasCallStack):
-  error, called at Main.hs:93:38 in main:Main
+  error, called at Main.hs:100:39 in main:Main

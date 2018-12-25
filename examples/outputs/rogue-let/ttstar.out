@@ -7,8 +7,8 @@
     constructor T : Bool
     constructor F : Bool
     not : (_x0 : Bool) -> Bool 
-      [not] T = F
-      [not] F = T
+      not T = F
+      not F = T
     main : (_x1 : Bool) -> Bool = not
   in main
 
@@ -19,14 +19,20 @@
     constructor T :2: Bool
     constructor F :3: Bool
     not :4: (_x0 :5: Bool) -> Bool 
-      [not] -6- T = F
-      [not] -7- F = T
+      not -6- T = F
+      not -7- F = T
     main :8: (_x1 :9: Bool) -> Bool = not
   in main
 
 ### Constraints ###
 
-[] -> [2,3,4,5,6,7,9,R]
+[4] -> [2,3,4,6,7]
+[5] -> [6,7,9]
+[6] -> [5]
+[7] -> [5]
+[8] -> [4]
+[9] -> [5]
+[E] -> [1,R]
 [R] -> [8]
 
 ### Solution ###
@@ -40,8 +46,8 @@
     constructor T :R: Bool
     constructor F :R: Bool
     not :R: (_x0 :R: Bool) -> Bool 
-      [not] -R- T = F
-      [not] -R- F = T
+      not -R- T = F
+      not -R- F = T
     main :R: (_x1 :R: Bool) -> Bool = not
   in main
 
@@ -52,8 +58,8 @@
     constructor T :R: Bool
     constructor F :R: Bool
     not :R: (_x0 :R: Bool) -> Bool 
-      [not] -R- T = F
-      [not] -R- F = T
+      not -R- T = F
+      not -R- F = T
     main :R: (_x1 :R: Bool) -> Bool = not
   in main
 
@@ -64,8 +70,8 @@
     constructor T :R: Bool
     constructor F :R: Bool
     not :R: (_x0 :R: Bool) -> Bool 
-      [not] -R- T = F
-      [not] -R- F = T
+      not -R- T = F
+      not -R- F = T
     main :R: (_x1 :R: Bool) -> Bool = not
   in main
 
@@ -79,8 +85,8 @@ Verification successful.
     constructor T : Bool
     constructor F : Bool
     not 
-      [_] T = F
-      [_] F = T
+      not T = F
+      not F = T
     main = not
   in main
 
@@ -104,8 +110,8 @@ unerased:
     constructor T : Bool
     constructor F : Bool
     not : (_x0 : Bool) -> Bool 
-      [not] T = F
-      [not] F = T
+      not T = F
+      not F = T
   in not
 
 erased:
@@ -114,7 +120,7 @@ erased:
     constructor T : Bool
     constructor F : Bool
     not 
-      [_] T = F
-      [_] F = T
+      not T = F
+      not F = T
   in not
 

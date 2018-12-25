@@ -14,73 +14,73 @@
     constructor Nothing : (a) -> Maybe a
     constructor Just : (a) -> (x) -> Maybe a
     not 
-      [_] T = F
-      [_] F = T
+      not T = F
+      not F = T
     constructor Id : (a) -> (x) -> (y) -> Type
     constructor Refl : (a) -> (x) -> Id a x x
     subst 
-      [_] a P x [_] [_] = (\w. w)
+      subst a P x [_] [_] = (\w. w)
     cong 
-      [_] a b f x [_] [_] = Refl b (f x)
+      cong a b f x [_] [_] = Refl b (f x)
     one = (\x. Cons x Nil)
     app 
-      [_] Nil ys = ys
-      [_] (Cons x xs) ys = Cons x (app xs ys)
+      app Nil ys = ys
+      app (Cons x xs) ys = Cons x (app xs ys)
     appRightNeutral 
-      [_] Nil = Refl List Nil
-      [_] (Cons x xs) = cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs)
+      appRightNeutral Nil = Refl List Nil
+      appRightNeutral (Cons x xs) = cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs)
     appAssoc 
-      [_] Nil ys zs = Refl List (app ys zs)
-      [_] (Cons x xs) ys zs = cong List List (Cons x) (app (app xs ys) zs) (app xs (app ys zs)) (appAssoc xs ys zs)
+      appAssoc Nil ys zs = Refl List (app ys zs)
+      appAssoc (Cons x xs) ys zs = cong List List (Cons x) (app (app xs ys) zs) (app xs (app ys zs)) (appAssoc xs ys zs)
     constructor Rev : (_x12) -> Type
     constructor RNil : Rev Nil
     constructor RSnoc : (xs) -> (x) -> (rxs) -> Rev (app xs (one x))
     rev' 
-      [_] xs rxs Nil = subst List Rev xs (app xs Nil) (appRightNeutral xs) rxs
-      [_] xs rxs (Cons y ys) = subst List Rev (app (app xs (one y)) ys) (app xs (Cons y ys)) (appAssoc xs (one y) ys) (rev' (app xs (one y)) (RSnoc xs y rxs) ys)
+      rev' xs rxs Nil = subst List Rev xs (app xs Nil) (appRightNeutral xs) rxs
+      rev' xs rxs (Cons y ys) = subst List Rev (app (app xs (one y)) ys) (app xs (Cons y ys)) (appAssoc xs (one y) ys) (rev' (app xs (one y)) (RSnoc xs y rxs) ys)
     reverse' 
-      [_] [_] RNil = Nil
-      [_] [_] (RSnoc xs x rxs) = Cons x (reverse' xs rxs)
+      reverse' [_] RNil = Nil
+      reverse' [_] (RSnoc xs x rxs) = Cons x (reverse' xs rxs)
     constructor V : (_x13) -> Type
     constructor VNil : V Nil
     constructor VOne : (x) -> V (Cons x Nil)
     constructor VTwo : (x) -> (xs) -> (u) -> (y) -> V (Cons x (app xs (one y)))
     length 
-      [_] Nil = Z
-      [_] (Cons x xs) = S (length xs)
+      length Nil = Z
+      length (Cons x xs) = S (length xs)
     index 
-      [_] Z xs ys = Nil
-      [_] (S Z) (Cons x xs) (Cons y ys) = Cons x Nil
-      [_] (S (S n)) (Cons x xs) (Cons y ys) = Cons x (app (index n xs ys) (one y))
-      [_] (S n) Nil Nil = Nil
+      index Z xs ys = Nil
+      index (S Z) (Cons x xs) (Cons y ys) = Cons x Nil
+      index (S (S n)) (Cons x xs) (Cons y ys) = Cons x (app (index n xs ys) (one y))
+      index (S n) Nil Nil = Nil
     build 
-      [_] Z xs ys = VNil
-      [_] (S Z) (Cons x xs) (Cons y ys) = VOne x
-      [_] (S (S n)) (Cons x xs) (Cons y ys) = VTwo x (index n xs ys) (build n xs ys) y
-      [_] (S n) Nil Nil = VNil
+      build Z xs ys = VNil
+      build (S Z) (Cons x xs) (Cons y ys) = VOne x
+      build (S (S n)) (Cons x xs) (Cons y ys) = VTwo x (index n xs ys) (build n xs ys) y
+      build (S n) Nil Nil = VNil
     constructor IsPalindrome : (_x18) -> Type
     constructor PNil : IsPalindrome Nil
     constructor POne : (b) -> IsPalindrome (Cons b Nil)
     constructor PTwo : (b) -> (xs) -> (pf) -> IsPalindrome (Cons b (app xs (one b)))
     decEq 
-      [_] T T = Just (Id B T T) (Refl B T)
-      [_] F F = Just (Id B F F) (Refl B F)
-      [_] T F = Nothing (Id B T F)
-      [_] F T = Nothing (Id B F T)
+      decEq T T = Just (Id B T T) (Refl B T)
+      decEq F F = Just (Id B F F) (Refl B F)
+      decEq T F = Nothing (Id B T F)
+      decEq F T = Nothing (Id B F T)
     isPalinV 
-      [_] [_] VNil = Just (IsPalindrome Nil) PNil
-      [_] [_] (VOne x) = Just (IsPalindrome (Cons x Nil)) (POne x)
-      [_] [_] (VTwo x xs v y) = 
+      isPalinV [_] VNil = Just (IsPalindrome Nil) PNil
+      isPalinV [_] (VOne x) = Just (IsPalindrome (Cons x Nil)) (POne x)
+      isPalinV [_] (VTwo x xs v y) = 
         let isPalinV' 
-          [_] x [_] xs v (Just [_] [_]) (Just [_] pfV) = Just (IsPalindrome (Cons x (app xs (one x)))) (PTwo x xs pfV)
-          [_] x y xs v pfB pfV = Nothing (IsPalindrome (Cons x (app xs (one y))))
+          isPalinV' x [_] xs v (Just [_] [_]) (Just [_] pfV) = Just (IsPalindrome (Cons x (app xs (one x)))) (PTwo x xs pfV)
+          isPalinV' x y xs v pfB pfV = Nothing (IsPalindrome (Cons x (app xs (one y))))
         in isPalinV' x y xs v (decEq x y) (isPalinV xs v)
     genList 
-      [_] b Z = Nil
-      [_] b (S n) = Cons b (genList (not b) n)
+      genList b Z = Nil
+      genList b (S n) = Cons b (genList (not b) n)
     isJust 
-      [_] a (Just [_] x) = T
-      [_] a (Nothing [_]) = F
+      isJust a (Just [_] x) = T
+      isJust a (Nothing [_]) = F
   in 
     let foreign inputSize
     in isJust (IsPalindrome (genList T inputSize)) (isPalinV (genList T inputSize) (build (length (genList T inputSize)) (genList T inputSize) (reverse' (genList T inputSize) (rev' Nil RNil (genList T inputSize)))))

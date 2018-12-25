@@ -8,10 +8,10 @@
     constructor Nil : (a) -> Vec Z a
     constructor Cons : (a) -> (n) -> (x) -> (xs) -> Vec (S n) a
     plus 
-      [_] Z n = n
-      [_] (S m) n = S (plus m n)
+      plus Z n = n
+      plus (S m) n = S (plus m n)
     append 
-      [_] a [_] n (Nil [_]) ys = ys
-      [_] a ([_] m) n (Cons [_] [_] x xs) ys = Cons a (plus m n) x (append a m n xs ys)
+      append a [_] n (Nil [_]) ys = ys
+      append a ([_] m) n (Cons [_] [_] x xs) ys = Cons a (plus m n) x (append a m n xs ys)
     main = append N Z 1 (Nil N) (Cons N Z 4 (Nil N))
   in main

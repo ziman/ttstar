@@ -5,9 +5,9 @@
     constructor Refl : (a) -> (x) -> Id a x x
     id = (\a. (\x. x))
     subst 
-      [_] a P x [_] [_] = (\w. w)
+      subst a P x [_] [_] = (\w. w)
     cong 
-      [_] a b f x [_] [_] = Refl b (f x)
+      cong a b f x [_] [_] = Refl b (f x)
     constructor Bool : Type
     constructor T : Bool
     constructor F : Bool
@@ -16,24 +16,24 @@
     constructor Cons : (x) -> (xs) -> List
     one = (\x. Cons x Nil)
     app 
-      [_] Nil ys = ys
-      [_] (Cons x xs) ys = Cons x (app xs ys)
+      app Nil ys = ys
+      app (Cons x xs) ys = Cons x (app xs ys)
     appRightNeutral 
-      [_] Nil = Refl List Nil
-      [_] (Cons x xs) = cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs)
+      appRightNeutral Nil = Refl List Nil
+      appRightNeutral (Cons x xs) = cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs)
     appAssoc 
-      [_] Nil ys zs = Refl List (app ys zs)
-      [_] (Cons x xs) ys zs = cong List List (Cons x) (app (app xs ys) zs) (app xs (app ys zs)) (appAssoc xs ys zs)
+      appAssoc Nil ys zs = Refl List (app ys zs)
+      appAssoc (Cons x xs) ys zs = cong List List (Cons x) (app (app xs ys) zs) (app xs (app ys zs)) (appAssoc xs ys zs)
     constructor Rev : (_x7) -> Type
     constructor RNil : Rev Nil
     constructor RSnoc : (xs) -> (x) -> (rxs) -> Rev (app xs (one x))
     rev' 
-      [_] xs rxs Nil = subst List Rev xs (app xs Nil) (appRightNeutral xs) rxs
-      [_] xs rxs (Cons y ys) = subst List Rev (app (app xs (one y)) ys) (app xs (Cons y ys)) (appAssoc xs (one y) ys) (rev' (app xs (one y)) (RSnoc xs y rxs) ys)
+      rev' xs rxs Nil = subst List Rev xs (app xs Nil) (appRightNeutral xs) rxs
+      rev' xs rxs (Cons y ys) = subst List Rev (app (app xs (one y)) ys) (app xs (Cons y ys)) (appAssoc xs (one y) ys) (rev' (app xs (one y)) (RSnoc xs y rxs) ys)
     rev = (\xs. rev' Nil RNil xs)
     reverse' 
-      [_] [_] RNil = Nil
-      [_] [_] (RSnoc xs x rxs) = Cons x (reverse' xs rxs)
+      reverse' [_] RNil = Nil
+      reverse' [_] (RSnoc xs x rxs) = Cons x (reverse' xs rxs)
     reverse = (\xs. reverse' xs (rev xs))
     main = reverse (Cons T (Cons F (Cons T (Cons F Nil))))
   in main

@@ -10,6 +10,6 @@
     constructor Refl : (x) -> Eq a x x
     const = (\y. y)
     subst 
-      [_] a P x [_] (Refl [_]) = (\z. z)
+      subst a P x [_] (Refl [_]) = (\z. z)
     main = Refl Poof
   in main

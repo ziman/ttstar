@@ -6,7 +6,7 @@
     constructor Bool : Type
     constructor False : Bool
     f 
-      [_] (Just b) = b
-      [_] Nothing = Bool
+      f (Just b) = b
+      f Nothing = Bool
     main = f (Just False)
   in main

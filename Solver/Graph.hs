@@ -32,7 +32,7 @@ addVertex v g = (vertexNo, IM.insert vertexNo v g)
   where
     vertexNo = IM.size g
 
-solve :: Constrs Evar -> Uses Evar
+solve :: Impls Evar -> Uses Evar
 solve cs' = evalState (increments initialVertices) graph
   where
     cs = M.insertWith S.union S.empty (S.singleton $ Fixed R) cs'

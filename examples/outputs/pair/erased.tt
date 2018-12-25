@@ -5,11 +5,11 @@
     constructor F : Bool
     constructor P : (x) -> (y) -> Pair
     fst 
-      [_] ([_] l _) = l
+      fst ([_] l r) = l
     snd 
-      [_] ([_] _ r) = r
+      snd ([_] l r) = r
     and 
-      [_] T y = y
-      [_] F _ = F
+      and T y = y
+      and F y = F
     main = and (fst (P T F)) (snd (P F T))
   in main

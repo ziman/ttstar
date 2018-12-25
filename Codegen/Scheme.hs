@@ -114,6 +114,8 @@ cgPat pvs pat@(PApp r f x) = error $ "can't compile pattern: " ++ show pat
 
 cgPat pvs (PForced tm) = text "_"
 
+cgPat pvs (PHead _f) = text "_"
+
 cgLambda :: Name -> Doc -> Doc
 cgLambda n body = parens (text "lambda" <+> parens (cgName n) $+$ indent body)
 
@@ -153,7 +155,8 @@ argNames _ = []
 
 codegen :: PrettyR r => Program r -> Doc
 codegen prog = 
-    parens (text "require-extension" <+> text "matchable")
+    text "(import (chicken process-context))"
+    $$ parens (text "require-extension" <+> text "matchable")
     $$ text "(define Type '(Type))"
     $$ text "(define (number->peano z s i) (if (= i 0) (list z) (list s (number->peano z s (- i 1)))))"
     $$ text "(define (rts-arg-peano z s i) (number->peano z s (string->number (list-ref (command-line-arguments) i))))"

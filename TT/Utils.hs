@@ -62,9 +62,17 @@ instance Termy Pat where
     subst n tm pat@(PForced tm')
         = PForced $ subst n tm tm'
 
+    subst n (V n') pat@(PHead f)
+        | n == f = PHead n'
+    
+    subst n tm pat@(PHead f)
+        | n /= f = pat
+        | otherwise = error $ "trying to substitute non-name for pattern head"
+
     freeVars (PV n) = S.singleton n
     freeVars (PApp r f x) = freeVars f `S.union` freeVars x
     freeVars (PForced tm) = freeVars tm
+    freeVars (PHead f) = S.singleton f
 
 instance Termy Def where
     subst n tm (Def dn r ty body mcs)
@@ -154,6 +162,7 @@ freePatVars ctx (PV n)
     = Just S.empty
 
     | otherwise = Just $ S.singleton n
+freePatVars ctx (PHead f) = Just S.empty
 freePatVars ctx (PForced tm) = Just S.empty
 freePatVars ctx (PApp r f x)
     = join (linUnion <$> freePatVars ctx f <*> freePatVars ctx x)
@@ -176,6 +185,7 @@ pat2term :: Pat r -> TT r
 pat2term (PV n) = V n
 pat2term (PApp r f x) = App r (pat2term f) (pat2term x)
 pat2term (PForced tm) = tm
+pat2term (PHead f) = V f
 
 monomorphise :: TT r -> TT r
 monomorphise (V n) = V n
@@ -198,3 +208,4 @@ monomorphise (Bind b d tm) = Bind b (map monoDef d) $ monomorphise tm
     monoPat (PV n) = PV n
     monoPat (PForced tm) = PForced $ monomorphise tm
     monoPat (PApp r f x) = PApp r (monoPat f) (monoPat x)
+    monoPat (PHead f) = PHead f

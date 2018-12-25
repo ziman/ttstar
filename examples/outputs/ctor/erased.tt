@@ -5,7 +5,7 @@
     constructor F : Bool
     constructor MkUnit : Unit
     not 
-      [_] T = MkUnit
-      [_] F = MkUnit
+      not T = MkUnit
+      not F = MkUnit
     main = not T
   in main

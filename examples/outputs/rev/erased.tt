@@ -8,12 +8,12 @@
     constructor RNil : Rev
     constructor RSnoc : (x) -> (rxs) -> Rev
     rev' 
-      [_] rxs Nil = rxs
-      [_] rxs (Cons y ys) = rev' (RSnoc y rxs) ys
+      rev' rxs Nil = rxs
+      rev' rxs (Cons y ys) = rev' (RSnoc y rxs) ys
     rev = (\xs. rev' RNil xs)
     reverse' 
-      [_] RNil = Nil
-      [_] (RSnoc x rxs) = Cons x (reverse' rxs)
+      reverse' RNil = Nil
+      reverse' (RSnoc x rxs) = Cons x (reverse' rxs)
     reverse = (\xs. reverse' (rev xs))
     main = reverse (Cons T (Cons F (Cons T (Cons F Nil))))
   in main

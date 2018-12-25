@@ -1,3 +1,5 @@
+(import (chicken process-context))
+
 (define-syntax curried-lambda
   (syntax-rules ()
     ((curried-lambda () body) body)

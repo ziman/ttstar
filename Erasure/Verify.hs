@@ -1,4 +1,5 @@
 {-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE NamedFieldPuns #-}
 
 module Erasure.Verify
     ( verify
@@ -8,7 +9,7 @@ module Erasure.Verify
 import TT.Core
 import TT.Utils
 import TT.Normalise (whnf)
-import TT.Pretty ()
+import TT.Pretty (prettyCol)
 
 import qualified Data.Set as S
 import qualified Data.Map as M
@@ -24,6 +25,8 @@ data VerError
     | NotImplemented
     | NotConstructor Name
     | NotConstructorHead Term
+    | BadPatAppHead (Pat Relevance)
+    | NotClauses Name
     | CantConvert Term Term
     | PatvarsPatternMismatch [Name] [Name]
     | NonLinearPattern (Pat Relevance)
@@ -73,8 +76,11 @@ bt dbg sub = do
 
 showCtx :: Ctx Relevance -> String
 showCtx ctx = unlines
-    [ "  " ++ show (defName d) ++ " : " ++ show (defType d)
-    | d <- M.elems ctx
+    [ "  "
+        ++ show defName
+        ++ " " ++ show (prettyCol defR)
+        ++ " " ++ show defType
+    | Def{defName, defR, defType} <- M.elems ctx
     ]
 
 getCtx :: Ver (Ctx Relevance)
@@ -109,7 +115,7 @@ R /\ R = R
 _ /\ _ = E
 
 mustBeType :: TT Relevance -> Ver ()
-mustBeType ty = conv E ty (V typeOfTypes)
+mustBeType ty = conv ty (V typeOfTypes)
 
 verify :: Program Relevance -> Either VerFailure ()
 verify prog = runVer (builtins relOfType) $ verProg prog
@@ -132,7 +138,7 @@ verDef d@(Def n r ty (Term tm) cs) = bt ("DEF-TERM", n) $ do
     tyty <- verTm E ty
     mustBeType tyty
     tmty <- with d{ defBody = Abstract Var } $ verTm r tm
-    conv r tmty ty
+    conv tmty ty
 
 verDef d@(Def n r ty (Clauses cls) cs) = bt ("DEF-CLAUSES", n) $ do
     tyty <- verTm E ty
@@ -157,7 +163,7 @@ verClause r (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
     lhsTy <- verPat True r r (M.fromList [(defName d, d) | d <- pvs]) lhs
     withs pvs $ do
         rhsTy <- verTm r rhs
-        conv r lhsTy rhsTy
+        conv lhsTy rhsTy
 
 verTm :: Relevance -> Term -> Ver Type
 verTm E (V n) = bt ("VAR-E", n) $ do
@@ -191,9 +197,9 @@ verTm r (App s f x) = bt ("APP", r, f, s, x) $ do
     fty <- verTm r f
     case whnf ctx fty of
         Bind Pi [Def n piR piTy (Abstract Var) _] piRhs -> do
-            (r /\ piR) <-> (r /\ s)
+            piR <-> s
             xty <- verTm (r /\ s) x
-            conv (r /\ s) xty piTy            
+            conv xty piTy            
             return $ subst n x piRhs
 
         _ -> verFail $ NotPi fty
@@ -207,7 +213,7 @@ verPat :: Bool -> Relevance -> Relevance -> Ctx Relevance -> Pat Relevance -> Ve
 verPat fapp funR r pvs (PV n)
     | Just d <- M.lookup n pvs
     = bt ("PAT-VAR", n) $ do
-        defR d --> r
+        defR d <-> r
         return $ defType d
 
 verPat fapp funR r pvs (PV n) = bt ("PAT-REF", n) $ do
@@ -229,27 +235,30 @@ verPat fapp funR r pvs (PApp s f x) = bt ("PAT-APP", fapp, r, s, f, x) $ do
 
     case f of
         PForced tm
-            | (h,_args) <- unApply tm
-            -> case h of
-                V n -> case M.lookup n ctx of
-                    Just (defBody -> Abstract Var) | fapp -> return () -- clause heads will be functions, vars at this stage
-                    Just (defBody -> Abstract Constructor) -> return ()  -- everything else must be a constructor
-                    _ -> verFail $ NotConstructor n
-                _ -> verFail $ NotConstructorHead h
+            | (V n, _args) <- unApply tm
+            , Just (defBody -> Abstract Constructor) <- M.lookup n ctx
+            -> return ()  -- forced constructor
 
-        PV n -> case M.lookup n ctx of
-            Just (defBody -> Abstract Constructor) -> return ()
-            _ -> verFail $ NotConstructor n
+        PHead f  -- whole fun def will be var at this stage
+            | Just (defBody -> Abstract Var) <- M.lookup f ctx
+            , fapp  -- can appear here
+            -> return ()
+
+        PV n
+            | Just (defBody -> Abstract Constructor) <- M.lookup n ctx
+            -> return () -- regular constructor
 
         PApp _ _ _ -> return ()
+
+        _ -> verFail $ BadPatAppHead f
 
     fty <- verPat fapp funR r pvs f
     case whnf ctx fty of
         Bind Pi [Def n piR piTy (Abstract Var) _] piRhs -> do
-            (r /\ piR) <-> (r /\ s)
+            piR <-> s
             xty <- verPat False funR (r /\ s) pvs x
             with' (M.union pvs) $
-                conv (r /\ s) xty piTy
+                conv xty piTy
             return $ subst n (pat2term x) piRhs
 
         _ -> verFail $ NotPi fty
@@ -258,36 +267,46 @@ verPat fapp funR r pvs (PForced tm) = bt ("PAT-FORCED", tm) $ do
     with' (M.union pvs) $ do
         verTm r tm
 
-conv :: Relevance -> Type -> Type -> Ver ()
-conv r p q = do
+verPat fapp funR r pvs (PHead f) = bt ("PAT-HEAD", f) $ do
+    d <- lookupName f
+    case defBody d of
+        Abstract Var -> return ()  -- recursive refs are abstract
+        _ -> verFail $ NotClauses f
+
+    funR --> defR d
+
+    return $ defType d
+
+conv :: Type -> Type -> Ver ()
+conv p q = do
     ctx <- getCtx
-    conv' r (whnf ctx p) (whnf ctx q)
+    conv' (whnf ctx p) (whnf ctx q)
     
-conv' :: Relevance -> Type -> Type -> Ver ()
-conv' r (V n) (V n')
+conv' :: Type -> Type -> Ver ()
+conv' (V n) (V n')
     | n == n' = return ()
 
-conv' s (App I f x) (App I f' x') = bt ("CONV-APP-IRR", f, x, f', x') $ do
-    conv s f f'
+conv' (App I f x) (App I f' x') = bt ("CONV-APP-IRR", f, x, f', x') $ do
+    conv f f'
 
-conv' s (App r f x) (App r' f' x') = bt ("CONV-APP", f, x, f', x') $ do
-    (s /\ r) <-> (s /\ r')
-    conv s f f'
-    conv (s /\ r) x x'
+conv' (App r f x) (App r' f' x') = bt ("CONV-APP", f, x, f', x') $ do
+    r <-> r'
+    conv f f'
+    conv x x'
 
-conv' s
+conv'
     (Bind b  [d@(Def  n  r  ty  (Abstract Var) _)] tm)
     (Bind b' [d'@(Def n' r' ty' (Abstract Var) _)] tm')
     | b == b' = bt ("CONV-BIND", b, d, tm, d', tm') $ do
-        (s /\ r) <-> (s /\ r')
-        conv (s /\ r) ty ty'
+        r <-> r'
+        conv ty ty'
         with d $ 
-            conv s tm (subst n' (V n) tm')
+            conv tm (subst n' (V n) tm')
 
 {- This would be necessary for conversion-checking of multilets. Let's disable them for now.
-conv' r (Bind b (d:ds) tm) (Bind b' (d':ds') tm')
+conv' (Bind b (d:ds) tm) (Bind b' (d':ds') tm')
     = bt ("CONV-SIMPL", b) $
-        conv' r (Bind b [d] $ Bind b ds tm) (Bind b' [d'] $ Bind b' ds' tm')
+        conv' (Bind b [d] $ Bind b ds tm) (Bind b' [d'] $ Bind b' ds' tm')
 -}
 
-conv' r p q = verFail $ CantConvert p q
+conv' p q = verFail $ CantConvert p q

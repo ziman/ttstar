@@ -22,7 +22,9 @@ instance Show Name where
 
 type Guards  r = S.Set r
 type Uses    r = S.Set r
-type Constrs r = M.Map (Guards r) (Uses r)
+type Impls   r = M.Map (Guards r) (Uses r)
+type Eqs     r = S.Set (r, r)
+newtype Constrs r = Constrs (Impls r) deriving (Eq, Ord)
 
 data TT r
     = V Name
@@ -35,6 +37,7 @@ data Pat r
     = PV Name
     | PApp r (Pat r) (Pat r)
     | PForced (TT r)
+    | PHead Name
     deriving (Eq, Ord)
 
 data Clause r = Clause
@@ -46,8 +49,12 @@ data Clause r = Clause
 -- The difference between Var and Constructor is that for Var, the value is unknown,
 -- for constructor; the term itself is the value. A variable stands for something else,
 -- a constructor stands for itself.
-data Abstractness = Constructor | Var | Postulate | Foreign String deriving (Eq, Ord, Show)
-data Body r = Abstract Abstractness | Term (TT r) | Clauses [Clause r] deriving (Eq, Ord)
+data Abstractness = Constructor | Var | Postulate | Foreign String
+    deriving (Eq, Ord, Show)
+
+data Body r = Abstract Abstractness | Term (TT r) | Clauses [Clause r]
+    deriving (Eq, Ord)
+
 data Def r = Def
     { defName :: Name
     , defR    :: r
@@ -63,7 +70,11 @@ type Ctx r = M.Map Name (Def r)
 type Program r = TT r
 
 noConstrs :: Constrs r
-noConstrs = M.empty
+noConstrs = Constrs M.empty
+
+-- for pretty-printing
+isEmpty :: Constrs r -> Bool
+isEmpty (Constrs impls) = M.null impls
 
 typeOfTypes :: Name
 typeOfTypes = UN "Type"

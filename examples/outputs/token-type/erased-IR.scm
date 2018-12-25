@@ -1,3 +1,5 @@
+(import (chicken process-context))
+
 (define-syntax curried-lambda
   (syntax-rules ()
     ((curried-lambda () body) body)
@@ -43,6 +45,7 @@
   (read (open-input-string
           (list-ref (command-line-arguments) i))))
 
-(display (lambda (x)
-  x))
+(display 
+  (letrec ((main Type))
+    main))
 (newline)

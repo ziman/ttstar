@@ -7,15 +7,15 @@
     constructor Unit : Type
     constructor MkUnit : Unit
     not 
-      [_] T = F
-      [_] F = T
+      not T = F
+      not F = T
     retTy 
-      [_] T = Bool
-      [_] F = Unit
+      retTy T = Bool
+      retTy F = Unit
     main = not 
       let f 
-        [_] F MkUnit = MkUnit
-        [_] T T = F
-        [_] T F = T
+        f F MkUnit = MkUnit
+        f T T = F
+        f T F = T
       in f (not F) T
   in main

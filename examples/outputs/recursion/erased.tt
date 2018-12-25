@@ -6,8 +6,8 @@
     constructor VNil : Vec
     constructor VCons : (xs) -> Vec
     vlen 
-      [_] VNil = Z
-      [_] (VCons xs) = S (vlen xs)
+      vlen VNil = Z
+      vlen (VCons xs) = S (vlen xs)
     testVec = VCons (VCons VNil)
     main = vlen testVec
   in main

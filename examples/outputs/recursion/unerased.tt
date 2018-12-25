@@ -11,8 +11,8 @@
     constructor VNil : (a) -> Vec Z a
     constructor VCons : (a) -> (n) -> (x) -> (xs) -> Vec (S n) a
     vlen 
-      [_] a [_] (VNil [_]) = Z
-      [_] a ([_] n) (VCons [_] [_] x xs) = S (vlen a n xs)
+      vlen a [_] (VNil [_]) = Z
+      vlen a ([_] n) (VCons [_] [_] x xs) = S (vlen a n xs)
     testVec = VCons Bool 1 True (VCons Bool Z False (VNil Bool))
     main = vlen Bool 2 testVec
   in main

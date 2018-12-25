@@ -6,7 +6,7 @@
     constructor Nil : Vec
     constructor Cons : (x) -> (xs) -> Vec
     append 
-      [_] Nil ys = ys
-      [_] (Cons x xs) ys = Cons x (append xs ys)
+      append Nil ys = ys
+      append (Cons x xs) ys = Cons x (append xs ys)
     main = append Nil (Cons 4 Nil)
   in main

@@ -9,6 +9,7 @@ indent = nest 2
 codegen :: IR -> Doc
 
 codegen prog = 
+    -- above this, we include rts.scm
     vcat [cgDef n d $$ blankLine | (n,d) <- defs]
     $$ parens (text "display" <+> cgTm entryPoint)
     $$ parens (text "newline")

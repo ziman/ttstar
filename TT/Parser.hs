@@ -289,7 +289,7 @@ clause = (<?> "pattern clause") $ do
 
 forceHead :: Pat MRel -> Pat MRel
 forceHead p | (PV f, args) <- unApplyPat p
-    = mkAppPat (PForced $ V f) args
+    = mkAppPat (PHead f) args
 forceHead p
     = error $ "invalid clause LHS: " ++ show p
 

@@ -1,3 +1,4 @@
+(import (chicken process-context))
 (require-extension matchable)
 (define Type '(Type))
 (define (number->peano z s i) (if (= i 0) (list z) (list s (number->peano z s (- i 1)))))
@@ -58,7 +59,7 @@
     (mkBin (lambda (_e0)
       (lambda (_e1)
         (match (list _e0 _e1)
-          ((_ ('Z))
+          ((b ('Z))
             N)
           ((('True) ('S n))
             ((C I) ((mkBin False) n)))

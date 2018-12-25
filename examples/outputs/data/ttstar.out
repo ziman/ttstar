@@ -8,14 +8,14 @@
     constructor S : (_x0 : N) -> N
     plus : (_x1 : N) -> (_x2 : N) -> N 
       m : N
-        [plus] Z m = m
+        plus Z m = m
       m : N n : N
-        [plus] (S n) m = S (plus n m)
+        plus (S n) m = S (plus n m)
     main : N = 
       let pred : (_x3 : N) -> N 
-        [pred] Z = Z
+        pred Z = Z
         n : N
-          [pred] (S n) = n
+          pred (S n) = n
       in plus 2 3
   in main
 
@@ -27,40 +27,68 @@
     constructor S :3: (_x0 :4: N) -> N
     plus :5: (_x1 :6: N) -> (_x2 :7: N) -> N 
       m :8: N
-        [plus] -10- Z -9- m = m
+        plus -10- Z -9- m = m
       m :11: N n :12: N
-        [plus] -14- (S -15- n) -13- m = S -16- (plus -18- n -17- m)
+        plus -14- (S -15- n) -13- m = S -16- (plus -18- n -17- m)
     main :19: N = 
       let pred :20: (_x3 :21: N) -> N 
-        [pred] -22- Z = Z
+        pred -22- Z = Z
         n :23: N
-          [pred] -24- (S -25- n) = n
+          pred -24- (S -25- n) = n
       in plus -27- 2 -26- 3
   in main
 
 ### Constraints ###
 
-[] -> [2,3,5,6,7,8,9,10,13,14,26,27,R]
-[4] -> [15,16,28,30]
-[4,28] -> [29]
-[4,30] -> [31]
-[4,30,31] -> [32]
-[11] -> [13]
-[12] -> [15]
-[15] -> [4,14]
-[16] -> [4,5,17,18]
-[16,17] -> [7,11]
-[16,18] -> [6,12]
-[28] -> [3,4]
-[28,29] -> [2,4]
-[30] -> [3,4]
-[30,31] -> [3,4]
-[30,31,32] -> [2,4]
+[4] -> [15,16,25,28,29,30,31,32]
+[5] -> [2,3,5,8,10,14]
+[5,9] -> [8]
+[5,13] -> [11]
+[5,14,15] -> [12]
+[5,16] -> [5]
+[5,16,17] -> [11]
+[5,16,18] -> [12]
+[6] -> [10,14,18,27]
+[7] -> [9,13,17,26]
+[8] -> [5,9]
+[9] -> [7]
+[10] -> [6]
+[11] -> [5,13]
+[12] -> [5,14,15]
+[13] -> [7]
+[14] -> [6]
+[15] -> [4]
+[16] -> [4]
+[17] -> [7]
+[18] -> [6]
+[19] -> [5]
+[19,26] -> [3]
+[19,26,30] -> [3]
+[19,26,30,31] -> [3]
+[19,26,30,31,32] -> [2]
+[19,27] -> [3]
+[19,27,28] -> [3]
+[19,27,28,29] -> [2]
+[20] -> [2,3,20,22,23,24]
+[20,24,25] -> [23]
+[21] -> [22,24]
+[22] -> [21]
+[23] -> [20,24,25]
+[24] -> [21]
+[25] -> [4]
+[26] -> [7]
+[27] -> [6]
+[28] -> [4]
+[29] -> [4]
+[30] -> [4]
+[31] -> [4]
+[32] -> [4]
+[E] -> [1,R]
 [R] -> [19]
 
 ### Solution ###
 
-[2,3,5,6,7,8,9,10,13,14,19,26,27,R]
+[2,3,5,6,7,8,9,10,11,13,14,17,18,19,26,27,R]
 
 ### Annotated ###
 
@@ -70,14 +98,14 @@
     constructor S :R: (_x0 :E: N) -> N
     plus :R: (_x1 :R: N) -> (_x2 :R: N) -> N 
       m :R: N
-        [plus] -R- Z -R- m = m
-      m :E: N n :E: N
-        [plus] -R- (S -E- n) -R- m = S -E- (plus -E- n -E- m)
+        plus -R- Z -R- m = m
+      m :R: N n :E: N
+        plus -R- (S -E- n) -R- m = S -E- (plus -R- n -R- m)
     main :R: N = 
       let pred :E: (_x3 :E: N) -> N 
-        [pred] -E- Z = Z
+        pred -E- Z = Z
         n :E: N
-          [pred] -E- (S -E- n) = n
+          pred -E- (S -E- n) = n
       in plus -R- 2 -R- 3
   in main
 
@@ -89,14 +117,14 @@
     constructor S :R: (_x0 :E: N) -> N
     plus :R: (_x1 :R: N) -> (_x2 :R: N) -> N 
       m :R: N
-        [plus] -R- Z -R- m = m
-      m :E: N n :E: N
-        [plus] -R- (S -E- n) -R- m = S -E- (plus -E- n -E- m)
+        plus -R- Z -R- m = m
+      m :R: N n :E: N
+        plus -R- (S -E- n) -R- m = S -E- (plus -R- n -R- m)
     main :R: N = 
       let pred :E: (_x3 :E: N) -> N 
-        [pred] -E- Z = Z
+        pred -E- Z = Z
         n :E: N
-          [pred] -E- (S -E- n) = n
+          pred -E- (S -E- n) = n
       in plus -R- 2 -R- 3
   in main
 
@@ -108,14 +136,14 @@
     constructor S :R: (_x0 :E: N) -> N
     plus :R: (_x1 :R: N) -> (_x2 :R: N) -> N 
       m :R: N
-        [plus] -R- Z -R- m = m
-      m :E: N n :E: N
-        [plus] -R- (S -E- n) -R- m = S -E- (plus -E- n -E- m)
+        plus -R- Z -R- m = m
+      m :R: N n :E: N
+        plus -R- (S -E- n) -R- m = S -E- (plus -R- n -R- m)
     main :R: N = 
       let pred :E: (_x3 :E: N) -> N 
-        [pred] -E- Z = Z
+        pred -E- Z = Z
         n :E: N
-          [pred] -E- (S -E- n) = n
+          pred -E- (S -E- n) = n
       in plus -R- 2 -R- 3
   in main
 
@@ -129,8 +157,8 @@ Verification successful.
     constructor Z : N
     constructor S : N
     plus 
-      [_] Z m = m
-      [_] S _ = S
+      plus Z m = m
+      plus S m = S
     main = plus S S
   in main
 

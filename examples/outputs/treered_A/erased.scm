@@ -1,3 +1,4 @@
+(import (chicken process-context))
 (require-extension matchable)
 (define Type '(Type))
 (define (number->peano z s i) (if (= i 0) (list z) (list s (number->peano z s (- i 1)))))
@@ -16,7 +17,7 @@
       (match (list _e0)
         ((('Nil))
           Z)
-        ((('Cons _ ys))
+        ((('Cons y ys))
           (S (vlen ys))))))
     (main (vlen ((Cons (S (S (S Z)))) Nil)))
   )

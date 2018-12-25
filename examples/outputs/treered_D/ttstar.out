@@ -14,12 +14,12 @@
     constructor Just : (a : Type) -> (x : a) -> Maybe a
     f : (x : Maybe Bool) -> Bool 
       b : Bool
-        [f] (Just [Bool] b) = b
-      [f] (Nothing [Bool]) = False
+        f (Just [Bool] b) = b
+      f (Nothing [Bool]) = False
     g : (x : Maybe Bool) -> Foo (f x) 
-      [g] (Just [Bool] True) = Yeah
-      [g] (Just [Bool] False) = Nope
-      [g] (Nothing [Bool]) = Nope
+      g (Just [Bool] True) = Yeah
+      g (Just [Bool] False) = Nope
+      g (Nothing [Bool]) = Nope
     main : Foo True = g (Just Bool True)
   in main
 
@@ -37,36 +37,75 @@
     constructor Just :15: (a :16: Type) -> (x :17: a) -> Maybe -18- a
     f :19: (x :20: Maybe -21- Bool) -> Bool 
       b :22: Bool
-        [f] -23- (Just -25- [Bool] -24- b) = b
-      [f] -26- (Nothing -27- [Bool]) = False
+        f -23- (Just -25- [Bool] -24- b) = b
+      f -26- (Nothing -27- [Bool]) = False
     g :28: (x :29: Maybe -30- Bool) -> Foo -31- (f -32- x) 
-      [g] -33- (Just -35- [Bool] -34- True) = Yeah
-      [g] -36- (Just -38- [Bool] -37- False) = Nope
-      [g] -39- (Nothing -40- [Bool]) = Nope
+      g -33- (Just -35- [Bool] -34- True) = Yeah
+      g -36- (Just -38- [Bool] -37- False) = Nope
+      g -39- (Nothing -40- [Bool]) = Nope
     main :41: Foo -42- True = g -43- (Just -45- Bool -44- True)
   in main
 
 ### Constraints ###
 
-[] -> [2,3,6,8,12,15,17,28,29,33,34,36,37,39,43,44,R]
-[7] -> [31]
-[9] -> [31]
-[13] -> [40]
-[14] -> [30]
-[16] -> [35,38,45]
-[18] -> [30]
-[30] -> [14,18]
-[31] -> [7,9,42]
-[35] -> [1,16,33]
-[38] -> [1,16,36]
-[40] -> [1,13,39]
-[42] -> [31]
-[45] -> [1,16]
+[5] -> [7,9,31,42]
+[7] -> [5,31]
+[7,E] -> [2]
+[9] -> [5,31]
+[9,E] -> [3]
+[11] -> [14,18]
+[13] -> [27,40]
+[14] -> [11,21,30]
+[14,E] -> [13]
+[16] -> [25,35,38,45]
+[17] -> [24,34,37,44]
+[18] -> [11,21,30]
+[18,E] -> [16]
+[19] -> [3,12,15,19,22,23,26]
+[19,23,24] -> [22]
+[19,23,25] -> [1]
+[19,26,27] -> [1]
+[20] -> [23,26,32]
+[21] -> [14,18,30]
+[22] -> [19,23,24]
+[23] -> [20]
+[24] -> [17]
+[25] -> [16]
+[26] -> [20]
+[27] -> [13]
+[28] -> [2,3,6,8,12,15,28,33,34,36,37,39]
+[28,33,35] -> [1]
+[28,36,38] -> [1]
+[28,39,40] -> [1]
+[29] -> [33,36,39,43]
+[30] -> [14,18,21]
+[31] -> [5,7,9,42]
+[31,32,E] -> [29]
+[31,E] -> [19]
+[32] -> [20]
+[33] -> [29]
+[34] -> [17]
+[35] -> [16]
+[36] -> [29]
+[37] -> [17]
+[38] -> [16]
+[39] -> [29]
+[40] -> [13]
+[41] -> [28]
+[41,43] -> [15]
+[41,43,44] -> [2]
+[41,43,45] -> [1]
+[42] -> [5,31]
+[42,E] -> [2]
+[43] -> [29]
+[44] -> [17]
+[45] -> [16]
+[E] -> [1,4,10,R]
 [R] -> [41]
 
 ### Solution ###
 
-[2,3,6,8,12,15,17,28,29,33,34,36,37,39,41,43,44,R]
+[2,3,6,8,12,15,17,24,28,29,33,34,36,37,39,41,43,44,R]
 
 ### Annotated ###
 
@@ -82,12 +121,12 @@
     constructor Just :R: (a :E: Type) -> (x :R: a) -> Maybe -E- a
     f :E: (x :E: Maybe -E- Bool) -> Bool 
       b :E: Bool
-        [f] -E- (Just -E- [Bool] -E- b) = b
-      [f] -E- (Nothing -E- [Bool]) = False
+        f -E- (Just -E- [Bool] -R- b) = b
+      f -E- (Nothing -E- [Bool]) = False
     g :R: (x :R: Maybe -E- Bool) -> Foo -E- (f -E- x) 
-      [g] -R- (Just -E- [Bool] -R- True) = Yeah
-      [g] -R- (Just -E- [Bool] -R- False) = Nope
-      [g] -R- (Nothing -E- [Bool]) = Nope
+      g -R- (Just -E- [Bool] -R- True) = Yeah
+      g -R- (Just -E- [Bool] -R- False) = Nope
+      g -R- (Nothing -E- [Bool]) = Nope
     main :R: Foo -E- True = g -R- (Just -E- Bool -R- True)
   in main
 
@@ -105,12 +144,12 @@
     constructor Just :R: (a :E: Type) -> (x :R: a) -> Maybe -E- a
     f :E: (x :E: Maybe -E- Bool) -> Bool 
       b :E: Bool
-        [f] -E- (Just -E- [Bool] -E- b) = b
-      [f] -E- (Nothing -E- [Bool]) = False
+        f -E- (Just -E- [Bool] -R- b) = b
+      f -E- (Nothing -E- [Bool]) = False
     g :R: (x :R: Maybe -E- Bool) -> Foo -E- (f -E- x) 
-      [g] -R- (Just -E- [Bool] -R- True) = Yeah
-      [g] -R- (Just -E- [Bool] -R- False) = Nope
-      [g] -R- (Nothing -E- [Bool]) = Nope
+      g -R- (Just -E- [Bool] -R- True) = Yeah
+      g -R- (Just -E- [Bool] -R- False) = Nope
+      g -R- (Nothing -E- [Bool]) = Nope
     main :R: Foo -E- True = g -R- (Just -E- Bool -R- True)
   in main
 
@@ -128,12 +167,12 @@
     constructor Just :R: (a :E: Type) -> (x :R: a) -> Maybe -E- a
     f :E: (x :E: Maybe -E- Bool) -> Bool 
       b :E: Bool
-        [f] -E- (Just -E- [Bool] -E- b) = b
-      [f] -E- (Nothing -E- [Bool]) = False
+        f -E- (Just -E- [Bool] -R- b) = b
+      f -E- (Nothing -E- [Bool]) = False
     g :R: (x :R: Maybe -E- Bool) -> Foo -E- (f -E- x) 
-      [g] -R- (Just -E- [Bool] -R- True) = Yeah
-      [g] -R- (Just -E- [Bool] -R- False) = Nope
-      [g] -R- (Nothing -E- [Bool]) = Nope
+      g -R- (Just -E- [Bool] -R- True) = Yeah
+      g -R- (Just -E- [Bool] -R- False) = Nope
+      g -R- (Nothing -E- [Bool]) = Nope
     main :R: Foo -E- True = g -R- (Just -E- Bool -R- True)
   in main
 
@@ -151,9 +190,9 @@ Verification successful.
     constructor Nothing : Maybe
     constructor Just : (x) -> Maybe
     g 
-      [_] (Just True) = Yeah
-      [_] (Just False) = Nope
-      [_] Nothing = Nope
+      g (Just True) = Yeah
+      g (Just False) = Nope
+      g Nothing = Nope
     main = g (Just True)
   in main
 

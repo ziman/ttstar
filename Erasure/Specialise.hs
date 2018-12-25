@@ -92,6 +92,7 @@ specPat (PApp rm fm xm) (PApp rr fr xr) = do
     (isx, xr') <- specPat xm xr
     return (M.unionWith S.union isf isx, PApp (Fixed rr) fr' xr')
 specPat (PForced tm) (PForced tr) = fmap PForced <$> specTm tm tr
+specPat (PHead fm) (PHead fr) = return (M.empty, PHead fr)  -- use the r-name
 
 specPat pm pr = error $ "cannot specialise: " ++ show (pm, pr)
 

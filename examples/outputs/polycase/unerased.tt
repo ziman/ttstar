@@ -10,22 +10,22 @@
     constructor Id : (a) -> (x) -> (y) -> Type
     constructor Refl : (a) -> (x) -> Id a x x
     not 
-      [_] T = F
-      [_] F = T
+      not T = F
+      not F = T
     notnot 
-      [_] T = Refl Bool T
-      [_] F = Refl Bool F
+      notnot T = Refl Bool T
+      notnot F = Refl Bool F
     retTy 
-      [_] T = Bool
-      [_] F = Mool
+      retTy T = Bool
+      retTy F = Mool
     mot 
-      [_] Q = W
-      [_] W = Q
+      mot Q = W
+      mot W = Q
     invert 
-      [_] T = not
-      [_] F = mot
+      invert T = not
+      invert F = mot
     invert' 
-      [_] T x = not x
-      [_] F x = mot x
+      invert' T x = not x
+      invert' F x = mot x
     main = invert F Q
   in main

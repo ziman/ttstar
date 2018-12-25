@@ -13,7 +13,7 @@
     const : (x :I: Type) -> (y : Type) -> Type = (\x :I: Type. (\y : Type. y))
     subst : (a : Type) -> (P : (_x1 : a) -> Type) -> (x : a) -> (y : a) -> (_x2 : Eq a x y) -> (_x3 : P x) -> P y 
       a : Type P : (_x4 : a) -> Type x : a
-        [subst] a P x [x] (Refl -I- [a] [x]) = (\z : P x. z)
+        subst a P x [x] (Refl -I- [a] [x]) = (\z : P x. z)
     main : Eq (Squash Bool) (Poof -I- Bool -I- True) (Poof -I- Bool -I- False) = Refl -I- (Squash Bool) (Poof -I- Bool -I- True)
   in main
 
@@ -30,29 +30,79 @@
     const :17: (x :I: Type) -> (y :18: Type) -> Type = (\x :I: Type. (\y :19: Type. y))
     subst :20: (a :21: Type) -> (P :22: (_x1 :23: a) -> Type) -> (x :24: a) -> (y :25: a) -> (_x2 :26: Eq -29- a -28- x -27- y) -> (_x3 :30: P -31- x) -> P -32- y 
       a :33: Type P :34: (_x4 :35: a) -> Type x :36: a
-        [subst] -41- a -40- P -39- x -38- [x] -37- (Refl -I- [a] -42- [x]) = (\z :43: P -44- x. z)
+        subst -41- a -40- P -39- x -38- [x] -37- (Refl -I- [a] -42- [x]) = (\z :43: P -44- x. z)
     main :45: Eq -48- (Squash -49- Bool) -47- (Poof -I- Bool -I- True) -46- (Poof -I- Bool -I- False) = Refl -I- (Squash -51- Bool) -50- (Poof -I- Bool -I- True)
   in main
 
 ### Constraints ###
 
-[] -> [12,R]
-[5,I] -> [51]
-[7,50] -> [51]
-[13] -> [50]
-[14] -> [46]
-[15] -> [47]
-[16] -> [48]
-[46] -> [14]
-[47] -> [15]
-[48] -> [16]
-[48,49] -> [51]
-[48,51] -> [49]
-[50] -> [6,13]
-[50,51] -> [7]
-[50,I] -> [1,2,I]
-[51,I] -> [1,5]
-[I] -> [4,I]
+[5] -> [7,49,51]
+[7] -> [5,49,51]
+[7,E] -> [I]
+[9] -> [16,48]
+[10] -> [15,47]
+[11] -> [14,46]
+[13] -> [42,50]
+[14] -> [11,27,46]
+[14,E] -> [13]
+[15] -> [10,28,47]
+[15,E] -> [13]
+[16] -> [9,29,48]
+[16,E] -> [I]
+[17] -> [19]
+[18] -> [19]
+[19] -> [18]
+[20] -> [12,20,37,43]
+[20,37,42] -> [36]
+[20,37,I] -> [33]
+[20,38] -> [36]
+[20,39] -> [36]
+[20,40] -> [34]
+[20,41] -> [33]
+[21] -> [41]
+[22] -> [40]
+[23] -> [32,35]
+[24] -> [39]
+[25] -> [38]
+[26] -> [37]
+[27] -> [14]
+[28] -> [15]
+[29] -> [16]
+[30] -> [43]
+[31] -> [44]
+[32] -> [23,44]
+[32,E] -> [25]
+[33] -> [20,41]
+[34] -> [20,40]
+[35] -> [23]
+[36] -> [20,39]
+[37] -> [26]
+[38] -> [25]
+[39] -> [24]
+[40] -> [22]
+[41] -> [21]
+[42] -> [13]
+[43] -> [30]
+[44] -> [31,32]
+[45] -> [12]
+[45,50] -> [6]
+[45,50,I] -> [1,2]
+[45,51,I] -> [1]
+[45,I] -> [4]
+[46] -> [11,14]
+[46,I,E] -> [1,3]
+[46,E] -> [6]
+[47] -> [10,15]
+[47,I,E] -> [1,2]
+[47,E] -> [6]
+[48] -> [9,16]
+[48,49,E] -> [1]
+[48,E] -> [4]
+[49] -> [5,7,51]
+[50] -> [13]
+[51] -> [5,7,49]
+[I] -> [I]
+[E] -> [1,4,8,22,R]
 [R] -> [45]
 
 ### Solution ###
@@ -72,7 +122,7 @@
     const :E: (x :I: Type) -> (y :E: Type) -> Type = (\x :I: Type. (\y :E: Type. y))
     subst :E: (a :E: Type) -> (P :E: (_x1 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (_x2 :E: Eq -E- a -E- x -E- y) -> (_x3 :E: P -E- x) -> P -E- y 
       a :E: Type P :E: (_x4 :E: a) -> Type x :E: a
-        [subst] -E- a -E- P -E- x -E- [x] -E- (Refl -I- [a] -E- [x]) = (\z :E: P -E- x. z)
+        subst -E- a -E- P -E- x -E- [x] -E- (Refl -I- [a] -E- [x]) = (\z :E: P -E- x. z)
     main :R: Eq -E- (Squash -E- Bool) -E- (Poof -I- Bool -I- True) -E- (Poof -I- Bool -I- False) = Refl -I- (Squash -E- Bool) -E- (Poof -I- Bool -I- True)
   in main
 
@@ -89,7 +139,7 @@
     const :E: (x :I: Type) -> (y :E: Type) -> Type = (\x :I: Type. (\y :E: Type. y))
     subst :E: (a :E: Type) -> (P :E: (_x1 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (_x2 :E: Eq -E- a -E- x -E- y) -> (_x3 :E: P -E- x) -> P -E- y 
       a :E: Type P :E: (_x4 :E: a) -> Type x :E: a
-        [subst] -E- a -E- P -E- x -E- [x] -E- (Refl -I- [a] -E- [x]) = (\z :E: P -E- x. z)
+        subst -E- a -E- P -E- x -E- [x] -E- (Refl -I- [a] -E- [x]) = (\z :E: P -E- x. z)
     main :R: Eq -E- (Squash -E- Bool) -E- (Poof -I- Bool -I- True) -E- (Poof -I- Bool -I- False) = Refl -I- (Squash -E- Bool) -E- (Poof -I- Bool -I- True)
   in main
 
@@ -106,7 +156,7 @@
     const :E: (x :I: Type) -> (y :E: Type) -> Type = (\x :I: Type. (\y :E: Type. y))
     subst :E: (a :E: Type) -> (P :E: (_x1 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (_x2 :E: Eq -E- a -E- x -E- y) -> (_x3 :E: P -E- x) -> P -E- y 
       a :E: Type P :E: (_x4 :E: a) -> Type x :E: a
-        [subst] -E- a -E- P -E- x -E- [x] -E- (Refl -I- [a] -E- [x]) = (\z :E: P -E- x. z)
+        subst -E- a -E- P -E- x -E- [x] -E- (Refl -I- [a] -E- [x]) = (\z :E: P -E- x. z)
     main :R: Eq -E- (Squash -E- Bool) -E- (Poof -I- Bool -I- True) -E- (Poof -I- Bool -I- False) = Refl -I- (Squash -E- Bool) -E- (Poof -I- Bool -I- True)
   in main
 

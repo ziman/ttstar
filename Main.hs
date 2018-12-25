@@ -68,11 +68,17 @@ pipeline args = do
         putStrLn ""
 
     let iterSpecialisation evarified = do
-            uses <- case Args.skipInference args of
-                True -> return $ S.fromList (
-                    evarified_1st ^.. (ttRelevance :: Traversal' (TT Evar) Evar)
-                  )
+            (evarified, uses) <- case Args.skipInference args of
+                True -> return
+                    ( evarified
+                    , S.fromList $ evarified_1st ^.. (
+                            ttRelevance :: Traversal' (TT Evar) Evar
+                        )  -- all annotations are used
+                    )
+
                 False -> do
+                    -- map evars to their connected components
+
                     -- We don't have a graph reductor (yet)
                     -- and it turns out that using `id` is actually better
                     -- than using the dumb reductor.
@@ -90,19 +96,24 @@ pipeline args = do
                                 Indexed -> Solver.Indexed.reduce
                                 LMS     -> Solver.LMS.reduce
 
-                    let cs = either (error . show) id . infer redConstrs $ evarified
+                    let Constrs impls
+                            = either (error . show) id
+                            . infer redConstrs
+                            $ evarified
+
                     when (Args.verbose args) $ do
                         putStrLn "### Constraints ###\n"
-                        mapM_ (putStrLn . fmtCtr) $ M.toList cs
+                        mapM_ (putStrLn . fmtCtr) $ M.toList impls
                         putStrLn ""
 
-                    let uses = solveConstraints cs
+                    let uses = solveConstraints impls
+
                     when (Args.verbose args) $ do
                         putStrLn "### Solution ###\n"
                         print $ S.toList uses
                         putStrLn ""
 
-                    return uses
+                    return (evarified, uses)
 
             if Fixed E `S.member` uses
                 then error "!! inconsistent annotation"

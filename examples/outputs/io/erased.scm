@@ -1,3 +1,4 @@
+(import (chicken process-context))
 (require-extension matchable)
 (define Type '(Type))
 (define (number->peano z s i) (if (= i 0) (list z) (list s (number->peano z s (- i 1)))))
@@ -13,7 +14,7 @@
         `(MkPair ,_x7 ,_x8))))
     (snd (lambda (_e0)
       (match (list _e0)
-        (((_ _ y))
+        (((_ x y))
           y))))
     (MkSt (lambda (run)
       `(MkSt ,run)))

@@ -10,9 +10,9 @@
     constructor Nil : (a : Type) -> Vec Z a
     constructor Cons : (a : Type) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a
     vlen : (n : N) -> (xs : Vec n N) -> N 
-      [vlen] [Z] (Nil [N]) = Z
+      vlen [Z] (Nil [N]) = Z
       m : N y : N ys : Vec m N
-        [vlen] ([S] m) (Cons [N] [m] y ys) = S (vlen m ys)
+        vlen ([S] m) (Cons [N] [m] y ys) = S (vlen m ys)
     main : N = vlen 1 (Cons N Z 3 (Nil N))
   in main
 
@@ -26,52 +26,74 @@
     constructor Nil :7: (a :8: Type) -> Vec -10- Z -9- a
     constructor Cons :11: (a :12: Type) -> (n :13: N) -> (x :R: a) -> (xs :R: Vec -15- n -14- a) -> Vec -17- (S -18- n) -16- a
     vlen :19: (n :20: N) -> (xs :21: Vec -23- n -22- N) -> N 
-      [vlen] -25- [Z] -24- (Nil -26- [N]) = Z
+      vlen -25- [Z] -24- (Nil -26- [N]) = Z
       m :27: N y :28: N ys :29: Vec -31- m -30- N
-        [vlen] -33- ([S] -34- m) -32- (Cons -38- [N] -37- [m] -36- y -35- ys) = S -39- (vlen -41- m -40- ys)
+        vlen -33- ([S] -34- m) -32- (Cons -38- [N] -37- [m] -36- y -35- ys) = S -39- (vlen -41- m -40- ys)
     main :42: N = vlen -44- 1 -43- (Cons -49- N -48- Z -47- 3 -46- (Nil -53- N))
   in main
 
 ### Constraints ###
 
-[] -> [2,3,7,11,19,21,24,29,32,35,36,39,40,43,46,47,50,51,52,R]
+[] -> [18,34,35,36,39,45,46,47,50,51,52,R]
+[5] -> [10,17]
+[6] -> [9,16]
 [8] -> [26,53]
-[9] -> [14,22]
-[10] -> [15,23]
+[9] -> [6,14,22]
+[9,E] -> [8]
+[10] -> [5,15,23]
+[10,E] -> [2]
 [12] -> [38,49]
 [13] -> [37,48]
 [14] -> [9,30]
 [15] -> [10,31]
-[16] -> [22]
-[17] -> [23]
-[17,18] -> [34,45]
-[17,34] -> [18]
-[17,45] -> [18]
+[16] -> [6,22]
+[16,E] -> [12]
+[17] -> [5,23]
+[17,E] -> [3,13]
+[19] -> [2,3,7,11,19,24,32]
+[19,24,26] -> [1]
+[19,25] -> [2]
+[19,32] -> [28,29]
+[19,32,37] -> [27]
+[19,32,38] -> [1]
+[19,33] -> [3,27]
+[19,40] -> [29]
+[19,41] -> [27]
 [20] -> [25,33,41,44]
+[21] -> [24,32,40,43]
 [22] -> [9,16,30]
 [23] -> [10,17,31]
-[25] -> [2,20,R]
-[26] -> [1,8,24]
-[27] -> [34]
-[28] -> [36]
+[24] -> [21]
+[25] -> [20]
+[26] -> [8]
+[27] -> [19,33,34]
+[28] -> [19,32,36]
+[29] -> [19,32,35]
 [30] -> [14,22]
 [31] -> [15,23]
-[33] -> [3,20,34,R]
-[33,34] -> [R]
-[34] -> [33]
-[37] -> [13,27,32]
-[38] -> [1,12,32]
-[41] -> [20,27]
-[44] -> [3,20,45]
-[44,45] -> [2,R]
-[48] -> [2,13]
-[49] -> [1,12]
-[53] -> [1,8]
+[32] -> [21]
+[33] -> [20]
+[37] -> [13]
+[38] -> [12]
+[40] -> [21]
+[41] -> [20]
+[42] -> [19]
+[42,43] -> [2,3,7,11]
+[42,43,48] -> [2]
+[42,43,49] -> [1]
+[42,43,53] -> [1]
+[42,44] -> [2,3]
+[43] -> [21]
+[44] -> [20]
+[48] -> [13]
+[49] -> [12]
+[53] -> [8]
+[E] -> [1,4,R]
 [R] -> [42]
 
 ### Solution ###
 
-[2,3,7,11,19,21,24,29,32,35,36,39,40,42,43,46,47,50,51,52,R]
+[2,3,7,11,18,19,21,24,28,29,32,34,35,36,39,40,42,43,45,46,47,50,51,52,R]
 
 ### Annotated ###
 
@@ -81,11 +103,11 @@
     constructor S :R: (x :R: N) -> N
     constructor Vec :E: (_x0 :E: N) -> (_x1 :E: Type) -> Type
     constructor Nil :R: (a :E: Type) -> Vec -E- Z -E- a
-    constructor Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+    constructor Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -R- n) -E- a
     vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N 
-      [vlen] -E- [Z] -R- (Nil -E- [N]) = Z
-      m :E: N y :E: N ys :R: Vec -E- m -E- N
-        [vlen] -E- ([S] -E- m) -R- (Cons -E- [N] -E- [m] -R- y -R- ys) = S -R- (vlen -E- m -R- ys)
+      vlen -E- [Z] -R- (Nil -E- [N]) = Z
+      m :E: N y :R: N ys :R: Vec -E- m -E- N
+        vlen -E- ([S] -R- m) -R- (Cons -E- [N] -E- [m] -R- y -R- ys) = S -R- (vlen -E- m -R- ys)
     main :R: N = vlen -E- 1 -R- (Cons -E- N -E- Z -R- 3 -R- (Nil -E- N))
   in main
 
@@ -97,11 +119,11 @@
     constructor S :R: (x :R: N) -> N
     constructor Vec :E: (_x0 :E: N) -> (_x1 :E: Type) -> Type
     constructor Nil :R: (a :E: Type) -> Vec -E- Z -E- a
-    constructor Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+    constructor Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -R- n) -E- a
     vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N 
-      [vlen] -E- [Z] -R- (Nil -E- [N]) = Z
-      m :E: N y :E: N ys :R: Vec -E- m -E- N
-        [vlen] -E- ([S] -E- m) -R- (Cons -E- [N] -E- [m] -R- y -R- ys) = S -R- (vlen -E- m -R- ys)
+      vlen -E- [Z] -R- (Nil -E- [N]) = Z
+      m :E: N y :R: N ys :R: Vec -E- m -E- N
+        vlen -E- ([S] -R- m) -R- (Cons -E- [N] -E- [m] -R- y -R- ys) = S -R- (vlen -E- m -R- ys)
     main :R: N = vlen -E- 1 -R- (Cons -E- N -E- Z -R- 3 -R- (Nil -E- N))
   in main
 
@@ -113,11 +135,11 @@
     constructor S :R: (x :R: N) -> N
     constructor Vec :E: (_x0 :E: N) -> (_x1 :E: Type) -> Type
     constructor Nil :R: (a :E: Type) -> Vec -E- Z -E- a
-    constructor Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
+    constructor Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -R- n) -E- a
     vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N 
-      [vlen] -E- [Z] -R- (Nil -E- [N]) = Z
-      m :E: N y :E: N ys :R: Vec -E- m -E- N
-        [vlen] -E- ([S] -E- m) -R- (Cons -E- [N] -E- [m] -R- y -R- ys) = S -R- (vlen -E- m -R- ys)
+      vlen -E- [Z] -R- (Nil -E- [N]) = Z
+      m :E: N y :R: N ys :R: Vec -E- m -E- N
+        vlen -E- ([S] -R- m) -R- (Cons -E- [N] -E- [m] -R- y -R- ys) = S -R- (vlen -E- m -R- ys)
     main :R: N = vlen -E- 1 -R- (Cons -E- N -E- Z -R- 3 -R- (Nil -E- N))
   in main
 
@@ -133,8 +155,8 @@ Verification successful.
     constructor Nil : Vec
     constructor Cons : (x) -> (xs) -> Vec
     vlen 
-      [_] Nil = Z
-      [_] (Cons _ ys) = S (vlen ys)
+      vlen Nil = Z
+      vlen (Cons y ys) = S (vlen ys)
     main = vlen (Cons 3 Nil)
   in main
 

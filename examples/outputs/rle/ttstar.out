@@ -8,30 +8,30 @@
     constructor S : (x :R: Nat) -> Nat
     plus : (_x0 : Nat) -> (_x1 : Nat) -> Nat 
       n : Nat
-        [plus] Z n = n
+        plus Z n = n
       m : Nat n : Nat
-        [plus] (S m) n = S (plus m n)
+        plus (S m) n = S (plus m n)
     times : (_x2 : Nat) -> (_x3 : Nat) -> Nat 
       n : Nat
-        [times] Z n = Z
+        times Z n = Z
       m : Nat n : Nat
-        [times] (S m) n = plus n (times m n)
+        times (S m) n = plus n (times m n)
     constructor Bool : Type
     constructor True : Bool
     constructor False : Bool
     not : (_x4 : Bool) -> Bool 
-      [not] True = False
-      [not] False = True
+      not True = False
+      not False = True
     constructor Unit : Type
     constructor MkUnit : Unit
     constructor Pair : (_x5 : Type) -> (_x6 : Type) -> Type
     constructor MkPair : (a : Type) -> (b : Type) -> (_x7 : a) -> (_x8 : b) -> Pair a b
     fst : (a : Type) -> (b : Type) -> (_x9 : Pair a b) -> a 
       a : Type b : Type x : a y : b
-        [fst] a b ([MkPair] [a] [b] x y) = x
+        fst a b ([MkPair] [a] [b] x y) = x
     snd : (a : Type) -> (b : Type) -> (_x10 : Pair a b) -> b 
       a : Type b : Type x : a y : b
-        [snd] a b ([MkPair] [a] [b] x y) = y
+        snd a b ([MkPair] [a] [b] x y) = y
     constructor Either : (_x11 : Type) -> (_x12 : Type) -> Type
     constructor Left : (a : Type) -> (b : Type) -> (_x13 : a) -> Either a b
     constructor Right : (a : Type) -> (b : Type) -> (_x14 : b) -> Either a b
@@ -47,42 +47,42 @@
     constructor Cons : (_x0 : Bool) -> (_x1 : List) -> List
     repl : (n : Nat) -> (x : Bool) -> (_x2 : List) -> List 
       x : Bool xs : List
-        [repl] Z x xs = xs
+        repl Z x xs = xs
       n : Nat x : Bool xs : List
-        [repl] (S n) x xs = Cons x (repl n x xs)
+        repl (S n) x xs = Cons x (repl n x xs)
     constructor RLE : (_x3 : List) -> Type
     constructor RNil : RLE Nil
     constructor RCons : (n : Nat) -> (x : Bool) -> (xs : List) -> (_x4 : RLE xs) -> RLE (repl n x xs)
     compress : (xs : List) -> RLE xs 
-      [compress] Nil = RNil
+      compress Nil = RNil
       x : Bool xs : List
-        [compress] (Cons x xs) = 
+        compress (Cons x xs) = 
           let aux : (y : Bool) -> (ys : List) -> (_x5 : RLE ys) -> RLE (Cons y ys) 
             y : Bool
-              [aux] y [Nil] RNil = RCons 1 y Nil RNil
+              aux y [Nil] RNil = RCons 1 y Nil RNil
             n : Nat zs : List rzs : RLE zs
-              [aux] True [repl n True zs] (RCons n True zs rzs) = RCons (S n) True zs rzs
+              aux True [repl n True zs] (RCons n True zs rzs) = RCons (S n) True zs rzs
             n : Nat zs : List rzs : RLE zs
-              [aux] False [repl n False zs] (RCons n False zs rzs) = RCons (S n) False zs rzs
+              aux False [repl n False zs] (RCons n False zs rzs) = RCons (S n) False zs rzs
             n : Nat zs : List rzs : RLE zs
-              [aux] True [repl n False zs] (RCons n False zs rzs) = RCons 1 True (repl n False zs) (RCons n False zs rzs)
+              aux True [repl n False zs] (RCons n False zs rzs) = RCons 1 True (repl n False zs) (RCons n False zs rzs)
             n : Nat zs : List rzs : RLE zs
-              [aux] False [repl n True zs] (RCons n True zs rzs) = RCons 1 False (repl n True zs) (RCons n True zs rzs)
+              aux False [repl n True zs] (RCons n True zs rzs) = RCons 1 False (repl n True zs) (RCons n True zs rzs)
           in aux x xs (compress xs)
     decompress : (xs : List) -> (_x6 : RLE xs) -> List 
-      [decompress] [Nil] RNil = Nil
+      decompress [Nil] RNil = Nil
       n : Nat x : Bool xs : List rxs : RLE xs
-        [decompress] [repl n x xs] (RCons n x xs rxs) = repl n x (decompress xs rxs)
+        decompress [repl n x xs] (RCons n x xs rxs) = repl n x (decompress xs rxs)
     foldl : (_x7 : (_x8 : Bool) -> (_x9 : Bool) -> Bool) -> (_x10 : Bool) -> (_x11 : List) -> Bool 
       f : (_x12 : Bool) -> (_x13 : Bool) -> Bool z : Bool
-        [foldl] f z Nil = z
+        foldl f z Nil = z
       f : (_x14 : Bool) -> (_x15 : Bool) -> Bool z : Bool x : Bool xs : List
-        [foldl] f z (Cons x xs) = foldl f (f z x) xs
+        foldl f z (Cons x xs) = foldl f (f z x) xs
     xor : (_x16 : Bool) -> (_x17 : Bool) -> Bool 
       b : Bool
-        [xor] False b = b
-      [xor] True False = True
-      [xor] True True = False
+        xor False b = b
+      xor True False = True
+      xor True True = False
     xors : (_x18 : List) -> Bool = foldl xor False
     genInputList : (n : Nat) -> List = (\n : Nat. repl n True Nil)
     main : Bool = 
@@ -100,30 +100,30 @@
     constructor S :3: (x :R: Nat) -> Nat
     plus :4: (_x0 :5: Nat) -> (_x1 :6: Nat) -> Nat 
       n :7: Nat
-        [plus] -9- Z -8- n = n
+        plus -9- Z -8- n = n
       m :10: Nat n :11: Nat
-        [plus] -13- (S -14- m) -12- n = S -15- (plus -17- m -16- n)
+        plus -13- (S -14- m) -12- n = S -15- (plus -17- m -16- n)
     times :18: (_x2 :19: Nat) -> (_x3 :20: Nat) -> Nat 
       n :21: Nat
-        [times] -23- Z -22- n = Z
+        times -23- Z -22- n = Z
       m :24: Nat n :25: Nat
-        [times] -27- (S -28- m) -26- n = plus -30- n -29- (times -32- m -31- n)
+        times -27- (S -28- m) -26- n = plus -30- n -29- (times -32- m -31- n)
     constructor Bool :33: Type
     constructor True :34: Bool
     constructor False :35: Bool
     not :36: (_x4 :37: Bool) -> Bool 
-      [not] -38- True = False
-      [not] -39- False = True
+      not -38- True = False
+      not -39- False = True
     constructor Unit :40: Type
     constructor MkUnit :41: Unit
     constructor Pair :42: (_x5 :43: Type) -> (_x6 :44: Type) -> Type
     constructor MkPair :45: (a :46: Type) -> (b :47: Type) -> (_x7 :48: a) -> (_x8 :49: b) -> Pair -51- a -50- b
     fst :52: (a :53: Type) -> (b :54: Type) -> (_x9 :55: Pair -57- a -56- b) -> a 
       a :58: Type b :59: Type x :60: a y :61: b
-        [fst] -64- a -63- b -62- ([MkPair] -68- [a] -67- [b] -66- x -65- y) = x
+        fst -64- a -63- b -62- ([MkPair] -68- [a] -67- [b] -66- x -65- y) = x
     snd :69: (a :70: Type) -> (b :71: Type) -> (_x10 :72: Pair -74- a -73- b) -> b 
       a :75: Type b :76: Type x :77: a y :78: b
-        [snd] -81- a -80- b -79- ([MkPair] -85- [a] -84- [b] -83- x -82- y) = y
+        snd -81- a -80- b -79- ([MkPair] -85- [a] -84- [b] -83- x -82- y) = y
     constructor Either :86: (_x11 :87: Type) -> (_x12 :88: Type) -> Type
     constructor Left :89: (a :90: Type) -> (b :91: Type) -> (_x13 :92: a) -> Either -94- a -93- b
     constructor Right :95: (a :96: Type) -> (b :97: Type) -> (_x14 :98: b) -> Either -100- a -99- b
@@ -139,42 +139,42 @@
     constructor Cons :137: (_x0 :138: Bool) -> (_x1 :139: List) -> List
     repl :140: (n :141: Nat) -> (x :142: Bool) -> (_x2 :143: List) -> List 
       x :144: Bool xs :145: List
-        [repl] -148- Z -147- x -146- xs = xs
+        repl -148- Z -147- x -146- xs = xs
       n :149: Nat x :150: Bool xs :151: List
-        [repl] -154- (S -155- n) -153- x -152- xs = Cons -157- x -156- (repl -160- n -159- x -158- xs)
+        repl -154- (S -155- n) -153- x -152- xs = Cons -157- x -156- (repl -160- n -159- x -158- xs)
     constructor RLE :161: (_x3 :162: List) -> Type
     constructor RNil :163: RLE -164- Nil
     constructor RCons :165: (n :166: Nat) -> (x :167: Bool) -> (xs :168: List) -> (_x4 :169: RLE -170- xs) -> RLE -171- (repl -174- n -173- x -172- xs)
     compress :175: (xs :176: List) -> RLE -177- xs 
-      [compress] -178- Nil = RNil
+      compress -178- Nil = RNil
       x :179: Bool xs :180: List
-        [compress] -181- (Cons -183- x -182- xs) = 
+        compress -181- (Cons -183- x -182- xs) = 
           let aux :184: (y :185: Bool) -> (ys :186: List) -> (_x5 :187: RLE -188- ys) -> RLE -189- (Cons -191- y -190- ys) 
             y :192: Bool
-              [aux] -195- y -194- [Nil] -193- RNil = RCons -199- 1 -198- y -197- Nil -196- RNil
+              aux -195- y -194- [Nil] -193- RNil = RCons -199- 1 -198- y -197- Nil -196- RNil
             n :201: Nat zs :202: List rzs :203: RLE -204- zs
-              [aux] -207- True -206- [repl -210- n -209- True -208- zs] -205- (RCons -214- n -213- True -212- zs -211- rzs) = RCons -218- (S -219- n) -217- True -216- zs -215- rzs
+              aux -207- True -206- [repl -210- n -209- True -208- zs] -205- (RCons -214- n -213- True -212- zs -211- rzs) = RCons -218- (S -219- n) -217- True -216- zs -215- rzs
             n :220: Nat zs :221: List rzs :222: RLE -223- zs
-              [aux] -226- False -225- [repl -229- n -228- False -227- zs] -224- (RCons -233- n -232- False -231- zs -230- rzs) = RCons -237- (S -238- n) -236- False -235- zs -234- rzs
+              aux -226- False -225- [repl -229- n -228- False -227- zs] -224- (RCons -233- n -232- False -231- zs -230- rzs) = RCons -237- (S -238- n) -236- False -235- zs -234- rzs
             n :239: Nat zs :240: List rzs :241: RLE -242- zs
-              [aux] -245- True -244- [repl -248- n -247- False -246- zs] -243- (RCons -252- n -251- False -250- zs -249- rzs) = RCons -256- 1 -255- True -254- (repl -260- n -259- False -258- zs) -253- (RCons -264- n -263- False -262- zs -261- rzs)
+              aux -245- True -244- [repl -248- n -247- False -246- zs] -243- (RCons -252- n -251- False -250- zs -249- rzs) = RCons -256- 1 -255- True -254- (repl -260- n -259- False -258- zs) -253- (RCons -264- n -263- False -262- zs -261- rzs)
             n :265: Nat zs :266: List rzs :267: RLE -268- zs
-              [aux] -271- False -270- [repl -274- n -273- True -272- zs] -269- (RCons -278- n -277- True -276- zs -275- rzs) = RCons -282- 1 -281- False -280- (repl -286- n -285- True -284- zs) -279- (RCons -290- n -289- True -288- zs -287- rzs)
+              aux -271- False -270- [repl -274- n -273- True -272- zs] -269- (RCons -278- n -277- True -276- zs -275- rzs) = RCons -282- 1 -281- False -280- (repl -286- n -285- True -284- zs) -279- (RCons -290- n -289- True -288- zs -287- rzs)
           in aux -293- x -292- xs -291- (compress -294- xs)
     decompress :295: (xs :296: List) -> (_x6 :297: RLE -298- xs) -> List 
-      [decompress] -300- [Nil] -299- RNil = Nil
+      decompress -300- [Nil] -299- RNil = Nil
       n :301: Nat x :302: Bool xs :303: List rxs :304: RLE -305- xs
-        [decompress] -307- [repl -310- n -309- x -308- xs] -306- (RCons -314- n -313- x -312- xs -311- rxs) = repl -317- n -316- x -315- (decompress -319- xs -318- rxs)
+        decompress -307- [repl -310- n -309- x -308- xs] -306- (RCons -314- n -313- x -312- xs -311- rxs) = repl -317- n -316- x -315- (decompress -319- xs -318- rxs)
     foldl :320: (_x7 :321: (_x8 :322: Bool) -> (_x9 :323: Bool) -> Bool) -> (_x10 :324: Bool) -> (_x11 :325: List) -> Bool 
       f :326: (_x12 :327: Bool) -> (_x13 :328: Bool) -> Bool z :329: Bool
-        [foldl] -332- f -331- z -330- Nil = z
+        foldl -332- f -331- z -330- Nil = z
       f :333: (_x14 :334: Bool) -> (_x15 :335: Bool) -> Bool z :336: Bool x :337: Bool xs :338: List
-        [foldl] -341- f -340- z -339- (Cons -343- x -342- xs) = foldl -346- f -345- (f -348- z -347- x) -344- xs
+        foldl -341- f -340- z -339- (Cons -343- x -342- xs) = foldl -346- f -345- (f -348- z -347- x) -344- xs
     xor :349: (_x16 :350: Bool) -> (_x17 :351: Bool) -> Bool 
       b :352: Bool
-        [xor] -354- False -353- b = b
-      [xor] -356- True -355- False = True
-      [xor] -358- True -357- True = False
+        xor -354- False -353- b = b
+      xor -356- True -355- False = True
+      xor -358- True -357- True = False
     xors :359: (_x18 :360: List) -> Bool = foldl -362- xor -361- False
     genInputList :363: (n :364: Nat) -> List = (\n :365: Nat. repl -368- n -367- True -366- Nil)
     main :369: Bool = 
@@ -186,131 +186,497 @@
 
 ### Constraints ###
 
-[] -> [2,3,34,35,136,137,138,139,140,141,142,143,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,163,165,166,167,169,175,176,178,179,180,181,182,183,184,185,187,192,193,195,196,198,199,200,201,203,205,207,211,213,214,215,217,218,219,220,222,224,226,230,232,233,234,236,237,238,239,241,243,245,249,251,252,253,255,256,257,261,263,264,265,267,269,271,275,277,278,279,281,282,283,287,289,290,291,293,294,295,297,299,301,302,304,306,311,313,314,315,316,317,318,320,321,322,323,324,325,327,328,329,330,331,332,333,334,335,336,337,338,339,340,341,342,343,344,345,346,347,348,349,350,351,352,353,354,355,356,357,358,359,360,361,362,363,364,365,366,367,368,370,371,372,373,374,376,R]
-[144] -> [147]
-[144,206] -> [147]
-[144,225] -> [147]
-[144,244] -> [147]
-[144,254] -> [147]
-[144,270] -> [147]
-[144,280] -> [147]
-[144,307] -> [147]
-[144,375] -> [147]
-[164] -> [170,177,188,298]
+[] -> [14,15,28,111,117,134,155,200,219,238,257,283,R]
+[4] -> [2,3,4,7,9,13]
+[4,8] -> [7]
+[4,12] -> [11]
+[4,13] -> [10]
+[4,16] -> [11]
+[4,17] -> [10]
+[5] -> [9,13,17,30]
+[6] -> [8,12,16,29]
+[7] -> [4,8]
+[8] -> [6]
+[9] -> [5]
+[10] -> [4,13,14]
+[11] -> [4,12]
+[12] -> [6]
+[13] -> [5]
+[16] -> [6]
+[17] -> [5]
+[18] -> [2,3,4,18,23,27]
+[18,22] -> [21]
+[18,26] -> [25]
+[18,27] -> [24]
+[18,29] -> [18]
+[18,29,31] -> [25]
+[18,29,32] -> [24]
+[18,30] -> [25]
+[19] -> [23,27,32]
+[20] -> [22,26,31]
+[21] -> [18,22]
+[22] -> [20]
+[23] -> [19]
+[24] -> [18,27,28]
+[25] -> [18,26]
+[26] -> [20]
+[27] -> [19]
+[29] -> [6]
+[30] -> [5]
+[31] -> [20]
+[32] -> [19]
+[36] -> [34,35,36,38,39]
+[37] -> [38,39]
+[38] -> [37]
+[39] -> [37]
+[43] -> [51]
+[44] -> [50]
+[46] -> [68,85]
+[47] -> [67,84]
+[48] -> [66,83]
+[49] -> [65,82]
+[50] -> [44,56,73]
+[50,E] -> [47]
+[51] -> [43,57,74]
+[51,E] -> [46]
+[52] -> [52,60]
+[52,62] -> [45]
+[52,62,65] -> [61]
+[52,62,66] -> [60]
+[52,62,67] -> [59]
+[52,62,68] -> [58]
+[52,63] -> [59]
+[52,64] -> [58]
+[53] -> [64]
+[54] -> [63]
+[55] -> [62]
+[56] -> [50]
+[57] -> [51]
+[58] -> [52,64]
+[59] -> [52,63]
+[60] -> [52,62,66]
+[61] -> [52,62,65]
+[62] -> [55]
+[63] -> [54]
+[64] -> [53]
+[65] -> [49]
+[66] -> [48]
+[67] -> [47]
+[68] -> [46]
+[69] -> [69,78]
+[69,79] -> [45]
+[69,79,82] -> [78]
+[69,79,83] -> [77]
+[69,79,84] -> [76]
+[69,79,85] -> [75]
+[69,80] -> [76]
+[69,81] -> [75]
+[70] -> [81]
+[71] -> [80]
+[72] -> [79]
+[73] -> [50]
+[74] -> [51]
+[75] -> [69,81]
+[76] -> [69,80]
+[77] -> [69,79,83]
+[78] -> [69,79,82]
+[79] -> [72]
+[80] -> [71]
+[81] -> [70]
+[82] -> [49]
+[83] -> [48]
+[84] -> [47]
+[85] -> [46]
+[87] -> [94,100]
+[88] -> [93,99]
+[93] -> [88]
+[93,E] -> [91]
+[94] -> [87]
+[94,E] -> [90]
+[99] -> [88]
+[99,E] -> [97]
+[100] -> [87]
+[100,E] -> [96]
+[101] -> [105]
+[102] -> [104]
+[103] -> [105]
+[104] -> [102]
+[105] -> [103]
+[107] -> [110,116]
+[110] -> [107]
+[110,E] -> [3,109]
+[116] -> [107]
+[116,E] -> [3,113]
+[119] -> [124,133]
+[120] -> [123,132]
+[123] -> [120]
+[123,E] -> [122]
+[124] -> [119]
+[124,E] -> [2]
+[132] -> [120]
+[132,E] -> [127]
+[133] -> [119]
+[133,E] -> [3,126]
+[138] -> [157,183,191,343]
+[139] -> [156,182,190,342]
+[140] -> [2,3,137,140,145,148,154]
+[140,146] -> [145]
+[140,147] -> [144]
+[140,152] -> [151]
+[140,153] -> [150]
+[140,154] -> [149]
+[140,156] -> [140]
+[140,156,158] -> [151]
+[140,156,159] -> [150]
+[140,156,160] -> [149]
+[140,157] -> [150]
+[141] -> [148,154,160,174,210,229,248,260,274,286,310,317,368]
+[142] -> [147,153,159,173,209,228,247,259,273,285,309,316,367]
+[143] -> [146,152,158,172,208,227,246,258,272,284,308,315,366]
+[144] -> [140,147]
+[145] -> [140,146]
+[146] -> [143]
+[147] -> [142]
+[148] -> [141]
+[149] -> [140,154,155]
+[150] -> [140,153]
+[151] -> [140,152]
+[152] -> [143]
+[153] -> [142]
+[154] -> [141]
+[156] -> [139,190]
+[157] -> [138,191]
+[158] -> [143,208,227]
+[159] -> [142,209,228]
+[160] -> [141,210,229]
+[162] -> [164,171,177,189]
+[164] -> [162,170,177,188,298]
+[164,E] -> [136]
+[166] -> [199,214,218,233,237,252,256,264,278,282,290,314]
+[167] -> [198,213,217,232,236,251,255,263,277,281,289,313]
 [168] -> [197,212,216,231,235,250,254,262,276,280,288,312]
+[169] -> [196,211,215,230,234,249,253,261,275,279,287,311]
 [170] -> [164,171,204,223,242,268,305]
-[171] -> [170,188,189,298]
-[171,172] -> [208,227,246,258,272,284,308]
-[171,173] -> [209,228,247,259,273,285,309]
-[171,174] -> [210,229,248,260,274,286,310]
-[171,208] -> [172]
-[171,209] -> [173]
-[171,210] -> [174]
-[171,227] -> [172]
-[171,228] -> [173]
-[171,229] -> [174]
-[171,246] -> [172]
-[171,247] -> [173]
-[171,248] -> [174]
-[171,258] -> [172]
-[171,259] -> [173]
-[171,260] -> [174]
-[171,272] -> [172]
-[171,273] -> [173]
-[171,274] -> [174]
-[171,284] -> [172]
-[171,285] -> [173]
-[171,286] -> [174]
-[171,308] -> [172]
-[171,309] -> [173]
-[171,310] -> [174]
-[177] -> [164,188,189,190,191,298,366,367,368]
-[177,190] -> [182]
-[177,191] -> [183]
+[171] -> [162,170,188,189,298]
+[171,172,E] -> [168]
+[171,173,E] -> [167]
+[171,174,E] -> [166]
+[171,E] -> [140]
+[172] -> [143,208,227,246,258,272,284,308]
+[173] -> [142,209,228,247,259,273,285,309]
+[174] -> [141,210,229,248,260,274,286,310]
+[175] -> [136,137,163,175,178,181,184]
+[175,181,182] -> [180]
+[175,181,183] -> [179]
+[175,291] -> [175]
+[175,291,294] -> [180]
+[175,292] -> [180]
+[175,293] -> [179]
+[176] -> [178,181,294,376]
+[177] -> [162,164,188,189,298]
+[177,E] -> [176]
+[178] -> [176]
+[179] -> [175,181,183]
+[180] -> [175,181,182]
+[181] -> [176]
+[182] -> [139,190]
+[183] -> [138,191]
+[184] -> [34,35,163,165,184,193,205,207,213,224,226,232,243,245,251,269,271,277]
+[184,194] -> [136]
+[184,195] -> [192]
+[184,196] -> [163]
+[184,197] -> [136]
+[184,198] -> [192]
+[184,199] -> [2,3]
+[184,205,211] -> [203]
+[184,205,212] -> [202]
+[184,205,214] -> [201]
+[184,206] -> [140]
+[184,206,208] -> [202]
+[184,206,209] -> [34]
+[184,206,210] -> [201]
+[184,215] -> [203]
+[184,216] -> [202]
+[184,217] -> [34]
+[184,218] -> [3,201]
+[184,224,230] -> [222]
+[184,224,231] -> [221]
+[184,224,233] -> [220]
+[184,225] -> [140]
+[184,225,227] -> [221]
+[184,225,228] -> [35]
+[184,225,229] -> [220]
+[184,234] -> [222]
+[184,235] -> [221]
+[184,236] -> [35]
+[184,237] -> [3,220]
+[184,243,249] -> [241]
+[184,243,250] -> [240]
+[184,243,252] -> [239]
+[184,244] -> [140]
+[184,244,246] -> [240]
+[184,244,247] -> [35]
+[184,244,248] -> [239]
+[184,253] -> [165]
+[184,253,261] -> [241]
+[184,253,262] -> [240]
+[184,253,263] -> [35]
+[184,253,264] -> [239]
+[184,254] -> [140]
+[184,254,258] -> [240]
+[184,254,259] -> [35]
+[184,254,260] -> [239]
+[184,255] -> [34]
+[184,256] -> [2,3]
+[184,269,275] -> [267]
+[184,269,276] -> [266]
+[184,269,278] -> [265]
+[184,270] -> [140]
+[184,270,272] -> [266]
+[184,270,273] -> [34]
+[184,270,274] -> [265]
+[184,279] -> [165]
+[184,279,287] -> [267]
+[184,279,288] -> [266]
+[184,279,289] -> [34]
+[184,279,290] -> [265]
+[184,280] -> [140]
+[184,280,284] -> [266]
+[184,280,285] -> [34]
+[184,280,286] -> [265]
+[184,281] -> [35]
+[184,282] -> [2,3]
+[185] -> [195,207,226,245,271,293]
 [186] -> [194,206,225,244,270,292]
+[187] -> [193,205,224,243,269,291]
 [188] -> [164,171,177]
-[189] -> [171,177,190,191]
-[189,190] -> [156,208,209,210,227,228,229]
-[189,190,208] -> [158]
-[189,190,209] -> [159]
-[189,190,210] -> [160]
-[189,190,227] -> [158]
-[189,190,228] -> [159]
-[189,190,229] -> [160]
-[189,190,246] -> [258]
-[189,190,247] -> [259]
-[189,190,248] -> [260]
-[189,190,258] -> [246]
-[189,190,259] -> [247]
-[189,190,260] -> [248]
-[189,190,272] -> [284]
-[189,190,273] -> [285]
-[189,190,274] -> [286]
-[189,190,284] -> [272]
-[189,190,285] -> [273]
-[189,190,286] -> [274]
-[189,191] -> [157]
-[194] -> [136,186,R]
-[197] -> [136,168]
-[202] -> [212]
+[189] -> [162,171,177]
+[189,190,E] -> [186]
+[189,191,E] -> [185]
+[189,E] -> [137]
+[190] -> [139,156,182]
+[191] -> [138,157,183]
+[192] -> [184,195]
+[193] -> [187]
+[194] -> [186]
+[195] -> [185]
+[196] -> [169]
+[197] -> [168]
+[198] -> [167]
+[199] -> [166]
+[201] -> [184,205,214]
+[202] -> [184,205,212]
+[203] -> [184,205,211]
 [204] -> [170]
-[206] -> [2,3,137,138,139,140,141,142,143,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,186,208,209,210,R]
-[206,208] -> [143,202]
-[206,209] -> [34,142]
-[206,210] -> [141,201]
-[212] -> [168,205]
-[216] -> [168,202]
-[221] -> [231]
+[205] -> [187]
+[206] -> [186]
+[207] -> [185]
+[208] -> [143,158,172]
+[209] -> [142,159,173]
+[210] -> [141,160,174]
+[211] -> [169]
+[212] -> [168]
+[213] -> [167]
+[214] -> [166]
+[215] -> [169]
+[216] -> [168]
+[217] -> [167]
+[218] -> [166]
+[220] -> [184,224,233]
+[221] -> [184,224,231]
+[222] -> [184,224,230]
 [223] -> [170]
-[225] -> [2,3,137,138,139,140,141,142,143,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,186,227,228,229,R]
-[225,227] -> [143,221]
-[225,228] -> [35,142]
-[225,229] -> [141,220]
-[231] -> [168,224]
-[235] -> [168,221]
-[240] -> [250]
+[224] -> [187]
+[225] -> [186]
+[226] -> [185]
+[227] -> [143,158,172]
+[228] -> [142,159,173]
+[229] -> [141,160,174]
+[230] -> [169]
+[231] -> [168]
+[232] -> [167]
+[233] -> [166]
+[234] -> [169]
+[235] -> [168]
+[236] -> [167]
+[237] -> [166]
+[239] -> [184,243,252]
+[240] -> [184,243,250]
+[241] -> [184,243,249]
 [242] -> [170]
-[244] -> [2,3,137,138,139,140,141,142,143,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,186,246,247,248,R]
-[244,246] -> [143,240]
-[244,247] -> [35,142]
-[244,248] -> [141,239]
-[250] -> [168,243]
-[254] -> [2,3,137,138,139,140,141,142,143,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,168,258,259,260,R]
-[254,258] -> [143,240]
-[254,259] -> [35,142]
-[254,260] -> [141,239]
-[262] -> [168,240]
-[266] -> [276]
+[243] -> [187]
+[244] -> [186]
+[245] -> [185]
+[246] -> [143,172,258]
+[247] -> [142,173,259]
+[248] -> [141,174,260]
+[249] -> [169]
+[250] -> [168]
+[251] -> [167]
+[252] -> [166]
+[253] -> [169]
+[254] -> [168]
+[255] -> [167]
+[256] -> [166]
+[258] -> [143,172,246]
+[259] -> [142,173,247]
+[260] -> [141,174,248]
+[261] -> [169]
+[262] -> [168]
+[263] -> [167]
+[264] -> [166]
+[265] -> [184,269,278]
+[266] -> [184,269,276]
+[267] -> [184,269,275]
 [268] -> [170]
-[270] -> [2,3,137,138,139,140,141,142,143,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,186,272,273,274,R]
-[270,272] -> [143,266]
-[270,273] -> [34,142]
-[270,274] -> [141,265]
-[276] -> [168,269]
-[280] -> [2,3,137,138,139,140,141,142,143,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,168,284,285,286,R]
-[280,284] -> [143,266]
-[280,285] -> [34,142]
-[280,286] -> [141,265]
-[288] -> [168,266]
-[292] -> [180,186]
+[269] -> [187]
+[270] -> [186]
+[271] -> [185]
+[272] -> [143,172,284]
+[273] -> [142,173,285]
+[274] -> [141,174,286]
+[275] -> [169]
+[276] -> [168]
+[277] -> [167]
+[278] -> [166]
+[279] -> [169]
+[280] -> [168]
+[281] -> [167]
+[282] -> [166]
+[284] -> [143,172,272]
+[285] -> [142,173,273]
+[286] -> [141,174,274]
+[287] -> [169]
+[288] -> [168]
+[289] -> [167]
+[290] -> [166]
+[291] -> [187]
+[292] -> [186]
+[293] -> [185]
+[294] -> [176]
+[295] -> [136,140,163,165,295,299,306]
+[295,300] -> [136]
+[295,306,311] -> [304]
+[295,306,312] -> [303]
+[295,306,313] -> [302]
+[295,306,314] -> [301]
+[295,307] -> [140]
+[295,307,308] -> [303]
+[295,307,309] -> [302]
+[295,307,310] -> [301]
+[295,315] -> [295]
+[295,315,318] -> [304]
+[295,315,319] -> [303]
+[295,316] -> [302]
+[295,317] -> [301]
 [296] -> [300,307,319,375]
+[297] -> [299,306,318,374]
 [298] -> [164,171,177,305]
-[300] -> [136,296,R]
-[303] -> [312]
+[299] -> [297]
+[300] -> [296]
+[301] -> [295,306,314]
+[302] -> [295,306,313]
+[303] -> [295,306,312]
+[304] -> [295,306,311]
 [305] -> [170,298]
-[307] -> [2,3,137,138,139,140,141,142,143,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,296,308,309,310,R]
-[307,308] -> [143,303]
-[307,309] -> [142,302]
-[307,310] -> [141,301]
-[312] -> [168,306]
-[319] -> [296,303]
-[326] -> [332]
-[375] -> [2,3,34,136,137,138,139,140,141,142,143,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,296,363,364,365,366,367,368,370,371,372,R]
+[306] -> [297]
+[307] -> [296]
+[308] -> [143,172]
+[309] -> [142,173]
+[310] -> [141,174]
+[311] -> [169]
+[312] -> [168]
+[313] -> [167]
+[314] -> [166]
+[315] -> [143]
+[316] -> [142]
+[317] -> [141]
+[318] -> [297]
+[319] -> [296]
+[320] -> [136,137,320,329,330,339]
+[320,331] -> [329]
+[320,332] -> [326]
+[320,339,342] -> [338]
+[320,339,343] -> [337]
+[320,340] -> [336]
+[320,341] -> [333]
+[320,344] -> [338]
+[320,345] -> [333]
+[320,345,347] -> [337]
+[320,345,348] -> [336]
+[320,346] -> [333]
+[321] -> [332,341,346,362]
+[322] -> [327,334,350]
+[323] -> [328,335,351]
+[324] -> [331,340,345,361]
+[325] -> [330,339,344,360]
+[326] -> [320,332]
+[327] -> [322]
+[328] -> [323]
+[329] -> [320,331]
+[330] -> [325]
+[331] -> [324]
+[332] -> [321]
+[333] -> [320,341]
+[334] -> [322,348]
+[335] -> [323,347]
+[336] -> [320,340]
+[337] -> [320,339,343]
+[338] -> [320,339,342]
+[339] -> [325]
+[340] -> [324]
+[341] -> [321]
+[342] -> [139]
+[343] -> [138]
+[344] -> [325]
+[345] -> [324]
+[346] -> [321]
+[347] -> [335]
+[348] -> [334]
+[349] -> [34,35,349,352,354,355,356,357,358]
+[349,353] -> [352]
+[350] -> [322,354,356,358]
+[351] -> [323,353,355,357]
+[352] -> [349,353]
+[353] -> [351]
+[354] -> [350]
+[355] -> [351]
+[356] -> [350]
+[357] -> [351]
+[358] -> [350]
+[359] -> [320]
+[359,361] -> [35]
+[359,362] -> [349]
+[360] -> [325,373]
+[361] -> [324]
+[362] -> [321]
+[363] -> [140]
+[363,366] -> [136]
+[363,367] -> [34]
+[363,368] -> [365]
+[364] -> [365,372]
+[365] -> [364]
+[366] -> [143,366]
+[367] -> [142,367]
+[368] -> [141,368]
+[369] -> [359]
+[369,373] -> [295]
+[369,373,374] -> [175]
+[369,373,374,376] -> [371]
+[369,373,375] -> [371]
+[371] -> [363]
+[371,372] -> [370]
+[372] -> [364]
+[373] -> [360]
+[374] -> [297]
+[375] -> [296]
+[376] -> [176]
+[E] -> [1,33,40,42,53,71,86,102,106,118,135,161,R]
 [R] -> [369]
 
 ### Solution ###
 
-[2,3,34,35,136,137,138,139,140,141,142,143,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,163,165,166,167,169,175,176,178,179,180,181,182,183,184,185,187,192,193,195,196,198,199,200,201,203,205,207,211,213,214,215,217,218,219,220,222,224,226,230,232,233,234,236,237,238,239,241,243,245,249,251,252,253,255,256,257,261,263,264,265,267,269,271,275,277,278,279,281,282,283,287,289,290,291,293,294,295,297,299,301,302,304,306,311,313,314,315,316,317,318,320,321,322,323,324,325,327,328,329,330,331,332,333,334,335,336,337,338,339,340,341,342,343,344,345,346,347,348,349,350,351,352,353,354,355,356,357,358,359,360,361,362,363,364,365,366,367,368,369,370,371,372,373,374,376,R]
+[2,3,14,15,28,34,35,111,117,134,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,163,165,166,167,169,172,173,174,175,176,178,179,180,181,182,183,184,185,187,190,191,192,193,195,196,198,199,200,201,203,205,207,208,209,210,211,213,214,215,217,218,219,220,222,224,226,227,228,229,230,232,233,234,236,237,238,239,241,243,245,246,247,248,249,251,252,253,255,256,257,258,259,260,261,263,264,265,267,269,271,272,273,274,275,277,278,279,281,282,283,284,285,286,287,289,290,291,293,294,295,297,299,301,302,304,306,308,309,310,311,313,314,315,316,317,318,320,321,322,323,324,325,326,327,328,329,330,331,332,333,334,335,336,337,338,339,340,341,342,343,344,345,346,347,348,349,350,351,352,353,354,355,356,357,358,359,360,361,362,363,364,365,366,367,368,369,370,371,372,373,374,376,R]
 
 ### Annotated ###
 
@@ -320,81 +686,81 @@
     constructor S :R: (x :R: Nat) -> Nat
     plus :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Nat 
       n :E: Nat
-        [plus] -E- Z -E- n = n
+        plus -E- Z -E- n = n
       m :E: Nat n :E: Nat
-        [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
+        plus -E- (S -R- m) -E- n = S -R- (plus -E- m -E- n)
     times :E: (_x2 :E: Nat) -> (_x3 :E: Nat) -> Nat 
       n :E: Nat
-        [times] -E- Z -E- n = Z
+        times -E- Z -E- n = Z
       m :E: Nat n :E: Nat
-        [times] -E- (S -E- m) -E- n = plus -E- n -E- (times -E- m -E- n)
+        times -E- (S -R- m) -E- n = plus -E- n -E- (times -E- m -E- n)
     constructor Bool :E: Type
     constructor True :R: Bool
     constructor False :R: Bool
     not :E: (_x4 :E: Bool) -> Bool 
-      [not] -E- True = False
-      [not] -E- False = True
+      not -E- True = False
+      not -E- False = True
     constructor Unit :E: Type
     constructor MkUnit :E: Unit
     constructor Pair :E: (_x5 :E: Type) -> (_x6 :E: Type) -> Type
     constructor MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: a) -> (_x8 :E: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x9 :E: Pair -E- a -E- b) -> a 
       a :E: Type b :E: Type x :E: a y :E: b
-        [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
+        fst -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
     snd :E: (a :E: Type) -> (b :E: Type) -> (_x10 :E: Pair -E- a -E- b) -> b 
       a :E: Type b :E: Type x :E: a y :E: b
-        [snd] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = y
+        snd -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = y
     constructor Either :E: (_x11 :E: Type) -> (_x12 :E: Type) -> Type
     constructor Left :E: (a :E: Type) -> (b :E: Type) -> (_x13 :E: a) -> Either -E- a -E- b
     constructor Right :E: (a :E: Type) -> (b :E: Type) -> (_x14 :E: b) -> Either -E- a -E- b
     id :E: (a :E: Type) -> (x :E: a) -> a = (\a :E: Type. (\x :E: a. x))
     constructor Fin :E: (_x15 :E: Nat) -> Type
-    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
-    constructor FS :E: (n :E: Nat) -> (_x16 :E: Fin -E- n) -> Fin -E- (S -E- n)
+    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -R- n)
+    constructor FS :E: (n :E: Nat) -> (_x16 :E: Fin -E- n) -> Fin -E- (S -R- n)
     constructor Vect :E: (_x17 :E: Nat) -> (_x18 :E: Type) -> Type
     constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
-    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
+    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
     constructor List :E: Type
     constructor Nil :R: List
     constructor Cons :R: (_x0 :R: Bool) -> (_x1 :R: List) -> List
     repl :R: (n :R: Nat) -> (x :R: Bool) -> (_x2 :R: List) -> List 
-      x :E: Bool xs :R: List
-        [repl] -R- Z -R- x -R- xs = xs
+      x :R: Bool xs :R: List
+        repl -R- Z -R- x -R- xs = xs
       n :R: Nat x :R: Bool xs :R: List
-        [repl] -R- (S -R- n) -R- x -R- xs = Cons -R- x -R- (repl -R- n -R- x -R- xs)
+        repl -R- (S -R- n) -R- x -R- xs = Cons -R- x -R- (repl -R- n -R- x -R- xs)
     constructor RLE :E: (_x3 :E: List) -> Type
     constructor RNil :R: RLE -E- Nil
-    constructor RCons :R: (n :R: Nat) -> (x :R: Bool) -> (xs :E: List) -> (_x4 :R: RLE -E- xs) -> RLE -E- (repl -E- n -E- x -E- xs)
+    constructor RCons :R: (n :R: Nat) -> (x :R: Bool) -> (xs :E: List) -> (_x4 :R: RLE -E- xs) -> RLE -E- (repl -R- n -R- x -R- xs)
     compress :R: (xs :R: List) -> RLE -E- xs 
-      [compress] -R- Nil = RNil
+      compress -R- Nil = RNil
       x :R: Bool xs :R: List
-        [compress] -R- (Cons -R- x -R- xs) = 
-          let aux :R: (y :R: Bool) -> (ys :E: List) -> (_x5 :R: RLE -E- ys) -> RLE -E- (Cons -E- y -E- ys) 
+        compress -R- (Cons -R- x -R- xs) = 
+          let aux :R: (y :R: Bool) -> (ys :E: List) -> (_x5 :R: RLE -E- ys) -> RLE -E- (Cons -R- y -R- ys) 
             y :R: Bool
-              [aux] -R- y -E- [Nil] -R- RNil = RCons -R- 1 -R- y -E- Nil -R- RNil
+              aux -R- y -E- [Nil] -R- RNil = RCons -R- 1 -R- y -E- Nil -R- RNil
             n :R: Nat zs :E: List rzs :R: RLE -E- zs
-              [aux] -R- True -E- [repl -E- n -E- True -E- zs] -R- (RCons -R- n -R- True -E- zs -R- rzs) = RCons -R- (S -R- n) -R- True -E- zs -R- rzs
+              aux -R- True -E- [repl -R- n -R- True -R- zs] -R- (RCons -R- n -R- True -E- zs -R- rzs) = RCons -R- (S -R- n) -R- True -E- zs -R- rzs
             n :R: Nat zs :E: List rzs :R: RLE -E- zs
-              [aux] -R- False -E- [repl -E- n -E- False -E- zs] -R- (RCons -R- n -R- False -E- zs -R- rzs) = RCons -R- (S -R- n) -R- False -E- zs -R- rzs
+              aux -R- False -E- [repl -R- n -R- False -R- zs] -R- (RCons -R- n -R- False -E- zs -R- rzs) = RCons -R- (S -R- n) -R- False -E- zs -R- rzs
             n :R: Nat zs :E: List rzs :R: RLE -E- zs
-              [aux] -R- True -E- [repl -E- n -E- False -E- zs] -R- (RCons -R- n -R- False -E- zs -R- rzs) = RCons -R- 1 -R- True -E- (repl -E- n -E- False -E- zs) -R- (RCons -R- n -R- False -E- zs -R- rzs)
+              aux -R- True -E- [repl -R- n -R- False -R- zs] -R- (RCons -R- n -R- False -E- zs -R- rzs) = RCons -R- 1 -R- True -E- (repl -R- n -R- False -R- zs) -R- (RCons -R- n -R- False -E- zs -R- rzs)
             n :R: Nat zs :E: List rzs :R: RLE -E- zs
-              [aux] -R- False -E- [repl -E- n -E- True -E- zs] -R- (RCons -R- n -R- True -E- zs -R- rzs) = RCons -R- 1 -R- False -E- (repl -E- n -E- True -E- zs) -R- (RCons -R- n -R- True -E- zs -R- rzs)
+              aux -R- False -E- [repl -R- n -R- True -R- zs] -R- (RCons -R- n -R- True -E- zs -R- rzs) = RCons -R- 1 -R- False -E- (repl -R- n -R- True -R- zs) -R- (RCons -R- n -R- True -E- zs -R- rzs)
           in aux -R- x -E- xs -R- (compress -R- xs)
     decompress :R: (xs :E: List) -> (_x6 :R: RLE -E- xs) -> List 
-      [decompress] -E- [Nil] -R- RNil = Nil
+      decompress -E- [Nil] -R- RNil = Nil
       n :R: Nat x :R: Bool xs :E: List rxs :R: RLE -E- xs
-        [decompress] -E- [repl -E- n -E- x -E- xs] -R- (RCons -R- n -R- x -E- xs -R- rxs) = repl -R- n -R- x -R- (decompress -E- xs -R- rxs)
+        decompress -E- [repl -R- n -R- x -R- xs] -R- (RCons -R- n -R- x -E- xs -R- rxs) = repl -R- n -R- x -R- (decompress -E- xs -R- rxs)
     foldl :R: (_x7 :R: (_x8 :R: Bool) -> (_x9 :R: Bool) -> Bool) -> (_x10 :R: Bool) -> (_x11 :R: List) -> Bool 
-      f :E: (_x12 :R: Bool) -> (_x13 :R: Bool) -> Bool z :R: Bool
-        [foldl] -R- f -R- z -R- Nil = z
+      f :R: (_x12 :R: Bool) -> (_x13 :R: Bool) -> Bool z :R: Bool
+        foldl -R- f -R- z -R- Nil = z
       f :R: (_x14 :R: Bool) -> (_x15 :R: Bool) -> Bool z :R: Bool x :R: Bool xs :R: List
-        [foldl] -R- f -R- z -R- (Cons -R- x -R- xs) = foldl -R- f -R- (f -R- z -R- x) -R- xs
+        foldl -R- f -R- z -R- (Cons -R- x -R- xs) = foldl -R- f -R- (f -R- z -R- x) -R- xs
     xor :R: (_x16 :R: Bool) -> (_x17 :R: Bool) -> Bool 
       b :R: Bool
-        [xor] -R- False -R- b = b
-      [xor] -R- True -R- False = True
-      [xor] -R- True -R- True = False
+        xor -R- False -R- b = b
+      xor -R- True -R- False = True
+      xor -R- True -R- True = False
     xors :R: (_x18 :R: List) -> Bool = foldl -R- xor -R- False
     genInputList :R: (n :R: Nat) -> List = (\n :R: Nat. repl -R- n -R- True -R- Nil)
     main :R: Bool = 
@@ -412,81 +778,81 @@
     constructor S :R: (x :R: Nat) -> Nat
     plus :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Nat 
       n :E: Nat
-        [plus] -E- Z -E- n = n
+        plus -E- Z -E- n = n
       m :E: Nat n :E: Nat
-        [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
+        plus -E- (S -R- m) -E- n = S -R- (plus -E- m -E- n)
     times :E: (_x2 :E: Nat) -> (_x3 :E: Nat) -> Nat 
       n :E: Nat
-        [times] -E- Z -E- n = Z
+        times -E- Z -E- n = Z
       m :E: Nat n :E: Nat
-        [times] -E- (S -E- m) -E- n = plus -E- n -E- (times -E- m -E- n)
+        times -E- (S -R- m) -E- n = plus -E- n -E- (times -E- m -E- n)
     constructor Bool :E: Type
     constructor True :R: Bool
     constructor False :R: Bool
     not :E: (_x4 :E: Bool) -> Bool 
-      [not] -E- True = False
-      [not] -E- False = True
+      not -E- True = False
+      not -E- False = True
     constructor Unit :E: Type
     constructor MkUnit :E: Unit
     constructor Pair :E: (_x5 :E: Type) -> (_x6 :E: Type) -> Type
     constructor MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: a) -> (_x8 :E: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x9 :E: Pair -E- a -E- b) -> a 
       a :E: Type b :E: Type x :E: a y :E: b
-        [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
+        fst -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
     snd :E: (a :E: Type) -> (b :E: Type) -> (_x10 :E: Pair -E- a -E- b) -> b 
       a :E: Type b :E: Type x :E: a y :E: b
-        [snd] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = y
+        snd -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = y
     constructor Either :E: (_x11 :E: Type) -> (_x12 :E: Type) -> Type
     constructor Left :E: (a :E: Type) -> (b :E: Type) -> (_x13 :E: a) -> Either -E- a -E- b
     constructor Right :E: (a :E: Type) -> (b :E: Type) -> (_x14 :E: b) -> Either -E- a -E- b
     id :E: (a :E: Type) -> (x :E: a) -> a = (\a :E: Type. (\x :E: a. x))
     constructor Fin :E: (_x15 :E: Nat) -> Type
-    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
-    constructor FS :E: (n :E: Nat) -> (_x16 :E: Fin -E- n) -> Fin -E- (S -E- n)
+    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -R- n)
+    constructor FS :E: (n :E: Nat) -> (_x16 :E: Fin -E- n) -> Fin -E- (S -R- n)
     constructor Vect :E: (_x17 :E: Nat) -> (_x18 :E: Type) -> Type
     constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
-    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
+    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
     constructor List :E: Type
     constructor Nil :R: List
     constructor Cons :R: (_x0 :R: Bool) -> (_x1 :R: List) -> List
     repl :R: (n :R: Nat) -> (x :R: Bool) -> (_x2 :R: List) -> List 
-      x :E: Bool xs :R: List
-        [repl] -R- Z -R- x -R- xs = xs
+      x :R: Bool xs :R: List
+        repl -R- Z -R- x -R- xs = xs
       n :R: Nat x :R: Bool xs :R: List
-        [repl] -R- (S -R- n) -R- x -R- xs = Cons -R- x -R- (repl -R- n -R- x -R- xs)
+        repl -R- (S -R- n) -R- x -R- xs = Cons -R- x -R- (repl -R- n -R- x -R- xs)
     constructor RLE :E: (_x3 :E: List) -> Type
     constructor RNil :R: RLE -E- Nil
-    constructor RCons :R: (n :R: Nat) -> (x :R: Bool) -> (xs :E: List) -> (_x4 :R: RLE -E- xs) -> RLE -E- (repl -E- n -E- x -E- xs)
+    constructor RCons :R: (n :R: Nat) -> (x :R: Bool) -> (xs :E: List) -> (_x4 :R: RLE -E- xs) -> RLE -E- (repl -R- n -R- x -R- xs)
     compress :R: (xs :R: List) -> RLE -E- xs 
-      [compress] -R- Nil = RNil
+      compress -R- Nil = RNil
       x :R: Bool xs :R: List
-        [compress] -R- (Cons -R- x -R- xs) = 
-          let aux :R: (y :R: Bool) -> (ys :E: List) -> (_x5 :R: RLE -E- ys) -> RLE -E- (Cons -E- y -E- ys) 
+        compress -R- (Cons -R- x -R- xs) = 
+          let aux :R: (y :R: Bool) -> (ys :E: List) -> (_x5 :R: RLE -E- ys) -> RLE -E- (Cons -R- y -R- ys) 
             y :R: Bool
-              [aux] -R- y -E- [Nil] -R- RNil = RCons -R- 1 -R- y -E- Nil -R- RNil
+              aux -R- y -E- [Nil] -R- RNil = RCons -R- 1 -R- y -E- Nil -R- RNil
             n :R: Nat zs :E: List rzs :R: RLE -E- zs
-              [aux] -R- True -E- [repl -E- n -E- True -E- zs] -R- (RCons -R- n -R- True -E- zs -R- rzs) = RCons -R- (S -R- n) -R- True -E- zs -R- rzs
+              aux -R- True -E- [repl -R- n -R- True -R- zs] -R- (RCons -R- n -R- True -E- zs -R- rzs) = RCons -R- (S -R- n) -R- True -E- zs -R- rzs
             n :R: Nat zs :E: List rzs :R: RLE -E- zs
-              [aux] -R- False -E- [repl -E- n -E- False -E- zs] -R- (RCons -R- n -R- False -E- zs -R- rzs) = RCons -R- (S -R- n) -R- False -E- zs -R- rzs
+              aux -R- False -E- [repl -R- n -R- False -R- zs] -R- (RCons -R- n -R- False -E- zs -R- rzs) = RCons -R- (S -R- n) -R- False -E- zs -R- rzs
             n :R: Nat zs :E: List rzs :R: RLE -E- zs
-              [aux] -R- True -E- [repl -E- n -E- False -E- zs] -R- (RCons -R- n -R- False -E- zs -R- rzs) = RCons -R- 1 -R- True -E- (repl -E- n -E- False -E- zs) -R- (RCons -R- n -R- False -E- zs -R- rzs)
+              aux -R- True -E- [repl -R- n -R- False -R- zs] -R- (RCons -R- n -R- False -E- zs -R- rzs) = RCons -R- 1 -R- True -E- (repl -R- n -R- False -R- zs) -R- (RCons -R- n -R- False -E- zs -R- rzs)
             n :R: Nat zs :E: List rzs :R: RLE -E- zs
-              [aux] -R- False -E- [repl -E- n -E- True -E- zs] -R- (RCons -R- n -R- True -E- zs -R- rzs) = RCons -R- 1 -R- False -E- (repl -E- n -E- True -E- zs) -R- (RCons -R- n -R- True -E- zs -R- rzs)
+              aux -R- False -E- [repl -R- n -R- True -R- zs] -R- (RCons -R- n -R- True -E- zs -R- rzs) = RCons -R- 1 -R- False -E- (repl -R- n -R- True -R- zs) -R- (RCons -R- n -R- True -E- zs -R- rzs)
           in aux -R- x -E- xs -R- (compress -R- xs)
     decompress :R: (xs :E: List) -> (_x6 :R: RLE -E- xs) -> List 
-      [decompress] -E- [Nil] -R- RNil = Nil
+      decompress -E- [Nil] -R- RNil = Nil
       n :R: Nat x :R: Bool xs :E: List rxs :R: RLE -E- xs
-        [decompress] -E- [repl -E- n -E- x -E- xs] -R- (RCons -R- n -R- x -E- xs -R- rxs) = repl -R- n -R- x -R- (decompress -E- xs -R- rxs)
+        decompress -E- [repl -R- n -R- x -R- xs] -R- (RCons -R- n -R- x -E- xs -R- rxs) = repl -R- n -R- x -R- (decompress -E- xs -R- rxs)
     foldl :R: (_x7 :R: (_x8 :R: Bool) -> (_x9 :R: Bool) -> Bool) -> (_x10 :R: Bool) -> (_x11 :R: List) -> Bool 
-      f :E: (_x12 :R: Bool) -> (_x13 :R: Bool) -> Bool z :R: Bool
-        [foldl] -R- f -R- z -R- Nil = z
+      f :R: (_x12 :R: Bool) -> (_x13 :R: Bool) -> Bool z :R: Bool
+        foldl -R- f -R- z -R- Nil = z
       f :R: (_x14 :R: Bool) -> (_x15 :R: Bool) -> Bool z :R: Bool x :R: Bool xs :R: List
-        [foldl] -R- f -R- z -R- (Cons -R- x -R- xs) = foldl -R- f -R- (f -R- z -R- x) -R- xs
+        foldl -R- f -R- z -R- (Cons -R- x -R- xs) = foldl -R- f -R- (f -R- z -R- x) -R- xs
     xor :R: (_x16 :R: Bool) -> (_x17 :R: Bool) -> Bool 
       b :R: Bool
-        [xor] -R- False -R- b = b
-      [xor] -R- True -R- False = True
-      [xor] -R- True -R- True = False
+        xor -R- False -R- b = b
+      xor -R- True -R- False = True
+      xor -R- True -R- True = False
     xors :R: (_x18 :R: List) -> Bool = foldl -R- xor -R- False
     genInputList :R: (n :R: Nat) -> List = (\n :R: Nat. repl -R- n -R- True -R- Nil)
     main :R: Bool = 
@@ -504,81 +870,81 @@
     constructor S :R: (x :R: Nat) -> Nat
     plus :E: (_x0 :E: Nat) -> (_x1 :E: Nat) -> Nat 
       n :E: Nat
-        [plus] -E- Z -E- n = n
+        plus -E- Z -E- n = n
       m :E: Nat n :E: Nat
-        [plus] -E- (S -E- m) -E- n = S -E- (plus -E- m -E- n)
+        plus -E- (S -R- m) -E- n = S -R- (plus -E- m -E- n)
     times :E: (_x2 :E: Nat) -> (_x3 :E: Nat) -> Nat 
       n :E: Nat
-        [times] -E- Z -E- n = Z
+        times -E- Z -E- n = Z
       m :E: Nat n :E: Nat
-        [times] -E- (S -E- m) -E- n = plus -E- n -E- (times -E- m -E- n)
+        times -E- (S -R- m) -E- n = plus -E- n -E- (times -E- m -E- n)
     constructor Bool :E: Type
     constructor True :R: Bool
     constructor False :R: Bool
     not :E: (_x4 :E: Bool) -> Bool 
-      [not] -E- True = False
-      [not] -E- False = True
+      not -E- True = False
+      not -E- False = True
     constructor Unit :E: Type
     constructor MkUnit :E: Unit
     constructor Pair :E: (_x5 :E: Type) -> (_x6 :E: Type) -> Type
     constructor MkPair :E: (a :E: Type) -> (b :E: Type) -> (_x7 :E: a) -> (_x8 :E: b) -> Pair -E- a -E- b
     fst :E: (a :E: Type) -> (b :E: Type) -> (_x9 :E: Pair -E- a -E- b) -> a 
       a :E: Type b :E: Type x :E: a y :E: b
-        [fst] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
+        fst -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = x
     snd :E: (a :E: Type) -> (b :E: Type) -> (_x10 :E: Pair -E- a -E- b) -> b 
       a :E: Type b :E: Type x :E: a y :E: b
-        [snd] -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = y
+        snd -E- a -E- b -E- ([MkPair] -E- [a] -E- [b] -E- x -E- y) = y
     constructor Either :E: (_x11 :E: Type) -> (_x12 :E: Type) -> Type
     constructor Left :E: (a :E: Type) -> (b :E: Type) -> (_x13 :E: a) -> Either -E- a -E- b
     constructor Right :E: (a :E: Type) -> (b :E: Type) -> (_x14 :E: b) -> Either -E- a -E- b
     id :E: (a :E: Type) -> (x :E: a) -> a = (\a :E: Type. (\x :E: a. x))
     constructor Fin :E: (_x15 :E: Nat) -> Type
-    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -E- n)
-    constructor FS :E: (n :E: Nat) -> (_x16 :E: Fin -E- n) -> Fin -E- (S -E- n)
+    constructor FZ :E: (n :E: Nat) -> Fin -E- (S -R- n)
+    constructor FS :E: (n :E: Nat) -> (_x16 :E: Fin -E- n) -> Fin -E- (S -R- n)
     constructor Vect :E: (_x17 :E: Nat) -> (_x18 :E: Type) -> Type
     constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
-    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -E- n) -E- a
+    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
     constructor List :E: Type
     constructor Nil :R: List
     constructor Cons :R: (_x0 :R: Bool) -> (_x1 :R: List) -> List
     repl :R: (n :R: Nat) -> (x :R: Bool) -> (_x2 :R: List) -> List 
-      x :E: Bool xs :R: List
-        [repl] -R- Z -R- x -R- xs = xs
+      x :R: Bool xs :R: List
+        repl -R- Z -R- x -R- xs = xs
       n :R: Nat x :R: Bool xs :R: List
-        [repl] -R- (S -R- n) -R- x -R- xs = Cons -R- x -R- (repl -R- n -R- x -R- xs)
+        repl -R- (S -R- n) -R- x -R- xs = Cons -R- x -R- (repl -R- n -R- x -R- xs)
     constructor RLE :E: (_x3 :E: List) -> Type
     constructor RNil :R: RLE -E- Nil
-    constructor RCons :R: (n :R: Nat) -> (x :R: Bool) -> (xs :E: List) -> (_x4 :R: RLE -E- xs) -> RLE -E- (repl -E- n -E- x -E- xs)
+    constructor RCons :R: (n :R: Nat) -> (x :R: Bool) -> (xs :E: List) -> (_x4 :R: RLE -E- xs) -> RLE -E- (repl -R- n -R- x -R- xs)
     compress :R: (xs :R: List) -> RLE -E- xs 
-      [compress] -R- Nil = RNil
+      compress -R- Nil = RNil
       x :R: Bool xs :R: List
-        [compress] -R- (Cons -R- x -R- xs) = 
-          let aux :R: (y :R: Bool) -> (ys :E: List) -> (_x5 :R: RLE -E- ys) -> RLE -E- (Cons -E- y -E- ys) 
+        compress -R- (Cons -R- x -R- xs) = 
+          let aux :R: (y :R: Bool) -> (ys :E: List) -> (_x5 :R: RLE -E- ys) -> RLE -E- (Cons -R- y -R- ys) 
             y :R: Bool
-              [aux] -R- y -E- [Nil] -R- RNil = RCons -R- 1 -R- y -E- Nil -R- RNil
+              aux -R- y -E- [Nil] -R- RNil = RCons -R- 1 -R- y -E- Nil -R- RNil
             n :R: Nat zs :E: List rzs :R: RLE -E- zs
-              [aux] -R- True -E- [repl -E- n -E- True -E- zs] -R- (RCons -R- n -R- True -E- zs -R- rzs) = RCons -R- (S -R- n) -R- True -E- zs -R- rzs
+              aux -R- True -E- [repl -R- n -R- True -R- zs] -R- (RCons -R- n -R- True -E- zs -R- rzs) = RCons -R- (S -R- n) -R- True -E- zs -R- rzs
             n :R: Nat zs :E: List rzs :R: RLE -E- zs
-              [aux] -R- False -E- [repl -E- n -E- False -E- zs] -R- (RCons -R- n -R- False -E- zs -R- rzs) = RCons -R- (S -R- n) -R- False -E- zs -R- rzs
+              aux -R- False -E- [repl -R- n -R- False -R- zs] -R- (RCons -R- n -R- False -E- zs -R- rzs) = RCons -R- (S -R- n) -R- False -E- zs -R- rzs
             n :R: Nat zs :E: List rzs :R: RLE -E- zs
-              [aux] -R- True -E- [repl -E- n -E- False -E- zs] -R- (RCons -R- n -R- False -E- zs -R- rzs) = RCons -R- 1 -R- True -E- (repl -E- n -E- False -E- zs) -R- (RCons -R- n -R- False -E- zs -R- rzs)
+              aux -R- True -E- [repl -R- n -R- False -R- zs] -R- (RCons -R- n -R- False -E- zs -R- rzs) = RCons -R- 1 -R- True -E- (repl -R- n -R- False -R- zs) -R- (RCons -R- n -R- False -E- zs -R- rzs)
             n :R: Nat zs :E: List rzs :R: RLE -E- zs
-              [aux] -R- False -E- [repl -E- n -E- True -E- zs] -R- (RCons -R- n -R- True -E- zs -R- rzs) = RCons -R- 1 -R- False -E- (repl -E- n -E- True -E- zs) -R- (RCons -R- n -R- True -E- zs -R- rzs)
+              aux -R- False -E- [repl -R- n -R- True -R- zs] -R- (RCons -R- n -R- True -E- zs -R- rzs) = RCons -R- 1 -R- False -E- (repl -R- n -R- True -R- zs) -R- (RCons -R- n -R- True -E- zs -R- rzs)
           in aux -R- x -E- xs -R- (compress -R- xs)
     decompress :R: (xs :E: List) -> (_x6 :R: RLE -E- xs) -> List 
-      [decompress] -E- [Nil] -R- RNil = Nil
+      decompress -E- [Nil] -R- RNil = Nil
       n :R: Nat x :R: Bool xs :E: List rxs :R: RLE -E- xs
-        [decompress] -E- [repl -E- n -E- x -E- xs] -R- (RCons -R- n -R- x -E- xs -R- rxs) = repl -R- n -R- x -R- (decompress -E- xs -R- rxs)
+        decompress -E- [repl -R- n -R- x -R- xs] -R- (RCons -R- n -R- x -E- xs -R- rxs) = repl -R- n -R- x -R- (decompress -E- xs -R- rxs)
     foldl :R: (_x7 :R: (_x8 :R: Bool) -> (_x9 :R: Bool) -> Bool) -> (_x10 :R: Bool) -> (_x11 :R: List) -> Bool 
-      f :E: (_x12 :R: Bool) -> (_x13 :R: Bool) -> Bool z :R: Bool
-        [foldl] -R- f -R- z -R- Nil = z
+      f :R: (_x12 :R: Bool) -> (_x13 :R: Bool) -> Bool z :R: Bool
+        foldl -R- f -R- z -R- Nil = z
       f :R: (_x14 :R: Bool) -> (_x15 :R: Bool) -> Bool z :R: Bool x :R: Bool xs :R: List
-        [foldl] -R- f -R- z -R- (Cons -R- x -R- xs) = foldl -R- f -R- (f -R- z -R- x) -R- xs
+        foldl -R- f -R- z -R- (Cons -R- x -R- xs) = foldl -R- f -R- (f -R- z -R- x) -R- xs
     xor :R: (_x16 :R: Bool) -> (_x17 :R: Bool) -> Bool 
       b :R: Bool
-        [xor] -R- False -R- b = b
-      [xor] -R- True -R- False = True
-      [xor] -R- True -R- True = False
+        xor -R- False -R- b = b
+      xor -R- True -R- False = True
+      xor -R- True -R- True = False
     xors :R: (_x18 :R: List) -> Bool = foldl -R- xor -R- False
     genInputList :R: (n :R: Nat) -> List = (\n :R: Nat. repl -R- n -R- True -R- Nil)
     main :R: Bool = 
@@ -602,30 +968,30 @@ Verification successful.
     constructor Nil : List
     constructor Cons : (_x0) -> (_x1) -> List
     repl 
-      [_] Z _ xs = xs
-      [_] (S n) x xs = Cons x (repl n x xs)
+      repl Z x xs = xs
+      repl (S n) x xs = Cons x (repl n x xs)
     constructor RNil : RLE
     constructor RCons : (n) -> (x) -> (_x4) -> RLE
     compress 
-      [_] Nil = RNil
-      [_] (Cons x xs) = 
+      compress Nil = RNil
+      compress (Cons x xs) = 
         let aux 
-          [_] y RNil = RCons 1 y RNil
-          [_] True (RCons n True rzs) = RCons (S n) True rzs
-          [_] False (RCons n False rzs) = RCons (S n) False rzs
-          [_] True (RCons n False rzs) = RCons 1 True (RCons n False rzs)
-          [_] False (RCons n True rzs) = RCons 1 False (RCons n True rzs)
+          aux y RNil = RCons 1 y RNil
+          aux True (RCons n True rzs) = RCons (S n) True rzs
+          aux False (RCons n False rzs) = RCons (S n) False rzs
+          aux True (RCons n False rzs) = RCons 1 True (RCons n False rzs)
+          aux False (RCons n True rzs) = RCons 1 False (RCons n True rzs)
         in aux x (compress xs)
     decompress 
-      [_] RNil = Nil
-      [_] (RCons n x rxs) = repl n x (decompress rxs)
+      decompress RNil = Nil
+      decompress (RCons n x rxs) = repl n x (decompress rxs)
     foldl 
-      [_] _ z Nil = z
-      [_] f z (Cons x xs) = foldl f (f z x) xs
+      foldl f z Nil = z
+      foldl f z (Cons x xs) = foldl f (f z x) xs
     xor 
-      [_] False b = b
-      [_] True False = True
-      [_] True True = False
+      xor False b = b
+      xor True False = True
+      xor True True = False
     xors = foldl xor False
     genInputList = (\n. repl n True Nil)
     main = 
@@ -702,42 +1068,42 @@ unerased:
     constructor Cons : (_x0 : Bool) -> (_x1 : List) -> List
     repl : (n : Nat) -> (x : Bool) -> (_x2 : List) -> List 
       x : Bool xs : List
-        [repl] Z x xs = xs
+        repl Z x xs = xs
       n : Nat x : Bool xs : List
-        [repl] (S n) x xs = Cons x (repl n x xs)
+        repl (S n) x xs = Cons x (repl n x xs)
     constructor RLE : (_x3 : List) -> Type
     constructor RNil : RLE Nil
     constructor RCons : (n : Nat) -> (x : Bool) -> (xs : List) -> (_x4 : RLE xs) -> RLE (repl n x xs)
     compress : (xs : List) -> RLE xs 
-      [compress] Nil = RNil
+      compress Nil = RNil
       x : Bool xs : List
-        [compress] (Cons x xs) = 
+        compress (Cons x xs) = 
           let aux : (y : Bool) -> (ys : List) -> (_x5 : RLE ys) -> RLE (Cons y ys) 
             y : Bool
-              [aux] y [Nil] RNil = RCons 1 y Nil RNil
+              aux y [Nil] RNil = RCons 1 y Nil RNil
             n : Nat zs : List rzs : RLE zs
-              [aux] True [repl n True zs] (RCons n True zs rzs) = RCons (S n) True zs rzs
+              aux True [repl n True zs] (RCons n True zs rzs) = RCons (S n) True zs rzs
             n : Nat zs : List rzs : RLE zs
-              [aux] False [repl n False zs] (RCons n False zs rzs) = RCons (S n) False zs rzs
+              aux False [repl n False zs] (RCons n False zs rzs) = RCons (S n) False zs rzs
             n : Nat zs : List rzs : RLE zs
-              [aux] True [repl n False zs] (RCons n False zs rzs) = RCons 1 True (repl n False zs) (RCons n False zs rzs)
+              aux True [repl n False zs] (RCons n False zs rzs) = RCons 1 True (repl n False zs) (RCons n False zs rzs)
             n : Nat zs : List rzs : RLE zs
-              [aux] False [repl n True zs] (RCons n True zs rzs) = RCons 1 False (repl n True zs) (RCons n True zs rzs)
+              aux False [repl n True zs] (RCons n True zs rzs) = RCons 1 False (repl n True zs) (RCons n True zs rzs)
           in aux x xs (compress xs)
     decompress : (xs : List) -> (_x6 : RLE xs) -> List 
-      [decompress] [Nil] RNil = Nil
+      decompress [Nil] RNil = Nil
       n : Nat x : Bool xs : List rxs : RLE xs
-        [decompress] [repl n x xs] (RCons n x xs rxs) = repl n x (decompress xs rxs)
+        decompress [repl n x xs] (RCons n x xs rxs) = repl n x (decompress xs rxs)
     foldl : (_x7 : (_x8 : Bool) -> (_x9 : Bool) -> Bool) -> (_x10 : Bool) -> (_x11 : List) -> Bool 
       f : (_x12 : Bool) -> (_x13 : Bool) -> Bool z : Bool
-        [foldl] f z Nil = z
+        foldl f z Nil = z
       f : (_x14 : Bool) -> (_x15 : Bool) -> Bool z : Bool x : Bool xs : List
-        [foldl] f z (Cons x xs) = foldl f (f z x) xs
+        foldl f z (Cons x xs) = foldl f (f z x) xs
     xor : (_x16 : Bool) -> (_x17 : Bool) -> Bool 
       b : Bool
-        [xor] False b = b
-      [xor] True False = True
-      [xor] True True = False
+        xor False b = b
+      xor True False = True
+      xor True True = False
   in 
     let foreign inputSize : Nat
     in foldl xor False (decompress (repl inputSize True Nil) (compress (repl inputSize True Nil)))
@@ -752,30 +1118,30 @@ erased:
     constructor Nil : List
     constructor Cons : (_x0) -> (_x1) -> List
     repl 
-      [_] Z _ xs = xs
-      [_] (S n) x xs = Cons x (repl n x xs)
+      repl Z x xs = xs
+      repl (S n) x xs = Cons x (repl n x xs)
     constructor RNil : RLE
     constructor RCons : (n) -> (x) -> (_x4) -> RLE
     compress 
-      [_] Nil = RNil
-      [_] (Cons x xs) = 
+      compress Nil = RNil
+      compress (Cons x xs) = 
         let aux 
-          [_] y RNil = RCons 1 y RNil
-          [_] True (RCons n True rzs) = RCons (S n) True rzs
-          [_] False (RCons n False rzs) = RCons (S n) False rzs
-          [_] True (RCons n False rzs) = RCons 1 True (RCons n False rzs)
-          [_] False (RCons n True rzs) = RCons 1 False (RCons n True rzs)
+          aux y RNil = RCons 1 y RNil
+          aux True (RCons n True rzs) = RCons (S n) True rzs
+          aux False (RCons n False rzs) = RCons (S n) False rzs
+          aux True (RCons n False rzs) = RCons 1 True (RCons n False rzs)
+          aux False (RCons n True rzs) = RCons 1 False (RCons n True rzs)
         in aux x (compress xs)
     decompress 
-      [_] RNil = Nil
-      [_] (RCons n x rxs) = repl n x (decompress rxs)
+      decompress RNil = Nil
+      decompress (RCons n x rxs) = repl n x (decompress rxs)
     foldl 
-      [_] _ z Nil = z
-      [_] f z (Cons x xs) = foldl f (f z x) xs
+      foldl f z Nil = z
+      foldl f z (Cons x xs) = foldl f (f z x) xs
     xor 
-      [_] False b = b
-      [_] True False = True
-      [_] True True = False
+      xor False b = b
+      xor True False = True
+      xor True True = False
   in 
     let foreign inputSize
     in foldl xor False (decompress (compress (repl inputSize True Nil)))

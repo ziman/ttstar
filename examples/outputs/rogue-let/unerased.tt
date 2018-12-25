@@ -5,7 +5,7 @@
     constructor T : Bool
     constructor F : Bool
     not 
-      [_] T = F
-      [_] F = T
+      not T = F
+      not F = T
     main = not
   in main

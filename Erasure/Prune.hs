@@ -52,3 +52,4 @@ prunePat pvs (PApp I f x) = prunePat pvs f
 prunePat pvs (PApp E f x) = prunePat pvs f
 prunePat pvs (PApp R f x) = PApp () (prunePat pvs f) (prunePat pvs x)
 prunePat pvs (PForced tm) = PForced $ V Blank
+prunePat pvs (PHead f)    = PHead f

@@ -12,6 +12,8 @@
 
 ### Constraints ###
 
+[1] -> [R]
+[E] -> [R]
 [R] -> [1]
 
 ### Solution ###
