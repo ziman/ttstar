@@ -29,7 +29,6 @@ import Solver.Simple
 import Solver.Graph
 import Solver.Indexed
 import Solver.LMS
-import Solver.Equalities
 
 import qualified Optimisation.Identity
 
@@ -68,10 +67,10 @@ pipeline args = do
         print evarified_1st
         putStrLn ""
 
-    let iterSpecialisation evarified_raw = do
+    let iterSpecialisation evarified = do
             (evarified, uses) <- case Args.skipInference args of
                 True -> return
-                    ( evarified_raw
+                    ( evarified
                     , S.fromList $ evarified_1st ^.. (
                             ttRelevance :: Traversal' (TT Evar) Evar
                         )  -- all annotations are used
@@ -97,29 +96,19 @@ pipeline args = do
                                 Indexed -> Solver.Indexed.reduce
                                 LMS     -> Solver.LMS.reduce
 
-                    let cs = either (error . show) id . infer redConstrs
-                            $ evarified_raw
+                    let Constrs impls
+                            = either (error . show) id
+                            . infer redConstrs
+                            $ evarified
 
                     when (Args.verbose args) $ do
                         putStrLn "### Constraints ###\n"
-                        mapM_ (putStrLn . fmtCtr) $ M.toList (cImpls cs)
-                        putStrLn ""
-                        mapM_ (putStrLn . fmtEq) $ S.toList (cEqs cs)
+                        mapM_ (putStrLn . fmtCtr) $ M.toList impls
                         putStrLn ""
 
-                    let Constrs impls eqs = cs
-                        evarMap = mergeEvars eqs
-                        impls' = replaceEvars evarMap implRelevance impls
-                        evarified = replaceEvars evarMap ttRelevance evarified_raw
-                        uses = solveConstraints impls'
+                    let uses = solveConstraints impls
 
                     when (Args.verbose args) $ do
-                        putStrLn "### Merge index ###"
-                        forM_ (M.toList evarMap) $ \(r, s) ->
-                            putStrLn $ show r ++ " -> " ++ show s
-                        putStrLn "### Merged evars ###"
-                        print evarified
-                        putStrLn ""
                         putStrLn "### Solution ###\n"
                         print $ S.toList uses
                         putStrLn ""
@@ -242,7 +231,6 @@ pipeline args = do
         Nothing -> return ()
         Just fname -> dumpScheme fname erasedNF
   where
-    fmtEq (r, s) = show r ++ " = " ++ show s
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
     dumpTT fname prog = writeFile fname $ "-- vim: ft=ttstar\n" ++ show prog ++ "\n"
     dumpScheme fname prog = writeFile fname $ render "; " (Codegen.Scheme.codegen prog) ++ "\n"
