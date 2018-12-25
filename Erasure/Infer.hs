@@ -315,7 +315,7 @@ inferTm s t@(EI n ty) = bt ("INST", n, ty) $ do
     -- the original function will be recognised as erased again, if necessary.
     --
     -- Also, all unused instances should be recognised as erased (I didn't check that).
-    return (ty, [] --> [defR d] /\ convCs /\ convType /\ tycs)
+    return (ty, [] --> [defR d] /\ convCs /\ convType /\ tycs /\ defConstraints d)
 
 inferTm s t@(Bind Lam [d@(Def n r ty (Abstract Var) _noCs)] tm) = bt ("LAM", t) $ do
     d' <- inferDef d
