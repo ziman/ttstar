@@ -270,7 +270,7 @@ verPat fapp funR r pvs (PForced tm) = bt ("PAT-FORCED", tm) $ do
 verPat fapp funR r pvs (PHead f) = bt ("PAT-HEAD", f) $ do
     d <- lookupName f
     case defBody d of
-        Clauses _ -> return ()
+        Abstract Var -> return ()  -- recursive refs are abstract
         _ -> verFail $ NotClauses f
 
     funR --> defR d
