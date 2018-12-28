@@ -62,7 +62,6 @@ instance Show TCFailure where
 type ConstrRedFun = Constrs Evar -> Constrs Evar
 type TCTraceback = [String]
 type TCState = Int
--- type TC a = ReaderT (ConstrRedFun, TCTraceback, Ctx Evar) (ExceptT TCFailure (State TCState)) a
 type TC a = RWST
     (ConstrRedFun, TCTraceback, Ctx Evar)  -- R: context
     (Constrs Evar)                         -- W: constraints
@@ -73,16 +72,11 @@ type TC a = RWST
 type Term = TT Evar
 type Type = TT Evar
 
-{-
-infixl 2 /\
-(/\) :: Constrs Evar -> Constrs Evar -> Constrs Evar
-Constrs impls /\ Constrs impls' = Constrs $ M.unionWith S.union impls impls'
--}
-
 infix 3 -->
 (-->) :: Guards Evar -> Uses Evar -> TC ()
-ps --> qs
+(S.delete (Fixed R) -> ps) --> (S.delete (Fixed R) -> qs)
     | Fixed E `S.member` ps = pure ()
+    | S.null qs = pure ()
     | otherwise = tell . Constrs $ M.singleton ps qs
 
 infix 3 <->
@@ -170,9 +164,8 @@ inferDefs :: [Def Evar] -> TC ()
 inferDefs [] = pure ()
 inferDefs (d:ds) = do
     simplifyF <- constrSimplifyF  -- constraint simplification
-    censor simplifyF $ do
-        with d{ defBody = Abstract Var } $ inferDef d
-        with d $ inferDefs ds
+    with d{ defBody = Abstract Var } $ inferDef d
+    with d $ inferDefs ds
 
 inferDef :: Def Evar -> TC ()
 inferDef (Def n r ty (Abstract a)) = do
