@@ -5,12 +5,12 @@ import TT.Pretty ()
 import qualified Data.Map as M
 
 pruneDef :: Def Relevance -> [Def ()]
-pruneDef (Def n I ty body mcs) = []
-pruneDef (Def n E ty body mcs) = []
+pruneDef (Def n I ty body) = []
+pruneDef (Def n E ty body) = []
 -- special case for constructors and postulates to keep their arity:
-pruneDef (Def n R ty (Abstract Constructor) mcs) = [Def n () (pruneTm ty) (Abstract Constructor) noConstrs]
-pruneDef (Def n R ty (Abstract Postulate) mcs) = [Def n () (pruneTm ty) (Abstract Postulate) noConstrs]
-pruneDef (Def n R ty body mcs) = [Def n () (V Blank) (pruneBody body) noConstrs]
+pruneDef (Def n R ty (Abstract Constructor)) = [Def n () (pruneTm ty) (Abstract Constructor)]
+pruneDef (Def n R ty (Abstract Postulate)) = [Def n () (pruneTm ty) (Abstract Postulate)]
+pruneDef (Def n R ty body) = [Def n () (V Blank) (pruneBody body)]
 
 pruneBody :: Body Relevance -> Body ()
 pruneBody (Abstract a) = Abstract a

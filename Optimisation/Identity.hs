@@ -8,7 +8,7 @@ import TT.Pretty ()
 import qualified Data.Set as S
 
 idTT :: TT ()
-idTT = Bind Lam [Def (UN "x") () (V Blank) (Abstract Var) noConstrs] (V (UN "x"))
+idTT = Bind Lam [Def (UN "x") () (V Blank) (Abstract Var)] (V (UN "x"))
 
 isIdClause :: S.Set Name -> Clause () -> Bool
 isIdClause ids (Clause pvs (PApp _r _f arg) rhs)
@@ -18,7 +18,7 @@ isIdClause ids (Clause [] (PHead _f) tm)
 isIdClause _ _ = False
 
 isIdTm' :: TT () -> Bool
-isIdTm' (Bind Lam [Def n () _ _ _] (V n')) | n == n' = True
+isIdTm' (Bind Lam [Def n () _ _] (V n')) | n == n' = True
 isIdTm' _ = False
 
 isIdTm :: S.Set Name -> TT () -> Bool
@@ -44,7 +44,7 @@ rmIdBody ids (Clauses cs) = Clauses $ map (rmIdClause ids) cs
 rmIdBody ids b = b
 
 rmIdDef :: S.Set Name -> Def () -> Def ()
-rmIdDef ids (Def n () ty body _noConstrs) = Def n () ty (rmIdBody ids body) noConstrs
+rmIdDef ids (Def n () ty body) = Def n () ty (rmIdBody ids body)
 
 rmLet :: S.Set Name -> [Def ()] -> TT () -> TT ()
 rmLet ids [] rhs = rmId ids rhs

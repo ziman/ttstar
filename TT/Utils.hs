@@ -75,14 +75,14 @@ instance Termy Pat where
     freeVars (PHead f) = S.singleton f
 
 instance Termy Def where
-    subst n tm (Def dn r ty body mcs)
+    subst n tm (Def dn r ty body)
         | n == dn
-        = Def dn r (subst n tm ty) body mcs  -- don't subst in body because those vars refer to `dn`
+        = Def dn r (subst n tm ty) body  -- don't subst in body because those vars refer to `dn`
 
         | otherwise
-        = Def dn r (subst n tm ty) (subst n tm body) mcs
+        = Def dn r (subst n tm ty) (subst n tm body)
 
-    freeVars (Def dn r ty body mcs)
+    freeVars (Def dn r ty body)
         = freeVars ty `S.union` S.delete dn (freeVars body)
 
 instance Termy Body where
@@ -158,7 +158,7 @@ insertDefs []     = id
 
 freePatVars :: Ctx r -> Pat r -> Maybe (S.Set Name)
 freePatVars ctx (PV n)
-    | Just (Def _n _r _ty (Abstract Constructor) _cs) <- M.lookup n ctx
+    | Just (Def _n _r _ty (Abstract Constructor)) <- M.lookup n ctx
     = Just S.empty
 
     | otherwise = Just $ S.singleton n
@@ -194,7 +194,7 @@ monomorphise (App r f x) = App r (monomorphise f) (monomorphise x)
 monomorphise (Bind b d tm) = Bind b (map monoDef d) $ monomorphise tm
   where
     monoDef :: Def r -> Def r
-    monoDef (Def n r ty b cs) = Def n r (monomorphise ty) (monoBody b) cs
+    monoDef (Def n r ty b) = Def n r (monomorphise ty) (monoBody b)
 
     monoBody :: Body r -> Body r
     monoBody (Abstract a) = Abstract a

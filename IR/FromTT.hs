@@ -29,9 +29,9 @@ irName n = IUN (show n)
 irTm :: S.Set Name -> Int -> TT () -> IR
 irTm cs pv (V n) = IV (irName n)
 irTm cs pv (App () f x) = IApp (irTm cs pv f) (irTm cs pv x)
-irTm cs pv (Bind Lam [Def n () _ty _body _cs] rhs) = ILam (irName n) (irTm cs pv rhs)
+irTm cs pv (Bind Lam [Def n () _ty _body] rhs) = ILam (irName n) (irTm cs pv rhs)
 irTm cs pv (Bind Let [] rhs) = irTm cs pv rhs
-irTm cs pv (Bind Let (Def n () ty body _cs : ds) rhs)
+irTm cs pv (Bind Let (Def n () ty body : ds) rhs)
     = ILet (irName n) (irBody cs pv ty body) $ irTm cs' pv (Bind Let ds rhs)
   where
     cs' | Abstract Constructor <- body = S.insert n cs

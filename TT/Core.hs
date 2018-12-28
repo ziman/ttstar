@@ -60,7 +60,6 @@ data Def r = Def
     , defR    :: r
     , defType :: TT r
     , defBody :: Body r
-    , defConstraints :: Constrs r
     } deriving (Eq, Ord)
 
 type Ctx r = M.Map Name (Def r)
@@ -69,19 +68,19 @@ type Ctx r = M.Map Name (Def r)
 -- (usually a big let-expression)
 type Program r = TT r
 
-noConstrs :: Constrs r
-noConstrs = Constrs M.empty
+instance Ord r => Semigroup (Constrs r) where
+    Constrs ps <> Constrs qs = Constrs $ M.unionWith S.union ps qs
 
--- for pretty-printing
-isEmpty :: Constrs r -> Bool
-isEmpty (Constrs impls) = M.null impls
+instance Ord r => Monoid (Constrs r) where
+    mempty = Constrs M.empty
+    mappend = (<>)
 
 typeOfTypes :: Name
 typeOfTypes = UN "Type"
 
 builtins :: r -> Ctx r
 builtins r = M.fromList
-    [ (typeOfTypes, Def typeOfTypes r (V typeOfTypes) (Abstract Constructor) noConstrs)
+    [ (typeOfTypes, Def typeOfTypes r (V typeOfTypes) (Abstract Constructor) )
     ]
 
 relOfType :: Relevance

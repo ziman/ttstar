@@ -45,12 +45,12 @@ cgOmitted :: Doc
 cgOmitted = text "'_"
 
 cgLetRec :: PrettyR r => [Def r] -> Doc -> Doc
-cgLetRec ds = cgLet' "letrec*" [(n, cgBody n ty b) | Def n r ty b _cs <- ds]
+cgLetRec ds = cgLet' "letrec*" [(n, cgBody n ty b) | Def n r ty b <- ds]
 
 cgTm :: PrettyR r => TT r -> Doc
 cgTm (V n) = cgName n
 cgTm tm@(EI n ty) = error $ "e-instance in codegen: " ++ show tm
-cgTm (Bind Lam [Def n r ty (Abstract Var) cs] rhs) = cgLambda n $ cgTm rhs
+cgTm (Bind Lam [Def n r ty (Abstract Var)] rhs) = cgLambda n $ cgTm rhs
 cgTm (Bind Let ds rhs) = cgLetRec ds $ cgTm rhs
 cgTm (Bind Pi ds rhs) = cgOmitted
 cgTm (App r f x) = cgApp (cgTm f) (cgTm x)
