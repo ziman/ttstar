@@ -130,17 +130,17 @@ verDefs [] = return ()
 verDefs (d:ds) = with d (verDef d *> verDefs ds)
 
 verDef :: Def Relevance -> Ver ()
-verDef (Def n r ty (Abstract _) cs) = bt ("DEF-ABSTR", n) $ do
+verDef (Def n r ty (Abstract _)) = bt ("DEF-ABSTR", n) $ do
     tyty <- verTm E ty
     mustBeType tyty
 
-verDef d@(Def n r ty (Term tm) cs) = bt ("DEF-TERM", n) $ do
+verDef d@(Def n r ty (Term tm)) = bt ("DEF-TERM", n) $ do
     tyty <- verTm E ty
     mustBeType tyty
     tmty <- with d{ defBody = Abstract Var } $ verTm r tm
     conv tmty ty
 
-verDef d@(Def n r ty (Clauses cls) cs) = bt ("DEF-CLAUSES", n) $ do
+verDef d@(Def n r ty (Clauses cls)) = bt ("DEF-CLAUSES", n) $ do
     tyty <- verTm E ty
     mustBeType tyty
     with d{ defBody = Abstract Var } $
@@ -175,13 +175,13 @@ verTm R (V n) = bt ("VAR-R", n) $ do
     defR d <-> R
     return $ defType d
 
-verTm r (Bind Lam [d@(Def n s ty (Abstract Var) _)] tm) = bt ("LAM", r, n) $ do
+verTm r (Bind Lam [d@(Def n s ty (Abstract Var))] tm) = bt ("LAM", r, n) $ do
     tyty <- verTm E ty    
     mustBeType tyty
     tmty <- with d $ verTm r tm
     return $ Bind Pi [d] tmty
 
-verTm r (Bind Pi [d@(Def n s ty (Abstract Var) _)] tm) = bt ("PI", r, n) $ do
+verTm r (Bind Pi [d@(Def n s ty (Abstract Var))] tm) = bt ("PI", r, n) $ do
     tyty <- verTm E ty
     mustBeType tyty
     tmty <- with d $ verTm r tm
@@ -196,7 +196,7 @@ verTm r (App s f x) = bt ("APP", r, f, s, x) $ do
     ctx <- getCtx
     fty <- verTm r f
     case whnf ctx fty of
-        Bind Pi [Def n piR piTy (Abstract Var) _] piRhs -> do
+        Bind Pi [Def n piR piTy (Abstract Var)] piRhs -> do
             piR <-> s
             xty <- verTm (r /\ s) x
             conv xty piTy            
@@ -254,7 +254,7 @@ verPat fapp funR r pvs (PApp s f x) = bt ("PAT-APP", fapp, r, s, f, x) $ do
 
     fty <- verPat fapp funR r pvs f
     case whnf ctx fty of
-        Bind Pi [Def n piR piTy (Abstract Var) _] piRhs -> do
+        Bind Pi [Def n piR piTy (Abstract Var)] piRhs -> do
             piR <-> s
             xty <- verPat False funR (r /\ s) pvs x
             with' (M.union pvs) $
@@ -295,8 +295,8 @@ conv' (App r f x) (App r' f' x') = bt ("CONV-APP", f, x, f', x') $ do
     conv x x'
 
 conv'
-    (Bind b  [d@(Def  n  r  ty  (Abstract Var) _)] tm)
-    (Bind b' [d'@(Def n' r' ty' (Abstract Var) _)] tm')
+    (Bind b  [d@(Def  n  r  ty  (Abstract Var))] tm)
+    (Bind b' [d'@(Def n' r' ty' (Abstract Var))] tm')
     | b == b' = bt ("CONV-BIND", b, d, tm, d', tm') $ do
         r <-> r'
         conv ty ty'

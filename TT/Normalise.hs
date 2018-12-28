@@ -59,7 +59,7 @@ nf :: IsRelevance r => Ctx r -> TT r -> TT r
 nf = red NF
 
 redDef :: IsRelevance r => Form -> Ctx r -> Def r -> Def r
-redDef form ctx (Def n r ty body cs) = Def n r (red form ctx ty) (redBody form ctx body) cs
+redDef form ctx (Def n r ty body) = Def n r (red form ctx ty) (redBody form ctx body)
 
 redBody :: IsRelevance r => Form -> Ctx r -> Body r -> Body r
 redBody form ctx (Abstract a) = Abstract a
@@ -101,7 +101,7 @@ red :: IsRelevance r => Form -> Ctx r -> TT r -> TT r
 red form ctx t@(V Blank) = t
 
 red form ctx t@(V n)
-    | Just (Def _n r ty body cs) <- M.lookup n ctx
+    | Just (Def _n r ty body) <- M.lookup n ctx
     = case body of
         Abstract _  -> t
         Term     tm -> red form ctx tm
@@ -151,7 +151,7 @@ red form ctx t@(App r (Bind Let ds tm) x)
 
 red form ctx t@(App r f x)
     -- simple lambda
-    | Bind Lam (Def n' r' ty' (Abstract Var) cs : ds) tm' <- redF
+    | Bind Lam (Def n' r' ty' (Abstract Var) : ds) tm' <- redF
     = let tm'' = red form ctx $ subst n' redX tm'
         in case ds of
             [] -> tm''

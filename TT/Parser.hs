@@ -121,7 +121,7 @@ arrow :: Parser (TT MRel)
 arrow = (<?> "arrow type") $ do
     n <- freshMN "x"
     ty <- try (app <* kwd "->")  -- app includes nullary applications (atoms)
-    Bind Pi [Def n Nothing ty (Abstract Var) noConstrs] <$> expr
+    Bind Pi [Def n Nothing ty (Abstract Var)] <$> expr
 
 lambda :: Parser (TT MRel)
 lambda = (<?> "lambda") $ do
@@ -234,7 +234,7 @@ typing a = (<?> "name binding") $ do
     n <- name
     r <- rcolon
     ty <- expr
-    return $ Def n r ty (Abstract a) noConstrs
+    return $ Def n r ty (Abstract a)
 
 ptyping :: Abstractness -> Parser (Def MRel)
 ptyping abs =
@@ -265,7 +265,7 @@ mlDef = (<?> "ml-style definition") $ do
     retTy <- expr
     kwd "="
     rhs <- expr
-    return $ Def n r (mkPi args retTy) (Term $ mkLam args rhs) noConstrs
+    return $ Def n r (mkPi args retTy) (Term $ mkLam args rhs)
   where
     mkLam [] rhs = rhs
     mkLam (d:ds) rhs = Bind Lam [d] $ mkLam ds rhs

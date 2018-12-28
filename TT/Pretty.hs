@@ -68,7 +68,7 @@ instance PrettyR r => Pretty (Body r) where
     pretty (Clauses cs) = blankLine $$ (indent . vcat . map pretty) cs
 
 instance PrettyR r => Pretty (Def r) where
-    pretty (Def n r ty body cs) =
+    pretty (Def n r ty body) =
         case body of
             Abstract Constructor -> text "constructor"
             Abstract Postulate -> text "postulate"
@@ -79,14 +79,11 @@ instance PrettyR r => Pretty (Def r) where
                 V Blank -> empty
                 _       -> prettyCol r <+> pretty ty
         <+> pretty body
-        <+> if isEmpty cs
-                then empty
-                else text "{- constraints apply -}"
 
 instance PrettyR r => Pretty (Clause r) where
     pretty (Clause pvs lhs rhs) = pretty' $ Clause (filter typed pvs) lhs rhs
       where
-        typed (Def _n _r (V Blank) _b _cs) = False
+        typed (Def _n _r (V Blank) _b) = False
         typed _ = True
 
         pretty' (Clause [] lhs rhs)
