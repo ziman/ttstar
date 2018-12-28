@@ -74,10 +74,13 @@ type Type = TT Evar
 
 infix 3 -->
 (-->) :: Guards Evar -> Uses Evar -> TC ()
-(S.delete (Fixed R) -> ps) --> (S.delete (Fixed R) -> qs)
+ps' --> qs'
     | Fixed E `S.member` ps = pure ()
     | S.null qs = pure ()
     | otherwise = tell . Constrs $ M.singleton ps qs
+  where
+    ps = S.delete (Fixed R) ps'
+    qs = S.delete (Fixed R) $ S.difference qs' ps
 
 infix 3 <->
 (<->) :: S.Set Evar -> S.Set Evar -> TC ()
