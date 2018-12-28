@@ -12,7 +12,9 @@ import Prelude hiding (lookup)
 
 import Control.Monad.Trans.Class
 import Control.Monad.Trans.Except
+import Control.Monad.Trans.State (evalStateT, StateT)
 import Control.Monad.Trans.RWS.Strict
+import qualified Control.Monad.Trans.State as State
 
 import Lens.Family2
 
@@ -62,10 +64,10 @@ type TCTraceback = [String]
 type TCState = Int
 -- type TC a = ReaderT (ConstrRedFun, TCTraceback, Ctx Evar) (ExceptT TCFailure (State TCState)) a
 type TC a = RWST
-    (ConstrRedFun, TCTraceback, Ctx Evar)  -- context
-    (Constr Evar)                          -- constraints
-    TCState                                -- for fresh names
-    (ExceptT TCFailure)                    -- errors
+    (ConstrRedFun, TCTraceback, Ctx Evar)  -- R: context
+    (Constrs Evar)                         -- W: constraints
+    TCState                                -- S: for fresh names
+    (Except TCFailure)                     -- T: errors
     a
 
 type Term = TT Evar
@@ -86,7 +88,8 @@ infix 3 <->
 ps <-> qs = ps --> qs >> qs --> ps
 
 unions :: [Constrs Evar] -> Constrs Evar
-unions = foldr (/\) noConstrs
+unions css = Constrs
+    $ M.unionsWith S.union [impls | Constrs impls <- css]
 
 with :: Def Evar -> TC a -> TC a
 with d = with' $ M.insert (defName d) d
@@ -132,7 +135,7 @@ lookup n = do
         Nothing -> tcfail $ UnknownName n
 
 freshTag :: TC Int
-freshTag = lift $ lift (modify (+1) >> get)
+freshTag = modify (+1) >> get
 
 constrSimplifyF :: TC ConstrRedFun
 constrSimplifyF = do
@@ -142,12 +145,12 @@ constrSimplifyF = do
 runTC :: ConstrRedFun -> Int -> Ctx Evar -> TC a
     -> Either TCFailure (a, Constrs Evar)
 runTC redConstrs maxTag ctx tc
-    = runExceptT
-    $ evalRWST tc (redConstrs, [], ctx)) maxTag
+    = runExcept
+    $ evalRWST tc (redConstrs, [], ctx) maxTag
 
 infer :: ConstrRedFun -> Program Evar -> Either TCFailure (Constrs Evar)
-infer redConstrs prog = runTC redConstrs maxTag ctx $ do
-    (cs, _ty) <- inferTm [] prog
+infer redConstrs prog = do
+    (_ty, cs) <- runTC redConstrs maxTag ctx (inferTm [] prog)
     return cs
   where
     getTag :: Evar -> Int
@@ -191,7 +194,7 @@ inferDef d@(Def n r ty (Clauses cls)) = bt ("DEF-CLAUSES", n) $ do
 
     -- check clauses
     with d{ defBody = Abstract Var }
-        $ traverse (inferClause r) cls
+        $ mapM_ (inferClause r) cls
 
 inferClause :: Evar -> Clause Evar -> TC ()
 inferClause q (Clause pvs lhs rhs) = bt ("CLAUSE", lhs) $ do
@@ -222,20 +225,20 @@ inferPat
     -> Guards Evar
     -> Ctx Evar
     -> Pat Evar
-    -> TC (Type, Constrs Evar)
+    -> TC Type
 inferPat q gs pvs pat@(PV n)
     | Just (Def n r ty (Abstract Var)) <- M.lookup n pvs
     = bt ("PAT-VAR", n) $ do
-        r <-> gs
+        [r] <-> gs
         return ty
 
 -- this must be a constructor if it's not a patvar
 inferPat q gs pvs pat@(PV n) = bt ("PAT-REF", n) $ do
-    d@(Def _n r ty body cs) <- lookup n
+    d@(Def _n r ty body) <- lookup n
     case body of
         Abstract Constructor -> do
             [q] --> gs
-            [q] --> r
+            [q] --> [r]
             return ty
 
         _ -> tcfail $ InvalidPattern pat
@@ -248,7 +251,7 @@ inferPat q gs pvs pat@(PApp appR f x) = bt ("PAT-APP", pat) $ do
     xty <- inferPat q (gs <> [appR]) pvs x
     ctx <- getCtx
     case whnf ctx fty of
-        Bind Pi [Def n' piR ty' (Abstract Var) _noCs] retTy -> do
+        Bind Pi [Def n' piR ty' (Abstract Var)] retTy -> do
             with' (M.union pvs)
                 $ xty ~= ty'
 
@@ -305,32 +308,32 @@ inferTm gs t@(EI n ty) = bt ("INST", n, ty) $ do
     --
     -- Also, all unused instances should be recognised as erased (I didn't check that).
     
-    [] -> [defR d]
+    [] --> [defR di]
 
     return ty
 
 inferTm gs t@(Bind Lam [d@(Def n r ty (Abstract Var))] tm) = bt ("LAM", t) $ do
     inferDef d
     tmty <- with d $ inferTm gs tm
-    return $ Bind Pi [d'] tmty
+    return $ Bind Pi [d] tmty
 
 inferTm gs t@(Bind Pi [d@(Def n r ty (Abstract Var))] tm) = bt ("PI", t) $ do
     inferDef d
-    with d' $ do
+    with d $ do
         tmty <- inferTm gs tm
         tmty ~= V typeOfTypes
     return (V typeOfTypes)
 
 inferTm gs t@(Bind Let ds tm) = bt ("LET", t) $ do
     inferDefs ds
-    with' (M.union ds') $ inferTm gs tm
+    withs ds $ inferTm gs tm
 
 inferTm gs t@(App appR f x) = bt ("APP", t) $ do
     fty <- inferTm gs f
     xty <- inferTm (gs <> [appR]) x
     ctx <- getCtx
     case whnf ctx fty of
-        Bind Pi [Def n' piR piTy (Abstract Var) _noCs] retTy -> do
+        Bind Pi [Def n' piR piTy (Abstract Var)] retTy -> do
             xty ~= piTy
             [piR] <-> [appR]
             return $ subst n' x retTy
@@ -343,13 +346,13 @@ inferTm gs tm = bt ("UNCHECKABLE-TERM", tm) $ do
 freshen :: Monad m => m Int -> Evar -> StateT (IM.IntMap Evar) m Evar
 freshen freshTag m@(Fixed r) = return m
 freshen freshTag (EV i) = do
-    imap <- get
+    imap <- State.get
     case IM.lookup i imap of
         Just j ->
             return j
         Nothing -> do
             j <- EV <$> lift freshTag
-            modify $ IM.insert i j
+            State.modify $ IM.insert i j
             return j
 
 instantiate :: Monad m => m Int -> IM.IntMap Evar -> Def Evar -> m (Def Evar)
@@ -365,19 +368,18 @@ p ~= q = do
     conv' (whnf ctx p) (whnf ctx q)
 
 -- note that this function gets arguments in WHNF
-conv' :: Type -> Type -> TC (Constrs Evar)
+conv' :: Type -> Type -> TC ()
 
 -- whnf is variable (something irreducible, constructor or axiom)
 conv' (V n) (V n') = bt ("C-VAR", n, n') $ do
     require (n == n') $ Mismatch (show n) (show n')
-    return noConstrs
 
-conv' p@(Bind b [Def n r ty (Abstract Var) _noCs] tm) q@(Bind b' [Def n' r' ty' (Abstract Var) _noCs'] tm')
+conv' p@(Bind b [Def n r ty (Abstract Var)] tm) q@(Bind b' [Def n' r' ty' (Abstract Var)] tm')
     = bt ("C-BIND", p, q) $ do
         require (b == b') $ Mismatch (show b) (show b')
         [r] <-> [r']
         ty ~= ty' -- (rename n' n ty')
-        with (Def n r ty (Abstract Var) noConstrs)
+        with (Def n r ty (Abstract Var))
                 $ tm ~= rename n' n tm'
 
 {- This would be necessary for conversion-checking of multilets. Let's disable them for now.

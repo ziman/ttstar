@@ -68,10 +68,10 @@ type Ctx r = M.Map Name (Def r)
 -- (usually a big let-expression)
 type Program r = TT r
 
-instance Semigroup (Constrs r) where
+instance Ord r => Semigroup (Constrs r) where
     Constrs ps <> Constrs qs = Constrs $ M.unionWith S.union ps qs
 
-instance Monoid (Constrs r) where
+instance Ord r => Monoid (Constrs r) where
     mempty = Constrs M.empty
     mappend = (<>)
 
