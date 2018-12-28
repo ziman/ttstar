@@ -13,8 +13,6 @@
 ### Constraints ###
 
 [] -> [1,2,R]
-[E] -> [R]
-[R] -> [R]
 
 ### Solution ###
 

@@ -81,7 +81,9 @@ Constrs impls /\ Constrs impls' = Constrs $ M.unionWith S.union impls impls'
 
 infix 3 -->
 (-->) :: Guards Evar -> Uses Evar -> TC ()
-ps --> qs = tell . Constrs $ M.singleton ps qs
+ps --> qs
+    | Fixed E `S.member` ps = pure ()
+    | otherwise = tell . Constrs $ M.singleton ps qs
 
 infix 3 <->
 (<->) :: S.Set Evar -> S.Set Evar -> TC ()
