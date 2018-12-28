@@ -80,10 +80,10 @@ specBody (Clauses csm) (Clauses csr) = do
 specBody bm br = error $ "specBody: non-matching bodies: " ++ show (bm, br)
 
 specDef :: Def Evar -> Def Relevance -> Spec (Def Evar)
-specDef (Def nm rm tym bodym _csm) (Def nr rr tyr bodyr csr) = do
+specDef (Def nm rm tym bodym) (Def nr rr tyr bodyr) = do
     (is, tyr') <- specTm tym tyr
     (is', bodyr') <- specBody bodym bodyr
-    return $ (M.unionWith S.union is is', Def nr (Fixed rr) tyr' bodyr' noConstrs)
+    return $ (M.unionWith S.union is is', Def nr (Fixed rr) tyr' bodyr')
 
 specPat :: Pat Evar -> Pat Relevance -> Spec (Pat Evar)
 specPat pm (PV n) = return (M.empty, PV n)
