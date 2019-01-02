@@ -292,21 +292,8 @@ inferTm gs t@(EI n ty) = bt ("INST", n, ty) $ do
     -- make the instance compatible with ty
     defType di ~= ty
 
-    -- This (Fixed R --> r) thing is tricky.
-    --
-    -- We should not include (Fixed R --> r) because it will be an instance
-    -- of this function that's runtime-relevant, not the function itself.
-    --
-    -- However, we must mark the instance as runtime-relevant, but it does not
-    -- exist yet. Hence we mark the original function as runtime-relevant as a proxy
-    -- for the relevance of the instance, and all instances will inherit this relevance.
-    --
-    -- In the next iteration of typechecking after specialisation,
-    -- the original function will be recognised as erased again, if necessary.
-    --
-    -- Also, all unused instances should be recognised as erased (I didn't check that).
-    
-    [] --> [defR di]
+    -- set the correct retention
+    gs --> [defR di]
 
     return ty
 
