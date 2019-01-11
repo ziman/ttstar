@@ -236,8 +236,8 @@ verPat fapp funR r pvs (PApp s f x) = bt ("PAT-APP", fapp, r, s, f, x) $ do
     case f of
         PForced tm
             | (V n, _args) <- unApply tm
-            , Just (defBody -> Abstract Constructor) <- M.lookup n ctx
-            -> return ()  -- forced constructor
+            , Just cd@(defBody -> Abstract Constructor) <- M.lookup n ctx
+            -> r --> defR cd  -- forced constructor
 
         PHead f  -- whole fun def will be var at this stage
             | Just (defBody -> Abstract Var) <- M.lookup f ctx
