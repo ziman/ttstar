@@ -10,5 +10,5 @@ for p in $programs; do
     evars=$(ttstar $fname --dump-stats /dev/stdout 2>/dev/null | jq .evars)
     annotations=$(ttstar $fname --dump-stats /dev/stdout 2>/dev/null | jq .annotations)
     annotations_used=$(ttstar $fname --dump-stats /dev/stdout 2>/dev/null | jq .annotations_used)
-    echo $p,$loc,$bytes,${evars:-0},${annotations:-0},${annotations_used:-0}
+    echo $p,$loc,$bytes,${evars:-NA},${annotations:-NA},${annotations_used:-NA}
 done
