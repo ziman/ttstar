@@ -5,8 +5,8 @@ import time
 import json
 import subprocess
 
-WARMUPS = 4
-SAMPLES = 32
+WARMUPS = 8
+SAMPLES = 64
 
 def time_cmd(cmd):
     # TODO: use perf stat -x \;
@@ -32,7 +32,7 @@ def main():
     print('"program","iteration","erasure","annotations","evars","annotations_used","duration"')
     for fname in os.listdir('../examples'):
         for erasure in (True, False):
-            cmd = ['../ttstar', '--dump-pretty', '/dev/null', '--dump-stats', '/tmp/stats.json']
+            cmd = ['ttstar', '--dump-pretty', '/dev/null', '--dump-stats', '/tmp/stats.json']
             if not erasure:
                 cmd += ['--skip-inference']
 
