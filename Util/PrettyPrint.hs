@@ -23,6 +23,7 @@ module Util.PrettyPrint
     where
 
 import Data.List
+import Data.String
 
 class Pretty a where
     pretty :: a -> Doc
@@ -37,6 +38,9 @@ type Line = (String, String)  -- text, comment
 newtype Doc = Doc [Line]
 instance Show Doc where
     show = render "--"
+
+instance IsString Doc where
+    fromString = text
 
 infixr 6 <+>
 infixr 5 $$, $+$
