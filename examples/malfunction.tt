@@ -1,0 +1,12 @@
+postulate Int : Type.
+postulate String : Type.
+postulate Unspec : Type.
+
+foreign zero : Int = "0".
+foreign one : Int = "1".
+foreign plus : (x :R: Int) -> (y :R: Int) -> Int = "(lambda ($x $y) (+ $x $y))".
+foreign times : (x :R: Int) -> (y :R: Int) -> Int = "(lambda ($x $y) (* $x $y))".
+foreign intToString : (i :R: Int) -> String = "(global $Pervasives $string_of_int)".
+foreign print : (s :R: String) -> Unspec = "(global $Pervasives $print_endline)".
+
+main \: Unspec = print (intToString (plus zero one)).
