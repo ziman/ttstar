@@ -46,7 +46,12 @@ pv :: Int -> Doc
 pv i = "$pv" <> int i
 
 cgDef :: IName -> IBody -> CG Doc
-cgDef n b = parens . (cgName n <+>) <$> cgBody n b
+cgDef n b = do
+    b' <- cgBody n b
+    let def = parens (cgName n <+> b')
+    return $ case b of
+        ICaseFun (_:_) _ -> parens ("rec" <+> def)
+        _ -> def
 
 cgTm :: IR -> CG Doc
 cgTm (IV n) = pure $ cgName n
@@ -120,11 +125,10 @@ cgCtor cn arity = do
 cgUnpack :: Int -> [Int] -> Doc -> Doc
 cgUnpack scrut [] rhs = rhs
 cgUnpack scrut vs rhs = parens (
-    "let" <+> parens (hsep
+    "let" <+> hsep
         [ parens (pv v <+> parens ("field" <+> int i <+> pv scrut))
         | (i, v) <- zip [0..] vs
         ]
-    )
     $$ indent rhs
   )
 
