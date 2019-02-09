@@ -169,15 +169,13 @@ cgLambda n body = parens ("lambda" <+> parens (cgName n) $+$ indent body)
 
 cgLet :: [(IName, Doc)] -> Doc -> Doc
 cgLet [(n, body)] rhs = parens (
-        "letrec" <+> parens (
-            parens (cgName n <+> body)
-        )
-        $+$ indent rhs
+        "let" <+> parens (cgName n <+> body)
+        $$ indent rhs
     )
 cgLet defs rhs = parens (
-        "letrec*" <+> "("
-        $+$ indent (
+        "let"
+        $$ indent (
             vcat [parens (cgName n <+> body) | (n, body) <- defs]
+            $$ rhs
         )
-        $+$ ")" <+> rhs
     )
