@@ -1,41 +1,69 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Codegen.Malfunction (codegen) where
 
+import Data.Functor
+import Data.Traversable
+import Control.Monad.Trans.State
+import qualified Data.Map as M
+
 import IR.Core
 import Util.PrettyPrint
+
+data CGState = CGS
+    { cgsCtorTags :: M.Map IName Int
+    }
+
+type CG a = State CGState a
+
+ctorTag :: IName -> CG Int
+ctorTag n = do
+    CGS{cgsCtorTags} <- get
+    case M.lookup n cgsCtorTags of
+        Just i -> return i
+        Nothing -> do
+            let i = M.size cgsCtorTags
+            modify $ \cgs -> cgs{cgsCtorTags = M.insert n i cgsCtorTags}
+            return i
 
 indent :: Doc -> Doc
 indent = nest 2
 
 codegen :: IR -> Doc
-
-codegen prog = parens ("module"
-        $$ indent (
-            vcat [cgDef n d $$ blankLine | (n,d) <- defs]
-            $$ parens ("_" <+> cgTm entryPoint)
-            $$ parens ("export")
-        ))
+codegen prog = evalState cg (CGS M.empty)
   where
     (defs, entryPoint) = letPrefix prog
+    cg = do
+        defs' <- for defs $ \(n,d) -> cgDef n d <&> ($$ blankLine)
+        entryPoint' <- cgTm entryPoint
+        return $ parens ("module"
+            $$ indent (
+                vcat defs'
+                $$ parens ("_" <+> entryPoint')
+                $$ parens ("export")
+            ))
 
 pv :: Int -> Doc
-pv i = "_pv" <> int i
+pv i = "$pv" <> int i
 
-cgDef :: IName -> IBody -> Doc
-cgDef n b = parens (cgName n <+> cgBody n b)
+cgDef :: IName -> IBody -> CG Doc
+cgDef n b = parens . (cgName n <+>) <$> cgBody n b
 
-cgTm :: IR -> Doc
-cgTm (IV n) = cgName n
-cgTm (ILam n rhs) = cgLambda n $ cgTm rhs
-cgTm (ILet n body rhs) = blankLine $$ indent (cgLet ds $ cgTm rhs')
+cgTm :: IR -> CG Doc
+cgTm (IV n) = pure $ cgName n
+cgTm (ILam n rhs) = cgLambda n <$> cgTm rhs
+cgTm (ILet n body rhs) = do
+    ds <- for ((n,body):ls) $ \(n,b) -> do
+        b' <- cgBody n b
+        return (n, b')
+    rhs'' <- cgTm rhs'
+    return (blankLine $$ indent (cgLet ds rhs''))
   where
     (ls, rhs') = letPrefix rhs
-    ds = [(n, cgBody n b) | (n, b) <- (n, body) : ls]
 
 cgTm tm@(IApp _ _)
     | (f, xs) <- unApp [] tm
-    = cgApp (cgTm f) (map cgTm xs)
-cgTm (IError s) = cgApp "error" [text $ show s]
+    = cgApp <$> cgTm f <*> traverse cgTm xs
+cgTm (IError s) = pure $ cgApp "error" [text $ show s]
 
 unApp :: [IR] -> IR -> (IR, [IR])
 unApp acc (IApp f x) = unApp (x : acc) f
@@ -45,46 +73,47 @@ letPrefix :: IR -> ([(IName, IBody)], IR)
 letPrefix (ILet n body rhs) = let (ls,ir) = letPrefix rhs in ((n,body):ls, ir)
 letPrefix ir = ([], ir)
 
-cgBody :: IName -> IBody -> Doc
+cgBody :: IName -> IBody -> CG Doc
 cgBody n (IConstructor arity) = cgCtor n arity
-cgBody n (IForeign code) = text code
-cgBody n (ICaseFun pvs ct) = nestLambdas (map pv pvs) (cgCaseTree ct)
+cgBody n (IForeign code) = pure $ text code
+cgBody n (ICaseFun pvs ct) = nestLambdas (map pv pvs) <$> cgCaseTree ct
 
-cgCaseTree :: ICaseTree -> Doc
+cgCaseTree :: ICaseTree -> CG Doc
 cgCaseTree (ILeaf tm)
     = cgTm tm
 cgCaseTree (ICase v [ICtor IBlank pvs rhs])
-    = cgUnpack v pvs (cgCaseTree rhs)
+    = cgUnpack v pvs <$> cgCaseTree rhs
 cgCaseTree (ICase v [IDefault rhs])
     = cgCaseTree rhs
 cgCaseTree (ICase v alts)
-    = cgCase (pv v) (map cgAlt alts)
+    = cgCase (pv v) <$> traverse (cgAlt v) alts
 
-cgAlt :: IAlt -> Doc
-cgAlt (IDefault rhs) = parens (parens("tag" <+> "_") <+> cgCaseTree rhs)
+cgAlt :: Int -> IAlt -> CG Doc
+cgAlt _ (IDefault rhs) = do
+    rhs' <- cgCaseTree rhs
+    return $ parens (parens("tag" <+> "_") <+> rhs')
 {-
-cgAlt (ICtor IBlank pvs rhs) = parens (
+cgAlt _ (ICtor IBlank pvs rhs) = parens (
     parens ("_" <+> hsep (map pv pvs))
     <+> cgCaseTree rhs
   )
 -}
-cgAlt (ICtor cn pvs rhs) = parens (
-    parens (cgName cn <+> hsep (map pv pvs))
-    <+> cgCaseTree rhs
-  )
+cgAlt v (ICtor cn pvs rhs) = do
+    tag <- ctorTag cn
+    rhs' <- cgCaseTree rhs
+    return $ parens (parens (cgTag tag) <+> cgUnpack v pvs rhs')
+
+cgTag :: Int -> Doc
+cgTag tag = parens ("tag" <+> int tag)
 
 cgCase :: Doc -> [Doc] -> Doc
 cgCase scrut alts = parens ("switch" <+> scrut $$ indent (vcat alts))
 
-cgCtor :: IName -> Int -> Doc
-cgCtor n arity
-    -- = parens ("constructor" <+> cgName n <+> hsep argNs)
-    = nestLambdas argNs (
-        cgForm "block" (
-            cgForm "tag" [int 0] -- TODO
-            : argNs
-        )
-    )
+cgCtor :: IName -> Int -> CG Doc
+cgCtor cn arity = do
+    tag <- ctorTag cn
+    return $ nestLambdas argNs
+        $ cgForm "block" (cgTag tag : argNs)
   where
     argNs = ["$e" <> int i | i <- [0..arity-1]]
 
@@ -118,7 +147,7 @@ specialNames =
 
 cgName :: IName -> Doc
 cgName IBlank = "_"
-cgName (IPV i) = "$" <> pv i
+cgName (IPV i) = pv i
 cgName (IUN n) = ("$" <>) . text . specialName . concatMap mogrify $ n
   where
     specialName n
