@@ -1,0 +1,24 @@
+postulate Int : Type.
+foreign int1 : Int = "1".
+foreign int0 : Int = "0".
+
+postulate String : Type.
+
+foreign plus : (x :R: Int) -> (y :R: Int) -> Int = "(lambda ($x $y) (+ $x $y))".
+foreign times : (x :R: Int) -> (y :R: Int) -> Int = "(lambda ($x $y) (* $x $y))".
+foreign intToString : (i :R: Int) -> String = "(global $Pervasives $string_of_int)".
+
+postulate Unspec : Type.
+
+printString \(s : String) : IO Unspec =
+  let foreign nativePrint : (x :R: String) -> Unspec = "(global $Pervasives $print_endline)"
+    in ioWrapImpure Unspec (\w:RealWorld. nativePrint s).
+
+printInt \(i : Int) : IO Unspec = printString (intToString i).
+
+natToInt : Nat -> Int.
+  natToInt Z = int0,
+  (n : Nat)
+    natToInt (S n) = plus int1 (natToInt n).
+
+printNat \(x : Nat) : IO Unspec = printInt (natToInt x).
