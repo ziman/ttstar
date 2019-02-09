@@ -1,4 +1,3 @@
-{-# LANGUAGE NoOverloadedLists #-}
 module Erasure.Specialise (specialise) where
 
 import TT.Core

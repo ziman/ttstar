@@ -19,11 +19,12 @@ cabal-version:       >=1.10
 executable ttstar
   main-is:             Main.hs
   -- other-modules:       
-  default-extensions:  FlexibleInstances, StandaloneDeriving, OverloadedLists,
+  default-extensions:  FlexibleInstances, StandaloneDeriving,
                        ViewPatterns, NamedFieldPuns, FlexibleContexts,
-                       KindSignatures
-  build-depends:       base, parsec, containers, transformers >=0.4,
-                       lens-family >=1.2, lens-family-core >=1.2,
+                       KindSignatures, GeneralizedNewtypeDeriving,
+                       NamedFieldPuns, FlexibleContexts, ConstraintKinds
+  build-depends:       base, parsec, containers, transformers,
+                       lens-family, lens-family-core,
                        optparse-applicative, filepath
   -- hs-source-dirs:      
   default-language:    Haskell2010
@@ -35,4 +36,4 @@ executable ttstar
     Solver.Indexed, Erasure.Specialise, Erasure.Verify, Optimisation.Identity,
     TT.Core, TT.Lens, TT.Normalise, TT.Parser, TT.Pretty, TT.Utils,
     Util.PrettyPrint, IR.Core, IR.FromTT, IR.Pretty, Codegen.SchemeIR,
-    Solver.LMS, IR.Prune
+    Solver.LMS, IR.Prune, Codegen.Malfunction

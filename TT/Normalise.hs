@@ -1,4 +1,3 @@
-{-# LANGUAGE ConstraintKinds, ViewPatterns #-}
 module TT.Normalise (IsRelevance, Form(..), red, whnf, nf) where
 
 import TT.Core

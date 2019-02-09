@@ -1,4 +1,3 @@
-{-# LANGUAGE ViewPatterns #-}
 module Optimisation.Identity (optimise) where
 
 import TT.Core

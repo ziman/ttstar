@@ -1,6 +1,3 @@
-{-# LANGUAGE ViewPatterns #-}
-{-# LANGUAGE NamedFieldPuns #-}
-
 module Erasure.Verify
     ( verify
     , VerError(..)

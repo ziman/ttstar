@@ -1,4 +1,3 @@
-{-# LANGUAGE FlexibleContexts, FlexibleInstances, StandaloneDeriving, ConstraintKinds #-}
 module TT.Pretty (useUnicode, PrettyR(..), ShowUnicode (..), sup) where
 
 import TT.Core

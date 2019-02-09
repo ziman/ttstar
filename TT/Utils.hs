@@ -1,4 +1,3 @@
-{-# LANGUAGE KindSignatures, FlexibleContexts #-}
 module TT.Utils where
 
 import TT.Core

@@ -1,5 +1,4 @@
-{-# LANGUAGE ViewPatterns, GeneralizedNewtypeDeriving #-}
-
+{-# LANGUAGE OverloadedLists #-}
 module Erasure.Infer (infer, instantiate, unions, TCFailure) where
 
 import TT.Core
