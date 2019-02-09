@@ -1,3 +1,4 @@
+{-# LANGUAGE NoOverloadedLists #-}
 module Erasure.Specialise (specialise) where
 
 import TT.Core
@@ -111,7 +112,7 @@ specTm (Bind bm [] tmm) (Bind br [] tmr) = fmap (Bind br []) <$> specTm tmm tmr
 
 specTm (Bind bm (dm:dsm) tmm) (Bind br (dr:dsr) tmr) = do
     (isDef, dr') <- specDef dm dr
-    (isSub, Bind _br' dsr' tmr') <- specTm (Bind bm dsm tmm) (Bind br dsr tmr)
+    (isSub, ~(Bind _br' dsr' tmr')) <- specTm (Bind bm dsm tmm) (Bind br dsr tmr)
     let is = M.unionWith S.union isDef isSub
     specs <- sequence [
         instantiate fresh (bindEvars ep (defType dm ^.. (ttRelevance :: Traversal' (TT Evar) Evar)))
