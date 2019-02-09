@@ -14,6 +14,7 @@ import IR.Pretty ()
 
 import qualified Codegen.Scheme
 import qualified Codegen.SchemeIR
+import qualified Codegen.Malfunction
 
 import Util.PrettyPrint
 
@@ -194,7 +195,11 @@ pipeline args = do
 
     case Args.dumpSchemeIR args of
         Nothing -> return ()
-        Just fname -> dumpSchemeIR fname (toIR optimised)
+        Just fname -> dumpSchemeIR fname optimisedIR
+
+    case Args.dumpMalfunction args of
+        Nothing -> return ()
+        Just fname -> dumpMalfunction fname optimisedIR
 
     case Args.dumpStats args of
         Nothing -> return ()
@@ -233,6 +238,7 @@ pipeline args = do
     fmtCtr (gs,cs) = show (S.toList gs) ++ " -> " ++ show (S.toList cs)
     dumpTT fname prog = writeFile fname $ "-- vim: ft=ttstar\n" ++ show prog ++ "\n"
     dumpScheme fname prog = writeFile fname $ render "; " (Codegen.Scheme.codegen prog) ++ "\n"
+    dumpMalfunction fname prog = writeFile fname $ render "; " (Codegen.Malfunction.codegen prog) ++ "\n"
 
     dumpSchemeIR fname prog = do
         rts <- readFile $ Args.rtsSchemePath args

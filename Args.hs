@@ -20,6 +20,7 @@ data Args = Args
     , dumpSchemeIR :: Maybe String
     , dumpNF :: Maybe String
     , dumpNFScheme :: Maybe String
+    , dumpMalfunction :: Maybe String
     , dumpStats :: Maybe String
     , rtsSchemePath :: String
     }
@@ -78,6 +79,11 @@ args = Args
         ( metavar "fileNF.scm"
         <> long "dump-nf-scheme"
         <> help "Generate Scheme source from normal form"))
+    <*> optional (strOption
+        ( metavar "file.mlf"
+        <> long "dump-mlf"
+        <> long "dump-malfunction"
+        <> help "Generate Malfunction source"))
     <*> optional (strOption
         ( metavar "stats.json"
         <> long "dump-stats"

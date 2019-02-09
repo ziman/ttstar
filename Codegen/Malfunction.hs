@@ -8,16 +8,12 @@ indent = nest 2
 
 codegen :: IR -> Doc
 
-codegen prog = parens (
-        text "module"
-        $$ parens (text "export")
-    )
-    {-
-    -- above this, we include rts.scm
-    vcat [cgDef n d $$ blankLine | (n,d) <- defs]
-    $$ parens (text "display" <+> cgTm entryPoint)
-    $$ parens (text "newline")
-    -}
+codegen prog = parens (text "module"
+        $$ indent (
+            vcat [cgDef n d $$ blankLine | (n,d) <- defs]
+            $$ parens (text "_" <+> cgTm entryPoint)
+            $$ parens (text "export")
+        ))
   where
     (defs, entryPoint) = letPrefix prog
 
@@ -25,7 +21,7 @@ pv :: Int -> Doc
 pv i = text "_pv" <> int i
 
 cgDef :: IName -> IBody -> Doc
-cgDef n b = parens (text "define" <+> cgName n <+> cgBody n b)
+cgDef n b = parens (cgName n <+> cgBody n b)
 
 cgTm :: IR -> Doc
 cgTm (IV n) = cgName n
@@ -35,8 +31,14 @@ cgTm (ILet n body rhs) = blankLine $$ indent (cgLet ds $ cgTm rhs')
     (ls, rhs') = letPrefix rhs
     ds = [(n, cgBody n b) | (n, b) <- (n, body) : ls]
 
-cgTm (IApp f x) = cgApp (cgTm f) (cgTm x)
-cgTm (IError s) = cgApp (text "error") (text $ show s)
+cgTm tm@(IApp _ _)
+    | (f, xs) <- unApp [] tm
+    = cgApp (cgTm f) (map cgTm xs)
+cgTm (IError s) = cgApp (text "error") [text $ show s]
+
+unApp :: [IR] -> IR -> (IR, [IR])
+unApp acc (IApp f x) = unApp (x : acc) f
+unApp acc tm = (tm, acc)
 
 letPrefix :: IR -> ([(IName, IBody)], IR)
 letPrefix (ILet n body rhs) = let (ls,ir) = letPrefix rhs in ((n,body):ls, ir)
@@ -85,9 +87,14 @@ cgCase scrut alts = parens (text "rts-case" <+> scrut $$ indent (vcat alts))
 cgCtor :: IName -> Int -> Doc
 cgCtor n arity
     -- = parens (text "constructor" <+> cgName n <+> hsep argNs)
-    = nestLambdas argNs (text "`" <> parens (cgName n <+> hsep [text "," <> n | n <- argNs]))
+    = nestLambdas argNs (
+        cgForm (text "block") (
+            cgForm (text "tag") [int 0] -- TODO
+            : argNs
+        )
+    )
   where
-    argNs = [text "e" <> int i | i <- [0..arity-1]]
+    argNs = [text "$e" <> int i | i <- [0..arity-1]]
 
 cgUnpack :: Int -> [Int] -> Doc -> Doc
 cgUnpack scrut [] rhs = rhs
@@ -98,14 +105,16 @@ cgUnpack scrut vs rhs = parens (
 
 nestLambdas :: [Doc] -> Doc -> Doc
 nestLambdas [] rhs = rhs
-nestLambdas [n] rhs = parens (text "lambda" <+> parens n $+$ indent rhs)
 nestLambdas ns rhs = parens (
-    text "curried-lambda" <+> parens (hsep ns)
+    text "lambda" <+> parens (hsep ns)
     $$ indent rhs
   )
 
-cgApp :: Doc -> Doc -> Doc
-cgApp f x = parens (f <+> x)
+cgForm :: Doc -> [Doc] -> Doc
+cgForm f xs = parens (f <+> hsep xs)
+
+cgApp :: Doc -> [Doc] -> Doc
+cgApp f xs = cgForm (text "apply") (f : xs)
 
 specialNames :: [String]
 specialNames =
@@ -117,8 +126,8 @@ specialNames =
 
 cgName :: IName -> Doc
 cgName IBlank = text "_"
-cgName (IPV i) = pv i
-cgName (IUN n) = text . specialName . concatMap mogrify $ n
+cgName (IPV i) = text "$" <> pv i
+cgName (IUN n) = (text "$" <>) . text . specialName . concatMap mogrify $ n
   where
     specialName n
         | n `elem` specialNames = n ++ "_TT"
