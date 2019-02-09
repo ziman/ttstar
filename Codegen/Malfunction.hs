@@ -101,7 +101,7 @@ cgAlt _ (ICtor IBlank pvs rhs) = parens (
 cgAlt v (ICtor cn pvs rhs) = do
     tag <- ctorTag cn
     rhs' <- cgCaseTree rhs
-    return $ parens (parens (cgTag tag) <+> cgUnpack v pvs rhs')
+    return $ parens (cgTag tag <+> cgUnpack v pvs rhs')
 
 cgTag :: Int -> Doc
 cgTag tag = parens ("tag" <+> int tag)
@@ -120,7 +120,11 @@ cgCtor cn arity = do
 cgUnpack :: Int -> [Int] -> Doc -> Doc
 cgUnpack scrut [] rhs = rhs
 cgUnpack scrut vs rhs = parens (
-    "rts-unpack" <+> parens ("cdr" <+> pv scrut) <+> parens (hsep $ map pv vs)
+    "let" <+> parens (hsep
+        [ parens (pv v <+> parens ("field" <+> int i <+> pv scrut))
+        | (i, v) <- zip [0..] vs
+        ]
+    )
     $$ indent rhs
   )
 
