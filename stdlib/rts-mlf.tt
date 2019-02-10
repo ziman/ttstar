@@ -5,7 +5,9 @@ foreign int0 : Int = "0".
 postulate String : Type.
 
 foreign plus : (x :R: Int) -> (y :R: Int) -> Int = "(lambda ($x $y) (+ $x $y))".
+foreign minus : (x :R: Int) -> (y :R: Int) -> Int = "(lambda ($x $y) (- $x $y))".
 foreign times : (x :R: Int) -> (y :R: Int) -> Int = "(lambda ($x $y) (* $x $y))".
+foreign eqInt : (x :R: Int) -> (y :R: Int) -> Bool = "(lambda ($x $y) (== $x $y))".
 foreign intToString : (i :R: Int) -> String = "(global $Pervasives $string_of_int)".
 
 postulate Unspec : Type.

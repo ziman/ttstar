@@ -3,6 +3,27 @@ import "../stdlib/state.tt"
 import "../stdlib/io.tt"
 import "../stdlib/rts-mlf.tt"
 
+sumFor : Bool -> Int -> (Int -> Int) -> Int.
+(n : Int) (f : Int -> Int)
+  sumFor True  n f = int0,
+(n : Int) (f : Int -> Int)
+  sumFor False n f = 
+    let n' \: Int = minus n int1
+      in plus (f n) (sumFor (eqInt n' int0) n' f).
+
+boolToInt : Bool -> Int.
+boolToInt True = int1,
+boolToInt False = int0.
+
+pythag \(n : Int) : Int = 
+  sumFor (eqInt n int0) n (\x:Int.
+    sumFor (eqInt x int0) x (\y:Int.
+      sumFor (eqInt y int0) y (\z:Int.
+        boolToInt (eqInt (plus (times x x) (times y y)) (times z z))
+      )
+    )
+  ).
+
 main \: Unspec = unsafePerformIO Unspec (
-  printInt (plus int0 int1)
+  printInt (pythag int1)
 ).
