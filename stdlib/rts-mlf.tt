@@ -7,8 +7,17 @@ postulate String : Type.
 foreign plus : (x :R: Int) -> (y :R: Int) -> Int = "(lambda ($x $y) (+ $x $y))".
 foreign minus : (x :R: Int) -> (y :R: Int) -> Int = "(lambda ($x $y) (- $x $y))".
 foreign times : (x :R: Int) -> (y :R: Int) -> Int = "(lambda ($x $y) (* $x $y))".
-foreign eqInt : (x :R: Int) -> (y :R: Int) -> Bool = "(lambda ($x $y) (== $x $y))".
 foreign intToString : (i :R: Int) -> String = "(global $Pervasives $string_of_int)".
+
+foreign ifRaw : (a :E: Type) -> (x :R: Int) -> (then :R: a) -> (else :R: a) -> a
+   = "(lambda ($x $then $else) (switch $x (0 $else) (_ $then)))".
+
+isZero \(x : Int) : Bool = ifRaw Bool x False True.
+isNonzero \(x : Int) : Bool = ifRaw Bool x True False.
+
+eqInt \(x : Int) (y : Int) : Bool =
+  let foreign eqInt_I : (x :R: Int) -> (y :R: Int) -> Int = "(lambda ($x $y) (== $x $y))"
+    in isNonzero (eqInt_I x y).
 
 postulate Unspec : Type.
 
@@ -23,4 +32,4 @@ natToInt : Nat -> Int.
   (n : Nat)
     natToInt (S n) = plus int1 (natToInt n).
 
-printNat \(x : Nat) : IO Unspec = printInt (natToInt x).
+printNat \(n : Nat) : IO Unspec = printInt (natToInt n).
