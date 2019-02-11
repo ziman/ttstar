@@ -32,6 +32,7 @@ pruneDefs = concatMap pruneDef
 
 pruneTm :: TT Relevance -> TT ()
 pruneTm (V n) = V n
+pruneTm (Meta i) = Meta i
 pruneTm (EI n ty) = error $ "non-specialised instance found in pruneTm: " ++ show (n, ty)
 pruneTm (Bind b ds tm)
     = case pruneDefs ds of

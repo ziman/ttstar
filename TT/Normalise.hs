@@ -109,6 +109,8 @@ red form ctx t@(V n)
 
     | otherwise = error $ "unknown variable: " ++ show n  -- unknown variable
 
+red form ctx t@(Meta _) = t
+
 red form ctx t
     | ("REDUCING", form, t, M.keys ctx) `dbg` False
     = undefined

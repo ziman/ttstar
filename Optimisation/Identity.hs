@@ -63,6 +63,8 @@ rmId ids tm@(V n)
     | n `S.member` ids = idTT
     | otherwise = tm
 
+rmId ids tm@(Meta _) = tm
+
 rmId ids (App () (V f) x)
     | f `S.member` ids = x'
     | otherwise = App () (V f) x'

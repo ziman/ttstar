@@ -13,6 +13,7 @@ ttRelevance f = g
   where
     g tm = case tm of
         V n     -> pure $ V n
+        Meta i  -> pure $ Meta i
         EI n ty -> EI n <$> g ty
         Bind b ds tm
             -> Bind b <$> traverse (defRelevance f) ds <*> g tm
