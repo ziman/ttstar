@@ -29,7 +29,7 @@ pythag \(n : Int) : Int =
     )
   ).
 
-main \: Unspec = unsafePerformIO Unspec (
+main : Unspec = unsafePerformIO Unspec (
   let int2 : Int = plus int1 int1,
       int4 : Int = times int2 int2,
       int16 : Int = times int4 int4,
