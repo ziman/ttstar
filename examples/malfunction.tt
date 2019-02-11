@@ -7,7 +7,7 @@ sumFor \(n : Int) (f : Int -> Int) : Int
   = case isZero n with
     g : Bool -> Int.
     g True  = int0,
-    g False = plus (f n) (sumFor (minus n int1) f)..
+    g False = plusInt (f n) (sumFor (minusInt n int1) f)..
 
 boolToInt : Bool -> Int.
 boolToInt True = int1,
@@ -16,8 +16,8 @@ boolToInt False = int0.
 isPythag \(x : Int) (y : Int) (z : Int) : Int
   = boolToInt (
     eqInt
-      (times x x)
-      (plus (times y y) (times z z))
+      (timesInt x x)
+      (plusInt (timesInt y y) (timesInt z z))
   ).
 
 pythag \(n : Int) : Int = 
@@ -30,10 +30,10 @@ pythag \(n : Int) : Int =
   ).
 
 main : Unspec = unsafePerformIO Unspec (
-  let int2 : Int = plus int1 int1,
-      int4 : Int = times int2 int2,
-      int16 : Int = times int4 int4,
-      int256 : Int = times int16 int16,
-      int512 : Int = times int256 int2
+  let int2 : Int = plusInt int1 int1,
+      int4 : Int = timesInt int2 int2,
+      int16 : Int = timesInt int4 int4,
+      int256 : Int = timesInt int16 int16,
+      int512 : Int = timesInt int256 int2
   in printInt (pythag int512)
 ).
