@@ -58,7 +58,7 @@ Dependently typed core calculus with erasure inference.
         * when interpreted with `csi`, the `IR`-generated code runs much (~3x) faster than the `TT`-generated code
         * only about 10% faster than `TT`-generated code when compiled using `csc`
     * a codegen via [Malfunction](https://github.com/stedolan/malfunction), using `IR`
-        * produces blazing fast native code
+        * produces fast native code
 
 ## Other stuff
 
