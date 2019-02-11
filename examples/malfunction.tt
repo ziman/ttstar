@@ -3,12 +3,11 @@ import "../stdlib/state.tt"
 import "../stdlib/io.tt"
 import "../stdlib/rts-mlf.tt"
 
-sumFor : Int -> (Int -> Int) -> Int.
-(n : Int) (f : Int -> Int)
-  sumFor n f = case isZero n with
-      g : Bool -> Int.
-      g True  = int0,
-      g False = plus (f n) (sumFor (minus n int1) f)..
+sumFor \(n : Int) (f : Int -> Int) : Int
+  = case isZero n with
+    g : Bool -> Int.
+    g True  = int0,
+    g False = plus (f n) (sumFor (minus n int1) f)..
 
 boolToInt : Bool -> Int.
 boolToInt True = int1,

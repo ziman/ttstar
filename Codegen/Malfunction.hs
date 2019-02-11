@@ -49,9 +49,15 @@ cgDef :: IName -> IBody -> CG Doc
 cgDef n b = do
     b' <- cgBody n b
     let def = parens (cgName n <+> b')
-    return $ case b of
-        ICaseFun (_:_) _ -> parens ("rec" <+> def)
-        _ -> def
+    return $
+        if isFun b
+            then parens ("rec" <+> def)
+            else def
+
+isFun :: IBody -> Bool
+isFun (ICaseFun (_:_) _) = True
+isFun (ICaseFun [] (ILeaf (ILam _ _))) = True
+isFun _ = False
 
 cgTm :: IR -> CG Doc
 cgTm (IV n) = pure $ cgName n
