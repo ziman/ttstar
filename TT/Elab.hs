@@ -19,6 +19,7 @@ type Type = TT MRel
 type ElabState = ()
 data ElabErr
     = CantUnify Term Term
+    | CantElaborate Term
     deriving (Show)
 
 newtype Backtrace = BT [String]
@@ -37,18 +38,23 @@ instance Show ElabFailure where
 
 
 type Elab a = RWST
-    (Ctx MRel)            -- R: context
+    (Ctx MRel, Backtrace) -- R: context
     (S.Set Constr)        -- W: constraints
     ElabState             -- S: for fresh names
     (Except ElabFailure)  -- T: errors
     a
 
-elabTm :: Term -> Elab ()
-elabTm _tm = undefined
+efail :: ElabErr -> Elab a
+efail err = do
+    (_, bt) <- ask
+    lift . throwE $ ElabFailure bt err
+
+elabTm :: Term -> Elab Type
+elabTm tm = efail $ CantElaborate tm
 
 -- solve all metas
 elab :: Term -> Either String Term
 elab tm =
-    case runExcept $ evalRWST (elabTm tm) M.empty () of
+    case runExcept $ evalRWST (elabTm tm) (M.empty, BT []) () of
         Left err -> Left $ show err
-        Right ((), cs) -> error $ show cs
+        Right (_ty, cs) -> error $ show cs
