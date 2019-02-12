@@ -109,10 +109,17 @@ natural = mkNat . read <$> (many1 (satisfy isDigit) <* sp) <?> "number"
     mkNat 0 = V $ UN "Z"
     mkNat k = App Nothing (V $ UN "S") (mkNat (k-1))
 
+meta :: Parser (TT MRel)
+meta = do
+    kwd "_"
+    ~(MN _ i) <- freshMN "_"
+    return $ Meta i
+
 atomic :: Parser (TT MRel)
 atomic = parens expr
     <|> caseExpr
     <|> erasureInstance
+    <|> meta
     <|> var
     <|> natural
     <?> "atomic expression"
