@@ -22,8 +22,19 @@ data ElabErr
     deriving (Show)
 
 newtype Backtrace = BT [String]
-data Constr = Eq Term Term
+data Constr = Eq Term Term deriving (Eq, Ord, Show)
+
 data ElabFailure = ElabFailure Backtrace ElabErr
+instance Show ElabFailure where
+    show (ElabFailure (BT []) e) = show e
+    show (ElabFailure (BT bt) e) = unlines $
+            "Traceback:"
+            : zipWith
+                (\i n -> show i ++ ". " ++ n)
+                [1::Integer ..]
+                (reverse bt)
+            ++ ["Error: " ++ show e]
+
 
 type Elab a = RWST
     (Ctx MRel)            -- R: context
@@ -36,5 +47,8 @@ elabTm :: Term -> Elab ()
 elabTm _tm = undefined
 
 -- solve all metas
-elab :: Term -> Term
-elab tm = tm
+elab :: Term -> Either String Term
+elab tm =
+    case runExcept $ evalRWST (elabTm tm) M.empty () of
+        Left err -> Left $ show err
+        Right ((), cs) -> error $ show cs
