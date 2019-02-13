@@ -149,6 +149,13 @@ ptt (PApp r f x) = App r (ptt f) (ptt x)
 ptt (PForced tm) = tm
 ptt (PHead n) = V n
 
+elabBnd :: Def MRel -> Type -> Binder -> Elab Type
+elabBnd d rty Lam = return $ Bind Pi [d] rty
+elabBnd d rty Pi  = do
+    rty ~= V typeOfTypes
+    return $ V typeOfTypes
+elabBnd _d rty Let = return rty
+
 elabTm :: Term -> Elab Type
 
 elabTm (V n) = do
@@ -163,25 +170,13 @@ elabTm (EI _n ty) = do
 
     return ty
 
-elabTm (Bind Lam [d@(Def n r ty (Abstract Var))] rhs) = do
+elabTm (Bind bnd [d] rhs) = do
     elabDef d
     rty <- with d $ elabTm rhs
-    return $ Bind Pi [d] rty
+    elabBnd d rty bnd 
 
-elabTm (Bind Pi [d@(Def n r ty (Abstract Var))] rhs) = do
-    elabDef d
-    rty <- with d $ elabTm rhs
-    rty ~= V typeOfTypes
-
-    return $ V typeOfTypes
-
-elabTm (Bind Let [d] rhs) = do
-    elabDef d
-    with d $ elabTm rhs
-
-elabTm (Bind Let (d:ds) rhs) = do
-    elabDef d
-    with d $ elabTm (Bind Let ds rhs)
+elabTm (Bind Let (d:ds) rhs) =
+    elabTm $ Bind Let [d] (Bind Let ds rhs)
 
 elabTm (App r f x) = do
     fty <- elabTm f
