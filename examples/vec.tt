@@ -9,15 +9,15 @@ data Vec : N -> Type -> Type where
   Cons : (a : Type) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a.
 
 plus : N -> N -> N.
-  (n : N)
+  (n : _)
     plus Z n = n,
-  (m : N) (n : N)
+  (m : _) (n : _)
     plus (S m) n = S (plus m n).
 
 append : (a : Type) -> (m : N) -> (n : N) -> (xs : Vec m a) -> (ys : Vec n a) -> Vec (plus m n) a.
-  (a : Type) (n : N) (ys : Vec n a)
+  (a : _) (n : _) (ys : _)
     append a {Z} n (Nil [a]) ys = ys,
-  (a : Type) (m : N) (n : N) (x : a) (xs : Vec m a) (ys : Vec n a)
+  (a : _) (m : _) (n : _) (x : _) (xs : _) (ys : _)
     append a ({S} m) n (Cons [a] [m] x xs) ys = Cons a (plus m n) x (append a m n xs ys).
 
 main : Vec 1 N
