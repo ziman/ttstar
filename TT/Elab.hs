@@ -23,7 +23,9 @@ data ElabErr
     = CantUnify Term Term
     | CantElaborate Term
     | UnknownVar Name
-    | NotPi Term Type
+    | NotPi Type
+    | NotConstructor Name
+    | BadPatHead Name
     deriving (Show)
 
 newtype Backtrace = BT [String]
@@ -83,7 +85,72 @@ p ~= q = do
 with :: Def MRel -> Elab a -> Elab a
 with d = local $ \(ctx, bt) -> (M.insert (defName d) d ctx, bt)
 
+withs :: [Def MRel] -> Elab a -> Elab a
+withs [] x = x
+withs (d:ds) x = with d $ withs ds x
+
+elabDefs :: [Def MRel] -> Elab ()
+elabDefs [] = pure ()
+elabDefs (d:ds) = do
+    elabDef d
+    with d $ elabDefs ds
+
+elabDef :: Def MRel -> Elab ()
+elabDef d@(Def n _r ty b) = do
+    tyty <- elabTm ty
+    tyty ~= V typeOfTypes
+    with d{ defBody = Abstract Var } $ elabBody n b
+
+elabBody :: Name -> Body MRel -> Elab ()
+elabBody _ (Abstract _) = pure ()
+elabBody n (Term tm) = do
+    ty  <- defType <$> lookup n
+    ty' <- elabTm tm
+    ty' ~= ty
+elabBody n (Clauses cs) = mapM_ (elabClause n) cs
+
+elabClause :: Name -> Clause MRel -> Elab ()
+elabClause n (Clause pvs lhs rhs) = do
+    elabDefs pvs
+    lty <- elabPat n (M.fromList [(defName d, d) | d <- pvs]) lhs
+    rty <- withs pvs $ elabTm rhs   
+    lty ~= rty
+
+elabPat :: Name -> Ctx MRel -> Pat MRel -> Elab Type
+elabPat n pvs (PV n') = case M.lookup n' pvs of
+    Just d -> return $ defType d
+    Nothing -> do
+        d <- lookup n'
+        case defBody d of
+            Abstract Constructor -> return $ defType d
+            _ -> efail $ NotConstructor n'
+
+elabPat n pvs (PApp r f x) = do
+    fty <- elabPat n pvs f
+    xty <- elabPat n pvs x
+    ctx <- fst <$> ask
+
+    case nf ctx fty of
+        Bind Pi [Def n' r' ty' (Abstract Var)] rhs' -> do
+            xty ~= ty'
+            return $ subst n' (ptt x) rhs'
+
+        fty' -> efail $ NotPi fty' 
+
+elabPat n pvs (PForced tm) = withs (M.elems pvs) $ elabTm tm
+
+elabPat n pvs (PHead n')
+    | n == n' = defType <$> lookup n
+    | otherwise = efail $ BadPatHead n'
+
+ptt :: Pat MRel -> Term
+ptt (PV n) = V n
+ptt (PApp r f x) = App r (ptt f) (ptt x)
+ptt (PForced tm) = tm
+ptt (PHead n) = V n
+
 elabTm :: Term -> Elab Type
+
 elabTm (V n) = do
     d <- lookup n
     return $ defType d
@@ -97,23 +164,24 @@ elabTm (EI _n ty) = do
     return ty
 
 elabTm (Bind Lam [d@(Def n r ty (Abstract Var))] rhs) = do
-    tyty <- elabTm ty
-    tyty ~= V typeOfTypes
+    elabDef d
     rty <- with d $ elabTm rhs
     return $ Bind Pi [d] rty
 
 elabTm (Bind Pi [d@(Def n r ty (Abstract Var))] rhs) = do
-    tyty <- elabTm ty
-    tyty ~= V typeOfTypes
-
+    elabDef d
     rty <- with d $ elabTm rhs
     rty ~= V typeOfTypes
 
     return $ V typeOfTypes
 
-elabTm (Bind Let [d] rhs) = with d $ elabTm rhs
+elabTm (Bind Let [d] rhs) = do
+    elabDef d
+    with d $ elabTm rhs
 
-elabTm (Bind Let (d:ds) rhs) = with d $ elabTm (Bind Let ds rhs)
+elabTm (Bind Let (d:ds) rhs) = do
+    elabDef d
+    with d $ elabTm (Bind Let ds rhs)
 
 elabTm (App r f x) = do
     fty <- elabTm f
@@ -125,13 +193,15 @@ elabTm (App r f x) = do
             xty ~= ty
             return $ subst n x rhs
 
-        fty' -> efail $ NotPi f fty'
+        fty' -> efail $ NotPi fty'
 
 elabTm tm = efail $ CantElaborate tm
 
 -- solve all metas
 elab :: Term -> Either String Term
 elab tm =
-    case runExcept $ evalRWST (elabTm tm) (M.empty, BT []) (ES 1) of
+    case runExcept $ evalRWST (elabTm tm) (ctx, BT []) (ES 1) of
         Left err -> Left $ show err
         Right (_ty, cs) -> error $ show cs
+  where
+    ctx = M.singleton typeOfTypes $ Def typeOfTypes Nothing (V typeOfTypes) (Abstract Constructor)
