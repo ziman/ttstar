@@ -200,12 +200,37 @@ elab = runExcept . withExcept show . elab'
 -- solve all metas
 elab' :: Term -> Except ElabFailure Term
 elab' tm = do
-    (_ty, cs) <- evalRWST (elabTm tm) (ctx, BT []) (ES 1)
+    (_ty, cs) <- evalRWST (elabTm tm) (ctx, BT []) (ES mm)
     ms <- solve M.empty cs
     return $ substMeta ms tm
   where
+    mm = maxMeta tm + 1
     ctx = M.singleton typeOfTypes
         $ Def typeOfTypes Nothing (V typeOfTypes) (Abstract Constructor)
+
+maxMeta :: Term -> Int
+maxMeta (V _) = 0
+maxMeta (Meta i) = i
+maxMeta (EI _ ty) = maxMeta ty
+maxMeta (App _ f x) = maxMeta f `max` maxMeta x
+maxMeta (Bind _ ds rhs) = maximum [maxMetaDef d | d <- ds]
+    `max` maxMeta rhs
+  where
+    maxMetaDef (Def _ _ ty b) = maxMeta ty `max` maxMetaBody b
+
+    maxMetaBody (Abstract _) = 0
+    maxMetaBody (Term tm) = maxMeta tm
+    maxMetaBody (Clauses cs) = maximum [maxMetaClause c | c <- cs]
+
+    maxMetaClause (Clause pvs lhs rhs) =
+        maximum [maxMetaDef d | d <- pvs]
+        `max` maxMetaPat lhs
+        `max` maxMeta rhs
+
+    maxMetaPat (PV _) = 0
+    maxMetaPat (PApp _ f x) = maxMetaPat f `max` maxMetaPat x
+    maxMetaPat (PForced tm) = maxMeta tm
+    maxMetaPat (PHead _) = 0
 
 substMeta :: M.Map Int Term -> Term -> Term
 substMeta ms tm@(V n) = tm
