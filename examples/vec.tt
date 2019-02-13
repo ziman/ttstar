@@ -5,7 +5,7 @@ data N : Type where
   S : (x :R: N) -> N.
 
 data Vec : N -> Type -> Type where
-  Nil : (a : Type) -> Vec Z a,
+  Nil : (a : _) -> Vec Z a,
   Cons : (a : Type) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a.
 
 plus : N -> N -> N.

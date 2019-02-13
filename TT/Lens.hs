@@ -57,3 +57,34 @@ implRelevance f = fmap M.fromList . traverse f' . M.toList
   where
     f' (x, y) = (,) <$> f'' x <*> f'' y
     f'' = fmap S.fromList . traverse f . S.toList
+
+ttMetaNums :: Traversal' (TT r) Int
+ttMetaNums f = ttMetas (\(Meta i) -> Meta <$> f i)
+
+ttMetas :: Traversal' (TT r) (TT r)
+ttMetas f = g
+  where
+    g tm@(V n)    = pure tm
+    g tm@(Meta i) = f tm
+    g (EI n ty)   = EI n <$> g ty
+    g (Bind b ds tm) = Bind b <$> traverse (defMetas f) ds <*> g tm
+    g (App r f x) = App r <$> g f <*> g x
+
+defMetas :: Traversal' (Def r) (TT r)
+defMetas f (Def n r ty body) = Def n r <$> ttMetas f ty <*> bodyMetas f body
+
+bodyMetas :: Traversal' (Body r) (TT r)
+bodyMetas f b@(Abstract _) = pure b
+bodyMetas f (Term tm)      = Term <$> ttMetas f tm
+bodyMetas f (Clauses cs)   = Clauses <$> traverse (clauseMetas f) cs
+
+clauseMetas :: Traversal' (Clause r) (TT r)
+clauseMetas f (Clause pvs lhs rhs) = Clause <$> traverse (defMetas f) pvs <*> patMetas f lhs <*> ttMetas f rhs
+
+patMetas :: Traversal' (Pat r) (TT r)
+patMetas f = g
+  where
+    g p@(PV _) = pure p
+    g (PApp r f x) = PApp r <$> g f <*> g x
+    g (PForced tm) = PForced <$> ttMetas f tm
+    g p@(PHead f) = pure p

@@ -5,11 +5,14 @@ import TT.Core
 import TT.Pretty ()
 import TT.Normalise
 import TT.Utils
+import TT.Lens
 
 import Prelude hiding (lookup)
 import Control.Monad.Trans.Class
 import Control.Monad.Trans.Except
 import Control.Monad.Trans.RWS.Strict
+
+import Lens.Family2
 
 import qualified Data.Set as S
 import qualified Data.Map as M
@@ -201,64 +204,14 @@ elab' tm = do
     ms <- solve M.empty cs
     return $ substMeta ms tm
   where
-    mm = maxMeta tm + 1
+    mm = maximum (0 : (tm ^.. ttMetaNums)) + 1
     ctx = M.singleton typeOfTypes
         $ Def typeOfTypes Nothing (V typeOfTypes) (Abstract Constructor)
 
-maxMeta :: Term -> Int
-maxMeta (V _) = 0
-maxMeta (Meta i) = i
-maxMeta (EI _ ty) = maxMeta ty
-maxMeta (App _ f x) = maxMeta f `max` maxMeta x
-maxMeta (Bind _ ds rhs) = maximum [maxMetaDef d | d <- ds]
-    `max` maxMeta rhs
-  where
-    maxMetaDef (Def _ _ ty b) = maxMeta ty `max` maxMetaBody b
-
-    maxMetaBody (Abstract _) = 0
-    maxMetaBody (Term tm) = maxMeta tm
-    maxMetaBody (Clauses cs) = maximum [maxMetaClause c | c <- cs]
-
-    maxMetaClause (Clause pvs lhs rhs) =
-        maximum [maxMetaDef d | d <- pvs]
-        `max` maxMetaPat lhs
-        `max` maxMeta rhs
-
-    maxMetaPat (PV _) = 0
-    maxMetaPat (PApp _ f x) = maxMetaPat f `max` maxMetaPat x
-    maxMetaPat (PForced tm) = maxMeta tm
-    maxMetaPat (PHead _) = 0
-
 substMeta :: M.Map Int Term -> Term -> Term
-substMeta ms tm@(V n) = tm
-substMeta ms m@(Meta i) = case M.lookup i ms of
-    Just tm -> tm
+substMeta ms tm = tm & ttMetas %~ \m@(Meta i) -> case M.lookup i ms of
+    Just tm' -> substMeta ms tm'
     Nothing -> m
-substMeta ms (EI n ty) = EI n (substMeta ms ty)
-substMeta ms (App r f x) = App r (substMeta ms f) (substMeta ms x)
-substMeta ms (Bind bnd ds rhs) =
-    Bind bnd (map (substMetaDef ms) ds) (substMeta ms rhs)
-  where
-    substMetaDef :: M.Map Int Term -> Def MRel -> Def MRel
-    substMetaDef ms (Def n r ty b) = Def n r (substMeta ms ty) (substMetaBody ms b)
-
-    substMetaBody :: M.Map Int Term -> Body MRel -> Body MRel
-    substMetaBody ms b@(Abstract _) = b
-    substMetaBody ms (Term tm) = Term $ substMeta ms tm
-    substMetaBody ms (Clauses cs) = Clauses $ map (substMetaClause ms) cs
-
-    substMetaClause :: M.Map Int Term -> Clause MRel -> Clause MRel
-    substMetaClause ms (Clause pvs lhs rhs) =
-        Clause
-            (map (substMetaDef ms) pvs)
-            (substMetaPat ms lhs)
-            (substMeta ms rhs)
-
-    substMetaPat :: M.Map Int Term -> Pat MRel -> Pat MRel
-    substMetaPat ms p@(PV _) = p
-    substMetaPat ms (PApp r f x) = PApp r (substMetaPat ms f) (substMetaPat ms x)
-    substMetaPat ms (PForced tm) = PForced $ substMeta ms tm
-    substMetaPat ms p@(PHead _) = p
 
 solve :: M.Map Int Term -> S.Set Constr -> Except ElabFailure (M.Map Int Term)
 solve ms cs
@@ -286,12 +239,14 @@ solveMany (Eq ctx p q : cs)
         in Eq ctx (s lhs) (s rhs)
 
 solveOne :: Ctx MRel -> Term -> Term -> Either (Int, Term) (S.Set Constr)
-solveOne _ (Meta i) tm = Left (i,tm)
-solveOne _ tm (Meta i) = Left (i,tm)
+solveOne _ (Meta i) tm
+    | i `notElem` tm ^.. ttMetaNums = Left (i,tm)
+solveOne _ tm (Meta i)
+    | i `notElem` tm ^.. ttMetaNums = Left (i,tm)
 solveOne _ tm tm' | tm == tm' = Right S.empty
 solveOne _ tm tm'
-    | 0 <- maxMeta tm
-    , 0 <- maxMeta tm'
+    | [] <- tm  ^.. ttMetas
+    , [] <- tm' ^.. ttMetas
     = Right S.empty  -- no metas here, nothing to do
 solveOne ctx p@(App _ _ _) q@(App _ _ _)
     | (V c, xs) <- unApply p
