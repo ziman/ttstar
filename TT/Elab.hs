@@ -14,6 +14,8 @@ import Control.Monad.Trans.RWS.Strict
 import qualified Data.Set as S
 import qualified Data.Map as M
 
+import Debug.Trace
+
 type MRel = Maybe Relevance
 type Term = TT MRel
 type Type = TT MRel
@@ -30,13 +32,7 @@ data ElabErr
     deriving (Show)
 
 newtype Backtrace = BT [String]
-data Constr = Eq Backtrace Term Term
-
-instance Eq Constr where
-    Eq _ p q == Eq _ p' q' = (p == p') && (q == q')
-
-instance Ord Constr where
-    compare (Eq _ p q) (Eq _ p' q') = compare p p' <> compare q q'
+data Constr = Eq (Ctx MRel) Term Term deriving (Eq, Ord)
 
 instance Show Constr where
     show (Eq _ p q) = "(" ++ show p ++ " ~ " ++ show q ++ ")"
@@ -81,8 +77,8 @@ freshMeta = do
 
 (~=) :: Term -> Term -> Elab ()
 p ~= q = do
-    (_, bt) <- ask
-    tell [Eq bt p q]
+    (ctx, _) <- ask
+    tell [Eq ctx p q]
 
 with :: Def MRel -> Elab a -> Elab a
 with d = local $ \(ctx, bt) -> (M.insert (defName d) d ctx, bt)
@@ -236,7 +232,7 @@ substMeta :: M.Map Int Term -> Term -> Term
 substMeta ms tm@(V n) = tm
 substMeta ms m@(Meta i) = case M.lookup i ms of
     Just tm -> tm
-    Nothing -> error $ "no solution for meta " ++ show m
+    Nothing -> m
 substMeta ms (EI n ty) = EI n (substMeta ms ty)
 substMeta ms (App r f x) = App r (substMeta ms f) (substMeta ms x)
 substMeta ms (Bind bnd ds rhs) =
@@ -283,12 +279,21 @@ solveMany (c:cs) = case solveOne c of
         in (ms', S.union csc cs')
   where
     subst :: Int -> Term -> Constr -> Constr
-    subst i tm (Eq bt lhs rhs) =
+    subst i tm (Eq ctx lhs rhs) =
         let s = substMeta (M.singleton i tm)
-        in Eq bt (s lhs) (s rhs)
+        in Eq ctx (s lhs) (s rhs)
 
 solveOne :: Constr -> Either (Int, Term) (S.Set Constr)
+solveOne (Eq _ p q) | ("EQ", p, q) `traceShow` False = undefined
 solveOne (Eq _ (Meta i) tm) = Left (i,tm)
 solveOne (Eq _ tm (Meta i)) = Left (i,tm)
 solveOne (Eq _ tm tm') | tm == tm' = Right S.empty
+solveOne (Eq ctx p@(App _ _ _) q@(App _ _ _))
+    | (V c, xs) <- unApply p
+    , (V c', xs') <- unApply q
+    , Just (defBody -> Abstract Constructor) <- M.lookup c ctx
+    , Just (defBody -> Abstract Constructor) <- M.lookup c' ctx
+    , length xs == length xs'
+    = Right . S.fromList $ [Eq ctx x x' | ((_,x),(_,x')) <- zip xs xs']
+
 solveOne c = Right [c]

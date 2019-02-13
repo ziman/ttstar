@@ -21,4 +21,4 @@ append : (a : Type) -> (m : N) -> (n : N) -> (xs : Vec m a) -> (ys : Vec n a) ->
     append a ({S} m) n (Cons [a] [m] x xs) ys = Cons a (plus m n) x (append a m n xs ys).
 
 main : Vec 1 N
-    = append N 0 1 (Nil N) (Cons N Z 4 (Nil N)).
+    = append _ 0 1 (Nil N) (Cons N Z 4 (Nil N)).
