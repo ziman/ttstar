@@ -5,20 +5,20 @@ data N : Type where
   S : (x :R: N) -> N.
 
 data Vec : N -> Type -> Type where
-  Nil : (a : _) -> Vec Z a,
-  Cons : (a : Type) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a.
+  Nil : forall a -> Vec Z a,
+  Cons : forall a n -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a.
 
 plus : N -> N -> N.
-  (n : _)
-    plus Z n = n,
-  (m : _) (n : _)
-    plus (S m) n = S (plus m n).
+pat n.
+  plus Z n = n,
+pat m n.
+  plus (S m) n = S (plus m n).
 
 append : (a : _) -> (m : N) -> (n : N) -> (xs : Vec m a) -> (ys : Vec n a) -> Vec (plus m n) a.
-  (a : _) (n : _) (ys : _)
-    append a {Z} n (Nil [a]) ys = ys,
-  (a : _) (m : _) (n : _) (x : _) (xs : _) (ys : _)
-    append a ({S} m) n (Cons [a] [m] x xs) ys = Cons a (plus m n) x (append a m n xs ys).
+pat a n ys.
+  append a {Z} n (Nil [a]) ys = ys,
+pat a m n x xs ys.
+  append a ({S} m) n (Cons [a] [m] x xs) ys = Cons _ _ x (append _ _ _ xs ys).
 
 main : Vec _ _
-    = append _ _ _ (Nil _) (Cons _ _ 4 (Nil _)).
+  = append _ _ _ (Nil _) (Cons _ _ 4 (Nil _)).

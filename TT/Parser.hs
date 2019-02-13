@@ -145,21 +145,23 @@ bpi = (<?> "pi") $ do
     kwd "->"
     Bind Pi [d] <$> expr
 
+-- meta-enabled typings
+mtypings :: Parser [Def MRel]
+mtypings = traverse f =<< many1 ((Left <$> name) <|> (Right <$> typing Var))
+  where
+    f (Left n) = do
+        ty <- freshMeta
+        return $ Def n Nothing ty (Abstract Var)
+
+    f (Right d) = return d
+
 bforall :: Parser (TT MRel)
 bforall = (<?> "forall") $ do
     kwd "forall"
-    ns <- many1 ((Left <$> name) <|> (Right <$> typing Var))
+    ds <- mtypings
     kwd "->"
     rhs <- expr
-    foldBind rhs ns
-  where
-    foldBind :: TT MRel -> [Either Name (Def MRel)] -> Parser (TT MRel)
-    foldBind rhs [] = pure rhs
-    foldBind rhs (Left n : ns) = do
-        ty <- freshMeta
-        Bind Pi [Def n Nothing ty (Abstract Var)] <$> foldBind rhs ns
-    foldBind rhs (Right d : ns) = do
-        Bind Pi [d] <$> foldBind rhs ns
+    pure $ foldr (\d rhs' -> Bind Pi [d] rhs') rhs ds
 
 bind :: Parser (TT MRel)
 bind = arrow
@@ -305,9 +307,12 @@ clausesBody = Clauses <$> (clause `sepBy` kwd ",") <* optional (kwd ".")
 termBody :: Parser (Body MRel)
 termBody = Term <$> expr
 
+mpatvars :: Parser [Def MRel]
+mpatvars = kwd "pat" *> mtypings <* kwd "."
+
 clause :: Parser (Clause MRel)
 clause = (<?> "pattern clause") $ do
-    pvs <- many (ptyping Var) <|> pure []
+    pvs <- mpatvars <|> many (ptyping Var)
     lhs <- forceHead <$> pattern
     kwd "="
     rhs <- expr
