@@ -22,6 +22,7 @@ data ElabState = ES Int
 data ElabErr
     = CantUnify Term Term
     | CantElaborate Term
+    | NoProgress (S.Set Constr)
     | UnknownVar Name
     | NotPi Type
     | NotConstructor Name
@@ -200,7 +201,7 @@ elab = runExcept . withExcept show . elab'
 elab' :: Term -> Except ElabFailure Term
 elab' tm = do
     (_ty, cs) <- evalRWST (elabTm tm) (ctx, BT []) (ES 1)
-    ms <- solve cs
+    ms <- solve M.empty cs
     return $ substMeta ms tm
   where
     ctx = M.singleton typeOfTypes
@@ -237,5 +238,32 @@ substMeta ms (Bind bnd ds rhs) =
     substMetaPat ms (PForced tm) = PForced $ substMeta ms tm
     substMetaPat ms p@(PHead _) = p
 
-solve :: S.Set Constr -> Except ElabFailure (M.Map Int Term)
-solve _cs = pure $ M.empty
+solve :: M.Map Int Term -> S.Set Constr -> Except ElabFailure (M.Map Int Term)
+solve ms cs
+    | S.null cs = return ms
+    | cs' == cs = throwE . ElabFailure (BT []) $ NoProgress cs
+    | otherwise = solve (M.union ms ms') cs'
+  where
+    (ms', cs') = solveMany (S.toList cs)
+
+solveMany :: [Constr] -> (M.Map Int Term, S.Set Constr)
+solveMany [] = (M.empty, S.empty)
+solveMany (c:cs) = case solveOne c of
+    Left (i, tm) ->
+        let (ms', cs') = solveMany (map (subst i tm) cs)
+        in (M.insert i tm ms', cs')
+
+    Right csc ->
+        let (ms', cs') = solveMany cs
+        in (ms', S.union csc cs')
+  where
+    subst :: Int -> Term -> Constr -> Constr
+    subst i tm (Eq bt lhs rhs) =
+        let s = substMeta (M.singleton i tm)
+        in Eq bt (s lhs) (s rhs)
+
+solveOne :: Constr -> Either (Int, Term) (S.Set Constr)
+solveOne (Eq _ (Meta i) tm) = Left (i,tm)
+solveOne (Eq _ tm (Meta i)) = Left (i,tm)
+solveOne (Eq _ tm tm') | tm == tm' = Right S.empty
+solveOne c = Right [c]
