@@ -41,6 +41,7 @@ instance Show Constr where
     show (Eq _ p q) = "(" ++ show p ++ " ~ " ++ show q ++ ")"
 
 data ElabFailure = ElabFailure Backtrace ElabErr
+
 instance Show ElabFailure where
     show (ElabFailure (BT []) e) = show e
     show (ElabFailure (BT bt) e) = unlines $
@@ -192,11 +193,49 @@ elabTm (App r f x) = do
 
 elabTm tm = efail $ CantElaborate tm
 
--- solve all metas
 elab :: Term -> Either String Term
-elab tm =
-    case runExcept $ evalRWST (elabTm tm) (ctx, BT []) (ES 1) of
-        Left err -> Left $ show err
-        Right (_ty, cs) -> error $ show cs
+elab = runExcept . withExcept show . elab'
+
+-- solve all metas
+elab' :: Term -> Except ElabFailure Term
+elab' tm = do
+    (_ty, cs) <- evalRWST (elabTm tm) (ctx, BT []) (ES 1)
+    ms <- solve cs
+    return $ substMeta ms tm
   where
-    ctx = M.singleton typeOfTypes $ Def typeOfTypes Nothing (V typeOfTypes) (Abstract Constructor)
+    ctx = M.singleton typeOfTypes
+        $ Def typeOfTypes Nothing (V typeOfTypes) (Abstract Constructor)
+
+substMeta :: M.Map Int Term -> Term -> Term
+substMeta ms tm@(V n) = tm
+substMeta ms m@(Meta i) = case M.lookup i ms of
+    Just tm -> tm
+    Nothing -> error $ "no solution for meta " ++ show m
+substMeta ms (EI n ty) = EI n (substMeta ms ty)
+substMeta ms (App r f x) = App r (substMeta ms f) (substMeta ms x)
+substMeta ms (Bind bnd ds rhs) =
+    Bind bnd (map (substMetaDef ms) ds) (substMeta ms rhs)
+  where
+    substMetaDef :: M.Map Int Term -> Def MRel -> Def MRel
+    substMetaDef ms (Def n r ty b) = Def n r (substMeta ms ty) (substMetaBody ms b)
+
+    substMetaBody :: M.Map Int Term -> Body MRel -> Body MRel
+    substMetaBody ms b@(Abstract _) = b
+    substMetaBody ms (Term tm) = Term $ substMeta ms tm
+    substMetaBody ms (Clauses cs) = Clauses $ map (substMetaClause ms) cs
+
+    substMetaClause :: M.Map Int Term -> Clause MRel -> Clause MRel
+    substMetaClause ms (Clause pvs lhs rhs) =
+        Clause
+            (map (substMetaDef ms) pvs)
+            (substMetaPat ms lhs)
+            (substMeta ms rhs)
+
+    substMetaPat :: M.Map Int Term -> Pat MRel -> Pat MRel
+    substMetaPat ms p@(PV _) = p
+    substMetaPat ms (PApp r f x) = PApp r (substMetaPat ms f) (substMetaPat ms x)
+    substMetaPat ms (PForced tm) = PForced $ substMeta ms tm
+    substMetaPat ms p@(PHead _) = p
+
+solve :: S.Set Constr -> Except ElabFailure (M.Map Int Term)
+solve _cs = pure $ M.empty
