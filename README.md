@@ -42,6 +42,7 @@ Dependently typed core calculus with erasure inference.
     * `case` expressions
     * `with` clauses
     * mutual recursion
+* simplistic term/type inference via metavars + unification
 
 ### Practicalities
 
@@ -69,7 +70,6 @@ Dependently typed core calculus with erasure inference.
 
 ## Does not feature
 
-* type inference
 * totality checking
 * mutual recursion
 	* a restricted form is easy to achieve using local let bindings

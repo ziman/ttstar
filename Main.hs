@@ -56,23 +56,25 @@ pipeline args = do
         Right prog ->
             return prog
 
-    -- elaborate metas
-    prog <- case elab progMeta of
-        Left err -> putStrLn err >> error "elaboration failed"
-        Right prog -> return prog
-
-    -- evarify the program
-    let evarified_1st = evar prog
-
     when (Args.verbose args) $ do
         putStrLn ""
         putStrLn "### Desugared ###"
         print progMeta
 
+    -- elaborate metas
+    prog <- case elab progMeta of
+        Left err -> putStrLn err >> error "elaboration failed"
+        Right prog -> return prog
+
+    when (Args.verbose args) $ do
         putStrLn ""
         putStrLn "### Elaborated ###"
         print prog
 
+    -- evarify the program
+    let evarified_1st = evar prog
+
+    when (Args.verbose args) $ do
         putStrLn ""
         putStrLn "### Evarified ###"
         print evarified_1st

@@ -289,6 +289,10 @@ solveOne :: Ctx MRel -> Term -> Term -> Either (Int, Term) (S.Set Constr)
 solveOne _ (Meta i) tm = Left (i,tm)
 solveOne _ tm (Meta i) = Left (i,tm)
 solveOne _ tm tm' | tm == tm' = Right S.empty
+solveOne _ tm tm'
+    | 0 <- maxMeta tm
+    , 0 <- maxMeta tm'
+    = Right S.empty  -- no metas here, nothing to do
 solveOne ctx p@(App _ _ _) q@(App _ _ _)
     | (V c, xs) <- unApply p
     , (V c', xs') <- unApply q

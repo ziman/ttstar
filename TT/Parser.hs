@@ -46,7 +46,7 @@ freshMN :: String -> Parser Name
 freshMN stem = do
     st <- getState
     let cs = psCounters st
-    let i = M.findWithDefault 0 stem cs
+    let i = M.findWithDefault 1 stem cs
     putState st{ psCounters = M.insert stem (i+1) cs }
     return $ MN stem i
 
@@ -54,7 +54,7 @@ keywords :: S.Set String
 keywords = S.fromList [
     "case", "with", "where",
     "data", "let", "in", "postulate",
-    "of"
+    "of", "forall"
   ]
 
 lineComment :: Parser ()
@@ -110,8 +110,10 @@ natural = mkNat . read <$> (many1 (satisfy isDigit) <* sp) <?> "number"
     mkNat k = App Nothing (V $ UN "S") (mkNat (k-1))
 
 meta :: Parser (TT MRel)
-meta = do
-    kwd "_"
+meta = kwd "_" *> freshMeta
+
+freshMeta :: Parser (TT MRel)
+freshMeta = do
     ~(MN _ i) <- freshMN "_"
     return $ Meta i
 
@@ -143,10 +145,27 @@ bpi = (<?> "pi") $ do
     kwd "->"
     Bind Pi [d] <$> expr
 
+bforall :: Parser (TT MRel)
+bforall = (<?> "forall") $ do
+    kwd "forall"
+    ns <- many1 ((Left <$> name) <|> (Right <$> typing Var))
+    kwd "->"
+    rhs <- expr
+    foldBind rhs ns
+  where
+    foldBind :: TT MRel -> [Either Name (Def MRel)] -> Parser (TT MRel)
+    foldBind rhs [] = pure rhs
+    foldBind rhs (Left n : ns) = do
+        ty <- freshMeta
+        Bind Pi [Def n Nothing ty (Abstract Var)] <$> foldBind rhs ns
+    foldBind rhs (Right d : ns) = do
+        Bind Pi [d] <$> foldBind rhs ns
+
 bind :: Parser (TT MRel)
 bind = arrow
     <|> lambda
     <|> bpi
+    <|> bforall
     <|> let_
     <?> "binder"
 
