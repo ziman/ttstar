@@ -130,7 +130,7 @@ elabPat n pvs (PApp r f x) = do
     xty <- elabPat n pvs x
     ctx <- fst <$> ask
 
-    case nf ctx fty of
+    case nf (pvs `M.union` ctx) fty of
         Bind Pi [Def n' r' ty' (Abstract Var)] rhs' -> do
             xty ~= ty'
             return $ subst n' (ptt x) rhs'
