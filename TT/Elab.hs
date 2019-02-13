@@ -14,8 +14,6 @@ import Control.Monad.Trans.RWS.Strict
 import qualified Data.Set as S
 import qualified Data.Map as M
 
-import Debug.Trace
-
 type MRel = Maybe Relevance
 type Term = TT MRel
 type Type = TT MRel
@@ -110,14 +108,17 @@ elabBody n (Clauses cs) = mapM_ (elabClause n) cs
 elabClause :: Name -> Clause MRel -> Elab ()
 elabClause n (Clause pvs lhs rhs) = do
     elabDefs pvs
-    lty <- elabPat n (M.fromList [(defName d, d) | d <- pvs]) lhs
-    rty <- withs pvs $ elabTm rhs   
-    lty ~= rty
+    withs pvs $ do
+        lty <- elabPat n (S.fromList $ map defName pvs) lhs
+        rty <- elabTm rhs   
+        lty ~= rty
 
-elabPat :: Name -> Ctx MRel -> Pat MRel -> Elab Type
-elabPat n pvs (PV n') = case M.lookup n' pvs of
-    Just d -> return $ defType d
-    Nothing -> do
+elabPat :: Name -> S.Set Name -> Pat MRel -> Elab Type
+elabPat n pvs (PV n')
+    | n' `S.member` pvs
+    = defType <$> lookup n'
+
+    | otherwise = do
         d <- lookup n'
         case defBody d of
             Abstract Constructor -> return $ defType d
@@ -128,14 +129,14 @@ elabPat n pvs (PApp r f x) = do
     xty <- elabPat n pvs x
     ctx <- fst <$> ask
 
-    case nf (pvs `M.union` ctx) fty of
+    case nf ctx fty of
         Bind Pi [Def n' r' ty' (Abstract Var)] rhs' -> do
             xty ~= ty'
             return $ subst n' (ptt x) rhs'
 
         fty' -> efail $ NotPi fty' 
 
-elabPat n pvs (PForced tm) = withs (M.elems pvs) $ elabTm tm
+elabPat n pvs (PForced tm) = elabTm tm
 
 elabPat n pvs (PHead n')
     | n == n' = defType <$> lookup n
@@ -269,26 +270,26 @@ solve ms cs
 
 solveMany :: [Constr] -> (M.Map Int Term, S.Set Constr)
 solveMany [] = (M.empty, S.empty)
-solveMany (c:cs) = case solveOne c of
-    Left (i, tm) ->
-        let (ms', cs') = solveMany (map (subst i tm) cs)
-        in (M.insert i tm ms', cs')
+solveMany (Eq ctx p q : cs)
+    = case solveOne ctx (nf ctx p) (nf ctx q) of
+        Left (i, tm) ->
+            let (ms', cs') = solveMany (map (subst i tm) cs)
+            in (M.insert i tm ms', cs')
 
-    Right csc ->
-        let (ms', cs') = solveMany cs
-        in (ms', S.union csc cs')
+        Right csc ->
+            let (ms', cs') = solveMany cs
+            in (ms', S.union csc cs')
   where
     subst :: Int -> Term -> Constr -> Constr
     subst i tm (Eq ctx lhs rhs) =
         let s = substMeta (M.singleton i tm)
         in Eq ctx (s lhs) (s rhs)
 
-solveOne :: Constr -> Either (Int, Term) (S.Set Constr)
-solveOne (Eq _ p q) | ("EQ", p, q) `traceShow` False = undefined
-solveOne (Eq _ (Meta i) tm) = Left (i,tm)
-solveOne (Eq _ tm (Meta i)) = Left (i,tm)
-solveOne (Eq _ tm tm') | tm == tm' = Right S.empty
-solveOne (Eq ctx p@(App _ _ _) q@(App _ _ _))
+solveOne :: Ctx MRel -> Term -> Term -> Either (Int, Term) (S.Set Constr)
+solveOne _ (Meta i) tm = Left (i,tm)
+solveOne _ tm (Meta i) = Left (i,tm)
+solveOne _ tm tm' | tm == tm' = Right S.empty
+solveOne ctx p@(App _ _ _) q@(App _ _ _)
     | (V c, xs) <- unApply p
     , (V c', xs') <- unApply q
     , Just (defBody -> Abstract Constructor) <- M.lookup c ctx
@@ -296,4 +297,14 @@ solveOne (Eq ctx p@(App _ _ _) q@(App _ _ _))
     , length xs == length xs'
     = Right . S.fromList $ [Eq ctx x x' | ((_,x),(_,x')) <- zip xs xs']
 
-solveOne c = Right [c]
+solveOne ctx p q = Right [Eq ctx p q]
+
+{-
+dbg :: Show a => Ctx MRel -> a -> String
+dbg ctx s = 
+    show s ++ "\n"
+    ++ unlines
+        [ "  " ++ show n ++ " : " ++ show ty
+        | Def n r ty _b <- M.elems ctx
+        ]
+-}
