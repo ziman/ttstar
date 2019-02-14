@@ -257,14 +257,32 @@ solveOne ctx (Bind b [d] rhs) (Bind b' [d'] rhs')
         , Eq (M.insert (defName d) d ctx) rhs rhs'
         ]
 
--- this is incorrect but helps most of the time
 solveOne ctx (Bind b [d] rhs) (Bind b' [d'] rhs')
     | b == b'
+    -- if right (ticked) side of the equality contains metas
+    -- then they would get unified with their unticked counterparts
+    -- so let's just disallow that
+    , [] <- rhs' ^.. ttMetas
+    , [] <- d' ^.. defMetas
     = Right
         [ Eq ctx (defType d) (defType d')
         , Eq (M.insert (defName d) d ctx)
             rhs
             (subst (defName d') (V $ defName d) rhs')
+        ]
+
+solveOne ctx (Bind b [d] rhs) (Bind b' [d'] rhs')
+    | b == b'
+    -- if left (unticked) side of the equality contains metas
+    -- then they would get unified with their ticked counterparts
+    -- so let's just disallow that
+    , [] <- rhs ^.. ttMetas
+    , [] <- d ^.. defMetas
+    = Right
+        [ Eq ctx (defType d) (defType d')
+        , Eq (M.insert (defName d) d ctx)
+            (subst (defName d) (V $ defName d') rhs)
+            rhs'
         ]
 
 solveOne ctx p@(App _ _ _) q@(App _ _ _)
