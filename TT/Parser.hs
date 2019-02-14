@@ -154,7 +154,7 @@ bpi = (<?> "pi") $ do
 
 -- meta-enabled typings
 mtypings :: Parser [Def MRel]
-mtypings = traverse f =<< many1 ((Left <$> name) <|> (Right <$> typing Var))
+mtypings = traverse f =<< many1 ((Left <$> name) <|> (Right <$> ptyping Var))
   where
     f (Left n) = do
         ty <- freshMeta
