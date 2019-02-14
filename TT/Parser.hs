@@ -135,9 +135,16 @@ arrow = (<?> "arrow type") $ do
 lambda :: Parser (TT MRel)
 lambda = (<?> "lambda") $ do
     kwd "\\"
-    d <- ptyping Var <|> typing Var
+    d' <- (Right <$> ptyping Var)
+        <|> try (Right <$> typing Var)
+        <|> (Left <$> name)
     kwd "."
-    Bind Lam [d] <$> expr
+
+    case d' of
+        Right d -> Bind Lam [d] <$> expr
+        Left n -> do
+            ty <- freshMeta
+            Bind Lam [Def n Nothing ty (Abstract Var)] <$> expr
 
 bpi :: Parser (TT MRel)
 bpi = (<?> "pi") $ do
