@@ -35,6 +35,8 @@ instance Termy TT where
         | n' == n   = tm
         | otherwise = V n'
 
+    subst n tm (Meta i) = Meta i
+
     subst n tm (EI n' ty)
         | n' == n   = tm
         | otherwise = EI n' $ subst n tm ty
@@ -46,6 +48,7 @@ instance Termy TT where
     subst n tm (App r f x) = App r (subst n tm f) (subst n tm x)
 
     freeVars (V n) = S.singleton n
+    freeVars (Meta i) = S.empty
     freeVars (EI n ty) = S.insert n $ freeVars ty
     freeVars (Bind b ds tm) = freeVarsBinder ds tm
     freeVars (App r f x) = freeVars f `S.union` freeVars x
@@ -188,6 +191,7 @@ pat2term (PHead f) = V f
 
 monomorphise :: TT r -> TT r
 monomorphise (V n) = V n
+monomorphise (Meta i) = Meta i
 monomorphise (EI n ty) = V n
 monomorphise (App r f x) = App r (monomorphise f) (monomorphise x)
 monomorphise (Bind b d tm) = Bind b (map monoDef d) $ monomorphise tm

@@ -30,6 +30,8 @@ import Solver.Graph
 import Solver.Indexed
 import Solver.LMS
 
+import TT.Elab
+
 import qualified Optimisation.Identity
 
 import Control.Monad
@@ -46,7 +48,7 @@ pipeline args = do
 
     let sourceFname = Args.sourceFile args
     prog' <- readProgram sourceFname
-    prog <- case prog' of
+    progMeta <- case prog' of
         Left err -> do
             print err
             error "parse error"
@@ -54,17 +56,29 @@ pipeline args = do
         Right prog ->
             return prog
 
+    when (Args.verbose args) $ do
+        putStrLn ""
+        putStrLn "### Desugared ###"
+        print progMeta
+
+    -- elaborate metas
+    prog <- case elab progMeta of
+        Left err -> putStrLn err >> error "elaboration failed"
+        Right prog -> return prog
+
+    when (Args.verbose args) $ do
+        putStrLn ""
+        putStrLn "### Elaborated ###"
+        print prog
+
     -- evarify the program
     let evarified_1st = evar prog
 
     when (Args.verbose args) $ do
         putStrLn ""
-        putStrLn "### Desugared ###"
-        print prog
-        putStrLn ""
-
         putStrLn "### Evarified ###"
         print evarified_1st
+
         putStrLn ""
 
     let iterSpecialisation evarified = do

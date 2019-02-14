@@ -28,6 +28,7 @@ newtype Constrs r = Constrs (Impls r) deriving (Eq, Ord)
 
 data TT r
     = V Name
+    | Meta Int
     | EI Name (TT r)  -- instance of a global definition with a specific erasure type
     | Bind Binder [Def r] (TT r)
     | App r (TT r) (TT r)

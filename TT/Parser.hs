@@ -46,7 +46,7 @@ freshMN :: String -> Parser Name
 freshMN stem = do
     st <- getState
     let cs = psCounters st
-    let i = M.findWithDefault 0 stem cs
+    let i = M.findWithDefault 1 stem cs
     putState st{ psCounters = M.insert stem (i+1) cs }
     return $ MN stem i
 
@@ -54,7 +54,7 @@ keywords :: S.Set String
 keywords = S.fromList [
     "case", "with", "where",
     "data", "let", "in", "postulate",
-    "of"
+    "of", "forall"
   ]
 
 lineComment :: Parser ()
@@ -109,10 +109,19 @@ natural = mkNat . read <$> (many1 (satisfy isDigit) <* sp) <?> "number"
     mkNat 0 = V $ UN "Z"
     mkNat k = App Nothing (V $ UN "S") (mkNat (k-1))
 
+meta :: Parser (TT MRel)
+meta = kwd "_" *> freshMeta
+
+freshMeta :: Parser (TT MRel)
+freshMeta = do
+    ~(MN _ i) <- freshMN "_"
+    return $ Meta i
+
 atomic :: Parser (TT MRel)
 atomic = parens expr
     <|> caseExpr
     <|> erasureInstance
+    <|> meta
     <|> var
     <|> natural
     <?> "atomic expression"
@@ -126,9 +135,16 @@ arrow = (<?> "arrow type") $ do
 lambda :: Parser (TT MRel)
 lambda = (<?> "lambda") $ do
     kwd "\\"
-    d <- ptyping Var <|> typing Var
+    d' <- (Right <$> ptyping Var)
+        <|> try (Right <$> typing Var)
+        <|> (Left <$> name)
     kwd "."
-    Bind Lam [d] <$> expr
+
+    case d' of
+        Right d -> Bind Lam [d] <$> expr
+        Left n -> do
+            ty <- freshMeta
+            Bind Lam [Def n Nothing ty (Abstract Var)] <$> expr
 
 bpi :: Parser (TT MRel)
 bpi = (<?> "pi") $ do
@@ -136,10 +152,29 @@ bpi = (<?> "pi") $ do
     kwd "->"
     Bind Pi [d] <$> expr
 
+-- meta-enabled typings
+mtypings :: Parser [Def MRel]
+mtypings = traverse f =<< many1 ((Left <$> name) <|> (Right <$> ptyping Var))
+  where
+    f (Left n) = do
+        ty <- freshMeta
+        return $ Def n Nothing ty (Abstract Var)
+
+    f (Right d) = return d
+
+bforall :: Parser (TT MRel)
+bforall = (<?> "forall") $ do
+    kwd "forall"
+    ds <- mtypings
+    kwd "->"
+    rhs <- expr
+    pure $ foldr (\d rhs' -> Bind Pi [d] rhs') rhs ds
+
 bind :: Parser (TT MRel)
 bind = arrow
     <|> lambda
     <|> bpi
+    <|> bforall
     <|> let_
     <?> "binder"
 
@@ -279,9 +314,12 @@ clausesBody = Clauses <$> (clause `sepBy` kwd ",") <* optional (kwd ".")
 termBody :: Parser (Body MRel)
 termBody = Term <$> expr
 
+mpatvars :: Parser [Def MRel]
+mpatvars = kwd "pat" *> mtypings <* kwd "."
+
 clause :: Parser (Clause MRel)
 clause = (<?> "pattern clause") $ do
-    pvs <- many (ptyping Var) <|> pure []
+    pvs <- mpatvars <|> many (ptyping Var)
     lhs <- forceHead <$> pattern
     kwd "="
     rhs <- expr
