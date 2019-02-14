@@ -248,6 +248,16 @@ solveOne _ tm tm'
     | [] <- tm  ^.. ttMetas
     , [] <- tm' ^.. ttMetas
     = Right S.empty  -- no metas here, nothing to do
+
+solveOne ctx (Bind b [d] rhs) (Bind b' [d'] rhs')
+    | b == b'
+    , defName d == defName d'
+    = Right
+        [ Eq ctx (defType d) (defType d')
+        , Eq (M.insert (defName d) d ctx) rhs rhs'
+        ]
+
+-- this is incorrect but helps most of the time
 solveOne ctx (Bind b [d] rhs) (Bind b' [d'] rhs')
     | b == b'
     = Right
@@ -256,6 +266,7 @@ solveOne ctx (Bind b [d] rhs) (Bind b' [d'] rhs')
             rhs
             (subst (defName d') (V $ defName d) rhs')
         ]
+
 solveOne ctx p@(App _ _ _) q@(App _ _ _)
     | (V c, xs) <- unApply p
     , (V c', xs') <- unApply q

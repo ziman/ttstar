@@ -42,7 +42,7 @@ Dependently typed core calculus with erasure inference.
     * `case` expressions
     * `with` clauses
     * mutual recursion
-* simplistic term/type inference via metavars + unification
+* rudimentary term/type inference via first order unification
 
 ### Practicalities
 
