@@ -14,7 +14,7 @@ pat n.
 pat m n.
   plus (S m) n = S (plus m n).
 
-append : (a : _) -> (m : N) -> (n : N) -> (xs : Vec m a) -> (ys : Vec n a) -> Vec (plus m n) a.
+append : forall a m n -> (xs : Vec m a) -> (ys : Vec n a) -> Vec (plus m n) a.
 pat a n ys.
   append a {Z} n (Nil [_]) ys = ys,
 pat a m n x xs ys.
