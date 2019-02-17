@@ -55,7 +55,7 @@ keywords :: S.Set String
 keywords = S.fromList [
     "case", "with", "where",
     "data", "let", "in", "postulate",
-    "of", "forall"
+    "of", "forall", "do"
   ]
 
 lineComment :: Parser ()
@@ -148,10 +148,10 @@ lambda = (<?> "lambda") $ do
             Bind Lam [Def n Nothing ty (Abstract Var)] <$> expr
 
 bpi :: Parser (TT MRel)
-bpi = (<?> "pi") $ do
+bpi = (<?> "pi") $ withPos $ do
     d <- try $ ptyping Var
     kwd "->"
-    Bind Pi [d] <$> expr
+    Bind Pi [d] <$> (sameOrIndented *> expr)
 
 -- meta-enabled typings
 mtypings :: Parser [Def MRel]
@@ -193,9 +193,9 @@ stringLiteral = (<?> "string literal") $ do
         <|> (kwd "\\\\" *> return '\\')
 
 app :: Parser (TT MRel)
-app = (<?> "application") $ do
+app = (<?> "application") $ withPos $ do
     f <- atomic
-    args <- many appArg
+    args <- many (sameOrIndented *> appArg)
     return $ mkApp f args
 
 appArg :: Parser (MRel, TT MRel)
@@ -255,12 +255,36 @@ erasureInstance = (<?> "erasure instance") $ do
     return $ EI n ty
 
 caseExpr :: Parser (TT MRel)
-caseExpr = (<?> "case expression") $ do
+caseExpr = (<?> "case expression") $ withPos $ do
     kwd "case"
     tms <- expr `sepBy` kwd ","
-    kwd "with"
-    d <- clauseDef
+    d   <- caseOf (length tms) <|> caseWith
     return $ Bind Let [d] (mkApp (V $ defName d) $ zip (repeat Nothing) tms)
+
+caseWith :: Parser (Def MRel)
+caseWith = kwd "with" >> indented >> clauseDef
+
+caseOf :: Int -> Parser (Def MRel)
+caseOf nscruts = do
+    kwd "of"
+    fn  <- freshMN "cf"
+    fty <- mkPi nscruts
+    Def fn Nothing fty . Clauses <$> many (indented >> caseArm fn)
+  where
+    mkPi :: Int -> Parser (TT MRel)
+    mkPi 0 = freshMeta
+    mkPi k = do
+        n <- freshMN "cft"
+        ty <- freshMeta                
+        Bind Pi [Def n Nothing ty $ Abstract Var] <$> mkPi (k-1)
+
+    caseArm :: Name -> Parser (Clause MRel)
+    caseArm fn = do
+        ns <- (kwd "pat" *> many1 name <* kwd ".") <|> (pure [])
+        pvs <- traverse (\n -> Def n Nothing <$> freshMeta <*> pure (Abstract Var)) ns
+        lhs <- pattern `sepBy1` kwd ","
+        kwd "="
+        Clause pvs (mkAppPat (PHead fn) [(Nothing, p) | p <- lhs]) <$> expr
 
 expr :: Parser (TT MRel)
 expr = bind <|> app <?> "expression"  -- app includes nullary-applied atoms
@@ -289,8 +313,8 @@ clauseDef :: Parser (Def MRel)
 clauseDef = (<?> "pattern-clause definition") $ do
     d <- typing Var
     body <-
-        (kwd "." *> clausesBody)
-        <|> (kwd "=" *> termBody)
+        (kwd "=" *> termBody)
+        <|> clausesBody
     return d{ defBody = body }
 
 mlDef :: Parser (Def MRel)
@@ -310,7 +334,7 @@ mlDef = (<?> "ml-style definition") $ do
     mkPi (d:ds) retTy = Bind Pi [d] $ mkPi ds retTy
 
 clausesBody :: Parser (Body MRel)
-clausesBody = Clauses <$> (clause `sepBy` kwd ",") <* optional (kwd ".")
+clausesBody = Clauses <$> many clause
 
 termBody :: Parser (Body MRel)
 termBody = Term <$> expr
@@ -320,6 +344,8 @@ mpatvars = kwd "pat" *> mtypings <* kwd "."
 
 clause :: Parser (Clause MRel)
 clause = (<?> "pattern clause") $ do
+    -- quickly reject "name :" because that's the beginning of the next decl
+    notFollowedBy (name >> kwd ":")
     pvs <- mpatvars <|> many (ptyping Var)
     lhs <- forceHead <$> pattern
     kwd "="
@@ -333,12 +359,11 @@ forceHead p
     = error $ "invalid clause LHS: " ++ show p
 
 dataDef :: Parser [Def MRel]
-dataDef = (<?> "data definition") $ do
-    kwd "data"
-    tfd <- typing Constructor
-    kwd "where"
-    ctors <- typing Constructor `sepBy` kwd ","
-    return (tfd : ctors)
+dataDef = (<?> "data definition")
+    $ withBlock
+        (\tfd ctors -> tfd : ctors)
+        (kwd "data" *> typing Constructor <* kwd "where")
+        (typing Constructor)
 
 foreignDef :: Parser (Def MRel)
 foreignDef = (<?> "foreign definition") $ do
