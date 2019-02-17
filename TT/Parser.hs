@@ -6,7 +6,8 @@ import TT.Pretty ()
 
 import Data.Char
 import Text.Parsec
-import Text.Parsec.Indent
+import Text.Parsec.Indent (IndentParser, withBlock, runIndentParser)
+import Text.Parsec.Indent.Explicit
 import System.FilePath
 import qualified Data.Map as M
 import qualified Data.Set as S
@@ -148,10 +149,10 @@ lambda = (<?> "lambda") $ do
             Bind Lam [Def n Nothing ty (Abstract Var)] <$> expr
 
 bpi :: Parser (TT MRel)
-bpi = (<?> "pi") $ withPos $ do
+bpi = (<?> "pi") $ do
     d <- try $ ptyping Var
     kwd "->"
-    Bind Pi [d] <$> (sameOrIndented *> expr)
+    Bind Pi [d] <$> expr
 
 -- meta-enabled typings
 mtypings :: Parser [Def MRel]
@@ -193,9 +194,10 @@ stringLiteral = (<?> "string literal") $ do
         <|> (kwd "\\\\" *> return '\\')
 
 app :: Parser (TT MRel)
-app = (<?> "application") $ withPos $ do
+app = (<?> "application") $ do
+    i <- indentation
     f <- atomic
-    args <- many (sameOrIndented *> appArg)
+    args <- many (sameOrIndented i *> appArg)
     return $ mkApp f args
 
 appArg :: Parser (MRel, TT MRel)
@@ -235,15 +237,17 @@ patApp = (<?> "pattern application") $ do
     return $ mkAppPat f args
 
 pattern :: Parser (Pat MRel)
-pattern = patApp
+pattern = parserTrace "---PATTERN---" >> patApp
 
 let_ :: Parser (TT MRel)
 let_ = (<?> "let expression") $ do
+    i <- indentation
     kwd "let"
-    d <- simpleDef
-    ds <- many (kwd "," *> simpleDef)
-    kwd "in"
-    Bind Let (d:ds) <$> expr
+    ds <- many1 (sameOrIndented i *> simpleDef)
+    sameOrIndented i >> do
+        j <- indentation
+        kwd "in"
+        Bind Let ds <$> (sameOrIndented j *> expr)
 
 erasureInstance :: Parser (TT MRel)
 erasureInstance = (<?> "erasure instance") $ do
@@ -255,21 +259,22 @@ erasureInstance = (<?> "erasure instance") $ do
     return $ EI n ty
 
 caseExpr :: Parser (TT MRel)
-caseExpr = (<?> "case expression") $ withPos $ do
+caseExpr = (<?> "case expression") $ do
+    i <- indentation
     kwd "case"
     tms <- expr `sepBy` kwd ","
-    d   <- caseOf (length tms) <|> caseWith
+    d   <- caseOf i (length tms) <|> caseWith i
     return $ Bind Let [d] (mkApp (V $ defName d) $ zip (repeat Nothing) tms)
 
-caseWith :: Parser (Def MRel)
-caseWith = kwd "with" >> indented >> clauseDef
+caseWith :: Indentation -> Parser (Def MRel)
+caseWith i = kwd "with" >> indented i >> clauseDef
 
-caseOf :: Int -> Parser (Def MRel)
-caseOf nscruts = do
+caseOf :: Indentation -> Int -> Parser (Def MRel)
+caseOf i nscruts = do
     kwd "of"
     fn  <- freshMN "cf"
     fty <- mkPi nscruts
-    Def fn Nothing fty . Clauses <$> many (indented >> caseArm fn)
+    Def fn Nothing fty . Clauses <$> many (indented i >> caseArm fn)
   where
     mkPi :: Int -> Parser (TT MRel)
     mkPi 0 = freshMeta
@@ -280,11 +285,11 @@ caseOf nscruts = do
 
     caseArm :: Name -> Parser (Clause MRel)
     caseArm fn = do
-        ns <- (kwd "pat" *> many1 name <* kwd ".") <|> (pure [])
-        pvs <- traverse (\n -> Def n Nothing <$> freshMeta <*> pure (Abstract Var)) ns
+        i <- indentation
+        pvs <- mpatvars <|> pure []
         lhs <- pattern `sepBy1` kwd ","
         kwd "="
-        Clause pvs (mkAppPat (PHead fn) [(Nothing, p) | p <- lhs]) <$> expr
+        Clause pvs (mkAppPat (PHead fn) [(Nothing, p) | p <- lhs]) <$> (sameOrIndented i *> expr)
 
 expr :: Parser (TT MRel)
 expr = bind <|> app <?> "expression"  -- app includes nullary-applied atoms
@@ -311,10 +316,12 @@ postulate = (<?> "postulate") $ do
 
 clauseDef :: Parser (Def MRel)
 clauseDef = (<?> "pattern-clause definition") $ do
+    i <- indentation
+    parserTrace $ "--- CLAUSE-DEF ---" ++ show i
     d <- typing Var
     body <-
         (kwd "=" *> termBody)
-        <|> clausesBody
+        <|> clausesBody i
     return d{ defBody = body }
 
 mlDef :: Parser (Def MRel)
@@ -333,23 +340,29 @@ mlDef = (<?> "ml-style definition") $ do
     mkPi [] retTy = retTy
     mkPi (d:ds) retTy = Bind Pi [d] $ mkPi ds retTy
 
-clausesBody :: Parser (Body MRel)
-clausesBody = Clauses <$> many clause
+-- (checkIndent <|> indented) == "not (indented less)"
+clausesBody :: Indentation -> Parser (Body MRel)
+clausesBody i = do
+    parserTrace "--- CLAUSES-BODY ---"
+    Clauses <$> many (clause i)
 
 termBody :: Parser (Body MRel)
 termBody = Term <$> expr
 
 mpatvars :: Parser [Def MRel]
-mpatvars = kwd "pat" *> mtypings <* kwd "."
+mpatvars = kwd "forall" *> mtypings <* kwd "."
 
-clause :: Parser (Clause MRel)
-clause = (<?> "pattern clause") $ do
+clause :: Indentation -> Parser (Clause MRel)
+clause i = (<?> "pattern clause") $ do
+    checkIndent i <|> indented i  -- not indented less
     -- quickly reject "name :" because that's the beginning of the next decl
     notFollowedBy (name >> kwd ":")
+    j <- indentation
+    parserTrace $ "---- CLAUSE ----" ++ show j
     pvs <- mpatvars <|> many (ptyping Var)
     lhs <- forceHead <$> pattern
     kwd "="
-    rhs <- expr
+    rhs <- sameOrIndented j *> expr
     return $ Clause pvs lhs rhs
 
 forceHead :: Pat MRel -> Pat MRel

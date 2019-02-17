@@ -19,9 +19,8 @@ other : Bool
   = not
       case not F, T of
         T, F = T
-        F, T = F
-        T, T = T
-        F, F = F
+        T, T = F
+        forall x. F, x = x
 
 main : Bool
   = not
