@@ -25,6 +25,31 @@
     main : Nat = Plus test_1 test_2
   in main
 
+### Elaborated ###
+
+  let
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (n :R: Nat) -> Nat
+    postulate Plus : (x :R: Nat) -> (y :R: Nat) -> Nat
+    id : (_x0 : Nat) -> Nat 
+      id Z = Z
+      y : Nat
+        id (S y) = 
+          let result : Nat = S y
+          in result
+    const_3 : (x : Nat) -> Nat = (\x : Nat. 3)
+    two : Nat = 2
+    f : (g : (_x1 : Nat) -> Nat) -> (z : Nat) -> (h : (_x2 : Nat) -> Nat) -> (w : Nat) -> Nat = (\g : (_x1 : Nat) -> Nat. (\z : Nat. (\h : (_x2 : Nat) -> Nat. (\w : Nat. Plus (g z) (h w)))))
+    apply : (f : (_x3 : Nat) -> Nat) -> (x : Nat) -> Nat = (\f : (_x3 : Nat) -> Nat. (\x : Nat. f x))
+    test_1 : Nat = Plus (apply id 2) (apply const_3 two)
+    test_2 : Nat = f id 2 const_3 1
+    main : Nat = Plus test_1 test_2
+  in main
+
 ### Evarified ###
 
   let

@@ -1,1 +1,10 @@
-(True)
+
+Warning: variable bound multiple times in letrec* construct
+List
+(letrec* ((Nat (quasiquote (Nat))) (Z (quasiquote (Z))) (S (lambda (x) (quasiquote (S (unquote x))))) (Bool (quasiquote (Bool))) (True (quasiquote (True))) (False (quasiquote (False))) (List (lambda (_x19) (quasiquote (List (unquote _x19))))) (Nil (lambda (a) (quasiquote (Nil (unquote a))))) (Cons (lambda (a) (lambda (x) (lambda (xs) (quasiquote (Cons (unquote a) (unquote x) (unquote xs))))))) (Li...
+Warning: variable bound multiple times in letrec* construct
+Nil
+(letrec* ((Nat (quasiquote (Nat))) (Z (quasiquote (Z))) (S (lambda (x) (quasiquote (S (unquote x))))) (Bool (quasiquote (Bool))) (True (quasiquote (True))) (False (quasiquote (False))) (List (lambda (_x19) (quasiquote (List (unquote _x19))))) (Nil (lambda (a) (quasiquote (Nil (unquote a))))) (Cons (lambda (a) (lambda (x) (lambda (xs) (quasiquote (Cons (unquote a) (unquote x) (unquote xs))))))) (Li...
+Warning: variable bound multiple times in letrec* construct
+Cons
+(letrec* ((Nat (quasiquote (Nat))) (Z (quasiquote (Z))) (S (lambda (x) (quasiquote (S (unquote x))))) (Bool (quasiquote (Bool))) (True (quasiquote (True))) (False (quasiquote (False))) (List (lambda (_x19) (quasiquote (List (unquote _x19))))) (Nil (lambda (a) (quasiquote (Nil (unquote a))))) (Cons (lambda (a) (lambda (x) (lambda (xs) (quasiquote (Cons (unquote a) (unquote x) (unquote xs))))))) (Li...(True)

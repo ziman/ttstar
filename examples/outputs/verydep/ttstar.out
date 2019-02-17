@@ -21,6 +21,27 @@
     main : Bool = f (Just Bool False)
   in main
 
+### Elaborated ###
+
+  let
+    postulate Void : Type
+    constructor Maybe : (_x0 : Type) -> Type
+    constructor Just : (a : Type) -> (x : a) -> Maybe a
+    constructor Nothing : (a : Type) -> Maybe a
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
+    retTy : (x : Maybe Bool) -> Type 
+      t : Bool
+        retTy (Just [Bool] t) = Bool
+      retTy (Nothing [Bool]) = Type
+    f : (x : Maybe Bool) -> retTy x 
+      b : Bool
+        f (Just [Bool] b) = b
+      f (Nothing [Bool]) = Bool
+    main : Bool = f (Just Bool False)
+  in main
+
 ### Evarified ###
 
   let

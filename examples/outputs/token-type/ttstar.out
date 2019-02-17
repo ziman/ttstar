@@ -19,6 +19,25 @@
     main : Type = Type
   in main
 
+### Elaborated ###
+
+  let
+    constructor TyEq : (_x0 : Type) -> (_x1 : Type) -> Type
+    constructor Refl : (a : Type) -> TyEq a a
+    coerce : (a : Type) -> (b : Type) -> (_x2 : TyEq a b) -> (_x3 : a) -> b 
+      a : Type
+        coerce a [a] ([Refl] [a]) = (\x : a. x)
+    sym : (a : Type) -> (b : Type) -> (_x4 : TyEq a b) -> TyEq b a 
+      a : Type
+        sym a [a] ([Refl] [a]) = Refl a
+    loopy : (a : Type) -> (b : Type) -> (_x5 : TyEq a (_x6 : a) -> b) -> b 
+      a : Type b : Type pf : TyEq a (_x7 : a) -> b
+        loopy a b pf = 
+          let w : (_x8 : a) -> b = (\x : a. coerce a (y : a) -> b pf x x)
+          in w (coerce (_x9 : a) -> b a (sym a (_x10 : a) -> b pf) w)
+    main : Type = Type
+  in main
+
 ### Evarified ###
 
   let

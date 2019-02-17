@@ -17,6 +17,23 @@
     main : Eq (Squash Bool) (Poof -I- Bool -I- True) (Poof -I- Bool -I- False) = Refl -I- (Squash Bool) (Poof -I- Bool -I- True)
   in main
 
+### Elaborated ###
+
+  let
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
+    constructor Squash : (_x0 : Type) -> Type
+    constructor Poof : (a :I: Type) -> (x :I: a) -> Squash a
+    constructor Eq : (a : Type) -> (x : a) -> (y : a) -> Type
+    constructor Refl : (a :I: Type) -> (x : a) -> Eq a x x
+    const : (x :I: Type) -> (y : Type) -> Type = (\x :I: Type. (\y : Type. y))
+    subst : (a : Type) -> (P : (_x1 : a) -> Type) -> (x : a) -> (y : a) -> (_x2 : Eq a x y) -> (_x3 : P x) -> P y 
+      a : Type P : (_x4 : a) -> Type x : a
+        subst a P x [x] (Refl -I- [a] [x]) = (\z : P x. z)
+    main : Eq (Squash Bool) (Poof -I- Bool -I- True) (Poof -I- Bool -I- False) = Refl -I- (Squash Bool) (Poof -I- Bool -I- True)
+  in main
+
 ### Evarified ###
 
   let

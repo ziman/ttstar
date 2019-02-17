@@ -50,6 +50,56 @@
     main : List = reverse (Cons T (Cons F (Cons T (Cons F Nil))))
   in main
 
+### Elaborated ###
+
+  let
+    constructor Id : (a : Type) -> (x : a) -> (y : a) -> Type
+    constructor Refl : (a : Type) -> (x : a) -> Id a x x
+    id : (a : Type) -> (_x0 : a) -> a = (\a : Type. (\x : a. x))
+    subst : (a : Type) -> (P : (_x1 : a) -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -> (w : P x) -> P y 
+      a : Type P : (_x2 : a) -> Type x : a
+        subst a P x [x] [Refl a x] = (\w : P x. w)
+    cong : (a : Type) -> (b : Type) -> (f : (_x3 : a) -> b) -> (x : a) -> (y : a) -> (eq : Id a x y) -> Id b (f x) (f y) 
+      a : Type b : Type f : (_x4 : a) -> b x : a
+        cong a b f x [x] [Refl a x] = Refl b (f x)
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    constructor List : Type
+    constructor Nil : List
+    constructor Cons : (x :R: Bool) -> (xs :R: List) -> List
+    one : (x : Bool) -> List = (\x : Bool. Cons x Nil)
+    app : (_x5 : List) -> (_x6 : List) -> List 
+      ys : List
+        app Nil ys = ys
+      x : Bool xs : List ys : List
+        app (Cons x xs) ys = Cons x (app xs ys)
+    appRightNeutral : (ys : List) -> Id List ys (app ys Nil) 
+      appRightNeutral Nil = Refl List Nil
+      x : Bool xs : List
+        appRightNeutral (Cons x xs) = cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs)
+    appAssoc : (xs : List) -> (ys : List) -> (zs : List) -> Id List (app (app xs ys) zs) (app xs (app ys zs)) 
+      ys : List zs : List
+        appAssoc Nil ys zs = Refl List (app ys zs)
+      x : Bool xs : List ys : List zs : List
+        appAssoc (Cons x xs) ys zs = cong List List (Cons x) (app (app xs ys) zs) (app xs (app ys zs)) (appAssoc xs ys zs)
+    constructor Rev : (_x7 : List) -> Type
+    constructor RNil : Rev Nil
+    constructor RSnoc : (xs : List) -> (x : Bool) -> (rxs : Rev xs) -> Rev (app xs (one x))
+    rev' : (xs : List) -> (rxs : Rev xs) -> (ys : List) -> Rev (app xs ys) 
+      xs : List rxs : Rev xs
+        rev' xs rxs Nil = subst List Rev xs (app xs Nil) (appRightNeutral xs) rxs
+      xs : List rxs : Rev xs y : Bool ys : List
+        rev' xs rxs (Cons y ys) = subst List Rev (app (app xs (one y)) ys) (app xs (Cons y ys)) (appAssoc xs (one y) ys) (rev' (app xs (one y)) (RSnoc xs y rxs) ys)
+    rev : (xs : List) -> Rev xs = (\xs : List. rev' Nil RNil xs)
+    reverse' : (xs : List) -> (rxs : Rev xs) -> List 
+      reverse' [Nil] RNil = Nil
+      xs : List x : Bool rxs : Rev xs
+        reverse' [app xs (one x)] (RSnoc xs x rxs) = Cons x (reverse' xs rxs)
+    reverse : (xs : List) -> List = (\xs : List. reverse' xs (rev xs))
+    main : List = reverse (Cons T (Cons F (Cons T (Cons F Nil))))
+  in main
+
 ### Evarified ###
 
   let

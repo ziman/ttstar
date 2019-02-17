@@ -37,49 +37,52 @@ let Nat = constructor 0
                                             in let Vect = constructor 2
                                               in let VN = constructor 1
                                                 in let VC = constructor 4
-                                                  in let List = constructor 0
-                                                    in let Nil = constructor 0
-                                                      in let Cons = constructor 2
-                                                        in let repl = \_pv0. \_pv1. \_pv2.
-                                                          case _pv0 of
-                                                            S _pv3 => ((Cons _pv1) (((repl _pv3) _pv1) _pv2))
-                                                            Z => _pv2
-                                                          in let RLE = constructor 1
-                                                            in let RNil = constructor 0
-                                                              in let RCons = constructor 4
-                                                                in let compress = \_pv0.
-                                                                  case _pv0 of
-                                                                    Cons _pv1 _pv2 => let aux = \_pv3. \_pv4. \_pv5.
-                                                                      case _pv5 of
-                                                                        RNil => ((((RCons (S Z)) _pv3) Nil) RNil)
-                                                                        _ => case _pv3 of
-                                                                          False => case _pv5 of
-                                                                            RCons _pv6 _pv7 _pv8 _pv9 => case _pv7 of
-                                                                              False => ((((RCons (S _pv6)) False) _pv8) _pv9)
-                                                                              True => ((((RCons (S Z)) False) (((repl _pv6) True) _pv8)) ((((RCons _pv6) True) _pv8) _pv9))
-                                                                          True => case _pv5 of
-                                                                            RCons _pv6 _pv7 _pv8 _pv9 => case _pv7 of
-                                                                              False => ((((RCons (S Z)) True) (((repl _pv6) False) _pv8)) ((((RCons _pv6) False) _pv8) _pv9))
-                                                                              True => ((((RCons (S _pv6)) True) _pv8) _pv9)
-                                                                      in (((aux _pv1) _pv2) (compress _pv2))
-                                                                    Nil => RNil
-                                                                  in let decompress = \_pv0. \_pv1.
-                                                                    case _pv1 of
-                                                                      RCons _pv2 _pv3 _pv4 _pv5 => (((repl _pv2) _pv3) ((decompress _pv4) _pv5))
-                                                                      RNil => Nil
-                                                                    in let foldl = \_pv0. \_pv1. \_pv2.
-                                                                      case _pv2 of
-                                                                        Cons _pv3 _pv4 => (((foldl _pv0) ((_pv0 _pv1) _pv3)) _pv4)
-                                                                        Nil => _pv1
-                                                                      in let xor = \_pv0. \_pv1.
+                                                  in let List = constructor 1
+                                                    in let Nil = constructor 1
+                                                      in let Cons = constructor 3
+                                                        in let List = constructor 0
+                                                          in let Nil = constructor 0
+                                                            in let Cons = constructor 2
+                                                              in let repl = \_pv0. \_pv1. \_pv2.
+                                                                case _pv0 of
+                                                                  S _pv3 => ((Cons _pv1) (((repl _pv3) _pv1) _pv2))
+                                                                  Z => _pv2
+                                                                in let RLE = constructor 1
+                                                                  in let RNil = constructor 0
+                                                                    in let RCons = constructor 4
+                                                                      in let compress = \_pv0.
                                                                         case _pv0 of
-                                                                          False => _pv1
-                                                                          True => case _pv1 of
-                                                                            False => True
-                                                                            True => False
-                                                                        in let xors = ((foldl xor) False)
-                                                                          in let genInputList = \n. (((repl n) True) Nil)
-                                                                            in let main = let inputSize = foreign "(rts-arg-peano 'Z 'S 0)"
-                                                                              in let inputList = (genInputList inputSize)
-                                                                                in (xors ((decompress inputList) (compress inputList)))
-                                                                              in main
+                                                                          Cons _pv1 _pv2 => let aux = \_pv3. \_pv4. \_pv5.
+                                                                            case _pv5 of
+                                                                              RNil => ((((RCons (S Z)) _pv3) Nil) RNil)
+                                                                              _ => case _pv3 of
+                                                                                False => case _pv5 of
+                                                                                  RCons _pv6 _pv7 _pv8 _pv9 => case _pv7 of
+                                                                                    False => ((((RCons (S _pv6)) False) _pv8) _pv9)
+                                                                                    True => ((((RCons (S Z)) False) (((repl _pv6) True) _pv8)) ((((RCons _pv6) True) _pv8) _pv9))
+                                                                                True => case _pv5 of
+                                                                                  RCons _pv6 _pv7 _pv8 _pv9 => case _pv7 of
+                                                                                    False => ((((RCons (S Z)) True) (((repl _pv6) False) _pv8)) ((((RCons _pv6) False) _pv8) _pv9))
+                                                                                    True => ((((RCons (S _pv6)) True) _pv8) _pv9)
+                                                                            in (((aux _pv1) _pv2) (compress _pv2))
+                                                                          Nil => RNil
+                                                                        in let decompress = \_pv0. \_pv1.
+                                                                          case _pv1 of
+                                                                            RCons _pv2 _pv3 _pv4 _pv5 => (((repl _pv2) _pv3) ((decompress _pv4) _pv5))
+                                                                            RNil => Nil
+                                                                          in let foldl = \_pv0. \_pv1. \_pv2.
+                                                                            case _pv2 of
+                                                                              Cons _pv3 _pv4 => (((foldl _pv0) ((_pv0 _pv1) _pv3)) _pv4)
+                                                                              Nil => _pv1
+                                                                            in let xor = \_pv0. \_pv1.
+                                                                              case _pv0 of
+                                                                                False => _pv1
+                                                                                True => case _pv1 of
+                                                                                  False => True
+                                                                                  True => False
+                                                                              in let xors = ((foldl xor) False)
+                                                                                in let genInputList = \n. (((repl n) True) Nil)
+                                                                                  in let main = let inputSize = foreign "(rts-arg-peano 'Z 'S 0)"
+                                                                                    in let inputList = (genInputList inputSize)
+                                                                                      in (xors ((decompress inputList) (compress inputList)))
+                                                                                    in main

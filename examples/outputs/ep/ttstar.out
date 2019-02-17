@@ -15,6 +15,21 @@
     main : T = Op test1 test2
   in main
 
+### Elaborated ###
+
+  let
+    constructor T : Type
+    constructor A : T
+    constructor B : T
+    postulate Op : (x :R: T) -> (y :R: T) -> T
+    id : (y : T) -> T = (\y : T. y)
+    constA : (x : T) -> T = (\x : T. A)
+    apply : (f : (_x0 : T) -> T) -> (x : T) -> T = (\f : (_x0 : T) -> T. (\x : T. f x))
+    test1 : T = [apply : (_x1 : (_x2 : T) -> T) -> (_x3 : T) -> T] id B
+    test2 : T = [apply : (_x4 : (_x5 : T) -> T) -> (_x6 : T) -> T] constA B
+    main : T = Op test1 test2
+  in main
+
 ### Evarified ###
 
   let

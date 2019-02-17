@@ -26,6 +26,32 @@
         in plus (apply id 2) (apply (const Q) three)
   in main
 
+### Elaborated ###
+
+  let
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (x :R: Nat) -> Nat
+    plus : (_x0 : Nat) -> (_x1 : Nat) -> Nat 
+      m : Nat
+        plus Z m = m
+      n : Nat m : Nat
+        plus (S n) m = S (plus n m)
+    id : (x : Nat) -> Nat = (\x : Nat. x)
+    const : (x : Nat) -> (y : Nat) -> Nat = (\x : Nat. (\y : Nat. x))
+    main : Nat = 
+      let apply : (_x2 : (_x3 : Nat) -> Nat) -> (_x4 : Nat) -> Nat 
+        f : (_x5 : Nat) -> Nat
+          apply f Z = f Z
+        f : (_x6 : Nat) -> Nat x : Nat
+          apply f (S x) = f (S x)
+      in 
+        let
+          postulate Q : Nat
+          three : Nat = 3
+        in plus (apply id 2) (apply (const Q) three)
+  in main
+
 ### Evarified ###
 
   let

@@ -42,6 +42,66 @@
     constructor Vect : (_x17 : Nat) -> (_x18 : Type) -> Type
     constructor VN : (a : Type) -> Vect Z a
     constructor VC : (n : Nat) -> (a : Type) -> (x : a) -> (xs : Vect n a) -> Vect (S n) a
+    constructor List : (_x19 : Type) -> Type
+    constructor Nil : (a : Type) -> List a
+    constructor Cons : (a : Type) -> (x : a) -> (xs : List a) -> List a
+    even : (_x0 : Nat) -> Bool 
+      even Z = True
+      n : Nat
+        even (S n) = 
+          let odd : (_x1 : Nat) -> Bool 
+            odd Z = False
+            n : Nat
+              odd (S n) = even n
+          in odd n
+    main : Bool = even 5
+  in main
+
+### Elaborated ###
+
+  let
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (x :R: Nat) -> Nat
+    plus : (_x0 : Nat) -> (_x1 : Nat) -> Nat 
+      n : Nat
+        plus Z n = n
+      m : Nat n : Nat
+        plus (S m) n = S (plus m n)
+    times : (_x2 : Nat) -> (_x3 : Nat) -> Nat 
+      n : Nat
+        times Z n = Z
+      m : Nat n : Nat
+        times (S m) n = plus n (times m n)
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
+    not : (_x4 : Bool) -> Bool 
+      not True = False
+      not False = True
+    constructor Unit : Type
+    constructor MkUnit : Unit
+    constructor Pair : (_x5 : Type) -> (_x6 : Type) -> Type
+    constructor MkPair : (a : Type) -> (b : Type) -> (_x7 : a) -> (_x8 : b) -> Pair a b
+    fst : (a : Type) -> (b : Type) -> (_x9 : Pair a b) -> a 
+      a : Type b : Type x : a y : b
+        fst a b ([MkPair] [a] [b] x y) = x
+    snd : (a : Type) -> (b : Type) -> (_x10 : Pair a b) -> b 
+      a : Type b : Type x : a y : b
+        snd a b ([MkPair] [a] [b] x y) = y
+    constructor Either : (_x11 : Type) -> (_x12 : Type) -> Type
+    constructor Left : (a : Type) -> (b : Type) -> (_x13 : a) -> Either a b
+    constructor Right : (a : Type) -> (b : Type) -> (_x14 : b) -> Either a b
+    id : (a : Type) -> (x : a) -> a = (\a : Type. (\x : a. x))
+    constructor Fin : (_x15 : Nat) -> Type
+    constructor FZ : (n : Nat) -> Fin (S n)
+    constructor FS : (n : Nat) -> (_x16 : Fin n) -> Fin (S n)
+    constructor Vect : (_x17 : Nat) -> (_x18 : Type) -> Type
+    constructor VN : (a : Type) -> Vect Z a
+    constructor VC : (n : Nat) -> (a : Type) -> (x : a) -> (xs : Vect n a) -> Vect (S n) a
+    constructor List : (_x19 : Type) -> Type
+    constructor Nil : (a : Type) -> List a
+    constructor Cons : (a : Type) -> (x : a) -> (xs : List a) -> List a
     even : (_x0 : Nat) -> Bool 
       even Z = True
       n : Nat
@@ -96,21 +156,24 @@
     constructor Vect :118: (_x17 :119: Nat) -> (_x18 :120: Type) -> Type
     constructor VN :121: (a :122: Type) -> Vect -124- Z -123- a
     constructor VC :125: (n :126: Nat) -> (a :127: Type) -> (x :128: a) -> (xs :129: Vect -131- n -130- a) -> Vect -133- (S -134- n) -132- a
-    even :135: (_x0 :136: Nat) -> Bool 
-      even -137- Z = True
-      n :138: Nat
-        even -139- (S -140- n) = 
-          let odd :141: (_x1 :142: Nat) -> Bool 
-            odd -143- Z = False
-            n :144: Nat
-              odd -145- (S -146- n) = even -147- n
-          in odd -148- n
-    main :149: Bool = even -150- 5
+    constructor List :135: (_x19 :136: Type) -> Type
+    constructor Nil :137: (a :138: Type) -> List -139- a
+    constructor Cons :140: (a :141: Type) -> (x :142: a) -> (xs :143: List -144- a) -> List -145- a
+    even :146: (_x0 :147: Nat) -> Bool 
+      even -148- Z = True
+      n :149: Nat
+        even -150- (S -151- n) = 
+          let odd :152: (_x1 :153: Nat) -> Bool 
+            odd -154- Z = False
+            n :155: Nat
+              odd -156- (S -157- n) = even -158- n
+          in odd -159- n
+    main :160: Bool = even -161- 5
   in main
 
 ### Constraints ###
 
-[] -> [14,15,28,111,117,134,140,146,149,151,152,153,154,155]
+[] -> [14,15,28,111,117,134,151,157,160,162,163,164,165,166]
 [4] -> [2,3,7,9,13]
 [4,8] -> [7]
 [4,12] -> [11]
@@ -231,34 +294,38 @@
 [131] -> [119]
 [132] -> [120]
 [133] -> [119]
-[135] -> [2,3,34,137,139,141]
-[135,139,140] -> [138]
-[135,148] -> [138]
-[136] -> [137,139,147,150]
-[137] -> [136]
-[138] -> [135,139,140]
+[136] -> [139,144,145]
 [139] -> [136]
-[141] -> [2,3,35,135,143,145]
-[141,145,146] -> [144]
-[141,147] -> [144]
-[142] -> [143,145,148]
-[143] -> [142]
-[144] -> [141,145,146]
-[145] -> [142]
-[147] -> [136]
-[148] -> [142]
-[149] -> [135]
-[149,150] -> [3]
-[149,150,151] -> [3]
-[149,150,151,152] -> [3]
-[149,150,151,152,153] -> [3]
-[149,150,151,152,153,154] -> [3]
-[149,150,151,152,153,154,155] -> [2]
-[150] -> [136]
+[144] -> [136]
+[145] -> [136]
+[146] -> [2,3,34,148,150,152]
+[146,150,151] -> [149]
+[146,159] -> [149]
+[147] -> [148,150,158,161]
+[148] -> [147]
+[149] -> [146,150,151]
+[150] -> [147]
+[152] -> [2,3,35,146,154,156]
+[152,156,157] -> [155]
+[152,158] -> [155]
+[153] -> [154,156,159]
+[154] -> [153]
+[155] -> [152,156,157]
+[156] -> [153]
+[158] -> [147]
+[159] -> [153]
+[160] -> [146]
+[160,161] -> [3]
+[160,161,162] -> [3]
+[160,161,162,163] -> [3]
+[160,161,162,163,164] -> [3]
+[160,161,162,163,164,165] -> [3]
+[160,161,162,163,164,165,166] -> [2]
+[161] -> [147]
 
 ### Solution ###
 
-[2,3,14,15,28,34,35,111,117,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,R]
+[2,3,14,15,28,34,35,111,117,134,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,R]
 
 ### Annotated ###
 
@@ -302,6 +369,9 @@
     constructor Vect :E: (_x17 :E: Nat) -> (_x18 :E: Type) -> Type
     constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
     constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
+    constructor List :E: (_x19 :E: Type) -> Type
+    constructor Nil :E: (a :E: Type) -> List -E- a
+    constructor Cons :E: (a :E: Type) -> (x :E: a) -> (xs :E: List -E- a) -> List -E- a
     even :R: (_x0 :R: Nat) -> Bool 
       even -R- Z = True
       n :R: Nat
@@ -356,6 +426,9 @@
     constructor Vect :E: (_x17 :E: Nat) -> (_x18 :E: Type) -> Type
     constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
     constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
+    constructor List :E: (_x19 :E: Type) -> Type
+    constructor Nil :E: (a :E: Type) -> List -E- a
+    constructor Cons :E: (a :E: Type) -> (x :E: a) -> (xs :E: List -E- a) -> List -E- a
     even :R: (_x0 :R: Nat) -> Bool 
       even -R- Z = True
       n :R: Nat
@@ -410,6 +483,9 @@
     constructor Vect :E: (_x17 :E: Nat) -> (_x18 :E: Type) -> Type
     constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
     constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
+    constructor List :E: (_x19 :E: Type) -> Type
+    constructor Nil :E: (a :E: Type) -> List -E- a
+    constructor Cons :E: (a :E: Type) -> (x :E: a) -> (xs :E: List -E- a) -> List -E- a
     even :R: (_x0 :R: Nat) -> Bool 
       even -R- Z = True
       n :R: Nat

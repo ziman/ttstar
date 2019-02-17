@@ -20,6 +20,129 @@
       not F = T
     constructor Id : (a : Type) -> (x : a) -> (y : a) -> Type
     constructor Refl : (a : Type) -> (x : a) -> Id a x x
+    id : (a : Type) -> (_x5 : a) -> a = (\a : _0. (\x : _1. x))
+    subst : (a : Type) -> (P : (_x6 : a) -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -> (w : P x) -> P y 
+      a : Type P : (_x7 : a) -> Type x : a
+        subst a P x [x] [Refl a x] = (\w : P x. w)
+    cong : (a : Type) -> (b : Type) -> (f : (_x8 : a) -> b) -> (x : a) -> (y : a) -> (eq : Id a x y) -> Id b (f x) (f y) 
+      a : Type b : Type f : (_x9 : a) -> b x : a
+        cong a b f x [x] [Refl a x] = Refl b (f x)
+    one : (x : B) -> List = (\x : B. Cons x Nil)
+    app : (_x10 : List) -> (_x11 : List) -> List 
+      ys : List
+        app Nil ys = ys
+      x : B xs : List ys : List
+        app (Cons x xs) ys = Cons x (app xs ys)
+    appRightNeutral : (ys : List) -> Id List ys (app ys Nil) 
+      appRightNeutral Nil = Refl List Nil
+      x : B xs : List
+        appRightNeutral (Cons x xs) = cong List List (Cons x) xs (app xs Nil) (appRightNeutral xs)
+    appAssoc : (xs : List) -> (ys : List) -> (zs : List) -> Id List (app (app xs ys) zs) (app xs (app ys zs)) 
+      ys : List zs : List
+        appAssoc Nil ys zs = Refl List (app ys zs)
+      x : B xs : List ys : List zs : List
+        appAssoc (Cons x xs) ys zs = cong List List (Cons x) (app (app xs ys) zs) (app xs (app ys zs)) (appAssoc xs ys zs)
+    constructor Rev : (_x12 : List) -> Type
+    constructor RNil : Rev Nil
+    constructor RSnoc : (xs : List) -> (x : B) -> (rxs : Rev xs) -> Rev (app xs (one x))
+    rev' : (xs : List) -> (rxs : Rev xs) -> (ys : List) -> Rev (app xs ys) 
+      xs : List rxs : Rev xs
+        rev' xs rxs Nil = subst List Rev xs (app xs Nil) (appRightNeutral xs) rxs
+      xs : List rxs : Rev xs y : B ys : List
+        rev' xs rxs (Cons y ys) = subst List Rev (app (app xs (one y)) ys) (app xs (Cons y ys)) (appAssoc xs (one y) ys) (rev' (app xs (one y)) (RSnoc xs y rxs) ys)
+    rev : (xs : List) -> Rev xs = (\xs : List. rev' Nil RNil xs)
+    reverse' : (xs : List) -> (rxs : Rev xs) -> List 
+      reverse' [Nil] RNil = Nil
+      xs : List x : B rxs : Rev xs
+        reverse' [app xs (one x)] (RSnoc xs x rxs) = Cons x (reverse' xs rxs)
+    reverse : (xs : List) -> List = (\xs : List. reverse' xs (rev xs))
+    constructor V : (_x13 : List) -> Type
+    constructor VNil : V Nil
+    constructor VOne : (x : B) -> V (Cons x Nil)
+    constructor VTwo : (x : B) -> (xs : List) -> (u : V xs) -> (y : B) -> V (Cons x (app xs (one y)))
+    length : (_x14 : List) -> N 
+      length Nil = Z
+      x : B xs : List
+        length (Cons x xs) = S (length xs)
+    index : (_x15 : N) -> (_x16 : List) -> (_x17 : List) -> List 
+      xs : List ys : List
+        index Z xs ys = Nil
+      x : B xs : List y : B ys : List
+        index (S Z) (Cons x xs) (Cons y ys) = Cons x Nil
+      n : N x : B xs : List y : B ys : List
+        index (S (S n)) (Cons x xs) (Cons y ys) = Cons x (app (index n xs ys) (one y))
+      n : N
+        index (S n) Nil Nil = Nil
+    build : (n : N) -> (xs : List) -> (ys : List) -> V (index n xs ys) 
+      xs : List ys : List
+        build Z xs ys = VNil
+      x : B xs : List y : B ys : List
+        build (S Z) (Cons x xs) (Cons y ys) = VOne x
+      n : N x : B xs : List y : B ys : List
+        build (S (S n)) (Cons x xs) (Cons y ys) = VTwo x (index n xs ys) (build n xs ys) y
+      n : N
+        build (S n) Nil Nil = VNil
+    postulate eq : (xs : List) -> Id List (index (length xs) xs (reverse xs)) xs
+    toV : (xs : List) -> V xs = (\xs : List. subst List V (index (length xs) xs (reverse xs)) xs (eq xs) (build (length xs) xs (reverse xs)))
+    constructor IsPalindrome : (_x18 : List) -> Type
+    constructor PNil : IsPalindrome Nil
+    constructor POne : (b : B) -> IsPalindrome (Cons b Nil)
+    constructor PTwo : (b : B) -> (xs : List) -> (pf : IsPalindrome xs) -> IsPalindrome (Cons b (app xs (one b)))
+    decEq : (x : B) -> (y : B) -> Maybe (Id B x y) 
+      decEq T T = Just (Id B T T) (Refl B T)
+      decEq F F = Just (Id B F F) (Refl B F)
+      decEq T F = Nothing (Id B T F)
+      decEq F T = Nothing (Id B F T)
+    isPalinV : (xs : List) -> (v : V xs) -> Maybe (IsPalindrome xs) 
+      isPalinV [Nil] VNil = Just (IsPalindrome Nil) PNil
+      x : B
+        isPalinV [Cons x Nil] (VOne x) = Just (IsPalindrome (Cons x Nil)) (POne x)
+      x : B xs : List y : B v : V xs
+        isPalinV [Cons x (app xs (one y))] (VTwo x xs v y) = 
+          let isPalinV' : (x : B) -> (y : B) -> (xs : List) -> (v : V xs) -> (pfB : Maybe (Id B x y)) -> (pfV : Maybe (IsPalindrome xs)) -> Maybe (IsPalindrome (Cons x (app xs (one y)))) 
+            x : B xs : List v : V xs pfV : IsPalindrome xs
+              isPalinV' x [x] xs v (Just [Id B x x] [Refl B x]) (Just [IsPalindrome xs] pfV) = Just (IsPalindrome (Cons x (app xs (one x)))) (PTwo x xs pfV)
+            x : B y : B xs : List v : V xs pfB : Maybe (Id B x y) pfV : Maybe (IsPalindrome xs)
+              isPalinV' x y xs v pfB pfV = Nothing (IsPalindrome (Cons x (app xs (one y))))
+          in isPalinV' x y xs v (decEq x y) (isPalinV xs v)
+    isPalindrome : (xs : List) -> Maybe (IsPalindrome xs) = (\xs : List. isPalinV xs (toV xs))
+    genList : (_x19 : B) -> (_x20 : N) -> List 
+      b : B
+        genList b Z = Nil
+      b : B n : N
+        genList b (S n) = Cons b (genList (not b) n)
+    isJust : (a : Type) -> (x : Maybe a) -> B 
+      a : Type x : a
+        isJust a (Just [a] x) = T
+      a : Type
+        isJust a (Nothing [a]) = F
+    main : B = 
+      let
+        foreign inputSize : N
+        inputList : List = genList T inputSize
+      in isJust (IsPalindrome inputList) (isPalindrome inputList)
+  in main
+
+### Elaborated ###
+
+  let
+    constructor N : Type
+    constructor Z : N
+    constructor S : (_x0 : N) -> N
+    constructor B : Type
+    constructor T : B
+    constructor F : B
+    constructor List : Type
+    constructor Cons : (_x1 : B) -> (_x2 : List) -> List
+    constructor Nil : List
+    constructor Maybe : (_x3 : Type) -> Type
+    constructor Nothing : (a : Type) -> Maybe a
+    constructor Just : (a : Type) -> (x : a) -> Maybe a
+    not : (_x4 : B) -> B 
+      not T = F
+      not F = T
+    constructor Id : (a : Type) -> (x : a) -> (y : a) -> Type
+    constructor Refl : (a : Type) -> (x : a) -> Id a x x
     id : (a : Type) -> (_x5 : a) -> a = (\a : Type. (\x : a. x))
     subst : (a : Type) -> (P : (_x6 : a) -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -> (w : P x) -> P y 
       a : Type P : (_x7 : a) -> Type x : a

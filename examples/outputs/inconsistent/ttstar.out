@@ -5,6 +5,11 @@
   let main :R: (x :E: Type) -> Type = (\x :E: Type. x)
   in main
 
+### Elaborated ###
+
+  let main :R: (x :E: Type) -> Type = (\x :E: Type. x)
+  in main
+
 ### Evarified ###
 
   let main :R: (x :E: Type) -> Type = (\x :E: Type. x)
@@ -20,4 +25,4 @@
 
 ttstar: !! inconsistent annotation
 CallStack (from HasCallStack):
-  error, called at Main.hs:119:22 in main:Main
+  error, called at Main.hs:133:22 in main:Main

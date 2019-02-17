@@ -13,6 +13,19 @@
       in not F
   in main
 
+### Elaborated ###
+
+  let
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    main : Bool = 
+      let not : (_x0 : Bool) -> Bool 
+        not T = F
+        not F = T
+      in not F
+  in main
+
 ### Evarified ###
 
   let

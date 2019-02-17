@@ -9,6 +9,15 @@
     main : Type = f Type Type
   in main
 
+### Elaborated ###
+
+  let
+    f : (_x0 : Type) -> (_x1 : Type) -> Type 
+      x : Type
+        f x x = x
+    main : Type = f Type Type
+  in main
+
 ### Evarified ###
 
   let
@@ -47,4 +56,4 @@ ttstar: Traceback:
 Error: NonlinearPattern (PApp 5 (PApp 6 (PHead f) (PV x)) (PV x))
 
 CallStack (from HasCallStack):
-  error, called at Main.hs:100:39 in main:Main
+  error, called at Main.hs:114:39 in main:Main

@@ -37,13 +37,16 @@ let Nat = constructor 0
                                             in let Vect = constructor 2
                                               in let VN = constructor 1
                                                 in let VC = constructor 4
-                                                  in let even = \_pv0.
-                                                    case _pv0 of
-                                                      S _pv1 => let odd = \_pv2.
-                                                        case _pv2 of
-                                                          S _pv3 => (even _pv3)
-                                                          Z => False
-                                                        in (odd _pv1)
-                                                      Z => True
-                                                    in let main = (even (S (S (S (S (S Z))))))
-                                                      in main
+                                                  in let List = constructor 1
+                                                    in let Nil = constructor 1
+                                                      in let Cons = constructor 3
+                                                        in let even = \_pv0.
+                                                          case _pv0 of
+                                                            S _pv1 => let odd = \_pv2.
+                                                              case _pv2 of
+                                                                S _pv3 => (even _pv3)
+                                                                Z => False
+                                                              in (odd _pv1)
+                                                            Z => True
+                                                          in let main = (even (S (S (S (S (S Z))))))
+                                                            in main

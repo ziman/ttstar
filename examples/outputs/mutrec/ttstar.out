@@ -16,6 +16,22 @@
     main : Bool = g T
   in main
 
+### Elaborated ###
+
+  let
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    g : (_x0 : Bool) -> Bool 
+      g T = 
+        let h : (_x1 : Bool) -> Bool 
+          h F = g F
+          h T = T
+        in h F
+      g F = T
+    main : Bool = g T
+  in main
+
 ### Evarified ###
 
   let

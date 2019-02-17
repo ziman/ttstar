@@ -1,0 +1,142 @@
+(import (chicken process-context))
+
+(define-syntax curried-lambda
+  (syntax-rules ()
+    ((curried-lambda () body) body)
+    ((curried-lambda (x . xs) body)
+      (lambda (x) (curried-lambda xs body)))))
+
+(define-syntax rts-unpack
+  (syntax-rules ()
+    ((rts-unpack xs () rhs) rhs)
+    ((rts-unpack xs (v . vs) rhs)
+      (let ((v (car xs)) (rest (cdr xs)))
+        (rts-unpack rest vs rhs)))))
+
+(define-syntax rts-case-int
+  (syntax-rules (_)
+    ((rts-case-int tag args)
+     (error "pattern match failure" (list tag args)))
+    ((rts-case-int tag args (_ rhs) . rest)
+     rhs)
+    ((rts-case-int tag args ((_ . pvs) rhs) . rest)
+     (rts-unpack args pvs rhs))
+    ((rts-case-int tag args ((cn . pvs) rhs) . rest)
+     (if (eq? tag 'cn)
+         (rts-unpack args pvs rhs)
+         (rts-case-int tag args . rest)))))
+
+(define-syntax rts-case
+  (syntax-rules ()
+    ((rts-case s . alts) (rts-case-int (car s) (cdr s) . alts))))
+
+(define Type '(Type))
+
+(define (number->peano z s i)
+  (if (= i 0)
+    (list z)
+    (list s (number->peano z s (- i 1)))))
+
+(define (rts-arg-peano z s i)
+  (number->peano z s (string->number
+                       (list-ref (command-line-arguments) i))))
+
+(define (rts-arg-read i)
+  (read (open-input-string
+          (list-ref (command-line-arguments) i))))
+
+(display 
+  (letrec* (
+    (True `(True))
+    (False `(False))
+    (MkPair (curried-lambda (e0 e1)
+      `(MkPair ,e0 ,e1)))
+    (snd (lambda (_pv0)
+      (rts-unpack (cdr _pv0) (_pv1 _pv2)
+        _pv2)))
+    (MkSt (lambda (e0)
+      `(MkSt ,e0)))
+    (runState (lambda (_pv0)
+      (rts-unpack (cdr _pv0) (_pv1)
+        _pv1)))
+    (execState (lambda (x)
+      (lambda (s)
+        (snd ((runState x) s)))))
+    (stGet (MkSt (lambda (s)
+      ((MkPair s) s))))
+    (stReturn (lambda (x)
+      (MkSt (lambda (s)
+        ((MkPair s) x)))))
+    (stBind (curried-lambda (_pv0 _pv1)
+      (rts-unpack (cdr _pv0) (_pv2)
+        
+          (letrec* (
+            (stBind3 (curried-lambda (_pv3 _pv4)
+              (rts-unpack (cdr _pv4) (_pv5)
+                (_pv5 _pv3))))
+            (stBind2 (curried-lambda (_pv3 _pv4)
+              (rts-unpack (cdr _pv4) (_pv5 _pv6)
+                ((stBind3 _pv5) (_pv3 _pv6)))))
+          ) (MkSt (lambda (s)
+            ((stBind2 _pv1) (_pv2 s))))))))
+    (ioWrapImpure (lambda (impureF)
+      ((stBind stGet) (lambda (w)
+        (stReturn (impureF w))))))
+    (unsafePerformIO (lambda (x)
+      
+        (letrec ((TheWorld `(TheWorld)))
+          ((execState x) TheWorld))))
+    (int1 1)
+    (int0 0)
+    (plusInt (lambda ($x $y) (+ $x $y)))
+    (minusInt (lambda ($x $y) (- $x $y)))
+    (timesInt (lambda ($x $y) (* $x $y)))
+    (intToString (global $Pervasives $string_of_int))
+    (ifRaw (lambda ($x $then $else) (switch $x (0 $else) (_ $then))))
+    (isZero (lambda (x)
+      (((ifRaw x) False) True)))
+    (isNonzero (lambda (x)
+      (((ifRaw x) True) False)))
+    (eqInt (lambda (x)
+      (lambda (y)
+        
+          (letrec ((eqInt_I (lambda ($x $y) (== $x $y))))
+            (isNonzero ((eqInt_I x) y))))))
+    (printString (lambda (s)
+      
+        (letrec ((nativePrint (global $Pervasives $print_endline)))
+          (ioWrapImpure (lambda (w)
+            (nativePrint s))))))
+    (printInt (lambda (i)
+      (printString (intToString i))))
+    (sumFor (lambda (n)
+      (lambda (f)
+        
+          (letrec ((g (lambda (_pv0)
+            (rts-case _pv0
+              ((False) ((plusInt (f n)) ((sumFor ((minusInt n) int1)) f)))
+              ((True) int0)))))
+            (g (isZero n))))))
+    (boolToInt (lambda (_pv0)
+      (rts-case _pv0
+        ((False) int0)
+        ((True) int1))))
+    (isPythag (lambda (x)
+      (lambda (y)
+        (lambda (z)
+          (boolToInt ((eqInt ((timesInt x) x)) ((plusInt ((timesInt y) y)) ((timesInt z) z))))))))
+    (pythag (lambda (n)
+      ((sumFor n) (lambda (x)
+        ((sumFor x) (lambda (y)
+          ((sumFor y) (lambda (z)
+            (((isPythag x) y) z)))))))))
+    (main (unsafePerformIO 
+      (letrec* (
+        (int2 ((plusInt int1) int1))
+        (int4 ((timesInt int2) int2))
+        (int16 ((timesInt int4) int4))
+        (int256 ((timesInt int16) int16))
+        (int512 ((timesInt int256) int2))
+      ) (printInt (pythag int512)))))
+  ) main))
+(newline)

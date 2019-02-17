@@ -14,6 +14,20 @@
     main : B = f constR
   in main
 
+### Elaborated ###
+
+  let
+    constructor Id : (a : Type) -> (x : a) -> (y : a) -> Type
+    constructor Refl : (a : Type) -> (x : a) -> Id a x x
+    constL : (a : Type) -> (x : a) -> (y : a) -> a = (\a : Type. (\x : a. (\y : a. x)))
+    constR : (a : Type) -> (x : a) -> (y : a) -> a = (\a : Type. (\x : a. (\y : a. y)))
+    constructor B : Type
+    constructor T : B
+    constructor F : B
+    f : (g : (a :E: Type) -> (x :E: a) -> (y :R: a) -> a) -> B = (\g : (a :E: Type) -> (x :E: a) -> (y :R: a) -> a. g B T F)
+    main : B = f constR
+  in main
+
 ### Evarified ###
 
   let

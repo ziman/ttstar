@@ -14,6 +14,20 @@
     main : Bool = fst (P T)
   in main
 
+### Elaborated ###
+
+  let
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    constructor Pair : Type
+    constructor P : (_x0 : Bool) -> (_x1 : Bool) -> Pair
+    fst : (_x2 : (_x3 : Bool) -> Pair) -> Bool 
+      y : Bool
+        fst (P y) = y
+    main : Bool = fst (P T)
+  in main
+
 ### Evarified ###
 
   let

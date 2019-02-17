@@ -34,6 +34,9 @@
     constructor Vect : (_x17) -> (_x18) -> Type
     constructor VN : (a) -> Vect Z a
     constructor VC : (n) -> (a) -> (x) -> (xs) -> Vect (S n) a
+    constructor List : (_x19) -> Type
+    constructor Nil : (a) -> List a
+    constructor Cons : (a) -> (x) -> (xs) -> List a
     constructor Id : (a) -> (x) -> (y) -> Type
     constructor Refl : (a) -> (x) -> Id a x x
     subst 

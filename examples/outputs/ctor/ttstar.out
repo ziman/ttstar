@@ -14,6 +14,20 @@
     main : Unit = not T
   in main
 
+### Elaborated ###
+
+  let
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    constructor Unit : Type
+    constructor MkUnit : Unit
+    not : (_x0 : Bool) -> Unit 
+      not T = MkUnit
+      not F = MkUnit
+    main : Unit = not T
+  in main
+
 ### Evarified ###
 
   let

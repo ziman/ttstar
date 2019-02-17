@@ -5,6 +5,11 @@
   let main : Type = Type
   in main
 
+### Elaborated ###
+
+  let main : Type = Type
+  in main
+
 ### Evarified ###
 
   let main :1: Type = Type

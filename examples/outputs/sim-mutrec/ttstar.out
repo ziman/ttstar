@@ -38,6 +38,44 @@
     main : Bool = even 8
   in main
 
+### Elaborated ###
+
+  let
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (_x0 : Nat) -> Nat
+    plus : (_x1 : Nat) -> (_x2 : Nat) -> Nat 
+      n : Nat
+        plus Z n = n
+      m : Nat n : Nat
+        plus (S m) n = S (plus m n)
+    constructor Tag : Type
+    constructor Even : Tag
+    constructor Odd : Tag
+    funTy : (_x3 : Tag) -> Type 
+      funTy Even = (_x4 : Nat) -> Bool
+      funTy Odd = (_x5 : Nat) -> (_x6 : Nat) -> Bool
+    fun : (tag : Tag) -> funTy tag 
+      fun Even = (\n : Nat. 
+        let f : (_x7 : Nat) -> Bool 
+          f Z = True
+          m : Nat
+            f (S m) = fun Odd m (plus m m)
+        in f n)
+      fun Odd = (\n : Nat. (\q : Nat. 
+        let f : (_x8 : Nat) -> Bool 
+          f Z = False
+          m : Nat
+            f (S m) = fun Even m
+        in f n))
+    even : (_x9 : Nat) -> Bool = fun Even
+    odd : (_x10 : Nat) -> (_x11 : Nat) -> Bool = fun Odd
+    main : Bool = even 8
+  in main
+
 ### Evarified ###
 
   let

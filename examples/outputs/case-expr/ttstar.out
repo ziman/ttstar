@@ -22,6 +22,28 @@
       in f (not F) T
   in main
 
+### Elaborated ###
+
+  let
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    constructor Unit : Type
+    constructor MkUnit : Unit
+    not : (_x0 : Bool) -> Bool 
+      not T = F
+      not F = T
+    retTy : (_x1 : Bool) -> Type 
+      retTy T = Bool
+      retTy F = Unit
+    main : Bool = not 
+      let f : (x : Bool) -> (_x2 : retTy x) -> retTy x 
+        f F MkUnit = MkUnit
+        f T T = F
+        f T F = T
+      in f (not F) T
+  in main
+
 ### Evarified ###
 
   let

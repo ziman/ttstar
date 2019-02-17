@@ -7,6 +7,28 @@
     constructor Z : N
     constructor S : (x :R: N) -> N
     constructor Vec : (_x0 : N) -> (_x1 : Type) -> Type
+    constructor Nil : (a : _0) -> Vec Z a
+    constructor Cons : (a : _1) -> (n : _2) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a
+    plus : (_x2 : N) -> (_x3 : N) -> N 
+      n : _3
+        plus Z n = n
+      m : _4 n : _5
+        plus (S m) n = S (plus m n)
+    append : (a : _6) -> (m : _7) -> (n : _8) -> (xs : Vec m a) -> (ys : Vec n a) -> Vec (plus m n) a 
+      a : _9 n : _10 ys : _11
+        append a [Z] n (Nil [_12]) ys = ys
+      a : _13 m : _14 n : _15 x : _16 xs : _17 ys : _18
+        append a ([S] m) n (Cons [_19] [_20] x xs) ys = Cons _21 _22 x (append _23 _24 _25 xs ys)
+    main : Vec _26 _27 = append _28 _29 _30 (Nil _31) (Cons _32 _33 4 (Nil _34))
+  in main
+
+### Elaborated ###
+
+  let
+    constructor N : Type
+    constructor Z : N
+    constructor S : (x :R: N) -> N
+    constructor Vec : (_x0 : N) -> (_x1 : Type) -> Type
     constructor Nil : (a : Type) -> Vec Z a
     constructor Cons : (a : Type) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a
     plus : (_x2 : N) -> (_x3 : N) -> N 

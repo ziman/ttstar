@@ -15,6 +15,21 @@
     main : Bool = f T
   in main
 
+### Elaborated ###
+
+  let
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    not : (_x0 : Bool) -> Bool 
+      not T = F
+      not F = T
+    f : (_x1 : Bool) -> Bool 
+      f ([not] T) = F
+      f ([not] F) = T
+    main : Bool = f T
+  in main
+
 ### Evarified ###
 
   let
@@ -153,4 +168,4 @@ ttstar: !! verification failed: Traceback:
 Error: BadPatAppHead (PForced not)
 
 CallStack (from HasCallStack):
-  error, called at Main.hs:159:25 in main:Main
+  error, called at Main.hs:173:25 in main:Main

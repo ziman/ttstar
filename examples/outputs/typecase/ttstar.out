@@ -42,6 +42,66 @@
     constructor Vect : (_x17 : Nat) -> (_x18 : Type) -> Type
     constructor VN : (a : Type) -> Vect Z a
     constructor VC : (n : Nat) -> (a : Type) -> (x : a) -> (xs : Vect n a) -> Vect (S n) a
+    constructor List : (_x19 : Type) -> Type
+    constructor Nil : (a : Type) -> List a
+    constructor Cons : (a : Type) -> (x : a) -> (xs : List a) -> List a
+    isZero : (_x0 : Nat) -> Bool 
+      isZero Z = True
+      n : Nat
+        isZero (S n) = False
+    f : (a : Type) -> (_x1 : a) -> Bool 
+      f Bool = not
+      f Nat = isZero
+      a : Type
+        f a = (\x : a. False)
+    main : Bool = f Bool False
+  in main
+
+### Elaborated ###
+
+  let
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (x :R: Nat) -> Nat
+    plus : (_x0 : Nat) -> (_x1 : Nat) -> Nat 
+      n : Nat
+        plus Z n = n
+      m : Nat n : Nat
+        plus (S m) n = S (plus m n)
+    times : (_x2 : Nat) -> (_x3 : Nat) -> Nat 
+      n : Nat
+        times Z n = Z
+      m : Nat n : Nat
+        times (S m) n = plus n (times m n)
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
+    not : (_x4 : Bool) -> Bool 
+      not True = False
+      not False = True
+    constructor Unit : Type
+    constructor MkUnit : Unit
+    constructor Pair : (_x5 : Type) -> (_x6 : Type) -> Type
+    constructor MkPair : (a : Type) -> (b : Type) -> (_x7 : a) -> (_x8 : b) -> Pair a b
+    fst : (a : Type) -> (b : Type) -> (_x9 : Pair a b) -> a 
+      a : Type b : Type x : a y : b
+        fst a b ([MkPair] [a] [b] x y) = x
+    snd : (a : Type) -> (b : Type) -> (_x10 : Pair a b) -> b 
+      a : Type b : Type x : a y : b
+        snd a b ([MkPair] [a] [b] x y) = y
+    constructor Either : (_x11 : Type) -> (_x12 : Type) -> Type
+    constructor Left : (a : Type) -> (b : Type) -> (_x13 : a) -> Either a b
+    constructor Right : (a : Type) -> (b : Type) -> (_x14 : b) -> Either a b
+    id : (a : Type) -> (x : a) -> a = (\a : Type. (\x : a. x))
+    constructor Fin : (_x15 : Nat) -> Type
+    constructor FZ : (n : Nat) -> Fin (S n)
+    constructor FS : (n : Nat) -> (_x16 : Fin n) -> Fin (S n)
+    constructor Vect : (_x17 : Nat) -> (_x18 : Type) -> Type
+    constructor VN : (a : Type) -> Vect Z a
+    constructor VC : (n : Nat) -> (a : Type) -> (x : a) -> (xs : Vect n a) -> Vect (S n) a
+    constructor List : (_x19 : Type) -> Type
+    constructor Nil : (a : Type) -> List a
+    constructor Cons : (a : Type) -> (x : a) -> (xs : List a) -> List a
     isZero : (_x0 : Nat) -> Bool 
       isZero Z = True
       n : Nat
@@ -96,21 +156,24 @@
     constructor Vect :118: (_x17 :119: Nat) -> (_x18 :120: Type) -> Type
     constructor VN :121: (a :122: Type) -> Vect -124- Z -123- a
     constructor VC :125: (n :126: Nat) -> (a :127: Type) -> (x :128: a) -> (xs :129: Vect -131- n -130- a) -> Vect -133- (S -134- n) -132- a
-    isZero :135: (_x0 :136: Nat) -> Bool 
-      isZero -137- Z = True
-      n :138: Nat
-        isZero -139- (S -140- n) = False
-    f :141: (a :142: Type) -> (_x1 :143: a) -> Bool 
-      f -144- Bool = not
-      f -145- Nat = isZero
-      a :146: Type
-        f -147- a = (\x :148: a. False)
-    main :149: Bool = f -151- Bool -150- False
+    constructor List :135: (_x19 :136: Type) -> Type
+    constructor Nil :137: (a :138: Type) -> List -139- a
+    constructor Cons :140: (a :141: Type) -> (x :142: a) -> (xs :143: List -144- a) -> List -145- a
+    isZero :146: (_x0 :147: Nat) -> Bool 
+      isZero -148- Z = True
+      n :149: Nat
+        isZero -150- (S -151- n) = False
+    f :152: (a :153: Type) -> (_x1 :154: a) -> Bool 
+      f -155- Bool = not
+      f -156- Nat = isZero
+      a :157: Type
+        f -158- a = (\x :159: a. False)
+    main :160: Bool = f -162- Bool -161- False
   in main
 
 ### Constraints ###
 
-[] -> [14,15,28,111,117,134,140,149]
+[] -> [14,15,28,111,117,134,151,160]
 [4] -> [2,3,7,9,13]
 [4,8] -> [7]
 [4,12] -> [11]
@@ -149,7 +212,7 @@
 [31] -> [20]
 [32] -> [19]
 [36] -> [34,35,38,39]
-[37] -> [38,39,143]
+[37] -> [38,39,154]
 [38] -> [37]
 [39] -> [37]
 [43] -> [51,57,74]
@@ -231,30 +294,34 @@
 [131] -> [119]
 [132] -> [120]
 [133] -> [119]
-[135] -> [2,3,34,35,137,139]
-[135,139,140] -> [138]
-[136] -> [137,139,143]
-[137] -> [136]
-[138] -> [135,139,140]
+[136] -> [139,144,145]
 [139] -> [136]
-[141] -> [1,33,35,36,135,144,145]
-[141,147] -> [146]
-[142] -> [144,145,147,151]
-[143] -> [37,136,148,150]
-[144] -> [142]
-[145] -> [142]
-[146] -> [141,147]
-[147] -> [142]
-[148] -> [143]
-[149] -> [141]
-[149,150] -> [35]
-[149,151] -> [33]
-[150] -> [143]
-[151] -> [142]
+[144] -> [136]
+[145] -> [136]
+[146] -> [2,3,34,35,148,150]
+[146,150,151] -> [149]
+[147] -> [148,150,154]
+[148] -> [147]
+[149] -> [146,150,151]
+[150] -> [147]
+[152] -> [1,33,35,36,146,155,156]
+[152,158] -> [157]
+[153] -> [155,156,158,162]
+[154] -> [37,147,159,161]
+[155] -> [153]
+[156] -> [153]
+[157] -> [152,158]
+[158] -> [153]
+[159] -> [154]
+[160] -> [152]
+[160,161] -> [35]
+[160,162] -> [33]
+[161] -> [154]
+[162] -> [153]
 
 ### Solution ###
 
-[1,2,3,14,15,28,33,34,35,36,37,38,39,111,117,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,R]
+[1,2,3,14,15,28,33,34,35,36,37,38,39,111,117,134,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,R]
 
 ### Annotated ###
 
@@ -298,6 +365,9 @@
     constructor Vect :E: (_x17 :E: Nat) -> (_x18 :E: Type) -> Type
     constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
     constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
+    constructor List :E: (_x19 :E: Type) -> Type
+    constructor Nil :E: (a :E: Type) -> List -E- a
+    constructor Cons :E: (a :E: Type) -> (x :E: a) -> (xs :E: List -E- a) -> List -E- a
     isZero :R: (_x0 :R: Nat) -> Bool 
       isZero -R- Z = True
       n :R: Nat
@@ -352,6 +422,9 @@
     constructor Vect :E: (_x17 :E: Nat) -> (_x18 :E: Type) -> Type
     constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
     constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
+    constructor List :E: (_x19 :E: Type) -> Type
+    constructor Nil :E: (a :E: Type) -> List -E- a
+    constructor Cons :E: (a :E: Type) -> (x :E: a) -> (xs :E: List -E- a) -> List -E- a
     isZero :R: (_x0 :R: Nat) -> Bool 
       isZero -R- Z = True
       n :R: Nat
@@ -406,6 +479,9 @@
     constructor Vect :E: (_x17 :E: Nat) -> (_x18 :E: Type) -> Type
     constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
     constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
+    constructor List :E: (_x19 :E: Type) -> Type
+    constructor Nil :E: (a :E: Type) -> List -E- a
+    constructor Cons :E: (a :E: Type) -> (x :E: a) -> (xs :E: List -E- a) -> List -E- a
     isZero :R: (_x0 :R: Nat) -> Bool 
       isZero -R- Z = True
       n :R: Nat

@@ -1,1 +1,10 @@
-(True)
+
+Warning: variable bound multiple times in letrec* construct
+List
+(letrec* ((Nat (quasiquote (Nat))) (Z (quasiquote (Z))) (S (lambda (e0) (quasiquote (S (unquote e0))))) (plus (curried-lambda (_pv0 _pv1) (rts-case _pv0 ((S _pv2) (S ((plus _pv2) _pv1))) ((Z) _pv1)))) (times (curried-lambda (_pv0 _pv1) (rts-case _pv0 ((S _pv2) ((plus _pv1) ((times _pv2) _pv1))) ((Z) Z)))) (Bool (quasiquote (Bool))) (True (quasiquote (True))) (False (quasiquote (False))) (not_TT (l...
+Warning: variable bound multiple times in letrec* construct
+Nil
+(letrec* ((Nat (quasiquote (Nat))) (Z (quasiquote (Z))) (S (lambda (e0) (quasiquote (S (unquote e0))))) (plus (curried-lambda (_pv0 _pv1) (rts-case _pv0 ((S _pv2) (S ((plus _pv2) _pv1))) ((Z) _pv1)))) (times (curried-lambda (_pv0 _pv1) (rts-case _pv0 ((S _pv2) ((plus _pv1) ((times _pv2) _pv1))) ((Z) Z)))) (Bool (quasiquote (Bool))) (True (quasiquote (True))) (False (quasiquote (False))) (not_TT (l...
+Warning: variable bound multiple times in letrec* construct
+Cons
+(letrec* ((Nat (quasiquote (Nat))) (Z (quasiquote (Z))) (S (lambda (e0) (quasiquote (S (unquote e0))))) (plus (curried-lambda (_pv0 _pv1) (rts-case _pv0 ((S _pv2) (S ((plus _pv2) _pv1))) ((Z) _pv1)))) (times (curried-lambda (_pv0 _pv1) (rts-case _pv0 ((S _pv2) ((plus _pv1) ((times _pv2) _pv1))) ((Z) Z)))) (Bool (quasiquote (Bool))) (True (quasiquote (True))) (False (quasiquote (False))) (not_TT (l...(True)

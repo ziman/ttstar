@@ -20,6 +20,26 @@
     main : Id Bool F (not (not F)) = notnot (subst Type (\a : Type. a) Bool Bool (Refl Type Bool) F)
   in main
 
+### Elaborated ###
+
+  let
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    constructor Id : (a : Type) -> (x : a) -> (y : a) -> Type
+    constructor Refl : (a : Type) -> (x : a) -> Id a x x
+    not : (_x0 : Bool) -> Bool 
+      not T = F
+      not F = T
+    notnot : (x : Bool) -> Id Bool x (not (not x)) 
+      notnot T = Refl Bool T
+      notnot F = Refl Bool F
+    subst : (a : Type) -> (P : (_x1 : a) -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -> (w : P x) -> P y 
+      a : Type P : (_x2 : a) -> Type x : a
+        subst a P x [x] [Refl a x] = (\w : P x. w)
+    main : Id Bool F (not (not F)) = notnot (subst Type (\a : Type. a) Bool Bool (Refl Type Bool) F)
+  in main
+
 ### Evarified ###
 
   let

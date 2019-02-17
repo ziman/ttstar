@@ -52,6 +52,58 @@
       main = semiDecEq sampleList sampleList
   in main
 
+### Elaborated ###
+
+  let
+    constructor N : Type
+    constructor Z : N
+    constructor S : (x :R: N) -> N
+    constructor B : Type
+    constructor T : B
+    constructor F : B
+    constructor List : Type
+    constructor Cons : (_x0 : B) -> (_x1 : List) -> List
+    constructor Nil : List
+    not : (_x2 : B) -> B 
+      not T = F
+      not F = T
+    foreign input : N
+    genList : (_x3 : B) -> (_x4 : N) -> List 
+      b : B
+        genList b Z = Nil
+      b : B n : N
+        genList b (S n) = Cons b (genList (not b) n)
+    constructor Eq : (a : Type) -> (_x5 : a) -> (_x6 : a) -> Type
+    constructor Refl : (a : Type) -> (x : a) -> Eq a x x
+    constructor Maybe : (_x7 : Type) -> Type
+    constructor Nothing : (a : Type) -> Maybe a
+    constructor Just : (a : Type) -> (x : a) -> Maybe a
+    semiDecEqB : (x : B) -> (y : B) -> Maybe (Eq B x y) 
+      semiDecEqB T T = Just (Eq B T T) (Refl B T)
+      semiDecEqB F F = Just (Eq B F F) (Refl B F)
+      semiDecEqB T F = Nothing (Eq B T F)
+      semiDecEqB F T = Nothing (Eq B F T)
+    semiDecEq : (xs : List) -> (ys : List) -> Maybe (Eq List xs ys) 
+      b : B ys : List
+        semiDecEq Nil (Cons b ys) = Nothing (Eq List Nil (Cons b ys))
+      b : B xs : List
+        semiDecEq (Cons b xs) Nil = Nothing (Eq List (Cons b xs) Nil)
+      semiDecEq Nil Nil = Just (Eq List Nil Nil) (Refl List Nil)
+      x : B y : B xs : List ys : List
+        semiDecEq (Cons x xs) (Cons y ys) = 
+          let semiDecEq' : (x : B) -> (y : B) -> (xs : List) -> (ys : List) -> (pfH : Maybe (Eq B x y)) -> (pfT : Maybe (Eq List xs ys)) -> Maybe (Eq List (Cons x xs) (Cons y ys)) 
+            x : B y : B xs : List ys : List pfT : Maybe (Eq List xs ys)
+              semiDecEq' x y xs ys (Nothing [Eq B x y]) pfT = Nothing (Eq List (Cons x xs) (Cons y ys))
+            x : B y : B xs : List ys : List pfH : Maybe (Eq B x y)
+              semiDecEq' x y xs ys pfH (Nothing [Eq List xs ys]) = Nothing (Eq List (Cons x xs) (Cons y ys))
+            x : B xs : List
+              semiDecEq' x [x] xs [xs] (Just [Eq B x x] [Refl B x]) (Just [Eq List xs xs] [Refl List xs]) = Just (Eq List (Cons x xs) (Cons x xs)) (Refl List (Cons x xs))
+          in semiDecEq' x y xs ys (semiDecEqB x y) (semiDecEq xs ys)
+    sampleList : List = genList T input
+    main : Maybe (Eq List sampleList sampleList) 
+      main = semiDecEq sampleList sampleList
+  in main
+
 ### Evarified ###
 
   let

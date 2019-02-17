@@ -99,6 +99,12 @@
       `(VN ,e0)))
     (VC (curried-lambda (e0 e1 e2 e3)
       `(VC ,e0 ,e1 ,e2 ,e3)))
+    (List (lambda (e0)
+      `(List ,e0)))
+    (Nil (lambda (e0)
+      `(Nil ,e0)))
+    (Cons (curried-lambda (e0 e1 e2)
+      `(Cons ,e0 ,e1 ,e2)))
     (f (curried-lambda (_pv0 _pv1)
       (rts-case _pv1
         ((False) True)

@@ -23,6 +23,29 @@
     main : Foo True = g (Just Bool True)
   in main
 
+### Elaborated ###
+
+  let
+    constructor Bool : Type
+    constructor True : Bool
+    constructor False : Bool
+    constructor Foo : (_x0 : Bool) -> Type
+    constructor Yeah : Foo True
+    constructor Nope : Foo False
+    constructor Maybe : (_x1 : Type) -> Type
+    constructor Nothing : (a : Type) -> Maybe a
+    constructor Just : (a : Type) -> (x : a) -> Maybe a
+    f : (x : Maybe Bool) -> Bool 
+      b : Bool
+        f (Just [Bool] b) = b
+      f (Nothing [Bool]) = False
+    g : (x : Maybe Bool) -> Foo (f x) 
+      g (Just [Bool] True) = Yeah
+      g (Just [Bool] False) = Nope
+      g (Nothing [Bool]) = Nope
+    main : Foo True = g (Just Bool True)
+  in main
+
 ### Evarified ###
 
   let

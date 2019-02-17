@@ -1,0 +1,21 @@
+
+Error: unbound variable: global
+
+	Call history:
+
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<syntax>	  (##core#undefined)
+	<eval>	  (print (letrec* ((True (quasiquote (True))) (False (quasiquote (False))) (MkPair (lambda (_x7) (lamb...
+	<eval>	  (##sys#list (##core#quote True))
+	<eval>	  (##sys#list (##core#quote False))
+	<eval>	  (MkSt (lambda (s) ((MkPair s) s)))
+	<eval>	  [MkSt] (##sys#list (##core#quote MkSt) run)
+	<eval>	  (global $Pervasives $string_of_int)	<--

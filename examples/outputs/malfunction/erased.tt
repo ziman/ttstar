@@ -1,0 +1,61 @@
+-- vim: ft=ttstar
+
+  let
+    constructor True : Bool
+    constructor False : Bool
+    constructor MkPair : (_x7) -> (_x8) -> Pair
+    snd 
+      snd ([_] x y) = y
+    constructor MkSt : (run) -> State
+    runState 
+      runState ([_] run) = run
+    execState = (\x. (\s. snd (runState x s)))
+    stGet = MkSt (\s. MkPair s s)
+    stReturn = (\x. MkSt (\s. MkPair s x))
+    stBind 
+      stBind ([_] f) g = 
+        let
+          stBind3 
+            stBind3 s ([_] f) = f s
+          stBind2 
+            stBind2 g ([_] s x) = stBind3 s (g x)
+        in MkSt (\s. stBind2 g (f s))
+    ioWrapImpure = (\impureF. stBind stGet (\w. stReturn (impureF w)))
+    unsafePerformIO = (\x. 
+      let postulate TheWorld : RealWorld
+      in execState x TheWorld)
+    foreign int1
+    foreign int0
+    foreign plusInt
+    foreign minusInt
+    foreign timesInt
+    foreign intToString
+    foreign ifRaw
+    isZero = (\x. ifRaw x False True)
+    isNonzero = (\x. ifRaw x True False)
+    eqInt = (\x. (\y. 
+      let foreign eqInt_I
+      in isNonzero (eqInt_I x y)))
+    printString = (\s. 
+      let foreign nativePrint
+      in ioWrapImpure (\w. nativePrint s))
+    printInt = (\i. printString (intToString i))
+    sumFor = (\n. (\f. 
+      let g 
+        g True = int0
+        g False = plusInt (f n) (sumFor (minusInt n int1) f)
+      in g (isZero n)))
+    boolToInt 
+      boolToInt True = int1
+      boolToInt False = int0
+    isPythag = (\x. (\y. (\z. boolToInt (eqInt (timesInt x x) (plusInt (timesInt y y) (timesInt z z))))))
+    pythag = (\n. sumFor n (\x. sumFor x (\y. sumFor y (\z. isPythag x y z))))
+    main = unsafePerformIO 
+      let
+        int2 = plusInt int1 int1
+        int4 = timesInt int2 int2
+        int16 = timesInt int4 int4
+        int256 = timesInt int16 int16
+        int512 = timesInt int256 int2
+      in printInt (pythag int512)
+  in main

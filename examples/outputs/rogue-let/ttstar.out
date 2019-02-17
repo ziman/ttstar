@@ -12,6 +12,18 @@
     main : (_x1 : Bool) -> Bool = not
   in main
 
+### Elaborated ###
+
+  let
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    not : (_x0 : Bool) -> Bool 
+      not T = F
+      not F = T
+    main : (_x1 : Bool) -> Bool = not
+  in main
+
 ### Evarified ###
 
   let

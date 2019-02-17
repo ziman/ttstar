@@ -37,10 +37,13 @@ let Nat = constructor 0
                                             in let Vect = constructor 2
                                               in let VN = constructor 1
                                                 in let VC = constructor 4
-                                                  in let f = \_pv0. \_pv1.
-                                                    case _pv1 of
-                                                      False => True
-                                                      True => False
-                                                      _ => _pv1
-                                                    in let main = ((f error "irTm: cannot translate: (_x1) -> Nat") \x. x)
-                                                      in main
+                                                  in let List = constructor 1
+                                                    in let Nil = constructor 1
+                                                      in let Cons = constructor 3
+                                                        in let f = \_pv0. \_pv1.
+                                                          case _pv1 of
+                                                            False => True
+                                                            True => False
+                                                            _ => _pv1
+                                                          in let main = ((f error "irTm: cannot translate: (_x1) -> Nat") \x. x)
+                                                            in main

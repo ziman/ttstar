@@ -13,6 +13,19 @@
     main : T = f id B const_A B
   in main
 
+### Elaborated ###
+
+  let
+    constructor T : Type
+    constructor A : T
+    constructor B : T
+    postulate Op : (x :R: T) -> (y :R: T) -> T
+    id : (x : T) -> T = (\x : T. x)
+    const_A : (x : T) -> T = (\x : T. A)
+    f : (g : (_x0 : T) -> T) -> (z : T) -> (h : (_x1 : T) -> T) -> (w : T) -> T = (\g : (_x0 : T) -> T. (\z : T. (\h : (_x1 : T) -> T. (\w : T. Op (g z) (h w)))))
+    main : T = f id B const_A B
+  in main
+
 ### Evarified ###
 
   let

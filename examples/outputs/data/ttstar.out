@@ -19,6 +19,25 @@
       in plus 2 3
   in main
 
+### Elaborated ###
+
+  let
+    constructor N : Type
+    constructor Z : N
+    constructor S : (_x0 : N) -> N
+    plus : (_x1 : N) -> (_x2 : N) -> N 
+      m : N
+        plus Z m = m
+      m : N n : N
+        plus (S n) m = S (plus n m)
+    main : N = 
+      let pred : (_x3 : N) -> N 
+        pred Z = Z
+        n : N
+          pred (S n) = n
+      in plus 2 3
+  in main
+
 ### Evarified ###
 
   let

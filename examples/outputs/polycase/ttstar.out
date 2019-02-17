@@ -34,6 +34,40 @@
     main : Mool = invert F Q
   in main
 
+### Elaborated ###
+
+  let
+    constructor Mool : Type
+    constructor Q : Mool
+    constructor W : Mool
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    constructor Id : (a : Type) -> (x : a) -> (y : a) -> Type
+    constructor Refl : (a : Type) -> (x : a) -> Id a x x
+    not : (_x0 : Bool) -> Bool 
+      not T = F
+      not F = T
+    notnot : (x : Bool) -> Id Bool x (not (not x)) 
+      notnot T = Refl Bool T
+      notnot F = Refl Bool F
+    retTy : (_x1 : Bool) -> Type 
+      retTy T = Bool
+      retTy F = Mool
+    mot : (_x2 : Mool) -> Mool 
+      mot Q = W
+      mot W = Q
+    invert : (t : Bool) -> (x : retTy t) -> retTy t 
+      invert T = not
+      invert F = mot
+    invert' : (t : Bool) -> (x : retTy t) -> retTy t 
+      x : Bool
+        invert' T x = not x
+      x : Mool
+        invert' F x = mot x
+    main : Mool = invert F Q
+  in main
+
 ### Evarified ###
 
   let

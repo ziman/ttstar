@@ -15,6 +15,21 @@
     main : (_x5 : B) -> K = f (P T)
   in main
 
+### Elaborated ###
+
+  let
+    constructor B : Type
+    constructor T : B
+    constructor F : B
+    constructor K : Type
+    constructor P : (_x0 : B) -> K
+    constructor Q : (_x1 : B) -> K
+    f : (_x2 : K) -> (_x3 : B) -> K 
+      c : (_x4 : B) -> K x : B
+        f (c x) = c
+    main : (_x5 : B) -> K = f (P T)
+  in main
+
 ### Evarified ###
 
   let
@@ -161,4 +176,4 @@ ttstar: !! verification failed: Traceback:
 Error: BadPatAppHead (PV c)
 
 CallStack (from HasCallStack):
-  error, called at Main.hs:159:25 in main:Main
+  error, called at Main.hs:173:25 in main:Main

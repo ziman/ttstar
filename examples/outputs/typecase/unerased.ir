@@ -37,14 +37,17 @@ let Nat = constructor 0
                                             in let Vect = constructor 2
                                               in let VN = constructor 1
                                                 in let VC = constructor 4
-                                                  in let isZero = \_pv0.
-                                                    case _pv0 of
-                                                      S _pv1 => False
-                                                      Z => True
-                                                    in let f = \_pv0.
-                                                      case _pv0 of
-                                                        Bool => not
-                                                        Nat => isZero
-                                                        _ => \x. False
-                                                      in let main = ((f Bool) False)
-                                                        in main
+                                                  in let List = constructor 1
+                                                    in let Nil = constructor 1
+                                                      in let Cons = constructor 3
+                                                        in let isZero = \_pv0.
+                                                          case _pv0 of
+                                                            S _pv1 => False
+                                                            Z => True
+                                                          in let f = \_pv0.
+                                                            case _pv0 of
+                                                              Bool => not
+                                                              Nat => isZero
+                                                              _ => \x. False
+                                                            in let main = ((f Bool) False)
+                                                              in main

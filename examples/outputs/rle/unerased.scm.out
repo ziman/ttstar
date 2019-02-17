@@ -1,1 +1,10 @@
-(True)
+
+Warning: variable bound multiple times in letrec* construct
+List
+(letrec* ((Nat (quasiquote (Nat))) (Z (quasiquote (Z))) (S (lambda (x) (quasiquote (S (unquote x))))) (plus (lambda (_e0) (lambda (_e1) (match (list _e0 _e1) ((((quote Z)) n) n) ((((quote S) m) n) (S ((plus m) n))))))) (times (lambda (_e0) (lambda (_e1) (match (list _e0 _e1) ((((quote Z)) n) Z) ((((quote S) m) n) ((plus n) ((times m) n))))))) (Bool (quasiquote (Bool))) (True (quasiquote (True))) (...
+Warning: variable bound multiple times in letrec* construct
+Nil
+(letrec* ((Nat (quasiquote (Nat))) (Z (quasiquote (Z))) (S (lambda (x) (quasiquote (S (unquote x))))) (plus (lambda (_e0) (lambda (_e1) (match (list _e0 _e1) ((((quote Z)) n) n) ((((quote S) m) n) (S ((plus m) n))))))) (times (lambda (_e0) (lambda (_e1) (match (list _e0 _e1) ((((quote Z)) n) Z) ((((quote S) m) n) ((plus n) ((times m) n))))))) (Bool (quasiquote (Bool))) (True (quasiquote (True))) (...
+Warning: variable bound multiple times in letrec* construct
+Cons
+(letrec* ((Nat (quasiquote (Nat))) (Z (quasiquote (Z))) (S (lambda (x) (quasiquote (S (unquote x))))) (plus (lambda (_e0) (lambda (_e1) (match (list _e0 _e1) ((((quote Z)) n) n) ((((quote S) m) n) (S ((plus m) n))))))) (times (lambda (_e0) (lambda (_e1) (match (list _e0 _e1) ((((quote Z)) n) Z) ((((quote S) m) n) ((plus n) ((times m) n))))))) (Bool (quasiquote (Bool))) (True (quasiquote (True))) (...(True)

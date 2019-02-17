@@ -20,6 +20,26 @@
     main : Pair = P (fsuc 2 (FS 1 (FZ Z))) (embed 3 (FS 2 (FS 1 (FZ Z))))
   in main
 
+### Elaborated ###
+
+  let
+    constructor N : Type
+    constructor Z : N
+    constructor S : (_x0 : N) -> N
+    constructor Fin : (_x1 : N) -> Type
+    constructor FZ : (n : N) -> Fin (S n)
+    constructor FS : (n : N) -> (x :R: Fin n) -> Fin (S n)
+    embed : (n : N) -> (_x2 : Fin n) -> Fin (S n) 
+      n : N
+        embed [S n] (FZ n) = FZ (S n)
+      n : N x : Fin n
+        embed [S n] (FS n x) = FS (S n) (embed n x)
+    fsuc : (n : N) -> (x : Fin n) -> Fin (S n) = FS
+    constructor Pair : Type
+    constructor P : (x :R: Fin 3) -> (y :R: Fin 4) -> Pair
+    main : Pair = P (fsuc 2 (FS 1 (FZ Z))) (embed 3 (FS 2 (FS 1 (FZ Z))))
+  in main
+
 ### Evarified ###
 
   let

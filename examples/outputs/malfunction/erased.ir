@@ -1,0 +1,58 @@
+-- vim: ft=ttstar
+let True = constructor 0
+  in let False = constructor 0
+    in let MkPair = constructor 2
+      in let snd = \_pv0.
+        case _pv0 of
+          _ _pv1 _pv2 => _pv2
+        in let MkSt = constructor 1
+          in let runState = \_pv0.
+            case _pv0 of
+              _ _pv1 => _pv1
+            in let execState = \x. \s. (snd ((runState x) s))
+              in let stGet = (MkSt \s. ((MkPair s) s))
+                in let stReturn = \x. (MkSt \s. ((MkPair s) x))
+                  in let stBind = \_pv0. \_pv1.
+                    case _pv0 of
+                      _ _pv2 => let stBind3 = \_pv3. \_pv4.
+                        case _pv4 of
+                          _ _pv5 => (_pv5 _pv3)
+                        in let stBind2 = \_pv3. \_pv4.
+                          case _pv4 of
+                            _ _pv5 _pv6 => ((stBind3 _pv5) (_pv3 _pv6))
+                          in (MkSt \s. ((stBind2 _pv1) (_pv2 s)))
+                    in let ioWrapImpure = \impureF. ((stBind stGet) \w. (stReturn (impureF w)))
+                      in let unsafePerformIO = \x. let TheWorld = constructor 0
+                        in ((execState x) TheWorld)
+                        in let int1 = foreign "1"
+                          in let int0 = foreign "0"
+                            in let plusInt = foreign "(lambda ($x $y) (+ $x $y))"
+                              in let minusInt = foreign "(lambda ($x $y) (- $x $y))"
+                                in let timesInt = foreign "(lambda ($x $y) (* $x $y))"
+                                  in let intToString = foreign "(global $Pervasives $string_of_int)"
+                                    in let ifRaw = foreign "(lambda ($x $then $else) (switch $x (0 $else) (_ $then)))"
+                                      in let isZero = \x. (((ifRaw x) False) True)
+                                        in let isNonzero = \x. (((ifRaw x) True) False)
+                                          in let eqInt = \x. \y. let eqInt_I = foreign "(lambda ($x $y) (== $x $y))"
+                                            in (isNonzero ((eqInt_I x) y))
+                                            in let printString = \s. let nativePrint = foreign "(global $Pervasives $print_endline)"
+                                              in (ioWrapImpure \w. (nativePrint s))
+                                              in let printInt = \i. (printString (intToString i))
+                                                in let sumFor = \n. \f. let g = \_pv0.
+                                                  case _pv0 of
+                                                    False => ((plusInt (f n)) ((sumFor ((minusInt n) int1)) f))
+                                                    True => int0
+                                                  in (g (isZero n))
+                                                  in let boolToInt = \_pv0.
+                                                    case _pv0 of
+                                                      False => int0
+                                                      True => int1
+                                                    in let isPythag = \x. \y. \z. (boolToInt ((eqInt ((timesInt x) x)) ((plusInt ((timesInt y) y)) ((timesInt z) z))))
+                                                      in let pythag = \n. ((sumFor n) \x. ((sumFor x) \y. ((sumFor y) \z. (((isPythag x) y) z))))
+                                                        in let main = (unsafePerformIO let int2 = ((plusInt int1) int1)
+                                                          in let int4 = ((timesInt int2) int2)
+                                                            in let int16 = ((timesInt int4) int4)
+                                                              in let int256 = ((timesInt int16) int16)
+                                                                in let int512 = ((timesInt int256) int2)
+                                                                  in (printInt (pythag int512)))
+                                                          in main

@@ -22,6 +22,28 @@
     main : Bool = and (fst (P T F)) (snd (P F T))
   in main
 
+### Elaborated ###
+
+  let
+    constructor Bool : Type
+    constructor T : Bool
+    constructor F : Bool
+    constructor Pair : Type
+    constructor P : (x : Bool) -> (y : Bool) -> Pair
+    fst : (_x0 : Pair) -> Bool 
+      l : Bool r : Bool
+        fst ([P] l r) = l
+    snd : (_x1 : Pair) -> Bool 
+      l : Bool r : Bool
+        snd ([P] l r) = r
+    and : (_x2 : Bool) -> (_x3 : Bool) -> Bool 
+      y : Bool
+        and T y = y
+      y : Bool
+        and F y = F
+    main : Bool = and (fst (P T F)) (snd (P F T))
+  in main
+
 ### Evarified ###
 
   let

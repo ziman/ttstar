@@ -17,6 +17,23 @@
     main : (_x2 : N) -> B = (\x : N. isSuc x)
   in main
 
+### Elaborated ###
+
+  let
+    constructor N : Type
+    constructor Z : N
+    constructor S : (_x0 : N) -> N
+    constructor B : Type
+    constructor T : B
+    constructor F : B
+    isSuc : (_x1 : N) -> B 
+      n : N
+        isSuc (S n) = T
+      n : N
+        isSuc n = F
+    main : (_x2 : N) -> B = (\x : N. isSuc x)
+  in main
+
 ### Evarified ###
 
   let
