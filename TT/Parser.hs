@@ -6,6 +6,7 @@ import TT.Pretty ()
 
 import Data.Char
 import Text.Parsec
+import Text.Parsec.Indent
 import System.FilePath
 import qualified Data.Map as M
 import qualified Data.Set as S
@@ -15,7 +16,7 @@ data ParserState = PS
     }
     deriving (Eq, Ord, Show)
 
-type Parser = Parsec String ParserState
+type Parser a = IndentParser String ParserState a
 type MRel = Maybe Relevance
 
 readProgram :: String -> IO (Either ParseError (Program MRel))
@@ -28,7 +29,7 @@ readProgram fname = do
 readDefs :: String -> IO (Either ParseError [Def MRel])
 readDefs fname = do
     body <- readFile fname
-    case runParser program initialParserState fname body of
+    case runIndentParser program initialParserState fname body of
         Left err -> return $ Left err
         Right (is, ds) -> do
             let rootDir = takeDirectory fname
@@ -46,7 +47,7 @@ freshMN :: String -> Parser Name
 freshMN stem = do
     st <- getState
     let cs = psCounters st
-    let i = M.findWithDefault 1 stem cs
+    let i = M.findWithDefault 0 stem cs
     putState st{ psCounters = M.insert stem (i+1) cs }
     return $ MN stem i
 

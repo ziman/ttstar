@@ -25,7 +25,7 @@ executable ttstar
                        NamedFieldPuns, FlexibleContexts, ConstraintKinds
   build-depends:       base, parsec, containers, transformers,
                        lens-family, lens-family-core,
-                       optparse-applicative, filepath
+                       optparse-applicative, filepath, indents
   -- hs-source-dirs:      
   default-language:    Haskell2010
   ghc-options:         -Wall -fno-warn-name-shadowing
