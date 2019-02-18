@@ -1,6 +1,6 @@
 -- vim: ft=ttstar
-f : Type -> Type -> Type.
+f : Type -> Type -> Type
   (x : Type)
-    f x x = x.
+    f x x = x
 
-main : Type = f Type Type.
+main : Type = f Type Type

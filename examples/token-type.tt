@@ -1,21 +1,21 @@
 data TyEq : Type -> Type -> Type where
-  Refl : (a : Type) -> TyEq a a.
+  Refl : (a : Type) -> TyEq a a
 
-coerce : (a : Type) -> (b : Type) -> TyEq a b -> a -> b.
+coerce : (a : Type) -> (b : Type) -> TyEq a b -> a -> b
   (a : Type)
-    coerce a [a] ({Refl} [a]) = \x:a. x.
+    coerce a [a] ({Refl} [a]) = \x:a. x
 
-sym : (a : Type) -> (b : Type) -> TyEq a b -> TyEq b a.
+sym : (a : Type) -> (b : Type) -> TyEq a b -> TyEq b a
   (a : Type)
-    sym a [a] ({Refl} [a]) = Refl a.
+    sym a [a] ({Refl} [a]) = Refl a
 
-loopy : (a : Type) -> (b : Type) -> TyEq a (a -> b) -> b.
+loopy : (a : Type) -> (b : Type) -> TyEq a (a -> b) -> b
   (a : Type) (b : Type) (pf : TyEq a (a -> b))
     loopy a b pf
       = let w \: a -> b = \x:a. coerce a ((y : a) -> b) pf x x
-          in w (coerce (a -> b) a (sym a (a -> b) pf) w).
+          in w (coerce (a -> b) a (sym a (a -> b) pf) w)
 
 -- causes infinite loop
--- main \: TyEq Type (Type -> Type) -> Type = loopy Type Type.
+-- main \: TyEq Type (Type -> Type) -> Type = loopy Type Type
 
-main : Type = Type.
+main : Type = Type

@@ -1,14 +1,14 @@
 -- vim: ft=ttstar
 
 data Bool : Type where
-  T : Bool,
-  F : Bool.
+  T : Bool
+  F : Bool
 
 data Pair : Type where
-  P : Bool -> Bool -> Pair.
+  P : Bool -> Bool -> Pair
 
-fst : (Bool -> Pair) -> Bool.
+fst : (Bool -> Pair) -> Bool
   (y : Bool)
-    fst (P y) = y.
+    fst (P y) = y
 
-main : Bool = fst (P T).
+main : Bool = fst (P T)

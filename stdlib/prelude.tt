@@ -48,7 +48,7 @@ data Fin : Nat -> Type where
 
 data Vect : Nat -> Type -> Type where
   VN : forall a -> Vect Z a
-  VC : forall a n -> a -> Vect n a -> Vect (S n) a
+  VC : forall n a -> a -> Vect n a -> Vect (S n) a
 
 data List : Type -> Type where
   Nil : forall a -> List a

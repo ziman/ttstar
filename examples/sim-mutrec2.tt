@@ -1,51 +1,53 @@
 -- vim: ft=ttstar
 
 data Bool : Type where
-  True : Bool,
-  False : Bool.
+  True : Bool
+  False : Bool
 
 data Nat : Type where
-  Z : Nat,
-  S : Nat -> Nat.
+  Z : Nat
+  S : Nat -> Nat
 
-plus : Nat -> Nat -> Nat.
+plus : Nat -> Nat -> Nat
   (n : Nat)
-    plus Z n = n,
+    plus Z n = n
   (m : Nat) (n : Nat)
-    plus (S m) n = S (plus m n).
+    plus (S m) n = S (plus m n)
 
 data Tag : Type where
-  Even : Tag,
-  Odd : Tag.
+  Even : Tag
+  Odd : Tag
 
 -- We give a strange type signature to Odd
--- to show off that the unused Nat argument gets erased,
+-- to show off that the unused Nat argument gets erased
 -- even if the function is polymorphic
--- and implements mutual recursion.
+-- and implements mutual recursion
 
-funTy : Tag -> Type.
-funTy Even = Nat -> Bool,
-funTy Odd  = Nat -> Nat -> Bool.
+funTy : Tag -> Type
+funTy Even = Nat -> Bool
+funTy Odd  = Nat -> Nat -> Bool
 
 fun : (tag : Tag) -> funTy tag
   = let
-      even : Nat -> Bool.
-        even Z = True,
+      even : Nat -> Bool
+        even Z = True
         (n : Nat)
-          even (S n) = fun Odd n (plus n n).,
+          even (S n) = fun Odd n (plus n n)
 
-      odd : Nat -> Nat -> Bool.
+      odd : Nat -> Nat -> Bool
         (n : Nat)
-          odd Z n = False,
+          odd Z n = False
         (m : Nat) (n : Nat)
-          odd (S m) n = fun Even m.
+          odd (S m) n = fun Even m
     in
-      \tag:Tag. case tag with f : (tag : Tag) -> funTy tag.
-        f Even = even,
-        f Odd  = odd..
+      \tag:Tag.
+        case tag with
+          f : (tag : Tag) -> funTy tag
+          f Even = even
+          f Odd  = odd
 
-even : Nat -> Bool = fun Even.
+even : Nat -> Bool = fun Even
 
-odd : Nat -> Nat -> Bool = fun Odd.
+odd : Nat -> Nat -> Bool = fun Odd
 
-main : Bool = even 8.
+main : Bool = even 8

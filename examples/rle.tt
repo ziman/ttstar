@@ -1,58 +1,59 @@
 import "../stdlib/prelude.tt"
 
 data List : Type where
-  Nil : List,
-  Cons : Bool -> List -> List.
+  Nil : List
+  Cons : Bool -> List -> List
 
-repl : (n : Nat) -> (x : Bool) -> List -> List.
+repl : (n : Nat) -> (x : Bool) -> List -> List
 (x : Bool) (xs : List)
-  repl Z x xs = xs,
+  repl Z x xs = xs
 (n : Nat) (x : Bool) (xs : List)
-  repl (S n) x xs = Cons x (repl n x xs).
+  repl (S n) x xs = Cons x (repl n x xs)
 
 data RLE : List -> Type where
-  RNil : RLE Nil,
-  RCons : (n : Nat) -> (x : Bool) -> (xs : List) -> RLE xs -> RLE (repl n x xs).
+  RNil : RLE Nil
+  RCons : (n : Nat) -> (x : Bool) -> (xs : List) -> RLE xs -> RLE (repl n x xs)
 
-compress : (xs : List) -> RLE xs.
-compress Nil = RNil,
+compress : (xs : List) -> RLE xs
+compress Nil = RNil
 (x : Bool) (xs : List)
-  compress (Cons x xs) = let
-      aux : (y : Bool) -> (ys : List) -> RLE ys -> RLE (Cons y ys).
+  compress (Cons x xs) =
+    let
+      aux : (y : Bool) -> (ys : List) -> RLE ys -> RLE (Cons y ys)
         (y : Bool)
-          aux y [Nil] RNil = RCons (S Z) y Nil RNil,
+          aux y [Nil] RNil = RCons (S Z) y Nil RNil
         (n : Nat) (zs : List) (rzs : RLE zs)
-          aux True [repl n True zs] (RCons n True zs rzs) = RCons (S n) True zs rzs,
+          aux True [repl n True zs] (RCons n True zs rzs) = RCons (S n) True zs rzs
         (n : Nat) (zs : List) (rzs : RLE zs)
-          aux False [repl n False zs] (RCons n False zs rzs) = RCons (S n) False zs rzs,
+          aux False [repl n False zs] (RCons n False zs rzs) = RCons (S n) False zs rzs
         (n : Nat) (zs : List) (rzs : RLE zs)
-          aux True [repl n False zs] (RCons n False zs rzs) = RCons (S Z) True (repl n False zs) (RCons n False zs rzs),
+          aux True [repl n False zs] (RCons n False zs rzs) = RCons (S Z) True (repl n False zs) (RCons n False zs rzs)
         (n : Nat) (zs : List) (rzs : RLE zs)
           aux False [repl n True zs] (RCons n True zs rzs) = RCons (S Z) False (repl n True zs) (RCons n True zs rzs)
-    in aux x xs (compress xs).
+    in aux x xs (compress xs)
 
-decompress : (xs : List) -> RLE xs -> List.
-decompress [Nil] RNil = Nil,
+decompress : (xs : List) -> RLE xs -> List
+decompress [Nil] RNil = Nil
 (n : Nat) (x : Bool) (xs : List) (rxs : RLE xs)
-  decompress [repl n x xs] (RCons n x xs rxs) = repl n x (decompress xs rxs).
+  decompress [repl n x xs] (RCons n x xs rxs) = repl n x (decompress xs rxs)
 
-foldl : (Bool -> Bool -> Bool) -> Bool -> List -> Bool.
+foldl : (Bool -> Bool -> Bool) -> Bool -> List -> Bool
 (f : Bool -> Bool -> Bool) (z : Bool)
-  foldl f z Nil = z,
+  foldl f z Nil = z
 (f : Bool -> Bool -> Bool) (z : Bool) (x : Bool) (xs : List)
-  foldl f z (Cons x xs) = foldl f (f z x) xs.
+  foldl f z (Cons x xs) = foldl f (f z x) xs
   
-xor : Bool -> Bool -> Bool.
+xor : Bool -> Bool -> Bool
 (b : Bool)
-  xor False b = b,
-  xor True False = True,
-  xor True True = False.
+  xor False b = b
+  xor True False = True
+  xor True True = False
 
-xors \: List -> Bool = foldl xor False.
+xors \: List -> Bool = foldl xor False
 
-genInputList \(n : Nat) : List = repl n True Nil.
+genInputList \(n : Nat) : List = repl n True Nil
 
 main \: Bool =
-  let foreign inputSize : Nat = "(rts-arg-peano 'Z 'S 0)",
+  let foreign inputSize : Nat = "(rts-arg-peano 'Z 'S 0)"
       inputList : List = genInputList inputSize
-    in xors (decompress inputList (compress inputList)).
+    in xors (decompress inputList (compress inputList))

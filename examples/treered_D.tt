@@ -1,39 +1,39 @@
 -- vim: ft=ttstar
 
 data Bool : Type where
-  True : Bool,
-  False : Bool.
+  True : Bool
+  False : Bool
 
 data Foo : Bool -> Type where
-  Yeah : Foo True,
-  Nope : Foo False.
+  Yeah : Foo True
+  Nope : Foo False
 
 data Maybe : Type -> Type where
-  Nothing : (a : Type) -> Maybe a,
-  Just : (a : Type) -> (x : a) -> Maybe a.
+  Nothing : (a : Type) -> Maybe a
+  Just : (a : Type) -> (x : a) -> Maybe a
 
-f : (x : Maybe Bool) -> Bool.
+f : (x : Maybe Bool) -> Bool
   (b : Bool)
-    f (Just [Bool] b) = b,
-  f (Nothing [Bool]) = False.
+    f (Just [Bool] b) = b
+  f (Nothing [Bool]) = False
 
-g : (x : Maybe Bool) -> Foo (f x).
-g (Just [Bool] True) = Yeah,
-g (Just [Bool] False) = Nope,
-g (Nothing [Bool]) = Nope.
+g : (x : Maybe Bool) -> Foo (f x)
+g (Just [Bool] True) = Yeah
+g (Just [Bool] False) = Nope
+g (Nothing [Bool]) = Nope
 
 main : Foo True
-  = g (Just Bool True).
+  = g (Just Bool True)
 
 {-
 
 I thought that TTstar wouldn't be able to see that in:
   case Just True of
-    Just b => ...
+    Just b => ..
 
 the variable b = True. However, you can't do nested matches
-so that's fine.
+so that's fine
 
-In other words, there's no matching patvars<->scrutinee args when typechecking.
+In other words, there's no matching patvars<->scrutinee args when typechecking
 
 -}
