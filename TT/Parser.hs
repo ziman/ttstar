@@ -20,12 +20,20 @@ type Parser a = PI.IndentParser String ParserState a
 type MRel = Maybe Relevance
 
 -- 2D layout --
-
-fenced :: Parser a -> Parser a
-fenced = PI.withPos
+-- the ticked versions allow being right on the fence
+-- the unticked versions require at least one indent
 
 withinFence :: Parser ()
 withinFence = PI.sameOrIndented
+
+withinFence' :: Parser ()
+withinFence' = PI.sameOrIndented <|> PI.checkIndent
+
+subfenced :: Parser a -> Parser a
+subfenced x = withinFence >> PI.withPos x
+
+subfenced' :: Parser a -> Parser a
+subfenced' x = withinFence' >> PI.withPos x
 
 -- Rest of parser --
 
@@ -206,7 +214,7 @@ stringLiteral = (<?> "string literal") $ do
         <|> (kwd "\\\\" *> return '\\')
 
 app :: Parser (TT MRel)
-app = (<?> "application") $ fenced $ do
+app = (<?> "application") $ subfenced $ do
     f <- atomic
     args <- many appArg
     return $ mkApp f args
@@ -237,25 +245,23 @@ patAtom = parens pattern <|> forcedCtor <|> patForced <|> patVar <?> "pattern at
 
 patAppArg :: Parser (MRel, Pat MRel)
 patAppArg =
-    withinFence >>
-        (   ((,) <$> pure (Just I) <*> try (string "." *> patAtom))
-        <|> ((,) <$> pure Nothing <*> patAtom)
-        <?> "pattern application argument"
-        )
+    ((,) <$> pure (Just I) <*> try (string "." *> patAtom))
+    <|> ((,) <$> pure Nothing <*> patAtom)
+    <?> "pattern application argument"
 
 patApp :: Parser (Pat MRel)
-patApp = (<?> "pattern application") $ fenced $ do
+patApp = (<?> "pattern application") $ subfenced $ do
     f <- patAtom
     args <- many patAppArg
     return $ mkAppPat f args
 
 pattern :: Parser (Pat MRel)
-pattern = parserTrace "---PATTERN---" >> patApp
+pattern = patApp
 
 let_ :: Parser (TT MRel)
-let_ = (<?> "let expression") $ fenced $ do
-    ds <- fenced $ kwd "let" *> many1 simpleDef
-    fenced $ kwd "in" *> (Bind Let ds <$> expr)
+let_ = (<?> "let expression") $ subfenced $ do
+    ds <- subfenced' $ kwd "let" *> many1 simpleDef
+    subfenced' $ kwd "in" *> (Bind Let ds <$> expr)
 
 erasureInstance :: Parser (TT MRel)
 erasureInstance = (<?> "erasure instance") $ do
@@ -267,7 +273,7 @@ erasureInstance = (<?> "erasure instance") $ do
     return $ EI n ty
 
 caseExpr :: Parser (TT MRel)
-caseExpr = (<?> "case expression") $ fenced $ do
+caseExpr = (<?> "case expression") $ subfenced $ do
     kwd "case"
     tms <- expr `sepBy` kwd ","
     d   <- caseOf (length tms) <|> caseWith
@@ -291,9 +297,12 @@ caseOf nscruts = do
         Bind Pi [Def n Nothing ty $ Abstract Var] <$> mkPi (k-1)
 
     caseArm :: Name -> Parser (Clause MRel)
-    caseArm fn = fenced $ do
+    caseArm fn = subfenced $ do
+        parserTrace "caseArm"
         pvs <- mpatvars <|> pure []
+        parserTrace "caseArm2"
         lhs <- pattern `sepBy1` kwd ","
+        parserTrace "caseArm3"
         kwd "="
         Clause pvs (mkAppPat (PHead fn) [(Nothing, p) | p <- lhs]) <$> expr
 
@@ -315,21 +324,21 @@ ptyping abs =
     makeIrrelevant def = def{ defR = Just I }
 
 postulate :: Parser (Def MRel)
-postulate = (<?> "postulate") $ fenced $ do
+postulate = (<?> "postulate") $ subfenced $ do
     kwd "postulate"
     d <- typing Postulate
     return d
 
 clauseDef :: Parser (Def MRel)
 clauseDef = (<?> "pattern-clause definition") $ do
-    d <- fenced $ typing Var
+    d <- subfenced' $ typing Var
     body <-
         (kwd "=" *> termBody)
         <|> clausesBody
     return d{ defBody = body }
 
 mlDef :: Parser (Def MRel)
-mlDef = (<?> "ml-style definition") $ fenced $ do
+mlDef = (<?> "ml-style definition") $ subfenced' $ do
     n <- try (name <* kwd "\\")
     args <- many (ptyping Var)
     r <- rcolon
@@ -351,15 +360,14 @@ termBody :: Parser (Body MRel)
 termBody = Term <$> expr
 
 mpatvars :: Parser [Def MRel]
-mpatvars = fenced (kwd "forall" *> mtypings)
+mpatvars = subfenced' (kwd "forall" *> mtypings <* kwd ".")
 
 clause :: Parser (Clause MRel)
-clause = (<?> "pattern clause") $ do
-    PI.checkIndent
+clause = (<?> "pattern clause") $ subfenced' $ do
     -- quickly reject "name :" because that's the beginning of the next decl
     notFollowedBy (name >> kwd ":")
     pvs <- mpatvars <|> many (ptyping Var)
-    fenced $ do
+    subfenced $ do
         lhs <- forceHead <$> pattern
         kwd "="
         rhs <- expr
@@ -372,13 +380,13 @@ forceHead p
     = error $ "invalid clause LHS: " ++ show p
 
 dataDef :: Parser [Def MRel]
-dataDef = (<?> "data definition") $ fenced $ do
+dataDef = (<?> "data definition") $ subfenced' $ do
     tfd <- kwd "data" *> typing Constructor <* kwd "where"
-    ctors <- many (fenced $ typing Constructor)
+    ctors <- many (subfenced $ typing Constructor)
     return (tfd : ctors)
 
 foreignDef :: Parser (Def MRel)
-foreignDef = (<?> "foreign definition") $ fenced $ do
+foreignDef = (<?> "foreign definition") $ subfenced $ do
     kwd "foreign"
     d <- typing $ Foreign undefined
     kwd "="
@@ -395,7 +403,7 @@ definition :: Parser [Def MRel]
 definition = dataDef <|> (pure <$> simpleDef) <?> "definition"
 
 definitions :: Parser [Def MRel]
-definitions = concat <$> many (definition <* optional (kwd ".")) <?> "definitions"
+definitions = concat <$> many definition <?> "definitions"
 
 program :: Parser ([String], [Def MRel])
 program = (<?> "program") $ do

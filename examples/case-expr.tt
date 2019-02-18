@@ -20,7 +20,8 @@ other : Bool
       case not F, T of
         T, F = T
         T, T = F
-        forall x. F, x = x
+        forall x.
+          F, x = x
 
 main : Bool
   = not
