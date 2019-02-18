@@ -6,9 +6,8 @@ import "../stdlib/io.tt"
 import "../stdlib/rts.tt"
 
 main \: _ =
-  unsafePerformIO _
-   (with ioBind _ _ do
+  unsafePerformIO _ $
+    with ioBind _ _ do
       v <- ioReturn _ 4
       printNat v
       printSchemeRepr _ (intToNat (intS (intS (intS intZ))))
-    )

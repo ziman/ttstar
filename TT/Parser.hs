@@ -228,6 +228,7 @@ appArg :: Parser (MRel, TT MRel)
 appArg =
     ((,) <$> pure (Just I) <*> try (string "." *> atomic))
     <|> ((,) <$> pure Nothing <*> atomic)
+    <|> (kwd "$" *> PI.withPos ((Nothing,) <$> expr))
     <?> "application argument"
 
 brackets :: Parser a -> Parser a

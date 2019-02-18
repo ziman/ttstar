@@ -23,7 +23,7 @@ executable ttstar
                        ViewPatterns, NamedFieldPuns, FlexibleContexts,
                        KindSignatures, GeneralizedNewtypeDeriving,
                        NamedFieldPuns, FlexibleContexts, ConstraintKinds,
-                       LambdaCase
+                       LambdaCase, TupleSections
   build-depends:       base, parsec, containers, transformers,
                        lens-family, lens-family-core,
                        optparse-applicative, filepath, indents
