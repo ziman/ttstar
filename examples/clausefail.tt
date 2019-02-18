@@ -1,19 +1,19 @@
 -- vim: ft=ttstar
 
 data N : Type where
-  Z : N,
-  S : N -> N.
+  Z : N
+  S : N -> N
 
 data B : Type where
-  T : B,
-  F : B.
+  T : B
+  F : B
 
-isSuc : N -> B.
-  (n : N)
-    isSuc (S n) = T,
-  (n : N)
-    isSuc n = F.
+isSuc : N -> B
+forall n.
+  isSuc (S n) = T
+forall n.
+  isSuc n = F
 
 -- TTstar used to say that the NF of main is (\x. F),
 -- which was incorrect. This has been fixed.
-main : N -> B = \x : N. isSuc x.
+main : N -> B = \x. isSuc x

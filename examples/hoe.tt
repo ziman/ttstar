@@ -2,22 +2,22 @@
 
 -- declare a data type
 data T : Type where
-  A : T,
-  B : T.
+  A : T
+  B : T
 
 -- any old binary operation on the data type
 -- NB. we need to postulate (ir-)relevance, too.
-postulate Op : (x :R: T) -> (y :R: T) -> T.
+postulate Op : (x :R: T) -> (y :R: T) -> T
 
 -- we can use lambdas to define functions
-id \(x : T) : T = x.
+id \(x : T) : T = x
 
-const_A \(x : T) : T = A.
+const_A \(x : T) : T = A
 
 -- but there are also ML-style definitions, for convenience
 f \(g : T -> T) (z : T) (h : T -> T) (w : T) : T
-  = Op (g z) (h w).
+  = Op (g z) (h w)
 
 -- main, manually marked as relevant
 main : T
-  = f id B const_A B.
+  = f id B const_A B

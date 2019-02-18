@@ -1,17 +1,17 @@
 -- vim: ft=ttstar
 
 data Bool : Type where
-  T : Bool,
-  F : Bool.
+  T : Bool
+  F : Bool
 
 -- patvar scoping bug
-broken : Bool -> Bool.
-(n : Bool)
+broken : Bool -> Bool
+forall n.
   broken n =
-    let id : Bool -> Bool.
-          id n = n
+    let id : Bool -> Bool
+        id n = n
       in
-        id n.
+        id n
 
 -- postulate checking bug FIXED
 {-
@@ -20,4 +20,4 @@ eek : Bool -> Bool.
   eek (broken n) = n.
 -}
 
-main : Bool = broken T.
+main : Bool = broken T

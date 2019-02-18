@@ -1,10 +1,10 @@
 -- vim: ft=ttstar
 
-postulate Int : Type.
-foreign intS : (x :R: Int) -> Int = "(lambda (x) (+ x 1))".
-foreign intZ : Int = "0".
+postulate Int : Type
+foreign intS : (x :R: Int) -> Int = "(lambda (x) (+ x 1))"
+foreign intZ : Int = "0"
 
-postulate Unspec : Type.
+postulate Unspec : Type
 
 -- `nativePrint` has side effects so we wrap it in an IO action.
 printSchemeRepr \ (a : Type) (x : a) : IO Unspec =
@@ -12,14 +12,14 @@ printSchemeRepr \ (a : Type) (x : a) : IO Unspec =
         -- The only places where we assert usage are foreign functions.
         foreign nativePrint : (a :E: Type) -> (x :R: a) -> Unspec = "print"
     in
-        ioWrapImpure Unspec (\w:RealWorld. nativePrint a x).
+        ioWrapImpure Unspec (\w. nativePrint a x)
 
-natToInt : Nat -> Int.
-  natToInt Z = intZ,
+natToInt : Nat -> Int
+  natToInt Z = intZ
   (n : Nat)
-    natToInt (S n) = intS (natToInt n).
+    natToInt (S n) = intS (natToInt n)
 
-foreign intToNat : (x :R: Int) -> Nat = "(lambda (x) (number->peano 'Z 'S x))".
+foreign intToNat : (x :R: Int) -> Nat = "(lambda (x) (number->peano 'Z 'S x))"
 
 printNat \(x : Nat) : IO Unspec
-    = printSchemeRepr Int (natToInt x).
+    = printSchemeRepr Int (natToInt x)

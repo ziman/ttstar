@@ -1,23 +1,23 @@
 -- vim: ft=ttstar
 
 data Bool : Type where
-  T : Bool,
-  F : Bool.
+  T : Bool
+  F : Bool
 
 data TwoBools : Type where
-  TB : (x :R: Bool) -> (y :R: Bool) -> TwoBools.
+  TB : (x :R: Bool) -> (y :R: Bool) -> TwoBools
 
-id : Bool -> Bool = \x:Bool. x.
+id : Bool -> Bool = \x. x
 
-constT : Bool -> Bool = \_:Bool. T.
+constT : Bool -> Bool = \_. T
 
-fty : Bool -> Type.
-fty T = Bool -> Bool,
-fty F = Bool -> Bool.
+fty : Bool -> Type
+fty T = Bool -> Bool
+fty F = Bool -> Bool
 
-f : (x : Bool) -> fty x.
-f T = id,
-f F = constT.
+f : (x : Bool) -> fty x
+f T = id
+f F = constT
 
 main : TwoBools
-  = TB (f T F) (f F F).
+  = TB (f T F) (f F F)

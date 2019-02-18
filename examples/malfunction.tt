@@ -4,36 +4,36 @@ import "../stdlib/io.tt"
 import "../stdlib/rts-mlf.tt"
 
 sumFor \(n : Int) (f : Int -> Int) : Int
-  = case isZero n with
-    g : Bool -> Int.
-    g True  = int0,
-    g False = plusInt (f n) (sumFor (minusInt n int1) f)..
+  = case isZero n of
+      True  = int0
+      False = plusInt (f n) (sumFor (minusInt n int1) f)
 
-boolToInt : Bool -> Int.
-boolToInt True = int1,
-boolToInt False = int0.
+boolToInt : Bool -> Int
+boolToInt True = int1
+boolToInt False = int0
 
-isPythag \(x : Int) (y : Int) (z : Int) : Int
-  = boolToInt (
+isPythag \(x : Int) (y : Int) (z : Int) : Int =
+  boolToInt (
     eqInt
       (timesInt x x)
       (plusInt (timesInt y y) (timesInt z z))
-  ).
+   )
 
 pythag \(n : Int) : Int = 
-  sumFor n (\x:Int.
-    sumFor x (\y:Int.
-      sumFor y (\z:Int.
+  sumFor n (\x.
+    sumFor x (\y.
+      sumFor y (\z.
         isPythag x y z
-      )
-    )
-  ).
+       )
+     )
+   )
 
-main : Unspec = unsafePerformIO Unspec (
-  let int2 : Int = plusInt int1 int1,
-      int4 : Int = timesInt int2 int2,
-      int16 : Int = timesInt int4 int4,
-      int256 : Int = timesInt int16 int16,
-      int512 : Int = timesInt int256 int2
-  in printInt (pythag int512)
-).
+main : Unspec =
+  unsafePerformIO Unspec (
+    let int2 : Int = plusInt int1 int1
+        int4 : Int = timesInt int2 int2
+        int16 : Int = timesInt int4 int4
+        int256 : Int = timesInt int16 int16
+        int512 : Int = timesInt int256 int2
+    in printInt (pythag int512)
+   )

@@ -1,23 +1,23 @@
 -- vim: ft=ttstar
 
 data T : Type where
-  A : T,
-  B : T.
+  A : T
+  B : T
 
 -- built-in primitive op
-postulate Op : (x :R: T) -> (y :R: T) -> T.
+postulate Op : (x :R: T) -> (y :R: T) -> T
 
-id \(y : T) : T = y.
+id \(y : T) : T = y
 
-constA \(x : T) : T = A.
+constA \(x : T) : T = A
 
-apply \(f : T -> T) (x : T) : T = f x.
+apply \(f : T -> T) (x : T) : T = f x
 
 test1 : T
-  = [apply : (T -> T) -> T -> T] id B.
+  = [apply : (T -> T) -> T -> T] id B
 
 test2 : T
-  = [apply : (T -> T) -> T -> T] constA B.
+  = [apply : (T -> T) -> T -> T] constA B
 
 main : T
-  = Op test1 test2.
+  = Op test1 test2

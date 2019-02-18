@@ -1,14 +1,14 @@
 -- vim: ft=ttstar
 
 data Bool : Type where
-  T : Bool,
-  F : Bool.
+  T : Bool
+  F : Bool
 
 data Unit : Type where
-  MkUnit : Unit.
+  MkUnit : Unit
 
-not : Bool -> Unit.
-not T = MkUnit,
-not F = MkUnit.
+not : Bool -> Unit
+not T = MkUnit
+not F = MkUnit
 
-main : Unit = not T.
+main : Unit = not T

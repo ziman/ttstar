@@ -7,6 +7,6 @@ import "../stdlib/rts.tt"
 
 main \: Unspec =
   unsafePerformIO Unspec (
-    ioBind Nat Unspec (ioReturn Nat 4) (\v:Nat.
-      ioBind Unspec Unspec (printNat v) (\_:Unspec.
+    ioBind Nat Unspec (ioReturn Nat 4) (\v.
+      ioBind Unspec Unspec (printNat v) (\_.
         printSchemeRepr Nat (intToNat (intS (intS (intS intZ)))))))

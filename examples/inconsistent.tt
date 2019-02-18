@@ -1,2 +1,2 @@
 -- vim: ft=ttstar
-main \(x :E: Type) :R: Type = x.
+main \(x :E: Type) :R: Type = x

@@ -78,7 +78,7 @@ keywords :: S.Set String
 keywords = S.fromList [
     "case", "with", "where",
     "data", "let", "in", "postulate",
-    "of", "forall", "do"
+    "of", "forall", "do", "foreign"
   ]
 
 -- this is not a kwd because we don't care about alignment
@@ -328,7 +328,7 @@ ptyping abs =
     makeIrrelevant def = def{ defR = Just I }
 
 postulate :: Parser (Def MRel)
-postulate = (<?> "postulate") $ subfenced $ do
+postulate = (<?> "postulate") $ subfenced' $ do
     kwd "postulate"
     d <- typing Postulate
     return d
