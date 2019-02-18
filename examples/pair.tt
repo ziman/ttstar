@@ -1,25 +1,25 @@
 -- vim: ft=ttstar
 
 data Bool : Type where
-  T : Bool,
-  F : Bool.
+  T : Bool
+  F : Bool
 
 data Pair : Type where
-  P : (x : Bool) -> (y : Bool) -> Pair.
+  P : (x : Bool) -> (y : Bool) -> Pair
 
-fst : Pair -> Bool.
+fst : Pair -> Bool
   (l : Bool) (r : Bool)
-    fst ([P] l r) = l.
+    fst ([P] l r) = l
 
-snd : Pair -> Bool.
+snd : Pair -> Bool
   (l : Bool) (r : Bool)
-    snd ([P] l r) = r.
+    snd ([P] l r) = r
 
-and : Bool -> Bool -> Bool.
+and : Bool -> Bool -> Bool
   (y : Bool)
-    and T y = y,
+    and T y = y
   (y : Bool)
-    and F y = F.
+    and F y = F
 
 main : Bool
-    = and (fst (P T F)) (snd (P F T)).
+    = and (fst (P T F)) (snd (P F T))

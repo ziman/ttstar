@@ -38,11 +38,11 @@ let True = constructor 0
                                             in let printString = \s. let nativePrint = foreign "(global $Pervasives $print_endline)"
                                               in (ioWrapImpure \w. (nativePrint s))
                                               in let printInt = \i. (printString (intToString i))
-                                                in let sumFor = \n. \f. let g = \_pv0.
+                                                in let sumFor = \n. \f. let _cf0 = \_pv0.
                                                   case _pv0 of
                                                     False => ((plusInt (f n)) ((sumFor ((minusInt n) int1)) f))
                                                     True => int0
-                                                  in (g (isZero n))
+                                                  in (_cf0 (isZero n))
                                                   in let boolToInt = \_pv0.
                                                     case _pv0 of
                                                       False => int0

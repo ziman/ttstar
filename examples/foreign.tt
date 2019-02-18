@@ -1,75 +1,75 @@
 -- vim: ft=ttstar
 
 data N : Type where
-  Z : N,
-  S : (x :R: N) -> N.
+  Z : N
+  S : (x :R: N) -> N
 
 data B : Type where
-  T : B,
-  F : B.
+  T : B
+  F : B
 
 data List : Type where
-  Cons : B -> List -> List,
-  Nil : List.
+  Cons : B -> List -> List
+  Nil : List
 
-not : B -> B.
-not T = F,
-not F = T.
+not : B -> B
+not T = F
+not F = T
 
 -- e.g.: csi -qs examples/foreign.scm 4
-foreign input : N = "(rts-arg-peano 'Z 'S 0)".
+foreign input : N = "(rts-arg-peano 'Z 'S 0)"
 
 -- e.g.: csi -qs examples/foreign.scm "(S (S (S (Z))))"
---foreign input : N = "(rts-arg-read 0)".
+--foreign input : N = "(rts-arg-read 0)"
 
-genList : B -> N -> List.
+genList : B -> N -> List
   (b : B)
-    genList b Z = Nil,
+    genList b Z = Nil
   (b : B) (n : N)
-    genList b (S n) = Cons b (genList (not b) n).
+    genList b (S n) = Cons b (genList (not b) n)
 
 data Eq : (a : Type) -> a -> a -> Type where
-  Refl : (a : Type) -> (x : a) -> Eq a x x.
+  Refl : (a : Type) -> (x : a) -> Eq a x x
 
 data Maybe : Type -> Type where
-  Nothing : (a : Type) -> Maybe a,
-  Just : (a : Type) -> (x : a) -> Maybe a.
+  Nothing : (a : Type) -> Maybe a
+  Just : (a : Type) -> (x : a) -> Maybe a
 
-semiDecEqB : (x : B) -> (y : B) -> Maybe (Eq B x y).
-semiDecEqB T T = Just (Eq B T T) (Refl B T),
-semiDecEqB F F = Just (Eq B F F) (Refl B F),
-semiDecEqB T F = Nothing (Eq B T F),
-semiDecEqB F T = Nothing (Eq B F T).
+semiDecEqB : (x : B) -> (y : B) -> Maybe (Eq B x y)
+semiDecEqB T T = Just (Eq B T T) (Refl B T)
+semiDecEqB F F = Just (Eq B F F) (Refl B F)
+semiDecEqB T F = Nothing (Eq B T F)
+semiDecEqB F T = Nothing (Eq B F T)
 
-semiDecEq : (xs : List) -> (ys : List) -> Maybe (Eq List xs ys).
+semiDecEq : (xs : List) -> (ys : List) -> Maybe (Eq List xs ys)
   (b : B) (ys : List)
-    semiDecEq Nil (Cons b ys) = Nothing (Eq List Nil (Cons b ys)),
+    semiDecEq Nil (Cons b ys) = Nothing (Eq List Nil (Cons b ys))
   (b : B) (xs : List)
-    semiDecEq (Cons b xs) Nil = Nothing (Eq List (Cons b xs) Nil),
-    semiDecEq Nil Nil = Just (Eq List Nil Nil) (Refl List Nil),
+    semiDecEq (Cons b xs) Nil = Nothing (Eq List (Cons b xs) Nil)
+    semiDecEq Nil Nil = Just (Eq List Nil Nil) (Refl List Nil)
   (x : B) (y : B) (xs : List) (ys : List)
     semiDecEq (Cons x xs) (Cons y ys) =
       let
         semiDecEq' : (x : B) -> (y : B) -> (xs : List) -> (ys : List)
             -> (pfH : Maybe (Eq B x y))
             -> (pfT : Maybe (Eq List xs ys))
-            -> Maybe (Eq List (Cons x xs) (Cons y ys)).
+            -> Maybe (Eq List (Cons x xs) (Cons y ys))
 
           (x : B) (y : B) (xs : List) (ys : List) (pfT : Maybe (Eq List xs ys))
             semiDecEq' x y xs ys (Nothing [Eq B x y]) pfT
-              = Nothing (Eq List (Cons x xs) (Cons y ys)),
+              = Nothing (Eq List (Cons x xs) (Cons y ys))
 
           (x : B) (y : B) (xs : List) (ys : List) (pfH : Maybe (Eq B x y))
             semiDecEq' x y xs ys pfH (Nothing [Eq List xs ys])
-              = Nothing (Eq List (Cons x xs) (Cons y ys)),
+              = Nothing (Eq List (Cons x xs) (Cons y ys))
 
           (x : B) (xs : List)
             semiDecEq' x [x] xs [xs] (Just [Eq B x x] [Refl B x]) (Just [Eq List xs xs] [Refl List xs])
-              = Just (Eq List (Cons x xs) (Cons x xs)) (Refl List (Cons x xs)).
+              = Just (Eq List (Cons x xs) (Cons x xs)) (Refl List (Cons x xs))
       in
-        semiDecEq' x y xs ys (semiDecEqB x y) (semiDecEq xs ys).
+        semiDecEq' x y xs ys (semiDecEqB x y) (semiDecEq xs ys)
 
-sampleList \: List = genList T input.
+sampleList \: List = genList T input
 
-main : Maybe (Eq List sampleList sampleList).
-main = semiDecEq sampleList sampleList.
+main : Maybe (Eq List sampleList sampleList)
+main = semiDecEq sampleList sampleList

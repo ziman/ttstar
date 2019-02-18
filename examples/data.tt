@@ -1,14 +1,14 @@
 -- vim: ft=ttstar
 
 data N : Type where
-  Z : N,
-  S : N -> N.
+  Z : N
+  S : N -> N
 
-plus : N -> N -> N.
+plus : N -> N -> N
   (m : N)
-    plus Z m = m,
+    plus Z m = m
   (m : N) (n : N)
-    plus (S n) m = S (plus n m).
+    plus (S n) m = S (plus n m)
 
 {-
 data Vect : N -> Type where
@@ -24,9 +24,9 @@ zipWith : (n : N) -> (f : N -> N -> N) -> (xs : Vect n) -> (ys : Vect n) -> Vect
 
 main : N
   = let
-      pred : N -> N.
-        pred Z = Z,
+      pred : N -> N
+        pred Z = Z
         (n : N)
           pred (S n) = n
     in
-      plus 2 3. -- plus (pred 4) (pred 5).
+      plus 2 3 -- plus (pred 4) (pred 5).

@@ -1,16 +1,16 @@
 -- vim: ft=ttstar
 
 data Bool : Type where
-  T : Bool,
-  F : Bool.
+  T : Bool
+  F : Bool
 
-g : Bool -> Bool.
+g : Bool -> Bool
 g T =
     let
-      h : Bool -> Bool.
-      h F = g F,
+      h : Bool -> Bool
+      h F = g F
       h T = T
-    in h F,
-g F = T.
+    in h F
+g F = T
 
-main : Bool = g T.
+main : Bool = g T

@@ -7,7 +7,7 @@
     constructor T : Bool
     constructor F : Bool
     broken : (_x0 : Bool) -> Bool 
-      n : Bool
+      n : _0
         broken n = 
           let id : (_x1 : Bool) -> Bool 
             id n = n
@@ -17,4 +17,4 @@
 NotConstructor n
 ttstar: elaboration failed
 CallStack (from HasCallStack):
-  error, called at Main.hs:66:37 in main:Main
+  error, called at Main.hs:61:37 in main:Main

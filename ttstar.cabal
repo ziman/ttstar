@@ -22,7 +22,8 @@ executable ttstar
   default-extensions:  FlexibleInstances, StandaloneDeriving,
                        ViewPatterns, NamedFieldPuns, FlexibleContexts,
                        KindSignatures, GeneralizedNewtypeDeriving,
-                       NamedFieldPuns, FlexibleContexts, ConstraintKinds
+                       NamedFieldPuns, FlexibleContexts, ConstraintKinds,
+                       LambdaCase, TupleSections
   build-depends:       base, parsec, containers, transformers,
                        lens-family, lens-family-core,
                        optparse-applicative, filepath, indents

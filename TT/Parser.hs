@@ -2,34 +2,57 @@ module TT.Parser (readProgram) where
 
 import TT.Core
 import TT.Utils
+import TT.Lens
 import TT.Pretty ()
 
 import Data.Char
+import Data.Functor
 import Text.Parsec
-import Text.Parsec.Indent
 import System.FilePath
 import qualified Data.Map as M
 import qualified Data.Set as S
+import qualified Text.Parsec.Indent as PI
+import qualified Control.Monad.Trans.State.Strict as ST
 
 data ParserState = PS
     { psCounters :: M.Map String Int
     }
     deriving (Eq, Ord, Show)
 
-type Parser a = IndentParser String ParserState a
+type Parser a = PI.IndentParser String ParserState a
 type MRel = Maybe Relevance
 
+-- 2D layout --
+-- the ticked versions allow being right on the fence
+-- the unticked versions require at least one indent
+
+withinFence :: Parser ()
+withinFence = PI.sameOrIndented
+
+withinFence' :: Parser ()
+withinFence' = PI.sameOrIndented <|> PI.checkIndent
+
+subfenced :: Parser a -> Parser a
+subfenced x = withinFence >> PI.withPos x
+
+subfenced' :: Parser a -> Parser a
+subfenced' x = withinFence' >> PI.withPos x
+
+-- Rest of parser --
+
 readProgram :: String -> IO (Either ParseError (Program MRel))
-readProgram fname = do
-    ds' <- readDefs fname
-    case ds' of
-        Left err -> return . Left  $ err
-        Right ds -> return . Right $ Bind Let ds (V $ UN "main")
+readProgram fname =
+    readDefs fname <&> \case
+        Left err -> Left  $ err
+        Right ds ->
+            let prog = Bind Let ds (V $ UN "main")
+                f _ = ST.get >>= \i -> ST.put (i+1) >> pure (Meta i)
+              in Right $ ST.evalState (ttMetas f prog) 0
 
 readDefs :: String -> IO (Either ParseError [Def MRel])
 readDefs fname = do
     body <- readFile fname
-    case runIndentParser program initialParserState fname body of
+    case PI.runIndentParser program initialParserState fname body of
         Left err -> return $ Left err
         Right (is, ds) -> do
             let rootDir = takeDirectory fname
@@ -55,23 +78,32 @@ keywords :: S.Set String
 keywords = S.fromList [
     "case", "with", "where",
     "data", "let", "in", "postulate",
-    "of", "forall", "do"
+    "of", "forall", "do", "foreign"
   ]
 
+-- this is not a kwd because we don't care about alignment
 lineComment :: Parser ()
-lineComment = kwd "--" *> many (satisfy (/= '\n')) *> return () <?> "line comment"
+lineComment = try (string "--") *> many (satisfy (/= '\n')) *> return () <?> "line comment"
 
+-- this is not a kwd because we don't care about alignment
 bigComment :: Parser ()
-bigComment = kwd "{-" *> manyTill anyChar (try $ kwd "-}") *> return () <?> "block comment"
+bigComment = try (string "{-") *> manyTill anyChar (try $ string "-}") *> return () <?> "block comment"
 
 sp :: Parser ()
-sp = many ((satisfy isSpace *> return ()) <|> lineComment <|> bigComment) *> return () <?> "whitespace or comment"
+sp = many
+    ( (satisfy isSpace *> return ())
+    <|> lineComment
+    <|> bigComment
+    )
+    *> return ()
+    <?> "whitespace or comment"
 
 kwd :: String -> Parser ()
-kwd s = (try (string s) >> sp) <?> s
+kwd s = (withinFence >> try (string s) >> sp) <?> s
 
 identifier :: Parser Name
 identifier = (<?> "identifier") $ do
+    withinFence
     n <- try $ do
         x <- satisfy isAlpha  -- let's make _idents reserved for the compiler
         xs <- many $ satisfy (\x -> idChar x || isDigit x)
@@ -104,25 +136,23 @@ var :: Parser (TT MRel)
 var = V <$> name <?> "variable"
 
 natural :: Parser (TT MRel)
-natural = mkNat . read <$> (many1 (satisfy isDigit) <* sp) <?> "number"
+natural = mkNat . read <$> (withinFence *> many1 (satisfy isDigit) <* sp) <?> "number"
   where
     mkNat :: Int -> TT MRel
     mkNat 0 = V $ UN "Z"
     mkNat k = App Nothing (V $ UN "S") (mkNat (k-1))
 
-meta :: Parser (TT MRel)
-meta = kwd "_" *> freshMeta
+metaVar :: Parser (TT MRel)
+metaVar = kwd "_" *> pure meta
 
-freshMeta :: Parser (TT MRel)
-freshMeta = do
-    ~(MN _ i) <- freshMN "_"
-    return $ Meta i
+meta :: TT MRel
+meta = Meta (error "meta numbers not defined in parser")  -- numbered later in parseFile
 
 atomic :: Parser (TT MRel)
 atomic = parens expr
     <|> caseExpr
     <|> erasureInstance
-    <|> meta
+    <|> metaVar
     <|> var
     <|> natural
     <?> "atomic expression"
@@ -143,25 +173,19 @@ lambda = (<?> "lambda") $ do
 
     case d' of
         Right d -> Bind Lam [d] <$> expr
-        Left n -> do
-            ty <- freshMeta
-            Bind Lam [Def n Nothing ty (Abstract Var)] <$> expr
+        Left n -> Bind Lam [Def n Nothing meta (Abstract Var)] <$> expr
 
 bpi :: Parser (TT MRel)
-bpi = (<?> "pi") $ withPos $ do
+bpi = (<?> "pi") $ do
     d <- try $ ptyping Var
     kwd "->"
-    Bind Pi [d] <$> (sameOrIndented *> expr)
+    Bind Pi [d] <$> expr
 
 -- meta-enabled typings
 mtypings :: Parser [Def MRel]
-mtypings = traverse f =<< many1 ((Left <$> name) <|> (Right <$> ptyping Var))
+mtypings = many1 (nm <|> ptyping Var)
   where
-    f (Left n) = do
-        ty <- freshMeta
-        return $ Def n Nothing ty (Abstract Var)
-
-    f (Right d) = return d
+    nm  = name <&> \n -> Def n Nothing meta (Abstract Var)
 
 bforall :: Parser (TT MRel)
 bforall = (<?> "forall") $ do
@@ -181,9 +205,11 @@ bind = arrow
 
 stringLiteral :: Parser String
 stringLiteral = (<?> "string literal") $ do
-    kwd "\""
+    withinFence
+    _ <- string "\""
     s <- many stringChar
-    kwd "\""
+    _ <- string "\""
+    sp
     return s
   where
     stringChar :: Parser Char
@@ -193,15 +219,16 @@ stringLiteral = (<?> "string literal") $ do
         <|> (kwd "\\\\" *> return '\\')
 
 app :: Parser (TT MRel)
-app = (<?> "application") $ withPos $ do
+app = (<?> "application") $ subfenced $ do
     f <- atomic
-    args <- many (sameOrIndented *> appArg)
+    args <- many appArg
     return $ mkApp f args
 
 appArg :: Parser (MRel, TT MRel)
 appArg =
     ((,) <$> pure (Just I) <*> try (string "." *> atomic))
     <|> ((,) <$> pure Nothing <*> atomic)
+    <|> (kwd "$" *> PI.withPos ((Nothing,) <$> expr))
     <?> "application argument"
 
 brackets :: Parser a -> Parser a
@@ -229,7 +256,7 @@ patAppArg =
     <?> "pattern application argument"
 
 patApp :: Parser (Pat MRel)
-patApp = (<?> "pattern application") $ do
+patApp = (<?> "pattern application") $ subfenced $ do
     f <- patAtom
     args <- many patAppArg
     return $ mkAppPat f args
@@ -238,12 +265,9 @@ pattern :: Parser (Pat MRel)
 pattern = patApp
 
 let_ :: Parser (TT MRel)
-let_ = (<?> "let expression") $ do
-    kwd "let"
-    d <- simpleDef
-    ds <- many (kwd "," *> simpleDef)
-    kwd "in"
-    Bind Let (d:ds) <$> expr
+let_ = (<?> "let expression") $ subfenced $ do
+    ds <- subfenced' $ kwd "let" *> many1 simpleDef
+    subfenced' $ kwd "in" *> (Bind Let ds <$> expr)
 
 erasureInstance :: Parser (TT MRel)
 erasureInstance = (<?> "erasure instance") $ do
@@ -255,39 +279,75 @@ erasureInstance = (<?> "erasure instance") $ do
     return $ EI n ty
 
 caseExpr :: Parser (TT MRel)
-caseExpr = (<?> "case expression") $ withPos $ do
+caseExpr = (<?> "case expression") $ subfenced $ do
     kwd "case"
     tms <- expr `sepBy` kwd ","
     d   <- caseOf (length tms) <|> caseWith
     return $ Bind Let [d] (mkApp (V $ defName d) $ zip (repeat Nothing) tms)
 
 caseWith :: Parser (Def MRel)
-caseWith = kwd "with" >> indented >> clauseDef
+caseWith = kwd "with" >> clauseDef
 
 caseOf :: Int -> Parser (Def MRel)
 caseOf nscruts = do
     kwd "of"
     fn  <- freshMN "cf"
     fty <- mkPi nscruts
-    Def fn Nothing fty . Clauses <$> many (indented >> caseArm fn)
+    Def fn Nothing fty . Clauses <$> PI.block (caseArm fn)
   where
     mkPi :: Int -> Parser (TT MRel)
-    mkPi 0 = freshMeta
+    mkPi 0 = pure meta
     mkPi k = do
         n <- freshMN "cft"
-        ty <- freshMeta                
-        Bind Pi [Def n Nothing ty $ Abstract Var] <$> mkPi (k-1)
+        Bind Pi [Def n Nothing meta $ Abstract Var] <$> mkPi (k-1)
 
     caseArm :: Name -> Parser (Clause MRel)
-    caseArm fn = do
-        ns <- (kwd "pat" *> many1 name <* kwd ".") <|> (pure [])
-        pvs <- traverse (\n -> Def n Nothing <$> freshMeta <*> pure (Abstract Var)) ns
+    caseArm fn = subfenced' $ do
+        pvs <- mpatvars <|> pure []
         lhs <- pattern `sepBy1` kwd ","
         kwd "="
         Clause pvs (mkAppPat (PHead fn) [(Nothing, p) | p <- lhs]) <$> expr
 
+doExpr :: Parser (TT MRel)
+doExpr = do
+    kwd "with"
+    bind <- expr
+    kwd "do"
+    ss <- PI.block (ass <|> assTy <|> ign)
+    rebind bind ss    
+  where
+    ass = do
+        n <- try (name <* kwd "<-")
+        rhs <- expr
+        return $ Left (n, meta, rhs)
+
+    assTy = do
+        d <- try (typing Var <* kwd "<-")
+        rhs <- expr
+        return $ Left (defName d, defType d, rhs)
+
+    ign = Right <$> expr
+
+    rebind :: TT MRel -> [Either (Name, TT MRel, TT MRel) (TT MRel)] -> Parser (TT MRel)
+    rebind bind [Right rhs] = pure rhs
+    rebind bind (s : ss) = do
+        (n, ty, rhs) <- case s of
+            Left (n, ty, rhs) -> pure (n, ty, rhs)
+            Right rhs -> do
+                n <- freshMN "do"
+                return (n, meta, rhs)
+
+        rest <- rebind bind ss
+
+        pure $ mkApp bind
+            [ (Nothing, rhs)
+            , (Nothing, Bind Lam [Def n Nothing ty (Abstract Var)] rest)
+            ]
+
+    rebind _bind ss = error $ "invalid do-notation statement: " ++ show ss
+
 expr :: Parser (TT MRel)
-expr = bind <|> app <?> "expression"  -- app includes nullary-applied atoms
+expr = bind <|> doExpr <|> app <?> "expression"  -- app includes nullary-applied atoms
 
 typing :: Abstractness -> Parser (Def MRel)
 typing a = (<?> "name binding") $ do
@@ -304,21 +364,21 @@ ptyping abs =
     makeIrrelevant def = def{ defR = Just I }
 
 postulate :: Parser (Def MRel)
-postulate = (<?> "postulate") $ do
+postulate = (<?> "postulate") $ subfenced' $ do
     kwd "postulate"
     d <- typing Postulate
     return d
 
 clauseDef :: Parser (Def MRel)
 clauseDef = (<?> "pattern-clause definition") $ do
-    d <- typing Var
+    d <- subfenced' $ typing Var
     body <-
         (kwd "=" *> termBody)
         <|> clausesBody
     return d{ defBody = body }
 
 mlDef :: Parser (Def MRel)
-mlDef = (<?> "ml-style definition") $ do
+mlDef = (<?> "ml-style definition") $ subfenced' $ do
     n <- try (name <* kwd "\\")
     args <- many (ptyping Var)
     r <- rcolon
@@ -340,17 +400,19 @@ termBody :: Parser (Body MRel)
 termBody = Term <$> expr
 
 mpatvars :: Parser [Def MRel]
-mpatvars = kwd "pat" *> mtypings <* kwd "."
+mpatvars = subfenced' (kwd "forall" *> mtypings <* optional (kwd "."))
 
 clause :: Parser (Clause MRel)
-clause = (<?> "pattern clause") $ do
-    -- quickly reject "name :" because that's the beginning of the next decl
+clause = (<?> "pattern clause") $ subfenced' $ do
+    -- quickly reject common beginnings of the next decl
     notFollowedBy (name >> kwd ":")
+    notFollowedBy (name >> kwd "\\")
     pvs <- mpatvars <|> many (ptyping Var)
-    lhs <- forceHead <$> pattern
-    kwd "="
-    rhs <- expr
-    return $ Clause pvs lhs rhs
+    subfenced' $ do
+        lhs <- forceHead <$> pattern
+        kwd "="
+        rhs <- expr
+        return $ Clause pvs lhs rhs
 
 forceHead :: Pat MRel -> Pat MRel
 forceHead p | (PV f, args) <- unApplyPat p
@@ -359,14 +421,13 @@ forceHead p
     = error $ "invalid clause LHS: " ++ show p
 
 dataDef :: Parser [Def MRel]
-dataDef = (<?> "data definition")
-    $ withBlock
-        (\tfd ctors -> tfd : ctors)
-        (kwd "data" *> typing Constructor <* kwd "where")
-        (typing Constructor)
+dataDef = (<?> "data definition") $ subfenced' $ do
+    tfd <- kwd "data" *> typing Constructor <* kwd "where"
+    ctors <- many (subfenced $ typing Constructor)
+    return (tfd : ctors)
 
 foreignDef :: Parser (Def MRel)
-foreignDef = (<?> "foreign definition") $ do
+foreignDef = (<?> "foreign definition") $ subfenced' $ do
     kwd "foreign"
     d <- typing $ Foreign undefined
     kwd "="
@@ -377,13 +438,13 @@ simpleDef :: Parser (Def MRel)
 simpleDef = foreignDef <|> postulate <|> mlDef <|> clauseDef <?> "simple definition"
 
 imports :: Parser [String]
-imports = many (kwd "import" *> stringLiteral)
+imports = many (subfenced' $ kwd "import" *> stringLiteral)
 
 definition :: Parser [Def MRel]
 definition = dataDef <|> (pure <$> simpleDef) <?> "definition"
 
 definitions :: Parser [Def MRel]
-definitions = concat <$> many (definition <* optional (kwd ".")) <?> "definitions"
+definitions = concat <$> many definition <?> "definitions"
 
 program :: Parser ([String], [Def MRel])
 program = (<?> "program") $ do

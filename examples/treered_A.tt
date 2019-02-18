@@ -1,18 +1,18 @@
 data N : Type where
-  Z : N,
-  S : (x :R: N) -> N.
+  Z : N
+  S : (x :R: N) -> N
 
 data Vec : N -> Type -> Type where
-  Nil : (a : Type) -> Vec Z a,
-  Cons : (a : Type) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a.
+  Nil : (a : Type) -> Vec Z a
+  Cons : (a : Type) -> (n : N) -> (x :R: a) -> (xs :R: Vec n a) -> Vec (S n) a
 
-vlen : (n : N) -> (xs : Vec n N) -> N.
-  vlen {Z} (Nil [N]) = Z,
+vlen : (n : N) -> (xs : Vec n N) -> N
+  vlen {Z} (Nil [N]) = Z
   (m : N) (y : N) (ys : Vec m N)
-    vlen ({S} m) (Cons [N] [m] y ys) = S (vlen m ys).
+    vlen ({S} m) (Cons [N] [m] y ys) = S (vlen m ys)
 
 main : N
-  = vlen 1 (Cons N Z 3 (Nil N)).
+  = vlen 1 (Cons N Z 3 (Nil N))
 
 {-
 
@@ -22,7 +22,7 @@ Bug 1:
 
 Cons :R: (a :E: Type) -> (n :E: N) -> (x :R: a) -> (xs :R: Vec -E- n -E- a) -> Vec -E- (S -E- n) -E- a
 
-vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N = \(n :E: N) (xs :R: Vec -E- n -E- N).
+vlen :R: (n :E: N) -> (xs :R: Vec -E- n -E- N) -> N = \(n :E: N) (xs :R: Vec -E- n -E- N)
   case -R- xs of
     Nil/R (a :E: Type)
       | a = N

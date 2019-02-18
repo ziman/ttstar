@@ -8,8 +8,8 @@
     constructor F : Bool
     constructor TwoBools : Type
     constructor TB : (x :R: Bool) -> (y :R: Bool) -> TwoBools
-    id : (_x0 : Bool) -> Bool = (\x : Bool. x)
-    constT : (_x1 : Bool) -> Bool = (\_0 : Bool. T)
+    id : (_x0 : Bool) -> Bool = (\x : _0. x)
+    constT : (_x1 : Bool) -> Bool = (\_0 : _1. T)
     fty : (_x2 : Bool) -> Type 
       fty T = (_x3 : Bool) -> Bool
       fty F = (_x4 : Bool) -> Bool

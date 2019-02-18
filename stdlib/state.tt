@@ -1,37 +1,37 @@
 -- vim: ft=ttstar
 
 data State : Type -> Type -> Type where
-  MkSt : (st : Type) -> (a : Type)
+  MkSt : forall st a
     -> (run : st -> Pair st a)
-    -> State st a.
+    -> State st a
 
-runState : (st : Type) -> (a : Type) -> (State st a) -> st -> Pair st a.
-  (st : Type) (a : Type) (run : st -> Pair st a)
-    runState st a ({MkSt} [st] [a] run) = run.
+runState : forall st a -> State st a -> st -> Pair st a
+forall st a (run : st -> Pair st a).
+    runState st a ({MkSt} [_] [_] run) = run
 
 execState \(st : Type) (a : Type) (x : State st a) (s : st) : a
-    = snd st a (runState st a x s).
+    = snd st a (runState st a x s)
 
 stGet \(st : Type) : State st st
-    = MkSt st st (\s:st. MkPair st st s s).
+    = MkSt st st (\s:st. MkPair st st s s)
 
 stReturn \(st : Type) (a : Type) (x : a) : State st a
-    = MkSt st a (\s:st. MkPair st a s x).
+    = MkSt st a (\s:st. MkPair st a s x)
 
-stBind : (st : Type) -> (a : Type) -> (b : Type)
+stBind : forall st a b
     -> (x : State st a)
     -> (y : (z : a) -> State st b)
-    -> State st b.
+    -> State st b
   (st : Type) (a : Type) (b : Type) (f : st -> Pair st a) (g : a -> State st b)
     stBind st a b ({MkSt} [st] [a] f) g
         = let
-            stBind3 : (st : Type) -> (b : Type) -> st -> (State st b) -> Pair st b.
+            stBind3 : (st : Type) -> (b : Type) -> st -> (State st b) -> Pair st b
               (st : Type) (b : Type) (s : st) (f : st -> Pair st b)
-                stBind3 st b s ({MkSt} [st] [b] f) = f s.,
+                stBind3 st b s ({MkSt} [st] [b] f) = f s
 
             stBind2 : (st : Type) -> (a : Type) -> (b : Type)
-                -> (g : a -> State st b) -> (r : Pair st a) -> Pair st b.
+                -> (g : a -> State st b) -> (r : Pair st a) -> Pair st b
               (st : Type) (a : Type) (b : Type) (g : a -> State st b) (x : a) (s : st)
-                stBind2 st a b g ({MkPair} [st] [a] s x) = stBind3 st b s (g x).
+                stBind2 st a b g ({MkPair} [st] [a] s x) = stBind3 st b s (g x)
           in
-            MkSt st b (\s:st. stBind2 st a b g (f s)).
+            MkSt st b (\s:st. stBind2 st a b g (f s))

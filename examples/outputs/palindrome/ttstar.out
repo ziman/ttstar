@@ -13,22 +13,22 @@
     constructor Cons : (_x1 : B) -> (_x2 : List) -> List
     constructor Nil : List
     constructor Maybe : (_x3 : Type) -> Type
-    constructor Nothing : (a : Type) -> Maybe a
-    constructor Just : (a : Type) -> (x : a) -> Maybe a
+    constructor Nothing : (a : _0) -> Maybe a
+    constructor Just : (a : _1) -> (x : a) -> Maybe a
     not : (_x4 : B) -> B 
       not T = F
       not F = T
-    constructor Id : (a : Type) -> (x : a) -> (y : a) -> Type
-    constructor Refl : (a : Type) -> (x : a) -> Id a x x
-    id : (a : Type) -> (_x5 : a) -> a = (\a : _0. (\x : _1. x))
+    constructor Id : (a : _2) -> (x : a) -> (y : a) -> Type
+    constructor Refl : (a : _3) -> (x : a) -> Id a x x
+    id : (a : Type) -> (_x5 : a) -> a = (\a : _4. (\x : _5. x))
     subst : (a : Type) -> (P : (_x6 : a) -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -> (w : P x) -> P y 
-      a : Type P : (_x7 : a) -> Type x : a
-        subst a P x [x] [Refl a x] = (\w : P x. w)
-    cong : (a : Type) -> (b : Type) -> (f : (_x8 : a) -> b) -> (x : a) -> (y : a) -> (eq : Id a x y) -> Id b (f x) (f y) 
-      a : Type b : Type f : (_x9 : a) -> b x : a
+      a : _6 P : _7 x : _8
+        subst a P x [_9] ([Refl] [_10] [_11]) = (\w : _12. w)
+    cong : (a : Type) -> (b : Type) -> (f : (_x7 : a) -> b) -> (x : a) -> (y : a) -> (eq : Id a x y) -> Id b (f x) (f y) 
+      a : Type b : Type f : (_x8 : a) -> b x : a
         cong a b f x [x] [Refl a x] = Refl b (f x)
     one : (x : B) -> List = (\x : B. Cons x Nil)
-    app : (_x10 : List) -> (_x11 : List) -> List 
+    app : (_x9 : List) -> (_x10 : List) -> List 
       ys : List
         app Nil ys = ys
       x : B xs : List ys : List
@@ -42,7 +42,7 @@
         appAssoc Nil ys zs = Refl List (app ys zs)
       x : B xs : List ys : List zs : List
         appAssoc (Cons x xs) ys zs = cong List List (Cons x) (app (app xs ys) zs) (app xs (app ys zs)) (appAssoc xs ys zs)
-    constructor Rev : (_x12 : List) -> Type
+    constructor Rev : (_x11 : List) -> Type
     constructor RNil : Rev Nil
     constructor RSnoc : (xs : List) -> (x : B) -> (rxs : Rev xs) -> Rev (app xs (one x))
     rev' : (xs : List) -> (rxs : Rev xs) -> (ys : List) -> Rev (app xs ys) 
@@ -56,15 +56,15 @@
       xs : List x : B rxs : Rev xs
         reverse' [app xs (one x)] (RSnoc xs x rxs) = Cons x (reverse' xs rxs)
     reverse : (xs : List) -> List = (\xs : List. reverse' xs (rev xs))
-    constructor V : (_x13 : List) -> Type
+    constructor V : (_x12 : List) -> Type
     constructor VNil : V Nil
     constructor VOne : (x : B) -> V (Cons x Nil)
     constructor VTwo : (x : B) -> (xs : List) -> (u : V xs) -> (y : B) -> V (Cons x (app xs (one y)))
-    length : (_x14 : List) -> N 
+    length : (_x13 : List) -> N 
       length Nil = Z
       x : B xs : List
         length (Cons x xs) = S (length xs)
-    index : (_x15 : N) -> (_x16 : List) -> (_x17 : List) -> List 
+    index : (_x14 : N) -> (_x15 : List) -> (_x16 : List) -> List 
       xs : List ys : List
         index Z xs ys = Nil
       x : B xs : List y : B ys : List
@@ -84,7 +84,7 @@
         build (S n) Nil Nil = VNil
     postulate eq : (xs : List) -> Id List (index (length xs) xs (reverse xs)) xs
     toV : (xs : List) -> V xs = (\xs : List. subst List V (index (length xs) xs (reverse xs)) xs (eq xs) (build (length xs) xs (reverse xs)))
-    constructor IsPalindrome : (_x18 : List) -> Type
+    constructor IsPalindrome : (_x17 : List) -> Type
     constructor PNil : IsPalindrome Nil
     constructor POne : (b : B) -> IsPalindrome (Cons b Nil)
     constructor PTwo : (b : B) -> (xs : List) -> (pf : IsPalindrome xs) -> IsPalindrome (Cons b (app xs (one b)))
@@ -106,7 +106,7 @@
               isPalinV' x y xs v pfB pfV = Nothing (IsPalindrome (Cons x (app xs (one y))))
           in isPalinV' x y xs v (decEq x y) (isPalinV xs v)
     isPalindrome : (xs : List) -> Maybe (IsPalindrome xs) = (\xs : List. isPalinV xs (toV xs))
-    genList : (_x19 : B) -> (_x20 : N) -> List 
+    genList : (_x18 : B) -> (_x19 : N) -> List 
       b : B
         genList b Z = Nil
       b : B n : N
@@ -145,13 +145,13 @@
     constructor Refl : (a : Type) -> (x : a) -> Id a x x
     id : (a : Type) -> (_x5 : a) -> a = (\a : Type. (\x : a. x))
     subst : (a : Type) -> (P : (_x6 : a) -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -> (w : P x) -> P y 
-      a : Type P : (_x7 : a) -> Type x : a
-        subst a P x [x] [Refl a x] = (\w : P x. w)
-    cong : (a : Type) -> (b : Type) -> (f : (_x8 : a) -> b) -> (x : a) -> (y : a) -> (eq : Id a x y) -> Id b (f x) (f y) 
-      a : Type b : Type f : (_x9 : a) -> b x : a
+      a : Type P : (_x6 : a) -> Type x : a
+        subst a P x [x] ([Refl] [a] [x]) = (\w : P x. w)
+    cong : (a : Type) -> (b : Type) -> (f : (_x7 : a) -> b) -> (x : a) -> (y : a) -> (eq : Id a x y) -> Id b (f x) (f y) 
+      a : Type b : Type f : (_x8 : a) -> b x : a
         cong a b f x [x] [Refl a x] = Refl b (f x)
     one : (x : B) -> List = (\x : B. Cons x Nil)
-    app : (_x10 : List) -> (_x11 : List) -> List 
+    app : (_x9 : List) -> (_x10 : List) -> List 
       ys : List
         app Nil ys = ys
       x : B xs : List ys : List
@@ -165,7 +165,7 @@
         appAssoc Nil ys zs = Refl List (app ys zs)
       x : B xs : List ys : List zs : List
         appAssoc (Cons x xs) ys zs = cong List List (Cons x) (app (app xs ys) zs) (app xs (app ys zs)) (appAssoc xs ys zs)
-    constructor Rev : (_x12 : List) -> Type
+    constructor Rev : (_x11 : List) -> Type
     constructor RNil : Rev Nil
     constructor RSnoc : (xs : List) -> (x : B) -> (rxs : Rev xs) -> Rev (app xs (one x))
     rev' : (xs : List) -> (rxs : Rev xs) -> (ys : List) -> Rev (app xs ys) 
@@ -179,15 +179,15 @@
       xs : List x : B rxs : Rev xs
         reverse' [app xs (one x)] (RSnoc xs x rxs) = Cons x (reverse' xs rxs)
     reverse : (xs : List) -> List = (\xs : List. reverse' xs (rev xs))
-    constructor V : (_x13 : List) -> Type
+    constructor V : (_x12 : List) -> Type
     constructor VNil : V Nil
     constructor VOne : (x : B) -> V (Cons x Nil)
     constructor VTwo : (x : B) -> (xs : List) -> (u : V xs) -> (y : B) -> V (Cons x (app xs (one y)))
-    length : (_x14 : List) -> N 
+    length : (_x13 : List) -> N 
       length Nil = Z
       x : B xs : List
         length (Cons x xs) = S (length xs)
-    index : (_x15 : N) -> (_x16 : List) -> (_x17 : List) -> List 
+    index : (_x14 : N) -> (_x15 : List) -> (_x16 : List) -> List 
       xs : List ys : List
         index Z xs ys = Nil
       x : B xs : List y : B ys : List
@@ -207,7 +207,7 @@
         build (S n) Nil Nil = VNil
     postulate eq : (xs : List) -> Id List (index (length xs) xs (reverse xs)) xs
     toV : (xs : List) -> V xs = (\xs : List. subst List V (index (length xs) xs (reverse xs)) xs (eq xs) (build (length xs) xs (reverse xs)))
-    constructor IsPalindrome : (_x18 : List) -> Type
+    constructor IsPalindrome : (_x17 : List) -> Type
     constructor PNil : IsPalindrome Nil
     constructor POne : (b : B) -> IsPalindrome (Cons b Nil)
     constructor PTwo : (b : B) -> (xs : List) -> (pf : IsPalindrome xs) -> IsPalindrome (Cons b (app xs (one b)))
@@ -229,7 +229,7 @@
               isPalinV' x y xs v pfB pfV = Nothing (IsPalindrome (Cons x (app xs (one y))))
           in isPalinV' x y xs v (decEq x y) (isPalinV xs v)
     isPalindrome : (xs : List) -> Maybe (IsPalindrome xs) = (\xs : List. isPalinV xs (toV xs))
-    genList : (_x19 : B) -> (_x20 : N) -> List 
+    genList : (_x18 : B) -> (_x19 : N) -> List 
       b : B
         genList b Z = Nil
       b : B n : N
@@ -268,13 +268,13 @@
     constructor Refl :30: (a :31: Type) -> (x :32: a) -> Id -35- a -34- x -33- x
     id :36: (a :37: Type) -> (_x5 :38: a) -> a = (\a :39: Type. (\x :40: a. x))
     subst :41: (a :42: Type) -> (P :43: (_x6 :44: a) -> Type) -> (x :45: a) -> (y :46: a) -> (eq :47: Id -50- a -49- x -48- y) -> (w :51: P -52- x) -> P -53- y 
-      a :54: Type P :55: (_x7 :56: a) -> Type x :57: a
-        subst -62- a -61- P -60- x -59- [x] -58- [Refl -64- a -63- x] = (\w :65: P -66- x. w)
-    cong :67: (a :68: Type) -> (b :69: Type) -> (f :70: (_x8 :71: a) -> b) -> (x :72: a) -> (y :73: a) -> (eq :74: Id -77- a -76- x -75- y) -> Id -80- b -79- (f -81- x) -78- (f -82- y) 
-      a :83: Type b :84: Type f :85: (_x9 :86: a) -> b x :87: a
+      a :54: Type P :55: (_x6 :56: a) -> Type x :57: a
+        subst -62- a -61- P -60- x -59- [x] -58- ([Refl] -64- [a] -63- [x]) = (\w :65: P -66- x. w)
+    cong :67: (a :68: Type) -> (b :69: Type) -> (f :70: (_x7 :71: a) -> b) -> (x :72: a) -> (y :73: a) -> (eq :74: Id -77- a -76- x -75- y) -> Id -80- b -79- (f -81- x) -78- (f -82- y) 
+      a :83: Type b :84: Type f :85: (_x8 :86: a) -> b x :87: a
         cong -93- a -92- b -91- f -90- x -89- [x] -88- [Refl -95- a -94- x] = Refl -97- b -96- (f -98- x)
     one :99: (x :100: B) -> List = (\x :101: B. Cons -103- x -102- Nil)
-    app :104: (_x10 :105: List) -> (_x11 :106: List) -> List 
+    app :104: (_x9 :105: List) -> (_x10 :106: List) -> List 
       ys :107: List
         app -109- Nil -108- ys = ys
       x :110: B xs :111: List ys :112: List
@@ -288,7 +288,7 @@
         appAssoc -165- Nil -164- ys -163- zs = Refl -167- List -166- (app -169- ys -168- zs)
       x :170: B xs :171: List ys :172: List zs :173: List
         appAssoc -176- (Cons -178- x -177- xs) -175- ys -174- zs = cong -184- List -183- List -182- (Cons -185- x) -181- (app -187- (app -189- xs -188- ys) -186- zs) -180- (app -191- xs -190- (app -193- ys -192- zs)) -179- (appAssoc -196- xs -195- ys -194- zs)
-    constructor Rev :197: (_x12 :198: List) -> Type
+    constructor Rev :197: (_x11 :198: List) -> Type
     constructor RNil :199: Rev -200- Nil
     constructor RSnoc :201: (xs :202: List) -> (x :203: B) -> (rxs :204: Rev -205- xs) -> Rev -206- (app -208- xs -207- (one -209- x))
     rev' :210: (xs :211: List) -> (rxs :212: Rev -213- xs) -> (ys :214: List) -> Rev -215- (app -217- xs -216- ys) 
@@ -302,15 +302,15 @@
       xs :284: List x :285: B rxs :286: Rev -287- xs
         reverse' -289- [app -291- xs -290- (one -292- x)] -288- (RSnoc -295- xs -294- x -293- rxs) = Cons -297- x -296- (reverse' -299- xs -298- rxs)
     reverse :300: (xs :301: List) -> List = (\xs :302: List. reverse' -304- xs -303- (rev -305- xs))
-    constructor V :306: (_x13 :307: List) -> Type
+    constructor V :306: (_x12 :307: List) -> Type
     constructor VNil :308: V -309- Nil
     constructor VOne :310: (x :311: B) -> V -312- (Cons -314- x -313- Nil)
     constructor VTwo :315: (x :316: B) -> (xs :317: List) -> (u :318: V -319- xs) -> (y :320: B) -> V -321- (Cons -323- x -322- (app -325- xs -324- (one -326- y)))
-    length :327: (_x14 :328: List) -> N 
+    length :327: (_x13 :328: List) -> N 
       length -329- Nil = Z
       x :330: B xs :331: List
         length -332- (Cons -334- x -333- xs) = S -335- (length -336- xs)
-    index :337: (_x15 :338: N) -> (_x16 :339: List) -> (_x17 :340: List) -> List 
+    index :337: (_x14 :338: N) -> (_x15 :339: List) -> (_x16 :340: List) -> List 
       xs :341: List ys :342: List
         index -345- Z -344- xs -343- ys = Nil
       x :346: B xs :347: List y :348: B ys :349: List
@@ -330,7 +330,7 @@
         build -440- (S -441- n) -439- Nil -438- Nil = VNil
     postulate eq :442: (xs :443: List) -> Id -446- List -445- (index -449- (length -450- xs) -448- xs -447- (reverse -451- xs)) -444- xs
     toV :452: (xs :453: List) -> V -454- xs = (\xs :455: List. subst -461- List -460- V -459- (index -464- (length -465- xs) -463- xs -462- (reverse -466- xs)) -458- xs -457- (eq -467- xs) -456- (build -470- (length -471- xs) -469- xs -468- (reverse -472- xs)))
-    constructor IsPalindrome :473: (_x18 :474: List) -> Type
+    constructor IsPalindrome :473: (_x17 :474: List) -> Type
     constructor PNil :475: IsPalindrome -476- Nil
     constructor POne :477: (b :478: B) -> IsPalindrome -479- (Cons -481- b -480- Nil)
     constructor PTwo :482: (b :483: B) -> (xs :484: List) -> (pf :485: IsPalindrome -486- xs) -> IsPalindrome -487- (Cons -489- b -488- (app -491- xs -490- (one -492- b)))
@@ -352,7 +352,7 @@
               isPalinV' -641- x -640- y -639- xs -638- v -637- pfB -636- pfV = Nothing -642- (IsPalindrome -643- (Cons -645- x -644- (app -647- xs -646- (one -648- y))))
           in isPalinV' -654- x -653- y -652- xs -651- v -650- (decEq -656- x -655- y) -649- (isPalinV -658- xs -657- v)
     isPalindrome :659: (xs :660: List) -> Maybe -661- (IsPalindrome -662- xs) = (\xs :663: List. isPalinV -665- xs -664- (toV -666- xs))
-    genList :667: (_x19 :668: B) -> (_x20 :669: N) -> List 
+    genList :667: (_x18 :668: B) -> (_x19 :669: N) -> List 
       b :670: B
         genList -672- b -671- Z = Nil
       b :673: B n :674: N
@@ -1380,13 +1380,13 @@
     constructor Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
     id :E: (a :E: Type) -> (_x5 :E: a) -> a = (\a :E: Type. (\x :E: a. x))
     subst :R: (a :E: Type) -> (P :E: (_x6 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (w :R: P -E- x) -> P -E- y 
-      a :E: Type P :E: (_x7 :E: a) -> Type x :E: a
-        subst -E- a -E- P -E- x -E- [x] -E- [Refl -E- a -E- x] = (\w :R: P -E- x. w)
-    cong :E: (a :E: Type) -> (b :E: Type) -> (f :E: (_x8 :R: a) -> b) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> Id -E- b -E- (f -R- x) -E- (f -R- y) 
-      a :E: Type b :E: Type f :E: (_x9 :R: a) -> b x :E: a
+      a :E: Type P :E: (_x6 :E: a) -> Type x :E: a
+        subst -E- a -E- P -E- x -E- [x] -E- ([Refl] -E- [a] -E- [x]) = (\w :R: P -E- x. w)
+    cong :E: (a :E: Type) -> (b :E: Type) -> (f :E: (_x7 :R: a) -> b) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> Id -E- b -E- (f -R- x) -E- (f -R- y) 
+      a :E: Type b :E: Type f :E: (_x8 :R: a) -> b x :E: a
         cong -E- a -E- b -E- f -E- x -E- [x] -E- [Refl -E- a -E- x] = Refl -E- b -E- (f -R- x)
     one :E: (x :E: B) -> List = (\x :E: B. Cons -R- x -R- Nil)
-    app :E: (_x10 :E: List) -> (_x11 :E: List) -> List 
+    app :E: (_x9 :E: List) -> (_x10 :E: List) -> List 
       ys :E: List
         app -E- Nil -E- ys = ys
       x :E: B xs :E: List ys :E: List
@@ -1400,7 +1400,7 @@
         appAssoc -E- Nil -E- ys -E- zs = Refl -E- List -E- (app -E- ys -E- zs)
       x :E: B xs :E: List ys :E: List zs :E: List
         appAssoc -E- (Cons -R- x -R- xs) -E- ys -E- zs = cong -E- List -E- List -E- (Cons -R- x) -E- (app -E- (app -E- xs -E- ys) -E- zs) -E- (app -E- xs -E- (app -E- ys -E- zs)) -E- (appAssoc -E- xs -E- ys -E- zs)
-    constructor Rev :E: (_x12 :E: List) -> Type
+    constructor Rev :E: (_x11 :E: List) -> Type
     constructor RNil :R: Rev -E- Nil
     constructor RSnoc :R: (xs :E: List) -> (x :R: B) -> (rxs :R: Rev -E- xs) -> Rev -E- (app -E- xs -E- (one -E- x))
     rev' :R: (xs :E: List) -> (rxs :R: Rev -E- xs) -> (ys :R: List) -> Rev -E- (app -E- xs -E- ys) 
@@ -1414,15 +1414,15 @@
       xs :E: List x :R: B rxs :R: Rev -E- xs
         reverse' -E- [app -E- xs -E- (one -E- x)] -R- (RSnoc -E- xs -R- x -R- rxs) = Cons -R- x -R- (reverse' -E- xs -R- rxs)
     reverse :R: (xs :R: List) -> List = (\xs :R: List. reverse' -E- xs -R- (rev -R- xs))
-    constructor V :E: (_x13 :E: List) -> Type
+    constructor V :E: (_x12 :E: List) -> Type
     constructor VNil :R: V -E- Nil
     constructor VOne :R: (x :E: B) -> V -E- (Cons -R- x -R- Nil)
     constructor VTwo :R: (x :R: B) -> (xs :E: List) -> (u :R: V -E- xs) -> (y :R: B) -> V -E- (Cons -R- x -R- (app -E- xs -E- (one -E- y)))
-    length :R: (_x14 :R: List) -> N 
+    length :R: (_x13 :R: List) -> N 
       length -R- Nil = Z
       x :R: B xs :R: List
         length -R- (Cons -R- x -R- xs) = S -R- (length -R- xs)
-    index :E: (_x15 :E: N) -> (_x16 :E: List) -> (_x17 :E: List) -> List 
+    index :E: (_x14 :E: N) -> (_x15 :E: List) -> (_x16 :E: List) -> List 
       xs :E: List ys :E: List
         index -E- Z -E- xs -E- ys = Nil
       x :E: B xs :E: List y :E: B ys :E: List
@@ -1442,7 +1442,7 @@
         build -R- (S -R- n) -R- Nil -R- Nil = VNil
     postulate eq :E: (xs :E: List) -> Id -E- List -E- (index -E- (length -R- xs) -E- xs -E- (reverse -R- xs)) -E- xs
     toV :R: (xs :R: List) -> V -E- xs = (\xs :R: List. subst -E- List -E- V -E- (index -E- (length -R- xs) -E- xs -E- (reverse -R- xs)) -E- xs -E- (eq -E- xs) -R- (build -R- (length -R- xs) -R- xs -R- (reverse -R- xs)))
-    constructor IsPalindrome :E: (_x18 :E: List) -> Type
+    constructor IsPalindrome :E: (_x17 :E: List) -> Type
     constructor PNil :E: IsPalindrome -E- Nil
     constructor POne :E: (b :E: B) -> IsPalindrome -E- (Cons -R- b -R- Nil)
     constructor PTwo :E: (b :E: B) -> (xs :E: List) -> (pf :E: IsPalindrome -E- xs) -> IsPalindrome -E- (Cons -R- b -R- (app -E- xs -E- (one -E- b)))
@@ -1464,7 +1464,7 @@
               isPalinV' -E- x -E- y -E- xs -E- v -R- pfB -R- pfV = Nothing -E- (IsPalindrome -E- (Cons -R- x -R- (app -E- xs -E- (one -E- y))))
           in isPalinV' -E- x -E- y -E- xs -E- v -R- (decEq -R- x -R- y) -R- (isPalinV -E- xs -R- v)
     isPalindrome :R: (xs :R: List) -> Maybe -E- (IsPalindrome -E- xs) = (\xs :R: List. isPalinV -E- xs -R- (toV -R- xs))
-    genList :R: (_x19 :R: B) -> (_x20 :R: N) -> List 
+    genList :R: (_x18 :R: B) -> (_x19 :R: N) -> List 
       b :R: B
         genList -R- b -R- Z = Nil
       b :R: B n :R: N
@@ -1503,13 +1503,13 @@
     constructor Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
     id :E: (a :E: Type) -> (_x5 :E: a) -> a = (\a :E: Type. (\x :E: a. x))
     subst :R: (a :E: Type) -> (P :E: (_x6 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (w :R: P -E- x) -> P -E- y 
-      a :E: Type P :E: (_x7 :E: a) -> Type x :E: a
-        subst -E- a -E- P -E- x -E- [x] -E- [Refl -E- a -E- x] = (\w :R: P -E- x. w)
-    cong :E: (a :E: Type) -> (b :E: Type) -> (f :E: (_x8 :R: a) -> b) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> Id -E- b -E- (f -R- x) -E- (f -R- y) 
-      a :E: Type b :E: Type f :E: (_x9 :R: a) -> b x :E: a
+      a :E: Type P :E: (_x6 :E: a) -> Type x :E: a
+        subst -E- a -E- P -E- x -E- [x] -E- ([Refl] -E- [a] -E- [x]) = (\w :R: P -E- x. w)
+    cong :E: (a :E: Type) -> (b :E: Type) -> (f :E: (_x7 :R: a) -> b) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> Id -E- b -E- (f -R- x) -E- (f -R- y) 
+      a :E: Type b :E: Type f :E: (_x8 :R: a) -> b x :E: a
         cong -E- a -E- b -E- f -E- x -E- [x] -E- [Refl -E- a -E- x] = Refl -E- b -E- (f -R- x)
     one :E: (x :E: B) -> List = (\x :E: B. Cons -R- x -R- Nil)
-    app :E: (_x10 :E: List) -> (_x11 :E: List) -> List 
+    app :E: (_x9 :E: List) -> (_x10 :E: List) -> List 
       ys :E: List
         app -E- Nil -E- ys = ys
       x :E: B xs :E: List ys :E: List
@@ -1523,7 +1523,7 @@
         appAssoc -E- Nil -E- ys -E- zs = Refl -E- List -E- (app -E- ys -E- zs)
       x :E: B xs :E: List ys :E: List zs :E: List
         appAssoc -E- (Cons -R- x -R- xs) -E- ys -E- zs = cong -E- List -E- List -E- (Cons -R- x) -E- (app -E- (app -E- xs -E- ys) -E- zs) -E- (app -E- xs -E- (app -E- ys -E- zs)) -E- (appAssoc -E- xs -E- ys -E- zs)
-    constructor Rev :E: (_x12 :E: List) -> Type
+    constructor Rev :E: (_x11 :E: List) -> Type
     constructor RNil :R: Rev -E- Nil
     constructor RSnoc :R: (xs :E: List) -> (x :R: B) -> (rxs :R: Rev -E- xs) -> Rev -E- (app -E- xs -E- (one -E- x))
     rev' :R: (xs :E: List) -> (rxs :R: Rev -E- xs) -> (ys :R: List) -> Rev -E- (app -E- xs -E- ys) 
@@ -1537,15 +1537,15 @@
       xs :E: List x :R: B rxs :R: Rev -E- xs
         reverse' -E- [app -E- xs -E- (one -E- x)] -R- (RSnoc -E- xs -R- x -R- rxs) = Cons -R- x -R- (reverse' -E- xs -R- rxs)
     reverse :R: (xs :R: List) -> List = (\xs :R: List. reverse' -E- xs -R- (rev -R- xs))
-    constructor V :E: (_x13 :E: List) -> Type
+    constructor V :E: (_x12 :E: List) -> Type
     constructor VNil :R: V -E- Nil
     constructor VOne :R: (x :E: B) -> V -E- (Cons -R- x -R- Nil)
     constructor VTwo :R: (x :R: B) -> (xs :E: List) -> (u :R: V -E- xs) -> (y :R: B) -> V -E- (Cons -R- x -R- (app -E- xs -E- (one -E- y)))
-    length :R: (_x14 :R: List) -> N 
+    length :R: (_x13 :R: List) -> N 
       length -R- Nil = Z
       x :R: B xs :R: List
         length -R- (Cons -R- x -R- xs) = S -R- (length -R- xs)
-    index :E: (_x15 :E: N) -> (_x16 :E: List) -> (_x17 :E: List) -> List 
+    index :E: (_x14 :E: N) -> (_x15 :E: List) -> (_x16 :E: List) -> List 
       xs :E: List ys :E: List
         index -E- Z -E- xs -E- ys = Nil
       x :E: B xs :E: List y :E: B ys :E: List
@@ -1565,7 +1565,7 @@
         build -R- (S -R- n) -R- Nil -R- Nil = VNil
     postulate eq :E: (xs :E: List) -> Id -E- List -E- (index -E- (length -R- xs) -E- xs -E- (reverse -R- xs)) -E- xs
     toV :R: (xs :R: List) -> V -E- xs = (\xs :R: List. subst -E- List -E- V -E- (index -E- (length -R- xs) -E- xs -E- (reverse -R- xs)) -E- xs -E- (eq -E- xs) -R- (build -R- (length -R- xs) -R- xs -R- (reverse -R- xs)))
-    constructor IsPalindrome :E: (_x18 :E: List) -> Type
+    constructor IsPalindrome :E: (_x17 :E: List) -> Type
     constructor PNil :E: IsPalindrome -E- Nil
     constructor POne :E: (b :E: B) -> IsPalindrome -E- (Cons -R- b -R- Nil)
     constructor PTwo :E: (b :E: B) -> (xs :E: List) -> (pf :E: IsPalindrome -E- xs) -> IsPalindrome -E- (Cons -R- b -R- (app -E- xs -E- (one -E- b)))
@@ -1587,7 +1587,7 @@
               isPalinV' -E- x -E- y -E- xs -E- v -R- pfB -R- pfV = Nothing -E- (IsPalindrome -E- (Cons -R- x -R- (app -E- xs -E- (one -E- y))))
           in isPalinV' -E- x -E- y -E- xs -E- v -R- (decEq -R- x -R- y) -R- (isPalinV -E- xs -R- v)
     isPalindrome :R: (xs :R: List) -> Maybe -E- (IsPalindrome -E- xs) = (\xs :R: List. isPalinV -E- xs -R- (toV -R- xs))
-    genList :R: (_x19 :R: B) -> (_x20 :R: N) -> List 
+    genList :R: (_x18 :R: B) -> (_x19 :R: N) -> List 
       b :R: B
         genList -R- b -R- Z = Nil
       b :R: B n :R: N
@@ -1626,13 +1626,13 @@
     constructor Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
     id :E: (a :E: Type) -> (_x5 :E: a) -> a = (\a :E: Type. (\x :E: a. x))
     subst :R: (a :E: Type) -> (P :E: (_x6 :E: a) -> Type) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> (w :R: P -E- x) -> P -E- y 
-      a :E: Type P :E: (_x7 :E: a) -> Type x :E: a
-        subst -E- a -E- P -E- x -E- [x] -E- [Refl -E- a -E- x] = (\w :R: P -E- x. w)
-    cong :E: (a :E: Type) -> (b :E: Type) -> (f :E: (_x8 :R: a) -> b) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> Id -E- b -E- (f -R- x) -E- (f -R- y) 
-      a :E: Type b :E: Type f :E: (_x9 :R: a) -> b x :E: a
+      a :E: Type P :E: (_x6 :E: a) -> Type x :E: a
+        subst -E- a -E- P -E- x -E- [x] -E- ([Refl] -E- [a] -E- [x]) = (\w :R: P -E- x. w)
+    cong :E: (a :E: Type) -> (b :E: Type) -> (f :E: (_x7 :R: a) -> b) -> (x :E: a) -> (y :E: a) -> (eq :E: Id -E- a -E- x -E- y) -> Id -E- b -E- (f -R- x) -E- (f -R- y) 
+      a :E: Type b :E: Type f :E: (_x8 :R: a) -> b x :E: a
         cong -E- a -E- b -E- f -E- x -E- [x] -E- [Refl -E- a -E- x] = Refl -E- b -E- (f -R- x)
     one :E: (x :E: B) -> List = (\x :E: B. Cons -R- x -R- Nil)
-    app :E: (_x10 :E: List) -> (_x11 :E: List) -> List 
+    app :E: (_x9 :E: List) -> (_x10 :E: List) -> List 
       ys :E: List
         app -E- Nil -E- ys = ys
       x :E: B xs :E: List ys :E: List
@@ -1646,7 +1646,7 @@
         appAssoc -E- Nil -E- ys -E- zs = Refl -E- List -E- (app -E- ys -E- zs)
       x :E: B xs :E: List ys :E: List zs :E: List
         appAssoc -E- (Cons -R- x -R- xs) -E- ys -E- zs = cong -E- List -E- List -E- (Cons -R- x) -E- (app -E- (app -E- xs -E- ys) -E- zs) -E- (app -E- xs -E- (app -E- ys -E- zs)) -E- (appAssoc -E- xs -E- ys -E- zs)
-    constructor Rev :E: (_x12 :E: List) -> Type
+    constructor Rev :E: (_x11 :E: List) -> Type
     constructor RNil :R: Rev -E- Nil
     constructor RSnoc :R: (xs :E: List) -> (x :R: B) -> (rxs :R: Rev -E- xs) -> Rev -E- (app -E- xs -E- (one -E- x))
     rev' :R: (xs :E: List) -> (rxs :R: Rev -E- xs) -> (ys :R: List) -> Rev -E- (app -E- xs -E- ys) 
@@ -1660,15 +1660,15 @@
       xs :E: List x :R: B rxs :R: Rev -E- xs
         reverse' -E- [app -E- xs -E- (one -E- x)] -R- (RSnoc -E- xs -R- x -R- rxs) = Cons -R- x -R- (reverse' -E- xs -R- rxs)
     reverse :R: (xs :R: List) -> List = (\xs :R: List. reverse' -E- xs -R- (rev -R- xs))
-    constructor V :E: (_x13 :E: List) -> Type
+    constructor V :E: (_x12 :E: List) -> Type
     constructor VNil :R: V -E- Nil
     constructor VOne :R: (x :E: B) -> V -E- (Cons -R- x -R- Nil)
     constructor VTwo :R: (x :R: B) -> (xs :E: List) -> (u :R: V -E- xs) -> (y :R: B) -> V -E- (Cons -R- x -R- (app -E- xs -E- (one -E- y)))
-    length :R: (_x14 :R: List) -> N 
+    length :R: (_x13 :R: List) -> N 
       length -R- Nil = Z
       x :R: B xs :R: List
         length -R- (Cons -R- x -R- xs) = S -R- (length -R- xs)
-    index :E: (_x15 :E: N) -> (_x16 :E: List) -> (_x17 :E: List) -> List 
+    index :E: (_x14 :E: N) -> (_x15 :E: List) -> (_x16 :E: List) -> List 
       xs :E: List ys :E: List
         index -E- Z -E- xs -E- ys = Nil
       x :E: B xs :E: List y :E: B ys :E: List
@@ -1688,7 +1688,7 @@
         build -R- (S -R- n) -R- Nil -R- Nil = VNil
     postulate eq :E: (xs :E: List) -> Id -E- List -E- (index -E- (length -R- xs) -E- xs -E- (reverse -R- xs)) -E- xs
     toV :R: (xs :R: List) -> V -E- xs = (\xs :R: List. subst -E- List -E- V -E- (index -E- (length -R- xs) -E- xs -E- (reverse -R- xs)) -E- xs -E- (eq -E- xs) -R- (build -R- (length -R- xs) -R- xs -R- (reverse -R- xs)))
-    constructor IsPalindrome :E: (_x18 :E: List) -> Type
+    constructor IsPalindrome :E: (_x17 :E: List) -> Type
     constructor PNil :E: IsPalindrome -E- Nil
     constructor POne :E: (b :E: B) -> IsPalindrome -E- (Cons -R- b -R- Nil)
     constructor PTwo :E: (b :E: B) -> (xs :E: List) -> (pf :E: IsPalindrome -E- xs) -> IsPalindrome -E- (Cons -R- b -R- (app -E- xs -E- (one -E- b)))
@@ -1710,7 +1710,7 @@
               isPalinV' -E- x -E- y -E- xs -E- v -R- pfB -R- pfV = Nothing -E- (IsPalindrome -E- (Cons -R- x -R- (app -E- xs -E- (one -E- y))))
           in isPalinV' -E- x -E- y -E- xs -E- v -R- (decEq -R- x -R- y) -R- (isPalinV -E- xs -R- v)
     isPalindrome :R: (xs :R: List) -> Maybe -E- (IsPalindrome -E- xs) = (\xs :R: List. isPalinV -E- xs -R- (toV -R- xs))
-    genList :R: (_x19 :R: B) -> (_x20 :R: N) -> List 
+    genList :R: (_x18 :R: B) -> (_x19 :R: N) -> List 
       b :R: B
         genList -R- b -R- Z = Nil
       b :R: B n :R: N
@@ -1902,13 +1902,13 @@ unerased:
     constructor Id : (a : Type) -> (x : a) -> (y : a) -> Type
     constructor Refl : (a : Type) -> (x : a) -> Id a x x
     subst : (a : Type) -> (P : (_x6 : a) -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -> (w : P x) -> P y 
-      a : Type P : (_x7 : a) -> Type x : a
-        subst a P x [x] [Refl a x] = (\w : P x. w)
-    cong : (a : Type) -> (b : Type) -> (f : (_x8 : a) -> b) -> (x : a) -> (y : a) -> (eq : Id a x y) -> Id b (f x) (f y) 
-      a : Type b : Type f : (_x9 : a) -> b x : a
+      a : Type P : (_x6 : a) -> Type x : a
+        subst a P x [x] ([Refl] [a] [x]) = (\w : P x. w)
+    cong : (a : Type) -> (b : Type) -> (f : (_x7 : a) -> b) -> (x : a) -> (y : a) -> (eq : Id a x y) -> Id b (f x) (f y) 
+      a : Type b : Type f : (_x8 : a) -> b x : a
         cong a b f x [x] [Refl a x] = Refl b (f x)
     one : (x : B) -> List = (\x : B. Cons x Nil)
-    app : (_x10 : List) -> (_x11 : List) -> List 
+    app : (_x9 : List) -> (_x10 : List) -> List 
       ys : List
         app Nil ys = ys
       x : B xs : List ys : List
@@ -1922,7 +1922,7 @@ unerased:
         appAssoc Nil ys zs = Refl List (app ys zs)
       x : B xs : List ys : List zs : List
         appAssoc (Cons x xs) ys zs = cong List List (Cons x) (app (app xs ys) zs) (app xs (app ys zs)) (appAssoc xs ys zs)
-    constructor Rev : (_x12 : List) -> Type
+    constructor Rev : (_x11 : List) -> Type
     constructor RNil : Rev Nil
     constructor RSnoc : (xs : List) -> (x : B) -> (rxs : Rev xs) -> Rev (app xs (one x))
     rev' : (xs : List) -> (rxs : Rev xs) -> (ys : List) -> Rev (app xs ys) 
@@ -1930,19 +1930,21 @@ unerased:
         rev' xs rxs Nil = subst List Rev xs (app xs Nil) (appRightNeutral xs) rxs
       xs : List rxs : Rev xs y : B ys : List
         rev' xs rxs (Cons y ys) = subst List Rev (app (app xs (one y)) ys) (app xs (Cons y ys)) (appAssoc xs (one y) ys) (rev' (app xs (one y)) (RSnoc xs y rxs) ys)
+    rev : (xs : List) -> Rev xs = (\xs : List. rev' Nil RNil xs)
     reverse' : (xs : List) -> (rxs : Rev xs) -> List 
       reverse' [Nil] RNil = Nil
       xs : List x : B rxs : Rev xs
         reverse' [app xs (one x)] (RSnoc xs x rxs) = Cons x (reverse' xs rxs)
-    constructor V : (_x13 : List) -> Type
+    reverse : (xs : List) -> List = (\xs : List. reverse' xs (rev xs))
+    constructor V : (_x12 : List) -> Type
     constructor VNil : V Nil
     constructor VOne : (x : B) -> V (Cons x Nil)
     constructor VTwo : (x : B) -> (xs : List) -> (u : V xs) -> (y : B) -> V (Cons x (app xs (one y)))
-    length : (_x14 : List) -> N 
+    length : (_x13 : List) -> N 
       length Nil = Z
       x : B xs : List
         length (Cons x xs) = S (length xs)
-    index : (_x15 : N) -> (_x16 : List) -> (_x17 : List) -> List 
+    index : (_x14 : N) -> (_x15 : List) -> (_x16 : List) -> List 
       xs : List ys : List
         index Z xs ys = Nil
       x : B xs : List y : B ys : List
@@ -1960,7 +1962,8 @@ unerased:
         build (S (S n)) (Cons x xs) (Cons y ys) = VTwo x (index n xs ys) (build n xs ys) y
       n : N
         build (S n) Nil Nil = VNil
-    constructor IsPalindrome : (_x18 : List) -> Type
+    postulate eq : (xs : List) -> Id List (index (length xs) xs (reverse xs)) xs
+    constructor IsPalindrome : (_x17 : List) -> Type
     constructor PNil : IsPalindrome Nil
     constructor POne : (b : B) -> IsPalindrome (Cons b Nil)
     constructor PTwo : (b : B) -> (xs : List) -> (pf : IsPalindrome xs) -> IsPalindrome (Cons b (app xs (one b)))
@@ -1981,7 +1984,7 @@ unerased:
             x : B y : B xs : List v : V xs pfB : Maybe (Id B x y) pfV : Maybe (IsPalindrome xs)
               isPalinV' x y xs v pfB pfV = Nothing (IsPalindrome (Cons x (app xs (one y))))
           in isPalinV' x y xs v (decEq x y) (isPalinV xs v)
-    genList : (_x19 : B) -> (_x20 : N) -> List 
+    genList : (_x18 : B) -> (_x19 : N) -> List 
       b : B
         genList b Z = Nil
       b : B n : N
@@ -1993,7 +1996,7 @@ unerased:
         isJust a (Nothing [a]) = F
   in 
     let foreign inputSize : N
-    in isJust (IsPalindrome (genList T inputSize)) (isPalinV (genList T inputSize) (build (length (genList T inputSize)) (genList T inputSize) (reverse' (genList T inputSize) (rev' Nil RNil (genList T inputSize)))))
+    in isJust (IsPalindrome (genList T inputSize)) (isPalinV (genList T inputSize) (subst List V (index (length (genList T inputSize)) (genList T inputSize) (reverse' (genList T inputSize) (rev' Nil RNil (genList T inputSize)))) (genList T inputSize) (eq (genList T inputSize)) (build (length (genList T inputSize)) (genList T inputSize) (reverse' (genList T inputSize) (rev' Nil RNil (genList T inputSize))))))
 
 erased:
   

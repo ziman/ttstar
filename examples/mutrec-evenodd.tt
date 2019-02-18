@@ -2,15 +2,15 @@
 
 import "../stdlib/prelude.tt"
 
-even : Nat -> Bool.
-even Z = True,
+even : Nat -> Bool
+even Z = True
 (n : Nat)
   even (S n) =
-    let odd : Nat -> Bool.
-        odd Z = False,
+    let odd : Nat -> Bool
+        odd Z = False
         (n : Nat)
           odd (S n) = even n
     in
-        odd n.
+        odd n
 
-main : Bool = even 5.
+main : Bool = even 5

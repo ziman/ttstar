@@ -1,41 +1,41 @@
 -- vim: ft=ttstar
 
 data Mool : Type where
-  Q : Mool,
-  W : Mool.
+  Q : Mool
+  W : Mool
 
 data Bool : Type where
-  T : Bool,
-  F : Bool.
+  T : Bool
+  F : Bool
 
 data Id : (a : Type) -> (x : a) -> (y : a) -> Type where
-  Refl : (a : Type) -> (x : a) -> Id a x x.
+  Refl : (a : Type) -> (x : a) -> Id a x x
 
-not : Bool -> Bool.
-not T = F,
-not F = T.
+not : Bool -> Bool
+not T = F
+not F = T
 
 -- a proof that pointwise, not.not = id
-notnot : (x : Bool) -> Id Bool x (not (not x)).
-notnot T = Refl Bool T,
-notnot F = Refl Bool F.
+notnot : (x : Bool) -> Id Bool x (not (not x))
+notnot T = Refl Bool T
+notnot F = Refl Bool F
 
-retTy : Bool -> Type.
-retTy T = Bool,
-retTy F = Mool.
+retTy : Bool -> Type
+retTy T = Bool
+retTy F = Mool
 
-mot : Mool -> Mool.
-mot Q = W,
-mot W = Q.
+mot : Mool -> Mool
+mot Q = W
+mot W = Q
 
-invert : (t : Bool) -> (x : retTy t) -> retTy t.
-invert T = not,
-invert F = mot.
+invert : (t : Bool) -> (x : retTy t) -> retTy t
+invert T = not
+invert F = mot
 
-invert' : (t : Bool) -> (x : retTy t) -> retTy t.
+invert' : (t : Bool) -> (x : retTy t) -> retTy t
   (x : Bool)
-    invert' T x = not x,
+    invert' T x = not x
   (x : Mool)
-    invert' F x = mot x.
+    invert' F x = mot x
 
-main : Mool = invert F Q.
+main : Mool = invert F Q

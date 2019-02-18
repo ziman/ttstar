@@ -1,13 +1,13 @@
 -- vim: ft=ttstar
 
 data Bool : Type where
-  T : Bool,
-  F : Bool.
+  T : Bool
+  F : Bool
 
 main : Bool = 
   (let
-    not : Bool -> Bool.
-      not T = F,
+    not : Bool -> Bool
+      not T = F
       not F = T
     in not
-  ) F.
+   ) F

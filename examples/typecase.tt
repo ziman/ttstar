@@ -2,15 +2,15 @@
 
 import "../stdlib/prelude.tt"
 
-isZero : Nat -> Bool.
-  isZero Z = True,
+isZero : Nat -> Bool
+  isZero Z = True
   (n : Nat)
-    isZero (S n) = False.
+    isZero (S n) = False
 
-f : (a : Type) -> (a -> Bool).
-  f Bool = not,
-  f Nat  = isZero,
+f : (a : Type) -> (a -> Bool)
+  f Bool = not
+  f Nat  = isZero
   (a : Type)
-    f a  = \x:a. False.
+    f a  = \x. False
 
-main \: Bool = f Bool False.
+main \: Bool = f Bool False

@@ -285,6 +285,17 @@ solveOne ctx (Bind b [d] rhs) (Bind b' [d'] rhs')
             rhs'
         ]
 
+-- this can be generalised:
+-- metas cannot correspond to terms containing the bound var
+solveOne ctx (Bind b [d] rhs) (Bind b' [d'] rhs')
+    | b == b'
+    , defName d  `S.notMember` freeVars rhs
+    , defName d' `S.notMember` freeVars rhs'
+    = Right
+        [ Eq ctx (defType d) (defType d')
+        , Eq ctx rhs rhs'
+        ]
+
 solveOne ctx p@(App _ _ _) q@(App _ _ _)
     | (V c, xs) <- unApply p
     , (V c', xs') <- unApply q

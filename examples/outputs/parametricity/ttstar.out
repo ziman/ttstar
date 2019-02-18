@@ -11,6 +11,7 @@
     constructor T : B
     constructor F : B
     f : (g : (a :E: Type) -> (x :E: a) -> (y :R: a) -> a) -> B = (\g : (a :E: Type) -> (x :E: a) -> (y :R: a) -> a. g B T F)
+    proof : Id B (f constL) T = Refl B T
     main : B = f constR
   in main
 
@@ -25,6 +26,7 @@
     constructor T : B
     constructor F : B
     f : (g : (a :E: Type) -> (x :E: a) -> (y :R: a) -> a) -> B = (\g : (a :E: Type) -> (x :E: a) -> (y :R: a) -> a. g B T F)
+    proof : Id B (f constL) T = Refl B T
     main : B = f constR
   in main
 
@@ -39,21 +41,24 @@
     constructor T :26: B
     constructor F :27: B
     f :28: (g :29: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a) -> B = (\g :30: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a. g -33- B -32- T -31- F)
-    main :34: B = f -35- constR
+    proof :34: Id -37- B -36- (f -38- constL) -35- T = Refl -40- B -39- T
+    main :41: B = f -42- constR
   in main
 
 ### Constraints ###
 
-[] -> [21,31,34]
-[2] -> [10]
-[3] -> [9]
-[4] -> [8]
-[8] -> [4]
+[] -> [14,21,31,41]
+[2] -> [10,37]
+[3] -> [9,36]
+[4] -> [8,35]
+[6] -> [40]
+[7] -> [39]
+[8] -> [4,35]
 [9] -> [3]
 [10] -> [2]
 [11] -> [16]
-[12] -> [15]
-[13] -> [16]
+[12] -> [15,E]
+[13] -> [16,E]
 [14] -> [17]
 [15] -> [12]
 [16] -> [13]
@@ -69,29 +74,39 @@
 [28,31] -> [27]
 [28,32] -> [26]
 [28,33] -> [25]
-[29] -> [30,35]
+[29] -> [30,38,42]
 [30] -> [29]
 [32] -> [E]
 [33] -> [E]
-[34] -> [28]
-[34,35] -> [18]
-[35] -> [29]
+[34] -> [5]
+[34,39] -> [26]
+[34,40] -> [25]
+[35] -> [4,8]
+[36] -> [3]
+[37] -> [2]
+[38] -> [29]
+[39] -> [7]
+[40] -> [6]
+[41] -> [28]
+[41,42] -> [18]
+[42] -> [29]
 
 ### Solution ###
 
-[18,21,24,27,28,29,30,31,34,35,R]
+[14,17,18,21,24,27,28,29,30,31,38,41,42,R]
 
 ### Annotated ###
 
   let
     constructor Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
     constructor Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
-    constL :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> a = (\a :E: Type. (\x :E: a. (\y :E: a. x)))
+    constL :E: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a = (\a :E: Type. (\x :E: a. (\y :R: a. x)))
     constR :R: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a = (\a :E: Type. (\x :E: a. (\y :R: a. y)))
     constructor B :E: Type
     constructor T :E: B
     constructor F :R: B
     f :R: (g :R: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a) -> B = (\g :R: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a. g -E- B -E- T -R- F)
+    proof :E: Id -E- B -E- (f -R- constL) -E- T = Refl -E- B -E- T
     main :R: B = f -R- constR
   in main
 
@@ -100,12 +115,13 @@
   let
     constructor Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
     constructor Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
-    constL :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> a = (\a :E: Type. (\x :E: a. (\y :E: a. x)))
+    constL :E: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a = (\a :E: Type. (\x :E: a. (\y :R: a. x)))
     constR :R: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a = (\a :E: Type. (\x :E: a. (\y :R: a. y)))
     constructor B :E: Type
     constructor T :E: B
     constructor F :R: B
     f :R: (g :R: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a) -> B = (\g :R: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a. g -E- B -E- T -R- F)
+    proof :E: Id -E- B -E- (f -R- constL) -E- T = Refl -E- B -E- T
     main :R: B = f -R- constR
   in main
 
@@ -114,12 +130,13 @@
   let
     constructor Id :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> Type
     constructor Refl :E: (a :E: Type) -> (x :E: a) -> Id -E- a -E- x -E- x
-    constL :E: (a :E: Type) -> (x :E: a) -> (y :E: a) -> a = (\a :E: Type. (\x :E: a. (\y :E: a. x)))
+    constL :E: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a = (\a :E: Type. (\x :E: a. (\y :R: a. x)))
     constR :R: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a = (\a :E: Type. (\x :E: a. (\y :R: a. y)))
     constructor B :E: Type
     constructor T :E: B
     constructor F :R: B
     f :R: (g :R: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a) -> B = (\g :R: (a :E: Type) -> (x :E: a) -> (y :R: a) -> a. g -E- B -E- T -R- F)
+    proof :E: Id -E- B -E- (f -R- constL) -E- T = Refl -E- B -E- T
     main :R: B = f -R- constR
   in main
 

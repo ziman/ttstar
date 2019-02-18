@@ -1,18 +1,18 @@
 data Bool : Type where
-  True : Bool,
-  False : Bool.
+  True : Bool
+  False : Bool
 
 data Squash : Type -> Type where
-  Poof : .(a : Type) -> .(x : a) -> Squash a.
+  Poof : .(a : Type) -> .(x : a) -> Squash a
 
 data Eq : (a : Type) -> (x : a) -> (y : a) -> Type where
-  Refl : .(a : Type) -> (x : a) -> Eq a x x.
+  Refl : .(a : Type) -> (x : a) -> Eq a x x
 
-const \.(x : Type) (y : Type) : Type = y.
+const \.(x : Type) (y : Type) : Type = y
 
-subst : (a : Type) -> (P : a -> Type) -> (x : a) -> (y : a) -> Eq a x y -> P x -> P y.
+subst : (a : Type) -> (P : a -> Type) -> (x : a) -> (y : a) -> Eq a x y -> P x -> P y
   (a : Type) (P : a -> Type) (x : a)
-    subst a P x [x] (Refl .[a] [x]) = \z : P x. z.
+    subst a P x [x] (Refl .[a] [x]) = \z : P x. z
 
 main \: Eq (Squash Bool) (Poof .Bool .True) (Poof .Bool .False)
-  = Refl .(Squash Bool) (Poof .Bool .True).
+  = Refl .(Squash Bool) (Poof .Bool .True)

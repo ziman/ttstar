@@ -7,10 +7,16 @@
     not 
       not T = F
       not F = T
+    other = not 
+      let _cf0 
+        _cf0 T F = T
+        _cf0 T T = F
+        _cf0 F x = x
+      in _cf0 (not F) T
     main = not 
       let f 
         f F MkUnit = MkUnit
         f T T = F
-        f T F = T
+        f T F = other
       in f (not F) T
   in main

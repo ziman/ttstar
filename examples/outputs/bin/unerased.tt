@@ -33,14 +33,14 @@
     constructor FS : (n) -> (_x16) -> Fin (S n)
     constructor Vect : (_x17) -> (_x18) -> Type
     constructor VN : (a) -> Vect Z a
-    constructor VC : (n) -> (a) -> (x) -> (xs) -> Vect (S n) a
-    constructor List : (_x19) -> Type
+    constructor VC : (n) -> (a) -> (_x19) -> (_x20) -> Vect (S n) a
+    constructor List : (_x21) -> Type
     constructor Nil : (a) -> List a
-    constructor Cons : (a) -> (x) -> (xs) -> List a
+    constructor Cons : (a) -> (_x22) -> (_x23) -> List a
     constructor Id : (a) -> (x) -> (y) -> Type
     constructor Refl : (a) -> (x) -> Id a x x
     subst 
-      subst a P x [_] [_] = (\z. z)
+      subst a P x [_] ([_] [_] [_]) = (\z. z)
     constructor Bit : (_x0) -> Type
     constructor I : Bit 1
     constructor O : Bit Z
@@ -66,7 +66,10 @@
       add' ([_] w) c [_] [_] cb (C [_] xb' xb xn' xn) (C [_] yb' yb yn' yn) = 
         let f 
           f ([_] [_] [_] [_] hi' hi lo' lo pf) = 
-            let postulate eq : Id Nat (plus lo' (double (plus hi' (plus xn' yn')))) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn'))))
+            let
+              x = plus lo' (double (plus hi' (plus xn' yn')))
+              y = plus c (plus (plus xb' (double xn')) (plus yb' (double yn')))
+              postulate eq : Id Nat x y
             in subst Nat (Bin (S (S w))) (plus lo' (double (plus hi' (plus xn' yn')))) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn')))) eq (C (S w) lo' lo (plus hi' (plus xn' yn')) (add' w hi' xn' yn' hi xn yn))
         in f (adb c xb' yb' cb xb yb)
     add = (\w. (\x. (\y. (\bx. (\by. add' w Z x y O bx by)))))

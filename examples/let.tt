@@ -1,29 +1,29 @@
 -- vim: ft=ttstar
 
 data Nat : Type where
-  Z : Nat,
-  S : (x :R: Nat) -> Nat.
+  Z : Nat
+  S : (x :R: Nat) -> Nat
 
-plus : Nat -> Nat -> Nat.
+plus : Nat -> Nat -> Nat
 (m : Nat)
-    plus Z m = m,
+    plus Z m = m
 (n : Nat) (m : Nat)
-    plus (S n) m = S (plus n m).
+    plus (S n) m = S (plus n m)
 
-id \(x : Nat) : Nat = x.
+id \(x : Nat) : Nat = x
 
-const \(x : Nat) (y : Nat) : Nat = x.
+const \(x : Nat) (y : Nat) : Nat = x
 
 main : Nat
     = let
-        apply : (Nat -> Nat) -> Nat -> Nat.
+        apply : (Nat -> Nat) -> Nat -> Nat
           (f : Nat -> Nat)
-            apply f Z = f Z,
+            apply f Z = f Z
           (f : Nat -> Nat) (x : Nat)
-            apply f (S x) = f (S x).
+            apply f (S x) = f (S x)
       in let
-           postulate Q : Nat,
+           postulate Q : Nat
            three : Nat = 3
-         in plus (apply id 2) (apply (const Q) three).
+         in plus (apply id 2) (apply (const Q) three)
          -- it's okay that this does not erasure-specialise!
          -- we did not request specialisation using [square brackets]

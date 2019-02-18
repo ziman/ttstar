@@ -14,11 +14,18 @@
     retTy : (_x1 : Bool) -> Type 
       retTy T = Bool
       retTy F = Unit
+    other : Bool = not 
+      let _cf0 : (_cft0 : _0) -> (_cft1 : _1) -> _2 
+        _cf0 T F = T
+        _cf0 T T = F
+        x : _3
+          _cf0 F x = x
+      in _cf0 (not F) T
     main : Bool = not 
       let f : (x : Bool) -> (_x2 : retTy x) -> retTy x 
         f F MkUnit = MkUnit
         f T T = F
-        f T F = T
+        f T F = other
       in f (not F) T
   in main
 
@@ -36,11 +43,18 @@
     retTy : (_x1 : Bool) -> Type 
       retTy T = Bool
       retTy F = Unit
+    other : Bool = not 
+      let _cf0 : (_cft0 : Bool) -> (_cft1 : Bool) -> Bool 
+        _cf0 T F = T
+        _cf0 T T = F
+        x : Bool
+          _cf0 F x = x
+      in _cf0 (not F) T
     main : Bool = not 
       let f : (x : Bool) -> (_x2 : retTy x) -> retTy x 
         f F MkUnit = MkUnit
         f T T = F
-        f T F = T
+        f T F = other
       in f (not F) T
   in main
 
@@ -58,49 +72,76 @@
     retTy :10: (_x1 :11: Bool) -> Type 
       retTy -12- T = Bool
       retTy -13- F = Unit
-    main :14: Bool = not -15- 
-      let f :16: (x :17: Bool) -> (_x2 :18: retTy -19- x) -> retTy -20- x 
-        f -22- F -21- MkUnit = MkUnit
-        f -24- T -23- T = F
-        f -26- T -25- F = T
-      in f -28- (not -29- F) -27- T
+    other :14: Bool = not -15- 
+      let _cf0 :16: (_cft0 :17: Bool) -> (_cft1 :18: Bool) -> Bool 
+        _cf0 -20- T -19- F = T
+        _cf0 -22- T -21- T = F
+        x :23: Bool
+          _cf0 -25- F -24- x = x
+      in _cf0 -27- (not -28- F) -26- T
+    main :29: Bool = not -30- 
+      let f :31: (x :32: Bool) -> (_x2 :33: retTy -34- x) -> retTy -35- x 
+        f -37- F -36- MkUnit = MkUnit
+        f -39- T -38- T = F
+        f -41- T -40- F = other
+      in f -43- (not -44- F) -42- T
   in main
 
 ### Constraints ###
 
-[] -> [14]
+[] -> [29]
 [6] -> [2,3,8,9]
-[7] -> [8,9,15,29]
+[7] -> [8,9,15,28,30,44]
 [8] -> [7]
 [9] -> [7]
 [10] -> [1,2,3,4,12,13]
-[11] -> [12,13,19,20]
+[11] -> [12,13,34,35]
 [12] -> [11]
 [13] -> [11]
 [14] -> [6]
 [14,15] -> [16]
-[14,15,27] -> [2]
-[14,15,28] -> [6]
-[14,15,28,29] -> [3]
+[14,15,26] -> [2]
+[14,15,27] -> [6]
+[14,15,27,28] -> [3]
 [15] -> [7]
-[16] -> [2,3,5,21,22,23,24,25,26]
-[17] -> [22,24,26,28]
-[18] -> [21,23,25,27]
-[19] -> [11]
-[20] -> [11]
+[16] -> [2,3,19,20,21,22,23,25]
+[16,24] -> [23]
+[17] -> [20,22,25,27]
+[18] -> [19,21,24,26]
+[19] -> [18]
+[20] -> [17]
 [21] -> [18]
 [22] -> [17]
-[23] -> [18]
-[24] -> [17]
-[25] -> [18]
-[26] -> [17]
-[27] -> [18]
-[28] -> [17]
-[29] -> [7]
+[23] -> [16,24]
+[24] -> [18]
+[25] -> [17]
+[26] -> [18]
+[27] -> [17]
+[28] -> [7]
+[29] -> [6]
+[29,30] -> [31]
+[29,30,42] -> [2]
+[29,30,43] -> [6]
+[29,30,43,44] -> [3]
+[30] -> [7]
+[31] -> [2,3,5,14,36,37,38,39,40,41]
+[32] -> [37,39,41,43]
+[33] -> [36,38,40,42]
+[34] -> [11]
+[35] -> [11]
+[36] -> [33]
+[37] -> [32]
+[38] -> [33]
+[39] -> [32]
+[40] -> [33]
+[41] -> [32]
+[42] -> [33]
+[43] -> [32]
+[44] -> [7]
 
 ### Solution ###
 
-[2,3,5,6,7,8,9,14,15,16,17,18,21,22,23,24,25,26,27,28,29,R]
+[2,3,5,6,7,8,9,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,36,37,38,39,40,41,42,43,44,R]
 
 ### Annotated ###
 
@@ -116,11 +157,18 @@
     retTy :E: (_x1 :E: Bool) -> Type 
       retTy -E- T = Bool
       retTy -E- F = Unit
+    other :R: Bool = not -R- 
+      let _cf0 :R: (_cft0 :R: Bool) -> (_cft1 :R: Bool) -> Bool 
+        _cf0 -R- T -R- F = T
+        _cf0 -R- T -R- T = F
+        x :R: Bool
+          _cf0 -R- F -R- x = x
+      in _cf0 -R- (not -R- F) -R- T
     main :R: Bool = not -R- 
       let f :R: (x :R: Bool) -> (_x2 :R: retTy -E- x) -> retTy -E- x 
         f -R- F -R- MkUnit = MkUnit
         f -R- T -R- T = F
-        f -R- T -R- F = T
+        f -R- T -R- F = other
       in f -R- (not -R- F) -R- T
   in main
 
@@ -138,11 +186,18 @@
     retTy :E: (_x1 :E: Bool) -> Type 
       retTy -E- T = Bool
       retTy -E- F = Unit
+    other :R: Bool = not -R- 
+      let _cf0 :R: (_cft0 :R: Bool) -> (_cft1 :R: Bool) -> Bool 
+        _cf0 -R- T -R- F = T
+        _cf0 -R- T -R- T = F
+        x :R: Bool
+          _cf0 -R- F -R- x = x
+      in _cf0 -R- (not -R- F) -R- T
     main :R: Bool = not -R- 
       let f :R: (x :R: Bool) -> (_x2 :R: retTy -E- x) -> retTy -E- x 
         f -R- F -R- MkUnit = MkUnit
         f -R- T -R- T = F
-        f -R- T -R- F = T
+        f -R- T -R- F = other
       in f -R- (not -R- F) -R- T
   in main
 
@@ -160,11 +215,18 @@
     retTy :E: (_x1 :E: Bool) -> Type 
       retTy -E- T = Bool
       retTy -E- F = Unit
+    other :R: Bool = not -R- 
+      let _cf0 :R: (_cft0 :R: Bool) -> (_cft1 :R: Bool) -> Bool 
+        _cf0 -R- T -R- F = T
+        _cf0 -R- T -R- T = F
+        x :R: Bool
+          _cf0 -R- F -R- x = x
+      in _cf0 -R- (not -R- F) -R- T
     main :R: Bool = not -R- 
       let f :R: (x :R: Bool) -> (_x2 :R: retTy -E- x) -> retTy -E- x 
         f -R- F -R- MkUnit = MkUnit
         f -R- T -R- T = F
-        f -R- T -R- F = T
+        f -R- T -R- F = other
       in f -R- (not -R- F) -R- T
   in main
 
@@ -181,11 +243,17 @@ Verification successful.
     not 
       not T = F
       not F = T
+    other = not 
+      let _cf0 
+        _cf0 T F = T
+        _cf0 T T = F
+        _cf0 F x = x
+      in _cf0 (not F) T
     main = not 
       let f 
         f F MkUnit = MkUnit
         f T T = F
-        f T F = T
+        f T F = other
       in f (not F) T
   in main
 
@@ -198,14 +266,21 @@ let T = constructor 0
         case _pv0 of
           F => T
           T => F
-        in let main = (not let f = \_pv0. \_pv1.
+        in let other = (not let _cf0 = \_pv0. \_pv1.
           case _pv0 of
-            F => MkUnit
+            F => _pv1
             T => case _pv1 of
               F => T
               T => F
-          in ((f (not F)) T))
-          in main
+          in ((_cf0 (not F)) T))
+          in let main = (not let f = \_pv0. \_pv1.
+            case _pv0 of
+              F => MkUnit
+              T => case _pv1 of
+                F => other
+                T => F
+            in ((f (not F)) T))
+            in main
 
 ### Normal forms ###
 

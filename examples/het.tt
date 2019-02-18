@@ -1,28 +1,28 @@
 -- vim: ft=ttstar
 
-postulate Tuple : (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type.
+postulate Tuple : (x :R: Type) -> (y :R: Type) -> (z :R: Type) -> (w :R: Type) -> Type
 
 data Bool : Type where
-  T : Bool,
-  F : Bool.
+  T : Bool
+  F : Bool
 
 data Mool : Type where
-  Q : Mool,
-  W : Mool.
+  Q : Mool
+  W : Mool
 
 data U : Type where
-  B : U,
-  M : U.
+  B : U
+  M : U
 
-ty : U -> Type.
-ty B = Bool,
-ty M = Mool.
+ty : U -> Type
+ty B = Bool
+ty M = Mool
 
-f : (u : U) -> (x : ty u) -> Type.
-f [B] T = Bool,
-f [B] F = Mool,
-f [M] Q = Bool,
-f [M] W = Mool.
+f : (u : U) -> (x : ty u) -> Type
+f [B] T = Bool
+f [B] F = Mool
+f [M] Q = Bool
+f [M] W = Mool
 
 main : Type =
-  Tuple (f B T) (f B F) (f M Q) (f M W).
+  Tuple (f B T) (f B F) (f M Q) (f M W)

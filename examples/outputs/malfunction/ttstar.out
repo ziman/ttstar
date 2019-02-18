@@ -7,14 +7,14 @@
     constructor Z : Nat
     constructor S : (x :R: Nat) -> Nat
     plus : (_x0 : Nat) -> (_x1 : Nat) -> Nat 
-      n : Nat
+      n : _0
         plus Z n = n
-      m : Nat n : Nat
+      m : _1 n : _2
         plus (S m) n = S (plus m n)
     times : (_x2 : Nat) -> (_x3 : Nat) -> Nat 
-      n : Nat
+      n : _3
         times Z n = Z
-      m : Nat n : Nat
+      m : _4 n : _5
         times (S m) n = plus n (times m n)
     constructor Bool : Type
     constructor True : Bool
@@ -25,35 +25,35 @@
     constructor Unit : Type
     constructor MkUnit : Unit
     constructor Pair : (_x5 : Type) -> (_x6 : Type) -> Type
-    constructor MkPair : (a : Type) -> (b : Type) -> (_x7 : a) -> (_x8 : b) -> Pair a b
-    fst : (a : Type) -> (b : Type) -> (_x9 : Pair a b) -> a 
-      a : Type b : Type x : a y : b
-        fst a b ([MkPair] [a] [b] x y) = x
-    snd : (a : Type) -> (b : Type) -> (_x10 : Pair a b) -> b 
-      a : Type b : Type x : a y : b
-        snd a b ([MkPair] [a] [b] x y) = y
+    constructor MkPair : (a : _6) -> (b : _7) -> (_x7 : a) -> (_x8 : b) -> Pair a b
+    fst : (a : _8) -> (b : _9) -> (_x9 : Pair a b) -> a 
+      a : _10 b : _11 x : _12 y : _13
+        fst a b ([MkPair] [_14] [_15] x y) = x
+    snd : (a : _16) -> (b : _17) -> (_x10 : Pair a b) -> b 
+      a : _18 b : _19 x : _20 y : _21
+        snd a b ([MkPair] [_22] [_23] x y) = y
     constructor Either : (_x11 : Type) -> (_x12 : Type) -> Type
-    constructor Left : (a : Type) -> (b : Type) -> (_x13 : a) -> Either a b
-    constructor Right : (a : Type) -> (b : Type) -> (_x14 : b) -> Either a b
+    constructor Left : (a : _24) -> (b : _25) -> (_x13 : a) -> Either a b
+    constructor Right : (a : _26) -> (b : _27) -> (_x14 : b) -> Either a b
     id : (a : Type) -> (x : a) -> a = (\a : Type. (\x : a. x))
     constructor Fin : (_x15 : Nat) -> Type
     constructor FZ : (n : Nat) -> Fin (S n)
     constructor FS : (n : Nat) -> (_x16 : Fin n) -> Fin (S n)
     constructor Vect : (_x17 : Nat) -> (_x18 : Type) -> Type
-    constructor VN : (a : Type) -> Vect Z a
-    constructor VC : (n : Nat) -> (a : Type) -> (x : a) -> (xs : Vect n a) -> Vect (S n) a
-    constructor List : (_x19 : Type) -> Type
-    constructor Nil : (a : Type) -> List a
-    constructor Cons : (a : Type) -> (x : a) -> (xs : List a) -> List a
+    constructor VN : (a : _28) -> Vect Z a
+    constructor VC : (n : _29) -> (a : _30) -> (_x19 : a) -> (_x20 : Vect n a) -> Vect (S n) a
+    constructor List : (_x21 : Type) -> Type
+    constructor Nil : (a : _31) -> List a
+    constructor Cons : (a : _32) -> (_x22 : a) -> (_x23 : List a) -> List a
     constructor State : (_x0 : Type) -> (_x1 : Type) -> Type
-    constructor MkSt : (st : Type) -> (a : Type) -> (run : (_x2 : st) -> Pair st a) -> State st a
-    runState : (st : Type) -> (a : Type) -> (_x3 : State st a) -> (_x4 : st) -> Pair st a 
-      st : Type a : Type run : (_x5 : st) -> Pair st a
-        runState st a ([MkSt] [st] [a] run) = run
+    constructor MkSt : (st : _33) -> (a : _34) -> (run : (_x2 : st) -> Pair st a) -> State st a
+    runState : (st : _35) -> (a : _36) -> (_x3 : State st a) -> (_x4 : st) -> Pair st a 
+      st : _37 a : _38 run : (_x5 : st) -> Pair st a
+        runState st a ([MkSt] [_39] [_40] run) = run
     execState : (st : Type) -> (a : Type) -> (x : State st a) -> (s : st) -> a = (\st : Type. (\a : Type. (\x : State st a. (\s : st. snd st a (runState st a x s)))))
     stGet : (st : Type) -> State st st = (\st : Type. MkSt st st (\s : st. MkPair st st s s))
     stReturn : (st : Type) -> (a : Type) -> (x : a) -> State st a = (\st : Type. (\a : Type. (\x : a. MkSt st a (\s : st. MkPair st a s x))))
-    stBind : (st : Type) -> (a : Type) -> (b : Type) -> (x : State st a) -> (y : (z : a) -> State st b) -> State st b 
+    stBind : (st : _41) -> (a : _42) -> (b : _43) -> (x : State st a) -> (y : (z : a) -> State st b) -> State st b 
       st : Type a : Type b : Type f : (_x6 : st) -> Pair st a g : (_x7 : a) -> State st b
         stBind st a b ([MkSt] [st] [a] f) g = 
           let
@@ -68,7 +68,7 @@
     IO : (_x0 : Type) -> Type = State RealWorld
     ioReturn : (a : Type) -> (x : a) -> IO a = (\a : Type. (\x : a. stReturn RealWorld a x))
     ioBind : (a : Type) -> (b : Type) -> (x : IO a) -> (y : (_x1 : a) -> IO b) -> IO b = (\a : Type. (\b : Type. (\x : IO a. (\y : (_x1 : a) -> IO b. stBind RealWorld a b x y))))
-    ioWrapImpure : (a : Type) -> (impureF : (w :R: RealWorld) -> a) -> IO a = (\a : Type. (\impureF : (w :R: RealWorld) -> a. stBind RealWorld RealWorld a (stGet RealWorld) (\w : RealWorld. stReturn RealWorld a (impureF w))))
+    ioWrapImpure : (a : Type) -> (impureF : (w :R: RealWorld) -> a) -> IO a = (\a : Type. (\impureF : (w :R: RealWorld) -> a. stBind RealWorld RealWorld a (stGet RealWorld) (\w : _44. stReturn RealWorld a (impureF w))))
     unsafePerformIO : (a : Type) -> (x : IO a) -> a = (\a : Type. (\x : IO a. 
       let postulate TheWorld : RealWorld
       in execState RealWorld a x TheWorld))
@@ -93,19 +93,19 @@
     printInt : (i : Int) -> IO Unspec = (\i : Int. printString (intToString i))
     natToInt : (_x0 : Nat) -> Int 
       natToInt Z = int0
-      n : Nat
+      n : _45
         natToInt (S n) = plusInt int1 (natToInt n)
     printNat : (n : Nat) -> IO Unspec = (\n : Nat. printInt (natToInt n))
     sumFor : (n : Int) -> (f : (_x0 : Int) -> Int) -> Int = (\n : Int. (\f : (_x0 : Int) -> Int. 
-      let g : (_x1 : Bool) -> Int 
-        g True = int0
-        g False = plusInt (f n) (sumFor (minusInt n int1) f)
-      in g (isZero n)))
-    boolToInt : (_x2 : Bool) -> Int 
+      let _cf0 : (_cft0 : _46) -> _47 
+        _cf0 True = int0
+        _cf0 False = plusInt (f n) (sumFor (minusInt n int1) f)
+      in _cf0 (isZero n)))
+    boolToInt : (_x1 : Bool) -> Int 
       boolToInt True = int1
       boolToInt False = int0
     isPythag : (x : Int) -> (y : Int) -> (z : Int) -> Int = (\x : Int. (\y : Int. (\z : Int. boolToInt (eqInt (timesInt x x) (plusInt (timesInt y y) (timesInt z z))))))
-    pythag : (n : Int) -> Int = (\n : Int. sumFor n (\x : Int. sumFor x (\y : Int. sumFor y (\z : Int. isPythag x y z))))
+    pythag : (n : Int) -> Int = (\n : Int. sumFor n (\x : _48. sumFor x (\y : _49. sumFor y (\z : _50. isPythag x y z))))
     main : Unspec = unsafePerformIO Unspec 
       let
         int2 : Int = plusInt int1 int1
@@ -157,10 +157,10 @@
     constructor FS : (n : Nat) -> (_x16 : Fin n) -> Fin (S n)
     constructor Vect : (_x17 : Nat) -> (_x18 : Type) -> Type
     constructor VN : (a : Type) -> Vect Z a
-    constructor VC : (n : Nat) -> (a : Type) -> (x : a) -> (xs : Vect n a) -> Vect (S n) a
-    constructor List : (_x19 : Type) -> Type
+    constructor VC : (n : Nat) -> (a : Type) -> (_x19 : a) -> (_x20 : Vect n a) -> Vect (S n) a
+    constructor List : (_x21 : Type) -> Type
     constructor Nil : (a : Type) -> List a
-    constructor Cons : (a : Type) -> (x : a) -> (xs : List a) -> List a
+    constructor Cons : (a : Type) -> (_x22 : a) -> (_x23 : List a) -> List a
     constructor State : (_x0 : Type) -> (_x1 : Type) -> Type
     constructor MkSt : (st : Type) -> (a : Type) -> (run : (_x2 : st) -> Pair st a) -> State st a
     runState : (st : Type) -> (a : Type) -> (_x3 : State st a) -> (_x4 : st) -> Pair st a 
@@ -213,11 +213,11 @@
         natToInt (S n) = plusInt int1 (natToInt n)
     printNat : (n : Nat) -> IO Unspec = (\n : Nat. printInt (natToInt n))
     sumFor : (n : Int) -> (f : (_x0 : Int) -> Int) -> Int = (\n : Int. (\f : (_x0 : Int) -> Int. 
-      let g : (_x1 : Bool) -> Int 
-        g True = int0
-        g False = plusInt (f n) (sumFor (minusInt n int1) f)
-      in g (isZero n)))
-    boolToInt : (_x2 : Bool) -> Int 
+      let _cf0 : (_cft0 : Bool) -> Int 
+        _cf0 True = int0
+        _cf0 False = plusInt (f n) (sumFor (minusInt n int1) f)
+      in _cf0 (isZero n)))
+    boolToInt : (_x1 : Bool) -> Int 
       boolToInt True = int1
       boolToInt False = int0
     isPythag : (x : Int) -> (y : Int) -> (z : Int) -> Int = (\x : Int. (\y : Int. (\z : Int. boolToInt (eqInt (timesInt x x) (plusInt (timesInt y y) (timesInt z z))))))
@@ -273,10 +273,10 @@
     constructor FS :112: (n :113: Nat) -> (_x16 :114: Fin -115- n) -> Fin -116- (S -117- n)
     constructor Vect :118: (_x17 :119: Nat) -> (_x18 :120: Type) -> Type
     constructor VN :121: (a :122: Type) -> Vect -124- Z -123- a
-    constructor VC :125: (n :126: Nat) -> (a :127: Type) -> (x :128: a) -> (xs :129: Vect -131- n -130- a) -> Vect -133- (S -134- n) -132- a
-    constructor List :135: (_x19 :136: Type) -> Type
+    constructor VC :125: (n :126: Nat) -> (a :127: Type) -> (_x19 :128: a) -> (_x20 :129: Vect -131- n -130- a) -> Vect -133- (S -134- n) -132- a
+    constructor List :135: (_x21 :136: Type) -> Type
     constructor Nil :137: (a :138: Type) -> List -139- a
-    constructor Cons :140: (a :141: Type) -> (x :142: a) -> (xs :143: List -144- a) -> List -145- a
+    constructor Cons :140: (a :141: Type) -> (_x22 :142: a) -> (_x23 :143: List -144- a) -> List -145- a
     constructor State :146: (_x0 :147: Type) -> (_x1 :148: Type) -> Type
     constructor MkSt :149: (st :150: Type) -> (a :151: Type) -> (run :152: (_x2 :153: st) -> Pair -155- st -154- a) -> State -157- st -156- a
     runState :158: (st :159: Type) -> (a :160: Type) -> (_x3 :161: State -163- st -162- a) -> (_x4 :164: st) -> Pair -166- st -165- a 
@@ -329,11 +329,11 @@
         natToInt -446- (S -447- n) = plusInt -449- int1 -448- (natToInt -450- n)
     printNat :451: (n :452: Nat) -> IO -453- Unspec = (\n :454: Nat. printInt -455- (natToInt -456- n))
     sumFor :457: (n :458: Int) -> (f :459: (_x0 :460: Int) -> Int) -> Int = (\n :461: Int. (\f :462: (_x0 :463: Int) -> Int. 
-      let g :464: (_x1 :465: Bool) -> Int 
-        g -466- True = int0
-        g -467- False = plusInt -469- (f -470- n) -468- (sumFor -472- (minusInt -474- n -473- int1) -471- f)
-      in g -475- (isZero -476- n)))
-    boolToInt :477: (_x2 :478: Bool) -> Int 
+      let _cf0 :464: (_cft0 :465: Bool) -> Int 
+        _cf0 -466- True = int0
+        _cf0 -467- False = plusInt -469- (f -470- n) -468- (sumFor -472- (minusInt -474- n -473- int1) -471- f)
+      in _cf0 -475- (isZero -476- n)))
+    boolToInt :477: (_x1 :478: Bool) -> Int 
       boolToInt -479- True = int1
       boolToInt -480- False = int0
     isPythag :481: (x :482: Int) -> (y :483: Int) -> (z :484: Int) -> Int = (\x :485: Int. (\y :486: Int. (\z :487: Int. boolToInt -488- (eqInt -490- (timesInt -492- x -491- x) -489- (plusInt -494- (timesInt -496- y -495- y) -493- (timesInt -498- z -497- z))))))
@@ -1009,10 +1009,10 @@
     constructor FS :E: (n :E: Nat) -> (_x16 :E: Fin -E- n) -> Fin -E- (S -R- n)
     constructor Vect :E: (_x17 :E: Nat) -> (_x18 :E: Type) -> Type
     constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
-    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
-    constructor List :E: (_x19 :E: Type) -> Type
+    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (_x19 :E: a) -> (_x20 :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
+    constructor List :E: (_x21 :E: Type) -> Type
     constructor Nil :E: (a :E: Type) -> List -E- a
-    constructor Cons :E: (a :E: Type) -> (x :E: a) -> (xs :E: List -E- a) -> List -E- a
+    constructor Cons :E: (a :E: Type) -> (_x22 :E: a) -> (_x23 :E: List -E- a) -> List -E- a
     constructor State :E: (_x0 :E: Type) -> (_x1 :E: Type) -> Type
     constructor MkSt :R: (st :E: Type) -> (a :E: Type) -> (run :R: (_x2 :R: st) -> Pair -E- st -E- a) -> State -E- st -E- a
     runState :R: (st :E: Type) -> (a :E: Type) -> (_x3 :R: State -E- st -E- a) -> (_x4 :R: st) -> Pair -E- st -E- a 
@@ -1065,11 +1065,11 @@
         natToInt -E- (S -R- n) = plusInt -R- int1 -R- (natToInt -E- n)
     printNat :E: (n :E: Nat) -> IO -E- Unspec = (\n :E: Nat. printInt -R- (natToInt -E- n))
     sumFor :R: (n :R: Int) -> (f :R: (_x0 :R: Int) -> Int) -> Int = (\n :R: Int. (\f :R: (_x0 :R: Int) -> Int. 
-      let g :R: (_x1 :R: Bool) -> Int 
-        g -R- True = int0
-        g -R- False = plusInt -R- (f -R- n) -R- (sumFor -R- (minusInt -R- n -R- int1) -R- f)
-      in g -R- (isZero -R- n)))
-    boolToInt :R: (_x2 :R: Bool) -> Int 
+      let _cf0 :R: (_cft0 :R: Bool) -> Int 
+        _cf0 -R- True = int0
+        _cf0 -R- False = plusInt -R- (f -R- n) -R- (sumFor -R- (minusInt -R- n -R- int1) -R- f)
+      in _cf0 -R- (isZero -R- n)))
+    boolToInt :R: (_x1 :R: Bool) -> Int 
       boolToInt -R- True = int1
       boolToInt -R- False = int0
     isPythag :R: (x :R: Int) -> (y :R: Int) -> (z :R: Int) -> Int = (\x :R: Int. (\y :R: Int. (\z :R: Int. boolToInt -R- (eqInt -R- (timesInt -R- x -R- x) -R- (plusInt -R- (timesInt -R- y -R- y) -R- (timesInt -R- z -R- z))))))
@@ -1125,10 +1125,10 @@
     constructor FS :E: (n :E: Nat) -> (_x16 :E: Fin -E- n) -> Fin -E- (S -R- n)
     constructor Vect :E: (_x17 :E: Nat) -> (_x18 :E: Type) -> Type
     constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
-    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
-    constructor List :E: (_x19 :E: Type) -> Type
+    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (_x19 :E: a) -> (_x20 :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
+    constructor List :E: (_x21 :E: Type) -> Type
     constructor Nil :E: (a :E: Type) -> List -E- a
-    constructor Cons :E: (a :E: Type) -> (x :E: a) -> (xs :E: List -E- a) -> List -E- a
+    constructor Cons :E: (a :E: Type) -> (_x22 :E: a) -> (_x23 :E: List -E- a) -> List -E- a
     constructor State :E: (_x0 :E: Type) -> (_x1 :E: Type) -> Type
     constructor MkSt :R: (st :E: Type) -> (a :E: Type) -> (run :R: (_x2 :R: st) -> Pair -E- st -E- a) -> State -E- st -E- a
     runState :R: (st :E: Type) -> (a :E: Type) -> (_x3 :R: State -E- st -E- a) -> (_x4 :R: st) -> Pair -E- st -E- a 
@@ -1181,11 +1181,11 @@
         natToInt -E- (S -R- n) = plusInt -R- int1 -R- (natToInt -E- n)
     printNat :E: (n :E: Nat) -> IO -E- Unspec = (\n :E: Nat. printInt -R- (natToInt -E- n))
     sumFor :R: (n :R: Int) -> (f :R: (_x0 :R: Int) -> Int) -> Int = (\n :R: Int. (\f :R: (_x0 :R: Int) -> Int. 
-      let g :R: (_x1 :R: Bool) -> Int 
-        g -R- True = int0
-        g -R- False = plusInt -R- (f -R- n) -R- (sumFor -R- (minusInt -R- n -R- int1) -R- f)
-      in g -R- (isZero -R- n)))
-    boolToInt :R: (_x2 :R: Bool) -> Int 
+      let _cf0 :R: (_cft0 :R: Bool) -> Int 
+        _cf0 -R- True = int0
+        _cf0 -R- False = plusInt -R- (f -R- n) -R- (sumFor -R- (minusInt -R- n -R- int1) -R- f)
+      in _cf0 -R- (isZero -R- n)))
+    boolToInt :R: (_x1 :R: Bool) -> Int 
       boolToInt -R- True = int1
       boolToInt -R- False = int0
     isPythag :R: (x :R: Int) -> (y :R: Int) -> (z :R: Int) -> Int = (\x :R: Int. (\y :R: Int. (\z :R: Int. boolToInt -R- (eqInt -R- (timesInt -R- x -R- x) -R- (plusInt -R- (timesInt -R- y -R- y) -R- (timesInt -R- z -R- z))))))
@@ -1241,10 +1241,10 @@
     constructor FS :E: (n :E: Nat) -> (_x16 :E: Fin -E- n) -> Fin -E- (S -R- n)
     constructor Vect :E: (_x17 :E: Nat) -> (_x18 :E: Type) -> Type
     constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
-    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
-    constructor List :E: (_x19 :E: Type) -> Type
+    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (_x19 :E: a) -> (_x20 :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
+    constructor List :E: (_x21 :E: Type) -> Type
     constructor Nil :E: (a :E: Type) -> List -E- a
-    constructor Cons :E: (a :E: Type) -> (x :E: a) -> (xs :E: List -E- a) -> List -E- a
+    constructor Cons :E: (a :E: Type) -> (_x22 :E: a) -> (_x23 :E: List -E- a) -> List -E- a
     constructor State :E: (_x0 :E: Type) -> (_x1 :E: Type) -> Type
     constructor MkSt :R: (st :E: Type) -> (a :E: Type) -> (run :R: (_x2 :R: st) -> Pair -E- st -E- a) -> State -E- st -E- a
     runState :R: (st :E: Type) -> (a :E: Type) -> (_x3 :R: State -E- st -E- a) -> (_x4 :R: st) -> Pair -E- st -E- a 
@@ -1297,11 +1297,11 @@
         natToInt -E- (S -R- n) = plusInt -R- int1 -R- (natToInt -E- n)
     printNat :E: (n :E: Nat) -> IO -E- Unspec = (\n :E: Nat. printInt -R- (natToInt -E- n))
     sumFor :R: (n :R: Int) -> (f :R: (_x0 :R: Int) -> Int) -> Int = (\n :R: Int. (\f :R: (_x0 :R: Int) -> Int. 
-      let g :R: (_x1 :R: Bool) -> Int 
-        g -R- True = int0
-        g -R- False = plusInt -R- (f -R- n) -R- (sumFor -R- (minusInt -R- n -R- int1) -R- f)
-      in g -R- (isZero -R- n)))
-    boolToInt :R: (_x2 :R: Bool) -> Int 
+      let _cf0 :R: (_cft0 :R: Bool) -> Int 
+        _cf0 -R- True = int0
+        _cf0 -R- False = plusInt -R- (f -R- n) -R- (sumFor -R- (minusInt -R- n -R- int1) -R- f)
+      in _cf0 -R- (isZero -R- n)))
+    boolToInt :R: (_x1 :R: Bool) -> Int 
       boolToInt -R- True = int1
       boolToInt -R- False = int0
     isPythag :R: (x :R: Int) -> (y :R: Int) -> (z :R: Int) -> Int = (\x :R: Int. (\y :R: Int. (\z :R: Int. boolToInt -R- (eqInt -R- (timesInt -R- x -R- x) -R- (plusInt -R- (timesInt -R- y -R- y) -R- (timesInt -R- z -R- z))))))
@@ -1363,10 +1363,10 @@ Verification successful.
       in ioWrapImpure (\w. nativePrint s))
     printInt = (\i. printString (intToString i))
     sumFor = (\n. (\f. 
-      let g 
-        g True = int0
-        g False = plusInt (f n) (sumFor (minusInt n int1) f)
-      in g (isZero n)))
+      let _cf0 
+        _cf0 True = int0
+        _cf0 False = plusInt (f n) (sumFor (minusInt n int1) f)
+      in _cf0 (isZero n)))
     boolToInt 
       boolToInt True = int1
       boolToInt False = int0
@@ -1423,11 +1423,11 @@ let True = constructor 0
                                             in let printString = \s. let nativePrint = foreign "(global $Pervasives $print_endline)"
                                               in (ioWrapImpure \w. (nativePrint s))
                                               in let printInt = \i. (printString (intToString i))
-                                                in let sumFor = \n. \f. let g = \_pv0.
+                                                in let sumFor = \n. \f. let _cf0 = \_pv0.
                                                   case _pv0 of
                                                     False => ((plusInt (f n)) ((sumFor ((minusInt n) int1)) f))
                                                     True => int0
-                                                  in (g (isZero n))
+                                                  in (_cf0 (isZero n))
                                                   in let boolToInt = \_pv0.
                                                     case _pv0 of
                                                       False => int0
@@ -1462,60 +1462,60 @@ unerased:
     isZero : (x : Int) -> Bool = (\x : Int. ifRaw Bool x False True)
     postulate Unspec : Type
     sumFor : (n : Int) -> (f : (_x0 : Int) -> Int) -> Int = (\n : Int. (\f : (_x0 : Int) -> Int. 
-      let g : (_x1 : Bool) -> Int 
-        g True = int0
-        g False = plusInt (f n) (sumFor (minusInt n int1) f)
-      in g (isZero n)))
-    boolToInt : (_x2 : Bool) -> Int 
+      let _cf0 : (_cft0 : Bool) -> Int 
+        _cf0 True = int0
+        _cf0 False = plusInt (f n) (sumFor (minusInt n int1) f)
+      in _cf0 (isZero n)))
+    boolToInt : (_x1 : Bool) -> Int 
       boolToInt True = int1
       boolToInt False = int0
   in 
     let foreign nativePrint : (x :R: String) -> Unspec
     in 
-      let g : (_x1 : Bool) -> Int 
-        g True = int0
-        g False = plusInt ((\x : Int. 
-          let g : (_x1 : Bool) -> Int 
-            g True = int0
-            g False = plusInt ((\y : Int. 
-              let g : (_x1 : Bool) -> Int 
-                g True = int0
-                g False = plusInt ((\z : Int. 
+      let _cf0 : (_cft0 : Bool) -> Int 
+        _cf0 True = int0
+        _cf0 False = plusInt ((\x : Int. 
+          let _cf0 : (_cft0 : Bool) -> Int 
+            _cf0 True = int0
+            _cf0 False = plusInt ((\y : Int. 
+              let _cf0 : (_cft0 : Bool) -> Int 
+                _cf0 True = int0
+                _cf0 False = plusInt ((\z : Int. 
                   let foreign eqInt_I : (x :R: Int) -> (y :R: Int) -> Int
                   in boolToInt (ifRaw Bool (eqInt_I (timesInt x x) (plusInt (timesInt y y) (timesInt z z))) True False)) y) (sumFor (minusInt y int1) (\z : Int. 
                   let foreign eqInt_I : (x :R: Int) -> (y :R: Int) -> Int
                   in boolToInt (ifRaw Bool (eqInt_I (timesInt x x) (plusInt (timesInt y y) (timesInt z z))) True False)))
-              in g (ifRaw Bool y False True)) x) (sumFor (minusInt x int1) (\y : Int. 
-              let g : (_x1 : Bool) -> Int 
-                g True = int0
-                g False = plusInt ((\z : Int. 
+              in _cf0 (ifRaw Bool y False True)) x) (sumFor (minusInt x int1) (\y : Int. 
+              let _cf0 : (_cft0 : Bool) -> Int 
+                _cf0 True = int0
+                _cf0 False = plusInt ((\z : Int. 
                   let foreign eqInt_I : (x :R: Int) -> (y :R: Int) -> Int
                   in boolToInt (ifRaw Bool (eqInt_I (timesInt x x) (plusInt (timesInt y y) (timesInt z z))) True False)) y) (sumFor (minusInt y int1) (\z : Int. 
                   let foreign eqInt_I : (x :R: Int) -> (y :R: Int) -> Int
                   in boolToInt (ifRaw Bool (eqInt_I (timesInt x x) (plusInt (timesInt y y) (timesInt z z))) True False)))
-              in g (ifRaw Bool y False True)))
-          in g (ifRaw Bool x False True)) (timesInt (timesInt (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1))) (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1)))) (plusInt int1 int1))) (sumFor (minusInt (timesInt (timesInt (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1))) (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1)))) (plusInt int1 int1)) int1) (\x : Int. 
-          let g : (_x1 : Bool) -> Int 
-            g True = int0
-            g False = plusInt ((\y : Int. 
-              let g : (_x1 : Bool) -> Int 
-                g True = int0
-                g False = plusInt ((\z : Int. 
+              in _cf0 (ifRaw Bool y False True)))
+          in _cf0 (ifRaw Bool x False True)) (timesInt (timesInt (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1))) (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1)))) (plusInt int1 int1))) (sumFor (minusInt (timesInt (timesInt (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1))) (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1)))) (plusInt int1 int1)) int1) (\x : Int. 
+          let _cf0 : (_cft0 : Bool) -> Int 
+            _cf0 True = int0
+            _cf0 False = plusInt ((\y : Int. 
+              let _cf0 : (_cft0 : Bool) -> Int 
+                _cf0 True = int0
+                _cf0 False = plusInt ((\z : Int. 
                   let foreign eqInt_I : (x :R: Int) -> (y :R: Int) -> Int
                   in boolToInt (ifRaw Bool (eqInt_I (timesInt x x) (plusInt (timesInt y y) (timesInt z z))) True False)) y) (sumFor (minusInt y int1) (\z : Int. 
                   let foreign eqInt_I : (x :R: Int) -> (y :R: Int) -> Int
                   in boolToInt (ifRaw Bool (eqInt_I (timesInt x x) (plusInt (timesInt y y) (timesInt z z))) True False)))
-              in g (ifRaw Bool y False True)) x) (sumFor (minusInt x int1) (\y : Int. 
-              let g : (_x1 : Bool) -> Int 
-                g True = int0
-                g False = plusInt ((\z : Int. 
+              in _cf0 (ifRaw Bool y False True)) x) (sumFor (minusInt x int1) (\y : Int. 
+              let _cf0 : (_cft0 : Bool) -> Int 
+                _cf0 True = int0
+                _cf0 False = plusInt ((\z : Int. 
                   let foreign eqInt_I : (x :R: Int) -> (y :R: Int) -> Int
                   in boolToInt (ifRaw Bool (eqInt_I (timesInt x x) (plusInt (timesInt y y) (timesInt z z))) True False)) y) (sumFor (minusInt y int1) (\z : Int. 
                   let foreign eqInt_I : (x :R: Int) -> (y :R: Int) -> Int
                   in boolToInt (ifRaw Bool (eqInt_I (timesInt x x) (plusInt (timesInt y y) (timesInt z z))) True False)))
-              in g (ifRaw Bool y False True)))
-          in g (ifRaw Bool x False True)))
-      in nativePrint (intToString (g (ifRaw Bool (timesInt (timesInt (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1))) (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1)))) (plusInt int1 int1)) False True)))
+              in _cf0 (ifRaw Bool y False True)))
+          in _cf0 (ifRaw Bool x False True)))
+      in nativePrint (intToString (_cf0 (ifRaw Bool (timesInt (timesInt (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1))) (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1)))) (plusInt int1 int1)) False True)))
 
 erased:
   
@@ -1531,58 +1531,58 @@ erased:
     foreign ifRaw
     isZero = (\x. ifRaw x False True)
     sumFor = (\n. (\f. 
-      let g 
-        g True = int0
-        g False = plusInt (f n) (sumFor (minusInt n int1) f)
-      in g (isZero n)))
+      let _cf0 
+        _cf0 True = int0
+        _cf0 False = plusInt (f n) (sumFor (minusInt n int1) f)
+      in _cf0 (isZero n)))
     boolToInt 
       boolToInt True = int1
       boolToInt False = int0
   in 
     let foreign nativePrint
     in 
-      let g 
-        g True = int0
-        g False = plusInt ((\x. 
-          let g 
-            g True = int0
-            g False = plusInt ((\y. 
-              let g 
-                g True = int0
-                g False = plusInt ((\z. 
+      let _cf0 
+        _cf0 True = int0
+        _cf0 False = plusInt ((\x. 
+          let _cf0 
+            _cf0 True = int0
+            _cf0 False = plusInt ((\y. 
+              let _cf0 
+                _cf0 True = int0
+                _cf0 False = plusInt ((\z. 
                   let foreign eqInt_I
                   in boolToInt (ifRaw (eqInt_I (timesInt x x) (plusInt (timesInt y y) (timesInt z z))) True False)) y) (sumFor (minusInt y int1) (\z. 
                   let foreign eqInt_I
                   in boolToInt (ifRaw (eqInt_I (timesInt x x) (plusInt (timesInt y y) (timesInt z z))) True False)))
-              in g (ifRaw y False True)) x) (sumFor (minusInt x int1) (\y. 
-              let g 
-                g True = int0
-                g False = plusInt ((\z. 
+              in _cf0 (ifRaw y False True)) x) (sumFor (minusInt x int1) (\y. 
+              let _cf0 
+                _cf0 True = int0
+                _cf0 False = plusInt ((\z. 
                   let foreign eqInt_I
                   in boolToInt (ifRaw (eqInt_I (timesInt x x) (plusInt (timesInt y y) (timesInt z z))) True False)) y) (sumFor (minusInt y int1) (\z. 
                   let foreign eqInt_I
                   in boolToInt (ifRaw (eqInt_I (timesInt x x) (plusInt (timesInt y y) (timesInt z z))) True False)))
-              in g (ifRaw y False True)))
-          in g (ifRaw x False True)) (timesInt (timesInt (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1))) (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1)))) (plusInt int1 int1))) (sumFor (minusInt (timesInt (timesInt (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1))) (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1)))) (plusInt int1 int1)) int1) (\x. 
-          let g 
-            g True = int0
-            g False = plusInt ((\y. 
-              let g 
-                g True = int0
-                g False = plusInt ((\z. 
+              in _cf0 (ifRaw y False True)))
+          in _cf0 (ifRaw x False True)) (timesInt (timesInt (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1))) (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1)))) (plusInt int1 int1))) (sumFor (minusInt (timesInt (timesInt (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1))) (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1)))) (plusInt int1 int1)) int1) (\x. 
+          let _cf0 
+            _cf0 True = int0
+            _cf0 False = plusInt ((\y. 
+              let _cf0 
+                _cf0 True = int0
+                _cf0 False = plusInt ((\z. 
                   let foreign eqInt_I
                   in boolToInt (ifRaw (eqInt_I (timesInt x x) (plusInt (timesInt y y) (timesInt z z))) True False)) y) (sumFor (minusInt y int1) (\z. 
                   let foreign eqInt_I
                   in boolToInt (ifRaw (eqInt_I (timesInt x x) (plusInt (timesInt y y) (timesInt z z))) True False)))
-              in g (ifRaw y False True)) x) (sumFor (minusInt x int1) (\y. 
-              let g 
-                g True = int0
-                g False = plusInt ((\z. 
+              in _cf0 (ifRaw y False True)) x) (sumFor (minusInt x int1) (\y. 
+              let _cf0 
+                _cf0 True = int0
+                _cf0 False = plusInt ((\z. 
                   let foreign eqInt_I
                   in boolToInt (ifRaw (eqInt_I (timesInt x x) (plusInt (timesInt y y) (timesInt z z))) True False)) y) (sumFor (minusInt y int1) (\z. 
                   let foreign eqInt_I
                   in boolToInt (ifRaw (eqInt_I (timesInt x x) (plusInt (timesInt y y) (timesInt z z))) True False)))
-              in g (ifRaw y False True)))
-          in g (ifRaw x False True)))
-      in nativePrint (intToString (g (ifRaw (timesInt (timesInt (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1))) (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1)))) (plusInt int1 int1)) False True)))
+              in _cf0 (ifRaw y False True)))
+          in _cf0 (ifRaw x False True)))
+      in nativePrint (intToString (_cf0 (ifRaw (timesInt (timesInt (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1))) (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1)))) (plusInt int1 int1)) False True)))
 
