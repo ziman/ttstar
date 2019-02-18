@@ -146,7 +146,7 @@ metaVar :: Parser (TT MRel)
 metaVar = kwd "_" *> pure meta
 
 meta :: TT MRel
-meta = Meta (error "meta numbers not defined in parser")
+meta = Meta (error "meta numbers not defined in parser")  -- numbered later in parseFile
 
 atomic :: Parser (TT MRel)
 atomic = parens expr

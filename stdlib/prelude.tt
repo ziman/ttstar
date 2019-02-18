@@ -3,15 +3,15 @@ data Nat : Type where
   S : (x :R: Nat) -> Nat
 
 plus : Nat -> Nat -> Nat
-(n : Nat)
+forall n.
   plus Z n = n
-(m : Nat) (n : Nat)
+forall m n.
   plus (S m) n = S (plus m n)
 
 times : Nat -> Nat -> Nat
-(n : Nat)
+forall n.
   times Z n = Z
-(m : Nat) (n : Nat)
+forall m n.
   times (S m) n = plus n (times m n)
 
 data Bool : Type where
@@ -26,19 +26,19 @@ data Unit : Type where
   MkUnit : Unit
 
 data Pair : Type -> Type -> Type where
-  MkPair : (a : Type) -> (b : Type) -> a -> b -> Pair a b
+  MkPair : forall a b -> a -> b -> Pair a b
 
-fst : (a : Type) -> (b : Type) -> (Pair a b) -> a
-(a : Type) (b : Type) (x : a) (y : b)
-  fst a b ({MkPair} [a] [b] x y) = x
+fst : forall a b -> Pair a b -> a
+forall a b x y.
+  fst a b ({MkPair} [_] [_] x y) = x
 
-snd : (a : Type) -> (b : Type) -> (Pair a b) -> b
-(a : Type) (b : Type) (x : a) (y : b)
-  snd a b ({MkPair} [a] [b] x y) = y
+snd : forall a b -> Pair a b -> b
+forall a b x y.
+  snd a b ({MkPair} [_] [_] x y) = y
 
 data Either : Type -> Type -> Type where
-  Left : (a : Type) -> (b : Type) -> a -> Either a b
-  Right : (a : Type) -> (b : Type) -> b -> Either a b
+  Left : forall a b -> a -> Either a b
+  Right : forall a b -> b -> Either a b
 
 id \(a : Type) (x : a) : a = x
 
@@ -47,9 +47,9 @@ data Fin : Nat -> Type where
   FS : (n : Nat) -> (Fin n) -> Fin (S n)
 
 data Vect : Nat -> Type -> Type where
-  VN : (a : Type) -> Vect Z a
-  VC : (n : Nat) -> (a : Type) -> (x : a) -> (xs : Vect n a) -> Vect (S n) a
+  VN : forall a -> Vect Z a
+  VC : forall a n -> a -> Vect n a -> Vect (S n) a
 
 data List : Type -> Type where
-  Nil : (a : Type) -> List a
-  Cons : (a : Type) -> (x : a) -> (xs : List a) -> List a
+  Nil : forall a -> List a
+  Cons : forall a -> a -> List a -> List a
