@@ -6,19 +6,28 @@ import TT.Pretty ()
 
 import Data.Char
 import Text.Parsec
-import Text.Parsec.Indent (IndentParser, withBlock, runIndentParser)
-import Text.Parsec.Indent.Explicit
 import System.FilePath
 import qualified Data.Map as M
 import qualified Data.Set as S
+import qualified Text.Parsec.Indent as PI
 
 data ParserState = PS
     { psCounters :: M.Map String Int
     }
     deriving (Eq, Ord, Show)
 
-type Parser a = IndentParser String ParserState a
+type Parser a = PI.IndentParser String ParserState a
 type MRel = Maybe Relevance
+
+-- 2D layout --
+
+fenced :: Parser a -> Parser a
+fenced = PI.withPos
+
+withinFence :: Parser ()
+withinFence = PI.sameOrIndented
+
+-- Rest of parser --
 
 readProgram :: String -> IO (Either ParseError (Program MRel))
 readProgram fname = do
@@ -30,7 +39,7 @@ readProgram fname = do
 readDefs :: String -> IO (Either ParseError [Def MRel])
 readDefs fname = do
     body <- readFile fname
-    case runIndentParser program initialParserState fname body of
+    case PI.runIndentParser program initialParserState fname body of
         Left err -> return $ Left err
         Right (is, ds) -> do
             let rootDir = takeDirectory fname
@@ -69,10 +78,11 @@ sp :: Parser ()
 sp = many ((satisfy isSpace *> return ()) <|> lineComment <|> bigComment) *> return () <?> "whitespace or comment"
 
 kwd :: String -> Parser ()
-kwd s = (try (string s) >> sp) <?> s
+kwd s = (withinFence >> try (string s) >> sp) <?> s
 
 identifier :: Parser Name
 identifier = (<?> "identifier") $ do
+    withinFence
     n <- try $ do
         x <- satisfy isAlpha  -- let's make _idents reserved for the compiler
         xs <- many $ satisfy (\x -> idChar x || isDigit x)
@@ -105,7 +115,7 @@ var :: Parser (TT MRel)
 var = V <$> name <?> "variable"
 
 natural :: Parser (TT MRel)
-natural = mkNat . read <$> (many1 (satisfy isDigit) <* sp) <?> "number"
+natural = mkNat . read <$> (withinFence *> many1 (satisfy isDigit) <* sp) <?> "number"
   where
     mkNat :: Int -> TT MRel
     mkNat 0 = V $ UN "Z"
@@ -182,9 +192,11 @@ bind = arrow
 
 stringLiteral :: Parser String
 stringLiteral = (<?> "string literal") $ do
-    kwd "\""
+    withinFence
+    _ <- string "\""
     s <- many stringChar
-    kwd "\""
+    _ <- string "\""
+    sp
     return s
   where
     stringChar :: Parser Char
@@ -194,10 +206,9 @@ stringLiteral = (<?> "string literal") $ do
         <|> (kwd "\\\\" *> return '\\')
 
 app :: Parser (TT MRel)
-app = (<?> "application") $ do
-    i <- indentation
+app = (<?> "application") $ fenced $ do
     f <- atomic
-    args <- many (sameOrIndented i *> appArg)
+    args <- many appArg
     return $ mkApp f args
 
 appArg :: Parser (MRel, TT MRel)
@@ -226,12 +237,14 @@ patAtom = parens pattern <|> forcedCtor <|> patForced <|> patVar <?> "pattern at
 
 patAppArg :: Parser (MRel, Pat MRel)
 patAppArg =
-    ((,) <$> pure (Just I) <*> try (string "." *> patAtom))
-    <|> ((,) <$> pure Nothing <*> patAtom)
-    <?> "pattern application argument"
+    withinFence >>
+        (   ((,) <$> pure (Just I) <*> try (string "." *> patAtom))
+        <|> ((,) <$> pure Nothing <*> patAtom)
+        <?> "pattern application argument"
+        )
 
 patApp :: Parser (Pat MRel)
-patApp = (<?> "pattern application") $ do
+patApp = (<?> "pattern application") $ fenced $ do
     f <- patAtom
     args <- many patAppArg
     return $ mkAppPat f args
@@ -240,14 +253,9 @@ pattern :: Parser (Pat MRel)
 pattern = parserTrace "---PATTERN---" >> patApp
 
 let_ :: Parser (TT MRel)
-let_ = (<?> "let expression") $ do
-    i <- indentation
-    kwd "let"
-    ds <- many1 (sameOrIndented i *> simpleDef)
-    sameOrIndented i >> do
-        j <- indentation
-        kwd "in"
-        Bind Let ds <$> (sameOrIndented j *> expr)
+let_ = (<?> "let expression") $ fenced $ do
+    ds <- fenced $ kwd "let" *> many1 simpleDef
+    fenced $ kwd "in" *> (Bind Let ds <$> expr)
 
 erasureInstance :: Parser (TT MRel)
 erasureInstance = (<?> "erasure instance") $ do
@@ -259,22 +267,21 @@ erasureInstance = (<?> "erasure instance") $ do
     return $ EI n ty
 
 caseExpr :: Parser (TT MRel)
-caseExpr = (<?> "case expression") $ do
-    i <- indentation
+caseExpr = (<?> "case expression") $ fenced $ do
     kwd "case"
     tms <- expr `sepBy` kwd ","
-    d   <- caseOf i (length tms) <|> caseWith i
+    d   <- caseOf (length tms) <|> caseWith
     return $ Bind Let [d] (mkApp (V $ defName d) $ zip (repeat Nothing) tms)
 
-caseWith :: Indentation -> Parser (Def MRel)
-caseWith i = kwd "with" >> indented i >> clauseDef
+caseWith :: Parser (Def MRel)
+caseWith = kwd "with" >> clauseDef
 
-caseOf :: Indentation -> Int -> Parser (Def MRel)
-caseOf i nscruts = do
+caseOf :: Int -> Parser (Def MRel)
+caseOf nscruts = do
     kwd "of"
     fn  <- freshMN "cf"
     fty <- mkPi nscruts
-    Def fn Nothing fty . Clauses <$> many (indented i >> caseArm fn)
+    Def fn Nothing fty . Clauses <$> many (caseArm fn)
   where
     mkPi :: Int -> Parser (TT MRel)
     mkPi 0 = freshMeta
@@ -284,12 +291,11 @@ caseOf i nscruts = do
         Bind Pi [Def n Nothing ty $ Abstract Var] <$> mkPi (k-1)
 
     caseArm :: Name -> Parser (Clause MRel)
-    caseArm fn = do
-        i <- indentation
+    caseArm fn = fenced $ do
         pvs <- mpatvars <|> pure []
         lhs <- pattern `sepBy1` kwd ","
         kwd "="
-        Clause pvs (mkAppPat (PHead fn) [(Nothing, p) | p <- lhs]) <$> (sameOrIndented i *> expr)
+        Clause pvs (mkAppPat (PHead fn) [(Nothing, p) | p <- lhs]) <$> expr
 
 expr :: Parser (TT MRel)
 expr = bind <|> app <?> "expression"  -- app includes nullary-applied atoms
@@ -309,23 +315,21 @@ ptyping abs =
     makeIrrelevant def = def{ defR = Just I }
 
 postulate :: Parser (Def MRel)
-postulate = (<?> "postulate") $ do
+postulate = (<?> "postulate") $ fenced $ do
     kwd "postulate"
     d <- typing Postulate
     return d
 
 clauseDef :: Parser (Def MRel)
 clauseDef = (<?> "pattern-clause definition") $ do
-    i <- indentation
-    parserTrace $ "--- CLAUSE-DEF ---" ++ show i
-    d <- typing Var
+    d <- fenced $ typing Var
     body <-
         (kwd "=" *> termBody)
-        <|> clausesBody i
+        <|> clausesBody
     return d{ defBody = body }
 
 mlDef :: Parser (Def MRel)
-mlDef = (<?> "ml-style definition") $ do
+mlDef = (<?> "ml-style definition") $ fenced $ do
     n <- try (name <* kwd "\\")
     args <- many (ptyping Var)
     r <- rcolon
@@ -340,30 +344,26 @@ mlDef = (<?> "ml-style definition") $ do
     mkPi [] retTy = retTy
     mkPi (d:ds) retTy = Bind Pi [d] $ mkPi ds retTy
 
--- (checkIndent <|> indented) == "not (indented less)"
-clausesBody :: Indentation -> Parser (Body MRel)
-clausesBody i = do
-    parserTrace "--- CLAUSES-BODY ---"
-    Clauses <$> many (clause i)
+clausesBody :: Parser (Body MRel)
+clausesBody = Clauses <$> many clause
 
 termBody :: Parser (Body MRel)
 termBody = Term <$> expr
 
 mpatvars :: Parser [Def MRel]
-mpatvars = kwd "forall" *> mtypings <* kwd "."
+mpatvars = fenced (kwd "forall" *> mtypings)
 
-clause :: Indentation -> Parser (Clause MRel)
-clause i = (<?> "pattern clause") $ do
-    checkIndent i <|> indented i  -- not indented less
+clause :: Parser (Clause MRel)
+clause = (<?> "pattern clause") $ do
+    PI.checkIndent
     -- quickly reject "name :" because that's the beginning of the next decl
     notFollowedBy (name >> kwd ":")
-    j <- indentation
-    parserTrace $ "---- CLAUSE ----" ++ show j
     pvs <- mpatvars <|> many (ptyping Var)
-    lhs <- forceHead <$> pattern
-    kwd "="
-    rhs <- sameOrIndented j *> expr
-    return $ Clause pvs lhs rhs
+    fenced $ do
+        lhs <- forceHead <$> pattern
+        kwd "="
+        rhs <- expr
+        return $ Clause pvs lhs rhs
 
 forceHead :: Pat MRel -> Pat MRel
 forceHead p | (PV f, args) <- unApplyPat p
@@ -372,14 +372,13 @@ forceHead p
     = error $ "invalid clause LHS: " ++ show p
 
 dataDef :: Parser [Def MRel]
-dataDef = (<?> "data definition")
-    $ withBlock
-        (\tfd ctors -> tfd : ctors)
-        (kwd "data" *> typing Constructor <* kwd "where")
-        (typing Constructor)
+dataDef = (<?> "data definition") $ fenced $ do
+    tfd <- kwd "data" *> typing Constructor <* kwd "where"
+    ctors <- many (fenced $ typing Constructor)
+    return (tfd : ctors)
 
 foreignDef :: Parser (Def MRel)
-foreignDef = (<?> "foreign definition") $ do
+foreignDef = (<?> "foreign definition") $ fenced $ do
     kwd "foreign"
     d <- typing $ Foreign undefined
     kwd "="
