@@ -292,7 +292,7 @@ caseOf nscruts = do
     kwd "of"
     fn  <- freshMN "cf"
     fty <- mkPi nscruts
-    Def fn Nothing fty . Clauses <$> many (caseArm fn)
+    Def fn Nothing fty . Clauses <$> PI.block (caseArm fn)
   where
     mkPi :: Int -> Parser (TT MRel)
     mkPi 0 = pure meta
@@ -301,17 +301,52 @@ caseOf nscruts = do
         Bind Pi [Def n Nothing meta $ Abstract Var] <$> mkPi (k-1)
 
     caseArm :: Name -> Parser (Clause MRel)
-    caseArm fn = subfenced $ do
-        parserTrace "caseArm"
+    caseArm fn = subfenced' $ do
         pvs <- mpatvars <|> pure []
-        parserTrace "caseArm2"
         lhs <- pattern `sepBy1` kwd ","
-        parserTrace "caseArm3"
         kwd "="
         Clause pvs (mkAppPat (PHead fn) [(Nothing, p) | p <- lhs]) <$> expr
 
+doExpr :: Parser (TT MRel)
+doExpr = do
+    kwd "with"
+    bind <- expr
+    kwd "do"
+    ss <- PI.block (ass <|> assTy <|> ign)
+    rebind bind ss    
+  where
+    ass = do
+        n <- try (name <* kwd "<-")
+        rhs <- expr
+        return $ Left (n, meta, rhs)
+
+    assTy = do
+        d <- try (typing Var <* kwd "<-")
+        rhs <- expr
+        return $ Left (defName d, defType d, rhs)
+
+    ign = Right <$> expr
+
+    rebind :: TT MRel -> [Either (Name, TT MRel, TT MRel) (TT MRel)] -> Parser (TT MRel)
+    rebind bind [Right rhs] = pure rhs
+    rebind bind (s : ss) = do
+        (n, ty, rhs) <- case s of
+            Left (n, ty, rhs) -> pure (n, ty, rhs)
+            Right rhs -> do
+                n <- freshMN "do"
+                return (n, meta, rhs)
+
+        rest <- rebind bind ss
+
+        pure $ mkApp bind
+            [ (Nothing, rhs)
+            , (Nothing, Bind Lam [Def n Nothing ty (Abstract Var)] rest)
+            ]
+
+    rebind _bind ss = error $ "invalid do-notation statement: " ++ show ss
+
 expr :: Parser (TT MRel)
-expr = bind <|> app <?> "expression"  -- app includes nullary-applied atoms
+expr = bind <|> doExpr <|> app <?> "expression"  -- app includes nullary-applied atoms
 
 typing :: Abstractness -> Parser (Def MRel)
 typing a = (<?> "name binding") $ do
