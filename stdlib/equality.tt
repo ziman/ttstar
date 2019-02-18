@@ -1,6 +1,7 @@
 data Id : (a : Type) -> (x : a) -> (y : a) -> Type where
-  Refl : (a : Type) -> (x : a) -> Id a x x.
+  Refl : (a : Type) -> (x : a) -> Id a x x
 
-subst : (a : Type) -> (P : a -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -> (P x) -> P y.
-  (a : Type) (P : a -> Type) (x : a)
-    subst a P x [x] [Refl a x] = \z:P x. z.
+subst : forall a (P : a -> Type) x y
+  -> (eq : Id _ x y) -> P x -> P y
+forall a (P : a -> Type) x.
+  subst a P x [_] ({Refl} [_] [_]) = \z. z
