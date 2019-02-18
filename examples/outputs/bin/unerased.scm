@@ -212,10 +212,6 @@
             (((((C n) (S Z)) I) ((binVal False) n)) ((mkBin False) n)))
           ((('False) ('S n))
             (((((C n) Z) O) ((binVal True) n)) ((mkBin True) n)))))))
-    (main (letrec* (
-      (x ((mkBin True) inputSize))
-      (y ((mkBin False) inputSize))
-    )
-      (((((add inputSize) ((binVal True) inputSize)) ((binVal False) inputSize)) x) y)))
+    (main (((((add inputSize) ((binVal True) inputSize)) ((binVal False) inputSize)) ((mkBin True) inputSize)) ((mkBin False) inputSize)))
   )
     main))

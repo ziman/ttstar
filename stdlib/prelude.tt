@@ -15,11 +15,11 @@ forall m n.
   times (S m) n = plus n (times m n)
 
 data Bool : Type where
-  True : Bool
+  True  : Bool
   False : Bool
 
 not : Bool -> Bool
-not True = False
+not True  = False
 not False = True
 
 data Unit : Type where
@@ -40,11 +40,11 @@ data Either : Type -> Type -> Type where
   Left : forall a b -> a -> Either a b
   Right : forall a b -> b -> Either a b
 
-id \(a : Type) (x : a) : a = x
+id \a (x : a) = x
 
 data Fin : Nat -> Type where
-  FZ : (n : Nat) -> Fin (S n)
-  FS : (n : Nat) -> (Fin n) -> Fin (S n)
+  FZ : forall n -> Fin (S n)
+  FS : forall n -> Fin n -> Fin (S n)
 
 data Vect : Nat -> Type -> Type where
   VN : forall a -> Vect Z a

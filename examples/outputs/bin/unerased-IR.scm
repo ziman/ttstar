@@ -198,10 +198,6 @@
             ((S _pv2) (((((C _pv2) Z) O) ((binVal True) _pv2)) ((mkBin True) _pv2)))))
           ((True) (rts-case _pv1
             ((S _pv2) (((((C _pv2) (S Z)) I) ((binVal False) _pv2)) ((mkBin False) _pv2))))))))))
-    (main 
-      (letrec* (
-        (x ((mkBin True) inputSize))
-        (y ((mkBin False) inputSize))
-      ) (((((add inputSize) ((binVal True) inputSize)) ((binVal False) inputSize)) x) y)))
+    (main (((((add inputSize) ((binVal True) inputSize)) ((binVal False) inputSize)) ((mkBin True) inputSize)) ((mkBin False) inputSize)))
   ) main))
 (newline)

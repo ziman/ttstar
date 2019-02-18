@@ -65,10 +65,6 @@
             ((C I) ((mkBin False) n)))
           ((('False) ('S n))
             ((C O) ((mkBin True) n)))))))
-    (main (letrec* (
-      (x ((mkBin True) inputSize))
-      (y ((mkBin False) inputSize))
-    )
-      ((add x) y)))
+    (main ((add ((mkBin True) inputSize)) ((mkBin False) inputSize)))
   )
     main))

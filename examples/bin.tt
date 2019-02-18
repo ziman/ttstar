@@ -48,7 +48,7 @@ add' : (w : Nat)
     -> Bin (S w) (plus c (plus x y))
 
 forall c (cb : Bit c).
-  add' {Z} c {Z} {Z} cb N N ~> C Z c cb Z N
+  add' {Z} c {Z} {Z} cb N N ~> C _ _ cb _ N
 
 forall w
    c  (cb : Bit c)
@@ -64,7 +64,7 @@ add' ({S} w) c [plus xb' (double xn')] [plus yb' (double yn')] cb (C [_] xb' xb 
           hi' (hi : Bit hi')
           lo' (lo : Bit lo')
           (pf : Id _ (plus c (plus xb' yb')) (plus lo' (double hi'))).
-        f ({TB} [c] [xb'] [yb'] hi' hi lo' lo pf)
+        f ({TB} [_] [_] [_] hi' hi lo' lo pf)
           ~> let
               -- cheat our way out of the boring proof stuff
               -- this should be normally proven as a consequence of `pf`
@@ -72,14 +72,10 @@ add' ({S} w) c [plus xb' (double xn')] [plus yb' (double yn')] cb (C [_] xb' xb 
               y : _ = plus c (plus (plus xb' (double xn')) (plus yb' (double yn')))
               postulate eq : Id _ x y
              in
-              subst Nat
-                (Bin (S (S w)))
-                (plus lo' (double (plus hi' (plus xn' yn'))))
-                (plus c (plus (plus xb' (double xn')) (plus yb' (double yn'))))
-                eq
-                (C (S w) lo' lo (plus hi' (plus xn' yn')) (add' w hi' xn' yn' hi xn yn))
+              subst _ (Bin (S (S w))) _ _ eq
+                (C _ _ lo _ $ add' _ hi' _ _ hi xn yn)
 
-add \(w : Nat) (x : Nat) (y : Nat) (bx : Bin w x) (by : Bin w y) : Bin (S w) (plus x y)
+add \w x y (bx : Bin w x) (by : Bin w y) : Bin (S w) (plus x y)
   ~> add' w Z x y O bx by
 
 foreign inputSize : Nat = "(rts-arg-peano 'Z 'S 0)"
@@ -96,13 +92,11 @@ mkBin : (b : Bool) -> (w : Nat) -> Bin w (binVal b w)
 forall b.
   mkBin b Z ~> N
 forall n.
-  mkBin True (S n) ~> C n _ I (binVal False n) (mkBin False n)
+  mkBin True (S n) ~> C _ _ I (binVal False n) (mkBin False n)
 forall n.
-  mkBin False (S n) ~> C n _ O (binVal True n) (mkBin True n)
+  mkBin False (S n) ~> C _ _ O (binVal True n) (mkBin True n)
 
-main \: Bin (S inputSize) (plus (binVal True inputSize) (binVal False inputSize))
-  = let
-      x \: Bin inputSize (binVal True inputSize) = mkBin True inputSize
-      y \: Bin inputSize (binVal False inputSize) = mkBin False inputSize
-    in
-      add inputSize (binVal True inputSize) (binVal False inputSize) x y
+main \: Bin _ _
+  = add _ _ _
+      (mkBin True inputSize)
+      (mkBin False inputSize)

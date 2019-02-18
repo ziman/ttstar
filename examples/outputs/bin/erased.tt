@@ -31,9 +31,5 @@
       mkBin b Z = N
       mkBin True (S n) = C I (mkBin False n)
       mkBin False (S n) = C O (mkBin True n)
-    main = 
-      let
-        x = mkBin True inputSize
-        y = mkBin False inputSize
-      in add x y
+    main = add (mkBin True inputSize) (mkBin False inputSize)
   in main

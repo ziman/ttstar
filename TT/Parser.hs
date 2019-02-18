@@ -182,15 +182,15 @@ bpi = (<?> "pi") $ do
     Bind Pi [d] <$> expr
 
 -- meta-enabled typings
-mtypings :: Parser [Def MRel]
-mtypings = many1 (nm <|> ptyping Var)
+mtyping :: Parser (Def MRel)
+mtyping = nm <|> ptyping Var
   where
     nm  = name <&> \n -> Def n Nothing meta (Abstract Var)
 
 bforall :: Parser (TT MRel)
 bforall = (<?> "forall") $ do
     kwd "forall"
-    ds <- mtypings
+    ds <- many1 mtyping
     kwd "->"
     rhs <- expr
     pure $ foldr (\d rhs' -> Bind Pi [d] rhs') rhs ds
@@ -383,9 +383,11 @@ clauseDef = (<?> "pattern-clause definition") $ do
 mlDef :: Parser (Def MRel)
 mlDef = (<?> "ml-style definition") $ subfenced' $ do
     n <- try (name <* kwd "\\")
-    args <- many (ptyping Var)
-    r <- rcolon
-    retTy <- expr
+    args <- many mtyping
+    (r, retTy) <-
+        ( (,) <$> rcolon <*> expr
+        <|> pure (Nothing, meta)
+        )
     defEq
     rhs <- expr
     return $ Def n r (mkPi args retTy) (Term $ mkLam args rhs)
@@ -403,7 +405,7 @@ termBody :: Parser (Body MRel)
 termBody = Term <$> expr
 
 mpatvars :: Parser [Def MRel]
-mpatvars = subfenced' (kwd "forall" *> mtypings <* optional (kwd "."))
+mpatvars = subfenced' (kwd "forall" *> many1 mtyping <* optional (kwd "."))
 
 clause :: Parser (Clause MRel)
 clause = (<?> "pattern clause") $ subfenced' $ do

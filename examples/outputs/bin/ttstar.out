@@ -35,27 +35,27 @@
     constructor Either : (_x11 : Type) -> (_x12 : Type) -> Type
     constructor Left : (a : _24) -> (b : _25) -> (_x13 : a) -> Either a b
     constructor Right : (a : _26) -> (b : _27) -> (_x14 : b) -> Either a b
-    id : (a : Type) -> (x : a) -> a = (\a : Type. (\x : a. x))
+    id : (a : _28) -> (x : a) -> _29 = (\a : _30. (\x : a. x))
     constructor Fin : (_x15 : Nat) -> Type
-    constructor FZ : (n : Nat) -> Fin (S n)
-    constructor FS : (n : Nat) -> (_x16 : Fin n) -> Fin (S n)
+    constructor FZ : (n : _31) -> Fin (S n)
+    constructor FS : (n : _32) -> (_x16 : Fin n) -> Fin (S n)
     constructor Vect : (_x17 : Nat) -> (_x18 : Type) -> Type
-    constructor VN : (a : _28) -> Vect Z a
-    constructor VC : (n : _29) -> (a : _30) -> (_x19 : a) -> (_x20 : Vect n a) -> Vect (S n) a
+    constructor VN : (a : _33) -> Vect Z a
+    constructor VC : (n : _34) -> (a : _35) -> (_x19 : a) -> (_x20 : Vect n a) -> Vect (S n) a
     constructor List : (_x21 : Type) -> Type
-    constructor Nil : (a : _31) -> List a
-    constructor Cons : (a : _32) -> (_x22 : a) -> (_x23 : List a) -> List a
-    constructor Id : (a : _33) -> (x : a) -> (y : a) -> Type
+    constructor Nil : (a : _36) -> List a
+    constructor Cons : (a : _37) -> (_x22 : a) -> (_x23 : List a) -> List a
+    constructor Id : (a : _38) -> (x : a) -> (y : a) -> Type
     constructor Refl : (a : Type) -> (x : a) -> Id a x x
-    subst : (a : _34) -> (P : (_x0 : a) -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -> (_x1 : P x) -> P y 
-      a : _35 P : _36 x : _37
-        subst a P x [_38] ([Refl] [_39] [_40]) = (\z : _41. z)
+    subst : (a : _39) -> (P : (_x0 : a) -> Type) -> (x : a) -> (y : a) -> (eq : Id a x y) -> (_x1 : P x) -> P y 
+      a : _40 P : _41 x : _42
+        subst a P x [_43] ([Refl] [_44] [_45]) = (\z : _46. z)
     constructor Bit : (_x0 : Nat) -> Type
     constructor I : Bit 1
     constructor O : Bit Z
     double : (_x1 : Nat) -> Nat 
       double Z = Z
-      n : _42
+      n : _47
         double (S n) = S (S (double n))
     constructor Bin : (width : Nat) -> (value : Nat) -> Type
     constructor N : Bin Z Z
@@ -63,49 +63,45 @@
     constructor TwoBits : (_x2 : Nat) -> (_x3 : Nat) -> (_x4 : Nat) -> Type
     constructor TB : (c : Nat) -> (x : Nat) -> (y : Nat) -> (hi' : Nat) -> (hi : Bit hi') -> (lo' : Nat) -> (lo : Bit lo') -> (pf : Id Nat (plus c (plus x y)) (plus lo' (double hi'))) -> TwoBits c x y
     adb : (c : Nat) -> (x : Nat) -> (y : Nat) -> (_x5 : Bit c) -> (_x6 : Bit x) -> (_x7 : Bit y) -> TwoBits c x y 
-      adb [_43] [_44] [_45] O O O = TB Z Z Z _46 O _47 O (Refl _48 _49)
-      adb [_50] [_51] [_52] I O O = TB 1 Z Z _53 O 1 I (Refl _54 _55)
-      adb [_56] [_57] [_58] O I O = TB Z 1 Z _59 O 1 I (Refl _60 _61)
-      adb [_62] [_63] [_64] O O I = TB Z Z 1 _65 O 1 I (Refl _66 _67)
-      adb [_68] [_69] [_70] I I O = TB 1 1 Z 1 I _71 O (Refl _72 _73)
-      adb [_74] [_75] [_76] I O I = TB 1 Z 1 1 I _77 O (Refl _78 _79)
-      adb [_80] [_81] [_82] O I I = TB Z 1 1 1 I _83 O (Refl _84 _85)
-      adb [_86] [_87] [_88] I I I = TB 1 1 1 1 I 1 I (Refl _89 _90)
+      adb [_48] [_49] [_50] O O O = TB Z Z Z _51 O _52 O (Refl _53 _54)
+      adb [_55] [_56] [_57] I O O = TB 1 Z Z _58 O 1 I (Refl _59 _60)
+      adb [_61] [_62] [_63] O I O = TB Z 1 Z _64 O 1 I (Refl _65 _66)
+      adb [_67] [_68] [_69] O O I = TB Z Z 1 _70 O 1 I (Refl _71 _72)
+      adb [_73] [_74] [_75] I I O = TB 1 1 Z 1 I _76 O (Refl _77 _78)
+      adb [_79] [_80] [_81] I O I = TB 1 Z 1 1 I _82 O (Refl _83 _84)
+      adb [_85] [_86] [_87] O I I = TB Z 1 1 1 I _88 O (Refl _89 _90)
+      adb [_91] [_92] [_93] I I I = TB 1 1 1 1 I 1 I (Refl _94 _95)
     add' : (w : Nat) -> (c : Nat) -> (x : Nat) -> (y : Nat) -> (_x8 : Bit c) -> (_x9 : Bin w x) -> (_x10 : Bin w y) -> Bin (S w) (plus c (plus x y)) 
-      c : _91 cb : Bit c
-        add' [Z] c [Z] [Z] cb N N = C Z c cb Z N
-      w : _92 c : _93 cb : Bit c xb' : _94 xb : Bit xb' xn' : _95 xn : Bin w xn' yb' : _96 yb : Bit yb' yn' : _97 yn : Bin w yn'
-        add' ([S] w) c [plus xb' (double xn')] [plus yb' (double yn')] cb (C [_98] xb' xb xn' xn) (C [_99] yb' yb yn' yn) = 
+      c : _96 cb : Bit c
+        add' [Z] c [Z] [Z] cb N N = C _97 _98 cb _99 N
+      w : _100 c : _101 cb : Bit c xb' : _102 xb : Bit xb' xn' : _103 xn : Bin w xn' yb' : _104 yb : Bit yb' yn' : _105 yn : Bin w yn'
+        add' ([S] w) c [plus xb' (double xn')] [plus yb' (double yn')] cb (C [_106] xb' xb xn' xn) (C [_107] yb' yb yn' yn) = 
           let f : (_x11 : TwoBits c xb' yb') -> Bin (S (S w)) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn')))) 
-            hi' : _100 hi : Bit hi' lo' : _101 lo : Bit lo' pf : Id _102 (plus c (plus xb' yb')) (plus lo' (double hi'))
-              f ([TB] [c] [xb'] [yb'] hi' hi lo' lo pf) = 
+            hi' : _108 hi : Bit hi' lo' : _109 lo : Bit lo' pf : Id _110 (plus c (plus xb' yb')) (plus lo' (double hi'))
+              f ([TB] [_111] [_112] [_113] hi' hi lo' lo pf) = 
                 let
-                  x : _103 = plus lo' (double (plus hi' (plus xn' yn')))
-                  y : _104 = plus c (plus (plus xb' (double xn')) (plus yb' (double yn')))
-                  postulate eq : Id Nat x y
-                in subst Nat (Bin (S (S w))) (plus lo' (double (plus hi' (plus xn' yn')))) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn')))) eq (C (S w) lo' lo (plus hi' (plus xn' yn')) (add' w hi' xn' yn' hi xn yn))
+                  x : _114 = plus lo' (double (plus hi' (plus xn' yn')))
+                  y : _115 = plus c (plus (plus xb' (double xn')) (plus yb' (double yn')))
+                  postulate eq : Id _116 x y
+                in subst _117 (Bin (S (S w))) _118 _119 eq (C _120 _121 lo _122 (add' _123 hi' _124 _125 hi xn yn))
           in f (adb c xb' yb' cb xb yb)
-    add : (w : Nat) -> (x : Nat) -> (y : Nat) -> (bx : Bin w x) -> (by : Bin w y) -> Bin (S w) (plus x y) = (\w : Nat. (\x : Nat. (\y : Nat. (\bx : Bin w x. (\by : Bin w y. add' w Z x y O bx by)))))
+    add : (w : _126) -> (x : _127) -> (y : _128) -> (bx : Bin w x) -> (by : Bin w y) -> Bin (S w) (plus x y) = (\w : _129. (\x : _130. (\y : _131. (\bx : Bin w x. (\by : Bin w y. add' w Z x y O bx by)))))
     foreign inputSize : Nat
     binVal : (_x12 : Bool) -> (_x13 : Nat) -> Nat 
-      b : _105
+      b : _132
         binVal b Z = Z
-      n : _106
+      n : _133
         binVal True (S n) = S (double (binVal False n))
-      n : _107
+      n : _134
         binVal False (S n) = double (binVal True n)
     mkBin : (b : Bool) -> (w : Nat) -> Bin w (binVal b w) 
-      b : _108
+      b : _135
         mkBin b Z = N
-      n : _109
-        mkBin True (S n) = C n 1 I (binVal False n) (mkBin False n)
-      n : _110
-        mkBin False (S n) = C n Z O (binVal True n) (mkBin True n)
-    main : Bin (S inputSize) (plus (binVal True inputSize) (binVal False inputSize)) = 
-      let
-        x : Bin inputSize (binVal True inputSize) = mkBin True inputSize
-        y : Bin inputSize (binVal False inputSize) = mkBin False inputSize
-      in add inputSize (binVal True inputSize) (binVal False inputSize) x y
+      n : _136
+        mkBin True (S n) = C _137 _138 I (binVal False n) (mkBin False n)
+      n : _139
+        mkBin False (S n) = C _140 _141 O (binVal True n) (mkBin True n)
+    main : Bin _142 _143 = add _144 _145 _146 (mkBin True inputSize) (mkBin False inputSize)
   in main
 
 ### Elaborated ###
@@ -209,11 +205,7 @@
         mkBin True (S n) = C n 1 I (binVal False n) (mkBin False n)
       n : Nat
         mkBin False (S n) = C n Z O (binVal True n) (mkBin True n)
-    main : Bin (S inputSize) (plus (binVal True inputSize) (binVal False inputSize)) = 
-      let
-        x : Bin inputSize (binVal True inputSize) = mkBin True inputSize
-        y : Bin inputSize (binVal False inputSize) = mkBin False inputSize
-      in add inputSize (binVal True inputSize) (binVal False inputSize) x y
+    main : Bin (S inputSize) (plus (binVal True inputSize) (binVal False inputSize)) = add inputSize (binVal True inputSize) (binVal False inputSize) (mkBin True inputSize) (mkBin False inputSize)
   in main
 
 ### Evarified ###
@@ -317,11 +309,7 @@
         mkBin -690- True -689- (S -691- n) = C -696- n -695- 1 -694- I -693- (binVal -699- False -698- n) -692- (mkBin -701- False -700- n)
       n :702: Nat
         mkBin -704- False -703- (S -705- n) = C -710- n -709- Z -708- O -707- (binVal -712- True -711- n) -706- (mkBin -714- True -713- n)
-    main :715: Bin -717- (S -718- inputSize) -716- (plus -720- (binVal -722- True -721- inputSize) -719- (binVal -724- False -723- inputSize)) = 
-      let
-        x :725: Bin -727- inputSize -726- (binVal -729- True -728- inputSize) = mkBin -731- True -730- inputSize
-        y :732: Bin -734- inputSize -733- (binVal -736- False -735- inputSize) = mkBin -738- False -737- inputSize
-      in add -743- inputSize -742- (binVal -745- True -744- inputSize) -741- (binVal -747- False -746- inputSize) -740- x -739- y
+    main :715: Bin -717- (S -718- inputSize) -716- (plus -720- (binVal -722- True -721- inputSize) -719- (binVal -724- False -723- inputSize)) = add -729- inputSize -728- (binVal -731- True -730- inputSize) -727- (binVal -733- False -732- inputSize) -726- (mkBin -735- True -734- inputSize) -725- (mkBin -737- False -736- inputSize)
   in main
 
 ### Constraints ###
@@ -504,8 +492,8 @@
 [192] -> [189,193,194]
 [193] -> [190]
 [197] -> [190]
-[199] -> [203,210,212,439,442,444,475,482,513,581,631,634,636,645,648,682,717,727,734]
-[200] -> [159,202,209,211,438,441,443,474,481,512,630,633,635,644,647,681,716,726,733]
+[199] -> [203,210,212,439,442,444,475,482,513,581,631,634,636,645,648,682,717]
+[200] -> [159,202,209,211,438,441,443,474,481,512,630,633,635,644,647,681,716]
 [202] -> [200,209,438,441,681]
 [203] -> [199]
 [205] -> [464,501,506,605,696,710]
@@ -1129,14 +1117,14 @@
 [625,653] -> [641]
 [625,654] -> [2]
 [625,655] -> [640]
-[626] -> [640,743]
-[627] -> [641,742]
-[628] -> [642,741]
-[629] -> [643,740]
-[630] -> [200,644,726]
+[626] -> [640,729]
+[627] -> [641,728]
+[628] -> [642,727]
+[629] -> [643,726]
+[630] -> [200,644,681]
 [631] -> [199]
-[632] -> [646,739]
-[633] -> [200,647,733]
+[632] -> [646,725]
+[633] -> [200,647,681]
 [634] -> [199]
 [635] -> [200,443,716]
 [636] -> [199]
@@ -1167,8 +1155,8 @@
 [657,672,674] -> [671]
 [657,675,676] -> [671]
 [657,675,677] -> [34]
-[658] -> [662,665,670,673,677,684,699,712,722,724,729,736,745,747]
-[659] -> [661,664,669,672,676,683,698,711,721,723,728,735,744,746]
+[658] -> [662,665,670,673,677,684,699,712,722,724,731,733]
+[659] -> [661,664,669,672,676,683,698,711,721,723,730,732]
 [660] -> [657,662]
 [661] -> [659]
 [662] -> [658]
@@ -1205,9 +1193,9 @@
 [678,708] -> [187]
 [678,709] -> [2]
 [678,710] -> [702]
-[679] -> [687,690,701,704,714,731,738]
-[680] -> [686,689,700,703,713,730,737]
-[681] -> [200,202,209,211,726,733]
+[679] -> [687,690,701,704,714,735,737]
+[680] -> [686,689,700,703,713,734,736]
+[681] -> [200,202,209,211,630,633]
 [682] -> [199]
 [683] -> [659]
 [684] -> [658]
@@ -1235,15 +1223,19 @@
 [713] -> [680]
 [714] -> [679]
 [715] -> [625]
-[715,739] -> [732]
-[715,740] -> [725]
-[715,741] -> [657]
-[715,741,746] -> [656]
-[715,741,747] -> [35]
-[715,742] -> [657]
-[715,742,744] -> [656]
-[715,742,745] -> [34]
-[715,743] -> [656]
+[715,725] -> [678]
+[715,725,736] -> [656]
+[715,725,737] -> [35]
+[715,726] -> [678]
+[715,726,734] -> [656]
+[715,726,735] -> [34]
+[715,727] -> [657]
+[715,727,732] -> [656]
+[715,727,733] -> [35]
+[715,728] -> [657]
+[715,728,730] -> [656]
+[715,728,731] -> [34]
+[715,729] -> [656]
 [716] -> [200,635]
 [717] -> [199]
 [719] -> [6]
@@ -1252,37 +1244,23 @@
 [722] -> [658]
 [723] -> [659]
 [724] -> [658]
-[725] -> [678]
-[725,730] -> [656]
-[725,731] -> [34]
-[726] -> [200,630,681]
-[727] -> [199]
-[728] -> [659]
-[729] -> [658]
-[730] -> [680]
-[731] -> [679]
-[732] -> [678]
-[732,737] -> [656]
-[732,738] -> [35]
-[733] -> [200,633,681]
-[734] -> [199]
-[735] -> [659]
-[736] -> [658]
-[737] -> [680]
-[738] -> [679]
-[739] -> [632]
-[740] -> [629]
-[741] -> [628]
-[742] -> [627]
-[743] -> [626]
-[744] -> [659]
-[745] -> [658]
-[746] -> [659]
-[747] -> [658]
+[725] -> [632]
+[726] -> [629]
+[727] -> [628]
+[728] -> [627]
+[729] -> [626]
+[730] -> [659]
+[731] -> [658]
+[732] -> [659]
+[733] -> [658]
+[734] -> [680]
+[735] -> [679]
+[736] -> [680]
+[737] -> [679]
 
 ### Solution ###
 
-[2,3,14,15,28,34,35,111,117,134,156,166,180,184,186,187,194,195,196,201,204,213,221,226,229,245,249,251,253,258,259,260,265,267,274,275,276,280,282,284,289,290,293,294,295,296,300,302,304,309,310,313,314,315,316,320,322,324,329,330,333,334,335,336,340,341,343,345,350,351,352,355,356,357,358,359,363,364,366,368,373,374,375,378,379,380,381,382,386,387,389,391,396,397,398,401,402,403,404,405,409,410,411,413,415,420,421,422,423,424,427,428,429,430,435,437,440,445,451,453,454,455,460,462,467,470,473,477,480,483,484,485,490,497,499,502,504,507,508,514,515,527,530,543,545,547,575,582,583,601,603,606,611,612,613,618,619,620,621,625,629,632,637,643,646,649,650,651,656,666,667,674,678,679,680,685,686,687,688,689,690,691,692,694,697,700,701,702,703,704,705,706,708,713,714,715,718,725,730,731,732,737,738,739,740,R]
+[2,3,14,15,28,34,35,111,117,134,156,166,180,184,186,187,194,195,196,201,204,213,221,226,229,245,249,251,253,258,259,260,265,267,274,275,276,280,282,284,289,290,293,294,295,296,300,302,304,309,310,313,314,315,316,320,322,324,329,330,333,334,335,336,340,341,343,345,350,351,352,355,356,357,358,359,363,364,366,368,373,374,375,378,379,380,381,382,386,387,389,391,396,397,398,401,402,403,404,405,409,410,411,413,415,420,421,422,423,424,427,428,429,430,435,437,440,445,451,453,454,455,460,462,467,470,473,477,480,483,484,485,490,497,499,502,504,507,508,514,515,527,530,543,545,547,575,582,583,601,603,606,611,612,613,618,619,620,621,625,629,632,637,643,646,649,650,651,656,666,667,674,678,679,680,685,686,687,688,689,690,691,692,694,697,700,701,702,703,704,705,706,708,713,714,715,718,725,726,734,735,736,737,R]
 
 ### Annotated ###
 
@@ -1385,11 +1363,7 @@
         mkBin -R- True -R- (S -R- n) = C -E- n -E- 1 -R- I -E- (binVal -E- False -E- n) -R- (mkBin -R- False -R- n)
       n :R: Nat
         mkBin -R- False -R- (S -R- n) = C -E- n -E- Z -R- O -E- (binVal -E- True -E- n) -R- (mkBin -R- True -R- n)
-    main :R: Bin -E- (S -R- inputSize) -E- (plus -E- (binVal -E- True -E- inputSize) -E- (binVal -E- False -E- inputSize)) = 
-      let
-        x :R: Bin -E- inputSize -E- (binVal -E- True -E- inputSize) = mkBin -R- True -R- inputSize
-        y :R: Bin -E- inputSize -E- (binVal -E- False -E- inputSize) = mkBin -R- False -R- inputSize
-      in add -E- inputSize -E- (binVal -E- True -E- inputSize) -E- (binVal -E- False -E- inputSize) -R- x -R- y
+    main :R: Bin -E- (S -R- inputSize) -E- (plus -E- (binVal -E- True -E- inputSize) -E- (binVal -E- False -E- inputSize)) = add -E- inputSize -E- (binVal -E- True -E- inputSize) -E- (binVal -E- False -E- inputSize) -R- (mkBin -R- True -R- inputSize) -R- (mkBin -R- False -R- inputSize)
   in main
 
 ### Specialised ###
@@ -1493,11 +1467,7 @@
         mkBin -R- True -R- (S -R- n) = C -E- n -E- 1 -R- I -E- (binVal -E- False -E- n) -R- (mkBin -R- False -R- n)
       n :R: Nat
         mkBin -R- False -R- (S -R- n) = C -E- n -E- Z -R- O -E- (binVal -E- True -E- n) -R- (mkBin -R- True -R- n)
-    main :R: Bin -E- (S -R- inputSize) -E- (plus -E- (binVal -E- True -E- inputSize) -E- (binVal -E- False -E- inputSize)) = 
-      let
-        x :R: Bin -E- inputSize -E- (binVal -E- True -E- inputSize) = mkBin -R- True -R- inputSize
-        y :R: Bin -E- inputSize -E- (binVal -E- False -E- inputSize) = mkBin -R- False -R- inputSize
-      in add -E- inputSize -E- (binVal -E- True -E- inputSize) -E- (binVal -E- False -E- inputSize) -R- x -R- y
+    main :R: Bin -E- (S -R- inputSize) -E- (plus -E- (binVal -E- True -E- inputSize) -E- (binVal -E- False -E- inputSize)) = add -E- inputSize -E- (binVal -E- True -E- inputSize) -E- (binVal -E- False -E- inputSize) -R- (mkBin -R- True -R- inputSize) -R- (mkBin -R- False -R- inputSize)
   in main
 
 ### Final annotation ###
@@ -1601,11 +1571,7 @@
         mkBin -R- True -R- (S -R- n) = C -E- n -E- 1 -R- I -E- (binVal -E- False -E- n) -R- (mkBin -R- False -R- n)
       n :R: Nat
         mkBin -R- False -R- (S -R- n) = C -E- n -E- Z -R- O -E- (binVal -E- True -E- n) -R- (mkBin -R- True -R- n)
-    main :R: Bin -E- (S -R- inputSize) -E- (plus -E- (binVal -E- True -E- inputSize) -E- (binVal -E- False -E- inputSize)) = 
-      let
-        x :R: Bin -E- inputSize -E- (binVal -E- True -E- inputSize) = mkBin -R- True -R- inputSize
-        y :R: Bin -E- inputSize -E- (binVal -E- False -E- inputSize) = mkBin -R- False -R- inputSize
-      in add -E- inputSize -E- (binVal -E- True -E- inputSize) -E- (binVal -E- False -E- inputSize) -R- x -R- y
+    main :R: Bin -E- (S -R- inputSize) -E- (plus -E- (binVal -E- True -E- inputSize) -E- (binVal -E- False -E- inputSize)) = add -E- inputSize -E- (binVal -E- True -E- inputSize) -E- (binVal -E- False -E- inputSize) -R- (mkBin -R- True -R- inputSize) -R- (mkBin -R- False -R- inputSize)
   in main
 
 ### Verification ###
@@ -1647,11 +1613,7 @@ Verification successful.
       mkBin b Z = N
       mkBin True (S n) = C I (mkBin False n)
       mkBin False (S n) = C O (mkBin True n)
-    main = 
-      let
-        x = mkBin True inputSize
-        y = mkBin False inputSize
-      in add x y
+    main = add (mkBin True inputSize) (mkBin False inputSize)
   in main
 
 ### Intermediate representation ###
@@ -1700,9 +1662,7 @@ let Z = constructor 0
                                     S _pv2 => ((C O) ((mkBin True) _pv2))
                                   True => case _pv1 of
                                     S _pv2 => ((C I) ((mkBin False) _pv2))
-                              in let main = let x = ((mkBin True) inputSize)
-                                in let y = ((mkBin False) inputSize)
-                                  in ((add x) y)
+                              in let main = ((add ((mkBin True) inputSize)) ((mkBin False) inputSize))
                                 in main
 
 ### Normal forms ###

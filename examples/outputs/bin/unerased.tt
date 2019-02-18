@@ -82,9 +82,5 @@
       mkBin b Z = N
       mkBin True (S n) = C n 1 I (binVal False n) (mkBin False n)
       mkBin False (S n) = C n Z O (binVal True n) (mkBin True n)
-    main = 
-      let
-        x = mkBin True inputSize
-        y = mkBin False inputSize
-      in add inputSize (binVal True inputSize) (binVal False inputSize) x y
+    main = add inputSize (binVal True inputSize) (binVal False inputSize) (mkBin True inputSize) (mkBin False inputSize)
   in main

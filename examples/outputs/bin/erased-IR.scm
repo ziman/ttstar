@@ -96,10 +96,6 @@
             ((S _pv2) ((C O) ((mkBin True) _pv2)))))
           ((True) (rts-case _pv1
             ((S _pv2) ((C I) ((mkBin False) _pv2))))))))))
-    (main 
-      (letrec* (
-        (x ((mkBin True) inputSize))
-        (y ((mkBin False) inputSize))
-      ) ((add x) y)))
+    (main ((add ((mkBin True) inputSize)) ((mkBin False) inputSize)))
   ) main))
 (newline)

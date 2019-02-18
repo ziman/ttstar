@@ -35,25 +35,25 @@
     constructor Either : (_x11 : Type) -> (_x12 : Type) -> Type
     constructor Left : (a : _24) -> (b : _25) -> (_x13 : a) -> Either a b
     constructor Right : (a : _26) -> (b : _27) -> (_x14 : b) -> Either a b
-    id : (a : Type) -> (x : a) -> a = (\a : Type. (\x : a. x))
+    id : (a : _28) -> (x : a) -> _29 = (\a : _30. (\x : a. x))
     constructor Fin : (_x15 : Nat) -> Type
-    constructor FZ : (n : Nat) -> Fin (S n)
-    constructor FS : (n : Nat) -> (_x16 : Fin n) -> Fin (S n)
+    constructor FZ : (n : _31) -> Fin (S n)
+    constructor FS : (n : _32) -> (_x16 : Fin n) -> Fin (S n)
     constructor Vect : (_x17 : Nat) -> (_x18 : Type) -> Type
-    constructor VN : (a : _28) -> Vect Z a
-    constructor VC : (n : _29) -> (a : _30) -> (_x19 : a) -> (_x20 : Vect n a) -> Vect (S n) a
+    constructor VN : (a : _33) -> Vect Z a
+    constructor VC : (n : _34) -> (a : _35) -> (_x19 : a) -> (_x20 : Vect n a) -> Vect (S n) a
     constructor List : (_x21 : Type) -> Type
-    constructor Nil : (a : _31) -> List a
-    constructor Cons : (a : _32) -> (_x22 : a) -> (_x23 : List a) -> List a
+    constructor Nil : (a : _36) -> List a
+    constructor Cons : (a : _37) -> (_x22 : a) -> (_x23 : List a) -> List a
     constructor State : (_x0 : Type) -> (_x1 : Type) -> Type
-    constructor MkSt : (st : _33) -> (a : _34) -> (run : (_x2 : st) -> Pair st a) -> State st a
-    runState : (st : _35) -> (a : _36) -> (_x3 : State st a) -> (_x4 : st) -> Pair st a 
-      st : _37 a : _38 run : (_x5 : st) -> Pair st a
-        runState st a ([MkSt] [_39] [_40] run) = run
+    constructor MkSt : (st : _38) -> (a : _39) -> (run : (_x2 : st) -> Pair st a) -> State st a
+    runState : (st : _40) -> (a : _41) -> (_x3 : State st a) -> (_x4 : st) -> Pair st a 
+      st : _42 a : _43 run : (_x5 : st) -> Pair st a
+        runState st a ([MkSt] [_44] [_45] run) = run
     execState : (st : Type) -> (a : Type) -> (x : State st a) -> (s : st) -> a = (\st : Type. (\a : Type. (\x : State st a. (\s : st. snd st a (runState st a x s)))))
     stGet : (st : Type) -> State st st = (\st : Type. MkSt st st (\s : st. MkPair st st s s))
     stReturn : (st : Type) -> (a : Type) -> (x : a) -> State st a = (\st : Type. (\a : Type. (\x : a. MkSt st a (\s : st. MkPair st a s x))))
-    stBind : (st : _41) -> (a : _42) -> (b : _43) -> (x : State st a) -> (y : (z : a) -> State st b) -> State st b 
+    stBind : (st : _46) -> (a : _47) -> (b : _48) -> (x : State st a) -> (y : (z : a) -> State st b) -> State st b 
       st : Type a : Type b : Type f : (_x6 : st) -> Pair st a g : (_x7 : a) -> State st b
         stBind st a b ([MkSt] [st] [a] f) g = 
           let
@@ -68,7 +68,7 @@
     IO : (_x0 : Type) -> Type = State RealWorld
     ioReturn : (a : Type) -> (x : a) -> IO a = (\a : Type. (\x : a. stReturn RealWorld a x))
     ioBind : (a : Type) -> (b : Type) -> (x : IO a) -> (y : (_x1 : a) -> IO b) -> IO b = (\a : Type. (\b : Type. (\x : IO a. (\y : (_x1 : a) -> IO b. stBind RealWorld a b x y))))
-    ioWrapImpure : (a : Type) -> (impureF : (w :R: RealWorld) -> a) -> IO a = (\a : Type. (\impureF : (w :R: RealWorld) -> a. stBind RealWorld RealWorld a (stGet RealWorld) (\w : _44. stReturn RealWorld a (impureF w))))
+    ioWrapImpure : (a : Type) -> (impureF : (w :R: RealWorld) -> a) -> IO a = (\a : Type. (\impureF : (w :R: RealWorld) -> a. stBind RealWorld RealWorld a (stGet RealWorld) (\w : _49. stReturn RealWorld a (impureF w))))
     unsafePerformIO : (a : Type) -> (x : IO a) -> a = (\a : Type. (\x : IO a. 
       let postulate TheWorld : RealWorld
       in execState RealWorld a x TheWorld))
@@ -78,14 +78,14 @@
     postulate Unspec : Type
     printSchemeRepr : (a : Type) -> (x : a) -> IO Unspec = (\a : Type. (\x : a. 
       let foreign nativePrint : (a :E: Type) -> (x :R: a) -> Unspec
-      in ioWrapImpure Unspec (\w : _45. nativePrint a x)))
+      in ioWrapImpure Unspec (\w : _50. nativePrint a x)))
     natToInt : (_x0 : Nat) -> Int 
       natToInt Z = intZ
       n : Nat
         natToInt (S n) = intS (natToInt n)
     foreign intToNat : (x :R: Int) -> Nat
     printNat : (x : Nat) -> IO Unspec = (\x : Nat. printSchemeRepr Int (natToInt x))
-    main : _46 = unsafePerformIO _47 (ioBind _48 _49 (ioReturn _50 4) (\v : _51. ioBind _52 _53 (printNat v) (\_do0 : _54. printSchemeRepr _55 (intToNat (intS (intS (intS intZ)))))))
+    main : _51 = unsafePerformIO _52 (ioBind _53 _54 (ioReturn _55 4) (\v : _56. ioBind _57 _58 (printNat v) (\_do0 : _59. printSchemeRepr _60 (intToNat (intS (intS (intS intZ)))))))
   in main
 
 ### Elaborated ###
