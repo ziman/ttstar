@@ -76,14 +76,22 @@ keywords = S.fromList [
     "of", "forall", "do"
   ]
 
+-- this is not a kwd because we don't care about alignment
 lineComment :: Parser ()
-lineComment = kwd "--" *> many (satisfy (/= '\n')) *> return () <?> "line comment"
+lineComment = try (string "--") *> many (satisfy (/= '\n')) *> return () <?> "line comment"
 
+-- this is not a kwd because we don't care about alignment
 bigComment :: Parser ()
-bigComment = kwd "{-" *> manyTill anyChar (try $ kwd "-}") *> return () <?> "block comment"
+bigComment = try (string "{-") *> manyTill anyChar (try $ string "-}") *> return () <?> "block comment"
 
 sp :: Parser ()
-sp = many ((satisfy isSpace *> return ()) <|> lineComment <|> bigComment) *> return () <?> "whitespace or comment"
+sp = many
+    ( (satisfy isSpace *> return ())
+    <|> lineComment
+    <|> bigComment
+    )
+    *> return ()
+    <?> "whitespace or comment"
 
 kwd :: String -> Parser ()
 kwd s = (withinFence >> try (string s) >> sp) <?> s
@@ -360,14 +368,15 @@ termBody :: Parser (Body MRel)
 termBody = Term <$> expr
 
 mpatvars :: Parser [Def MRel]
-mpatvars = subfenced' (kwd "forall" *> mtypings <* kwd ".")
+mpatvars = subfenced' (kwd "forall" *> mtypings <* optional (kwd "."))
 
 clause :: Parser (Clause MRel)
 clause = (<?> "pattern clause") $ subfenced' $ do
-    -- quickly reject "name :" because that's the beginning of the next decl
+    -- quickly reject common beginnings of the next decl
     notFollowedBy (name >> kwd ":")
+    notFollowedBy (name >> kwd "\\")
     pvs <- mpatvars <|> many (ptyping Var)
-    subfenced $ do
+    subfenced' $ do
         lhs <- forceHead <$> pattern
         kwd "="
         rhs <- expr
@@ -386,7 +395,7 @@ dataDef = (<?> "data definition") $ subfenced' $ do
     return (tfd : ctors)
 
 foreignDef :: Parser (Def MRel)
-foreignDef = (<?> "foreign definition") $ subfenced $ do
+foreignDef = (<?> "foreign definition") $ subfenced' $ do
     kwd "foreign"
     d <- typing $ Foreign undefined
     kwd "="
@@ -397,7 +406,7 @@ simpleDef :: Parser (Def MRel)
 simpleDef = foreignDef <|> postulate <|> mlDef <|> clauseDef <?> "simple definition"
 
 imports :: Parser [String]
-imports = many (kwd "import" *> stringLiteral)
+imports = many (subfenced' $ kwd "import" *> stringLiteral)
 
 definition :: Parser [Def MRel]
 definition = dataDef <|> (pure <$> simpleDef) <?> "definition"

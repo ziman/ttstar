@@ -1,6 +1,6 @@
 data Nat : Type where
-  Z : Nat,
-  S : (x :R: Nat) -> Nat.
+  Z : Nat
+  S : (x :R: Nat) -> Nat
 
 plus : Nat -> Nat -> Nat.
   (n : Nat)

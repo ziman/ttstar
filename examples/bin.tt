@@ -94,7 +94,7 @@ forall n.
 
 mkBin : (b : Bool) -> (w : Nat) -> Bin w (binVal b w)
 forall b.
-  mkBin b Z = N,
+  mkBin b Z = N
 forall n.
   mkBin True (S n) = C n 1 I (binVal False n) (mkBin False n)
 forall n.
@@ -102,7 +102,7 @@ forall n.
 
 main \: Bin (S inputSize) (plus (binVal True inputSize) (binVal False inputSize))
   = let
-      x \: Bin inputSize (binVal True inputSize) = mkBin True inputSize,
+      x \: Bin inputSize (binVal True inputSize) = mkBin True inputSize
       y \: Bin inputSize (binVal False inputSize) = mkBin False inputSize
     in
       add inputSize (binVal True inputSize) (binVal False inputSize) x y
