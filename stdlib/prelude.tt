@@ -3,15 +3,15 @@ data Nat : Type where
   S : (x :R: Nat) -> Nat
 
 plus : Nat -> Nat -> Nat
-forall n.
+(n : Nat)
   plus Z n = n
-forall m n.
+(m : Nat) (n : Nat)
   plus (S m) n = S (plus m n)
 
 times : Nat -> Nat -> Nat
-forall n.
+(n : Nat)
   times Z n = Z
-forall m n.
+(m : Nat) (n : Nat)
   times (S m) n = plus n (times m n)
 
 data Bool : Type where
@@ -29,12 +29,12 @@ data Pair : Type -> Type -> Type where
   MkPair : (a : Type) -> (b : Type) -> a -> b -> Pair a b
 
 fst : (a : Type) -> (b : Type) -> (Pair a b) -> a
-forall a b x y.
-  fst a b ({MkPair} [_] [_] x y) = x
+(a : Type) (b : Type) (x : a) (y : b)
+  fst a b ({MkPair} [a] [b] x y) = x
 
 snd : (a : Type) -> (b : Type) -> (Pair a b) -> b
-forall a b x y.
-  snd a b ({MkPair} [_] [_] x y) = y
+(a : Type) (b : Type) (x : a) (y : b)
+  snd a b ({MkPair} [a] [b] x y) = y
 
 data Either : Type -> Type -> Type where
   Left : (a : Type) -> (b : Type) -> a -> Either a b

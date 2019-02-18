@@ -33,14 +33,14 @@ data TwoBits : Nat -> Nat -> Nat -> Type where
 
 adb : (c : Nat) -> (x : Nat) -> (y : Nat)
     -> Bit c -> Bit x -> Bit y -> TwoBits c x y
-adb [_] [_] [_] O O O = TB  _ _ _  _ O _ O  (Refl _ _)
-adb [_] [_] [_] I O O = TB  _ _ _  _ O _ I  (Refl _ _)
-adb [_] [_] [_] O I O = TB  _ _ _  _ O _ I  (Refl _ _)
-adb [_] [_] [_] O O I = TB  _ _ _  _ O _ I  (Refl _ _)
-adb [_] [_] [_] I I O = TB  _ _ _  _ I _ O  (Refl _ _)
-adb [_] [_] [_] I O I = TB  _ _ _  _ I _ O  (Refl _ _)
-adb [_] [_] [_] O I I = TB  _ _ _  _ I _ O  (Refl _ _)
-adb [_] [_] [_] I I I = TB  _ _ _  _ I _ I  (Refl _ _)
+adb [_] [_] [_] O O O = TB  0 0 0  _ O _ O  (Refl _ _)
+adb [_] [_] [_] I O O = TB  1 0 0  _ O 1 I  (Refl _ _)
+adb [_] [_] [_] O I O = TB  0 1 0  _ O 1 I  (Refl _ _)
+adb [_] [_] [_] O O I = TB  0 0 1  _ O 1 I  (Refl _ _)
+adb [_] [_] [_] I I O = TB  1 1 0  1 I _ O  (Refl _ _)
+adb [_] [_] [_] I O I = TB  1 0 1  1 I _ O  (Refl _ _)
+adb [_] [_] [_] O I I = TB  0 1 1  1 I _ O  (Refl _ _)
+adb [_] [_] [_] I I I = TB  1 1 1  1 I 1 I  (Refl _ _)
 
 add' : (w : Nat)
     -> (c : Nat) -> (x : Nat) -> (y : Nat)
@@ -56,7 +56,7 @@ forall w
   xn' (xn : Bin w xn')
   yb' (yb : Bit yb')
   yn' (yn : Bin w yn').
-add' ({S} w) c [_] [_] cb (C [_] xb' xb xn' xn) (C [_] yb' yb yn' yn)
+add' ({S} w) c [plus xb' (double xn')] [plus yb' (double yn')] cb (C [_] xb' xb xn' xn) (C [_] yb' yb yn' yn)
     = case adb c xb' yb' cb xb yb with
         f : (TwoBits c xb' yb')
           -> Bin (S (S w)) (plus c (plus (plus xb' (double xn')) (plus yb' (double yn'))))
