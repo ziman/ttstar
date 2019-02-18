@@ -47,14 +47,9 @@ pipeline args = do
         putStrLn "-- vim: ft=ttstar"
 
     let sourceFname = Args.sourceFile args
-    prog' <- readProgram sourceFname
-    progMeta <- case prog' of
-        Left err -> do
-            print err
-            error "parse error"
-
-        Right prog ->
-            return prog
+    progMeta <- readProgram sourceFname >>= \case
+        Left  err  -> print err >> error "parse error"
+        Right prog -> return prog
 
     when (Args.verbose args) $ do
         putStrLn ""

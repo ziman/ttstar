@@ -2,14 +2,17 @@ module TT.Parser (readProgram) where
 
 import TT.Core
 import TT.Utils
+import TT.Lens
 import TT.Pretty ()
 
 import Data.Char
+import Data.Functor
 import Text.Parsec
 import System.FilePath
 import qualified Data.Map as M
 import qualified Data.Set as S
 import qualified Text.Parsec.Indent as PI
+import qualified Control.Monad.Trans.State.Strict as ST
 
 data ParserState = PS
     { psCounters :: M.Map String Int
@@ -38,11 +41,13 @@ subfenced' x = withinFence' >> PI.withPos x
 -- Rest of parser --
 
 readProgram :: String -> IO (Either ParseError (Program MRel))
-readProgram fname = do
-    ds' <- readDefs fname
-    case ds' of
-        Left err -> return . Left  $ err
-        Right ds -> return . Right $ Bind Let ds (V $ UN "main")
+readProgram fname =
+    readDefs fname <&> \case
+        Left err -> Left  $ err
+        Right ds ->
+            let prog = Bind Let ds (V $ UN "main")
+                f _ = ST.get >>= \i -> ST.put (i+1) >> pure (Meta i)
+              in Right $ ST.evalState (ttMetas f prog) 0
 
 readDefs :: String -> IO (Either ParseError [Def MRel])
 readDefs fname = do
@@ -137,19 +142,17 @@ natural = mkNat . read <$> (withinFence *> many1 (satisfy isDigit) <* sp) <?> "n
     mkNat 0 = V $ UN "Z"
     mkNat k = App Nothing (V $ UN "S") (mkNat (k-1))
 
-meta :: Parser (TT MRel)
-meta = kwd "_" *> freshMeta
+metaVar :: Parser (TT MRel)
+metaVar = kwd "_" *> pure meta
 
-freshMeta :: Parser (TT MRel)
-freshMeta = do
-    ~(MN _ i) <- freshMN "_"
-    return $ Meta i
+meta :: TT MRel
+meta = Meta (error "meta numbers not defined in parser")
 
 atomic :: Parser (TT MRel)
 atomic = parens expr
     <|> caseExpr
     <|> erasureInstance
-    <|> meta
+    <|> metaVar
     <|> var
     <|> natural
     <?> "atomic expression"
@@ -170,9 +173,7 @@ lambda = (<?> "lambda") $ do
 
     case d' of
         Right d -> Bind Lam [d] <$> expr
-        Left n -> do
-            ty <- freshMeta
-            Bind Lam [Def n Nothing ty (Abstract Var)] <$> expr
+        Left n -> Bind Lam [Def n Nothing meta (Abstract Var)] <$> expr
 
 bpi :: Parser (TT MRel)
 bpi = (<?> "pi") $ do
@@ -182,13 +183,9 @@ bpi = (<?> "pi") $ do
 
 -- meta-enabled typings
 mtypings :: Parser [Def MRel]
-mtypings = traverse f =<< many1 ((Left <$> name) <|> (Right <$> ptyping Var))
+mtypings = many1 (nm <|> ptyping Var)
   where
-    f (Left n) = do
-        ty <- freshMeta
-        return $ Def n Nothing ty (Abstract Var)
-
-    f (Right d) = return d
+    nm  = name <&> \n -> Def n Nothing meta (Abstract Var)
 
 bforall :: Parser (TT MRel)
 bforall = (<?> "forall") $ do
@@ -298,11 +295,10 @@ caseOf nscruts = do
     Def fn Nothing fty . Clauses <$> many (caseArm fn)
   where
     mkPi :: Int -> Parser (TT MRel)
-    mkPi 0 = freshMeta
+    mkPi 0 = pure meta
     mkPi k = do
         n <- freshMN "cft"
-        ty <- freshMeta                
-        Bind Pi [Def n Nothing ty $ Abstract Var] <$> mkPi (k-1)
+        Bind Pi [Def n Nothing meta $ Abstract Var] <$> mkPi (k-1)
 
     caseArm :: Name -> Parser (Clause MRel)
     caseArm fn = subfenced $ do
