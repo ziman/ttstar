@@ -176,4 +176,4 @@ ttstar: !! verification failed: Traceback:
 Error: BadPatAppHead (PV c)
 
 CallStack (from HasCallStack):
-  error, called at Main.hs:173:25 in main:Main
+  error, called at Main.hs:168:25 in main:Main

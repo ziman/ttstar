@@ -10,11 +10,11 @@
     constructor T : B
     constructor F : B
     isSuc : (_x1 : N) -> B 
-      n : N
+      n : _0
         isSuc (S n) = T
-      n : N
+      n : _1
         isSuc n = F
-    main : (_x2 : N) -> B = (\x : N. isSuc x)
+    main : (_x2 : N) -> B = (\x : _2. isSuc x)
   in main
 
 ### Elaborated ###

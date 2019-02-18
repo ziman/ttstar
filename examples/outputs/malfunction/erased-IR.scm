@@ -112,11 +112,11 @@
     (sumFor (lambda (n)
       (lambda (f)
         
-          (letrec ((g (lambda (_pv0)
+          (letrec ((_cf0 (lambda (_pv0)
             (rts-case _pv0
               ((False) ((plusInt (f n)) ((sumFor ((minusInt n) int1)) f)))
               ((True) int0)))))
-            (g (isZero n))))))
+            (_cf0 (isZero n))))))
     (boolToInt (lambda (_pv0)
       (rts-case _pv0
         ((False) int0)

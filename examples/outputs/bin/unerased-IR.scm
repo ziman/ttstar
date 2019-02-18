@@ -156,8 +156,11 @@
                   (letrec ((f (lambda (_pv18)
                     (rts-unpack (cdr _pv18) (_pv19 _pv20 _pv21 _pv22 _pv23 _pv24 _pv25 _pv26)
                       
-                        (letrec ((eq `(eq)))
-                          ((((((subst Nat) (Bin (S (S _pv7)))) ((plus _pv24) (double ((plus _pv22) ((plus _pv11) _pv16))))) ((plus _pv1) ((plus ((plus _pv9) (double _pv11))) ((plus _pv14) (double _pv16))))) eq) (((((C (S _pv7)) _pv24) _pv25) ((plus _pv22) ((plus _pv11) _pv16))) (((((((add_ _pv7) _pv22) _pv11) _pv16) _pv23) _pv12) _pv17))))))))
+                        (letrec* (
+                          (x ((plus _pv24) (double ((plus _pv22) ((plus _pv11) _pv16)))))
+                          (y ((plus _pv1) ((plus ((plus _pv9) (double _pv11))) ((plus _pv14) (double _pv16)))))
+                          (eq `(eq))
+                        ) ((((((subst Nat) (Bin (S (S _pv7)))) ((plus _pv24) (double ((plus _pv22) ((plus _pv11) _pv16))))) ((plus _pv1) ((plus ((plus _pv9) (double _pv11))) ((plus _pv14) (double _pv16))))) eq) (((((C (S _pv7)) _pv24) _pv25) ((plus _pv22) ((plus _pv11) _pv16))) (((((((add_ _pv7) _pv22) _pv11) _pv16) _pv23) _pv12) _pv17))))))))
                     (f ((((((adb _pv1) _pv9) _pv14) _pv4) _pv10) _pv15)))))))))))
         (_ (rts-unpack (cdr _pv0) (_pv7)
           (rts-case _pv5
@@ -166,8 +169,11 @@
                 (letrec ((f (lambda (_pv18)
                   (rts-unpack (cdr _pv18) (_pv19 _pv20 _pv21 _pv22 _pv23 _pv24 _pv25 _pv26)
                     
-                      (letrec ((eq `(eq)))
-                        ((((((subst Nat) (Bin (S (S _pv7)))) ((plus _pv24) (double ((plus _pv22) ((plus _pv11) _pv16))))) ((plus _pv1) ((plus ((plus _pv9) (double _pv11))) ((plus _pv14) (double _pv16))))) eq) (((((C (S _pv7)) _pv24) _pv25) ((plus _pv22) ((plus _pv11) _pv16))) (((((((add_ _pv7) _pv22) _pv11) _pv16) _pv23) _pv12) _pv17))))))))
+                      (letrec* (
+                        (x ((plus _pv24) (double ((plus _pv22) ((plus _pv11) _pv16)))))
+                        (y ((plus _pv1) ((plus ((plus _pv9) (double _pv11))) ((plus _pv14) (double _pv16)))))
+                        (eq `(eq))
+                      ) ((((((subst Nat) (Bin (S (S _pv7)))) ((plus _pv24) (double ((plus _pv22) ((plus _pv11) _pv16))))) ((plus _pv1) ((plus ((plus _pv9) (double _pv11))) ((plus _pv14) (double _pv16))))) eq) (((((C (S _pv7)) _pv24) _pv25) ((plus _pv22) ((plus _pv11) _pv16))) (((((((add_ _pv7) _pv22) _pv11) _pv16) _pv23) _pv12) _pv17))))))))
                   (f ((((((adb _pv1) _pv9) _pv14) _pv4) _pv10) _pv15))))))))))))
     (add (lambda (w)
       (lambda (x)

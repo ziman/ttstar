@@ -1,1 +1,21 @@
-(T)
+
+Error: (match) no matching pattern
+
+	Call history:
+
+	<eval>	  [subst] (pair?885 x801)
+	<eval>	  [subst] (car888 x801)
+	<eval>	  [subst] (cdr890 x801)
+	<eval>	  [subst] (pair?909 x889)
+	<eval>	  [subst] (null?910 (cdr911 x889))
+	<eval>	  [subst] (cdr911 x889)
+	<eval>	  [subst] (car914 x889)
+	<eval>	  [subst] (pair?999 w913)
+	<eval>	  [subst] (car1002 w913)
+	<eval>	  [subst] (cdr1004 w913)
+	<eval>	  [subst] (pair?1092 x1003)
+	<eval>	  [subst] (car1095 x1003)
+	<eval>	  [subst] (cdr1097 x1003)
+	<eval>	  [subst] (pair?1116 x1096)
+	<eval>	  [subst] (failure414)
+	<eval>	  [failure414] (error1129 (quote1130 match1131) "no matching pattern")	<--

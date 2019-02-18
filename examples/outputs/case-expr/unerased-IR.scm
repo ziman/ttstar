@@ -60,12 +60,20 @@
       (rts-case _pv0
         ((F) Unit)
         ((T) Bool))))
+    (other (not_TT 
+      (letrec ((_cf0 (curried-lambda (_pv0 _pv1)
+        (rts-case _pv0
+          ((F) _pv1)
+          ((T) (rts-case _pv1
+            ((F) T)
+            ((T) F)))))))
+        ((_cf0 (not_TT F)) T))))
     (main (not_TT 
       (letrec ((f (curried-lambda (_pv0 _pv1)
         (rts-case _pv0
           ((F) MkUnit)
           ((T) (rts-case _pv1
-            ((F) T)
+            ((F) other)
             ((T) F)))))))
         ((f (not_TT F)) T))))
   ) main))

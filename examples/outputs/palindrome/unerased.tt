@@ -20,7 +20,7 @@
     constructor Refl : (a) -> (x) -> Id a x x
     id = (\a. (\x. x))
     subst 
-      subst a P x [_] [_] = (\w. w)
+      subst a P x [_] ([_] [_] [_]) = (\w. w)
     cong 
       cong a b f x [_] [_] = Refl b (f x)
     one = (\x. Cons x Nil)
@@ -33,7 +33,7 @@
     appAssoc 
       appAssoc Nil ys zs = Refl List (app ys zs)
       appAssoc (Cons x xs) ys zs = cong List List (Cons x) (app (app xs ys) zs) (app xs (app ys zs)) (appAssoc xs ys zs)
-    constructor Rev : (_x12) -> Type
+    constructor Rev : (_x11) -> Type
     constructor RNil : Rev Nil
     constructor RSnoc : (xs) -> (x) -> (rxs) -> Rev (app xs (one x))
     rev' 
@@ -44,7 +44,7 @@
       reverse' [_] RNil = Nil
       reverse' [_] (RSnoc xs x rxs) = Cons x (reverse' xs rxs)
     reverse = (\xs. reverse' xs (rev xs))
-    constructor V : (_x13) -> Type
+    constructor V : (_x12) -> Type
     constructor VNil : V Nil
     constructor VOne : (x) -> V (Cons x Nil)
     constructor VTwo : (x) -> (xs) -> (u) -> (y) -> V (Cons x (app xs (one y)))
@@ -63,7 +63,7 @@
       build (S n) Nil Nil = VNil
     postulate eq : (xs) -> Id List (index (length xs) xs (reverse xs)) xs
     toV = (\xs. subst List V (index (length xs) xs (reverse xs)) xs (eq xs) (build (length xs) xs (reverse xs)))
-    constructor IsPalindrome : (_x18) -> Type
+    constructor IsPalindrome : (_x17) -> Type
     constructor PNil : IsPalindrome Nil
     constructor POne : (b) -> IsPalindrome (Cons b Nil)
     constructor PTwo : (b) -> (xs) -> (pf) -> IsPalindrome (Cons b (app xs (one b)))

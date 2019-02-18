@@ -7,14 +7,14 @@
     constructor Z : Nat
     constructor S : (x :R: Nat) -> Nat
     plus : (_x0 : Nat) -> (_x1 : Nat) -> Nat 
-      n : Nat
+      n : _0
         plus Z n = n
-      m : Nat n : Nat
+      m : _1 n : _2
         plus (S m) n = S (plus m n)
     times : (_x2 : Nat) -> (_x3 : Nat) -> Nat 
-      n : Nat
+      n : _3
         times Z n = Z
-      m : Nat n : Nat
+      m : _4 n : _5
         times (S m) n = plus n (times m n)
     constructor Bool : Type
     constructor True : Bool
@@ -25,26 +25,26 @@
     constructor Unit : Type
     constructor MkUnit : Unit
     constructor Pair : (_x5 : Type) -> (_x6 : Type) -> Type
-    constructor MkPair : (a : Type) -> (b : Type) -> (_x7 : a) -> (_x8 : b) -> Pair a b
-    fst : (a : Type) -> (b : Type) -> (_x9 : Pair a b) -> a 
-      a : Type b : Type x : a y : b
-        fst a b ([MkPair] [a] [b] x y) = x
-    snd : (a : Type) -> (b : Type) -> (_x10 : Pair a b) -> b 
-      a : Type b : Type x : a y : b
-        snd a b ([MkPair] [a] [b] x y) = y
+    constructor MkPair : (a : _6) -> (b : _7) -> (_x7 : a) -> (_x8 : b) -> Pair a b
+    fst : (a : _8) -> (b : _9) -> (_x9 : Pair a b) -> a 
+      a : _10 b : _11 x : _12 y : _13
+        fst a b ([MkPair] [_14] [_15] x y) = x
+    snd : (a : _16) -> (b : _17) -> (_x10 : Pair a b) -> b 
+      a : _18 b : _19 x : _20 y : _21
+        snd a b ([MkPair] [_22] [_23] x y) = y
     constructor Either : (_x11 : Type) -> (_x12 : Type) -> Type
-    constructor Left : (a : Type) -> (b : Type) -> (_x13 : a) -> Either a b
-    constructor Right : (a : Type) -> (b : Type) -> (_x14 : b) -> Either a b
+    constructor Left : (a : _24) -> (b : _25) -> (_x13 : a) -> Either a b
+    constructor Right : (a : _26) -> (b : _27) -> (_x14 : b) -> Either a b
     id : (a : Type) -> (x : a) -> a = (\a : Type. (\x : a. x))
     constructor Fin : (_x15 : Nat) -> Type
     constructor FZ : (n : Nat) -> Fin (S n)
     constructor FS : (n : Nat) -> (_x16 : Fin n) -> Fin (S n)
     constructor Vect : (_x17 : Nat) -> (_x18 : Type) -> Type
-    constructor VN : (a : Type) -> Vect Z a
-    constructor VC : (n : Nat) -> (a : Type) -> (x : a) -> (xs : Vect n a) -> Vect (S n) a
-    constructor List : (_x19 : Type) -> Type
-    constructor Nil : (a : Type) -> List a
-    constructor Cons : (a : Type) -> (x : a) -> (xs : List a) -> List a
+    constructor VN : (a : _28) -> Vect Z a
+    constructor VC : (n : _29) -> (a : _30) -> (_x19 : a) -> (_x20 : Vect n a) -> Vect (S n) a
+    constructor List : (_x21 : Type) -> Type
+    constructor Nil : (a : _31) -> List a
+    constructor Cons : (a : _32) -> (_x22 : a) -> (_x23 : List a) -> List a
     f : (a : Type) -> (x : a) -> a 
       f [Bool] True = False
       f [Bool] False = True
@@ -94,10 +94,10 @@
     constructor FS : (n : Nat) -> (_x16 : Fin n) -> Fin (S n)
     constructor Vect : (_x17 : Nat) -> (_x18 : Type) -> Type
     constructor VN : (a : Type) -> Vect Z a
-    constructor VC : (n : Nat) -> (a : Type) -> (x : a) -> (xs : Vect n a) -> Vect (S n) a
-    constructor List : (_x19 : Type) -> Type
+    constructor VC : (n : Nat) -> (a : Type) -> (_x19 : a) -> (_x20 : Vect n a) -> Vect (S n) a
+    constructor List : (_x21 : Type) -> Type
     constructor Nil : (a : Type) -> List a
-    constructor Cons : (a : Type) -> (x : a) -> (xs : List a) -> List a
+    constructor Cons : (a : Type) -> (_x22 : a) -> (_x23 : List a) -> List a
     f : (a : Type) -> (x : a) -> a 
       f [Bool] True = False
       f [Bool] False = True
@@ -147,10 +147,10 @@
     constructor FS :112: (n :113: Nat) -> (_x16 :114: Fin -115- n) -> Fin -116- (S -117- n)
     constructor Vect :118: (_x17 :119: Nat) -> (_x18 :120: Type) -> Type
     constructor VN :121: (a :122: Type) -> Vect -124- Z -123- a
-    constructor VC :125: (n :126: Nat) -> (a :127: Type) -> (x :128: a) -> (xs :129: Vect -131- n -130- a) -> Vect -133- (S -134- n) -132- a
-    constructor List :135: (_x19 :136: Type) -> Type
+    constructor VC :125: (n :126: Nat) -> (a :127: Type) -> (_x19 :128: a) -> (_x20 :129: Vect -131- n -130- a) -> Vect -133- (S -134- n) -132- a
+    constructor List :135: (_x21 :136: Type) -> Type
     constructor Nil :137: (a :138: Type) -> List -139- a
-    constructor Cons :140: (a :141: Type) -> (x :142: a) -> (xs :143: List -144- a) -> List -145- a
+    constructor Cons :140: (a :141: Type) -> (_x22 :142: a) -> (_x23 :143: List -144- a) -> List -145- a
     f :146: (a :147: Type) -> (x :148: a) -> a 
       f -150- [Bool] -149- True = False
       f -152- [Bool] -151- False = True
@@ -355,10 +355,10 @@
     constructor FS :E: (n :E: Nat) -> (_x16 :E: Fin -E- n) -> Fin -E- (S -R- n)
     constructor Vect :E: (_x17 :E: Nat) -> (_x18 :E: Type) -> Type
     constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
-    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
-    constructor List :E: (_x19 :E: Type) -> Type
+    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (_x19 :E: a) -> (_x20 :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
+    constructor List :E: (_x21 :E: Type) -> Type
     constructor Nil :E: (a :E: Type) -> List -E- a
-    constructor Cons :E: (a :E: Type) -> (x :E: a) -> (xs :E: List -E- a) -> List -E- a
+    constructor Cons :E: (a :E: Type) -> (_x22 :E: a) -> (_x23 :E: List -E- a) -> List -E- a
     f :R: (a :E: Type) -> (x :R: a) -> a 
       f -E- [Bool] -R- True = False
       f -E- [Bool] -R- False = True
@@ -408,10 +408,10 @@
     constructor FS :E: (n :E: Nat) -> (_x16 :E: Fin -E- n) -> Fin -E- (S -R- n)
     constructor Vect :E: (_x17 :E: Nat) -> (_x18 :E: Type) -> Type
     constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
-    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
-    constructor List :E: (_x19 :E: Type) -> Type
+    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (_x19 :E: a) -> (_x20 :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
+    constructor List :E: (_x21 :E: Type) -> Type
     constructor Nil :E: (a :E: Type) -> List -E- a
-    constructor Cons :E: (a :E: Type) -> (x :E: a) -> (xs :E: List -E- a) -> List -E- a
+    constructor Cons :E: (a :E: Type) -> (_x22 :E: a) -> (_x23 :E: List -E- a) -> List -E- a
     f :R: (a :E: Type) -> (x :R: a) -> a 
       f -E- [Bool] -R- True = False
       f -E- [Bool] -R- False = True
@@ -461,10 +461,10 @@
     constructor FS :E: (n :E: Nat) -> (_x16 :E: Fin -E- n) -> Fin -E- (S -R- n)
     constructor Vect :E: (_x17 :E: Nat) -> (_x18 :E: Type) -> Type
     constructor VN :E: (a :E: Type) -> Vect -E- Z -E- a
-    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (x :E: a) -> (xs :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
-    constructor List :E: (_x19 :E: Type) -> Type
+    constructor VC :E: (n :E: Nat) -> (a :E: Type) -> (_x19 :E: a) -> (_x20 :E: Vect -E- n -E- a) -> Vect -E- (S -R- n) -E- a
+    constructor List :E: (_x21 :E: Type) -> Type
     constructor Nil :E: (a :E: Type) -> List -E- a
-    constructor Cons :E: (a :E: Type) -> (x :E: a) -> (xs :E: List -E- a) -> List -E- a
+    constructor Cons :E: (a :E: Type) -> (_x22 :E: a) -> (_x23 :E: List -E- a) -> List -E- a
     f :R: (a :E: Type) -> (x :R: a) -> a 
       f -E- [Bool] -R- True = False
       f -E- [Bool] -R- False = True

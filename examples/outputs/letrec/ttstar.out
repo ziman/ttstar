@@ -2,7 +2,7 @@
 
 ### Desugared ###
 
-  let main : (_x0 : Type) -> Type = (\x : Type. x)
+  let main : (_x0 : Type) -> Type = (\x : _0. x)
   in main
 
 ### Elaborated ###

@@ -36,5 +36,5 @@ let Z = constructor 0
                                       Z => intZ
                                     in let intToNat = foreign "(lambda (x) (number->peano 'Z 'S x))"
                                       in let printNat = \x. (printSchemeRepr (natToInt x))
-                                        in let main = (unsafePerformIO ((ioBind (ioReturn (S (S (S (S Z)))))) \v. ((ioBind (printNat v)) \_0. (printSchemeRepr (intToNat (intS (intS (intS intZ))))))))
+                                        in let main = (unsafePerformIO ((ioBind (ioReturn (S (S (S (S Z)))))) \v. ((ioBind (printNat v)) \_do0. (printSchemeRepr (intToNat (intS (intS (intS intZ))))))))
                                           in main

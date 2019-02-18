@@ -7,9 +7,9 @@
     constructor Bool : Type
     constructor True : Bool
     constructor False : Bool
-    constructor List : (_x19) -> Type
+    constructor List : (_x21) -> Type
     constructor Nil : (a) -> List a
-    constructor Cons : (a) -> (x) -> (xs) -> List a
+    constructor Cons : (a) -> (_x22) -> (_x23) -> List a
     constructor List : Type
     constructor Nil : List
     constructor Cons : (_x0) -> (_x1) -> List

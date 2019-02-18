@@ -107,7 +107,7 @@
     (printNat (lambda (x)
       (printSchemeRepr (natToInt x))))
     (main (unsafePerformIO ((ioBind (ioReturn (S (S (S (S Z)))))) (lambda (v)
-      ((ioBind (printNat v)) (lambda (_0)
+      ((ioBind (printNat v)) (lambda (_do0)
         (printSchemeRepr (intToNat (intS (intS (intS intZ)))))))))))
   ) main))
 (newline)

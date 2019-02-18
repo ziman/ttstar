@@ -41,10 +41,10 @@
       in ioWrapImpure (\w. nativePrint s))
     printInt = (\i. printString (intToString i))
     sumFor = (\n. (\f. 
-      let g 
-        g True = int0
-        g False = plusInt (f n) (sumFor (minusInt n int1) f)
-      in g (isZero n)))
+      let _cf0 
+        _cf0 True = int0
+        _cf0 False = plusInt (f n) (sumFor (minusInt n int1) f)
+      in _cf0 (isZero n)))
     boolToInt 
       boolToInt True = int1
       boolToInt False = int0

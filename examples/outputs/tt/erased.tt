@@ -4,7 +4,7 @@
     constructor FZ : Fin
     constructor FS : (_x16) -> Fin
     constructor VN : Vect
-    constructor VC : (x) -> (xs) -> Vect
+    constructor VC : (_x19) -> (_x20) -> Vect
     constructor V : (_x1) -> TT
     constructor Lam : (_x2) -> TT
     constructor App : (_x3) -> (_x4) -> TT

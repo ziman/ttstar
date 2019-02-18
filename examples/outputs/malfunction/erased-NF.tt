@@ -12,57 +12,57 @@
     foreign ifRaw
     isZero = (\x. ifRaw x False True)
     sumFor = (\n. (\f. 
-      let g 
-        g True = int0
-        g False = plusInt (f n) (sumFor (minusInt n int1) f)
-      in g (isZero n)))
+      let _cf0 
+        _cf0 True = int0
+        _cf0 False = plusInt (f n) (sumFor (minusInt n int1) f)
+      in _cf0 (isZero n)))
     boolToInt 
       boolToInt True = int1
       boolToInt False = int0
   in 
     let foreign nativePrint
     in 
-      let g 
-        g True = int0
-        g False = plusInt ((\x. 
-          let g 
-            g True = int0
-            g False = plusInt ((\y. 
-              let g 
-                g True = int0
-                g False = plusInt ((\z. 
+      let _cf0 
+        _cf0 True = int0
+        _cf0 False = plusInt ((\x. 
+          let _cf0 
+            _cf0 True = int0
+            _cf0 False = plusInt ((\y. 
+              let _cf0 
+                _cf0 True = int0
+                _cf0 False = plusInt ((\z. 
                   let foreign eqInt_I
                   in boolToInt (ifRaw (eqInt_I (timesInt x x) (plusInt (timesInt y y) (timesInt z z))) True False)) y) (sumFor (minusInt y int1) (\z. 
                   let foreign eqInt_I
                   in boolToInt (ifRaw (eqInt_I (timesInt x x) (plusInt (timesInt y y) (timesInt z z))) True False)))
-              in g (ifRaw y False True)) x) (sumFor (minusInt x int1) (\y. 
-              let g 
-                g True = int0
-                g False = plusInt ((\z. 
+              in _cf0 (ifRaw y False True)) x) (sumFor (minusInt x int1) (\y. 
+              let _cf0 
+                _cf0 True = int0
+                _cf0 False = plusInt ((\z. 
                   let foreign eqInt_I
                   in boolToInt (ifRaw (eqInt_I (timesInt x x) (plusInt (timesInt y y) (timesInt z z))) True False)) y) (sumFor (minusInt y int1) (\z. 
                   let foreign eqInt_I
                   in boolToInt (ifRaw (eqInt_I (timesInt x x) (plusInt (timesInt y y) (timesInt z z))) True False)))
-              in g (ifRaw y False True)))
-          in g (ifRaw x False True)) (timesInt (timesInt (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1))) (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1)))) (plusInt int1 int1))) (sumFor (minusInt (timesInt (timesInt (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1))) (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1)))) (plusInt int1 int1)) int1) (\x. 
-          let g 
-            g True = int0
-            g False = plusInt ((\y. 
-              let g 
-                g True = int0
-                g False = plusInt ((\z. 
+              in _cf0 (ifRaw y False True)))
+          in _cf0 (ifRaw x False True)) (timesInt (timesInt (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1))) (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1)))) (plusInt int1 int1))) (sumFor (minusInt (timesInt (timesInt (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1))) (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1)))) (plusInt int1 int1)) int1) (\x. 
+          let _cf0 
+            _cf0 True = int0
+            _cf0 False = plusInt ((\y. 
+              let _cf0 
+                _cf0 True = int0
+                _cf0 False = plusInt ((\z. 
                   let foreign eqInt_I
                   in boolToInt (ifRaw (eqInt_I (timesInt x x) (plusInt (timesInt y y) (timesInt z z))) True False)) y) (sumFor (minusInt y int1) (\z. 
                   let foreign eqInt_I
                   in boolToInt (ifRaw (eqInt_I (timesInt x x) (plusInt (timesInt y y) (timesInt z z))) True False)))
-              in g (ifRaw y False True)) x) (sumFor (minusInt x int1) (\y. 
-              let g 
-                g True = int0
-                g False = plusInt ((\z. 
+              in _cf0 (ifRaw y False True)) x) (sumFor (minusInt x int1) (\y. 
+              let _cf0 
+                _cf0 True = int0
+                _cf0 False = plusInt ((\z. 
                   let foreign eqInt_I
                   in boolToInt (ifRaw (eqInt_I (timesInt x x) (plusInt (timesInt y y) (timesInt z z))) True False)) y) (sumFor (minusInt y int1) (\z. 
                   let foreign eqInt_I
                   in boolToInt (ifRaw (eqInt_I (timesInt x x) (plusInt (timesInt y y) (timesInt z z))) True False)))
-              in g (ifRaw y False True)))
-          in g (ifRaw x False True)))
-      in nativePrint (intToString (g (ifRaw (timesInt (timesInt (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1))) (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1)))) (plusInt int1 int1)) False True)))
+              in _cf0 (ifRaw y False True)))
+          in _cf0 (ifRaw x False True)))
+      in nativePrint (intToString (_cf0 (ifRaw (timesInt (timesInt (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1))) (timesInt (timesInt (plusInt int1 int1) (plusInt int1 int1)) (timesInt (plusInt int1 int1) (plusInt int1 int1)))) (plusInt int1 int1)) False True)))
