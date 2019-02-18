@@ -305,8 +305,11 @@ caseOf nscruts = do
     caseArm fn = subfenced' $ do
         pvs <- mpatvars <|> pure []
         lhs <- pattern `sepBy1` kwd ","
-        kwd "="
+        defEq
         Clause pvs (mkAppPat (PHead fn) [(Nothing, p) | p <- lhs]) <$> expr
+
+defEq :: Parser ()
+defEq = kwd "=" <|> kwd "~>"
 
 doExpr :: Parser (TT MRel)
 doExpr = do
@@ -373,7 +376,7 @@ clauseDef :: Parser (Def MRel)
 clauseDef = (<?> "pattern-clause definition") $ do
     d <- subfenced' $ typing Var
     body <-
-        (kwd "=" *> termBody)
+        (defEq *> termBody)
         <|> clausesBody
     return d{ defBody = body }
 
@@ -383,7 +386,7 @@ mlDef = (<?> "ml-style definition") $ subfenced' $ do
     args <- many (ptyping Var)
     r <- rcolon
     retTy <- expr
-    kwd "="
+    defEq
     rhs <- expr
     return $ Def n r (mkPi args retTy) (Term $ mkLam args rhs)
   where
@@ -410,7 +413,7 @@ clause = (<?> "pattern clause") $ subfenced' $ do
     pvs <- mpatvars <|> many (ptyping Var)
     subfenced' $ do
         lhs <- forceHead <$> pattern
-        kwd "="
+        defEq
         rhs <- expr
         return $ Clause pvs lhs rhs
 
@@ -430,7 +433,7 @@ foreignDef :: Parser (Def MRel)
 foreignDef = (<?> "foreign definition") $ subfenced' $ do
     kwd "foreign"
     d <- typing $ Foreign undefined
-    kwd "="
+    defEq
     code <- stringLiteral
     return d{defBody = Abstract $ Foreign code}
 
