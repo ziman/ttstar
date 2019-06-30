@@ -31,7 +31,4 @@
           semiDecEq' pfH Nothing = Nothing
           semiDecEq' Just Just = Just
         in semiDecEq' (semiDecEqB x y) (semiDecEq xs ys)
-    sampleList = genList T input
-    main 
-      main = semiDecEq sampleList sampleList
-  in main
+  in semiDecEq (genList T input) (genList T input)

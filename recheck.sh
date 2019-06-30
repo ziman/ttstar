@@ -14,13 +14,13 @@ scheme_racket() {
 
 # Chicken Scheme, interpreter
 scheme_csi() {
-    csi -qs "$1" $2 2>&1
+    chicken-csi -qs "$1" $2 2>&1
 }
 
 # Chicken Scheme, compiler
 scheme_csc() {
     exe="${1%.scm}"
-    csc "$1" \
+    chicken-csc "$1" \
         -O5 \
         -unsafe \
         -strict-types \
