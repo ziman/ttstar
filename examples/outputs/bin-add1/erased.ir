@@ -1,0 +1,11 @@
+-- vim: ft=ttstar
+let N = constructor 0
+  in let O = constructor 1
+    in let I = constructor 1
+      in let add1 = \_pv0.
+        case _pv0 of
+          I _pv1 => (O (add1 _pv1))
+          N => (I N)
+          O _pv1 => (I _pv1)
+        in let main = (add1 (I N))
+          in main

@@ -1,0 +1,19 @@
+-- vim: ft=ttstar
+let Nat = constructor 0
+  in let Z = constructor 0
+    in let S = constructor 1
+      in let double = \_pv0.
+        case _pv0 of
+          S _pv1 => (S (S (double _pv1)))
+          Z => Z
+        in let Bin = constructor 1
+          in let N = constructor 0
+            in let O = constructor 2
+              in let I = constructor 2
+                in let add1 = \_pv0. \_pv1.
+                  case _pv1 of
+                    I _pv2 _pv3 => ((O (S _pv2)) ((add1 _pv2) _pv3))
+                    N => ((I Z) N)
+                    O _pv2 _pv3 => ((I _pv2) _pv3)
+                  in let main = ((add1 (S Z)) ((I Z) N))
+                    in main

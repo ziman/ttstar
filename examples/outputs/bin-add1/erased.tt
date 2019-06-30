@@ -1,0 +1,13 @@
+-- vim: ft=ttstar
+
+  let
+    constructor N : Bin
+    constructor O : (b) -> Bin
+    constructor I : (b) -> Bin
+    add1 
+      add1 N = I N
+      add1 (O b) = I b
+      add1 (I b) = O (add1 b)
+    main 
+      main = add1 (I N)
+  in main

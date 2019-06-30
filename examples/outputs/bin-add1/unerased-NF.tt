@@ -1,0 +1,14 @@
+-- vim: ft=ttstar
+
+  let
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (_x0) -> Nat
+    double 
+      double Z = Z
+      double (S n) = S (S (double n))
+    constructor Bin : (_x2) -> Type
+    constructor N : Bin Z
+    constructor O : (n) -> (b) -> Bin (double n)
+    constructor I : (n) -> (b) -> Bin (S (double n))
+  in O 1 (I Z N)

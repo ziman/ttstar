@@ -1,0 +1,295 @@
+-- vim: ft=ttstar
+
+### Desugared ###
+
+  let
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (_x0 : Nat) -> Nat
+    double : (_x1 : Nat) -> Nat 
+      double Z = Z
+      n : _0
+        double (S n) = S (S (double n))
+    constructor Bin : (_x2 : Nat) -> Type
+    constructor N : Bin Z
+    constructor O : (n : Nat) -> (b :R: Bin n) -> Bin (double n)
+    constructor I : (n : Nat) -> (b :R: Bin n) -> Bin (S (double n))
+    add1 : (n : Nat) -> (_x3 : Bin n) -> Bin (S n) 
+      add1 [Z] N = I Z N
+      n : _1 b : _2
+        add1 [double n] (O n b) = I n b
+      n : _3 b : _4
+        add1 [S (double n)] (I n b) = O (S n) (add1 n b)
+    main : Bin 2 
+      main = add1 1 (I Z N)
+  in main
+
+### Elaborated ###
+
+  let
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (_x0 : Nat) -> Nat
+    double : (_x1 : Nat) -> Nat 
+      double Z = Z
+      n : Nat
+        double (S n) = S (S (double n))
+    constructor Bin : (_x2 : Nat) -> Type
+    constructor N : Bin Z
+    constructor O : (n : Nat) -> (b :R: Bin n) -> Bin (double n)
+    constructor I : (n : Nat) -> (b :R: Bin n) -> Bin (S (double n))
+    add1 : (n : Nat) -> (_x3 : Bin n) -> Bin (S n) 
+      add1 [Z] N = I Z N
+      n : Nat b : Bin n
+        add1 [double n] (O n b) = I n b
+      n : Nat b : Bin n
+        add1 [S (double n)] (I n b) = O (S n) (add1 n b)
+    main : Bin 2 
+      main = add1 1 (I Z N)
+  in main
+
+### Evarified ###
+
+  let
+    constructor Nat :1: Type
+    constructor Z :2: Nat
+    constructor S :3: (_x0 :4: Nat) -> Nat
+    double :5: (_x1 :6: Nat) -> Nat 
+      double -7- Z = Z
+      n :8: Nat
+        double -9- (S -10- n) = S -11- (S -12- (double -13- n))
+    constructor Bin :14: (_x2 :15: Nat) -> Type
+    constructor N :16: Bin -17- Z
+    constructor O :18: (n :19: Nat) -> (b :R: Bin -20- n) -> Bin -21- (double -22- n)
+    constructor I :23: (n :24: Nat) -> (b :R: Bin -25- n) -> Bin -26- (S -27- (double -28- n))
+    add1 :29: (n :30: Nat) -> (_x3 :31: Bin -32- n) -> Bin -33- (S -34- n) 
+      add1 -36- [Z] -35- N = I -38- Z -37- N
+      n :39: Nat b :40: Bin -41- n
+        add1 -43- [double -44- n] -42- (O -46- n -45- b) = I -48- n -47- b
+      n :49: Nat b :50: Bin -51- n
+        add1 -53- [S -54- (double -55- n)] -52- (I -57- n -56- b) = O -59- (S -60- n) -58- (add1 -62- n -61- b)
+    main :63: Bin -64- 2 
+      main = add1 -68- 1 -67- (I -71- Z -70- N)
+  in main
+
+### Constraints ###
+
+[] -> [37,45,47,56,58,63,70]
+[4] -> [10,11,12,27,34,54,60,65,66,69]
+[5] -> [2,3,7,9]
+[5,9,10] -> [8]
+[5,11] -> [3]
+[5,11,12,13] -> [8]
+[6] -> [7,9,13,22,28,44,55]
+[7] -> [6]
+[8] -> [5,9,10]
+[9] -> [6]
+[10] -> [4]
+[11] -> [4]
+[12] -> [4]
+[13] -> [6]
+[15] -> [17,20,21,25,26,32,33,41,51,64]
+[17] -> [15,25,32]
+[19] -> [46,59]
+[20] -> [15,33,41]
+[21] -> [15,32,33]
+[22] -> [6]
+[24] -> [38,48,57,71]
+[25] -> [15,17,41,51]
+[26] -> [15,32,33]
+[27] -> [4]
+[28] -> [6]
+[29] -> [16,18,23,35,42,52]
+[29,36] -> [2]
+[29,37] -> [16]
+[29,38] -> [2]
+[29,42,45] -> [40]
+[29,42,46] -> [39]
+[29,43] -> [5]
+[29,43,44] -> [39]
+[29,47] -> [40]
+[29,48] -> [39]
+[29,52,56] -> [50]
+[29,52,57] -> [49]
+[29,53] -> [3]
+[29,53,54] -> [5]
+[29,53,54,55] -> [49]
+[29,58,61] -> [50]
+[29,58,62] -> [49]
+[29,59] -> [3]
+[29,59,60] -> [49]
+[30] -> [36,43,53,62,68]
+[31] -> [35,42,52,61,67]
+[32] -> [15,17,21,26,51]
+[33] -> [15,20,21,26,64]
+[34] -> [4]
+[35] -> [31]
+[36] -> [30]
+[38] -> [24]
+[39] -> [29,42,46]
+[40] -> [29,42,45]
+[41] -> [15,20,25]
+[42] -> [31]
+[43] -> [30]
+[44] -> [6]
+[46] -> [19]
+[48] -> [24]
+[49] -> [29,52,57]
+[50] -> [29,52,56]
+[51] -> [15,25,32]
+[52] -> [31]
+[53] -> [30]
+[54] -> [4]
+[55] -> [6]
+[57] -> [24]
+[59] -> [19]
+[60] -> [4]
+[61] -> [31]
+[62] -> [30]
+[63] -> [29]
+[63,67] -> [23]
+[63,67,70] -> [16]
+[63,67,71] -> [2]
+[63,68] -> [3]
+[63,68,69] -> [2]
+[64] -> [15,33]
+[65] -> [4]
+[66] -> [4]
+[67] -> [31]
+[68] -> [30]
+[69] -> [4]
+[71] -> [24]
+
+### Solution ###
+
+[16,18,23,29,31,35,37,40,42,45,47,50,52,56,58,61,63,67,70,R]
+
+### Annotated ###
+
+  let
+    constructor Nat :E: Type
+    constructor Z :E: Nat
+    constructor S :E: (_x0 :E: Nat) -> Nat
+    double :E: (_x1 :E: Nat) -> Nat 
+      double -E- Z = Z
+      n :E: Nat
+        double -E- (S -E- n) = S -E- (S -E- (double -E- n))
+    constructor Bin :E: (_x2 :E: Nat) -> Type
+    constructor N :R: Bin -E- Z
+    constructor O :R: (n :E: Nat) -> (b :R: Bin -E- n) -> Bin -E- (double -E- n)
+    constructor I :R: (n :E: Nat) -> (b :R: Bin -E- n) -> Bin -E- (S -E- (double -E- n))
+    add1 :R: (n :E: Nat) -> (_x3 :R: Bin -E- n) -> Bin -E- (S -E- n) 
+      add1 -E- [Z] -R- N = I -E- Z -R- N
+      n :E: Nat b :R: Bin -E- n
+        add1 -E- [double -E- n] -R- (O -E- n -R- b) = I -E- n -R- b
+      n :E: Nat b :R: Bin -E- n
+        add1 -E- [S -E- (double -E- n)] -R- (I -E- n -R- b) = O -E- (S -E- n) -R- (add1 -E- n -R- b)
+    main :R: Bin -E- 2 
+      main = add1 -E- 1 -R- (I -E- Z -R- N)
+  in main
+
+### Specialised ###
+
+  let
+    constructor Nat :E: Type
+    constructor Z :E: Nat
+    constructor S :E: (_x0 :E: Nat) -> Nat
+    double :E: (_x1 :E: Nat) -> Nat 
+      double -E- Z = Z
+      n :E: Nat
+        double -E- (S -E- n) = S -E- (S -E- (double -E- n))
+    constructor Bin :E: (_x2 :E: Nat) -> Type
+    constructor N :R: Bin -E- Z
+    constructor O :R: (n :E: Nat) -> (b :R: Bin -E- n) -> Bin -E- (double -E- n)
+    constructor I :R: (n :E: Nat) -> (b :R: Bin -E- n) -> Bin -E- (S -E- (double -E- n))
+    add1 :R: (n :E: Nat) -> (_x3 :R: Bin -E- n) -> Bin -E- (S -E- n) 
+      add1 -E- [Z] -R- N = I -E- Z -R- N
+      n :E: Nat b :R: Bin -E- n
+        add1 -E- [double -E- n] -R- (O -E- n -R- b) = I -E- n -R- b
+      n :E: Nat b :R: Bin -E- n
+        add1 -E- [S -E- (double -E- n)] -R- (I -E- n -R- b) = O -E- (S -E- n) -R- (add1 -E- n -R- b)
+    main :R: Bin -E- 2 
+      main = add1 -E- 1 -R- (I -E- Z -R- N)
+  in main
+
+### Final annotation ###
+
+  let
+    constructor Nat :E: Type
+    constructor Z :E: Nat
+    constructor S :E: (_x0 :E: Nat) -> Nat
+    double :E: (_x1 :E: Nat) -> Nat 
+      double -E- Z = Z
+      n :E: Nat
+        double -E- (S -E- n) = S -E- (S -E- (double -E- n))
+    constructor Bin :E: (_x2 :E: Nat) -> Type
+    constructor N :R: Bin -E- Z
+    constructor O :R: (n :E: Nat) -> (b :R: Bin -E- n) -> Bin -E- (double -E- n)
+    constructor I :R: (n :E: Nat) -> (b :R: Bin -E- n) -> Bin -E- (S -E- (double -E- n))
+    add1 :R: (n :E: Nat) -> (_x3 :R: Bin -E- n) -> Bin -E- (S -E- n) 
+      add1 -E- [Z] -R- N = I -E- Z -R- N
+      n :E: Nat b :R: Bin -E- n
+        add1 -E- [double -E- n] -R- (O -E- n -R- b) = I -E- n -R- b
+      n :E: Nat b :R: Bin -E- n
+        add1 -E- [S -E- (double -E- n)] -R- (I -E- n -R- b) = O -E- (S -E- n) -R- (add1 -E- n -R- b)
+    main :R: Bin -E- 2 
+      main = add1 -E- 1 -R- (I -E- Z -R- N)
+  in main
+
+### Verification ###
+
+Verification successful.
+
+### Pruned ###
+
+  let
+    constructor N : Bin
+    constructor O : (b) -> Bin
+    constructor I : (b) -> Bin
+    add1 
+      add1 N = I N
+      add1 (O b) = I b
+      add1 (I b) = O (add1 b)
+    main 
+      main = add1 (I N)
+  in main
+
+### Intermediate representation ###
+
+let N = constructor 0
+  in let O = constructor 1
+    in let I = constructor 1
+      in let add1 = \_pv0.
+        case _pv0 of
+          I _pv1 => (O (add1 _pv1))
+          N => (I N)
+          O _pv1 => (I _pv1)
+        in let main = (add1 (I N))
+          in main
+
+### Normal forms ###
+
+unerased:
+  
+  let
+    constructor Nat : Type
+    constructor Z : Nat
+    constructor S : (_x0 : Nat) -> Nat
+    double : (_x1 : Nat) -> Nat 
+      double Z = Z
+      n : Nat
+        double (S n) = S (S (double n))
+    constructor Bin : (_x2 : Nat) -> Type
+    constructor N : Bin Z
+    constructor O : (n : Nat) -> (b :R: Bin n) -> Bin (double n)
+    constructor I : (n : Nat) -> (b :R: Bin n) -> Bin (S (double n))
+  in O 1 (I Z N)
+
+erased:
+  
+  let
+    constructor N : Bin
+    constructor O : (b) -> Bin
+    constructor I : (b) -> Bin
+  in O (I N)
+

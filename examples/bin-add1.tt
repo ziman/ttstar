@@ -1,0 +1,23 @@
+data Nat : Type where
+  Z : Nat
+  S : Nat -> Nat
+
+double : Nat -> Nat
+double Z ~> Z
+forall n.
+  double (S n) ~> S (S (double n))
+
+data Bin : Nat -> Type where
+  N : Bin Z
+  O : (n : Nat) -> (b :R: Bin n) -> Bin (double n)
+  I : (n : Nat) -> (b :R: Bin n) -> Bin (S (double n))
+
+add1 : (n : Nat) -> Bin n -> Bin (S n)
+add1 [Z] N ~> I Z N
+forall n b.
+  add1 [double n] (O n b) ~> I n b
+forall n b.
+  add1 [S (double n)] (I n b) ~> O (S n) (add1 n b)
+
+main : Bin 2
+main = add1 (S Z) (I Z N)
