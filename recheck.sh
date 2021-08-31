@@ -56,7 +56,7 @@ stack install \
 mkdir -p examples/outputs
 for i in examples/*.tt; do
     n_src="${i%.tt}"
-    n="${n_src/examples/examples\/outputs}"
+    n="${n_src/examples/examples/outputs}"
 
     mkdir -p "${n}"
     find "${n}" -type f | xargs rm
